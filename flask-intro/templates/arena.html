@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Arena</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+    <div class="container">
+      <h1>Welcome to the arena {{ myHero.name }}!</h1>
+
+<h2> 
+You are currently on level {{ myHero.wins }} of the arena.
+<br>
+<br>
+<br>Name: {{ myHero.name}}
+<br>Level: {{ myHero.level}}
+<br>Health: {{ myHero.hp }} / {{ myHero.maxhp }}
+<br>Wins: {{ myHero.wins }}
+<br>
+<br>
+<br>Enemy: {{ enemy.name}}
+<br>Level: {{ enemy.level}}
+<br>Health: {{ enemy.hp }} / {{ enemy.maxhp }}
+</h2>
+<br>
+	
+      <p>Click <a href="/battle">here</a> to battle in the arena.</p>
+      <p>Click <a href="/">here</a> to go to the main menu.</p>
+      <p>Click <a href="/logout">here</a> to logout.</p>
+      {% for message in get_flashed_messages() %}
+        {{ message }}
+      {% endfor %}
+    </div>
+  </body>
+</html>
