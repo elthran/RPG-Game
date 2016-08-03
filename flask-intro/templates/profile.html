@@ -12,19 +12,19 @@
 {% if myHero %}
 <h2> 
 <br>Name: {{ myHero.name}}
-<br>Class: {{ myHero.spec }}
-<br>Level: {{ myHero.level}}
-<br>Health: {{ myHero.hp }} / {{ myHero.max_hp }}
-<br>Strength: {{ myHero.strength}}
-<br>Agility: {{ myHero.agility}}
+<br>Class: {{ myHero.starting_class }}
+<br>Level: {{ myHero.level }}
+
+<br>Damage: {{ myHero.damage }}
+<br>Affinity: {{ myHero.affinity }}
 <br>Wisdom: {{ myHero.wisdom}}
-<br>Vitality: {{ myHero.vitality}}
+<br>Health: {{ myHero.hp }} / {{ myHero.max_hp }}
 <br>Wins: {{ myHero.wins }}
 </h2>
 {% endif %}
 <br>
 
-      <p>Click <a href="/createcharacter">here</a> to change your name or class.</p>
+      <p>Click <a href="/createcharacter">here</a> to reset your character.</p>
       <p>Click <a href="/">here</a> to go to the main menu.</p>
       <p>Click <a href="/logout">here</a> to logout.</p>
       {% for message in get_flashed_messages() %}

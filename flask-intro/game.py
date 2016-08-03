@@ -30,7 +30,7 @@ class Hero(object):
         return "Name: %s\nDamage: %s" % (self.name, self.damage) 
 
 myHero = Hero("Unknown", 1, "", 3, 3, 0, 3, 0, 0, 3, 3, 0, 0)
-enemy = Hero("Goblin", 1, "", 3, 3, 0, 3, 0, 0, 3, 3, 0, 0)
+enemy = Hero("Goblin", 1, "", 2, 2, 0, 2, 0, 0, 2, 2, 0, 0)
 
 myHero.update_stats(myHero.strength, myHero.speed, myHero.vitality, myHero.wisdom, myHero.faith)
 myHero.update_health(myHero.max_hp)

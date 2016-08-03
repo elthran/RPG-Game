@@ -12,16 +12,12 @@
 
 <h1>You died!</h1>
 
-<br>Name: {{ myHero.name}}
-<br>Level: {{ myHero.level}}
-<br>Health: {{ myHero.hp }} / {{ myHero.maxhp }}
-<br>Wins: {{ myHero.wins }}
+<h2>
+<br>You were able to achieve {{ myHero.wins }} wins.
+</h2>
+<p>You can click <a href="/createcharacter">here</a> to start over.</p>
 
 
-</h3>
-
-     <p>Click <a href="/arena">here</a> to return to the arena.</p>
-      <p>Click <a href="/">here</a> to go to the main menu.</p>
       <p>Click <a href="/logout">here</a> to logout.</p>
       {% for message in get_flashed_messages() %}
         {{ message }}

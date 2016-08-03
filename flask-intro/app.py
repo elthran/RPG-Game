@@ -43,7 +43,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
         if username not in username_password:
-            error = 'You have typed in your username incorrctly.'
+            error = 'You have typed in your username incorrectly.'
         elif password != username_password[username]:
             error = 'You have typed in your password incorrectly.' 
         else:
@@ -94,6 +94,8 @@ def victory():
 @app.route('/createcharacter', methods=['GET', 'POST'])
 @login_required
 def createcharacter():
+    myHero.wins = 0
+    myHero.update_health(myHero.max_hp)
     if request.method == 'POST':
         myHero.name = request.form['char_name']
         myHero.spec = request.form['spec']
