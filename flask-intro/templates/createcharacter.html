@@ -9,9 +9,11 @@
       <h1>What would you like to name your character?</h1>
       <br>
       <form action="" method="post">
-        <input type="text" placeholder="Name" name="name" value="{{
-          request.form.name }}">
-        <input class="btn btn-default" type="submit" value="Name">
+        <input type="text" placeholder="Name" name="char_name" value="{{
+          request.form.char_name }}">
+        <input type="text" placeholder="Class" name="spec" value="{{
+          request.form.spec }}">
+        <input class="btn btn-default" type="submit" value="Submit">
       </form>
       {% if error %}
         <p class="error"><strong>Error:</strong> {{ error }}
