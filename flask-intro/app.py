@@ -58,7 +58,7 @@ def login():
             error = 'You have typed in your username or password incorrctly.'
         else:
             session['logged_in'] = True
-            flash("LOG IN SUCCESFUL")
+            flash("LOG IN SUCCESSFUL")
             return redirect(url_for('home'))
     return render_template('login.html', error=error)
 
@@ -66,7 +66,7 @@ def login():
 @login_required
 def logout():
     session.pop('logged_in', None)
-    flash("LOG OUT SUCCeSFULL")
+    flash("LOG OUT SUCCESSFUL")
     return redirect(url_for('logout'))
 
 @app.route('/profile')
