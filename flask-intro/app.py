@@ -38,9 +38,14 @@ def welcome():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
+    username_password = {'admin':'admin','jacob':'silly'}
     if request.method == 'POST':
-        if request.form['username'] != 'admin' or request.form['password'] != 'admin':
-            error = 'You have typed in your username or password incorrctly.'
+        username = request.form['username']
+        password = request.form['password']
+        if username not in username_password:
+            error = 'You have typed in your username incorrctly.'
+        elif password != username_password[username]:
+            error = 'You have typed in your password incorrectly.' 
         else:
             session['logged_in'] = True
             flash("LOG IN SUCCESSFUL")
