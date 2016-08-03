@@ -1,24 +1,7 @@
 # import the Flask class from the flask module
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from functools import wraps
-
-class Hero(object):
-    def __init__(self, name, level, strength, agility, wisdom, vitality, hp, maxhp, wins, spec):
-        self.name = name
-        self.level = level
-        self.strength = strength
-        self.agility = agility
-        self.wisdom = wisdom
-        self.vitality = vitality
-        self.hp = hp
-        self.maxhp = maxhp
-        self.wins = wins
-        self.spec = spec
-
-    def __repr__(self):
-        return "Name: %s \n Class: Brute \n Level: %s \n Strength: %s \n Agility: %s \n Wisdom: %s \n Vitality: %s \n HP: %s/%s \n" % (self.name, self.level, self.strength, self.agility, self.wisdom, self.vitality, self.hp, self.maxhp) 
-myHero = Hero("Unknown", 1, 3, 4, 2, 3, 50, 50, 1, "")
-enemy = Hero("Goblin", 1, 2, 2, 2, 2, 7, 7, 0, "")
+from game import *
 
 # create the application object
 app = Flask(__name__)
@@ -83,18 +66,32 @@ def arena():
 @app.route('/battle')
 @login_required
 def battle():
-    myHero.hp -= 20
-    if myHero.hp <= 0:
-        dead = " "
-    else:
-        dead = None
+    myHero.hp = 50
+    enemy.hp = 7 + myHero.wins
+    while myHero.hp > 0 and enemy.hp > 0:
+        myHero.hp -= 1
+        enemy.hp -= 5
+        if myHero.hp < 0:
+            myHero.hp = 0
+        if enemy.hp < 0:
+            enemy.hp = 0
+    if myHero.hp == 0:
+        return redirect(url_for('defeat', myHero=myHero))
+    elif enemy.hp == 0:
         myHero.wins += 1
-    return render_template('battle.html', myHero=myHero, enemy=enemy, dead=dead)  # return a string
+        return redirect(url_for('victory', myHero=myHero))
+    return render_template('battle.html', myHero=myHero, enemy=enemy)  # return a string
 
-@app.route('/battle_results')
+@app.route('/defeat')
 @login_required
-def battle_results():
-    return render_template('battle_results.html', myHero=myHero, enemy=enemy, dead=dead)  # return a string
+def defeat():
+    return render_template('defeat.html', myHero=myHero)  # return a string
+
+@app.route('/victory')
+@login_required
+def victory():
+    return render_template('victory.html', myHero=myHero)  # return a string
+
 
 @app.route('/createcharacter', methods=['GET', 'POST'])
 @login_required
@@ -103,7 +100,7 @@ def createcharacter():
         myHero.name = request.form['char_name']
         myHero.spec = request.form['spec']
         return redirect(url_for('profile'))
-    return render_template('createcharacter.html', myHero=myHero)  # return a string
+    return render_template('createcharacter.html')  # return a string
 
 # start the server with the 'run()' method
 if __name__ == '__main__':
