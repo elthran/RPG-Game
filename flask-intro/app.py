@@ -2,6 +2,7 @@
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from functools import wraps
 from game import *
+from battle import *
 
 # create the application object
 app = Flask(__name__)
@@ -66,15 +67,7 @@ def arena():
 @app.route('/battle')
 @login_required
 def battle():
-    myHero.hp = 50
-    enemy.hp = 7 + myHero.wins
-    while myHero.hp > 0 and enemy.hp > 0:
-        myHero.hp -= 1
-        enemy.hp -= 5
-        if myHero.hp < 0:
-            myHero.hp = 0
-        if enemy.hp < 0:
-            enemy.hp = 0
+    myHero.hp,enemy.hp = battle_logic()
     if myHero.hp == 0:
         return redirect(url_for('defeat', myHero=myHero))
     elif enemy.hp == 0:
