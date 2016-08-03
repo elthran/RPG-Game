@@ -103,7 +103,7 @@ def createcharacter():
         myHero.name = request.form['char_name']
         myHero.spec = request.form['spec']
         return redirect(url_for('profile'))
-    return render_template('createcharacter.html')  # return a string
+    return render_template('createcharacter.html', myHero=myHero)  # return a string
 
 # start the server with the 'run()' method
 if __name__ == '__main__':

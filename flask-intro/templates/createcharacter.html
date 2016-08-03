@@ -8,13 +8,21 @@
     <div class="container">
       <h1>What would you like to name your character?</h1>
       <br>
-      <form action="" method="post">
+
+<form action="" method="post">
+        <h2>Choose your name:</h2>
         <input type="text" placeholder="Name" name="char_name" value="{{
           request.form.char_name }}">
-        <input type="text" placeholder="Class" name="spec" value="{{
-          request.form.spec }}">
+
+        <h2>Choose your class:</h2>
+        <select name="spec">
+          <option value="Human">Human</option>
+          <option value="Orc">Orc</option>        
+        </select>
+
+        <br><br><br><br>
         <input class="btn btn-default" type="submit" value="Submit">
-      </form>
+</form>
       {% if error %}
         <p class="error"><strong>Error:</strong> {{ error }}
       {% endif %}
@@ -22,6 +30,14 @@
         {{ message }}
       {% endfor %}
 
+{% if myHero %}
+<h2> 
+<br>Name: {{ myHero.name}}
+<br>Class: {{ myHero.spec }}
+</h2>
+{% endif %}
+
+      <p>Click <a href="/profile">here</a> to see your profile.</p>
       <p>Click <a href="/">here</a> to go to the main menu.</p>
       <p>Click <a href="/logout">here</a> to logout.</p>
 
