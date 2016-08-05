@@ -77,6 +77,8 @@ def battle():
         return redirect(url_for('defeat', myHero=myHero))
     elif enemy.hp == 0:
         myHero.wins += 1
+        myHero.current_exp += enemy.level * 5
+        myHero.level_up(myHero.stat_points, myHero.current_exp, myHero.max_exp)
         return redirect(url_for('victory', myHero=myHero))
     return render_template('battle.html', myHero=myHero, enemy=enemy)  # return a string
 
@@ -98,7 +100,7 @@ def createcharacter():
     myHero.update_health(myHero.max_hp)
     if request.method == 'POST':
         myHero.name = request.form['char_name']
-        myHero.spec = request.form['spec']
+        myHero.starting_class = request.form['spec']
         return redirect(url_for('profile'))
     return render_template('createcharacter.html')  # return a string
 
