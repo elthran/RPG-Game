@@ -1,5 +1,6 @@
 import math
 from items import *
+from bestiary import *
 
 class Hero(object):
     def __init__(self, name, level, attribute_points, current_exp, max_exp, starting_class, strength, speed, damage, vitality, hp, max_hp, wisdom, faith, affinity, wins):
@@ -38,6 +39,9 @@ class Hero(object):
     def set_health(self, hp):
         self.hp = hp
 
+    def full_heal(self, hp, max_hp):
+        self.hp = max_hp
+
     # updates field variables when hero levels up
     def level_up(self, attribute_points, current_exp, max_exp):
         if self.current_exp < self.max_exp:
@@ -46,6 +50,7 @@ class Hero(object):
         self.max_exp = math.floor(1.5 * self.max_exp)
         self.attribute_points += 3
         self.level += 1
+        myHero.full_heal(myHero.hp, myHero.max_hp)
 
     def __repr__(self):
         return "\nName: %s\nDamage: %s" % (self.name, self.damage)
@@ -61,5 +66,6 @@ for item in myHero.items:
     item.equip()
 	
 myHero.set_health(myHero.max_hp)
+enemy = monster_generator(myHero.level)
 
 

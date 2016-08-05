@@ -39,5 +39,3 @@ def monster_generator(level):
     monster.update_attributes(monster.strength, monster.speed, monster.vitality, monster.wisdom, monster.faith)
     monster.set_health(monster.max_hp)
     return monster
-
-enemy = monster_generator(myHero.level)
