@@ -16,7 +16,7 @@ class Item(object):
         self.name = name
 		
     def set_buy_price(self, buy_price):
-	self.buy_price = buy_price
+        self.buy_price = buy_price
 		
     def set_level_req(self, level_req):
         self.level_req = level_req

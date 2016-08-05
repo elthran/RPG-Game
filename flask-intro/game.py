@@ -9,15 +9,18 @@ class Hero(object):
         self.current_exp = current_exp
         self.max_exp = max_exp
         self.starting_class = starting_class
-        
+
+        # Damage is calculated from strength and speed
         self.strength = strength
         self.speed = speed
         self.damage = damage
-        
+
+        # HP is calculated based on your vitality
         self.vitality = vitality
         self.hp = hp
         self.max_hp = max_hp
 
+        # Affinity is calculated based on wisdom and faith
         self.wisdom = wisdom
         self.faith = faith
         self.affinity = affinity
@@ -56,9 +59,7 @@ item_list = [dummy_item]
 myHero.set_items(item_list)
 for item in myHero.items:
     item.equip()
-    print myHero.max_hp
 	
 myHero.set_health(myHero.max_hp)
-print myHero.hp
 
 

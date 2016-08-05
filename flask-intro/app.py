@@ -93,6 +93,26 @@ def defeat():
 def victory():
     return render_template('victory.html', myHero=myHero)  # return a string
 
+@app.route('/store_greeting')
+@login_required
+def store_greeting():
+    store_greeting = True
+    return render_template('store.html', myHero=myHero, store_greeting=store_greeting)  # return a string
+
+@app.route('/store_armoury')
+@login_required
+def store_armoury():
+    store_armoury = True
+    items_for_sale = ["tunic", "hat"]
+    return render_template('store.html', myHero=myHero, store_armoury=store_armoury, items_for_sale=items_for_sale)  # return a string
+
+@app.route('/store_weaponry')
+@login_required
+def store_weaponry():
+    store_weaponry = True
+    items_for_sale = ["sword", "axe"]
+    return render_template('store.html', myHero=myHero, store_weaponry=store_weaponry, items_for_sale=items_for_sale)  # return a string
+
 
 @app.route('/createcharacter', methods=['GET', 'POST'])
 @login_required
@@ -103,7 +123,7 @@ def createcharacter():
         myHero.name = request.form['char_name']
         myHero.starting_class = request.form['spec']
         return redirect(url_for('profile'))
-    return render_template('createcharacter.html')  # return a string
+    return render_template('createcharacter.html', myHero=myHero)  # return a string
 
 # start the server with the 'run()' method
 if __name__ == '__main__':

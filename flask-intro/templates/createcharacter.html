@@ -24,6 +24,14 @@
         <br><br><br><br>
         <input class="btn btn-default" type="submit" value="Submit">
 </form>
+
+<h3>
+<br>Strength: {{ myHero.strength }}
+<br>Speed: {{ myHero.speed }}
+<br>Wisdon: {{ myHero.wisdom }}
+</h3>
+
+
       {% if error %}
         <p class="error"><strong>Error:</strong> {{ error }}
       {% endif %}
