@@ -11,7 +11,7 @@
 
 <form action="" method="post">
         <h2>Choose your name:</h2>
-        <input type="text" placeholder="Name" name="char_name" value="{{
+        <input type="text" placeholder="Name" name="char_name" pattern="[A-Za-z]{1,30}" title="Alphabets only, maximum length 30" value="{{
           request.form.char_name }}">
 
         <h2>Choose your archetype:</h2>
