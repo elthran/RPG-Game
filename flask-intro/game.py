@@ -28,9 +28,10 @@ class Hero(object):
         self.max_hp = vitality * 10
         self.affinity = wisdom + faith
 
-    def update_health(self, max_hp):
-        self.hp = max_hp
+    def set_health(self, hp):
+        self.hp = hp
 
+    # updates field variables when hero levels up
     def level_up(self, attribute_points, current_exp, max_exp):
         if self.current_exp < self.max_exp:
             return
@@ -45,6 +46,6 @@ class Hero(object):
 myHero = Hero("Unknown", 1, 0, 0, 10, "", 3, 3, 0, 3, 0, 0, 3, 3, 0, 0)
 
 myHero.update_attributes(myHero.strength, myHero.speed, myHero.vitality, myHero.wisdom, myHero.faith)
-myHero.update_health(myHero.max_hp)
+myHero.set_health(myHero.max_hp)
 
 

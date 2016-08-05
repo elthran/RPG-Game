@@ -18,14 +18,15 @@ class Monster(object):
         self.wisdom = wisdom
         self.faith = faith
         self.affinity = affinity
-
+		
+    # Assign values for damage, max_hp, and affinity based on other stat values.
     def update_attributes(self, strength, speed, vitality, wisdom, faith):
         self.damage = strength * speed
         self.max_hp = vitality * 10
         self.affinity = wisdom + faith
 
-    def update_health(self, max_hp):
-        self.hp = max_hp
+    def set_health(self, hp):
+        self.hp = hp
 
     def __repr__(self):
         return "\nName: %s\nDamage: %s" % (self.name, self.damage)
@@ -36,7 +37,7 @@ def monster_generator(level):
     species = names[name]
     monster = Monster(name, level, species, 2, 2, 0, 2, 0, 0, 2, 2, 2)
     monster.update_attributes(monster.strength, monster.speed, monster.vitality, monster.wisdom, monster.faith)
-    monster.update_health(monster.max_hp)
+    monster.set_health(monster.max_hp)
     return monster
 
 enemy = monster_generator(myHero.level)

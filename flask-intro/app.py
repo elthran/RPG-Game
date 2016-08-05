@@ -98,7 +98,7 @@ def victory():
 @login_required
 def createcharacter():
     myHero.wins = 0
-    myHero.update_health(myHero.max_hp)
+    myHero.set_health(myHero.max_hp)
     if request.method == 'POST':
         myHero.name = request.form['char_name']
         myHero.starting_class = request.form['spec']
