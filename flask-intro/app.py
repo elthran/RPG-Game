@@ -3,6 +3,7 @@ from flask import Flask, render_template, redirect, url_for, request, session, f
 from functools import wraps
 from game import *
 from battle import *
+from bestiary import *
 
 # create the application object
 app = Flask(__name__)
@@ -78,7 +79,7 @@ def battle():
     elif enemy.hp == 0:
         myHero.wins += 1
         myHero.current_exp += enemy.level * 5
-        myHero.level_up(myHero.stat_points, myHero.current_exp, myHero.max_exp)
+        myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
         return redirect(url_for('victory', myHero=myHero))
     return render_template('battle.html', myHero=myHero, enemy=enemy)  # return a string
 

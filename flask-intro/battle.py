@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from functools import wraps
 from game import *
+from bestiary import *
 import math, random
 
 def battle_logic():
