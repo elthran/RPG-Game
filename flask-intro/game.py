@@ -1,4 +1,5 @@
 import math
+from items import *
 
 class Hero(object):
     def __init__(self, name, level, attribute_points, current_exp, max_exp, starting_class, strength, speed, damage, vitality, hp, max_hp, wisdom, faith, affinity, wins):
@@ -23,6 +24,9 @@ class Hero(object):
         
         self.wins = wins
 
+    def set_items(self,items):
+        self.items = items	
+	
     def update_attributes(self, strength, speed, vitality, wisdom, faith):
         self.damage = strength * speed
         self.max_hp = vitality * 10
@@ -43,9 +47,18 @@ class Hero(object):
     def __repr__(self):
         return "\nName: %s\nDamage: %s" % (self.name, self.damage)
 
+# initialization
 myHero = Hero("Unknown", 1, 0, 0, 10, "", 3, 3, 0, 3, 0, 0, 3, 3, 0, 0)
-
 myHero.update_attributes(myHero.strength, myHero.speed, myHero.vitality, myHero.wisdom, myHero.faith)
+
+dummy_item = Garment("ripped tunic", myHero)
+item_list = [dummy_item]
+myHero.set_items(item_list)
+for item in myHero.items:
+    item.equip()
+    print myHero.max_hp
+	
 myHero.set_health(myHero.max_hp)
+print myHero.hp
 
 
