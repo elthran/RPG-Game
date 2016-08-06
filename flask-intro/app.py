@@ -69,20 +69,21 @@ def profile():
 @login_required
 def arena():
     enemy = monster_generator(myHero.level)
-    return render_template('arena.html', myHero=myHero, enemy=enemy)  # return a string
+    game.set_enemy(enemy)
+    return render_template('arena.html', myHero=myHero, game=game)  # return a string
 
 @app.route('/battle')
 @login_required
 def battle():
-    myHero.hp,enemy.hp = battle_logic()
+    myHero.hp,game.enemy.hp = battle_logic()
     if myHero.hp == 0:
         return redirect(url_for('defeat', myHero=myHero))
-    elif enemy.hp == 0:
+    elif game.enemy.hp == 0:
         myHero.wins += 1
-        myHero.current_exp += enemy.level * 5
+        myHero.current_exp += game.enemy.level * 5
         myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
         return redirect(url_for('victory', myHero=myHero))
-    return render_template('battle.html', myHero=myHero, enemy=enemy)  # return a string
+    return render_template('battle.html', myHero=myHero, game=game)  # return a string
 
 @app.route('/defeat')
 @login_required

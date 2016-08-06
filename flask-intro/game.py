@@ -2,6 +2,15 @@ import math
 from items import *
 from bestiary import *
 
+class Game(object):
+    def __init__(self, hero):
+        self.hero = hero
+
+    def set_enemy(self, enemy):
+        self.enemy = enemy
+	
+    #def 
+
 class Hero(object):
     def __init__(self, name, level, attribute_points, current_exp, max_exp, starting_class, strength, speed, damage, vitality, hp, max_hp, wisdom, faith, affinity, wins):
         self.name = name
@@ -48,14 +57,15 @@ class Hero(object):
         self.attribute_points += 3
         self.level += 1
 		# full heal
-        myHero.set_health(myHero.max_hp)
+        self.set_health(self.max_hp)
 
     def __repr__(self):
         return "\nName: %s\nDamage: %s" % (self.name, self.damage)
 
 # initialization
 myHero = Hero("Unknown", 1, 0, 0, 10, "", 3, 3, 0, 3, 0, 0, 3, 3, 0, 0)
-myHero.update_attributes(myHero.strength, myHero.speed, myHero.vitality, myHero.wisdom, myHero.faith)
+game = Game(myHero)
+game.hero.update_attributes(myHero.strength, myHero.speed, myHero.vitality, myHero.wisdom, myHero.faith)
 
 dummy_item = Garment("ripped tunic", myHero)
 item_list = [dummy_item]
@@ -64,6 +74,6 @@ for item in myHero.items:
     item.equip()
 	
 myHero.set_health(myHero.max_hp)
-enemy = monster_generator(myHero.level)
+#enemy = monster_generator(myHero.level)
 
 
