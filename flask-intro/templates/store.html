@@ -13,22 +13,23 @@
 <h2>Here is our list of items:</h2>
 {% for item in items_for_sale %}
         {{ item}}
+		<br>
       {% endfor %}
 {% endif %}
 <br><br><br><br><br>
 
-	{% if store_greeting %}
+	{% if is_store_greeting %}
       <h2>Good day sir! What can I get for you?</h2>
       <h2><a href="/store_armoury">Armour</a></h2>
       <h2><a href="/store_weaponry">Weapons</a></h2>
         {% endif %}
 
-	{% if store_armoury %}
+	{% if is_store_armoury %}
       <h2>We have the finest armoury in town! Take a look.</h2>
       <h2><a href="/store_greeting">Menu</a></h2>
 	{% endif %}
 
-        {% if store_weaponry %}
+        {% if is_store_weaponry %}
       <h2>Careful! Our weapons are sharp.</h2>
       <h2><a href="/store_greeting">Menu</a></h2>
 	{% endif %}

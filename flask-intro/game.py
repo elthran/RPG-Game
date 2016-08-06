@@ -39,9 +39,6 @@ class Hero(object):
     def set_health(self, hp):
         self.hp = hp
 
-    def full_heal(self, hp, max_hp):
-        self.hp = max_hp
-
     # updates field variables when hero levels up
     def level_up(self, attribute_points, current_exp, max_exp):
         if self.current_exp < self.max_exp:
@@ -50,7 +47,8 @@ class Hero(object):
         self.max_exp = math.floor(1.5 * self.max_exp)
         self.attribute_points += 3
         self.level += 1
-        myHero.full_heal(myHero.hp, myHero.max_hp)
+		# full heal
+        myHero.set_health(myHero.max_hp)
 
     def __repr__(self):
         return "\nName: %s\nDamage: %s" % (self.name, self.damage)

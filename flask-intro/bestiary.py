@@ -32,9 +32,9 @@ class Monster(object):
         return "\nName: %s\nDamage: %s" % (self.name, self.damage)
 
 def monster_generator(level):
-    names = {"Wolf":"Beast","Scout":"Goblin","Spider":"Beast"}
-    name = random.choice(list(names.keys()))
-    species = names[name]
+    name_species = {"Wolf":"Beast","Scout":"Goblin","Spider":"Beast"}
+    name = random.choice(list(name_species.keys()))
+    species = name_species[name]
     monster = Monster(name, level, species, 2, 2, 0, 2, 0, 0, 2, 2, 2)
     monster.update_attributes(monster.strength, monster.speed, monster.vitality, monster.wisdom, monster.faith)
     monster.set_health(monster.max_hp)
