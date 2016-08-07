@@ -35,6 +35,10 @@ def home():
 def welcome():
     return render_template('welcome.html')  # render a template
 
+@app.route('/level_up')
+def level_up():
+    return render_template('level_up.html')  # render a template
+
 # route for handling the login page logic
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -103,7 +107,7 @@ def store_greeting():
 @app.route('/store_armoury')
 @login_required
 def store_armoury():
-    items_for_sale = ["tunic", "hat"]
+    items_for_sale = ["ripped tunic", "torn tunic"]
     return render_template('store.html', myHero=myHero, is_store_armoury=True, items_for_sale=items_for_sale)  # return a string
 
 @app.route('/store_weaponry')

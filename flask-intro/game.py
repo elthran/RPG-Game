@@ -1,6 +1,7 @@
 import math
 from items import *
 from bestiary import *
+from abilities import *
 
 class Game(object):
     def __init__(self, hero):
@@ -62,8 +63,16 @@ class Hero(object):
     def __repr__(self):
         return "\nName: %s\nDamage: %s" % (self.name, self.damage)
 
+# Temporary Functions
+def create_random_hero():
+    name = random.choice(["Jimmy", "Jacob", "Jimbo"])
+    hero_class = random.choice(["Brute", "Scholar", "Scoundrel"])
+    myHero = Hero(name, 1, 0, 0, 10, hero_class, 3, 3, 0, 3, 0, 0, 3, 3, 0, 0)
+    return myHero
+
+
 # initialization
-myHero = Hero("Unknown", 1, 0, 0, 10, "", 3, 3, 0, 3, 0, 0, 3, 3, 0, 0)
+myHero = create_random_hero()
 game = Game(myHero)
 game.hero.update_attributes(myHero.strength, myHero.speed, myHero.vitality, myHero.wisdom, myHero.faith)
 
