@@ -9,7 +9,7 @@
     <div class="container">
       <h1>Here is your hero!</h1>
 
-{% if myHero %}
+{% if not myHero.attribute_points %}
 <h2> 
 <br>Name: {{ myHero.name}}
 <br>Class: {{ myHero.starting_class }}
@@ -33,6 +33,33 @@
 <br>Instinct: {{ myHero.instinct }}
 </h2>
 {% endif %}
+{% if myHero.attribute_points %}
+You have {{ myHero.attribute_points }} points to spend
+<br>
+<br>
+
+<form method="post" action="">
+    <div>
+        <label for="name">Strength: {{ myHero.strength }}</label>
+        <input type="text" placeholder="0" name="strength_upgrade" pattern="[0-{{ myHero.attribute_points }}]{1,2}" title="Numbers only" value="{{ request.form.strength_upgrade }}">
+    </div>
+<input class="btn btn-default" type="submit" value="Submit">
+</form>
+
+
+<br>Endurance: {{ myHero.endurance }}
+<br>Vitality: {{ myHero.vitality }}
+<br>Agility: {{ myHero.agility }}
+<br>Dexterity: {{ myHero.dexterity }}
+<br>Devotion: {{ myHero.devotion }}
+<br>Resistance: {{ myHero.resistance }}
+<br>Wisdom: {{ myHero.wisdom }}
+<br>Charm: {{ myHero.charm }}
+<br>Instinct: {{ myHero.instinct }}
+<br>&emsp; &emsp; &emsp; &emsp; <b>Points remaining {{ myHero.attribute_points }}</b>
+{% endif %}
+</h2>
+
 <br>
 
       <p>Click <a href="/createcharacter">here</a> to reset your character.</p>

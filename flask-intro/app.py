@@ -64,9 +64,12 @@ def logout():
     flash("LOG OUT SUCCESSFUL")
     return redirect(url_for('logout'))
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
+    if request.method == 'POST':
+        myHero.strength += int(request.form['strength_upgrade'])
+        myHero.attribute_points -= int(request.form['strength_upgrade'])
     return render_template('profile.html', myHero=myHero)  # return a string'
 
 @app.route('/arena')
@@ -79,11 +82,12 @@ def arena():
 @app.route('/battle')
 @login_required
 def battle():
-    myHero.hp,game.enemy.hp = battle_logic()
+    enemy = monster_generator(myHero.level)
+    game.set_enemy(enemy)
+    myHero.hp,game.enemy.hp = battle_logic(myHero,game.enemy)
     if myHero.hp == 0:
         return redirect(url_for('defeat', myHero=myHero))
     elif game.enemy.hp == 0:
-        myHero.wins += 1
         myHero.current_exp += game.enemy.level * 5
         myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
         return redirect(url_for('victory', myHero=myHero))
@@ -115,7 +119,6 @@ def store_armoury():
 def store_weaponry():
     items_for_sale = ["sword", "axe"]
     return render_template('store.html', myHero=myHero, is_store_weaponry=True, items_for_sale=items_for_sale)  # return a string
-
 
 @app.route('/createcharacter', methods=['GET', 'POST'])
 @login_required

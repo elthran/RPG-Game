@@ -17,7 +17,7 @@ class Hero(object):
         self.starting_class = starting_class
 
     # Creates a level 1 hero
-    def create_hero(self, current_exp=0, max_exp=10, level=1, attribute_points=0):
+    def create_hero(self, current_exp=0, max_exp=10, level=1, attribute_points=5):
         self.current_exp = current_exp
         self.max_exp = max_exp
         self.level = level
@@ -48,6 +48,15 @@ class Hero(object):
         if myHero.starting_class == "Scoundrel":
             myHero.agility += 2
             myHero.dexterity += 1
+        # Tmporary
+        myHero.set_health(myHero.endurance, myHero.vitality)
+        name = random.choice(["ripped tunic", "torn tunic"])
+        dummy_item = Garment(name, myHero)
+        item_list = [dummy_item]
+        myHero.set_items(item_list)
+        for item in myHero.items:
+            item.equip()
+        return myHero
 
     # Sets damage
     def set_damage(self, strength, damage=0):
@@ -56,7 +65,7 @@ class Hero(object):
     # Sets max health and fully heals hero
     def set_health(self, endurance, vitality, max_hp=0, current_hp=0):
         self.max_hp = (3 * vitality) + endurance
-        self.current_hp = max_hp
+        self.current_hp = self.max_hp
 
     def set_items(self,items):
         self.items = items	
@@ -69,7 +78,7 @@ class Hero(object):
         self.max_exp = math.floor(1.5 * self.max_exp)
         self.attribute_points += 3
         self.level += 1
-        self.set_health(self.max_hp)
+        self.set_health(self.endurance, self.vitality, self.max_hp)
 
     def __repr__(self):
         return "\nName: %s\nDamage: %s" % (self.name, self.damage)
@@ -83,17 +92,21 @@ def create_random_hero():
     myHero.create_attributes()
     myHero.set_damage(myHero.strength)
     myHero.set_health(myHero.endurance, myHero.vitality)
+
+    name = random.choice(["ripped tunic", "torn tunic"])
+    dummy_item = Garment(name, myHero)
+    item_list = [dummy_item]
+    myHero.set_items(item_list)
+    for item in myHero.items:
+        item.equip()
     return myHero
+# End of temporary functions
 
 
 # initialization
 myHero = create_random_hero()
 game = Game(myHero)
-dummy_item = Garment("ripped tunic", myHero)
-item_list = [dummy_item]
-myHero.set_items(item_list)
-for item in myHero.items:
-    item.equip()
+
 	
 
 

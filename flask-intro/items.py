@@ -60,18 +60,19 @@ class Garment(Item):
         super(Garment, self).equip()
         if self.name == "ripped tunic":
             self.hero.max_hp += 5
+            self.hero.current_hp += 5
+        if self.name == "torn tunic":
+            self.hero.max_hp += 10
+            self.hero.current_hp += 10
 			
     def dequip(self):
         super(Garment, self).dequip()
         if self.name == "ripped tunic":
             self.hero.max_hp -= 5
+            self.hero.current_hp -= 5
+        if self.name == "torn tunic":
+            self.hero.max_hp -= 10
+            self.hero.current_hp -= 10
+        if self.hero.current_hp <= 0:
+            self.hero.current_hp = 1
 
-    def equip(self):
-        super(Garment, self).equip()
-        if self.name == "torn tunic":
-            self.hero.max_hp += 10
-			
-    def dequip(self):
-        super(Garment, self).dequip()
-        if self.name == "torn tunic":
-            self.hero.max_hp -= 10  
