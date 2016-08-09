@@ -120,11 +120,8 @@ def store_weaponry():
 @app.route('/createcharacter', methods=['GET', 'POST'])
 @login_required
 def createcharacter():
-    myHero.wins = 0
-    myHero.set_health(myHero.max_hp)
     if request.method == 'POST':
-        myHero.name = request.form['char_name']
-        myHero.starting_class = request.form['spec']
+        myHero.choose_class()
         return redirect(url_for('profile'))
     return render_template('createcharacter.html', myHero=myHero)  # return a string
 

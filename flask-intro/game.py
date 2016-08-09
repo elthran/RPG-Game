@@ -1,4 +1,5 @@
 import math
+from flask import request
 from items import *
 from bestiary import *
 from abilities import *
@@ -9,45 +10,55 @@ class Game(object):
 
     def set_enemy(self, enemy):
         self.enemy = enemy
-	
-    #def 
 
 class Hero(object):
-    def __init__(self, name, level, attribute_points, current_exp, max_exp, starting_class, strength, speed, damage, vitality, hp, max_hp, wisdom, faith, affinity, wins):
+    def __init__(self, name, starting_class):
         self.name = name
-        self.level = level
-        self.attribute_points = attribute_points
-        self.current_exp = current_exp
-        self.max_exp = max_exp
         self.starting_class = starting_class
 
-        # Damage is calculated from strength and speed
+    # Creates a level 1 hero
+    def create_hero(self, current_exp=0, max_exp=10, level=1, attribute_points=0):
+        self.current_exp = current_exp
+        self.max_exp = max_exp
+        self.level = level
+        self.attribute_points = attribute_points
+
+    # Initializes attritubes to value of 1
+    def create_attributes(self, strength=1, endurance=1, vitality=1, agility=1, dexterity=1, devotion=1, resistance=1, wisdom=1, charm=1, instinct=1):
         self.strength = strength
-        self.speed = speed
-        self.damage = damage
-
-        # HP is calculated based on your vitality
+        self.endurance = endurance
         self.vitality = vitality
-        self.hp = hp
-        self.max_hp = max_hp
-
-        # Affinity is calculated based on wisdom and faith
+        self.agility = agility
+        self.dexterity = dexterity
+        self.devotion = devotion
+        self.resistance = resistance
         self.wisdom = wisdom
-        self.faith = faith
-        self.affinity = affinity
-        
-        self.wins = wins
+        self.charm = charm
+        self.instinct = instinct
+
+    def choose_class(self):
+        myHero.name = request.form['char_name']
+        myHero.starting_class = request.form['spec']
+        if myHero.starting_class == "Brute":
+            myHero.strength += 2
+            myHero.endurance += 1
+        if myHero.starting_class == "Scholar":
+            myHero.wisdom += 3
+        if myHero.starting_class == "Scoundrel":
+            myHero.agility += 2
+            myHero.dexterity += 1
+
+    # Sets damage
+    def set_damage(self, strength, damage=0):
+        self.damage = 2 * strength
+
+    # Sets max health and fully heals hero
+    def set_health(self, endurance, vitality, max_hp=0, current_hp=0):
+        self.max_hp = (3 * vitality) + endurance
+        self.current_hp = max_hp
 
     def set_items(self,items):
         self.items = items	
-	
-    def update_attributes(self, strength, speed, vitality, wisdom, faith):
-        self.damage = strength * speed
-        self.max_hp = vitality * 10
-        self.affinity = wisdom + faith
-
-    def set_health(self, hp):
-        self.hp = hp
 
     # updates field variables when hero levels up
     def level_up(self, attribute_points, current_exp, max_exp):
@@ -57,32 +68,31 @@ class Hero(object):
         self.max_exp = math.floor(1.5 * self.max_exp)
         self.attribute_points += 3
         self.level += 1
-		# full heal
         self.set_health(self.max_hp)
 
     def __repr__(self):
         return "\nName: %s\nDamage: %s" % (self.name, self.damage)
 
-# Temporary Functions
+# Temporary Function to create a random hero
 def create_random_hero():
     name = random.choice(["Jimmy", "Jacob", "Jimbo"])
     hero_class = random.choice(["Brute", "Scholar", "Scoundrel"])
-    myHero = Hero(name, 1, 0, 0, 10, hero_class, 3, 3, 0, 3, 0, 0, 3, 3, 0, 0)
+    myHero = Hero(name, hero_class)
+    myHero.create_hero()
+    myHero.create_attributes()
+    myHero.set_damage(myHero.strength)
+    myHero.set_health(myHero.endurance, myHero.vitality)
     return myHero
 
 
 # initialization
 myHero = create_random_hero()
 game = Game(myHero)
-game.hero.update_attributes(myHero.strength, myHero.speed, myHero.vitality, myHero.wisdom, myHero.faith)
-
 dummy_item = Garment("ripped tunic", myHero)
 item_list = [dummy_item]
 myHero.set_items(item_list)
 for item in myHero.items:
     item.equip()
 	
-myHero.set_health(myHero.max_hp)
-#enemy = monster_generator(myHero.level)
 
 
