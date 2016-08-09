@@ -36,6 +36,7 @@ class Hero(object):
         self.charm = charm
         self.instinct = instinct
 
+    # Allows you to choose your starting class and apply buffs
     def choose_class(self):
         myHero.name = request.form['char_name']
         myHero.starting_class = request.form['spec']
