@@ -6,7 +6,16 @@
 <link href="static/style.css" rel="stylesheet" media="screen">
   </head>
   <body>
-    <div class="container">
+  <div class="sidebar">
+  <ul>
+        <li><h1><a href="/createcharacter">New Character</a></h1></li>
+        <li><h1><a href="/profile">Profile</a></h1></li>
+        <li><h1><a href="/arena">Arena</a></h1></li>
+        <li><h1><a href="/store_greeting">Store</a></h1></li>
+        <li><h1><a href="/logout">Logout</a></h1></li>
+  </ul>
+</div>
+<div class="content">
 
 {% if not myHero.attribute_points %}
 <h1>General Statistics</h1>
@@ -15,7 +24,11 @@ Name: {{ myHero.name}}
 <br>Class: {{ myHero.starting_class }}
 <br>Level: {{ myHero.level }}
 <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
-<br>Damage: {{ myHero.damage }}
+</h2>
+
+<h1>Battle Statistics</h1>
+<h2>
+Damage: {{ myHero.damage }}
 <br>Health: {{ myHero.current_hp }} / {{ myHero.max_hp }}
 </h2>
 
@@ -25,6 +38,7 @@ Item(s): {{ myHero.items[0].name }}
 </h2>
 
 <h1>Attributes</h1>
+<h2>
 Strength: {{ myHero.strength }}
 <br>Endurance: {{ myHero.endurance }}
 <br>Vitality: {{ myHero.vitality }}
@@ -70,9 +84,6 @@ You have {{ myHero.attribute_points }} points to spend
 
 <br>
 
-      <p>Click <a href="/createcharacter">here</a> to reset your character.</p>
-      <p>Click <a href="/">here</a> to go to the main menu.</p>
-      <p>Click <a href="/logout">here</a> to logout.</p>
       {% for message in get_flashed_messages() %}
         {{ message }}
       {% endfor %}

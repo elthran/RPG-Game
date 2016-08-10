@@ -6,3 +6,41 @@ h1 {
     font-size: 40px;
     color:green;
 }
+
+.content {
+  width: 95%;
+  display: inline;
+  float: left;
+  background: url() repeat-y left top;
+}
+
+.sidebar{
+  width: 5%;
+  display: inline;
+  height: 100%;
+  float: left;
+  background: url(http://s21.postimg.org/kexv3aupf/bg_sidebar.png) repeat-y left top;
+
+}
+
+.sidebar ul{
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    list-style: none;
+
+}
+
+.sidebar li{
+     padding: 50%;
+     position: relative;
+}
+
+.sidebar a{
+        display: block;
+        font-size: 0.5em;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+}

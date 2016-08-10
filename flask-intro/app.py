@@ -81,9 +81,7 @@ def profile():
 @app.route('/arena')
 @login_required
 def arena():
-    enemy = monster_generator(myHero.level)
-    game.set_enemy(enemy)
-    return render_template('arena.html', myHero=myHero, game=game)  # return a string
+    return render_template('arena.html', myHero=myHero)  # return a string
 
 @app.route('/battle')
 @login_required
