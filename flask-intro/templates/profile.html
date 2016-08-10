@@ -40,14 +40,15 @@ You have {{ myHero.attribute_points }} points to spend
 
 <form method="post" action="">
     <div>
+        <label for="name">Endurance: {{ myHero.endurance }}</label>
+        <input type="text" placeholder="0" name="endurance_upgrade" pattern="[0-{{ myHero.attribute_points }}]{1,2}" title="Numbers only" value="{{ request.form.endurance_upgrade }}">
+        <br>
         <label for="name">Strength: {{ myHero.strength }}</label>
         <input type="text" placeholder="0" name="strength_upgrade" pattern="[0-{{ myHero.attribute_points }}]{1,2}" title="Numbers only" value="{{ request.form.strength_upgrade }}">
     </div>
 <input class="btn btn-default" type="submit" value="Submit">
 </form>
 
-
-<br>Endurance: {{ myHero.endurance }}
 <br>Vitality: {{ myHero.vitality }}
 <br>Agility: {{ myHero.agility }}
 <br>Dexterity: {{ myHero.dexterity }}

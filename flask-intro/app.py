@@ -70,6 +70,8 @@ def profile():
     if request.method == 'POST':
         myHero.strength += int(request.form['strength_upgrade'])
         myHero.attribute_points -= int(request.form['strength_upgrade'])
+        myHero.endurance += int(request.form['endurance_upgrade'])
+        myHero.attribute_points -= int(request.form['endurance_upgrade'])
     return render_template('profile.html', myHero=myHero)  # return a string'
 
 @app.route('/arena')
