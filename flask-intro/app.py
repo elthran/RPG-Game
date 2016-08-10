@@ -72,6 +72,10 @@ def profile():
         myHero.attribute_points -= int(request.form['strength_upgrade'])
         myHero.endurance += int(request.form['endurance_upgrade'])
         myHero.attribute_points -= int(request.form['endurance_upgrade'])
+        myHero.vitality += int(request.form['vitality_upgrade'])
+        myHero.attribute_points -= int(request.form['vitality_upgrade'])
+        myHero.set_health(myHero.endurance, myHero.vitality, myHero.max_hp)
+        myHero.set_damage(myHero.strength)
     return render_template('profile.html', myHero=myHero)  # return a string'
 
 @app.route('/arena')

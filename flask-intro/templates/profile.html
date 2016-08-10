@@ -45,7 +45,10 @@ You have {{ myHero.attribute_points }} points to spend
         <br>
         <label for="name">Strength: {{ myHero.strength }}</label>
         <input type="text" placeholder="0" name="strength_upgrade" pattern="[0-{{ myHero.attribute_points }}]{1,2}" title="Numbers only" value="{{ request.form.strength_upgrade }}">
-    </div>
+    	<br>
+        <label for="name">Vitality: {{ myHero.vitality }}</label>
+        <input type="text" placeholder="0" name="vitality_upgrade" pattern="[0-{{ myHero.attribute_points }}]{1,2}" title="Numbers only" value="{{ request.form.vitality_upgrade }}">
+</div>
 <input class="btn btn-default" type="submit" value="Submit">
 </form>
 
