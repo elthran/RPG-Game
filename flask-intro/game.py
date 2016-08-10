@@ -17,7 +17,7 @@ class Hero(object):
         self.starting_class = starting_class
 
     # Creates a level 1 hero
-    def create_hero(self, current_exp=0, max_exp=10, level=1, attribute_points=5):
+    def create_hero(self, current_exp=0, max_exp=10, level=1, attribute_points=0):
         self.current_exp = current_exp
         self.max_exp = max_exp
         self.level = level

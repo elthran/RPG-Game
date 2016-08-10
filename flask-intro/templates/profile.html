@@ -7,21 +7,25 @@
   </head>
   <body>
     <div class="container">
-      <h1>Here is your hero!</h1>
 
 {% if not myHero.attribute_points %}
+<h1>General Statistics</h1>
 <h2> 
-<br>Name: {{ myHero.name}}
+Name: {{ myHero.name}}
 <br>Class: {{ myHero.starting_class }}
 <br>Level: {{ myHero.level }}
 <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
 <br>Damage: {{ myHero.damage }}
 <br>Health: {{ myHero.current_hp }} / {{ myHero.max_hp }}
-<br>Wins: {{ myHero.wins }}
-<br>Item(s): {{ myHero.items[0].name }}
-<br>
-<br>Attribute Points: {{ myHero.attribute_points }}
-<br>Strength: {{ myHero.strength }}
+</h2>
+
+<h1>Inventory</h1>
+<h2>
+Item(s): {{ myHero.items[0].name }}
+</h2>
+
+<h1>Attributes</h1>
+Strength: {{ myHero.strength }}
 <br>Endurance: {{ myHero.endurance }}
 <br>Vitality: {{ myHero.vitality }}
 <br>Agility: {{ myHero.agility }}
