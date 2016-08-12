@@ -37,22 +37,19 @@
       <h2>Good day sir! What can I get for you?</h2>
       <h2><a href="/store_armoury">Armour</a></h2>
       <h2><a href="/store_weaponry">Weapons</a></h2>
-        {% endif %}
+	{% endif %}
 
 	{% if is_store_armoury %}
       <h2>We have the finest armoury in town! Take a look.</h2>
-      <h2><a href="/store_greeting">Menu</a></h2>
-	{% endif %}
+      <h2>Return to the <a href="/store_greeting">store menu</a>.</h2>
 
-        {% if is_store_weaponry %}
+        {% elif is_store_weaponry %}
       <h2>Careful! Our weapons are sharp.</h2>
-      <h2><a href="/store_greeting">Menu</a></h2>
+      <h2>Return to the <a href="/store_greeting">store menu</a>.</h2>
 	{% endif %}
 
 <br><br><br><br><br>
 
-
-      <p>Click <a href="/logout">here</a> to logout.</p>
       {% for message in get_flashed_messages() %}
         {{ message }}
       {% endfor %}
