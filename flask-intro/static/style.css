@@ -8,14 +8,14 @@ h1 {
 }
 
 .content {
-  width: 95%;
+  width: 85%;
   display: inline;
   float: left;
   background: url() repeat-y left top;
 }
 
 .sidebar{
-  width: 5%;
+  width: 15%;
   display: inline;
   height: 100%;
   float: left;
@@ -33,7 +33,7 @@ h1 {
 }
 
 .sidebar li{
-     padding: 50%;
+     padding: 10%;
      position: relative;
 }
 

@@ -1,23 +1,42 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Profile</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="static/style.css" rel="stylesheet" media="screen">
-  </head>
-  <body>
-  <div class="sidebar">
-  <ul>
-        <li><h1><a href="/createcharacter">New Character</a></h1></li>
-        <li><h1><a href="/profile">Profile</a></h1></li>
-        <li><h1><a href="/arena">Arena</a></h1></li>
-        <li><h1><a href="/store_greeting">Store</a></h1></li>
-        <li><h1><a href="/logout">Logout</a></h1></li>
-  </ul>
-</div>
-<div class="content">
 
-{% if not myHero.attribute_points %}
+  <head>
+    <title>{{ page_title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="static/style.css" rel="stylesheet" media="screen">
+  </head>
+
+
+  <div class="sidebar">
+
+    <u1>
+      <img src="/images/character.jpg" alt="Sample" style="width:100px;height:100px;">
+      <br>Name: {{ myHero.name}}
+      <br>Class: {{ myHero.starting_class }}
+      <br>Level: {{ myHero.level }}
+      <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
+    </u1>
+
+    <h1>
+      {% for key,value in sidebar.items() %}
+        <li><a href={{ value }}>{{ key }}</a></li>
+      {% endfor %}
+    </h1>
+
+  </div>
+
+  <body>
+  <div class="content">
+
+  <h1>{{ page_greeting }}</h1>
+
+{% if arena %}
+<h2>Compete in the <a href="/battle" title="Battle a random opponent.">arena.</a></h2>
+<h2>Battle another <a href="/arena" title="Under construction.">player.</a></h2>
+{% endif %}
+
+{% if profile %}
 <h1>General Statistics</h1>
 <h2> 
 Name: {{ myHero.name}}
@@ -25,21 +44,18 @@ Name: {{ myHero.name}}
 <br>Level: {{ myHero.level }}
 <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
 </h2>
-
 <h1>Battle Statistics</h1>
 <h2>
 Damage: {{ myHero.damage }}
 <br>Health: {{ myHero.current_hp }} / {{ myHero.max_hp }}
 </h2>
-
 <h1>Inventory</h1>
 <h2>
 Item(s): {{ myHero.items[0].name }}
 </h2>
-
 <h1>Attributes</h1>
 <h2>
-Strength: {{ myHero.strength }}
+<title="Damage and carrying capacity">Strength</>: {{ myHero.strength }}
 <br>Endurance: {{ myHero.endurance }}
 <br>Vitality: {{ myHero.vitality }}
 <br>Agility: {{ myHero.agility }}
@@ -51,7 +67,8 @@ Strength: {{ myHero.strength }}
 <br>Instinct: {{ myHero.instinct }}
 </h2>
 {% endif %}
-{% if myHero.attribute_points %}
+
+{% if leveling_up %}
 You have {{ myHero.attribute_points }} points to spend
 <br>
 <br>
@@ -59,13 +76,13 @@ You have {{ myHero.attribute_points }} points to spend
 <form method="post" action="">
     <div>
         <label for="name">Endurance: {{ myHero.endurance }}</label>
-        <input type="text" placeholder="0" name="endurance_upgrade" pattern="[0-{{ myHero.attribute_points }}]{1,2}" title="Numbers only" value="{{ request.form.endurance_upgrade }}">
-        <br>
+        <input type="number" placeholder="0" name="endurance_upgrade" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="{{ request.form.endurance_upgrade }}">
+<br>
         <label for="name">Strength: {{ myHero.strength }}</label>
-        <input type="text" placeholder="0" name="strength_upgrade" pattern="[0-{{ myHero.attribute_points }}]{1,2}" title="Numbers only" value="{{ request.form.strength_upgrade }}">
+        <input type="number" placeholder="0" name="strength_upgrade" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="{{ request.form.strength_upgrade }}">
     	<br>
         <label for="name">Vitality: {{ myHero.vitality }}</label>
-        <input type="text" placeholder="0" name="vitality_upgrade" pattern="[0-{{ myHero.attribute_points }}]{1,2}" title="Numbers only" value="{{ request.form.vitality_upgrade }}">
+        <input type="number" placeholder="0" name="vitality_upgrade" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="{{ request.form.vitality_upgrade }}">
 </div>
 <input class="btn btn-default" type="submit" value="Submit">
 </form>
