@@ -18,7 +18,7 @@
       <br>Health: {{ myHero.current_hp }} / {{ myHero.max_hp }}
     </u1>
     <h1>
-      <li><a href=/profile>Profile</a></li>
+      <li><a href=/home>Profile</a></li>
       <li><a href=/arena>Arena</a></li>
       <li><a href=/store_greeting>Store</a></li>
       <li><a href=/logout>Logout</a></li>
@@ -36,7 +36,7 @@
 <h2>Battle another <a href="/arena" title="Under construction.">player.</a></h2>
 {% endif %}
 
-{% if profile %}
+{% if home %}
 <h1>General Statistics</h1>
 <h2> 
 Name: {{ myHero.name}}

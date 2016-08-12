@@ -4,12 +4,33 @@ from functools import wraps
 from game import *
 from battle import *
 from bestiary import *
+import sqlite3
+import hashlib
 
 # create the application object
 app = Flask(__name__)
 
 app.secret_key = 'starcraft'
 
+# Two functions used in login()
+def check_password(hashed_password, user_password):
+    return hashed_password == hashlib.md5(user_password.encode()).hexdigest()
+
+def validate(username, password):
+    con = sqlite3.connect('static/user.db')
+    completion = False
+
+    with con:
+                cur = con.cursor()
+                cur.execute("SELECT * FROM Users")
+                rows = cur.fetchall()
+                for row in rows:
+                    dbUser = row[0]
+                    dbPass = row[1]
+                    if dbUser==username:
+                        completion=check_password(dbPass, password)
+    return completion	
+	
 # login required decorator
 def login_required(f):
     @wraps(f)
@@ -22,6 +43,22 @@ def login_required(f):
     return wrap
 
 # use decorators to link the function to a url
+	
+@app.route('/home', methods=['GET', 'POST'])
+@login_required
+def home():
+    if request.method == 'POST':
+        myHero.strength += int(request.form['strength_upgrade'])
+        myHero.attribute_points -= int(request.form['strength_upgrade'])
+        myHero.endurance += int(request.form['endurance_upgrade'])
+        myHero.attribute_points -= int(request.form['endurance_upgrade'])
+        myHero.vitality += int(request.form['vitality_upgrade'])
+        myHero.attribute_points -= int(request.form['vitality_upgrade'])
+        myHero.set_health(myHero.endurance, myHero.vitality, myHero.max_hp)
+        myHero.set_damage(myHero.strength)
+    return render_template('home.html', page_title="Profile", myHero=myHero, home=home)  # return a string'
+
+# use decorators to link the function to a url
 @app.route('/level_up')
 def level_up():
     return render_template('level_up.html')  # render a template
@@ -30,14 +67,12 @@ def level_up():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
-    username_password = {'admin':'admin','jacob':'silly'}
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if username not in username_password:
-            error = 'You have typed in your username incorrectly.'
-        elif password != username_password[username]:
-            error = 'You have typed in your password incorrectly.' 
+        completion = validate(username, password)
+        if completion ==False:
+            error = 'Invalid Credentials. Please try again.'
         else:
             session['logged_in'] = True
             flash("LOG IN SUCCESSFUL")
@@ -50,20 +85,6 @@ def logout():
     session.pop('logged_in', None)
     flash("LOG OUT SUCCESSFUL")
     return redirect(url_for('logout'))
-
-@app.route('/profile', methods=['GET', 'POST'])
-@login_required
-def profile():
-    if request.method == 'POST':
-        myHero.strength += int(request.form['strength_upgrade'])
-        myHero.attribute_points -= int(request.form['strength_upgrade'])
-        myHero.endurance += int(request.form['endurance_upgrade'])
-        myHero.attribute_points -= int(request.form['endurance_upgrade'])
-        myHero.vitality += int(request.form['vitality_upgrade'])
-        myHero.attribute_points -= int(request.form['vitality_upgrade'])
-        myHero.set_health(myHero.endurance, myHero.vitality, myHero.max_hp)
-        myHero.set_damage(myHero.strength)
-    return render_template('home.html', profile=profile, page_title="Profile", myHero=myHero)  # return a string'
 
 @app.route('/arena')
 @login_required
@@ -127,8 +148,8 @@ def store_weaponry():
 def createcharacter():
     if request.method == 'POST':
         myHero.choose_class()
-        return redirect(url_for('profile'))
-    return render_template('createcharacter.html', myHero=myHero, sidebar=sidebar)  # return a string
+        return redirect(url_for('home'))
+    return render_template('createcharacter.html', myHero=myHero)  # return a string
 
 # start the server with the 'run()' method
 if __name__ == '__main__':
