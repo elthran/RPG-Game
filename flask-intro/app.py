@@ -21,14 +21,14 @@ def validate(username, password):
     completion = False
 
     with con:
-                cur = con.cursor()
-                cur.execute("SELECT * FROM Users")
-                rows = cur.fetchall()
-                for row in rows:
-                    dbUser = row[0]
-                    dbPass = row[1]
-                    if dbUser==username:
-                        completion=check_password(dbPass, password)
+        cur = con.cursor()
+        cur.execute("SELECT * FROM Users")
+        rows = cur.fetchall()
+        for row in rows:
+            dbUser = row[0]
+            dbPass = row[1]
+            if dbUser==username:
+                completion=check_password(dbPass, password)
     return completion	
 
 def add_new_user(username, password, charname):
@@ -90,22 +90,17 @@ def login():
 
 # route for handling the account creation page logic
 @app.route('/createaccount', methods=['GET', 'POST'])
+
 def createaccount():
     error = None
     
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-	charname = request.form['charname']
-        #completion = validate(username, password)
-        #if completion ==False:
-        #    error = 'Invalid Credentials. Please try again.'
-        #else:
-	add_new_user(username, password, charname)
-	print "hiff"
+        charname = request.form['charname']
+        add_new_user(username, password, charname)        
         return redirect(url_for('login'))
     return render_template('createaccount.html', error=error)
-	
 	
 @app.route('/logout')
 @login_required
