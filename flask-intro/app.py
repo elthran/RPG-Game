@@ -12,6 +12,7 @@ app = Flask(__name__)
 
 app.secret_key = 'starcraft'
 
+new_user_id = 15
 # Two functions used in login()
 def check_password(hashed_password, user_password):
     return hashed_password == hashlib.md5(user_password.encode()).hexdigest()
@@ -21,14 +22,14 @@ def validate(username, password):
     completion = False
 
     with con:
-        cur = con.cursor()
-        cur.execute("SELECT * FROM Users")
-        rows = cur.fetchall()
-        for row in rows:
-            dbUser = row[0]
-            dbPass = row[1]
-            if dbUser==username:
-                completion=check_password(dbPass, password)
+                cur = con.cursor()
+                cur.execute("SELECT * FROM Users")
+                rows = cur.fetchall()
+                for row in rows:
+                    dbUser = row[0]
+                    dbPass = row[1]
+                    if dbUser==username:
+                        completion=check_password(dbPass, password)
     return completion	
 
 def add_new_user(username, password, charname):
@@ -36,9 +37,23 @@ def add_new_user(username, password, charname):
 
     with con:
                 cur = con.cursor()
-                cur.execute('INSERT INTO USERS VALUES ("' + username + '","' + str(hashlib.md5(password.encode()).hexdigest()) + '",10);' ) #,10 needs to be changed 
+                cur.execute('INSERT INTO USERS VALUES ("' + username + '","' + str(hashlib.md5(password.encode()).hexdigest()) + '",' +str(new_user_id) + ');' ) # needs to be changed 
+                cur.execute('INSERT INTO CHARACTERS VALUES ( '+ str(new_user_id) +',"' + charname + '");')
                 con.commit()
     con.close()
+
+# username must exist
+def get_user_id(username):
+    con = sqlite3.connect('static/user.db')
+
+    with con:
+                cur = con.cursor()
+                cur.execute('SELECT USER_ID FROM USERS WHERE USERNAME = ' + '"' + username +'";' ) # needs to be changed 
+                row = cur.fetchall()
+    con.close()
+    return row[0][0]
+    
+    
 		
 # login required decorator
 def login_required(f):
@@ -56,6 +71,22 @@ def login_required(f):
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
+    print session['id'] , "     home"
+    con = sqlite3.connect('static/user.db')
+    with con:
+                cur = con.cursor()
+                cur.execute('SELECT * FROM characters WHERE user_id = ' + str(session['id']) + ';')
+                rows = cur.fetchall()
+                for row in rows:
+                    id = row[0]
+                    
+                    name = row[1]
+                    print session['id'],id,name + "     herheher"
+                    if id==session['id']:
+                        myHero.name = name;
+                    break
+    con.close()
+    
     if request.method == 'POST':
         myHero.strength += int(request.form['strength_upgrade'])
         myHero.attribute_points -= int(request.form['strength_upgrade'])
@@ -65,6 +96,7 @@ def home():
         myHero.attribute_points -= int(request.form['vitality_upgrade'])
         myHero.set_health(myHero.endurance, myHero.vitality, myHero.max_hp)
         myHero.set_damage(myHero.strength)
+        
     return render_template('home.html', page_title="Profile", myHero=myHero, home=home)  # return a string'
 
 # use decorators to link the function to a url
@@ -85,22 +117,24 @@ def login():
         else:
             session['logged_in'] = True
             flash("LOG IN SUCCESSFUL")
+            session['id'] = get_user_id(username)
+            print username,session['id'] , "     logggginnnnnnnnn"
             return redirect(url_for('home'))
     return render_template('login.html', error=error)
 
 # route for handling the account creation page logic
 @app.route('/createaccount', methods=['GET', 'POST'])
-
 def createaccount():
     error = None
     
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        charname = request.form['charname']
-        add_new_user(username, password, charname)        
+	charname = request.form['charname']
+	add_new_user(username, password, charname)
         return redirect(url_for('login'))
     return render_template('createaccount.html', error=error)
+	
 	
 @app.route('/logout')
 @login_required
