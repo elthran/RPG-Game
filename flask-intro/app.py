@@ -30,7 +30,16 @@ def validate(username, password):
                     if dbUser==username:
                         completion=check_password(dbPass, password)
     return completion	
-	
+
+def add_new_user(username, password, charname):
+    con = sqlite3.connect('static/user.db')
+
+    with con:
+                cur = con.cursor()
+                cur.execute('INSERT INTO USERS VALUES ("' + username + '","' + str(hashlib.md5(password.encode()).hexdigest()) + '",10);' ) #,10 needs to be changed 
+                con.commit()
+    con.close()
+		
 # login required decorator
 def login_required(f):
     @wraps(f)
@@ -79,6 +88,25 @@ def login():
             return redirect(url_for('home'))
     return render_template('login.html', error=error)
 
+# route for handling the account creation page logic
+@app.route('/createaccount', methods=['GET', 'POST'])
+def createaccount():
+    error = None
+    
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+	charname = request.form['charname']
+        #completion = validate(username, password)
+        #if completion ==False:
+        #    error = 'Invalid Credentials. Please try again.'
+        #else:
+	add_new_user(username, password, charname)
+	print "hiff"
+        return redirect(url_for('login'))
+    return render_template('createaccount.html', error=error)
+	
+	
 @app.route('/logout')
 @login_required
 def logout():
