@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 app.secret_key = 'starcraft'
 
-new_user_id = 15
+new_user_id = 17
 # Two functions used in login()
 def check_password(hashed_password, user_password):
     return hashed_password == hashlib.md5(user_password.encode()).hexdigest()
@@ -71,7 +71,6 @@ def login_required(f):
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
-    print session['id'] , "     home"
     con = sqlite3.connect('static/user.db')
     with con:
                 cur = con.cursor()
@@ -81,23 +80,29 @@ def home():
                     id = row[0]
                     
                     name = row[1]
-                    print session['id'],id,name + "     herheher"
                     if id==session['id']:
                         myHero.name = name;
                     break
     con.close()
     
     if request.method == 'POST':
-        myHero.strength += int(request.form['strength_upgrade'])
-        myHero.attribute_points -= int(request.form['strength_upgrade'])
-        myHero.endurance += int(request.form['endurance_upgrade'])
-        myHero.attribute_points -= int(request.form['endurance_upgrade'])
-        myHero.vitality += int(request.form['vitality_upgrade'])
-        myHero.attribute_points -= int(request.form['vitality_upgrade'])
-        myHero.set_health(myHero.endurance, myHero.vitality, myHero.max_hp)
-        myHero.set_damage(myHero.strength)
-        
-    return render_template('home.html', page_title="Profile", myHero=myHero, home=home)  # return a string'
+        strength = int(request.form['strength_upgrade'])
+        endurance = int(request.form['endurance_upgrade'])
+        vitality = int(request.form['vitality_upgrade'])
+        total_points_spent = sum([strength, endurance, vitality])
+        if total_points_spent <= myHero.attribute_points:
+            myHero.strength += strength
+            myHero.endurance += endurance
+            myHero.vitality += vitality
+            myHero.attribute_points -= total_points_spent
+            myHero.set_health(myHero.endurance, myHero.vitality, myHero.max_hp)
+            myHero.set_damage(myHero.strength)
+        else:
+            error = "Spend less points."
+    if myHero.attribute_points > 0:
+        return render_template('home.html', page_title="Profile", myHero=myHero, leveling_up=leveling_up)
+    else:
+        return render_template('home.html', page_title="Profile", myHero=myHero, home=home)  # return a string'
 
 # use decorators to link the function to a url
 @app.route('/level_up')
@@ -118,7 +123,6 @@ def login():
             session['logged_in'] = True
             flash("LOG IN SUCCESSFUL")
             session['id'] = get_user_id(username)
-            print username,session['id'] , "     logggginnnnnnnnn"
             return redirect(url_for('home'))
     return render_template('login.html', error=error)
 
@@ -130,8 +134,8 @@ def createaccount():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-	charname = request.form['charname']
-	add_new_user(username, password, charname)
+        charname = request.form['charname']
+        add_new_user(username, password, charname)
         return redirect(url_for('login'))
     return render_template('createaccount.html', error=error)
 	
