@@ -91,6 +91,9 @@ def home():
         vitality = int(request.form["vitality_upgrade"])
         total_points_spent = sum([strength, endurance, vitality])
         if total_points_spent <= myHero.attribute_points:
+            myHero.strength += strength
+            myHero.endurance += endurance
+            myHero.vitality += vitality
             myHero.attribute_points -= total_points_spent
             myHero.set_health(myHero.endurance, myHero.vitality, myHero.max_hp)
             myHero.set_damage(myHero.strength)
