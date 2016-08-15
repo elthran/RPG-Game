@@ -2,31 +2,20 @@ import random
 from game import *
 
 class Monster(object):
-    def __init__(self, name, level, species, strength, speed, damage, vitality, hp, max_hp, wisdom, faith, affinity):
+    def __init__(self, name, level, species, strength, speed, vitality):
         self.name = name
         self.level = level
         self.species = species
-        
         self.strength = strength
         self.speed = speed
-        self.damage = damage
-        
         self.vitality = vitality
-        self.hp = hp
-        self.max_hp = max_hp
 
-        self.wisdom = wisdom
-        self.faith = faith
-        self.affinity = affinity
-		
-    # Assign values for damage, max_hp, and affinity based on other stat values.
-    def update_attributes(self, strength, speed, vitality, wisdom, faith):
-        self.damage = strength * speed
-        self.max_hp = vitality * 10
-        self.affinity = wisdom + faith
-
-    def set_health(self, hp):
-        self.hp = hp
+    def combat_stats(self, vitality, strength, speed, current_hp=0, max_hp=0, min_damage=0, max_damage=0):
+        
+        self.current_hp = 5 * vitality
+        self.max_hp = self.current_hp
+        self.min_damage = strength
+        self.max_damage = 2 * strength
 
     def __repr__(self):
         return "\nName: %s\nDamage: %s" % (self.name, self.damage)
@@ -35,7 +24,6 @@ def monster_generator(level):
     name_species = {"Wolf":"Beast","Scout":"Goblin","Spider":"Beast"}
     name = random.choice(list(name_species.keys()))
     species = name_species[name]
-    monster = Monster(name, level, species, 2, 2, 0, 2, 0, 0, 2, 2, 2)
-    monster.update_attributes(monster.strength, monster.speed, monster.vitality, monster.wisdom, monster.faith)
-    monster.set_health(monster.max_hp)
+    monster = Monster(name, level, species, 2, 0.1, 2)
+    monster.combat_stats(monster.vitality, monster.strength, monster.speed)
     return monster

@@ -32,8 +32,14 @@
   <h1>{{ page_greeting }}</h1>
 
 {% if arena %}
-<h2>Compete in the <a href="/battle" title="Battle a random opponent.">arena.</a></h2>
-<h2>Battle another <a href="/arena" title="Under construction.">player.</a></h2>
+<h2>Compete in the <a href="/battle" title="Battle a random opponent.">arena.</a>
+<br>Battle another <a href="/arena" title="Under construction.">player.</a></h2>
+
+<h1>{{ enemy.name }} ({{ enemy.species }})
+<br>Damage: {{ enemy.min_damage }} - {{ enemy.max_damage }}
+<br>Attack Speed: {{ enemy.speed }}
+<br>Health: {{ enemy.current_hp }} / {{ enemy.max_hp }}
+</h1>
 {% endif %}
 
 {% if home %}
@@ -46,7 +52,8 @@ Name: {{ myHero.name}}
 </h2>
 <h1>Battle Statistics</h1>
 <h2>
-Damage: {{ myHero.damage }}
+Damage: {{ myHero.min_damage }} - {{ myHero.max_damage }}
+<br>Attack Speed: {{myHero.speed }}
 <br>Health: {{ myHero.current_hp }} / {{ myHero.max_hp }}
 </h2>
 <h1>Inventory</h1>

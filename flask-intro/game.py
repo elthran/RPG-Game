@@ -59,12 +59,15 @@ class Hero(object):
         return myHero
 
     # Sets damage
-    def set_damage(self, strength, damage=0):
-        self.damage = 2 * strength
+    def set_combat_stats(self, strength, agility, dexterity, endurance, damage=0, speed=0):
+        self.min_damage = strength + dexterity
+        self.max_damage = (2 * strength) + dexterity
+        self.speed = ((2 * agility) + dexterity) / 5
+        self.defence = (3 * endurance) + dexterity
 
     # Sets max health and fully heals hero
     def set_health(self, endurance, vitality, max_hp=0, current_hp=0):
-        self.max_hp = (3 * vitality) + endurance
+        self.max_hp = (5 * vitality) + endurance
         self.current_hp = self.max_hp
 
     def set_items(self,items):
@@ -90,7 +93,7 @@ def create_random_hero():
     myHero = Hero(name, hero_class)
     myHero.create_hero()
     myHero.create_attributes()
-    myHero.set_damage(myHero.strength)
+    myHero.set_combat_stats(myHero.strength, myHero.agility, myHero.dexterity, myHero.endurance)
     myHero.set_health(myHero.endurance, myHero.vitality)
 
     name = random.choice(["ripped tunic", "torn tunic"])
@@ -106,6 +109,7 @@ def create_random_hero():
 # initialization
 myHero = create_random_hero()
 game = Game(myHero)
+enemy = monster_generator(myHero.level)
 
 	
 

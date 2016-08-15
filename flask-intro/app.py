@@ -96,7 +96,7 @@ def home():
             myHero.vitality += vitality
             myHero.attribute_points -= total_points_spent
             myHero.set_health(myHero.endurance, myHero.vitality, myHero.max_hp)
-            myHero.set_damage(myHero.strength)
+            myHero.set_combat_stats(myHero.strength, myHero.agility, myHero.dexterity, myHero.endurance)
         else:
             error = "Spend less points."
     if myHero.attribute_points > 0:
@@ -150,8 +150,10 @@ def logout():
 @app.route('/arena')
 @login_required
 def arena():
+    enemy = monster_generator(myHero.level)
+    game.set_enemy(enemy)
     page_greeting= "Welcome to the arena " + myHero.name +"!"
-    return render_template('home.html', page_title="Arena Results", page_greeting=page_greeting, myHero=myHero, arena=arena)  # return a string
+    return render_template('home.html', page_title="Arena Results", page_greeting=page_greeting, myHero=myHero, arena=arena, enemy=enemy)  # return a string
 
 @app.route('/level_up')
 @login_required
@@ -163,8 +165,6 @@ def leveling_up():
 @app.route('/battle')
 @login_required
 def battle():
-    enemy = monster_generator(myHero.level)
-    game.set_enemy(enemy)
     myHero.hp,game.enemy.hp = battle_logic(myHero,game.enemy)
     if myHero.hp == 0:
         page_title = "Defeat!"
