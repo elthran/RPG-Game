@@ -170,11 +170,11 @@ def battle():
         page_title = "Defeat!"
         page_greeting = "You have died."
     elif game.enemy.hp == 0:
-        myHero.current_exp += game.enemy.level * 5
+        myHero.current_exp += game.enemy.experience
         myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
         page_title = "Victory!"
-        page_greeting = "You have won the battle!"
-    return render_template('home.html', page_title=page_title, page_greeting=page_greeting, myHero=myHero)  # return a string
+        page_greeting = "You have won the battle and gained " + str(game.enemy.experience) + " experience!"
+    return render_template('home.html', page_title=page_title, page_greeting=page_greeting, myHero=myHero, enemy=enemy)  # return a string
 
 
 @app.route('/defeat')
