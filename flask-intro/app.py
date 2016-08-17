@@ -103,6 +103,7 @@ def home():
         return render_template('home.html', page_title="Profile", myHero=myHero, leveling_up=leveling_up)
     else:
         return render_template('home.html', page_title="Profile", myHero=myHero, home=home)  # return a string'
+  
 
 # use decorators to link the function to a url
 @app.route('/level_up')
