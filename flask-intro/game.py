@@ -4,17 +4,27 @@ from items import *
 from bestiary import *
 from abilities import *
 
+def convert_input(x):
+    try:
+        x = int(x)
+    except:
+        x = 0
+    return x
+
 class Game(object):
     def __init__(self, hero):
         self.hero = hero
+        self.has_enemy = False
 
     def set_enemy(self, enemy):
         self.enemy = enemy
+        self.has_enemy = True
 
 class Hero(object):
     def __init__(self, name, starting_class):
         self.name = name
         self.starting_class = starting_class
+        self.abilities = []
 
     # Creates a level 1 hero
     def create_hero(self, current_exp=0, max_exp=10, level=1, attribute_points=0):
@@ -71,7 +81,7 @@ class Hero(object):
         self.current_hp = self.max_hp
 
     def set_items(self,items):
-        self.items = items	
+        self.items = items
 
     # updates field variables when hero levels up
     def level_up(self, attribute_points, current_exp, max_exp):

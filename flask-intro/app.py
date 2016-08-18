@@ -65,9 +65,8 @@ def login_required(f):
             flash('You need to login first.')
             return redirect(url_for('login'))
     return wrap
-
-# use decorators to link the function to a url
-	
+       
+# use decorators to link the function to a url	
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
@@ -86,9 +85,9 @@ def home():
     con.close()
 
     if request.method == 'POST':
-        strength = int(request.form["strength_upgrade"])
-        endurance = int(request.form["endurance_upgrade"])
-        vitality = int(request.form["vitality_upgrade"])
+        strength = convert_input(request.form["strength_upgrade"])
+        endurance = convert_input(request.form["endurance_upgrade"])
+        vitality = convert_input(request.form["vitality_upgrade"])
         total_points_spent = sum([strength, endurance, vitality])
         if total_points_spent <= myHero.attribute_points:
             myHero.strength += strength
@@ -151,10 +150,11 @@ def logout():
 @app.route('/arena')
 @login_required
 def arena():
-    enemy = monster_generator(myHero.level)
-    game.set_enemy(enemy)
+    if not game.has_enemy:
+        enemy = monster_generator(myHero.level)
+        game.set_enemy(enemy)
     page_greeting= "Welcome to the arena " + myHero.name +"!"
-    return render_template('home.html', page_title="Arena Results", page_greeting=page_greeting, myHero=myHero, arena=arena, enemy=enemy)  # return a string
+    return render_template('home.html', page_title="Arena Results", page_greeting=page_greeting, myHero=myHero, arena=arena, game=game)  # return a string
 
 @app.route('/level_up')
 @login_required
@@ -171,6 +171,7 @@ def battle():
         page_title = "Defeat!"
         page_greeting = "You have died."
     elif game.enemy.hp == 0:
+        game.has_enemy = False
         myHero.current_exp += game.enemy.experience
         myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
         page_title = "Victory!"
