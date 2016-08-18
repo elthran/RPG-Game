@@ -94,8 +94,8 @@ def home():
             myHero.endurance += endurance
             myHero.vitality += vitality
             myHero.attribute_points -= total_points_spent
-            myHero.set_health(myHero.endurance, myHero.vitality, myHero.max_hp)
-            myHero.set_combat_stats(myHero.strength, myHero.agility, myHero.dexterity, myHero.endurance)
+            myHero.update_health()
+            myHero.update_combat_stats()
         else:
             error = "Spend less points."
     if myHero.attribute_points > 0:

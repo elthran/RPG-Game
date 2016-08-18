@@ -4,6 +4,7 @@ from items import *
 from bestiary import *
 from abilities import *
 
+
 def convert_input(x):
     try:
         x = int(x)
@@ -69,15 +70,17 @@ class Hero(object):
         return myHero
 
     # Sets damage
-    def set_combat_stats(self, strength, agility, dexterity, endurance, damage=0, speed=0):
-        self.min_damage = strength + dexterity
-        self.max_damage = (2 * strength) + dexterity
-        self.speed = ((2 * agility) + dexterity) / 5
-        self.defence = (3 * endurance) + dexterity
+    def update_combat_stats(self):
+        self.min_damage = self.strength + self.dexterity
+        self.max_damage = (2 * self.strength) + self.dexterity
+        self.speed = ((2 * self.agility) + self.dexterity) / 5
+        self.defence = (3 * self.endurance) + self.dexterity
+        for ability in self.abilities:
+            ability.update_stats()
 
     # Sets max health and fully heals hero
-    def set_health(self, endurance, vitality, max_hp=0, current_hp=0):
-        self.max_hp = (5 * vitality) + endurance
+    def update_health(self):
+        self.max_hp = (5 * self.vitality) + self.endurance
         self.current_hp = self.max_hp
 
     def set_items(self,items):
@@ -91,20 +94,25 @@ class Hero(object):
         self.max_exp = math.floor(1.5 * self.max_exp)
         self.attribute_points += 3
         self.level += 1
-        self.set_health(self.endurance, self.vitality, self.max_hp)
+        self.update_health()
 
     def __repr__(self):
-        return "\nName: %s\nDamage: %s" % (self.name, self.damage)
+        return "\nName: %s" % (self.name)
 
 # Temporary Function to create a random hero
 def create_random_hero():
+
     name = random.choice(["Jimmy", "Jacob", "Jimbo"])
     hero_class = random.choice(["Brute", "Scholar", "Scoundrel"])
     myHero = Hero(name, hero_class)
     myHero.create_hero()
     myHero.create_attributes()
-    myHero.set_combat_stats(myHero.strength, myHero.agility, myHero.dexterity, myHero.endurance)
-    myHero.set_health(myHero.endurance, myHero.vitality)
+    myHero.update_health()
+    
+    test_ability = Ability("Stone Skin", myHero, skin_adjective)
+    myHero.abilities.append(test_ability)
+    myHero.update_combat_stats()
+    
 
     name = random.choice(["ripped tunic", "torn tunic"])
     dummy_item = Garment(name, myHero)
@@ -117,6 +125,8 @@ def create_random_hero():
 
 
 # initialization
+
+
 myHero = create_random_hero()
 game = Game(myHero)
 enemy = monster_generator(myHero.level)

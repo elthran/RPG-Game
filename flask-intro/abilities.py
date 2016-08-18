@@ -1,23 +1,22 @@
+skin_adjective = ["Tough","Iron","Stone","Diamond"]
+
 class Ability(object):
     # name : Name of the Item, e.x. "power bracelet"
     # hero : The Hero who owns the item
 	# buy_price : Price to buy the item
 	# level_req : level requirment
-    def __init__(self, name, hero):
+    def __init__(self, name, hero, adjectives):
         self.name = name
         self.hero = hero
-		
-    def set_hero(self, hero):
-        self.hero = hero
+        self.level = 1
+        self.adjectives = adjectives
+        self.display_name = self.adjectives[self.level - 1]
+        self.requirements = []
 
-    def set_name(self, name):
-        self.name = name
-		
-    def set_buy_price(self, buy_price):
-        self.buy_price = buy_price
-		
-    def set_level_req(self, level_req):
-        self.level_req = level_req
+    def update_stats(self):
+        if self.name == "Stone Skin":
+            self.hero.max_hp += 500 * self.level
 
     def __repr__(self):
         return "\nName: %s\nHero: %s" % (self.name, self.hero)
+    

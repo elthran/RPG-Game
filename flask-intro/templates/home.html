@@ -45,6 +45,7 @@
 {% endif %}
 
 {% if home %}
+
 <h1>General Statistics</h1>
 <h2> 
 Name: {{ myHero.name}}
@@ -52,19 +53,26 @@ Name: {{ myHero.name}}
 <br>Level: {{ myHero.level }}
 <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
 </h2>
+
 <h1>Battle Statistics</h1>
-<h2>
-Damage: {{ myHero.min_damage }} - {{ myHero.max_damage }}
+<h2>Damage: {{ myHero.min_damage }} - {{ myHero.max_damage }}
 <br>Attack Speed: {{myHero.speed }}
 <br>Health: {{ myHero.current_hp }} / {{ myHero.max_hp }}
 </h2>
-<h1>Inventory</h1>
+
+<h1>Abilities</h1>
 <h2>
-Item(s): {{ myHero.items[0].name }}
+{% for abilitiy in myHero.abilities %} 
+{{ ability }}
+{% endfor %}
 </h2>
+
+<h1>Inventory</h1>
+<h2>Item(s): {{ myHero.items[0].name }}
+</h2>
+
 <h1>Attributes</h1>
-<h2>
-<title="Damage and carrying capacity">Strength</>: {{ myHero.strength }}
+<h2><title="Damage and carrying capacity">Strength</>: {{ myHero.strength }}
 <br>Endurance: {{ myHero.endurance }}
 <br>Vitality: {{ myHero.vitality }}
 <br>Agility: {{ myHero.agility }}
