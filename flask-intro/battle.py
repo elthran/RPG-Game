@@ -7,7 +7,8 @@ import math, random
 def battle_logic(myHero,enemy):
     enemy.hp = 5 + myHero.level
     while myHero.current_hp > 0 and enemy.hp > 0:
-        myHero.current_hp -= math.floor(random.randint(enemy.min_damage, enemy.max_damage) * enemy.speed)
+        enemy_damage = random.randint(enemy.min_damage, enemy.max_damage) * enemy.speed
+        myHero.current_hp -= math.floor(enemy_damage / myHero.defence)
         enemy.hp -= math.floor(random.randint(myHero.min_damage, myHero.max_damage) * myHero.speed)
         if myHero.current_hp < 0:
             myHero.current_hp = 0
