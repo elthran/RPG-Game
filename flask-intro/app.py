@@ -196,8 +196,8 @@ def createaccount():
 @app.route('/logout')
 @login_required
 def logout():
-    #user_id = get_user_id(myHero.user_name) # Save upon logout #
-    #update_character(user_id,myHero.strength) ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
+    user_id = session['id']
+    update_character(user_id,myHero.strength) ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
     session.pop('logged_in', None)
     flash("LOG OUT SUCCESSFUL")
     return redirect(url_for('logout'))
