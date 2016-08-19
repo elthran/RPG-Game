@@ -32,7 +32,7 @@ def validate(username, password):
                         completion=check_password(dbPass, password)
     return completion	
 
-def add_new_user(username, password, charname):
+def add_new_user(username, password):
     con = sqlite3.connect('static/user.db')
 
     with con:
@@ -41,7 +41,6 @@ def add_new_user(username, password, charname):
                 rows = cur.fetchall()
                 new_user_id = len(rows)+1
                 cur.execute('INSERT INTO USERS VALUES ("' + username + '","' + str(hashlib.md5(password.encode()).hexdigest()) + '",' +str(new_user_id) + ');' ) # needs to be changed 
-                cur.execute('INSERT INTO CHARACTERS VALUES ( '+ str(new_user_id) +',"' + charname + '");')
                 con.commit()
     con.close()
 
@@ -156,8 +155,7 @@ def createaccount():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        charname = request.form['charname']
-        add_new_user(username, password, charname)
+        add_new_user(username, password)
         return redirect(url_for('login'))
     return render_template('createaccount.html', error=error)
 	
