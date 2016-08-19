@@ -40,7 +40,6 @@ def add_new_user(username, password, charname):
                 cur.execute("SELECT * FROM Users")
                 rows = cur.fetchall()
                 new_user_id = len(rows)+1
-                print new_user_id
                 cur.execute('INSERT INTO USERS VALUES ("' + username + '","' + str(hashlib.md5(password.encode()).hexdigest()) + '",' +str(new_user_id) + ');' ) # needs to be changed 
                 cur.execute('INSERT INTO CHARACTERS VALUES ( '+ str(new_user_id) +',"' + charname + '");')
                 con.commit()
