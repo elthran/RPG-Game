@@ -115,11 +115,25 @@ def home():
         strength = convert_input(request.form["strength_upgrade"])
         endurance = convert_input(request.form["endurance_upgrade"])
         vitality = convert_input(request.form["vitality_upgrade"])
-        total_points_spent = sum([strength, endurance, vitality])
+        agility = convert_input(request.form["agility_upgrade"])
+        dexterity = convert_input(request.form["dexterity_upgrade"])
+        devotion = convert_input(request.form["devotion_upgrade"])
+        resistance = convert_input(request.form["resistance_upgrade"])
+        wisdom = convert_input(request.form["wisdom_upgrade"])
+        charm = convert_input(request.form["charm_upgrade"])
+        instinct = convert_input(request.form["instinct_upgrade"])
+        total_points_spent = sum([strength, endurance, vitality, agility, dexterity, devotion, resistance, wisdom, charm, instinct])
         if total_points_spent <= myHero.attribute_points:
             myHero.strength += strength
             myHero.endurance += endurance
             myHero.vitality += vitality
+            myHero.agility += agility
+            myHero.dexterity += dexterity
+            myHero.devotion += devotion
+            myHero.resistance += resistance
+            myHero.wisdom += wisdom
+            myHero.charm += charm
+            myHero.instinct += instinct
             myHero.attribute_points -= total_points_spent
             myHero.update_health()
             myHero.update_combat_stats()
@@ -140,13 +154,13 @@ def create_character():
     page_title = "A New Beginning"
     choose_image = "beached"
     paragraph = "You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. A firm and inquisitive voice pierces the air."
-    conversation = ["Stranger: Who are you and what are you doing here?"]
+    conversation = [("Stranger: ", "Who are you and what are you doing here?")]
     if request.method == 'POST' and myHero.name == "Unknown":
         myHero.name = request.form["character_name"]
         page_title = None
         choose_image = "old_man"
         paragraph = None
-        conversation = ["Stranger: Where do you come from, child?"]
+        conversation = [("Stranger: ", "Where do you come from, child?")]
         display = False
     elif request.method == 'POST' and myHero.starting_class == "None":
         myHero.starting_class = request.form["starting_class"]

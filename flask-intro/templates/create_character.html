@@ -21,7 +21,7 @@
 {% endif %}
 
 {% for text in conversation %}
-<br>{{ text }}<br>
+<br><b>{{ text[0] }}</b>{{ text[1] }}<br>
 {% endfor %}
 
 {% if display %}
@@ -35,9 +35,9 @@ Me: ...I don't remember what happened. My name is
 {% else %}
 <br>
 <form action="" method="post">
-	<b>Me:</b>My father was a great
+	<b>Me:</b> My father was a great
         <select name="starting_class" value="{{ request.starting_class }}">
-	<option value="Brute">Brute</option>
+	<option value="Brute" title="BE STRONG">Brute</option>
 	<option value="Scholar">Scholar</option>
 	<option value="Rogue">Rogue</option>
 	</select>

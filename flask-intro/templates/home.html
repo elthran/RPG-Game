@@ -89,35 +89,48 @@ Name: {{ myHero.name}}
 {% endif %}
 
 {% if leveling_up %}
-You have {{ myHero.attribute_points }} attribute points to spend
-<br>
-<h1>MAKE SURE ALL VALUES ARE FILLED IN OR IT CRASHES, EVEN IF YOU JUST FILL IT IN WITH A 0</h1>
+You have attribute points to spend!
 <br>
 
 <form method="post" action="">
     <div>
         <label for="name">Strength: {{ myHero.strength }}</label>
-        <input type="number" placeholder="0" name="strength_upgrade" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="{{ request.form.strength_upgrade }}">
+        <input type="number" placeholder="0" name="strength_upgrade" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="0">
     	<br>
         <label for="name">Endurance: {{ myHero.endurance }}</label>
-        <input type="number" placeholder="0" name="endurance_upgrade" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="{{ request.form.endurance_upgrade }}">
+        <input type="number" placeholder="0" name="endurance_upgrade" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="0">
         <br>
         <label for="name">Vitality: {{ myHero.vitality }}</label>
-        <input type="number" placeholder="0" name="vitality_upgrade" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="{{ request.form.vitality_upgrade }}">
+        <input type="number" placeholder="0" name="vitality_upgrade" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="0">
+        <br>
+        <label for="name">Agility: {{ myHero.agility }}</label>
+        <input type="number" placeholder="0" name="agility_upgrade" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="0">
+        <br>
+        <label for="name">Dexterity: {{ myHero.dexterity }}</label>
+        <input type="number" placeholder="0" name="dexterity_upgrade" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="0">
+        <br>
+        <label for="name">Devotion: {{ myHero.devotion }}</label>
+        <input type="number" placeholder="0" name="devotion_upgrade" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="0">
+        <br>
+        <label for="name">Resistance: {{ myHero.resistance }}</label>
+        <input type="number" placeholder="0" name="resistance_upgrade" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="0">
+        <br>
+        <label for="name">Wisdom: {{ myHero.wisdom }}</label>
+        <input type="number" placeholder="0" name="wisdom_upgrade" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="0">
+        <br>
+        <label for="name">Charm: {{ myHero.charm }}</label>
+        <input type="number" placeholder="0" name="charm_upgrade" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="0">
+        <br>
+        <label for="name">Instinct: {{ myHero.instinct }}</label>
+        <input type="number" placeholder="0" name="instinct_upgrade" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="0">
 </div>
+</h2>
 <input class="btn btn-default" type="submit" value="Submit">
+<h1>&emsp; &emsp; &emsp; &emsp; <b>Points remaining {{ myHero.attribute_points }}</b>
 </form>
 
-<br>Agility: {{ myHero.agility }}
-<br>Dexterity: {{ myHero.dexterity }}
-<br>Devotion: {{ myHero.devotion }}
-<br>Resistance: {{ myHero.resistance }}
-<br>Wisdom: {{ myHero.wisdom }}
-<br>Charm: {{ myHero.charm }}
-<br>Instinct: {{ myHero.instinct }}
-<br>&emsp; &emsp; &emsp; &emsp; <b>Points remaining {{ myHero.attribute_points }}</b>
 {% endif %}
-</h2>
+</h1>
 
 <br>
 
