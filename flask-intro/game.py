@@ -22,30 +22,28 @@ class Game(object):
         self.has_enemy = True
 
 class Hero(object):
-    def __init__(self, name, starting_class):
-        self.name = name
-        self.starting_class = starting_class
+    def __init__(self, user_name="Unknown"):
+        self.user_name = user_name
+        self.name = "Unknown"
         self.abilities = []
 
     # Creates a level 1 hero
-    def create_hero(self, current_exp=0, max_exp=10, level=1, attribute_points=0):
-        self.current_exp = current_exp
-        self.max_exp = max_exp
-        self.level = level
-        self.attribute_points = attribute_points
-
-    # Initializes attritubes to value of 1
-    def create_attributes(self, strength=1, endurance=1, vitality=1, agility=1, dexterity=1, devotion=1, resistance=1, wisdom=1, charm=1, instinct=1):
-        self.strength = strength
-        self.endurance = endurance
-        self.vitality = vitality
-        self.agility = agility
-        self.dexterity = dexterity
-        self.devotion = devotion
-        self.resistance = resistance
-        self.wisdom = wisdom
-        self.charm = charm
-        self.instinct = instinct
+    def create_hero(self):
+        self.starting_class = "None"
+        self.current_exp = 0
+        self.max_exp = 10
+        self.level = 1
+        self.attribute_points = 0
+        self.strength = 1
+        self.endurance = 1
+        self.vitality = 1
+        self.agility = 1
+        self.dexterity = 1
+        self.devotion = 1
+        self.resistance = 1
+        self.wisdom = 1
+        self.charm = 1
+        self.instinct = 1
 
     # Allows you to choose your starting class and apply buffs
     def choose_class(self):
@@ -59,14 +57,6 @@ class Hero(object):
         if myHero.starting_class == "Scoundrel":
             myHero.agility += 2
             myHero.dexterity += 1
-        # Tmporary
-        myHero.set_health(myHero.endurance, myHero.vitality)
-        name = random.choice(["ripped tunic", "torn tunic"])
-        dummy_item = Garment(name, myHero)
-        item_list = [dummy_item]
-        myHero.set_items(item_list)
-        for item in myHero.items:
-            item.equip()
         return myHero
 
     # Sets damage
@@ -102,17 +92,13 @@ class Hero(object):
 # Temporary Function to create a random hero
 def create_random_hero():
 
-    name = random.choice(["Jimmy", "Jacob", "Jimbo"])
-    hero_class = random.choice(["Brute", "Scholar", "Scoundrel"])
-    myHero = Hero(name, hero_class)
+    myHero = Hero()
     myHero.create_hero()
-    myHero.create_attributes()
     myHero.update_health()
     
     test_ability = Ability("Stone Skin", myHero, skin_adjective)
     myHero.abilities.append(test_ability)
     myHero.update_combat_stats()
-    
 
     name = random.choice(["ripped tunic", "torn tunic"])
     dummy_item = Garment(name, myHero)

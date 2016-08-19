@@ -80,7 +80,7 @@ def home():
                     
                     name = row[1]
                     if id==session['id']:
-                        myHero.name = name;
+                        myHero.user_name = name;
                     break
     con.close()
 
@@ -98,14 +98,33 @@ def home():
             myHero.update_combat_stats()
         else:
             error = "Spend less points."
-    if myHero.attribute_points > 0:
+    if myHero.name == "Unknown" or myHero.starting_class == "None":
+        return redirect(url_for('create_character'))
+    elif myHero.attribute_points > 0:
         return render_template('home.html', page_title="Profile", myHero=myHero, leveling_up=leveling_up)
     else:
         return render_template('home.html', page_title="Profile", myHero=myHero, home=home)  # return a string'
-  
+
+
+# use decorators to link the function to a url
+@app.route('/create_character', methods=['GET', 'POST'])
+@login_required
+def create_character():
+    display = True
+    if request.method == 'POST' and myHero.name == "Unknown":
+        myHero.name = request.form["character_name"]
+        display = False
+    elif request.method == 'POST' and myHero.starting_class == "None":
+        myHero.starting_class = request.form["starting_class"]
+        
+    if myHero.name != "Unknown" and myHero.starting_class != "None":
+        return redirect(url_for('home'))
+    else:
+        return render_template('create_character.html', display=display)  # render a template  
 
 # use decorators to link the function to a url
 @app.route('/level_up')
+@login_required
 def level_up():
     return render_template('level_up.html')  # render a template
 
