@@ -232,7 +232,7 @@ def createcharacter():
     if request.method == 'POST':
         myHero.choose_class()
         return redirect(url_for('home'))
-    return render_template('createcharacter.html', myHero=myHero)  # return a string
+    return render_template('create_character.html', myHero=myHero)  # return a string
 
 # start the server with the 'run()' method
 if __name__ == '__main__':

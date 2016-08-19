@@ -25,10 +25,6 @@ class Hero(object):
     def __init__(self, user_name="Unknown"):
         self.user_name = user_name
         self.name = "Unknown"
-        self.abilities = []
-
-    # Creates a level 1 hero
-    def create_hero(self):
         self.starting_class = "None"
         self.current_exp = 0
         self.max_exp = 10
@@ -44,6 +40,7 @@ class Hero(object):
         self.wisdom = 1
         self.charm = 1
         self.instinct = 1
+        self.abilities = []
 
     # Allows you to choose your starting class and apply buffs
     def choose_class(self):
@@ -93,7 +90,6 @@ class Hero(object):
 def create_random_hero():
 
     myHero = Hero()
-    myHero.create_hero()
     myHero.update_health()
     
     test_ability = Ability("Stone Skin", myHero, skin_adjective)
