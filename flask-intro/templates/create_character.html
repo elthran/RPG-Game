@@ -24,7 +24,11 @@
 <p><b>Stranger:</b>What do you do?
 <br><br><b>Me:</b>I am a
 <form action="" method="post">
-        <input type="text" placeholder="Starting Class" name="starting_class" value="{{ request.form.starting_class }}">
+        <select name="starting_class" value="{{ request.starting_class }}">
+	<option value="Brute">Brute</option>
+	<option value="Scholar">Scholar</option>
+	<option value="Rogue">Rogue</option>
+	</select>
         <input class="btn btn-default" type="submit" value="OK">
       </form>
 
