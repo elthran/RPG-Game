@@ -113,8 +113,16 @@ def home():
 @login_required
 def create_character():
     display = True
+    page_title = "A New Beginning"
+    choose_image = "beached"
+    paragraph = "You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. A firm and inquisitive voice pierces the air."
+    conversation = ["Stranger: Who are you and what are you doing here?"]
     if request.method == 'POST' and myHero.name == "Unknown":
         myHero.name = request.form["character_name"]
+        page_title = None
+        choose_image = "old_man"
+        paragraph = None
+        conversation = ["Stranger: Where do you come from, child?"]
         display = False
     elif request.method == 'POST' and myHero.starting_class == "None":
         myHero.starting_class = request.form["starting_class"]
@@ -122,7 +130,7 @@ def create_character():
     if myHero.name != "Unknown" and myHero.starting_class != "None":
         return redirect(url_for('home'))
     else:
-        return render_template('create_character.html', display=display)  # render a template  
+        return render_template('create_character.html', paragraph=paragraph, conversation=conversation, page_title=page_title, choose_image=choose_image, display=display)  # render a template  
 
 # use decorators to link the function to a url
 @app.route('/level_up')
