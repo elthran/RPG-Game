@@ -2,7 +2,10 @@
 <html>
 
   <head>
+    {% if page_title %}
     <title>{{ page_title }}</title>
+    {% endif %}
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="static/style.css" rel="stylesheet" media="screen">
   </head>
@@ -29,7 +32,21 @@
   <body>
   <div class="content">
 
-  <h1>{{ page_greeting }}</h1>
+    {% if page_heading %}
+    <h1>{{ page_heading }}</h1>
+    {% endif %}
+
+    {% if page_image %}
+    <img src="images/{{ page_image }}.jpg" alt="{{ page_image }}" style="width:304px;height:228px;">
+    {% endif %}
+
+    {% if paragraph %}
+    <p>{{ paragraph }}</p>
+    {% endif %}
+
+    {% for text in conversation %}
+    <br><b>{{ text[0] }}</b>{{ text[1] }}<br>
+    {% endfor %}
 
 {% if arena %}
 <h2>Compete in the <a href="/battle" title="Battle a random opponent.">arena.</a>
@@ -44,52 +61,7 @@
 </h2>
 {% endif %}
 
-{% if home %}
-
-<h1>General Statistics</h1>
-<h2> 
-Name: {{ myHero.name}}
-<br>User Name: {{ myHero.user_name }}
-<br>Class: {{ myHero.starting_class }}
-<br>Level: {{ myHero.level }}
-<br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
-</h2>
-
-<h1>Battle Statistics</h1>
-<h2>Damage: {{ myHero.min_damage }} - {{ myHero.max_damage }}
-<br>Attack Speed: {{myHero.speed }}
-<br>Health: {{ myHero.current_hp }} / {{ myHero.max_hp }}
-<br>Defence: {{ myHero.defence }}
-</h2>
-
-<h1>Abilities</h1>
-<h2>
-{% for abilitiy in myHero.abilities %} 
-{{ ability }}
-{% endfor %}
-</h2>
-
-<h1>Inventory</h1>
-<h2>Item(s): {{ myHero.items[0].name }}
-</h2>
-
-<h1>Attributes</h1>
-<h2><title="Damage and carrying capacity">Strength</>: {{ myHero.strength }}
-<br>Endurance: {{ myHero.endurance }}
-<br>Vitality: {{ myHero.vitality }}
-<br>Agility: {{ myHero.agility }}
-<br>Dexterity: {{ myHero.dexterity }}
-<br>Devotion: {{ myHero.devotion }}
-<br>Resistance: {{ myHero.resistance }}
-<br>Wisdom: {{ myHero.wisdom }}
-<br>Charm: {{ myHero.charm }}
-<br>Instinct: {{ myHero.instinct }}
-</h2>
-<h1><a href="/create_character">Create New Character</a></h1>
-{% endif %}
-
 {% if leveling_up %}
-You have attribute points to spend!
 <br>
 
 <form method="post" action="">
@@ -129,8 +101,60 @@ You have attribute points to spend!
 <h1>&emsp; &emsp; &emsp; &emsp; <b>Points remaining {{ myHero.attribute_points }}</b>
 </form>
 
+{% elif home %}
+
+<h1>General Statistics</h1>
+<h2> 
+Name: {{ myHero.name}}
+<br>Class: {{ myHero.starting_class }}
+<br>Level: {{ myHero.level }}
+<br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
+</h2>
+
+<h1>Battle Statistics</h1>
+<h2>Damage: {{ myHero.min_damage }} - {{ myHero.max_damage }}
+<br>Attack Speed: {{myHero.speed }}
+<br>Health: {{ myHero.current_hp }} / {{ myHero.max_hp }}
+<br>Defence: {{ myHero.defence }}
+</h2>
+
+<h1>Abilities</h1>
+<h2>
+{% for abilitiy in myHero.abilities %} 
+{{ ability }}
+{% endfor %}
+</h2>
+
+<h1>Inventory</h1>
+<h2>Item(s): {{ myHero.items[0].name }}
+</h2>
+
+<h1>Attributes</h1>
+<h2><title="Damage and carrying capacity">Strength</>: {{ myHero.strength }}
+<br>Endurance: {{ myHero.endurance }}
+<br>Vitality: {{ myHero.vitality }}
+<br>Agility: {{ myHero.agility }}
+<br>Dexterity: {{ myHero.dexterity }}
+<br>Devotion: {{ myHero.devotion }}
+<br>Resistance: {{ myHero.resistance }}
+<br>Wisdom: {{ myHero.wisdom }}
+<br>Charm: {{ myHero.charm }}
+<br>Instinct: {{ myHero.instinct }}
+</h2>
+<h1><a href="/create_character">Create New Character</a></h1>
 {% endif %}
-</h1>
+
+{% if inside_store %}
+  {% if items_for_sale %}
+  <h2>Here is our list of items:</h2>
+    {% for item in items_for_sale %}
+        {{ item}}<br>
+     {% endfor %}
+  {% endif %}
+  {% for link in page_links %}
+    <h2><a href="/{{ link[0] }}">{{ link[1] }}</a></h2>
+  {% endfor %}
+{% endif %}
 
 <br>
 

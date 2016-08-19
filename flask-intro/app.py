@@ -142,23 +142,23 @@ def home():
     if myHero.name == "Unknown" or myHero.starting_class == "None":
         return redirect(url_for('create_character'))
     elif myHero.attribute_points > 0:
-        return render_template('home.html', page_title="Profile", myHero=myHero, leveling_up=leveling_up)
+        return render_template('home.html', page_title="Profile", myHero=myHero, leveling_up=True)
     else:
-        return render_template('home.html', page_title="Profile", myHero=myHero, home=home)  # return a string'
+        return render_template('home.html', page_title="Profile", myHero=myHero, home=True)  # return a string'
 
 # use decorators to link the function to a url
 @app.route('/create_character', methods=['GET', 'POST'])
 @login_required
 def create_character():
     display = True
-    page_title = "A New Beginning"
-    choose_image = "beached"
+    page_title = "Create Character"
+    page_heading = "A New Beginning"
+    page_image = "beached"
     paragraph = "You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. A firm and inquisitive voice pierces the air."
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
     if request.method == 'POST' and myHero.name == "Unknown":
         myHero.name = request.form["character_name"]
-        page_title = None
-        choose_image = "old_man"
+        page_image = "old_man"
         paragraph = None
         conversation = [("Stranger: ", "Where do you come from, child?")]
         display = False
@@ -169,14 +169,9 @@ def create_character():
         add_new_character(myHero.name,myHero.starting_class) 
         return redirect(url_for('home'))
     else:
-        return render_template('create_character.html', paragraph=paragraph, conversation=conversation, page_title=page_title, choose_image=choose_image, display=display)  # render a template  
+        return render_template('create_character.html', page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, conversation=conversation, display=display)  # render a template  
 
 # use decorators to link the function to a url
-@app.route('/level_up')
-@login_required
-def level_up():
-    return render_template('level_up.html')  # render a template
-
 # route for handling the login page logic
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -192,11 +187,11 @@ def login():
             flash("LOG IN SUCCESSFUL")
             session['id'] = get_user_id(username)
             return redirect(url_for('home'))
-    return render_template('login.html', error=error)
+    return render_template('login.html', error=error, login=True)
 
 # route for handling the account creation page logic
-@app.route('/createaccount', methods=['GET', 'POST'])
-def createaccount():
+@app.route('/create_account', methods=['GET', 'POST'])
+def create_account():
     error = None
     
     if request.method == 'POST':
@@ -204,7 +199,7 @@ def createaccount():
         password = request.form['password']
         add_new_user(username, password)
         return redirect(url_for('login'))
-    return render_template('createaccount.html', error=error)
+    return render_template('login.html', error=error, create_account=True)
 	
 	
 @app.route('/logout')
@@ -213,8 +208,8 @@ def logout():
     user_id = session['id']
     update_character(user_id,myHero.strength) ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
     session.pop('logged_in', None)
-    flash("LOG OUT SUCCESSFUL")
-    return redirect(url_for('logout'))
+    flash("Thank you for playing! Your have successfully logged out.")
+    return redirect(url_for('login'))
 
 @app.route('/arena')
 @login_required
@@ -222,15 +217,9 @@ def arena():
     if not game.has_enemy:
         enemy = monster_generator(myHero.level)
         game.set_enemy(enemy)
-    page_greeting= "Welcome to the arena " + myHero.name +"!"
-    return render_template('home.html', page_title="Arena Results", page_greeting=page_greeting, myHero=myHero, arena=arena, game=game)  # return a string
-
-@app.route('/level_up')
-@login_required
-def leveling_up():
-    page_greeting = "You have leveled up! How would you like to spend your attribute points?"
-    return render_template('home.html', page_title="Level Up", page_greeting=page_greeting, myHero=myHero, leveling_up=leveling_up)  # return a string
-
+    page_heading = "Welcome to the arena " + myHero.name +"!"
+    page_image = "arena"
+    return render_template('home.html', page_title="Arena Results", page_heading=page_heading, page_image=page_image, myHero=myHero, arena=arena, game=game)  # return a string
 
 @app.route('/battle')
 @login_required
@@ -238,50 +227,43 @@ def battle():
     myHero.hp,game.enemy.hp = battle_logic(myHero,game.enemy)
     if myHero.hp == 0:
         page_title = "Defeat!"
-        page_greeting = "You have died."
+        page_heading = "You have died."
     elif game.enemy.hp == 0:
         game.has_enemy = False
         myHero.current_exp += game.enemy.experience
         myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
         page_title = "Victory!"
-        page_greeting = "You have won the battle and gained " + str(game.enemy.experience) + " experience!"
-    return render_template('home.html', page_title=page_title, page_greeting=page_greeting, myHero=myHero, enemy=enemy)  # return a string
-
-
-@app.route('/defeat')
-@login_required
-def defeat():
-    return render_template('home.html', page_title="Death", myHero=myHero)  # return a string
-
-@app.route('/victory')
-@login_required
-def victory():
-    return render_template('home.html', page_title="Victory!", myHero=myHero)  # return a string
+        page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience) + " experience!"
+    return render_template('home.html', page_title=page_title, page_heading=page_heading, myHero=myHero, enemy=enemy)  # return a string
 
 @app.route('/store_greeting')
 @login_required
 def store_greeting():
-    return render_template('store.html', myHero=myHero, is_store_greeting=True)  # return a string
+    page_title = "Store"
+    page_heading = "Good day sir! What can I get for you?"
+    page_image = "store"
+    page_links = [("store_armoury", "Armour"), ("store_weaponry", "Weapons")]
+    return render_template('home.html', myHero=myHero, inside_store=True, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
 
 @app.route('/store_armoury')
 @login_required
 def store_armoury():
+    page_title = "Store"
+    page_heading = "We have the finest armoury in town! Take a look."
+    page_image = "store"
+    page_links = [("store_weaponry", "Weapons")]
     items_for_sale = ["ripped tunic", "torn tunic"]
-    return render_template('store.html', myHero=myHero, is_store_armoury=True, items_for_sale=items_for_sale)  # return a string
+    return render_template('home.html', myHero=myHero, inside_store=True, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
 
 @app.route('/store_weaponry')
 @login_required
 def store_weaponry():
+    page_title = "Store"
+    page_heading = "Careful! Our weapons are sharp."
+    page_image = "store"
+    page_links = [("store_armoury", "Armour")]
     items_for_sale = ["sword", "axe"]
-    return render_template('store.html', myHero=myHero, is_store_weaponry=True, items_for_sale=items_for_sale)  # return a string
-
-@app.route('/createcharacter', methods=['GET', 'POST'])
-@login_required
-def createcharacter():
-    if request.method == 'POST':
-        myHero.choose_class()
-        return redirect(url_for('home'))
-    return render_template('create_character.html', myHero=myHero)  # return a string
+    return render_template('home.html', myHero=myHero, inside_store=True, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
 
 # start the server with the 'run()' method
 if __name__ == '__main__':

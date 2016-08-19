@@ -1,11 +1,28 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Login</title>
+    <title>Create a New Account</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="static/style.css" rel="stylesheet" media="screen">
   </head>
   <body>
+
+{% if create_account %}
+    <div class="container">
+      <h1>Please create a new account</h1>
+      <br>
+      <form action="" method="post">
+        <input type="text" placeholder="Username" name="username" value="{{
+          request.form.username }}">
+         <input type="password" placeholder="Password" name="password" value="{{
+          request.form.password }}">
+        <input class="btn btn-default" type="submit" value="Create">
+      </form>
+<br><br><br>
+<li><a href=/login>Login</a></li>
+
+
+{% elif login %}
     <div class="container">
       <h1>Please login</h1>
       <br>
@@ -17,7 +34,20 @@
         <input class="btn btn-default" type="submit" value="Login">
       </form>
 <br><br><br>
-<li><a href=/createaccount>Create Account</a></li>
+<li><a href=/create_account>Create Account</a></li>
+
+
+{% else %}
+      <h1>Thank you for playing today!</h1>
+      <br>
+
+      <p>Click <a href="/">here</a> to go home.</p>
+
+
+{% endif %}
+
+
+
       {% if error %}
         <p class="error"><strong>Error:</strong> {{ error }}
       {% endif %}
