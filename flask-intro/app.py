@@ -12,6 +12,11 @@ app = Flask(__name__)
 
 app.secret_key = 'starcraft'
 
+#///////////////////////////////////////
+#
+#  TEMPORARY DATABASE FUNCTIONS
+#
+#///////////////////////////////////////
 
 # Two functions used in login()
 def check_password(hashed_password, user_password):
@@ -47,7 +52,7 @@ def add_new_user(username, password):
 # username must exist
 def get_user_id(username):
     con = sqlite3.connect('static/user.db')
-
+    row = []
     with con:
                 cur = con.cursor()
                 cur.execute('SELECT USER_ID FROM USERS WHERE USERNAME = ' + '"' + username +'";' ) # needs to be changed 
@@ -55,7 +60,27 @@ def get_user_id(username):
     con.close()
     return row[0][0]
     
-    
+
+def add_new_character(charname, classname): ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
+    con = sqlite3.connect('static/user.db')
+
+    with con:
+                cur = con.cursor()
+                cur.execute("SELECT * FROM Users")
+                rows = cur.fetchall()
+                new_user_id = len(rows)
+                cur.execute('INSERT INTO CHARACTERS VALUES (' + str(new_user_id) + ',"' + charname + '","' + classname + '",1' + ');'); 
+                con.commit()
+    con.close()    
+
+def update_character(user_id,strength): ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
+    con = sqlite3.connect('static/user.db')
+
+    with con:
+                cur = con.cursor()
+                cur.execute("UPDATE CHARACTERS SET STRENGTH=" + str(strength) + " WHERE USER_ID=" + str(user_id) + ';')
+                con.commit()
+    con.close()  
 		
 # login required decorator
 def login_required(f):
@@ -78,11 +103,11 @@ def home():
                 cur.execute('SELECT * FROM characters WHERE user_id = ' + str(session['id']) + ';')
                 rows = cur.fetchall()
                 for row in rows:
-                    id = row[0]
-                    
-                    name = row[1]
+                    id = row[0] 
                     if id==session['id']:
-                        myHero.user_name = name;
+                        myHero.name = row[1]
+                        myHero.starting_class = row[2]
+                        myHero.strength = row[3] ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
                     break
     con.close()
 
@@ -107,7 +132,6 @@ def home():
     else:
         return render_template('home.html', page_title="Profile", myHero=myHero, home=home)  # return a string'
 
-
 # use decorators to link the function to a url
 @app.route('/create_character', methods=['GET', 'POST'])
 @login_required
@@ -128,6 +152,7 @@ def create_character():
         myHero.starting_class = request.form["starting_class"]
         
     if myHero.name != "Unknown" and myHero.starting_class != "None":
+        add_new_character(myHero.name,myHero.starting_class) 
         return redirect(url_for('home'))
     else:
         return render_template('create_character.html', paragraph=paragraph, conversation=conversation, page_title=page_title, choose_image=choose_image, display=display)  # render a template  
@@ -171,6 +196,8 @@ def createaccount():
 @app.route('/logout')
 @login_required
 def logout():
+    #user_id = get_user_id(myHero.user_name) # Save upon logout #
+    #update_character(user_id,myHero.strength) ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
     session.pop('logged_in', None)
     flash("LOG OUT SUCCESSFUL")
     return redirect(url_for('logout'))
