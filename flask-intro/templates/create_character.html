@@ -9,27 +9,33 @@
     <div class="container">
 
 {% if display %}
-      <h1>Who Am I?</h1>
+      <h1>A New Start</h1>
       <br>
-<p><b>Stranger:</b>Who are you?
-<br><br><b>Me:</b>My name is
+<img src="images/beached.jpg" alt="A Beach" style="width:304px;height:228px;">
+<p>You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. 
+A firm and inquisitive voice pierces the air.
+<br><br><b>Stranger:</b>Who are you and what are you doing here?
+<br><br>
       <form action="" method="post">
+<b>Me:</b>...I don't remember what happened. My name is
         <input type="text" placeholder="Character Name" name="character_name" value="{{ request.form.character_name }}">
-        <input class="btn btn-default" type="submit" value="OK">
+        <input class="btn btn-default" type="submit" value="Next">
       </form>
 
 {% else %}
-      <h1>What Am I?</h1>
       <br>
-<p><b>Stranger:</b>What do you do?
-<br><br><b>Me:</b>I am a
+<img src="images/old_man.jpg" alt="Old Man" style="width:304px;height:228px;">
+<p><b>Stranger:</b>Where do you come from child?
+<br><br>
 <form action="" method="post">
+	<b>Me:</b>My father was a great
         <select name="starting_class" value="{{ request.starting_class }}">
 	<option value="Brute">Brute</option>
 	<option value="Scholar">Scholar</option>
 	<option value="Rogue">Rogue</option>
 	</select>
-        <input class="btn btn-default" type="submit" value="OK">
+from the lands in the north.
+<input class="btn btn-default" type="submit" value="Next">
       </form>
 
 {% endif %}
