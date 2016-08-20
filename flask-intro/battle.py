@@ -5,7 +5,11 @@ from bestiary import *
 import math, random
 
 def battle_logic(myHero,enemy):
+    print("in battle logic")
+    print(myHero.current_hp)
     while myHero.current_hp > 0 and enemy.current_hp > 0:
+        print("in battle logic while loop")
+        print(myHero.current_hp)
         combat_log = []
         combat_log.append(("Enemy:", "I start with " + str(enemy.current_hp) + " health."))
         combat_log.append(("Hero:", "I start with " + str(myHero.current_hp) + " health."))
@@ -35,7 +39,7 @@ def battle_logic(myHero,enemy):
                 combat_log.append(("Hero:", "I have swung and missed an attack."))
             else:
                 myHero_damage = math.floor((random.randint(myHero.min_damage, myHero.max_damage) * myHero.attack_speed * 5) / enemy.defence_modifier) # Calculate enemy's damage
-                combat_log.append(("Hero:", "I hit the enemy for " + str(enemy_damage) + " damage."))
+                combat_log.append(("Hero:", "I hit the enemy for " + str(myHero_damage) + " damage."))
                 enemy.current_hp -= myHero_damage
             combat_log.append(("Enemy:", "I have " + str(enemy.current_hp) + " health remaining."))
             hero_attacks -= 1
