@@ -28,6 +28,6 @@ def monster_generator(level):
     name_species = {"Wolf":"Beast","Scout":"Goblin","Spider":"Beast"}
     name = random.choice(list(name_species.keys()))
     species = name_species[name]
-    monster = Monster(name, level, species, 2, 0.1, 2, 5 + level)
+    monster = Monster(name, level, species, 1, 0.1, 2, 5 + level)
     monster.combat_stats(monster.vitality, monster.strength, monster.speed)
     return monster

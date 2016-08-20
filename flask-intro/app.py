@@ -214,7 +214,7 @@ def logout():
 @app.route('/arena')
 @login_required
 def arena():
-    print("in arena")
+    print("running function: arena")
     if not game.has_enemy:
         enemy = monster_generator(myHero.level)
         game.set_enemy(enemy)
@@ -225,8 +225,9 @@ def arena():
 @app.route('/battle')
 @login_required
 def battle():
-    print("in battle")
-    print(myHero.current_hp)
+    print("running function: battle")
+    page_title = "Battle"
+    page_heading = "Fighting"
     myHero.current_hp,game.enemy.current_hp,conversation = battle_logic(myHero,game.enemy)
     if myHero.current_hp == 0:
         page_title = "Defeat!"
