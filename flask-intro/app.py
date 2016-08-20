@@ -69,18 +69,35 @@ def add_new_character(charname, classname): ######### MODIFY HERE TO ADD MORE TH
                 cur.execute("SELECT * FROM Users")
                 rows = cur.fetchall()
                 new_user_id = len(rows)
-                cur.execute('INSERT INTO CHARACTERS VALUES (' + str(new_user_id) + ',"' + charname + '","' + classname + '",1' + ');'); 
+                cur.execute('INSERT INTO CHARACTERS VALUES (' + str(new_user_id) + ',"' + charname + '","' + classname + '",5' + ');'); 
                 con.commit()
     con.close()    
 
-def update_character(user_id,strength): ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
+def update_character(user_id,charname , classname, strength): ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
     con = sqlite3.connect('static/user.db')
 
     with con:
                 cur = con.cursor()
+                cur.execute('UPDATE CHARACTERS SET NAME="' + charname + '" WHERE USER_ID=' + str(user_id) + ';')
+                cur.execute('UPDATE CHARACTERS SET CLASS="' + classname + '" WHERE USER_ID=' + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET STRENGTH=" + str(strength) + " WHERE USER_ID=" + str(user_id) + ';')
                 con.commit()
-    con.close()  
+    con.close()
+
+def fetch_character_data():
+    con = sqlite3.connect('static/user.db')
+    with con:
+                cur = con.cursor()
+                cur.execute('SELECT * FROM characters WHERE user_id = ' + str(session['id']) + ';')
+                rows = cur.fetchall()
+                for row in rows:
+                    id = row[0] 
+                    if id==session['id']:
+                        myHero.name = row[1]
+                        myHero.starting_class = row[2]
+                        myHero.strength = row[3] ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
+                        break
+    con.close() 
 		
 # login required decorator
 def login_required(f):
@@ -97,20 +114,8 @@ def login_required(f):
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
-    con = sqlite3.connect('static/user.db')
-    with con:
-                cur = con.cursor()
-                cur.execute('SELECT * FROM characters WHERE user_id = ' + str(session['id']) + ';')
-                rows = cur.fetchall()
-                for row in rows:
-                    id = row[0] 
-                    if id==session['id']:
-                        myHero.name = row[1]
-                        myHero.starting_class = row[2]
-                        myHero.strength = row[3] ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
-                    break
-    con.close()
 
+    myHero.update_secondary_attributes()
     if request.method == 'POST':
         strength = convert_input(request.form["strength_upgrade"])
         endurance = convert_input(request.form["endurance_upgrade"])
@@ -165,6 +170,7 @@ def create_character():
         myHero.starting_class = request.form["starting_class"]
         
     if myHero.name != "Unknown" and myHero.starting_class != "None":
+        print(myHero.name + " " + myHero.starting_class)
         add_new_character(myHero.name,myHero.starting_class) 
         return redirect(url_for('home'))
     else:
@@ -185,6 +191,7 @@ def login():
             session['logged_in'] = True
             flash("LOG IN SUCCESSFUL")
             session['id'] = get_user_id(username)
+            fetch_character_data()
             return redirect(url_for('home'))
     return render_template('login.html', error=error, login=True)
 
@@ -205,7 +212,7 @@ def create_account():
 @login_required
 def logout():
     user_id = session['id']
-    update_character(user_id,myHero.strength) ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
+    update_character(user_id,myHero.name, myHero.starting_class,myHero.strength) ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
     session.pop('logged_in', None)
     flash("Thank you for playing! Your have successfully logged out.")
     return redirect(url_for('login'))
