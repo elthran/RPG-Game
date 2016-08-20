@@ -15,7 +15,7 @@ class Ability(object):
 
     def update_stats(self):
         if self.name == "Stone Skin":
-            self.hero.max_hp += 500 * self.level
+            self.hero.max_hp += 15 * self.level
 
     def __repr__(self):
         return "\nName: %s\nHero: %s" % (self.name, self.hero)

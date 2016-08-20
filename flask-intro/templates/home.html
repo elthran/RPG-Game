@@ -51,15 +51,18 @@
 
 {% if arena %}
 <h2>Compete in the <a href="/battle" title="Battle a random opponent.">arena.</a>
-<h1>MY HERO'S CURRENT HEALTH IS {{ myHero.current_hp }}</h1>
 <br>Battle another <a href="/arena" title="Under construction.">player.</a></h2>
 
 <h1>A challenger approaches!</h1>
 <h2>
 <br>{{ game.enemy.name }} ({{ game.enemy.species }})
+<br>Level: {{ game.enemy.level }}
 <br>Damage: {{ game.enemy.min_damage }} - {{ game.enemy.max_damage }}
-<br>Attack Speed: {{ game.enemy.speed }}
+<br>Attack Speed: {{ game.enemy.attack_speed }}
 <br>Health: {{ game.enemy.current_hp }} / {{ game.enemy.max_hp }}
+<br>Accuracy: {{ game.enemy.accuracy }}%
+<br>Dodge: {{ game.enemy.dodge_chance }}%
+<br>Defence: {{ game.enemy.defence_modifier }}%
 </h2>
 {% endif %}
 

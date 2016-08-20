@@ -111,7 +111,6 @@ def home():
                     break
     con.close()
 
-    myHero.update_secondary_attributes()
     if request.method == 'POST':
         strength = convert_input(request.form["strength_upgrade"])
         endurance = convert_input(request.form["endurance_upgrade"])
@@ -215,7 +214,7 @@ def logout():
 @login_required
 def arena():
     print("running function: arena")
-    if not game.has_enemy:
+    if not game.has_enemy or game.enemy.current_hp <= 0:
         enemy = monster_generator(myHero.level)
         game.set_enemy(enemy)
     page_heading = "Welcome to the arena " + myHero.name +"!"
@@ -232,12 +231,12 @@ def battle():
     if myHero.current_hp == 0:
         page_title = "Defeat!"
         page_heading = "You have died."
-    elif game.enemy.current_hp == 0:
+    elif game.enemy.current_hp <= 0:
         game.has_enemy = False
-        myHero.current_exp += game.enemy.experience
+        myHero.current_exp += game.enemy.experience_rewarded
         myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
         page_title = "Victory!"
-        page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience) + " experience!"
+        page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience!"
     return render_template('home.html', page_title=page_title, page_heading=page_heading, myHero=myHero, enemy=enemy, conversation=conversation)  # return a string
 
 @app.route('/store_greeting')
@@ -274,6 +273,7 @@ def store_weaponry():
 def reset_character():
     myHero.name = "Unknown"
     myHero.level = 1
+    myHero.update_secondary_attributes()
     return redirect(url_for('home'))  # return a string
 
 

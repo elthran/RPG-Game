@@ -30,10 +30,10 @@ class Hero(object):
         self.max_exp = 10
         self.level = 1
         self.attribute_points = 0
-        self.strength = 1
-        self.endurance = 1
-        self.vitality = 1
-        self.agility = 1
+        self.strength = 5
+        self.endurance = 5
+        self.vitality = 5
+        self.agility = 5
         self.dexterity = 1
         self.devotion = 1
         self.resistance = 1
@@ -65,12 +65,12 @@ class Hero(object):
         self.defence_modifier = (2 * self.resistance + self.endurance)/ 2
         self.dodge_chance = (self.agility + self.dexterity) / 2
         self.max_hp = (5 * self.vitality) + self.endurance
-        self.current_hp = self.max_hp
         self.max_mp = self.wisdom + self.devotion
         self.current_mp = self.max_mp
         self.carrying_capacity = (3 * self.endurance) + (2 * self.strength)
         for ability in self.abilities:
             ability.update_stats()
+        self.current_hp = self.max_hp
 
     def set_items(self,items):
         self.items = items
