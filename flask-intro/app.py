@@ -224,17 +224,17 @@ def arena():
 @app.route('/battle')
 @login_required
 def battle():
-    myHero.hp,game.enemy.hp = battle_logic(myHero,game.enemy)
-    if myHero.hp == 0:
+    myHero.current_hp,game.enemy.current_hp,conversation = battle_logic(myHero,game.enemy)
+    if myHero.current_hp == 0:
         page_title = "Defeat!"
         page_heading = "You have died."
-    elif game.enemy.hp == 0:
+    elif game.enemy.current_hp == 0:
         game.has_enemy = False
         myHero.current_exp += game.enemy.experience
         myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
         page_title = "Victory!"
         page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience) + " experience!"
-    return render_template('home.html', page_title=page_title, page_heading=page_heading, myHero=myHero, enemy=enemy)  # return a string
+    return render_template('home.html', page_title=page_title, page_heading=page_heading, myHero=myHero, enemy=enemy, conversation=conversation)  # return a string
 
 @app.route('/store_greeting')
 @login_required

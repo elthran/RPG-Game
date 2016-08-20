@@ -46,11 +46,12 @@
     {% endif %}
 
     {% for text in conversation %}
-    <br><b>{{ text[0] }}</b>{{ text[1] }}<br>
+    <br><b>{{ text[0] }}</b> {{ text[1] }}<br>
     {% endfor %}
 
 {% if arena %}
 <h2>Compete in the <a href="/battle" title="Battle a random opponent.">arena.</a>
+<h1>MY HERO'S CURRENT HEALTH IS {{ myHero.current_hp }}</h1>
 <br>Battle another <a href="/arena" title="Under construction.">player.</a></h2>
 
 <h1>A challenger approaches!</h1>
