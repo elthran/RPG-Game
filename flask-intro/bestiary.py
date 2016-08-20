@@ -17,6 +17,7 @@ class Monster(object):
         self.max_hp = self.current_hp
         self.min_damage = strength
         self.max_damage = 2 * strength
+        self.accuracy = 50
 
     def __repr__(self):
         return "\nName: %s\nDamage: %s" % (self.name, self.damage)

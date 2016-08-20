@@ -13,12 +13,13 @@
 
   <div class="sidebar">
     <u1>
-      <img src="/images/character.jpg" alt="Sample" style="width:100px;height:100px;">
+      <img src="images/character.jpg" alt="Sample" style="width:100px;height:100px;">
       <br>Name: {{ myHero.name}}
       <br>Class: {{ myHero.starting_class }}
       <br>Level: {{ myHero.level }}
       <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
       <br>Health: {{ myHero.current_hp }} / {{ myHero.max_hp }}
+      <br>Mana: {{ myHero.current_mp }} / {{ myHero.max_mp }}
     </u1>
     <h1>
       <li><a href=/home>Profile</a></li>
@@ -109,13 +110,17 @@ Name: {{ myHero.name}}
 <br>Class: {{ myHero.starting_class }}
 <br>Level: {{ myHero.level }}
 <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
+<br>Carrying Capacity: {{ myHero.carrying_capacity }}
 </h2>
 
 <h1>Battle Statistics</h1>
 <h2>Damage: {{ myHero.min_damage }} - {{ myHero.max_damage }}
-<br>Attack Speed: {{myHero.speed }}
+<br>Attack Speed: {{myHero.attack_speed }}
+<br>Accuracy: {{myHero.attack_accuracy }}%
+<br>Defence: {{ myHero.defence_modifier }}%
+<br>Dodge: {{ myHero.dodge_chance }}%
 <br>Health: {{ myHero.current_hp }} / {{ myHero.max_hp }}
-<br>Defence: {{ myHero.defence }}
+<br>Mana: {{ myHero.current_mp }} / {{ myHero.max_mp }}
 </h2>
 
 <h1>Abilities</h1>
@@ -141,7 +146,7 @@ Name: {{ myHero.name}}
 <br>Charm: {{ myHero.charm }}
 <br>Instinct: {{ myHero.instinct }}
 </h2>
-<h1><a href="/create_character">Create New Character</a></h1>
+<h1><a href="/reset_character">Reset Character</a></h1>
 {% endif %}
 
 {% if inside_store %}

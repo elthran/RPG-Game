@@ -111,6 +111,7 @@ def home():
                     break
     con.close()
 
+    myHero.update_secondary_attributes()
     if request.method == 'POST':
         strength = convert_input(request.form["strength_upgrade"])
         endurance = convert_input(request.form["endurance_upgrade"])
@@ -135,8 +136,7 @@ def home():
             myHero.charm += charm
             myHero.instinct += instinct
             myHero.attribute_points -= total_points_spent
-            myHero.update_health()
-            myHero.update_combat_stats()
+            myHero.update_secondary_attributes()
         else:
             error = "Spend less points."
     if myHero.name == "Unknown" or myHero.starting_class == "None":
@@ -264,6 +264,14 @@ def store_weaponry():
     page_links = [("store_armoury", "Armour")]
     items_for_sale = ["sword", "axe"]
     return render_template('home.html', myHero=myHero, inside_store=True, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
+
+@app.route('/reset_character')
+@login_required
+def reset_character():
+    myHero.name = "Unknown"
+    myHero.level = 1
+    return redirect(url_for('home'))  # return a string
+
 
 # start the server with the 'run()' method
 if __name__ == '__main__':
