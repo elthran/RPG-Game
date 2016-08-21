@@ -69,7 +69,7 @@ def add_new_character(charname, classname): ######### MODIFY HERE TO ADD MORE TH
                 cur.execute("SELECT * FROM Users")
                 rows = cur.fetchall()
                 new_user_id = len(rows)
-                cur.execute('INSERT INTO CHARACTERS VALUES (' + str(new_user_id) + ',"' + charname + '","' + classname + '",5' + ');'); 
+                cur.execute('INSERT INTO CHARACTERS (USER_ID,NAME,CLASS) VALUES  (' + str(new_user_id) + ',"' + charname + '","' + classname + '"' + ');'); 
                 con.commit()
     con.close()    
 
@@ -205,6 +205,8 @@ def create_account():
         password = request.form['password']
         add_new_user(username, password)
         add_new_character("Unknown","None")
+        user_id = get_user_id(username)
+        update_character(user_id,myHero.name, myHero.starting_class,myHero.strength) # slightly redundant, fix laterrr
         return redirect(url_for('login'))
     return render_template('login.html', error=error, create_account=True)
 	
@@ -234,7 +236,9 @@ def battle():
     print("running function: battle")
     page_title = "Battle"
     page_heading = "Fighting"
+    print("running function: battle2")
     myHero.current_hp,game.enemy.current_hp,conversation = battle_logic(myHero,game.enemy)
+    print("running function: battle3")
     if myHero.current_hp == 0:
         page_title = "Defeat!"
         page_heading = "You have died."
