@@ -73,14 +73,28 @@ def add_new_character(charname, classname): ######### MODIFY HERE TO ADD MORE TH
                 con.commit()
     con.close()    
 
-def update_character(user_id,charname , classname, strength): ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
+
+def update_character(user_id, hero): ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
     con = sqlite3.connect('static/user.db')
 
     with con:
                 cur = con.cursor()
-                cur.execute('UPDATE CHARACTERS SET NAME="' + charname + '" WHERE USER_ID=' + str(user_id) + ';')
-                cur.execute('UPDATE CHARACTERS SET CLASS="' + classname + '" WHERE USER_ID=' + str(user_id) + ';')
-                cur.execute("UPDATE CHARACTERS SET STRENGTH=" + str(strength) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute('UPDATE CHARACTERS SET NAME="' + hero.name + '" WHERE USER_ID=' + str(user_id) + ';')
+                cur.execute('UPDATE CHARACTERS SET CLASS="' + hero.starting_class + '" WHERE USER_ID=' + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET STRENGTH=" + str(hero.strength) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET CURRENT_EXP=" + str(hero.current_exp) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET MAX_EXP=" + str(hero.max_exp) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET LEVEL=" + str(hero.level) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET ATTRIBUTE_POINTS=" + str(hero.attribute_points) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET ENDURANCE=" + str(hero.endurance) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET VITALITY=" + str(hero.vitality) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET AGILITY=" + str(hero.agility) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET DEXTERITY=" + str(hero.dexterity) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET DEVOTION=" + str(hero.devotion) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET RESISTANCE=" + str(hero.resistance) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET WISDOM=" + str(hero.wisdom) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET CHARM=" + str(hero.charm) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET INSTINCT=" + str(hero.instinct) + " WHERE USER_ID=" + str(user_id) + ';')
                 con.commit()
     con.close()
 
@@ -95,9 +109,23 @@ def fetch_character_data():
                     if id==session['id']:
                         myHero.name = row[1]
                         myHero.starting_class = row[2]
-                        myHero.strength = row[3] ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
+                        myHero.strength = row[3]
+                        myHero.current_exp = row[4]
+                        myHero.max_exp = row[5]
+                        myHero.level = row[6]
+                        myHero.attribute_points = row[7]
+                        myHero.endurance = row[8]
+                        myHero.vitality = row[9]
+                        myHero.agility = row[10]
+                        myHero.dexterity = row[11]
+                        myHero.resistance = row[12]
+                        myHero.wisdom = row[13]
+                        myHero.charm = row[14]
+                        myHero.instinct = row[15]######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
                         break
     con.close() 
+
+
 		
 # login required decorator
 def login_required(f):
@@ -171,7 +199,7 @@ def create_character():
         
     if myHero.name != "Unknown" and myHero.starting_class != "None":
         print(myHero.name + " " + myHero.starting_class)
-        update_character(session['id'],myHero.name, myHero.starting_class,myHero.strength)
+        update_character(session['id'],myHero)
         return redirect(url_for('home'))
     else:
         return render_template('create_character.html', page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, conversation=conversation, display=display)  # render a template  
@@ -206,7 +234,7 @@ def create_account():
         add_new_user(username, password)
         add_new_character("Unknown","None")
         user_id = get_user_id(username)
-        update_character(user_id,myHero.name, myHero.starting_class,myHero.strength) # slightly redundant, fix laterrr
+        update_character(user_id,myHero) # slightly redundant, fix laterrr
         return redirect(url_for('login'))
     return render_template('login.html', error=error, create_account=True)
 	
@@ -214,7 +242,7 @@ def create_account():
 @app.route('/logout')
 @login_required
 def logout():
-    update_character(session['id'],myHero.name, myHero.starting_class,myHero.strength) ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
+    update_character(session['id'],myHero) ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
     session.pop('logged_in', None)
     flash("Thank you for playing! Your have successfully logged out.")
     return redirect(url_for('login'))
