@@ -20,6 +20,7 @@
       <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
       <br>Health: {{ myHero.current_hp }} / {{ myHero.max_hp }}
       <br>Mana: {{ myHero.current_mp }} / {{ myHero.max_mp }}
+      <br>Gold: {{ myHero.gold }}
     </u1>
     <h1>
       <li><a href=/home>Profile</a></li>
@@ -49,6 +50,22 @@
     <br><b>{{ text[0] }}</b> {{ text[1] }}<br>
     {% endfor %}
 
+    {% if items_for_sale %}
+      <h2>Here is our list of items:</h2>
+      <form method="post" action="">
+      <div>
+      {% for item in items_for_sale %}
+        {{ item[0] }} &nbsp; <input type="number" placeholder="0" name="{{ item[0] }}" min="0" max="99" title="Numbers only" value="0"> &nbsp; <b>Cost:</b> {{ item[1] }}<br>
+      {% endfor %}
+      <input class="btn btn-default" type="submit" value="Submit">
+      </div>
+      </form>
+    {% endif %}
+
+    {% for link in page_links %}
+    <h2><a href="/{{ link[0] }}">{{ link[1] }}</a></h2>
+    {% endfor %}
+
 {% if arena %}
 <h2>Compete in the <a href="/battle" title="Battle a random opponent.">arena.</a>
 <br>Battle another <a href="/arena" title="Under construction.">player.</a></h2>
@@ -69,7 +86,7 @@
 {% if leveling_up %}
 <br>
 
-<form method="post" action="">
+<form method="post" action="" autocomplete="off">
     <div>
         <label for="name">Strength: {{ myHero.strength }}</label>
         <input type="number" placeholder="0" name="strength_upgrade" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="0">
@@ -115,6 +132,7 @@ Name: {{ myHero.name}}
 <br>Level: {{ myHero.level }}
 <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
 <br>Carrying Capacity: {{ myHero.carrying_capacity }}
+<br>Gold: {{ myHero.gold }}
 </h2>
 
 <h1>Battle Statistics</h1>
@@ -153,17 +171,6 @@ Name: {{ myHero.name}}
 <h1><a href="/reset_character">Reset Character</a></h1>
 {% endif %}
 
-{% if inside_store %}
-  {% if items_for_sale %}
-  <h2>Here is our list of items:</h2>
-    {% for item in items_for_sale %}
-        {{ item}}<br>
-     {% endfor %}
-  {% endif %}
-  {% for link in page_links %}
-    <h2><a href="/{{ link[0] }}">{{ link[1] }}</a></h2>
-  {% endfor %}
-{% endif %}
 
 <br>
 

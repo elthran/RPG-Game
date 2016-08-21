@@ -95,6 +95,7 @@ def update_character(user_id, hero): ######### MODIFY HERE TO ADD MORE THINGS TO
                 cur.execute("UPDATE CHARACTERS SET WISDOM=" + str(hero.wisdom) + " WHERE USER_ID=" + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET CHARM=" + str(hero.charm) + " WHERE USER_ID=" + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET INSTINCT=" + str(hero.instinct) + " WHERE USER_ID=" + str(user_id) + ';')
+                #cur.execute("UPDATE CHARACTERS SET GOLD=" + str(hero.gold) + " WHERE USER_ID=" + str(user_id) + ';')
                 con.commit()
     con.close()
 
@@ -121,7 +122,9 @@ def fetch_character_data():
                         myHero.resistance = row[12]
                         myHero.wisdom = row[13]
                         myHero.charm = row[14]
-                        myHero.instinct = row[15]######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
+                        myHero.instinct = row[15]
+                        #myHero.gold = row[16]
+                        ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
                         break
     con.close() 
 
@@ -142,8 +145,6 @@ def login_required(f):
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
-
-    myHero.update_secondary_attributes()
     if request.method == 'POST':
         strength = convert_input(request.form["strength_upgrade"])
         endurance = convert_input(request.form["endurance_upgrade"])
@@ -168,9 +169,9 @@ def home():
             myHero.charm += charm
             myHero.instinct += instinct
             myHero.attribute_points -= total_points_spent
-            myHero.update_secondary_attributes()
         else:
             error = "Spend less points."
+    myHero.update_secondary_attributes()
     if myHero.name == "Unknown" or myHero.starting_class == "None":
         return redirect(url_for('create_character'))
     elif myHero.attribute_points > 0:
@@ -195,8 +196,7 @@ def create_character():
         conversation = [("Stranger: ", "Where do you come from, child?")]
         display = False
     elif request.method == 'POST' and myHero.starting_class == "None":
-        myHero.starting_class = request.form["starting_class"]
-        
+        myHero.starting_class = request.form["starting_class"]        
     if myHero.name != "Unknown" and myHero.starting_class != "None":
         print(myHero.name + " " + myHero.starting_class)
         update_character(session['id'],myHero)
@@ -226,8 +226,7 @@ def login():
 # route for handling the account creation page logic
 @app.route('/create_account', methods=['GET', 'POST'])
 def create_account():
-    error = None
-    
+    error = None    
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -287,24 +286,62 @@ def store_greeting():
     page_links = [("store_armoury", "Armour"), ("store_weaponry", "Weapons")]
     return render_template('home.html', myHero=myHero, inside_store=True, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
 
-@app.route('/store_armoury')
+@app.route('/store_armoury', methods=['GET', 'POST'])
 @login_required
 def store_armoury():
     page_title = "Store"
     page_heading = "We have the finest armoury in town! Take a look."
     page_image = "store"
     page_links = [("store_weaponry", "Weapons")]
-    items_for_sale = ["ripped tunic", "torn tunic"]
+    items_for_sale = [("Ripped Tunic", "25"), ("Normal Tunic", "50")]
+    items_being_bought = []
+    cost = 0
+    if request.method == 'POST':
+        for item in range (0, int(request.form[items_for_sale[0][0]])):
+            items_being_bought.append(items_for_sale[0][0])
+            cost += int(items_for_sale[0][1])
+        for item in range (0, int(request.form[items_for_sale[1][0]])):
+            items_being_bought.append(items_for_sale[1][0])
+            cost += int(items_for_sale[1][1])
+        if cost <= myHero.gold:
+            myHero.gold -= cost
+            for item in items_being_bought:
+                dummy_item = Garment(item, myHero)
+                item_list = [dummy_item]
+                myHero.set_items(item_list)
+        else:
+            items_being_bought = []
+            cost = 0
+            error = "You can't afford it."
     return render_template('home.html', myHero=myHero, inside_store=True, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
 
-@app.route('/store_weaponry')
+@app.route('/store_weaponry', methods=['GET', 'POST'])
 @login_required
 def store_weaponry():
     page_title = "Store"
     page_heading = "Careful! Our weapons are sharp."
     page_image = "store"
     page_links = [("store_armoury", "Armour")]
-    items_for_sale = ["sword", "axe"]
+    items_for_sale = [("Sword", "35"), ("Axe", "55")]
+    items_being_bought = []
+    cost = 0
+    if request.method == 'POST':
+        for item in range (0, int(request.form[items_for_sale[0][0]])):
+            items_being_bought.append(items_for_sale[0][0])
+            cost += int(items_for_sale[0][1])
+        for item in range (0, int(request.form[items_for_sale[1][0]])):
+            items_being_bought.append(items_for_sale[1][0])
+            cost += int(items_for_sale[1][1])
+        if cost <= myHero.gold:
+            myHero.gold -= cost
+            for item in items_being_bought:
+                dummy_item = Garment(item, myHero)
+                item_list = [dummy_item]
+                myHero.set_items(item_list)
+        else:
+            items_being_bought = []
+            cost = 0
+            error = "You can't afford it."
     return render_template('home.html', myHero=myHero, inside_store=True, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
 
 @app.route('/reset_character')
@@ -313,6 +350,20 @@ def reset_character():
     myHero.name = "Unknown"
     myHero.starting_class = "None" # I assume user wants to reset class as well
     myHero.level = 1
+    myHero.attribute_points = 0
+    myHero.current_xp = 0
+    myHero.max_xp = 0
+    myHero.strength = 5
+    myHero.endurance = 5
+    myHero.vitality = 5
+    myHero.agility = 5
+    myHero.dexterity = 1
+    myHero.devotion = 1
+    myHero.resistance = 1
+    myHero.wisdom = 1
+    myHero.charm = 1
+    myHero.instinct = 1
+    myHero.abilities = []
     myHero.update_secondary_attributes()
     return redirect(url_for('home'))  # return a string
 

@@ -41,6 +41,7 @@ class Hero(object):
         self.charm = 1
         self.instinct = 1
         self.abilities = []
+        self.gold = 500
 
         # Right now I need to set them here, otherwise items.py won't run because it seems to check for these even though no items get equipped at the start of the game. Otherwise I'd prefer to delete the lines below this and
         # just have these declared in the update_secondary_attributes function below.
@@ -109,7 +110,6 @@ def create_random_hero():
 
 
 # initialization
-
 
 myHero = create_random_hero()
 game = Game(myHero)
