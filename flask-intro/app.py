@@ -171,7 +171,7 @@ def create_character():
         
     if myHero.name != "Unknown" and myHero.starting_class != "None":
         print(myHero.name + " " + myHero.starting_class)
-        add_new_character(myHero.name,myHero.starting_class) 
+        update_character(session['id'],myHero.name, myHero.starting_class,myHero.strength)
         return redirect(url_for('home'))
     else:
         return render_template('create_character.html', page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, conversation=conversation, display=display)  # render a template  
@@ -204,6 +204,7 @@ def create_account():
         username = request.form['username']
         password = request.form['password']
         add_new_user(username, password)
+        add_new_character("Unknown","None")
         return redirect(url_for('login'))
     return render_template('login.html', error=error, create_account=True)
 	
@@ -211,8 +212,7 @@ def create_account():
 @app.route('/logout')
 @login_required
 def logout():
-    user_id = session['id']
-    update_character(user_id,myHero.name, myHero.starting_class,myHero.strength) ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
+    update_character(session['id'],myHero.name, myHero.starting_class,myHero.strength) ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
     session.pop('logged_in', None)
     flash("Thank you for playing! Your have successfully logged out.")
     return redirect(url_for('login'))
@@ -279,6 +279,7 @@ def store_weaponry():
 @login_required
 def reset_character():
     myHero.name = "Unknown"
+    myHero.starting_class = "None" # I assume user wants to reset class as well
     myHero.level = 1
     myHero.update_secondary_attributes()
     return redirect(url_for('home'))  # return a string
