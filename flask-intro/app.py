@@ -196,7 +196,21 @@ def create_character():
         conversation = [("Stranger: ", "Where do you come from, child?")]
         display = False
     elif request.method == 'POST' and myHero.starting_class == "None":
-        myHero.starting_class = request.form["starting_class"]        
+        myHero.starting_class = request.form["starting_class"]
+        if myHero.starting_class == "Brute":
+            myHero.strength += 4
+            myHero.endurance += 2
+        elif myHero.starting_class == "Scholar":
+            myHero.wisdom += 6
+        elif myHero.starting_class == "Scoundrel":
+            myHero.agility += 3
+            myHero.dexterity += 3
+        elif myHero.starting_class == "Merchant":
+            myHero.gold += 250
+            myHero.charm += 1
+        elif myHero.starting_class == "Priest":
+            myHero.wisdom += 1
+            myHero.devotion += 5
     if myHero.name != "Unknown" and myHero.starting_class != "None":
         print(myHero.name + " " + myHero.starting_class)
         update_character(session['id'],myHero)
@@ -342,7 +356,7 @@ def store_weaponry():
         if cost <= myHero.gold and len(items_being_bought) > 0:
             paragraph += "You have bought "
             myHero.gold -= cost
-            for item in items_being_bought and len(items_being_bought) > 0:
+            for item in items_being_bought:
                 paragraph += item
                 dummy_item = Garment(item, myHero)
                 item_list = [dummy_item]
@@ -375,6 +389,7 @@ def reset_character():
     myHero.charm = 1
     myHero.instinct = 1
     myHero.abilities = []
+    myHero.gold = 500
     myHero.update_secondary_attributes()
     return redirect(url_for('home'))  # return a string
 

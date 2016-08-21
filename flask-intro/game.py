@@ -30,10 +30,10 @@ class Hero(object):
         self.max_exp = 10
         self.level = 1
         self.attribute_points = 0
-        self.strength = 5
-        self.endurance = 5
-        self.vitality = 5
-        self.agility = 5
+        self.strength = 1
+        self.endurance = 1
+        self.vitality = 1
+        self.agility = 1
         self.dexterity = 1
         self.devotion = 1
         self.resistance = 1
