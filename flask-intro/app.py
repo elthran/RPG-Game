@@ -294,6 +294,7 @@ def store_armoury():
     page_image = "store"
     page_links = [("store_weaponry", "Weapons")]
     items_for_sale = [("Ripped Tunic", "25"), ("Normal Tunic", "50")]
+    paragraph = ""
     items_being_bought = []
     cost = 0
     if request.method == 'POST':
@@ -303,17 +304,22 @@ def store_armoury():
         for item in range (0, int(request.form[items_for_sale[1][0]])):
             items_being_bought.append(items_for_sale[1][0])
             cost += int(items_for_sale[1][1])
-        if cost <= myHero.gold:
+        if cost <= myHero.gold and len(items_being_bought) > 0:
+            paragraph = "You have bought "
             myHero.gold -= cost
             for item in items_being_bought:
+                paragraph += item
                 dummy_item = Garment(item, myHero)
                 item_list = [dummy_item]
                 myHero.set_items(item_list)
+            paragraph += " for " + str(cost) + " gold."
+        elif len(items_being_bought) == 0:
+            paragraph = ""
         else:
             items_being_bought = []
             cost = 0
-            error = "You can't afford it."
-    return render_template('home.html', myHero=myHero, inside_store=True, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
+            paragraph = "You can't afford it."
+    return render_template('home.html', myHero=myHero, inside_store=True, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links, paragraph=paragraph)  # return a string
 
 @app.route('/store_weaponry', methods=['GET', 'POST'])
 @login_required
@@ -323,6 +329,7 @@ def store_weaponry():
     page_image = "store"
     page_links = [("store_armoury", "Armour")]
     items_for_sale = [("Sword", "35"), ("Axe", "55")]
+    paragraph = ""
     items_being_bought = []
     cost = 0
     if request.method == 'POST':
@@ -332,17 +339,21 @@ def store_weaponry():
         for item in range (0, int(request.form[items_for_sale[1][0]])):
             items_being_bought.append(items_for_sale[1][0])
             cost += int(items_for_sale[1][1])
-        if cost <= myHero.gold:
+        if cost <= myHero.gold and len(items_being_bought) > 0:
+            paragraph += "You have bought "
             myHero.gold -= cost
-            for item in items_being_bought:
+            for item in items_being_bought and len(items_being_bought) > 0:
+                paragraph += item
                 dummy_item = Garment(item, myHero)
                 item_list = [dummy_item]
                 myHero.set_items(item_list)
+        elif len(items_being_bought) == 0:
+            paragraph = ""
         else:
             items_being_bought = []
             cost = 0
-            error = "You can't afford it."
-    return render_template('home.html', myHero=myHero, inside_store=True, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
+            paragraph = "You can't afford it."
+    return render_template('home.html', myHero=myHero, inside_store=True, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links, paragraph=paragraph)  # return a string
 
 @app.route('/reset_character')
 @login_required
