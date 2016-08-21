@@ -4,7 +4,6 @@ from items import *
 from bestiary import *
 from abilities import *
 
-
 def convert_input(x):
     try:
         x = int(x)
@@ -114,7 +113,6 @@ def create_random_hero():
 myHero = create_random_hero()
 game = Game(myHero)
 enemy = monster_generator(myHero.level)
-
 	
 
 

@@ -146,18 +146,18 @@ def login_required(f):
 @login_required
 def home():
     if request.method == 'POST':
-        strength = convert_input(request.form["strength_upgrade"])
-        endurance = convert_input(request.form["endurance_upgrade"])
-        vitality = convert_input(request.form["vitality_upgrade"])
-        agility = convert_input(request.form["agility_upgrade"])
-        dexterity = convert_input(request.form["dexterity_upgrade"])
-        devotion = convert_input(request.form["devotion_upgrade"])
-        resistance = convert_input(request.form["resistance_upgrade"])
-        wisdom = convert_input(request.form["wisdom_upgrade"])
-        charm = convert_input(request.form["charm_upgrade"])
-        instinct = convert_input(request.form["instinct_upgrade"])
+        strength = convert_input(request.form["Strength"])
+        endurance = convert_input(request.form["Endurance"])
+        vitality = convert_input(request.form["Vitality"])
+        agility = convert_input(request.form["Agility"])
+        dexterity = convert_input(request.form["Dexterity"])
+        devotion = convert_input(request.form["Devotion"])
+        resistance = convert_input(request.form["Resistance"])
+        wisdom = convert_input(request.form["Wisdom"])
+        charm = convert_input(request.form["Charm"])
+        instinct = convert_input(request.form["Instinct"])
         total_points_spent = sum([strength, endurance, vitality, agility, dexterity, devotion, resistance, wisdom, charm, instinct])
-        if total_points_spent <= myHero.attribute_points:
+        if total_points_spent <= myHero.attribute_points:            
             myHero.strength += strength
             myHero.endurance += endurance
             myHero.vitality += vitality
@@ -175,7 +175,19 @@ def home():
     if myHero.name == "Unknown" or myHero.starting_class == "None":
         return redirect(url_for('create_character'))
     elif myHero.attribute_points > 0:
-        return render_template('home.html', page_title="Profile", myHero=myHero, leveling_up=True)
+        page_heading = "You have leveled up!"
+        paragraph = "Choose how you would like to distribute your attribute points."
+        primary_attributes = [("Strength", myHero.strength),
+                      ("Endurance", myHero.endurance),
+                      ("Vitality", myHero.vitality),
+                      ("Agility", myHero.agility),
+                      ("Dexterity", myHero.dexterity),
+                      ("Devotion", myHero.devotion),
+                      ("Resistance", myHero.resistance),
+                      ("Wisdom", myHero.wisdom),
+                      ("Charm", myHero.charm),
+                      ("Instinct", myHero.instinct)]
+        return render_template('home.html', page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero, primary_attributes=primary_attributes)
     else:
         return render_template('home.html', page_title="Profile", myHero=myHero, home=True)  # return a string'
 
