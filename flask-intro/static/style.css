@@ -1,25 +1,64 @@
-p {
-    font-family: "Times New Roman", Times, serif;
+body {
+  font-family: "Source Sans Pro", Helvetica, sans-serif;
+  
+}
+
+#page {
+margin:0 auto;
+overflow:hidden;
+}
+
+#page:after {
+  clear:both;
 }
 
 h1 {
     font-size: 40px;
-    color:green;
+    color: #08edb2;
 }
 
+h3 {
+    font-size: 32px;
+    color: #08edb2;
+}
+
+p{
+  font-size:14px;
+  line-height:25px;
+}
+
+
+
+
 .content {
-  width: 85%;
-  display: inline;
-  float: left;
-  background: url() repeat-y left top;
+  width: 75%;
+  padding-top: 60px;
+  float: right;
+background-color:white;
+}
+
+.content img {
+  opacity:1;
+  border-radius: 50%;
+
 }
 
 .sidebar{
-  width: 15%;
-  display: inline;
-  height: 100%;
-  float: left;
-  background: url(http://s21.postimg.org/kexv3aupf/bg_sidebar.png) repeat-y left top;
+  width:20%;
+  position:fixed;
+  color:#E6E6FA;
+  height:100%;
+  padding-top: 60px;
+  height:850px;
+  background: #A8DD9C;
+  background: -moz-linear-gradient(45deg, rgba(168,221,156,1) 0%, rgba(0,128,128,1) 100%); /* ff3.6+ */
+background: -webkit-gradient(linear, left bottom, right top, color-stop(0%, rgba(168,221,156,1)), color-stop(100%, rgba(0,128,128,1))); /* safari4+,chrome */
+background: -webkit-linear-gradient(45deg, rgba(168,221,156,1) 0%, rgba(0,128,128,1) 100%); /* safari5.1+,chrome10+ */
+background: -o-linear-gradient(45deg, rgba(168,221,156,1) 0%, rgba(0,128,128,1) 100%); /* opera 11.10+ */
+background: -ms-linear-gradient(45deg, rgba(168,221,156,1) 0%, rgba(0,128,128,1) 100%); /* ie10+ */
+background: linear-gradient(45deg, rgba(168,221,156,1) 0%, rgba(0,128,128,1) 100%); /* w3c */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#008080', endColorstr='#A8DD9C',GradientType=1 ); /* ie6-9 */
+
 
 }
 
@@ -29,12 +68,12 @@ h1 {
     padding: 0;
     overflow: hidden;
     list-style: none;
-
 }
 
 .sidebar li{
-     padding: 10%;
+    padding:20px;
      position: relative;
+    list-style-type: none;
 }
 
 .sidebar a{
@@ -43,4 +82,9 @@ h1 {
         position: absolute;
         bottom: 0;
         left: 0;
+}
+
+a:hover {
+    color: #339966;
+    text-decoration: none;
 }

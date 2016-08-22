@@ -10,28 +10,30 @@
     <link href="static/style.css" rel="stylesheet" media="screen">
   </head>
 
-
-  <div class="sidebar">
-    <u1>
-      <img src="static/images/character.jpg" alt="Sample" style="width:100px;height:100px;">
-      <br>Name: {{ myHero.name}}
-      <br>Class: {{ myHero.starting_class }}
-      <br>Level: {{ myHero.level }}
-      <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
-      <br>Health: {{ myHero.current_hp }} / {{ myHero.max_hp }}
-      <br>Mana: {{ myHero.current_mp }} / {{ myHero.max_mp }}
-      <br>Gold: {{ myHero.gold }}
-    </u1>
-    <h1>
-      <li><a href=/home>Profile</a></li>
-      <li><a href=/arena>Arena</a></li>
-      <li><a href=/store_greeting>Store</a></li>
-      <li><a href=/logout>Logout</a></li>
-    </h1>
-
-  </div>
-
   <body>
+  <div id="page">
+    <div class="sidebar">
+      <u1>
+        <img src="static/images/character.jpg" alt="Sample" style="width:100px;height:100px;">
+        <p>
+        <br>Name: {{ myHero.name}}
+        <br>Class: {{ myHero.starting_class }}
+        <br>Level: {{ myHero.level }}
+        <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
+        <br>Health: {{ myHero.current_hp }} / {{ myHero.max_hp }}
+        <br>Mana: {{ myHero.current_mp }} / {{ myHero.max_mp }}
+        <br>Gold: {{ myHero.gold }}
+        </p>
+      </u1>
+      <h3>
+        <li><a href=/home>Profile</a></li>
+        <li><a href=/arena>Arena</a></li>
+        <li><a href=/store_greeting>Store</a></li>
+        <li><a href=/logout>Logout</a></li>
+      </h3>
+
+    </div>
+
   <div class="content">
 
     {% if page_heading %}
