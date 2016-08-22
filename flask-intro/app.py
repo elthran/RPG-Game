@@ -142,9 +142,21 @@ def login_required(f):
     return wrap
        
 # use decorators to link the function to a url	
-@app.route('/home', methods=['GET', 'POST'])
+@app.route('/home')
 @login_required
 def home():
+    myHero.update_secondary_attributes()
+    # If it's a new character, send them to cerate_character url
+    if myHero.name == "Unknown" or myHero.starting_class == "None":
+        return redirect(url_for('create_character'))
+    # If they have leveled up, send them to level_up url
+    elif myHero.attribute_points > 0:
+        return redirect(url_for('level_up'))
+    return render_template('home.html', page_title="Profile", myHero=myHero, home=True)  # return a string'
+
+@app.route('/level_up', methods=['GET', 'POST'])
+@login_required
+def level_up():
     if request.method == 'POST':
         strength = convert_input(request.form["Strength"])
         endurance = convert_input(request.form["Endurance"])
@@ -171,25 +183,22 @@ def home():
             myHero.attribute_points -= total_points_spent
         else:
             error = "Spend less points."
+        if myHero.attribute_points <= 0:
+            return redirect(url_for('home'))
     myHero.update_secondary_attributes()
-    if myHero.name == "Unknown" or myHero.starting_class == "None":
-        return redirect(url_for('create_character'))
-    elif myHero.attribute_points > 0:
-        page_heading = "You have leveled up!"
-        paragraph = "Choose how you would like to distribute your attribute points."
-        primary_attributes = [("Strength", myHero.strength),
-                      ("Endurance", myHero.endurance),
-                      ("Vitality", myHero.vitality),
-                      ("Agility", myHero.agility),
-                      ("Dexterity", myHero.dexterity),
-                      ("Devotion", myHero.devotion),
-                      ("Resistance", myHero.resistance),
-                      ("Wisdom", myHero.wisdom),
-                      ("Charm", myHero.charm),
-                      ("Instinct", myHero.instinct)]
-        return render_template('home.html', page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero, primary_attributes=primary_attributes)
-    else:
-        return render_template('home.html', page_title="Profile", myHero=myHero, home=True)  # return a string'
+    page_heading = "You have leveled up!"
+    paragraph = "Choose how you would like to distribute your attribute points."
+    primary_attributes = [("Strength", myHero.strength),
+                          ("Endurance", myHero.endurance),
+                          ("Vitality", myHero.vitality),
+                          ("Agility", myHero.agility),
+                          ("Dexterity", myHero.dexterity),
+                          ("Devotion", myHero.devotion),
+                          ("Resistance", myHero.resistance),
+                          ("Wisdom", myHero.wisdom),
+                          ("Charm", myHero.charm),
+                          ("Instinct", myHero.instinct)]
+    return render_template('home.html', page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero, primary_attributes=primary_attributes)
 
 # use decorators to link the function to a url
 @app.route('/create_character', methods=['GET', 'POST'])
@@ -305,58 +314,23 @@ def battle():
 
 @app.route('/store_greeting')
 @login_required
-def store_greeting():
-    page_title = "Store"
+def store_greeting(page_title = "Store"):
     page_heading = "Good day sir! What can I get for you?"
     page_image = "store"
     page_links = [("store_armoury", "Armour"), ("store_weaponry", "Weapons")]
-    return render_template('home.html', myHero=myHero, inside_store=True, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
+    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
 
 @app.route('/store_armoury', methods=['GET', 'POST'])
 @login_required
 def store_armoury():
     page_title = "Store"
-    page_heading = "We have the finest armoury in town! Take a look."
+    page_heading = "Check out our new armour!"
     page_image = "store"
     page_links = [("store_weaponry", "Weapons")]
-    items_for_sale = [("Ripped Tunic", "25"), ("Normal Tunic", "50")]
+    items_for_sale = [("Medium Tunic", "25"), ("Strong Tunic", "35")]
     paragraph = ""
     items_being_bought = []
-    cost = 0
-    if request.method == 'POST':
-        for item in range (0, int(request.form[items_for_sale[0][0]])):
-            items_being_bought.append(items_for_sale[0][0])
-            cost += int(items_for_sale[0][1])
-        for item in range (0, int(request.form[items_for_sale[1][0]])):
-            items_being_bought.append(items_for_sale[1][0])
-            cost += int(items_for_sale[1][1])
-        if cost <= myHero.gold and len(items_being_bought) > 0:
-            paragraph = "You have bought "
-            myHero.gold -= cost
-            for item in items_being_bought:
-                paragraph += item
-                dummy_item = Garment(item, myHero)
-                item_list = [dummy_item]
-                myHero.set_items(item_list)
-            paragraph += " for " + str(cost) + " gold."
-        elif len(items_being_bought) == 0:
-            paragraph = ""
-        else:
-            items_being_bought = []
-            cost = 0
-            paragraph = "You can't afford it."
-    return render_template('home.html', myHero=myHero, inside_store=True, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links, paragraph=paragraph)  # return a string
-
-@app.route('/store_weaponry', methods=['GET', 'POST'])
-@login_required
-def store_weaponry():
-    page_title = "Store"
-    page_heading = "Careful! Our weapons are sharp."
-    page_image = "store"
-    page_links = [("store_armoury", "Armour")]
-    items_for_sale = [("Sword", "35"), ("Axe", "55")]
-    paragraph = ""
-    items_being_bought = []
+    items_bought = []
     cost = 0
     if request.method == 'POST':
         for item in range (0, int(request.form[items_for_sale[0][0]])):
@@ -370,16 +344,55 @@ def store_weaponry():
             myHero.gold -= cost
             for item in items_being_bought:
                 paragraph += item
-                dummy_item = Garment(item, myHero)
-                item_list = [dummy_item]
-                myHero.set_items(item_list)
+                dummy_item = Weapon(item, myHero, 5, 5)
+                items_bought.append(dummy_item)
+            for item in items_bought:
+                myHero.inventory.append(item)
+            paragraph += " for " + str(cost) + " gold."
         elif len(items_being_bought) == 0:
             paragraph = ""
         else:
             items_being_bought = []
             cost = 0
             paragraph = "You can't afford it."
-    return render_template('home.html', myHero=myHero, inside_store=True, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links, paragraph=paragraph)  # return a string
+    return render_template('home.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links, paragraph=paragraph)  # return a string
+
+@app.route('/store_weaponry', methods=['GET', 'POST'])
+@login_required
+def store_weaponry():
+    page_title = "Store"
+    page_heading = "Careful! Our weapons are sharp."
+    page_image = "store"
+    page_links = [("store_armoury", "Armour")]
+    items_for_sale = [("Medium Axe", "35"), ("Strong Axe", "55")]
+    paragraph = ""
+    items_being_bought = []
+    items_bought = []
+    cost = 0
+    if request.method == 'POST':
+        for item in range (0, int(request.form[items_for_sale[0][0]])):
+            items_being_bought.append(items_for_sale[0][0])
+            cost += int(items_for_sale[0][1])
+        for item in range (0, int(request.form[items_for_sale[1][0]])):
+            items_being_bought.append(items_for_sale[1][0])
+            cost += int(items_for_sale[1][1])
+        if cost <= myHero.gold and len(items_being_bought) > 0:
+            paragraph += "You have bought "
+            myHero.gold -= cost
+            for item in items_being_bought:
+                paragraph += item
+                dummy_item = Weapon(item, myHero, 5, 5)
+                items_bought.append(dummy_item)
+            for item in items_bought:
+                myHero.inventory.append(item)
+            paragraph += " for " + str(cost) + " gold."
+        elif len(items_being_bought) == 0:
+            paragraph = ""
+        else:
+            items_being_bought = []
+            cost = 0
+            paragraph = "You can't afford it."
+    return render_template('home.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links, paragraph=paragraph)  # return a string
 
 @app.route('/reset_character')
 @login_required

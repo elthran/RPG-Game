@@ -53,12 +53,10 @@
     {% if items_for_sale %}
       <h2>Here is our list of items:</h2>
       <form method="post" action="">
-      <div>
       {% for item in items_for_sale %}
         {{ item[0] }} &nbsp; <input type="number" placeholder="0" name="{{ item[0] }}" min="0" max="99" title="Numbers only" value="0"> &nbsp; <b>Cost:</b> {{ item[1] }}<br>
       {% endfor %}
       <input class="btn btn-default" type="submit" value="Submit">
-      </div>
       </form>
     {% endif %}
 
@@ -122,8 +120,14 @@ Name: {{ myHero.name}}
 {% endfor %}
 </h2>
 
-<h1>Inventory</h1>
-<h2>Item(s): {{ myHero.items[0].name }}
+<h1>Equipped Item(s):</h1>
+<h2>{% for item in myHero.equipped_items %}  
+<br>{{ item.name }} &emsp;  <input type="submit" name="{{ item.name }}" value="Unequip">
+{% endfor %}</h2>
+<h1>Inventory:</h1>
+<h2>{% for item in myHero.inventory %}   
+<br>{{ item.name }} &emsp;  <input type="submit" name="{{ item.name }}" value="Equip">
+{% endfor %}
 </h2>
 
 <h1>Attributes</h1>

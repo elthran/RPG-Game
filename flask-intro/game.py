@@ -39,6 +39,8 @@ class Hero(object):
         self.wisdom = 1
         self.charm = 1
         self.instinct = 1
+        self.equipped_items = []
+        self.inventory = []
         self.abilities = []
         self.gold = 500
 
@@ -70,10 +72,9 @@ class Hero(object):
         self.carrying_capacity = (3 * self.endurance) + (2 * self.strength)
         for ability in self.abilities:
             ability.update_stats()
+        for item in self.equipped_items:
+            item.update_stats()
         self.current_hp = self.max_hp
-
-    def set_items(self,items):
-        self.items = items
 
     # updates field variables when hero levels up
     def level_up(self, attribute_points, current_exp, max_exp):
@@ -96,12 +97,10 @@ def create_random_hero():
     test_ability = Ability("Stone Skin", myHero, skin_adjective)
     myHero.abilities.append(test_ability)
     # Items (Temporary)
-    name = random.choice(["ripped tunic", "torn tunic"])
-    dummy_item = Garment(name, myHero)
-    item_list = [dummy_item]
-    myHero.set_items(item_list)
-    for item in myHero.items:
-        item.equip()
+    dummy_armour = Garment("Ripped Tunic", myHero, 25, 35)
+    dummy_weapon = Weapon("Broken Axe", myHero, 10, 15)
+    myHero.inventory.append(dummy_armour)
+    myHero.equipped_items.append(dummy_weapon)
     # Refresh Hero
     myHero.update_secondary_attributes
     return myHero
