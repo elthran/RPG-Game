@@ -13,7 +13,7 @@
 
   <div class="sidebar">
     <u1>
-      <img src="images/character.jpg" alt="Sample" style="width:100px;height:100px;">
+      <img src="static/images/character.jpg" alt="Sample" style="width:100px;height:100px;">
       <br>Name: {{ myHero.name}}
       <br>Class: {{ myHero.starting_class }}
       <br>Level: {{ myHero.level }}
@@ -39,7 +39,7 @@
     {% endif %}
 
     {% if page_image %}
-    <img src="images/{{ page_image }}.jpg" alt="{{ page_image }}" style="width:304px;height:228px;">
+    <img src="static/images/{{ page_image }}.jpg" alt="{{ page_image }}" style="width:304px;height:228px;">
     {% endif %}
 
     {% if paragraph %}
@@ -115,8 +115,8 @@ Name: {{ myHero.name}}
 
 <h1>Abilities</h1>
 <h2>
-{% for abilitiy in myHero.abilities %} 
-{{ ability }}
+{% for ability in myHero.abilities %} 
+{{ ability.name }}
 {% endfor %}
 </h2>
 
