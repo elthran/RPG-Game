@@ -73,7 +73,7 @@
         <input type="number" name="{{ attribute[0] }}" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="0"><br>
       {% endfor %}
     <input class="btn btn-default" type="submit" value="Submit">
-    <h1>&emsp; &emsp; &emsp; &emsp; <b>Points remaining {{ myHero.attribute_points }}</b></h1?
+    <h1>&emsp; &emsp; &emsp; &emsp; <b>Points remaining {{ myHero.attribute_points }}</b></h1>
       </form>
     {% endif %}
 
@@ -94,7 +94,6 @@
 </h2>
 
 {% elif home %}
-
 <h1>General Statistics</h1>
 <h2> 
 Name: {{ myHero.name}}
@@ -123,14 +122,16 @@ Name: {{ myHero.name}}
 </h2>
 
 <h1>Equipped Item(s):</h1>
+
 <h2>{% for item in myHero.equipped_items %}  
-<br>{{ item.name }} &emsp;  <input type="submit" name="{{ item.name }}" value="Unequip">
+<br>{{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
 {% endfor %}</h2>
 <h1>Inventory:</h1>
 <h2>{% for item in myHero.inventory %}   
-<br>{{ item.name }} &emsp;  <input type="submit" name="{{ item.name }}" value="Equip">
+<br>{{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Equip</button>
 {% endfor %}
 </h2>
+
 
 <h1>Attributes</h1>
 <h2><title="Damage and carrying capacity">Strength</>: {{ myHero.strength }}
@@ -145,6 +146,7 @@ Name: {{ myHero.name}}
 <br>Instinct: {{ myHero.instinct }}
 </h2>
 <h1><a href="/reset_character">Reset Character</a></h1>
+
 {% endif %}
 
 
@@ -156,3 +158,38 @@ Name: {{ myHero.name}}
     </div>
   </body>
 </html>
+
+<script>
+// Only run what comes next *after* the page has loaded
+addEventListener("DOMContentLoaded", function() {
+  // Grab all of the elements with a class of command
+  // (which all of the buttons we just created have)
+  var commandButtons = document.querySelectorAll(".command");
+  for (var i=0, l=commandButtons.length; i<l; i++) {
+    var button = commandButtons[i];
+    // For each button, listen for the "click" event
+    button.addEventListener("click", function(e) {
+      // When a click happens, stop the button
+      // from submitting our form (if we have one)
+      e.preventDefault();
+
+      var clickedButton = e.target;
+      var command = clickedButton.value;
+
+      // Now we need to send the data to our server
+      // without reloading the page - this is the domain of
+      // AJAX (Asynchronous JavaScript And XML)
+      // We will create a new request object
+      // and set up a handler for the response
+      var request = new XMLHttpRequest();
+      // We point the request at the appropriate command
+      request.open("GET", "/" + command, true);
+      // and then we send it off
+      request.send();
+	  location.reload();
+	  
+    });
+  }
+  
+}, true);
+</script>

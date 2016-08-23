@@ -140,6 +140,25 @@ def login_required(f):
             flash('You need to login first.')
             return redirect(url_for('login'))
     return wrap
+
+@app.route('/<cmd>') # need to make sure this doesn't conflict with other routes
+def command(cmd=None):
+    for item in myHero.inventory:
+        if cmd == item.name:
+            myHero.equipped_items.append(item)
+            myHero.inventory.remove(item)
+            render_template('home.html', page_title="Profile", myHero=myHero, home=True)
+            return "success", 200, {'Content-Type': 'text/plain'}
+        
+    for item in myHero.equipped_items:
+        if cmd == item.name:
+            myHero.inventory.append(item)
+            myHero.equipped_items.remove(item)
+            render_template('home.html', page_title="Profile", myHero=myHero, home=True)
+            return "success", 200, {'Content-Type': 'text/plain'}
+        
+    return "failure", 200, {'Content-Type': 'text/plain'}
+
        
 # use decorators to link the function to a url	
 @app.route('/home')
