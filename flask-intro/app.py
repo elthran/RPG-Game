@@ -143,21 +143,23 @@ def login_required(f):
 
 @app.route('/<cmd>') # need to make sure this doesn't conflict with other routes
 def command(cmd=None):
+    # cmd (string type)is an item name, sent from the javascript code in html
+    # it is the item that will get equipped/unequiped
     for item in myHero.inventory:
         if cmd == item.name:
             myHero.equipped_items.append(item)
             myHero.inventory.remove(item)
             render_template('home.html', page_title="Profile", myHero=myHero, home=True)
-            return "success", 200, {'Content-Type': 'text/plain'}
+            return "success", 200, {'Content-Type': 'text/plain'} #//
         
     for item in myHero.equipped_items:
         if cmd == item.name:
             myHero.inventory.append(item)
             myHero.equipped_items.remove(item)
             render_template('home.html', page_title="Profile", myHero=myHero, home=True)
-            return "success", 200, {'Content-Type': 'text/plain'}
+            return "success", 200, {'Content-Type': 'text/plain'} #//
         
-    return "failure", 200, {'Content-Type': 'text/plain'}
+    return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
 
        
 # use decorators to link the function to a url	

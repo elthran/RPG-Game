@@ -98,7 +98,7 @@ def create_random_hero():
     myHero.abilities.append(test_ability)
     # Items (Temporary)
     dummy_armour = Garment("Ripped Tunic", myHero, 25, 35)
-    dummy_armour2 = Garment("Cape of Velocity", myHero, 25, 35)
+    dummy_armour2 = Garment("Strong Tunic", myHero, 25, 35)
     dummy_weapon = Weapon("Broken Axe", myHero, 10, 15)
     myHero.inventory.append(dummy_armour)
     myHero.inventory.append(dummy_armour2)
