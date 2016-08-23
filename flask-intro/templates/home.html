@@ -27,8 +27,10 @@
       </u1>
       <h3>
         <li><a href=/home>Profile</a></li>
-        <li><a href=/arena>Arena</a></li>
+        <li><a href=/war_room>War Room</a></li>
+        <li><a href=/under_construction>Town</a></li>
         <li><a href=/store_greeting>Store</a></li>
+        <li><a href=/under_construction>Users</a></li>
         <li><a href=/logout>Logout</a></li>
       </h3>
 
@@ -52,6 +54,10 @@
     <br><b>{{ text[0] }}</b> {{ text[1] }}<br>
     {% endfor %}
 
+    {% for status in status_display %}
+      <h2>{{ status[2] }}</h2><b>{{ status[0] }}</b> {{ status[1] }}
+    {% endfor %}
+
     {% if items_for_sale %}
       <h2>Here is our list of items:</h2>
       <form method="post" action="">
@@ -63,7 +69,7 @@
     {% endif %}
 
     {% for link in page_links %}
-    <h2><a href="/{{ link[0] }}">{{ link[1] }}</a></h2>
+    <h2>{{ link[0] }}<a href="{{ link[1] }}">{{ link[2] }}</a>{{ link[3] }}</h2>
     {% endfor %}
 
     {% if primary_attributes %}
@@ -77,23 +83,7 @@
       </form>
     {% endif %}
 
-{% if arena %}
-<h2>Compete in the <a href="/battle" title="Battle a random opponent.">arena.</a>
-<br>Battle another <a href="/arena" title="Under construction.">player.</a></h2>
-
-<h1>A challenger approaches!</h1>
-<h2>
-<br>{{ game.enemy.name }} ({{ game.enemy.species }})
-<br>Level: {{ game.enemy.level }}
-<br>Damage: {{ game.enemy.min_damage }} - {{ game.enemy.max_damage }}
-<br>Attack Speed: {{ game.enemy.attack_speed }}
-<br>Health: {{ game.enemy.current_hp }} / {{ game.enemy.max_hp }}
-<br>Accuracy: {{ game.enemy.accuracy }}%
-<br>Dodge: {{ game.enemy.dodge_chance }}%
-<br>Defence: {{ game.enemy.defence_modifier }}%
-</h2>
-
-{% elif home %}
+{% if home %}
 <h1>General Statistics</h1>
 <h2> 
 Name: {{ myHero.name}}

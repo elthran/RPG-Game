@@ -46,3 +46,4 @@ class Garment(Item):
 
         if self.name == "Strong Tunic":
             self.myHero.max_hp += 110
+

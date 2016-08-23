@@ -92,17 +92,14 @@ class Hero(object):
 # Temporary Function to create a random hero
 def create_random_hero():
     myHero = Hero()
+    clothes = [Garment("Ripped Tunic", myHero, 25, 35), Garment("Medium Tunic", myHero, 25, 35), Garment("Strong Tunic", myHero, 25, 35)]
+    weapons = [Weapon("Broken Axe", myHero, 10, 15), Weapon("Medium Axe", myHero, 10, 15), Weapon("Strong Axe", myHero, 10, 15)]
     myHero.update_secondary_attributes
     # Abilities (Temporary)
     test_ability = Ability("Stone Skin", myHero, skin_adjective)
     myHero.abilities.append(test_ability)
-    # Items (Temporary)
-    dummy_armour = Garment("Ripped Tunic", myHero, 25, 35)
-    dummy_armour2 = Garment("Strong Tunic", myHero, 25, 35)
-    dummy_weapon = Weapon("Broken Axe", myHero, 10, 15)
-    myHero.inventory.append(dummy_armour)
-    myHero.inventory.append(dummy_armour2)
-    myHero.equipped_items.append(dummy_weapon)
+    myHero.inventory.append(clothes[0])
+    myHero.inventory.append(weapons[0])
     # Refresh Hero
     myHero.update_secondary_attributes
     return myHero
@@ -111,9 +108,12 @@ def create_random_hero():
 
 # initialization
 
+
 myHero = create_random_hero()
 game = Game(myHero)
 enemy = monster_generator(myHero.level)
+
+
 	
 
 

@@ -302,21 +302,39 @@ def logout():
     flash("Thank you for playing! Your have successfully logged out.")
     return redirect(url_for('login'))
 
+@app.route('/war_room')
+@login_required
+def war_room():
+    if myHero.current_hp <= 0:
+        page_heading = "Your hero is currently dead."
+        page_image = "dead"
+        page_links = ["","","",""]
+    else:
+        page_heading = "Welcome to the arena " + myHero.name +"!"
+        page_image = "arena"
+        page_links = [("Compete in the ","/arena","arena","."), ("Battle another ","/under_construction","player",".")]
+    return render_template('home.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links)  # return a string
+
 @app.route('/arena')
 @login_required
 def arena():
-    print("running function: arena")
     if not game.has_enemy or game.enemy.current_hp <= 0:
         enemy = monster_generator(myHero.level)
         game.set_enemy(enemy)
     page_heading = "Welcome to the arena " + myHero.name +"!"
-    page_image = "arena"
-    return render_template('home.html', page_title="Arena Results", page_heading=page_heading, page_image=page_image, myHero=myHero, arena=arena, game=game)  # return a string
+    page_image = str(game.enemy.name)
+    conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
+                    ("Level: ", str(game.enemy.level), "Combat Details"),
+                    ("Damage: ", str(str(game.enemy.min_damage) + " - " + str(game.enemy.max_damage))),
+                    ("Attack Speed: ", str(game.enemy.attack_speed)),
+                    ("Health: ", str(str(game.enemy.current_hp) + " / " + str(game.enemy.max_hp))),
+                    ("Accuracy: ", str(str(game.enemy.accuracy) + "%"))]
+    page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/war_room","War Room",".")]
+    return render_template('home.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, status_display=conversation)  # return a string
 
 @app.route('/battle')
 @login_required
 def battle():
-    print("running function: battle")
     page_title = "Battle"
     page_heading = "Fighting"
     print("running function: battle2")
@@ -325,20 +343,25 @@ def battle():
     if myHero.current_hp == 0:
         page_title = "Defeat!"
         page_heading = "You have died."
+        page_links = [("Return to your ","home","profile"," page.")]
     elif game.enemy.current_hp <= 0:
         game.has_enemy = False
         myHero.current_exp += game.enemy.experience_rewarded
         myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
         page_title = "Victory!"
         page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience!"
-    return render_template('home.html', page_title=page_title, page_heading=page_heading, myHero=myHero, enemy=enemy, conversation=conversation)  # return a string
+        page_links = [("Compete in the ","/arena","arena","."), ("Go back to the ","/war_room","War Room","."), ("Return to your ","/home","profile"," page.")]
+        if myHero.current_exp == 0:
+            page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience. You have leveled up! You should return to your profile page to advance in skill."
+            page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
+    return render_template('home.html', page_title=page_title, page_heading=page_heading, myHero=myHero, enemy=enemy, status_display=conversation, page_links=page_links)  # return a string
 
 @app.route('/store_greeting')
 @login_required
 def store_greeting(page_title = "Store"):
     page_heading = "Good day sir! What can I get for you?"
     page_image = "store"
-    page_links = [("store_armoury", "Armour"), ("store_weaponry", "Weapons")]
+    page_links = [("Enter the ", "/store_armoury", "armoury", "."), ("Enter the ", "/store_weaponry", "weapons", ".")]
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
 
 @app.route('/store_armoury', methods=['GET', 'POST'])
@@ -347,7 +370,7 @@ def store_armoury():
     page_title = "Store"
     page_heading = "Check out our new armour!"
     page_image = "store"
-    page_links = [("store_weaponry", "Weapons")]
+    page_links = [("Enter the ", "/store_weaponry", "weapons", ".")]
     items_for_sale = [("Medium Tunic", "25"), ("Strong Tunic", "35")]
     paragraph = ""
     items_being_bought = []
@@ -384,8 +407,8 @@ def store_weaponry():
     page_title = "Store"
     page_heading = "Careful! Our weapons are sharp."
     page_image = "store"
-    page_links = [("store_armoury", "Armour")]
-    items_for_sale = [("Medium Axe", "35"), ("Strong Axe", "55")]
+    page_links = [("Enter the ", "/store_armoury", "armoury", ".")]
+    items_for_sale = [("Medium Axe", "35"), ("Strong Axe", "55"), ("OK Axe", "50")]
     paragraph = ""
     items_being_bought = []
     items_bought = []
@@ -438,6 +461,14 @@ def reset_character():
     myHero.gold = 500
     myHero.update_secondary_attributes()
     return redirect(url_for('home'))  # return a string
+
+@app.route('/under_construction')
+@login_required
+def under_construction():
+    page_title = "Under Construction"
+    page_heading = "This page is not complete yet."
+    page_image = "under_construction"
+    return render_template('home.html', page_title=page_title, page_heading=page_heading, page_image=page_image, myHero=myHero)  # return a string
 
 
 # start the server with the 'run()' method
