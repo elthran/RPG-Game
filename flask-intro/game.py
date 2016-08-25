@@ -4,6 +4,7 @@ from items import *
 from bestiary import *
 from abilities import *
 
+# function used in '/level_up'
 def convert_input(x):
     try:
         x = int(x)
@@ -54,7 +55,6 @@ class Hero(object):
         self.dodge_chance = 0
         self.max_hp = 0
         self.current_hp = 0
-        self.max_mp = 0
         self.current_mp = 0
         self.carrying_capacity = 0
 
@@ -107,8 +107,6 @@ def create_random_hero():
 
 
 # initialization
-
-
 myHero = create_random_hero()
 game = Game(myHero)
 enemy = monster_generator(myHero.level)
