@@ -51,20 +51,7 @@ class Hero(object):
         self.inventory = []
         self.abilities = []
         self.gold = 500
-
-        # Right now I need to set them here, otherwise items.py won't run because it seems to check for these even though no items get equipped at the start of the game. Otherwise I'd prefer to delete the lines below this and
-        # just have these declared in the update_secondary_attributes function below.
-        self.min_damage = 0
-        self.max_damage = 0
-        self.attack_speed = 0
-        self.attack_accuracy = 0
-        self.defence_modifier = 0
-        self.dodge_chance = 0
-        self.max_hp = 0
-        self.current_hp = 0
-        self.current_mp = 0
-        self.carrying_capacity = 0
-
+        
     # Sets damage
     def update_secondary_attributes(self):
         self.min_damage = self.strength + self.dexterity
@@ -102,11 +89,13 @@ def create_random_hero():
     clothes = [Garment("Ripped Tunic", myHero, 25, 35), Garment("Medium Tunic", myHero, 25, 35), Garment("Strong Tunic", myHero, 25, 35)]
     weapons = [Weapon("Broken Axe", myHero, 10, 15), Weapon("Medium Axe", myHero, 10, 15), Weapon("Strong Axe", myHero, 10, 15)]
     myHero.update_secondary_attributes
-    # Abilities (Temporary)
+    
+    # Abilities & Items (Temporary)
     test_ability = Ability("Stone Skin", myHero, skin_adjective)
     myHero.abilities.append(test_ability)
     myHero.inventory.append(clothes[0])
     myHero.inventory.append(weapons[0])
+    
     # Refresh Hero
     myHero.update_secondary_attributes
     return myHero
