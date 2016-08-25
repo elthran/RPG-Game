@@ -1,3 +1,10 @@
+#//////////////////////////////////////////////////////////////////////////////#
+#                                                                              #
+#  Author: Elthran B, Jimmy Zhang                                              #
+#  Email : jimmy.gnahz@gmail.com                                               #
+#                                                                              #
+#//////////////////////////////////////////////////////////////////////////////#
+
 import math
 from flask import request
 from items import *

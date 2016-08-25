@@ -1,3 +1,10 @@
+#//////////////////////////////////////////////////////////////////////////////#
+#                                                                              #
+#  Author: Elthran B, Jimmy Zhang                                              #
+#  Email : jimmy.gnahz@gmail.com                                               #
+#                                                                              #
+#//////////////////////////////////////////////////////////////////////////////#
+
 skin_adjective = ["Tough","Iron","Stone","Diamond"]
 
 class Ability(object):

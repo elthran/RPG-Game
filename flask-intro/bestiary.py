@@ -1,5 +1,11 @@
+#//////////////////////////////////////////////////////////////////////////////#
+#                                                                              #
+#  Author: Elthran B, Jimmy Zhang                                              #
+#  Email : jimmy.gnahz@gmail.com                                               #
+#                                                                              #
+#//////////////////////////////////////////////////////////////////////////////#
+
 import random
-from game import *
 
 class Monster(object):
     def __init__(self, name, species, level):

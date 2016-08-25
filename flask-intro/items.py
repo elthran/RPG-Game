@@ -1,4 +1,4 @@
-from game import *
+
 
 class Item(object):
     # name : Name of the Item, e.x. "power bracelet"

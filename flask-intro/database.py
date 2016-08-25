@@ -1,3 +1,10 @@
+#//////////////////////////////////////////////////////////////////////////////#
+#                                                                              #
+#  Author: Elthran B, Jimmy Zhang                                              #
+#  Email : jimmy.gnahz@gmail.com                                               #
+#                                                                              #
+#//////////////////////////////////////////////////////////////////////////////#
+
 from app import *
 import sqlite3
 import hashlib

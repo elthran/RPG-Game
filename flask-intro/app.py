@@ -1,3 +1,10 @@
+#//////////////////////////////////////////////////////////////////////////////#
+#                                                                              #
+#  Author: Elthran B, Jimmy Zhang                                              #
+#  Email : jimmy.gnahz@gmail.com                                               #
+#                                                                              #
+#//////////////////////////////////////////////////////////////////////////////#
+
 # import the Flask class from the flask module
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from functools import wraps
@@ -12,12 +19,6 @@ from database import *
 app = Flask(__name__)
 
 app.secret_key = 'starcraft'
-
-#///////////////////////////////////////
-#
-#  TEMPORARY DATABASE FUNCTIONS
-#
-#///////////////////////////////////////
 		
 # login required decorator
 def login_required(f):
