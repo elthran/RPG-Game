@@ -14,23 +14,16 @@ class Item(object):
 # Subclass of Item
 # (Other comments about it)
 class Weapon(Item):
-    def __init__(self, name, myHero, buy_price, damage):
+    def __init__(self, name, myHero, buy_price, min_damage, max_damage, attack_speed):
         super(Weapon, self).__init__(name, myHero, buy_price)
-        self.damage = damage
+        self.min_damage = min_damage
+        self.max_damage = max_damage
+        self.attack_speed = attack_speed
 		
     def update_stats(self):
-        if self.name == "Broken Axe":
-            print("correct name")
-            self.myHero.max_damage += 20
-
-        if self.name == "Medium Axe":
-            print("correct name")
-            self.myHero.max_damage += 30
-
-        if self.name == "Strong Axe":
-            print("correct name")
-            self.myHero.max_damage += 40
-
+        self.myHero.min_damage += self.min_damage
+        self.myHero.max_damage += self.max_damage
+        self.myHero.attack_speed += self.attack_speed
 		
 class Garment(Item):
     def __init__(self, name, myHero, buy_price, hp_modifier):
