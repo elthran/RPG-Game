@@ -11,9 +11,11 @@ from functools import wraps
 from game import *
 from battle import *
 from bestiary import *
+from database import *
 import sqlite3
 import hashlib
-from database import *
+
+
 
 # create the application object
 app = Flask(__name__)
@@ -168,6 +170,25 @@ def login():
             fetch_character_data()
             return redirect(url_for('home'))
     return render_template('login.html', error=error, login=True)
+
+# route for handling the account creation page logic
+@app.route('/password_recovery', methods=['GET', 'POST'])
+def password_recovery():
+    error = "Password Not Found"
+
+    if request.method == 'POST':
+        username = request.form['username']
+        
+        con = sqlite3.connect('static/user.db')
+        with con:
+            cur = con.cursor()
+            cur.execute("SELECT * FROM Users")
+            rows = cur.fetchall()
+            for row in rows:
+                if row[0] == username:
+                    error = "We found your password, but it was hashed into this: " + row[1] + ". We are unable to decode the jargon. Sorry, please restart the game!"
+        con.close()
+    return render_template('login.html', error=error, password_recovery=True)
 
 # route for handling the account creation page logic
 @app.route('/create_account', methods=['GET', 'POST'])

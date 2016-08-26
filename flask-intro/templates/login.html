@@ -35,6 +35,20 @@
       </form>
 <br><br><br>
 <li><a href=/create_account>Create Account</a></li>
+<li><a href=/password_recovery>Forgot Your Password</a></li>
+
+{% elif password_recovery %}
+    <div class="container">
+      <h1>You Must Not Forget Your Password</h1>
+      <br>
+      <form action="" method="post">
+		<p> Please enter your username: </p>
+        <input type="text" placeholder="Username" name="username" value="{{
+          request.form.username }}">
+        <input class="btn btn-default" type="submit" value="Submit">
+      </form>
+<br><br><br>
+<li><a href=/login>Login</a></li>
 
 
 {% else %}
