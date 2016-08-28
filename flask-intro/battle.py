@@ -11,6 +11,50 @@ from game import *
 from bestiary import *
 import math, random
 
+# gives a list of distribution of the chance to strike a certain number of times
+def get_distribution(atk_s,def_s):
+    atk_s = float(atk_s)
+    def_s = float(def_s)
+    ratio = max(atk_s/def_s,def_s/atk_s)
+    cap = math.ceil(ratio)
+    sub_cap = cap - 1
+    ratio_i = ratio - sub_cap
+    cap_amount = cap * ratio_i
+    distribution = []
+    total = (1 + sub_cap)*(sub_cap)/2 + cap_amount
+    for i in range(1,cap):
+        distribution.append(i*100/total)
+    distribution.append(cap_amount*100/total)
+    return distribution
+
+def calculate_attacks(attacker,defender):
+    attacker_atks = 1
+    defender_atks = 1
+    distribution = get_distribution(attacker.attack_speed,defender.attack_speed)
+    print(distribution)
+    random_dec = random.randint(0,101)
+    num_atks = 0
+    print(random_dec)
+    for n in distribution:
+        num_atks += 1
+        random_dec -= n
+        if random_dec <= 0:
+            break
+    if attacker.attack_speed > defender.attack_speed:
+        attacker_atks = num_atks
+    else:
+        defender_atks = num_atks    
+
+    return attacker_atks,defender_atks
+
+'''
+hero1 = create_random_hero()
+hero1.attack_speed = 2
+hero2 = create_random_hero()
+hero2.attack_speed = 50
+print(calculate_attacks(hero1,hero2))
+'''
+
 def battle_logic(myHero,enemy):
     combat_log = []
     combat_log.append(("Enemy HP:", str(enemy.current_hp) + "/" + str(enemy.max_hp)))
@@ -18,8 +62,7 @@ def battle_logic(myHero,enemy):
     
     while myHero.current_hp > 0 and enemy.current_hp > 0:
         # Calculate how many attacks every gets this round (for now it's just 1, but the faster you are this should increase)
-        enemy_attacks = 1
-        myHero_attacks = 1
+        myHero_attacks, enemy_attacks = calculate_attacks(myHero,enemy)
         # Perform attacks
         while (enemy_attacks + myHero_attacks) > 0:
             # Enemy attacks first
