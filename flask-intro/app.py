@@ -234,9 +234,9 @@ def logout():
     flash("Thank you for playing! Your have successfully logged out.")
     return redirect(url_for('login'))
 
-@app.route('/war_room')
+@app.route('/barracks')
 @login_required
-def war_room():
+def barracks():
     if myHero.current_health <= 0:
         page_heading = "Your hero is currently dead."
         page_image = "dead"
@@ -245,7 +245,7 @@ def war_room():
         page_heading = "Welcome to the arena " + myHero.character_name +"!"
         page_image = "arena"
         page_links = [("Compete in the ","/arena","arena","."), ("Battle another ","/under_construction","player",".")]
-    return render_template('home.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links)  # return a string
+    return render_template('home.html', page_title="Barracks", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links)  # return a string
 
 @app.route('/arena')
 @login_required
@@ -261,7 +261,7 @@ def arena():
                     ("Attack Speed: ", str(game.enemy.attack_speed)),
                     ("Health: ", str(str(game.enemy.current_health) + " / " + str(game.enemy.max_health))),
                     ("Accuracy: ", str(str(game.enemy.accuracy) + "%"))]
-    page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/war_room","War Room",".")]
+    page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
     return render_template('home.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, status_display=conversation)  # return a string
 
 @app.route('/battle')
@@ -282,7 +282,7 @@ def battle():
         myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
         page_title = "Victory!"
         page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience!"
-        page_links = [("Compete in the ","/arena","arena","."), ("Go back to the ","/war_room","War Room","."), ("Return to your ","/home","profile"," page.")]
+        page_links = [("Compete in the ","/arena","arena","."), ("Go back to the ","/barracks","barracks","."), ("Return to your ","/home","profile"," page.")]
         if myHero.current_exp == 0:
             page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience. You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
@@ -294,6 +294,15 @@ def store_greeting(page_title = "Store"):
     page_heading = "Good day sir! What can I get for you?"
     page_image = "store"
     page_links = [("Enter the ", "/store_armoury", "armoury", "."), ("Enter the ", "/store_weaponry", "weapons", ".")]
+    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
+
+@app.route('/town')
+@login_required
+def town(page_title = "Town"):
+    page_heading = "You are in the Starting Town."
+    page_image = "town"
+    page_links = [("Enter the ", "/store_greeting", "store", "."),
+                  ("Enter the ", "/barracks", "barracks", ".")]
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
 
 @app.route('/store_armoury', methods=['GET', 'POST'])
