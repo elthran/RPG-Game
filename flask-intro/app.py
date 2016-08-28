@@ -101,6 +101,7 @@ def level_up():
         else:
             error = "Spend less points."
         if myHero.attribute_points <= 0:
+            update_character(session['id'],myHero)
             return redirect(url_for('home'))
     myHero.update_secondary_attributes()
     page_heading = "You have leveled up!"
@@ -244,7 +245,7 @@ def arena():
                     ("Level: ", str(game.enemy.level), "Combat Details"),
                     ("Damage: ", str(str(game.enemy.min_damage) + " - " + str(game.enemy.max_damage))),
                     ("Attack Speed: ", str(game.enemy.attack_speed)),
-                    ("Health: ", str(str(game.enemy.current_hp) + " / " + str(game.enemy.max_hp))),
+                    ("Health: ", str(str(game.enemy.current_health) + " / " + str(game.enemy.max_health))),
                     ("Accuracy: ", str(str(game.enemy.accuracy) + "%"))]
     page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/war_room","War Room",".")]
     return render_template('home.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, status_display=conversation)  # return a string
@@ -256,12 +257,12 @@ def battle():
     page_heading = "Fighting"
     print("running function: battle2")
     myHero.current_hp,game.enemy.current_hp,conversation = battle_logic(myHero,game.enemy)
-    print("running function: battle3")
+    page_links = [("Return to your ","home","profile"," page.")]
     if myHero.current_health == 0:
         page_title = "Defeat!"
         page_heading = "You have died."
         page_links = [("Return to your ","home","profile"," page.")]
-    elif game.enemy.current_health <= 0:
+    else:
         game.has_enemy = False
         myHero.current_exp += game.enemy.experience_rewarded
         myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)

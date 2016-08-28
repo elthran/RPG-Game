@@ -23,7 +23,7 @@ class Monster(object):
         self.max_damage = 2 * self.strength
         self.attack_speed = 0.5 + (0.1 * self.level)
         self.accuracy = 50 + self.level
-        self.dodge_chance = 1 + self.level
+        self.evade_chance = 1 + self.level
         self.defence_modifier = 1 + self.level
 
     def __repr__(self):

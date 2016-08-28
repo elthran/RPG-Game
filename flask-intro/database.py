@@ -61,7 +61,7 @@ def add_new_character(charname, classname): ######### MODIFY HERE TO ADD MORE TH
                 cur.execute("SELECT * FROM Users")
                 rows = cur.fetchall()
                 new_user_id = len(rows)
-                cur.execute('INSERT INTO CHARACTERS (USER_ID,NAME,CLASS) VALUES  (' + str(new_user_id) + ',"' + charname + '","' + classname + '"' + ');'); 
+                cur.execute('INSERT INTO CHARACTERS (USER_ID,CHARACTER_NAME,CHARACTER_CLASS) VALUES  (' + str(new_user_id) + ',"' + charname + '","' + classname + '"' + ');'); 
                 con.commit()
     con.close()    
 
@@ -74,8 +74,8 @@ def update_character(user_id, hero): ######### MODIFY HERE TO ADD MORE THINGS TO
                 cur.execute('UPDATE CHARACTERS SET CHARACTER_NAME="' + hero.character_name + '" WHERE USER_ID=' + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET AGE=" + str(hero.age) + " WHERE USER_ID=" + str(user_id) + ';')
                 cur.execute('UPDATE CHARACTERS SET CHARACTER_CLASS="' + hero.character_class + '" WHERE USER_ID=' + str(user_id) + ';')
-                cur.execute("UPDATE CHARACTERS SET SPECIALIZATION=" + str(hero.specialization) + " WHERE USER_ID=" + str(user_id) + ';')
-                cur.execute("UPDATE CHARACTERS SET HOUSE=" + str(hero.house) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute('UPDATE CHARACTERS SET SPECIALIZATION="' + str(hero.specialization) + '" WHERE USER_ID='+ str(user_id) + ';')
+                cur.execute('UPDATE CHARACTERS SET HOUSE="' + str(hero.house) + '" WHERE USER_ID=' + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET CURRENT_EXP=" + str(hero.current_exp) + " WHERE USER_ID=" + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET MAX_EXP=" + str(hero.max_exp) + " WHERE USER_ID=" + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET RENOWN=" + str(hero.renown) + " WHERE USER_ID=" + str(user_id) + ';')
@@ -102,9 +102,9 @@ def update_character(user_id, hero): ######### MODIFY HERE TO ADD MORE THINGS TO
                 cur.execute("UPDATE CHARACTERS SET SURVIVALISM=" + str(hero.survivalism) + " WHERE USER_ID=" + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET FORTUITY=" + str(hero.fortuity) + " WHERE USER_ID=" + str(user_id) + ';')
 
-                cur.execute("UPDATE CHARACTERS SET EQUIPPED_ITEMS=" + str(hero.equipped_items) + " WHERE USER_ID=" + str(user_id) + ';')
-                cur.execute("UPDATE CHARACTERS SET INVENTORY=" + str(hero.inventory) + " WHERE USER_ID=" + str(user_id) + ';')
-                cur.execute("UPDATE CHARACTERS SET ABILITIES=" + str(hero.abilities) + " WHERE USER_ID=" + str(user_id) + ';')
+                #cur.execute("UPDATE CHARACTERS SET EQUIPPED_ITEMS=" + str(hero.equipped_items) + " WHERE USER_ID=" + str(user_id) + ';')
+                #cur.execute("UPDATE CHARACTERS SET INVENTORY=" + str(hero.inventory) + " WHERE USER_ID=" + str(user_id) + ';')
+                #cur.execute("UPDATE CHARACTERS SET ABILITIES=" + str(hero.abilities) + " WHERE USER_ID=" + str(user_id) + ';')
                 con.commit()
     con.close()
 
@@ -148,9 +148,9 @@ def fetch_character_data():
                         myHero.survivalism = row[27]
                         myHero.fortuity = row[28]
                         
-                        myHero.equipped_items = row[29]
-                        myHero.inventory = row[30]
-                        myHero.abilities = row[31]
+                        #myHero.equipped_items = row[29]
+                        #myHero.inventory = row[30]
+                        #myHero.abilities = row[31]
                         ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
                         break
     con.close() 

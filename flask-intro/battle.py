@@ -16,7 +16,7 @@ def get_distribution(atk_s,def_s):
     atk_s = float(atk_s)
     def_s = float(def_s)
     ratio = max(atk_s/def_s,def_s/atk_s)
-    cap = math.ceil(ratio)
+    cap = int(math.ceil(ratio))
     sub_cap = cap - 1
     ratio_i = ratio - sub_cap
     cap_amount = cap * ratio_i
