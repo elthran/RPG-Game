@@ -125,6 +125,7 @@ def level_up():
 @login_required
 def create_character():
     display = True
+    fathers_job = None
     page_title = "Create Character"
     page_heading = "A New Beginning"
     page_image = "beached"
@@ -136,37 +137,37 @@ def create_character():
         paragraph = None
         conversation = [("Stranger: ", "Where do you come from, child?")]
         display = False
-    elif request.method == 'POST' and myHero.character_class == "None":
-        myHero.character_class = request.form["character_class"]
-        if myHero.character_class == "Brute":
+    elif request.method == 'POST' and fathers_job == None:
+        fathers_job = request.form["character_class"]
+        if fathers_job == "Brute":
             myHero.inventory.append(starting_items[0])
             myHero.inventory.append(starting_items[4])
             myHero.strength += 3
             myHero.resilience += 1
             myHero.vitality += 1
             myHero.fortitude += 1
-        elif myHero.character_class == "Scholar":
+        elif fathers_job == "Scholar":
             myHero.inventory.append(starting_items[3])
             myHero.wisdom += 6
             myHero.perception += 1
-        elif myHero.character_class == "Hunter":
+        elif fathers_job == "Hunter":
             myHero.inventory.append(starting_items[1])
             myHero.inventory.append(starting_items[4])
             myHero.agility += 3
             myHero.reflexes += 1
             myHero.survivalism += 2
-        elif myHero.character_class == "Merchant":
+        elif fathers_job == "Merchant":
             yHero.inventory.append(starting_items[3])
             myHero.gold += 75
             myHero.charisma += 5
             myHero.fortuity += 1
-        elif myHero.character_class == "Priest":
+        elif fathers_job == "Priest":
             myHero.inventory.append(starting_items[3])
             myHero.inventory.append(starting_items[2])
             myHero.divinity += 5
             myHero.wisdom += 1
-    if myHero.character_name != "Unknown" and myHero.character_class != "None":
-        print(myHero.character_name + " " + myHero.character_class)
+    if myHero.character_name != "Unknown" and fathers_job != None:
+        print(myHero.character_name + " " + fathers_job)
         update_character(session['id'],myHero)
         return redirect(url_for('home'))
     else:
@@ -249,7 +250,7 @@ def war_room():
 @app.route('/arena')
 @login_required
 def arena():
-    if not game.has_enemy or game.enemy.current_hp <= 0:
+    if not game.has_enemy or game.enemy.current_health <= 0:
         enemy = monster_generator(myHero.age)
         game.set_enemy(enemy)
     page_heading = "Welcome to the arena " + myHero.character_name +"!"
@@ -269,7 +270,7 @@ def battle():
     page_title = "Battle"
     page_heading = "Fighting"
     print("running function: battle2")
-    myHero.current_hp,game.enemy.current_hp,conversation = battle_logic(myHero,game.enemy)
+    myHero.current_health,game.enemy.current_health,conversation = battle_logic(myHero,game.enemy)
     page_links = [("Return to your ","home","profile"," page.")]
     if myHero.current_health == 0:
         page_title = "Defeat!"
@@ -373,24 +374,24 @@ def store_weaponry():
 @login_required
 def reset_character():
     myHero.character_name = "Unknown"
-    myHero.character_class = "None" # I assume user wants to reset class as well
+    myHero.character_class = "None" 
     myHero.age = 1
     myHero.attribute_points = 0
     myHero.current_xp = 0
     myHero.max_xp = 0
-    self.attribute_points = 0
-    self.strength = 1
-    self.resilience = 1
-    self.vitality = 1
-    self.fortitude = 1
-    self.reflexes = 1
-    self.agility = 1
-    self.perception = 1
-    self.wisdom = 1
-    self.divinity = 1
-    self.charisma = 1
-    self.survivalism = 1
-    self.fortuity = 1
+    myHero.attribute_points = 0
+    myHero.strength = 1
+    myHero.resilience = 1
+    myHero.vitality = 1
+    myHero.fortitude = 1
+    myHero.reflexes = 1
+    myHero.agility = 1
+    myHero.perception = 1
+    myHero.wisdom = 1
+    myHero.divinity = 1
+    myHero.charisma = 1
+    myHero.survivalism = 1
+    myHero.fortuity = 1
     myHero.abilities = []
     myHero.gold = 500
     myHero.update_secondary_attributes()

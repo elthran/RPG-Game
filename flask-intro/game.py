@@ -68,28 +68,28 @@ class Hero(object):
         
     # Sets damage
     def update_secondary_attributes(self):
-        self.min_damage = 3
-        self.max_damage = 5
-        self.attack_speed = 1
-        self.attack_accuracy = 50         # A percentage
-        self.first_strike = 15         # A percentage
-        self.critical_hit = 15         # A percentage
-        self.defence_modifier = 25         # A percentage
-        self.evade_chance = 10         # A percentage
-        self.parry_chance = 15         # A percentage
-        self.block_chance = 10         # A percentage
-        self.block_reduction = 35         # A percentage
-        self.poisin_resistance = 5         # A percentage
-        self.spiritual_resistance = 5         # A percentage
-        self.stealth_skill = 5         # A percentage
-        self.faith = 1
-        self.max_health = 20
-        self.max_sanctity = 10
-        self.max_endurance = 25
-        self.max_carrying_capacity = 35
-        self.barter = 5
-        self.oration = 5
-        self.luck = 5                  # A percentage
+        self.min_damage = self.strength
+        self.max_damage = self.strength + self.agility
+        self.attack_speed = 2 * self.agility + self.reflexes
+        self.attack_accuracy = 3 * self.agility         # A percentage
+        self.first_strike = 3 * self.agility + self.reflexes         # A percentage
+        self.critical_hit = 5 * self.agility         # A percentage
+        self.defence_modifier = 3 * self.resilience         # A percentage
+        self.evade_chance = 4 * self.reflexes + self.agility         # A percentage
+        self.parry_chance = 3 * self.reflexes + 2 * self.agility + self.perception         # A percentage
+        self.block_chance = 2 * self.reflexes + self.agility        # A percentage
+        self.block_reduction = self.strength # + shield type/size         # A percentage
+        self.poisin_resistance = 5 * self.resilience         # A percentage
+        self.spiritual_resistance = 2 * self.resilience + 2 * self.divinity         # A percentage
+        self.stealth_skill = self.agility + self.reflexes + self.perception        # A percentage
+        self.faith = self.divinity
+        self.max_health = 5 * self.vitality + self.resilience
+        self.max_sanctity = 5 * self.divinity
+        self.max_endurance = 5 * self.fortitude
+        self.max_carrying_capacity = 3 * self.strength + 2 * self.fortitude
+        self.barter = 5 * self.charisma
+        self.oration = 4 * self.charisma + self.wisdom
+        self.luck = 5 * self.fortuity                  # A percentage
         for ability in self.abilities:
             ability.update_stats()
         for item in self.equipped_items:
