@@ -22,5 +22,5 @@ class Ability(object):
 
     def update_stats(self):
         if self.name == "Stone Skin":
-            self.myHero.max_hp += 15 * self.level
+            self.myHero.max_health += 15 * self.level
     

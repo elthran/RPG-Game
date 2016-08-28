@@ -17,8 +17,8 @@ class Monster(object):
         self.experience_rewarded = 5 + level
 
     def combat_stats(self):        
-        self.current_hp = 5 * self.vitality
-        self.max_hp = self.current_hp
+        self.current_health = 5 * self.vitality
+        self.max_health = self.current_health
         self.min_damage = self.strength
         self.max_damage = 2 * self.strength
         self.attack_speed = 0.5 + (0.1 * self.level)

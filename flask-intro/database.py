@@ -71,23 +71,40 @@ def update_character(user_id, hero): ######### MODIFY HERE TO ADD MORE THINGS TO
 
     with con:
                 cur = con.cursor()
-                cur.execute('UPDATE CHARACTERS SET NAME="' + hero.name + '" WHERE USER_ID=' + str(user_id) + ';')
-                cur.execute('UPDATE CHARACTERS SET CLASS="' + hero.starting_class + '" WHERE USER_ID=' + str(user_id) + ';')
-                cur.execute("UPDATE CHARACTERS SET STRENGTH=" + str(hero.strength) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute('UPDATE CHARACTERS SET CHARACTER_NAME="' + hero.character_name + '" WHERE USER_ID=' + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET AGE=" + str(hero.age) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute('UPDATE CHARACTERS SET CHARACTER_CLASS="' + hero.character_class + '" WHERE USER_ID=' + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET SPECIALIZATION=" + str(hero.specialization) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET HOUSE=" + str(hero.house) + " WHERE USER_ID=" + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET CURRENT_EXP=" + str(hero.current_exp) + " WHERE USER_ID=" + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET MAX_EXP=" + str(hero.max_exp) + " WHERE USER_ID=" + str(user_id) + ';')
-                cur.execute("UPDATE CHARACTERS SET LEVEL=" + str(hero.level) + " WHERE USER_ID=" + str(user_id) + ';')
-                cur.execute("UPDATE CHARACTERS SET ATTRIBUTE_POINTS=" + str(hero.attribute_points) + " WHERE USER_ID=" + str(user_id) + ';')
-                cur.execute("UPDATE CHARACTERS SET ENDURANCE=" + str(hero.endurance) + " WHERE USER_ID=" + str(user_id) + ';')
-                cur.execute("UPDATE CHARACTERS SET VITALITY=" + str(hero.vitality) + " WHERE USER_ID=" + str(user_id) + ';')
-                cur.execute("UPDATE CHARACTERS SET AGILITY=" + str(hero.agility) + " WHERE USER_ID=" + str(user_id) + ';')
-                cur.execute("UPDATE CHARACTERS SET DEXTERITY=" + str(hero.dexterity) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET RENOWN=" + str(hero.renown) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET VIRTUE=" + str(hero.virtue) + " WHERE USER_ID=" + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET DEVOTION=" + str(hero.devotion) + " WHERE USER_ID=" + str(user_id) + ';')
-                cur.execute("UPDATE CHARACTERS SET RESISTANCE=" + str(hero.resistance) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET GOLD=" + str(hero.gold) + " WHERE USER_ID=" + str(user_id) + ';')
+
+                cur.execute("UPDATE CHARACTERS SET BASIC_ABILITY_POINTS=" + str(hero.basic_ability_points) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET CLASS_ABILITY_POINTS=" + str(hero.class_ability_points) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET SPECIALIZATION_ABILITY_POINTS=" + str(hero.specialization_ability_points) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET PANTHEONIC_ABILITY_POINTS=" + str(hero.pantheonic_ability_points) + " WHERE USER_ID=" + str(user_id) + ';')
+                
+                cur.execute("UPDATE CHARACTERS SET ATTRIBUTE_POINTS=" + str(hero.attribute_points) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET STRENGTH=" + str(hero.strength) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET RESILIENCE=" + str(hero.resilience) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET VITALITY=" + str(hero.vitality) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET FORTITUDE=" + str(hero.fortitude) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET REFLEXES=" + str(hero.reflexes) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET AGILITY=" + str(hero.agility) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET PERCEPTION=" + str(hero.perception) + " WHERE USER_ID=" + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET WISDOM=" + str(hero.wisdom) + " WHERE USER_ID=" + str(user_id) + ';')
-                cur.execute("UPDATE CHARACTERS SET CHARM=" + str(hero.charm) + " WHERE USER_ID=" + str(user_id) + ';')
-                cur.execute("UPDATE CHARACTERS SET INSTINCT=" + str(hero.instinct) + " WHERE USER_ID=" + str(user_id) + ';')
-                #cur.execute("UPDATE CHARACTERS SET GOLD=" + str(hero.gold) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET DIVINITY=" + str(hero.divinity) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET CHARISMA=" + str(hero.charisma) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET SURVIVALISM=" + str(hero.survivalism) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET FORTUITY=" + str(hero.fortuity) + " WHERE USER_ID=" + str(user_id) + ';')
+
+                cur.execute("UPDATE CHARACTERS SET EQUIPPED_ITEMS=" + str(hero.equipped_items) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET INVENTORY=" + str(hero.inventory) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET ABILITIES=" + str(hero.abilities) + " WHERE USER_ID=" + str(user_id) + ';')
                 con.commit()
     con.close()
 
@@ -100,22 +117,40 @@ def fetch_character_data():
                 for row in rows:
                     id = row[0] 
                     if id==session['id']:
-                        myHero.name = row[1]
-                        myHero.starting_class = row[2]
-                        myHero.strength = row[3]
-                        myHero.current_exp = row[4]
-                        myHero.max_exp = row[5]
-                        myHero.level = row[6]
-                        myHero.attribute_points = row[7]
-                        myHero.endurance = row[8]
-                        myHero.vitality = row[9]
-                        myHero.agility = row[10]
-                        myHero.dexterity = row[11]
-                        myHero.resistance = row[12]
-                        myHero.wisdom = row[13]
-                        myHero.charm = row[14]
-                        myHero.instinct = row[15]
-                        #myHero.gold = row[16]
+                        myHero.character_name = row[1]
+                        myHero.age = row[2]
+                        myHero.character_class = row[3]
+                        myHero.specialization = row[4]
+                        myHero.house = row[5]
+                        myHero.current_exp = row[6]
+                        myHero.max_exp = row[7]
+                        myHero.renown = row[8]
+                        myHero.virtue = row[9]
+                        myHero.devotion = row[10]
+                        myHero.gold = row[11]
+
+                        myHero.basic_ability_points = row[12]
+                        myHero.class_ability_points = row[13]
+                        myHero.specialization_ability_points = row[14]
+                        myHero.pantheonic_ability_points = row[15]
+                        
+                        myHero.attribute_points = row[16]
+                        myHero.strength = row[17]
+                        myHero.resilience = row[18]
+                        myHero.vitality = row[19]
+                        myHero.fortitude = row[20]
+                        myHero.reflexes = row[21]
+                        myHero.agility = row[22]
+                        myHero.perception = row[23]
+                        myHero.wisdom = row[24]
+                        myHero.divinity = row[25]
+                        myHero.charisma = row[26]
+                        myHero.survivalism = row[27]
+                        myHero.fortuity = row[28]
+                        
+                        myHero.equipped_items = row[29]
+                        myHero.inventory = row[30]
+                        myHero.abilities = row[31]
                         ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
                         break
     con.close() 

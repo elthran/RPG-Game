@@ -31,44 +31,73 @@ class Game(object):
 class Hero(object):
     def __init__(self, user_name="Unknown"):
         self.user_name = user_name
-        self.name = "Unknown"
-        self.starting_class = "None"
+        self.character_name = "Unknown"
+        self.age = 7
+        self.character_class = "None"
+        self.specialization = "None"
+        self.house = "None"
         self.current_exp = 0
         self.max_exp = 10
-        self.level = 1
+        self.renown = 0
+        self.virtue = 0
+        self.devotion = 0
+        self.gold = 50
+
+        self.basic_ability_points = 0
+        self.class_ability_points = 0
+        self.specialization_ability_points = 0
+        self.pantheonic_ability_points = 0
+        
         self.attribute_points = 0
         self.strength = 1
-        self.endurance = 1
+        self.resilience = 1
         self.vitality = 1
+        self.fortitude = 1
+        self.reflexes = 1
         self.agility = 1
-        self.dexterity = 1
-        self.devotion = 1
-        self.resistance = 1
+        self.perception = 1
         self.wisdom = 1
-        self.charm = 1
-        self.instinct = 1
+        self.divinity = 1
+        self.charisma = 1
+        self.survivalism = 1
+        self.fortuity = 1
+        
         self.equipped_items = []
         self.inventory = []
         self.abilities = []
-        self.gold = 500
         
     # Sets damage
     def update_secondary_attributes(self):
-        self.min_damage = self.strength + self.dexterity
-        self.max_damage = (2 * self.strength) + self.dexterity
-        self.attack_speed = ((2 * self.agility) + self.dexterity) / 5
-        self.attack_accuracy = round(((5 * self.dexterity) + (3 * self.agility)) ** 1.5, 2)
-        self.defence_modifier = (2 * self.resistance + self.endurance)/ 2
-        self.dodge_chance = (self.agility + self.dexterity) / 2
-        self.max_hp = (5 * self.vitality) + self.endurance
-        self.max_mp = self.wisdom + self.devotion
-        self.current_mp = self.max_mp
-        self.carrying_capacity = (3 * self.endurance) + (2 * self.strength)
+        self.min_damage = 3
+        self.max_damage = 5
+        self.attack_speed = 1
+        self.attack_accuracy = 50         # A percentage
+        self.first_strike = 15         # A percentage
+        self.critical_hit = 15         # A percentage
+        self.defence_modifier = 25         # A percentage
+        self.evade_chance = 10         # A percentage
+        self.parry_chance = 15         # A percentage
+        self.block_chance = 10         # A percentage
+        self.block_reduction = 35         # A percentage
+        self.poisin_resistance = 5         # A percentage
+        self.spiritual_resistance = 5         # A percentage
+        self.stealth_skill = 5         # A percentage
+        self.faith = 1
+        self.max_health = 20
+        self.max_sanctity = 10
+        self.max_endurance = 25
+        self.max_carrying_capacity = 35
+        self.barter = 5
+        self.oration = 5
+        self.luck = 5                  # A percentage
         for ability in self.abilities:
             ability.update_stats()
         for item in self.equipped_items:
             item.update_stats()
-        self.current_hp = self.max_hp
+        self.current_sanctity = self.max_sanctity
+        self.current_health = self.max_health
+        self.current_endurance = self.max_endurance
+        self.current_carrying_capacity = self.max_carrying_capacity
 
     # updates field variables when hero levels up
     def level_up(self, attribute_points, current_exp, max_exp):
@@ -77,7 +106,7 @@ class Hero(object):
         self.current_exp = 0
         self.max_exp = math.floor(1.5 * self.max_exp)
         self.attribute_points += 3
-        self.level += 1
+        self.age += 1
         self.update_secondary_attributes()
 
     def __repr__(self):
@@ -107,7 +136,7 @@ def create_random_hero():
 # initialization
 myHero = create_random_hero()
 game = Game(myHero)
-enemy = monster_generator(myHero.level)
+enemy = monster_generator(myHero.age)
 
 
 	

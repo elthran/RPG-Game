@@ -31,12 +31,5 @@ class Garment(Item):
         self.hp_modifier = hp_modifier
 
     def update_stats(self):
-        if self.name == "Ripped Tunic":
-            self.myHero.max_hp += 50
-
-        if self.name == "Medium Tunic":
-            self.myHero.max_hp += 80
-
-        if self.name == "Strong Tunic":
-            self.myHero.max_hp += 110
+        self.myHero.max_hp += self.max_hp
 

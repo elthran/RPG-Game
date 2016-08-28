@@ -17,11 +17,11 @@
         <img src="static/images/character.jpg" alt="Sample" style="width:100px;height:100px;">
         <p>
         <br>Name: {{ myHero.name}}
-        <br>Class: {{ myHero.starting_class }}
-        <br>Level: {{ myHero.level }}
+        <br>Class: {{ myHero.character_class }}
+        <br>Level: {{ myHero.age }}
         <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
-        <br>Health: {{ myHero.current_hp }} / {{ myHero.max_hp }}
-        <br>Mana: {{ myHero.current_mp }} / {{ myHero.max_mp }}
+        <br>Health: {{ myHero.current_health }} / {{ myHero.max_health }}
+        <br>Sanctity: {{ myHero.current_sanctity }} / {{ myHero.max_sanctity }}
         <br>Gold: {{ myHero.gold }}
         </p>
       </u1>
@@ -87,10 +87,10 @@
 <h1>General Statistics</h1>
 <h2> 
 Name: {{ myHero.name}}
-<br>Class: {{ myHero.starting_class }}
-<br>Level: {{ myHero.level }}
+<br>Class: {{ myHero.character_class }}
+<br>Level: {{ myHero.age }}
 <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
-<br>Carrying Capacity: {{ myHero.carrying_capacity }}
+<br>Carrying Capacity: {{ myHero.current_carrying_capacity }} / {{ myHero.max_carrying_capacity }}
 <br>Gold: {{ myHero.gold }}
 </h2>
 
@@ -99,9 +99,9 @@ Name: {{ myHero.name}}
 <br>Attack Speed: {{myHero.attack_speed }}
 <br>Accuracy: {{myHero.attack_accuracy }}%
 <br>Defence: {{ myHero.defence_modifier }}%
-<br>Dodge: {{ myHero.dodge_chance }}%
-<br>Health: {{ myHero.current_hp }} / {{ myHero.max_hp }}
-<br>Mana: {{ myHero.current_mp }} / {{ myHero.max_mp }}
+<br>Dodge: {{ myHero.evade_chance }}%
+<br>Health: {{ myHero.current_health }} / {{ myHero.max_health }}
+<br>Mana: {{ myHero.current_sanctity }} / {{ myHero.max_sanctity }}
 </h2>
 
 <h1>Abilities</h1>
@@ -125,15 +125,17 @@ Name: {{ myHero.name}}
 
 <h1>Attributes</h1>
 <h2><title="Damage and carrying capacity">Strength</>: {{ myHero.strength }}
-<br>Endurance: {{ myHero.endurance }}
+<br>Resilience: {{ myHero.resilience }}
 <br>Vitality: {{ myHero.vitality }}
+<br>Fortitude: {{ myHero.fortitude }}
+<br>Reflexes: {{ myHero.reflexes }}
 <br>Agility: {{ myHero.agility }}
-<br>Dexterity: {{ myHero.dexterity }}
-<br>Devotion: {{ myHero.devotion }}
-<br>Resistance: {{ myHero.resistance }}
+<br>Perception: {{ myHero.perception }}
 <br>Wisdom: {{ myHero.wisdom }}
-<br>Charm: {{ myHero.charm }}
-<br>Instinct: {{ myHero.instinct }}
+<br>Divinity: {{ myHero.divinity }}
+<br>Charisma: {{ myHero.charisma }}
+<br>Survivalism: {{ myHero.survivalism }}
+<br>Fortuity: {{ myHero.fortuity }}
 </h2>
 <h1><a href="/reset_character">Reset Character</a></h1>
 

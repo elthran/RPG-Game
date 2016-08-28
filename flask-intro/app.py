@@ -60,7 +60,7 @@ def command(cmd=None):
 def home():
     myHero.update_secondary_attributes()
     # If it's a new character, send them to cerate_character url
-    if myHero.name == "Unknown" or myHero.starting_class == "None":
+    if myHero.character_name == "Unknown":
         return redirect(url_for('create_character'))
     # If they have leveled up, send them to level_up url
     elif myHero.attribute_points > 0:
@@ -72,27 +72,31 @@ def home():
 def level_up():
     if request.method == 'POST':
         strength = convert_input(request.form["Strength"])
-        endurance = convert_input(request.form["Endurance"])
+        resilience = convert_input(request.form["Resilience"])
         vitality = convert_input(request.form["Vitality"])
+        fortitude = convert_input(request.form["Fortitude"])
+        reflexes = convert_input(request.form["Reflexes"])
         agility = convert_input(request.form["Agility"])
-        dexterity = convert_input(request.form["Dexterity"])
-        devotion = convert_input(request.form["Devotion"])
-        resistance = convert_input(request.form["Resistance"])
+        perception = convert_input(request.form["Perception"])
         wisdom = convert_input(request.form["Wisdom"])
-        charm = convert_input(request.form["Charm"])
-        instinct = convert_input(request.form["Instinct"])
-        total_points_spent = sum([strength, endurance, vitality, agility, dexterity, devotion, resistance, wisdom, charm, instinct])
+        divinity = convert_input(request.form["Divinity"])
+        charisma = convert_input(request.form["Charisma"])
+        survivalism = convert_input(request.form["Survivalism"])
+        fortuity = convert_input(request.form["Fortuity"])
+        total_points_spent = sum([strength, resilience, vitality, fortitude, reflexes, agility, perception, wisdom, divinity, charisma, survivalism, fortuity])
         if total_points_spent <= myHero.attribute_points:            
             myHero.strength += strength
-            myHero.endurance += endurance
+            myHero.resilience += resilience
             myHero.vitality += vitality
+            myHero.fortitude += fortitude
+            myHero.reflexes += reflexes
             myHero.agility += agility
-            myHero.dexterity += dexterity
-            myHero.devotion += devotion
-            myHero.resistance += resistance
+            myHero.perception += perception
             myHero.wisdom += wisdom
-            myHero.charm += charm
-            myHero.instinct += instinct
+            myHero.divinity += divinity
+            myHero.charisma += charisma
+            myHero.survivalism += survivalism
+            myHero.fortuity += fortuity
             myHero.attribute_points -= total_points_spent
         else:
             error = "Spend less points."
@@ -102,15 +106,17 @@ def level_up():
     page_heading = "You have leveled up!"
     paragraph = "Choose how you would like to distribute your attribute points."
     primary_attributes = [("Strength", myHero.strength),
-                          ("Endurance", myHero.endurance),
+                          ("Resilience", myHero.resilience),
                           ("Vitality", myHero.vitality),
+                          ("Fortitude", myHero.fortitude),
+                          ("Reflexes", myHero.reflexes),
                           ("Agility", myHero.agility),
-                          ("Dexterity", myHero.dexterity),
-                          ("Devotion", myHero.devotion),
-                          ("Resistance", myHero.resistance),
+                          ("Perception", myHero.perception),
                           ("Wisdom", myHero.wisdom),
-                          ("Charm", myHero.charm),
-                          ("Instinct", myHero.instinct)]
+                          ("Divinity", myHero.divinity),
+                          ("Charisma", myHero.charisma),
+                          ("Survivalism", myHero.survivalism),
+                          ("Fortuity", myHero.fortuity)]
     return render_template('home.html', page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero, primary_attributes=primary_attributes)
 
 # use decorators to link the function to a url
@@ -123,30 +129,30 @@ def create_character():
     page_image = "beached"
     paragraph = "You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. A firm and inquisitive voice pierces the air."
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
-    if request.method == 'POST' and myHero.name == "Unknown":
-        myHero.name = request.form["character_name"]
+    if request.method == 'POST' and myHero.character_name == "Unknown":
+        myHero.character_name = request.form["character_name"]
         page_image = "old_man"
         paragraph = None
         conversation = [("Stranger: ", "Where do you come from, child?")]
         display = False
-    elif request.method == 'POST' and myHero.starting_class == "None":
-        myHero.starting_class = request.form["starting_class"]
-        if myHero.starting_class == "Brute":
+    elif request.method == 'POST' and myHero.character_class == "None":
+        myHero.character_class = request.form["character_class"]
+        if myHero.character_class == "Brute":
             myHero.strength += 4
-            myHero.endurance += 2
-        elif myHero.starting_class == "Scholar":
+            myHero.resilience += 2
+        elif myHero.character_class == "Scholar":
             myHero.wisdom += 6
-        elif myHero.starting_class == "Scoundrel":
+        elif myHero.character_class == "Scoundrel":
             myHero.agility += 3
-            myHero.dexterity += 3
-        elif myHero.starting_class == "Merchant":
+            myHero.reflexes += 3
+        elif myHero.character_class == "Merchant":
             myHero.gold += 250
-            myHero.charm += 1
-        elif myHero.starting_class == "Priest":
+            myHero.charisma += 1
+        elif myHero.character_class == "Priest":
             myHero.wisdom += 1
-            myHero.devotion += 5
-    if myHero.name != "Unknown" and myHero.starting_class != "None":
-        print(myHero.name + " " + myHero.starting_class)
+            myHero.divinity += 5
+    if myHero.character_name != "Unknown" and myHero.character_class != "None":
+        print(myHero.character_name + " " + myHero.character_class)
         update_character(session['id'],myHero)
         return redirect(url_for('home'))
     else:
@@ -216,12 +222,12 @@ def logout():
 @app.route('/war_room')
 @login_required
 def war_room():
-    if myHero.current_hp <= 0:
+    if myHero.current_health <= 0:
         page_heading = "Your hero is currently dead."
         page_image = "dead"
         page_links = ["","","",""]
     else:
-        page_heading = "Welcome to the arena " + myHero.name +"!"
+        page_heading = "Welcome to the arena " + myHero.character_name +"!"
         page_image = "arena"
         page_links = [("Compete in the ","/arena","arena","."), ("Battle another ","/under_construction","player",".")]
     return render_template('home.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links)  # return a string
@@ -230,9 +236,9 @@ def war_room():
 @login_required
 def arena():
     if not game.has_enemy or game.enemy.current_hp <= 0:
-        enemy = monster_generator(myHero.level)
+        enemy = monster_generator(myHero.age)
         game.set_enemy(enemy)
-    page_heading = "Welcome to the arena " + myHero.name +"!"
+    page_heading = "Welcome to the arena " + myHero.character_name +"!"
     page_image = str(game.enemy.name)
     conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
                     ("Level: ", str(game.enemy.level), "Combat Details"),
@@ -251,11 +257,11 @@ def battle():
     print("running function: battle2")
     myHero.current_hp,game.enemy.current_hp,conversation = battle_logic(myHero,game.enemy)
     print("running function: battle3")
-    if myHero.current_hp == 0:
+    if myHero.current_health == 0:
         page_title = "Defeat!"
         page_heading = "You have died."
         page_links = [("Return to your ","home","profile"," page.")]
-    elif game.enemy.current_hp <= 0:
+    elif game.enemy.current_health <= 0:
         game.has_enemy = False
         myHero.current_exp += game.enemy.experience_rewarded
         myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
@@ -352,22 +358,25 @@ def store_weaponry():
 @app.route('/reset_character')
 @login_required
 def reset_character():
-    myHero.name = "Unknown"
-    myHero.starting_class = "None" # I assume user wants to reset class as well
-    myHero.level = 1
+    myHero.character_name = "Unknown"
+    myHero.character_class = "None" # I assume user wants to reset class as well
+    myHero.age = 1
     myHero.attribute_points = 0
     myHero.current_xp = 0
     myHero.max_xp = 0
-    myHero.strength = 5
-    myHero.endurance = 5
-    myHero.vitality = 5
-    myHero.agility = 5
-    myHero.dexterity = 1
-    myHero.devotion = 1
-    myHero.resistance = 1
-    myHero.wisdom = 1
-    myHero.charm = 1
-    myHero.instinct = 1
+    self.attribute_points = 0
+    self.strength = 1
+    self.resilience = 1
+    self.vitality = 1
+    self.fortitude = 1
+    self.reflexes = 1
+    self.agility = 1
+    self.perception = 1
+    self.wisdom = 1
+    self.divinity = 1
+    self.charisma = 1
+    self.survivalism = 1
+    self.fortuity = 1
     myHero.abilities = []
     myHero.gold = 500
     myHero.update_secondary_attributes()
