@@ -116,16 +116,10 @@ class Hero(object):
 def create_random_hero():
     myHero = Hero()
     myHero.update_secondary_attributes
-    clothes = [Garment("Ripped Tunic", myHero, 25, 35), Garment("Medium Tunic", myHero, 25, 35), Garment("Strong Tunic", myHero, 25, 35)]
-    weapons = [Weapon("Chipped Axe", myHero, 125, 3, 12, -0.5), Weapon("Chipped Knife", myHero, 75, 3, 5, 1), Weapon("Blunt Staff", myHero, 85, 4, 4, -0.7)]
-    myHero.update_secondary_attributes
     
     # Abilities & Items (Temporary)
     test_ability = Ability("Stone Skin", myHero, skin_adjective)
     myHero.abilities.append(test_ability)
-    myHero.inventory.append(clothes[0])
-    myHero.inventory.append(weapons[0])
-    myHero.inventory.append(weapons[1])
     
     # Refresh Hero
     myHero.update_secondary_attributes
@@ -137,6 +131,9 @@ def create_random_hero():
 myHero = create_random_hero()
 game = Game(myHero)
 enemy = monster_generator(myHero.age)
+starting_items = [Weapon("Chipped Axe", myHero, 65, 2, 6, -0.5), Weapon("Chipped Dagger", myHero, 50, 2, 3, 0.5), Weapon("Old Staff", myHero, 65, 2, 4, -0.5),
+                  Garment("Cloth Tunic", myHero, 25, 5), Garment("Ripped Tunic", myHero, 65, 15)]
+blacksmith_items = [Garment("Ripped Tunic", myHero, 25, 35), Garment("Medium Tunic", myHero, 25, 35), Garment("Strong Tunic", myHero, 25, 35)]
 
 
 	

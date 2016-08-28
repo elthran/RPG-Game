@@ -139,19 +139,32 @@ def create_character():
     elif request.method == 'POST' and myHero.character_class == "None":
         myHero.character_class = request.form["character_class"]
         if myHero.character_class == "Brute":
-            myHero.strength += 4
-            myHero.resilience += 2
+            myHero.inventory.append(starting_items[0])
+            myHero.inventory.append(starting_items[4])
+            myHero.strength += 3
+            myHero.resilience += 1
+            myHero.vitality += 1
+            myHero.fortitude += 1
         elif myHero.character_class == "Scholar":
+            myHero.inventory.append(starting_items[3])
             myHero.wisdom += 6
-        elif myHero.character_class == "Scoundrel":
+            myHero.perception += 1
+        elif myHero.character_class == "Hunter":
+            myHero.inventory.append(starting_items[1])
+            myHero.inventory.append(starting_items[4])
             myHero.agility += 3
-            myHero.reflexes += 3
+            myHero.reflexes += 1
+            myHero.survivalism += 2
         elif myHero.character_class == "Merchant":
-            myHero.gold += 250
-            myHero.charisma += 1
+            yHero.inventory.append(starting_items[3])
+            myHero.gold += 75
+            myHero.charisma += 5
+            myHero.fortuity += 1
         elif myHero.character_class == "Priest":
-            myHero.wisdom += 1
+            myHero.inventory.append(starting_items[3])
+            myHero.inventory.append(starting_items[2])
             myHero.divinity += 5
+            myHero.wisdom += 1
     if myHero.character_name != "Unknown" and myHero.character_class != "None":
         print(myHero.character_name + " " + myHero.character_class)
         update_character(session['id'],myHero)

@@ -26,10 +26,10 @@ class Weapon(Item):
         self.myHero.attack_speed += self.attack_speed
 		
 class Garment(Item):
-    def __init__(self, name, myHero, buy_price, hp_modifier):
+    def __init__(self, name, myHero, buy_price, health_modifier):
         super(Garment, self).__init__(name, myHero, buy_price)
-        self.hp_modifier = hp_modifier
+        self.health_modifier = health_modifier
 
     def update_stats(self):
-        self.myHero.max_hp += self.max_hp
+        self.myHero.max_health += self.health_modifier
 
