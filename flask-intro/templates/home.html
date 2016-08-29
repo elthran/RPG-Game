@@ -72,6 +72,10 @@
     <h2>{{ link[0] }}<a href="{{ link[1] }}">{{ link[2] }}</a>{{ link[3] }}</h2>
     {% endfor %}
 
+    {% for town_link in town_links %}
+      <h1>{{ town_link[2] }}</h1><h2><a href="{{ town_link[0] }}">{{ town_link[1] }}</a></h2>
+    {% endfor %}
+
     {% if primary_attributes %}
       <form method="post" action="" autocomplete="off">
       {% for attribute in primary_attributes %}

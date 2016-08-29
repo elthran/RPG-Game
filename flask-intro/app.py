@@ -301,9 +301,12 @@ def store_greeting(page_title = "Store"):
 def town(page_title = "Town"):
     page_heading = "You are in the Starting Town."
     page_image = "town"
-    page_links = [("Enter the ", "/store_greeting", "store", "."),
-                  ("Enter the ", "/barracks", "barracks", ".")]
-    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
+    paragraph = "The starting town. There are many places to visit within the town. Have a look!"
+    town_links = [("/store_greeting", "Blacksmith", "Shops"),
+                  ("/barracks", "Barracks"),
+                  ("/under_construction", "Marketplace"),
+                  ("under_construction", "Tavern", "Other")]
+    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, town_links=town_links)  # return a string
 
 @app.route('/store_armoury', methods=['GET', 'POST'])
 @login_required
