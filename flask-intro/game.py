@@ -65,6 +65,9 @@ class Hero(object):
         self.equipped_items = []
         self.inventory = []
         self.abilities = []
+
+        self.current_quests = []
+        self.completed_quests = []
         
     # Sets damage
     def update_secondary_attributes(self):
@@ -112,6 +115,7 @@ class Hero(object):
     def __repr__(self):
         return "\nName: %s" % (self.name)
 
+
 # Temporary Function to create a random hero
 def create_random_hero():
     myHero = Hero()
@@ -125,6 +129,8 @@ def create_random_hero():
     myHero.update_secondary_attributes
     return myHero
 # End of temporary functions
+
+    
 
 
 # initialization

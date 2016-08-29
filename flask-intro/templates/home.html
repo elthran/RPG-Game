@@ -87,6 +87,17 @@
     <h1>&emsp; &emsp; &emsp; &emsp; <b>Points remaining {{ myHero.attribute_points }}</b></h1>
       </form>
     {% endif %}
+
+    {% if tavern %}
+      <form action="" method="post">
+	I would like to
+        <select name="tavern_choice">
+	<option value="Drink" title="BE STRONG">Buy a drink.</option>
+	<option value="Jobs">Ask if the bartender has any jobs for me.</option>
+	</select>
+      <input class="btn btn-default" type="submit" value="Next">
+      </form>
+    {% endif %}
 	
 	{% if admin %}
       <form method="post" action="" autocomplete="off">

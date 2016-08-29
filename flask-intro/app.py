@@ -305,7 +305,7 @@ def town(page_title = "Town"):
     town_links = [("/store_greeting", "Blacksmith", "Shops"),
                   ("/barracks", "Barracks"),
                   ("/under_construction", "Marketplace"),
-                  ("under_construction", "Tavern", "Other")]
+                  ("/tavern", "Tavern", "Other")]
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, town_links=town_links)  # return a string
 
 @app.route('/store_armoury', methods=['GET', 'POST'])
@@ -381,6 +381,26 @@ def store_weaponry():
             cost = 0
             paragraph = "You can't afford it."
     return render_template('home.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links, paragraph=paragraph)  # return a string
+
+@app.route('/tavern', methods=['GET', 'POST'])
+@login_required
+def tavern():
+    tavern=1
+    page_title = "Tavern"
+    page_heading = "You enter the Red Dragon Inn."
+    page_image = "bartender"
+    paragraph = "Greetings traveler! What can I get for you today?"
+    page_links = [("Buy a ", "/tavern", "beer", "."),
+                  ("Ask if the bartender needs ", "/tavern", "help", ".")]
+    if request.method == 'POST':
+        tavern_choice = request.form["tavern_choice"]
+        if tavern_choice == "Drink":
+            myHero.current_health = myHero.max_health
+        elif tavern_choice == "Jobs":
+            myHero.current_quests.append(("FIND WOLF PELTS NOW", [0]))
+            print(myHero.current_quests)
+    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, page_links=page_links, tavern=tavern)  # return a string
+    
 
 @app.route('/reset_character')
 @login_required
