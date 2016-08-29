@@ -31,6 +31,7 @@
         <li><a href=/town>Town</a></li>
         <li><a href=/under_construction>Journal</a></li>
         <li><a href=/under_construction>Users</a></li>
+		<li><a href=/admin>Admin</a></li>
         <li><a href=/logout>Logout</a></li>
       </h3>
 
@@ -86,7 +87,19 @@
     <h1>&emsp; &emsp; &emsp; &emsp; <b>Points remaining {{ myHero.attribute_points }}</b></h1>
       </form>
     {% endif %}
+	
+	{% if admin %}
+      <form method="post" action="" autocomplete="off">
+      {% for attribute in admin %}
+        <label for="name">{{ attribute[0] }}: {{ attribute[1] }}</label>
+        <input type="number" name="{{ attribute[0] }}" min="0" title="Numbers only" value="0"><br>
+      {% endfor %}
+    <input class="btn btn-default" type="submit" value="Save">
+      </form>
+    {% endif %}
 
+	
+	
 {% if home %}
 <h1>General Statistics</h1>
 <h2> 

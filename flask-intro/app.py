@@ -417,10 +417,73 @@ def under_construction():
     page_image = "under_construction"
     return render_template('home.html', page_title=page_title, page_heading=page_heading, page_image=page_image, myHero=myHero)  # return a string
 
+@app.route('/admin',methods=['GET', 'POST'])
+@login_required
+def admin():
+    page_title = "Admin"
+    page_heading = "User this page to set values"
+    page_image = "town"
+    if request.method == 'POST':
+        myHero.strength = convert_input(request.form["Strength"])
+        
+        myHero.resilience = convert_input(request.form["Resilience"])
+        myHero.vitality = convert_input(request.form["Vitality"])
+        myHero.fortitude = convert_input(request.form["Fortitude"])
+        myHero.reflexes = convert_input(request.form["Reflexes"])
+        myHero.agility = convert_input(request.form["Agility"])
+        myHero.perception = convert_input(request.form["Perception"])
+        myHero.wisdom = convert_input(request.form["Wisdom"])
+        myHero.divinity = convert_input(request.form["Divinity"])
+        myHero.charisma = convert_input(request.form["Charisma"])
+        myHero.survivalism = convert_input(request.form["Survivalism"])
+        myHero.fortuity = convert_input(request.form["Fortuity"])
+        myHero.age = convert_input(request.form["Age"])
+        myHero.current_exp = convert_input(request.form["Current_exp"])
+        myHero.max_exp = convert_input(request.form["Max_exp"])
+        myHero.renown = convert_input(request.form["Renown"])
+        myHero.virtue = convert_input(request.form["Virtue"])
+        myHero.charisma = convert_input(request.form["Charisma"])
+        myHero.devotion = convert_input(request.form["Devotion"])
+        myHero.gold = convert_input(request.form["Gold"])
+        myHero.basic_ability_points = convert_input(request.form["Basic_ability_points"])
+        myHero.class_ability_points = convert_input(request.form["Class_ability_points"])
+        myHero.specialization_ability_points = convert_input(request.form["Specialization_ability_points"])
+        myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
+        myHero.attribute_points = convert_input(request.form["Attribute_points"])
+        myHero.update_secondary_attributes()
+        return redirect(url_for('home'))
+
+    admin = [("Strength", myHero.strength),
+                          ("Resilience", myHero.resilience),
+                          ("Vitality", myHero.vitality),
+                          ("Fortitude", myHero.fortitude),
+                          ("Reflexes", myHero.reflexes),
+                          ("Agility", myHero.agility),
+                          ("Perception", myHero.perception),
+                          ("Wisdom", myHero.wisdom),
+                          ("Divinity", myHero.divinity),
+                          ("Charisma", myHero.charisma),
+                          ("Survivalism", myHero.survivalism),
+                          ("Fortuity", myHero.fortuity),
+                          ("Age", myHero.age),  
+                          ("Current_exp", myHero.current_exp),
+                          ("Max_exp", myHero.max_exp),
+                          ("Renown", myHero.renown),
+                          ("Virtue", myHero.virtue),
+                          ("Charisma", myHero.charisma),
+                          ("Devotion", myHero.devotion),
+                          ("Gold", myHero.gold),
+                          ("Basic_ability_points", myHero.basic_ability_points),
+                          ("Class_ability_points", myHero.class_ability_points),
+                          ("Specialization_ability_points", myHero.specialization_ability_points),
+                          ("Pantheonic_ability_points", myHero.pantheonic_ability_points),
+                          ("Attribute_points", myHero.attribute_points)]
+    
+    return render_template('home.html', page_title=page_title, page_heading=page_heading, page_image=page_image, myHero=myHero, admin=admin)  # return a string
+
 
 # start the server with the 'run()' method
 if __name__ == '__main__':
     app.run(debug=True)
-
 
 
