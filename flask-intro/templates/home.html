@@ -29,7 +29,7 @@
         <li><a href=/under_construction>Inventory</a></li>
         <li><a href=/under_construction>Abilities</a></li>
         <li><a href=/town>Town</a></li>
-        <li><a href=/under_construction>Journal</a></li>
+        <li><a href=/journal>Journal</a></li>
         <li><a href=/under_construction>Users</a></li>
 		<li><a href=/admin>Admin</a></li>
         <li><a href=/logout>Logout</a></li>
@@ -94,9 +94,25 @@
         <select name="tavern_choice">
 	<option value="Drink" title="BE STRONG">Buy a drink.</option>
 	<option value="Jobs">Ask if the bartender has any jobs for me.</option>
+        <option value="Give Wolf Pelts">Give the bartender 5 wolf pelts.</option>
 	</select>
       <input class="btn btn-default" type="submit" value="Next">
       </form>
+    {% endif %}
+
+    {% if current_quests %}
+      <h1>Current Quests</h1>
+      {% for quest in current_quests %}
+        <br><b>{{ quest[0] }}</b> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Part:{{ quest[1] }}<br>
+        {{ paragraph }}
+      {% endfor %}
+    {% endif %}
+    {% if completed_quests %}
+      <h1>Completed Quests</h1>
+      {% for quest in completed_quests %}
+        <br><b>{{ quest }}</b><br>
+        {{ paragraph }}
+      {% endfor %}
     {% endif %}
 	
 	{% if admin %}

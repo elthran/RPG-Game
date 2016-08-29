@@ -390,16 +390,42 @@ def tavern():
     page_heading = "You enter the Red Dragon Inn."
     page_image = "bartender"
     paragraph = "Greetings traveler! What can I get for you today?"
-    page_links = [("Buy a ", "/tavern", "beer", "."),
-                  ("Ask if the bartender needs ", "/tavern", "help", ".")]
+    #page_links = [("Buy a ", "/tavern", "beer", ".")] I wish it looked like this
     if request.method == 'POST':
+        paragraph = ""
+        #page_links = []
         tavern_choice = request.form["tavern_choice"]
         if tavern_choice == "Drink":
             myHero.current_health = myHero.max_health
+            myHero.gold -= 25
+            page_heading = "You give the bartender 25 gold and he pours you a drink. You feel very refreshed!"
         elif tavern_choice == "Jobs":
-            myHero.current_quests.append(("FIND WOLF PELTS NOW", [0]))
-            print(myHero.current_quests)
-    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, page_links=page_links, tavern=tavern)  # return a string
+            myHero.current_quests.append(("Collect 5 Wolf Pelts for the Bartender", [0]))
+            page_heading = "The bartender has asked you to find 5 wolf pelts!"
+            page_image = ""
+        elif tavern_choice == "Give Wolf Pelts":
+            myHero.gold += 5000
+            myHero.current_quests = [(name, stage) for name, stage in myHero.current_quests if name != "Collect 5 Wolf Pelts for the Bartender"]
+            myHero.completed_quests.append(("Collect 5 Wolf Pelts for the Bartender"))
+            page_heading = "You have given the bartender 5 wolf pelts and completed your quest! He has rewarded you with 5000 gold."
+    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, tavern=tavern)  # return a string
+
+@app.route('/journal')
+@login_required
+def journal():
+    paragraph = ""
+    page_title = "Journal"
+    current_quests = myHero.current_quests
+    completed_quests = myHero.completed_quests
+    if current_quests == []:
+        current_quests = [""]
+        paragraph = "No current quests."
+    if completed_quests == []:
+        completed_quests = [""]
+        paragraph = "No current quests."
+    return render_template('home.html', myHero=myHero, current_quests=current_quests, completed_quests=completed_quests, paragraph=paragraph)  # return a string
+    
+
     
 
 @app.route('/reset_character')
