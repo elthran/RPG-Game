@@ -390,10 +390,10 @@ def tavern():
     page_heading = "You enter the Red Dragon Inn."
     page_image = "bartender"
     paragraph = "Greetings traveler! What can I get for you today?"
-    #page_links = [("Buy a ", "/tavern", "beer", ".")] I wish it looked like this
+    page_links = [("Buy a ", "/tavern", "beer", ".")] # I wish it looked like this
     if request.method == 'POST':
         paragraph = ""
-        #page_links = []
+        page_links = []
         tavern_choice = request.form["tavern_choice"]
         if tavern_choice == "Drink":
             myHero.current_health = myHero.max_health
@@ -408,7 +408,7 @@ def tavern():
             myHero.current_quests = [(name, stage) for name, stage in myHero.current_quests if name != "Collect 5 Wolf Pelts for the Bartender"]
             myHero.completed_quests.append(("Collect 5 Wolf Pelts for the Bartender"))
             page_heading = "You have given the bartender 5 wolf pelts and completed your quest! He has rewarded you with 5000 gold."
-    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, tavern=tavern)  # return a string
+    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, tavern=tavern, page_links=page_links)  # return a string
 
 @app.route('/journal')
 @login_required
