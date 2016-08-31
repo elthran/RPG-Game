@@ -33,3 +33,7 @@ class Garment(Item):
     def update_stats(self):
         self.myHero.max_health += self.health_modifier
 
+
+class Quest_Item(Item):
+    def __init__(self, name, myHero, buy_price):
+        super(Quest_Item, self).__init__(name, myHero, buy_price)

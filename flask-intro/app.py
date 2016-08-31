@@ -404,6 +404,9 @@ def tavern():
     page_image = "bartender"
     paragraph = "Greetings traveler! What can I get for you today?"
     page_links = [("Buy a ", "/tavern", "beer", ".")] # I wish it looked like this
+    dialogue_options = {"Drink": "Buy a drink.", "Jobs": "Ask if the bartender has any jobs for me.", "Freestuff": "Free wolf pelts please ^_^!!!!!"}
+    if any("Collect 5 Wolf Pelts for the Bartender" in quest_pair for quest_pair in myHero.current_quests):
+        dialogue_options["Handin"] = "Give the bartender 5 wolf pelts."
     if request.method == 'POST':
         paragraph = ""
         page_links = []
@@ -416,12 +419,18 @@ def tavern():
             myHero.current_quests.append(("Collect 5 Wolf Pelts for the Bartender", [0]))
             page_heading = "The bartender has asked you to find 5 wolf pelts!"
             page_image = ""
-        elif tavern_choice == "Give Wolf Pelts":
+            dialogue_options = {}
+        elif tavern_choice == "Handin":
             myHero.gold += 5000
             myHero.current_quests = [(name, stage) for name, stage in myHero.current_quests if name != "Collect 5 Wolf Pelts for the Bartender"]
             myHero.completed_quests.append(("Collect 5 Wolf Pelts for the Bartender"))
             page_heading = "You have given the bartender 5 wolf pelts and completed your quest! He has rewarded you with 5000 gold."
-    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, tavern=tavern, page_links=page_links)  # return a string
+            dialogue_options = {}
+        elif tavern_choice == "Freestuff":
+            myHero.inventory.append(Quest_Item("5 Wolf Pelts", myHero, 0))
+            page_heading = "The bartender hands you 5 free wolf pelts. Don't lose them!"
+            dialogue_options = {}
+    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, tavern=tavern, page_links=page_links, dialogue_options=dialogue_options)  # return a string
 
 @app.route('/journal')
 @login_required

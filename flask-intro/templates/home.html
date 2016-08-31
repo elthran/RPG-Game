@@ -93,9 +93,9 @@
       <form action="" method="post">
 	I would like to
         <select name="tavern_choice">
-	<option value="Drink" title="BE STRONG">Buy a drink.</option>
-	<option value="Jobs">Ask if the bartender has any jobs for me.</option>
-        <option value="Give Wolf Pelts">Give the bartender 5 wolf pelts.</option>
+        {% for key,value in dialogue_options.items() %}
+	<option value={{ key }}>{{ value }}</option>
+        {% endfor %}
 	</select>
       <input class="btn btn-default" type="submit" value="Next">
       </form>

@@ -132,7 +132,10 @@ def update_character(user_id, hero): ######### MODIFY HERE TO ADD MORE THINGS TO
                 cur.execute("UPDATE CHARACTERS SET CHARISMA=" + str(hero.charisma) + " WHERE USER_ID=" + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET SURVIVALISM=" + str(hero.survivalism) + " WHERE USER_ID=" + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET FORTUITY=" + str(hero.fortuity) + " WHERE USER_ID=" + str(user_id) + ';')
+                
                 cur.execute("UPDATE CHARACTERS SET ENDURANCE=" + str(hero.current_endurance) + " WHERE USER_ID=" + str(user_id) + ';')
+                #cur.execute("UPDATE CHARACTERS SET HEALTH=" + str(hero.current_health) + " WHERE USER_ID=" + str(user_id) + ';')
+                #cur.execute("UPDATE CHARACTERS SET SANCTITY=" + str(hero.current_sanctity) + " WHERE USER_ID=" + str(user_id) + ';')
 
                 #cur.execute("UPDATE CHARACTERS SET EQUIPPED_ITEMS=" + str(hero.equipped_items) + " WHERE USER_ID=" + str(user_id) + ';')
                 #cur.execute("UPDATE CHARACTERS SET INVENTORY=" + str(hero.inventory) + " WHERE USER_ID=" + str(user_id) + ';')
@@ -179,6 +182,10 @@ def fetch_character_data():
                         myHero.charisma = row[26]
                         myHero.survivalism = row[27]
                         myHero.fortuity = row[28]
+
+                        #myHero.current_endurance = 
+                        #myHero.current_health =
+                        #myHero.current_sanctity =
                         
                         #myHero.equipped_items = row[29]
                         #myHero.inventory = row[30]
