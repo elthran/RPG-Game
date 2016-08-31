@@ -298,7 +298,7 @@ def battle():
             page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience. You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
      # Todo: 5 is just a dummy number for testing
-    return render_template('home.html', page_title=page_title, page_heading=page_heading,  enemy=enemy, status_display=conversation, page_links=page_links)  # return a string
+    return render_template('home.html', page_title=page_title, page_heading=page_heading, myHero=myHero, enemy=enemy, status_display=conversation, page_links=page_links)  # return a string
 
 @app.route('/store_greeting')
 @login_required
