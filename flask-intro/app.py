@@ -58,7 +58,7 @@ def command(cmd=None):
 @app.route('/home')
 @login_required
 def home():
-    fetch_character_data()
+    #fetch_character_data()
     myHero.update_secondary_attributes()
     update_time(myHero)
     # If it's a new character, send them to cerate_character url
@@ -288,6 +288,7 @@ def battle():
         if myHero.current_exp == 0:
             page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience. You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
+    myHero.endurance -= 5 # Todo: 5 is just a dummy number for testing
     return render_template('home.html', page_title=page_title, page_heading=page_heading, myHero=myHero, enemy=enemy, status_display=conversation, page_links=page_links)  # return a string
 
 @app.route('/store_greeting')
@@ -469,11 +470,10 @@ def under_construction():
 @login_required
 def admin():
     page_title = "Admin"
-    page_heading = "User this page to set values"
+    page_heading = "Use this page to set values"
     page_image = "town"
     if request.method == 'POST':
         myHero.strength = convert_input(request.form["Strength"])
-        
         myHero.resilience = convert_input(request.form["Resilience"])
         myHero.vitality = convert_input(request.form["Vitality"])
         myHero.fortitude = convert_input(request.form["Fortitude"])
@@ -498,7 +498,9 @@ def admin():
         myHero.specialization_ability_points = convert_input(request.form["Specialization_ability_points"])
         myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
         myHero.attribute_points = convert_input(request.form["Attribute_points"])
+        myHero.endurance = convert_input(request.form["Endurance"])
         myHero.update_secondary_attributes()
+        update_character(session['id'],myHero)
         return redirect(url_for('home'))
 
     admin = [("Strength", myHero.strength),
@@ -525,7 +527,8 @@ def admin():
                           ("Class_ability_points", myHero.class_ability_points),
                           ("Specialization_ability_points", myHero.specialization_ability_points),
                           ("Pantheonic_ability_points", myHero.pantheonic_ability_points),
-                          ("Attribute_points", myHero.attribute_points)]
+                          ("Attribute_points", myHero.attribute_points),
+                          ("Endurance",myHero.endurance)]
     
     return render_template('home.html', page_title=page_title, page_heading=page_heading, page_image=page_image, myHero=myHero, admin=admin)  # return a string
 
