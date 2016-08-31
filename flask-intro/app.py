@@ -398,39 +398,44 @@ def store_weaponry():
 @app.route('/tavern', methods=['GET', 'POST'])
 @login_required
 def tavern():
-    tavern=1
+    tavern=True
     page_title = "Tavern"
     page_heading = "You enter the Red Dragon Inn."
     page_image = "bartender"
     paragraph = "Greetings traveler! What can I get for you today?"
-    page_links = [("Buy a ", "/tavern", "beer", ".")] # I wish it looked like this
-    dialogue_options = {"Drink": "Buy a drink.", "Jobs": "Ask if the bartender has any jobs for me.", "Freestuff": "Free wolf pelts please ^_^!!!!!"}
+    page_links = [("Return to ", "/tavern", "tavern", ".")] # I wish it looked like this
+    dialogue_options = {"Drink": "Buy a drink."}
+    if not any("Collect 5 Wolf Pelts for the Bartender" in quest_pair for quest_pair in myHero.current_quests) and "Collect 5 Wolf Pelts for the Bartender" not in myHero.completed_quests:
+        dialogue_options["Jobs"] = "Ask if the bartender has any jobs for me."
     if any("Collect 5 Wolf Pelts for the Bartender" in quest_pair for quest_pair in myHero.current_quests):
-        dialogue_options["Handin"] = "Give the bartender 5 wolf pelts."
+        if any(item.name == "5 Wolf Pelts" for item in myHero.inventory):
+            dialogue_options["Hand In Quest"] = "Give the bartender 5 wolf pelts."
+        else:
+            dialogue_options["Quest Not Finished"] = "I'm still looking for the 5 wolf pelts."
     if request.method == 'POST':
+        tavern=False
         paragraph = ""
-        page_links = []
+        dialogue_options = {}
         tavern_choice = request.form["tavern_choice"]
         if tavern_choice == "Drink":
-            myHero.current_health = myHero.max_health
-            myHero.gold -= 25
-            page_heading = "You give the bartender 25 gold and he pours you a drink. You feel very refreshed!"
+            if myHero.gold >= 25:
+                myHero.current_health = myHero.max_health
+                myHero.gold -= 25
+                page_heading = "You give the bartender 25 gold and he pours you a drink. You feel very refreshed!"
+            else:
+                page_heading = "Pay me 25 gold first if you want to see your drink."
         elif tavern_choice == "Jobs":
             myHero.current_quests.append(("Collect 5 Wolf Pelts for the Bartender", [0]))
             page_heading = "The bartender has asked you to find 5 wolf pelts!"
             page_image = ""
-            dialogue_options = {}
-        elif tavern_choice == "Handin":
+        elif tavern_choice == "Hand In Quest":
             myHero.gold += 5000
             myHero.current_quests = [(name, stage) for name, stage in myHero.current_quests if name != "Collect 5 Wolf Pelts for the Bartender"]
             myHero.completed_quests.append(("Collect 5 Wolf Pelts for the Bartender"))
             page_heading = "You have given the bartender 5 wolf pelts and completed your quest! He has rewarded you with 5000 gold."
-            dialogue_options = {}
-        elif tavern_choice == "Freestuff":
-            myHero.inventory.append(Quest_Item("5 Wolf Pelts", myHero, 0))
-            page_heading = "The bartender hands you 5 free wolf pelts. Don't lose them!"
-            dialogue_options = {}
-    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, tavern=tavern, page_links=page_links, dialogue_options=dialogue_options)  # return a string
+        elif tavern_choice == "Quest Not Finished":
+            page_heading = "Don't take too long!"
+    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, tavern=tavern, bottom_page_links=page_links, dialogue_options=dialogue_options)  # return a string
 
 @app.route('/journal')
 @login_required

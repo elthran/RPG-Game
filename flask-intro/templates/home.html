@@ -126,6 +126,10 @@
       </form>
     {% endif %}
 
+    {% for link in bottom_page_links %}
+    <h2>{{ link[0] }}<a href="{{ link[1] }}">{{ link[2] }}</a>{{ link[3] }}</h2>
+    {% endfor %}
+
 	
 	
 {% if home %}
