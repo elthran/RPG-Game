@@ -68,8 +68,6 @@ class Hero(object):
 
         self.current_quests = []
         self.completed_quests = []
-
-        self.endurance = 1
         
     # Sets damage
     def update_secondary_attributes(self):
@@ -101,7 +99,7 @@ class Hero(object):
             item.update_stats()
         self.current_sanctity = self.max_sanctity
         self.current_health = self.max_health
-        self.current_endurance = self.max_endurance
+        self.endurance = 0 # for testing, so you can see it grow. self.max_endurance
         self.current_carrying_capacity = self.max_carrying_capacity
 
     # updates field variables when hero levels up
