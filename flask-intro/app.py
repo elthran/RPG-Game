@@ -269,16 +269,25 @@ def arena():
 @app.route('/battle')
 @login_required
 def battle():
+    required_endurance = 5
+    
     page_title = "Battle"
     page_heading = "Fighting"
     print("running function: battle2")
-    myHero.current_health,game.enemy.current_health,conversation = battle_logic(myHero,game.enemy)
+    
     page_links = [("Return to your ","home","profile"," page.")]
+    if myHero.endurance < required_endurance:
+        page_title = "Battle"
+        page_heading = "Not enough endurance, wait a bit!"
+        return render_template('home.html', page_title=page_title, myHero=myHero, page_heading=page_heading, page_links=page_links)
+    
+    myHero.current_health,game.enemy.current_health,conversation = battle_logic(myHero,game.enemy)    
     if myHero.current_health == 0:
+        myHero.endurance -= required_endurance
         page_title = "Defeat!"
         page_heading = "You have died."
-        page_links = [("Return to your ","home","profile"," page.")]
     else:
+        myHero.endurance -= required_endurance
         game.has_enemy = False
         myHero.current_exp += game.enemy.experience_rewarded
         myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
@@ -288,8 +297,8 @@ def battle():
         if myHero.current_exp == 0:
             page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience. You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
-    myHero.endurance -= 5 # Todo: 5 is just a dummy number for testing
-    return render_template('home.html', page_title=page_title, page_heading=page_heading, myHero=myHero, enemy=enemy, status_display=conversation, page_links=page_links)  # return a string
+     # Todo: 5 is just a dummy number for testing
+    return render_template('home.html', page_title=page_title, page_heading=page_heading,  enemy=enemy, status_display=conversation, page_links=page_links)  # return a string
 
 @app.route('/store_greeting')
 @login_required
