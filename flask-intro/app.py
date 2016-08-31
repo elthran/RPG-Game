@@ -269,7 +269,7 @@ def arena():
 @app.route('/battle')
 @login_required
 def battle():
-    required_endurance = 5
+    required_endurance = 5 # Todo: 5 is just a dummy number for testing
     
     page_title = "Battle"
     page_heading = "Fighting"
@@ -297,7 +297,8 @@ def battle():
         if myHero.current_exp == 0:
             page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience. You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
-     # Todo: 5 is just a dummy number for testing
+     
+    update_character(session['id'],myHero)
     return render_template('home.html', page_title=page_title, page_heading=page_heading, myHero=myHero, enemy=enemy, status_display=conversation, page_links=page_links)  # return a string
 
 @app.route('/store_greeting')
