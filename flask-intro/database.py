@@ -24,7 +24,7 @@ def update_time(hero):
                 cur = con.cursor()
                 cur.execute('SELECT ENDURANCE FROM characters WHERE user_id = ' + str(session['id']) + ';')
                 rows1 = cur.fetchall()
-                hero.endurance = rows1[0][0]
+                hero.current_endurance = rows1[0][0]
                 cur.execute('SELECT PREVIOUS_TIME FROM characters WHERE user_id = ' + str(session['id']) + ';')
                 rows2 = cur.fetchall()
                 s = str(rows2[0][0].split('.')[0])
@@ -32,13 +32,13 @@ def update_time(hero):
                 print("difference in previously recorded time and the current time in seconds: " + str(time_dif.total_seconds()))
                 endurance_increment = int(time_dif.total_seconds()/second_per_endurance)
                 print("endurance should increase by this amount:" + str(endurance_increment))
-                if endurance_increment >= 1 and hero.endurance < hero.max_endurance:
+                if endurance_increment >= 1 and hero.current_endurance < hero.max_endurance:
                     cur.execute('UPDATE CHARACTERS SET PREVIOUS_TIME="' + str(now) + '" WHERE USER_ID=' + str(session['id']) + ';')
-                    if hero.endurance + endurance_increment < hero.max_endurance:
-                        hero.endurance += endurance_increment
-                        cur.execute('UPDATE CHARACTERS SET ENDURANCE=' + str(hero.endurance) + ' WHERE USER_ID = ' + str(session['id']) + ';')     
+                    if hero.current_endurance + endurance_increment < hero.max_endurance:
+                        hero.current_endurance += endurance_increment
+                        cur.execute('UPDATE CHARACTERS SET ENDURANCE=' + str(hero.current_endurance) + ' WHERE USER_ID = ' + str(session['id']) + ';')     
                     else:
-                        hero.endurance = hero.max_endurance
+                        hero.current_endurance = hero.max_endurance
                         cur.execute('UPDATE CHARACTERS SET ENDURANCE=' + str(hero.max_endurance) + ' WHERE USER_ID = ' + str(session['id']) + ';')
                 con.commit()
     con.close()
@@ -92,7 +92,7 @@ def add_new_character(charname, classname): ######### MODIFY HERE TO ADD MORE TH
                 new_user_id = len(rows)
                 cur.execute('INSERT INTO CHARACTERS (USER_ID,CHARACTER_NAME,CHARACTER_CLASS) VALUES  (' + str(new_user_id) + ',"' + charname + '","' + classname + '"' + ');');
                 cur.execute('UPDATE CHARACTERS SET PREVIOUS_TIME="' + str(now) + '" WHERE USER_ID=' + str(new_user_id) + ';')
-                #cur.execute("UPDATE CHARACTERS SET ENDURANCE=" + str(myHero.endurance) + " WHERE USER_ID=" + str(new_user_id) + ';')
+                #cur.execute("UPDATE CHARACTERS SET ENDURANCE=" + str(myHero.current_endurance) + " WHERE USER_ID=" + str(new_user_id) + ';')
                 con.commit()
     con.close()    
 
@@ -132,7 +132,7 @@ def update_character(user_id, hero): ######### MODIFY HERE TO ADD MORE THINGS TO
                 cur.execute("UPDATE CHARACTERS SET CHARISMA=" + str(hero.charisma) + " WHERE USER_ID=" + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET SURVIVALISM=" + str(hero.survivalism) + " WHERE USER_ID=" + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET FORTUITY=" + str(hero.fortuity) + " WHERE USER_ID=" + str(user_id) + ';')
-                cur.execute("UPDATE CHARACTERS SET ENDURANCE=" + str(hero.endurance) + " WHERE USER_ID=" + str(user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET ENDURANCE=" + str(hero.current_endurance) + " WHERE USER_ID=" + str(user_id) + ';')
 
                 #cur.execute("UPDATE CHARACTERS SET EQUIPPED_ITEMS=" + str(hero.equipped_items) + " WHERE USER_ID=" + str(user_id) + ';')
                 #cur.execute("UPDATE CHARACTERS SET INVENTORY=" + str(hero.inventory) + " WHERE USER_ID=" + str(user_id) + ';')

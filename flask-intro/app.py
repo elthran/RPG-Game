@@ -276,18 +276,18 @@ def battle():
     print("running function: battle2")
     
     page_links = [("Return to your ","home","profile"," page.")]
-    if myHero.endurance < required_endurance:
+    if myHero.current_endurance < required_endurance:
         page_title = "Battle"
         page_heading = "Not enough endurance, wait a bit!"
         return render_template('home.html', page_title=page_title, myHero=myHero, page_heading=page_heading, page_links=page_links)
     
     myHero.current_health,game.enemy.current_health,conversation = battle_logic(myHero,game.enemy)    
     if myHero.current_health == 0:
-        myHero.endurance -= required_endurance
+        myHero.current_endurance -= required_endurance
         page_title = "Defeat!"
         page_heading = "You have died."
     else:
-        myHero.endurance -= required_endurance
+        myHero.current_endurance -= required_endurance
         game.has_enemy = False
         myHero.current_exp += game.enemy.experience_rewarded
         myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
@@ -508,7 +508,7 @@ def admin():
         myHero.specialization_ability_points = convert_input(request.form["Specialization_ability_points"])
         myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
         myHero.attribute_points = convert_input(request.form["Attribute_points"])
-        myHero.endurance = convert_input(request.form["Endurance"])
+        myHero.current_endurance = convert_input(request.form["Endurance"])
         myHero.update_secondary_attributes()
         update_character(session['id'],myHero)
         return redirect(url_for('home'))
@@ -538,7 +538,7 @@ def admin():
                           ("Specialization_ability_points", myHero.specialization_ability_points),
                           ("Pantheonic_ability_points", myHero.pantheonic_ability_points),
                           ("Attribute_points", myHero.attribute_points),
-                          ("Endurance",myHero.endurance)]
+                          ("Endurance",myHero.current_endurance)]
     
     return render_template('home.html', page_title=page_title, page_heading=page_heading, page_image=page_image, myHero=myHero, admin=admin)  # return a string
 
