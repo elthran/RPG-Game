@@ -119,7 +119,7 @@
       <form method="post" action="" autocomplete="off">
       {% for attribute in admin %}
         <label for="name">{{ attribute[0] }}: {{ attribute[1] }}</label>
-        <input type="number" name="{{ attribute[0] }}" min="0" title="Numbers only" value="0"><br>
+        <input type="number" name="{{ attribute[0] }}" min="0" title="Numbers only" value=5><br>
       {% endfor %}
     <input class="btn btn-default" type="submit" value="Save">
       </form>
@@ -136,6 +136,7 @@ Name: {{ myHero.name}}
 <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
 <br>Carrying Capacity: {{ myHero.current_carrying_capacity }} / {{ myHero.max_carrying_capacity }}
 <br>Gold: {{ myHero.gold }}
+<br>Endurance: {{ myHero.endurance }}
 </h2>
 
 

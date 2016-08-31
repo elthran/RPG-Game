@@ -8,11 +8,41 @@
 from app import *
 import sqlite3
 import hashlib
+import datetime   
 
+#
+second_per_endurance = 10
 
 # Two functions used in login()
 def check_password(hashed_password, user_password):
     return hashed_password == hashlib.md5(user_password.encode()).hexdigest()
+
+def update_time(hero):
+    con = sqlite3.connect('static/user.db')
+    now = datetime.datetime.now()
+    with con:
+                cur = con.cursor()
+                cur.execute('SELECT ENDURANCE FROM characters WHERE user_id = ' + str(session['id']) + ';')
+                rows1 = cur.fetchall()
+                hero.endurance = rows1[0][0]
+                cur.execute('SELECT PREVIOUS_TIME FROM characters WHERE user_id = ' + str(session['id']) + ';')
+                rows2 = cur.fetchall()
+                s = str(rows2[0][0].split('.')[0])
+                print(s)
+                print("dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
+                time_dif = now - datetime.datetime.strptime(s,'%Y-%m-%d %H:%M:%S')
+                print(time_dif.total_seconds())
+                m = int(time_dif.total_seconds()/second_per_endurance)
+                print(m)
+                if m >= 1 and hero.endurance < hero.max_endurance:
+                    cur.execute('UPDATE CHARACTERS SET PREVIOUS_TIME="' + str(now) + '" WHERE USER_ID=' + str(session['id']) + ';')
+                    if hero.endurance + m < hero.max_endurance:
+                        cur.execute('UPDATE CHARACTERS SET ENDURANCE=' + str(hero.endurance + m) + ' WHERE USER_ID = ' + str(session['id']) + ';')
+                    else:
+                        cur.execute('UPDATE CHARACTERS SET ENDURANCE=' + str(hero.max_endurance) + ' WHERE USER_ID = ' + str(session['id']) + ';')
+                con.commit()
+    con.close()
+
 
 def validate(username, password):
     con = sqlite3.connect('static/user.db')
@@ -55,13 +85,15 @@ def get_user_id(username):
 
 def add_new_character(charname, classname): ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
     con = sqlite3.connect('static/user.db')
-
+    now = datetime.datetime.now()
     with con:
                 cur = con.cursor()
                 cur.execute("SELECT * FROM Users")
                 rows = cur.fetchall()
                 new_user_id = len(rows)
-                cur.execute('INSERT INTO CHARACTERS (USER_ID,CHARACTER_NAME,CHARACTER_CLASS) VALUES  (' + str(new_user_id) + ',"' + charname + '","' + classname + '"' + ');'); 
+                cur.execute('INSERT INTO CHARACTERS (USER_ID,CHARACTER_NAME,CHARACTER_CLASS) VALUES  (' + str(new_user_id) + ',"' + charname + '","' + classname + '"' + ');');
+                cur.execute('UPDATE CHARACTERS SET PREVIOUS_TIME="' + str(now) + '" WHERE USER_ID=' + str(new_user_id) + ';')
+                cur.execute("UPDATE CHARACTERS SET ENDURANCE=" + str(myHero.endurance) + " WHERE USER_ID=" + str(new_user_id) + ';')
                 con.commit()
     con.close()    
 
@@ -101,6 +133,7 @@ def update_character(user_id, hero): ######### MODIFY HERE TO ADD MORE THINGS TO
                 cur.execute("UPDATE CHARACTERS SET CHARISMA=" + str(hero.charisma) + " WHERE USER_ID=" + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET SURVIVALISM=" + str(hero.survivalism) + " WHERE USER_ID=" + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET FORTUITY=" + str(hero.fortuity) + " WHERE USER_ID=" + str(user_id) + ';')
+                #cur.execute("UPDATE CHARACTERS SET ENDURANCE=" + str(hero.endurance) + " WHERE USER_ID=" + str(user_id) + ';')
 
                 #cur.execute("UPDATE CHARACTERS SET EQUIPPED_ITEMS=" + str(hero.equipped_items) + " WHERE USER_ID=" + str(user_id) + ';')
                 #cur.execute("UPDATE CHARACTERS SET INVENTORY=" + str(hero.inventory) + " WHERE USER_ID=" + str(user_id) + ';')

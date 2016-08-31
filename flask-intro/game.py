@@ -68,6 +68,8 @@ class Hero(object):
 
         self.current_quests = []
         self.completed_quests = []
+
+        self.endurance = 1
         
     # Sets damage
     def update_secondary_attributes(self):

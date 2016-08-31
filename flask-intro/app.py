@@ -58,7 +58,9 @@ def command(cmd=None):
 @app.route('/home')
 @login_required
 def home():
+    fetch_character_data()
     myHero.update_secondary_attributes()
+    update_time(myHero)
     # If it's a new character, send them to cerate_character url
     if myHero.character_name == "Unknown":
         return redirect(url_for('create_character'))
@@ -157,7 +159,7 @@ def create_character():
             myHero.reflexes += 1
             myHero.survivalism += 2
         elif fathers_job == "Merchant":
-            yHero.inventory.append(starting_items[3])
+            myHero.inventory.append(starting_items[3])
             myHero.gold += 75
             myHero.charisma += 5
             myHero.fortuity += 1
