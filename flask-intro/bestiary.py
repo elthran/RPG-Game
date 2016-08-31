@@ -15,6 +15,7 @@ class Monster(object):
         self.strength = 1 + self.level
         self.vitality = 1 + self.level
         self.experience_rewarded = 5 + level
+        self.items_rewarded = []
 
     def combat_stats(self):        
         self.current_health = 5 * self.vitality
