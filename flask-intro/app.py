@@ -255,7 +255,11 @@ def arena():
     if not game.has_enemy or game.enemy.current_health <= 0:
         enemy = monster_generator(myHero.age)
         if enemy.name == "Wolf":
-            enemy.items_rewarded.append((Quest_Item("5 Wolf Pelts", myHero, 50)))
+            enemy.items_rewarded.append((Quest_Item("Wolf Pelt", myHero, 50)))
+        if enemy.name == "Scout":
+            enemy.items_rewarded.append((Quest_Item("Special Coin", myHero, 50)))
+        if enemy.name == "Spider":
+            enemy.items_rewarded.append((Quest_Item("Spider Leg", myHero, 50)))
         game.set_enemy(enemy)
     page_heading = "Welcome to the arena " + myHero.character_name +"!"
     page_image = str(game.enemy.name)
@@ -293,7 +297,13 @@ def battle():
         game.has_enemy = False
         myHero.current_exp += game.enemy.experience_rewarded
         if len(game.enemy.items_rewarded) > 0:
-            myHero.inventory.append(game.enemy.items_rewarded[0])
+            for item in game.enemy.items_rewarded:
+                if not any(items.name == item.name for items in myHero.inventory):
+                    myHero.inventory.append(item)
+                else:
+                    for items in myHero.inventory:
+                        if items.name == item.name:
+                            items.amount_owned += 1
         myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
         page_title = "Victory!"
         page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience!"
@@ -408,14 +418,14 @@ def tavern():
     page_image = "bartender"
     paragraph = "Greetings traveler! What can I get for you today?"
     page_links = [("Return to ", "/tavern", "tavern", ".")] # I wish it looked like this
-    dialogue_options = {"Drink": "Buy a drink."}
-    if not any("Collect 5 Wolf Pelts for the Bartender" in quest_pair for quest_pair in myHero.current_quests) and "Collect 5 Wolf Pelts for the Bartender" not in myHero.completed_quests:
-        dialogue_options["Jobs"] = "Ask if the bartender has any jobs for me."
-    if any("Collect 5 Wolf Pelts for the Bartender" in quest_pair for quest_pair in myHero.current_quests):
-        if any(item.name == "5 Wolf Pelts" for item in myHero.inventory):
-            dialogue_options["HandInQuest"] = "Give the bartender 5 wolf pelts."
+    dialogue_options = {"Drink": "Buy a drink for 25 gold. (This fully heals you)"}
+    if not any("Collect 2 Wolf Pelts for the Bartender" in quest_pair for quest_pair in myHero.current_quests) and "Collect 2 Wolf Pelts for the Bartender" not in myHero.completed_quests:
+        dialogue_options["Jobs"] = "Ask if there are any jobs you can do."
+    if any("Collect 2 Wolf Pelts for the Bartender" in quest_pair for quest_pair in myHero.current_quests):
+        if any(item.name == "Wolf Pelt" and item.amount_owned >= 2 for item in myHero.inventory):
+            dialogue_options["HandInQuest"] = "Give the bartender 2 wolf pelts."
         else:
-            dialogue_options["QuestNotFinished"] = "I'm still looking for the 5 wolf pelts."
+            dialogue_options["QuestNotFinished"] = "I'm still looking for the 2 wolf pelts."
     if request.method == 'POST':
         tavern=False
         paragraph = ""
@@ -429,14 +439,14 @@ def tavern():
             else:
                 page_heading = "Pay me 25 gold first if you want to see your drink."
         elif tavern_choice == "Jobs":
-            myHero.current_quests.append(("Collect 5 Wolf Pelts for the Bartender", [0]))
-            page_heading = "The bartender has asked you to find 5 wolf pelts!"
+            myHero.current_quests.append(("Collect 2 Wolf Pelts for the Bartender", [0]))
+            page_heading = "The bartender has asked you to find 2 wolf pelts!"
             page_image = ""
         elif tavern_choice == "HandInQuest":
             myHero.gold += 5000
-            myHero.current_quests = [(name, stage) for name, stage in myHero.current_quests if name != "Collect 5 Wolf Pelts for the Bartender"]
-            myHero.completed_quests.append(("Collect 5 Wolf Pelts for the Bartender"))
-            page_heading = "You have given the bartender 5 wolf pelts and completed your quest! He has rewarded you with 5000 gold."
+            myHero.current_quests = [(name, stage) for name, stage in myHero.current_quests if name != "Collect 2 Wolf Pelts for the Bartender"]
+            myHero.completed_quests.append(("Collect 2 Wolf Pelts for the Bartender"))
+            page_heading = "You have given the bartender 2 wolf pelts and completed your quest! He has rewarded you with 5000 gold."
         elif tavern_choice == "QuestNotFinished":
             page_heading = "Don't take too long!"
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, tavern=tavern, bottom_page_links=page_links, dialogue_options=dialogue_options)  # return a string

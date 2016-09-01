@@ -37,3 +37,4 @@ class Garment(Item):
 class Quest_Item(Item):
     def __init__(self, name, myHero, buy_price):
         super(Quest_Item, self).__init__(name, myHero, buy_price)
+        self.amount_owned = 1
