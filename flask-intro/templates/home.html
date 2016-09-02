@@ -105,7 +105,8 @@
       <h1>Current Quests</h1>
       {% if current_quests %}
         {% for quest in current_quests %}
-          <br><b>{{ quest[0] }}</b> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;(Stage: {{ quest[1] }})<br>
+          <h2><br><b>{{ quest[0] }}</b> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;(Stage: {{ quest[2] }})</h2>
+          {{ quest[1] }}
         {% endfor %}
       {% else %}
         No current quests.

@@ -257,7 +257,7 @@ def arena():
         if enemy.name == "Wolf":
             enemy.items_rewarded.append((Quest_Item("Wolf Pelt", myHero, 50)))
         if enemy.name == "Scout":
-            enemy.items_rewarded.append((Quest_Item("Special Coin", myHero, 50)))
+            enemy.items_rewarded.append((Quest_Item("Copper Coin", myHero, 50)))
         if enemy.name == "Spider":
             enemy.items_rewarded.append((Quest_Item("Spider Leg", myHero, 50)))
         game.set_enemy(enemy)
@@ -426,6 +426,14 @@ def tavern():
             dialogue_options["HandInQuest"] = "Give the bartender 2 wolf pelts."
         else:
             dialogue_options["QuestNotFinished"] = "I'm still looking for the 2 wolf pelts."
+    if "Collect 2 Wolf Pelts for the Bartender" in myHero.completed_quests:
+        if any(quest[0] == "Become an apprentice at the tavern." for quest in myHero.current_quests):
+            if any(item.name == "Copper Coin" and item.amount_owned >= 2 for item in myHero.inventory):
+                dialogue_options["HandInQuest2"] = "Give the bartender 2 copper coins."
+            else:
+                dialogue_options["QuestNotFinished"] = "I'm still looking for the two copper coins."
+        else:
+            dialogue_options["Jobs2"] = "Do you have any other jobs you need help with?"
     if request.method == 'POST':
         tavern=False
         paragraph = ""
@@ -449,6 +457,13 @@ def tavern():
             page_heading = "You have given the bartender 2 wolf pelts and completed your quest! He has rewarded you with 5000 gold."
         elif tavern_choice == "QuestNotFinished":
             page_heading = "Don't take too long!"
+        elif tavern_choice == "Jobs2":
+            page_heading = "Actually, I could use a hand with something if you are interested in becoming my apprentice. First I will need 2 copper coins. Some of the goblins around the city are carrying them."
+            myHero.current_quests.append(["Become an apprentice at the tavern.", "You need to find two copper coins and give them to the blacksmith", 1])
+        elif tavern_choice == "HandInQuest2":
+            myHero.current_quests[0][1] = "Now the bartender wants you to find a spider leg."
+            myHero.current_quests[0][2] += 1
+            page_heading = "Fantastic! Now I just need a spider leg."
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, tavern=tavern, bottom_page_links=page_links, dialogue_options=dialogue_options)  # return a string
 
 @app.route('/journal')

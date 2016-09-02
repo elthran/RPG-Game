@@ -147,6 +147,13 @@ starting_items = [Weapon("Chipped Axe", myHero, 65, 2, 6, -0.5), Weapon("Chipped
                   Garment("Cloth Tunic", myHero, 25, 5), Garment("Ripped Tunic", myHero, 65, 15)]
 blacksmith_items = [Garment("Ripped Tunic", myHero, 25, 35), Garment("Medium Tunic", myHero, 25, 35), Garment("Strong Tunic", myHero, 25, 35)]
 
+# Super temporary while testing quests
+myHero.inventory.append(Quest_Item("Wolf Pelt", myHero, 50))
+myHero.inventory.append(Quest_Item("Spider Leg", myHero, 50))
+myHero.inventory.append(Quest_Item("Copper Coin", myHero, 50))
+for item in myHero.inventory:
+    item.amount_owned = 5
+# ~~~~~~~~~~
 
 	
 
