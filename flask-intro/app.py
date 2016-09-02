@@ -169,7 +169,7 @@ def create_character():
             myHero.divinity += 5
             myHero.wisdom += 1
     if myHero.character_name != "Unknown" and fathers_job != None:
-        print(myHero.character_name + " " + fathers_job)
+        myHero.character_class = fathers_job
         update_character(session['id'],myHero)
         return redirect(url_for('home'))
     else:
