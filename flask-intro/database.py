@@ -140,6 +140,8 @@ def update_character(user_id, hero): ######### MODIFY HERE TO ADD MORE THINGS TO
                 #cur.execute("UPDATE CHARACTERS SET EQUIPPED_ITEMS=" + str(hero.equipped_items) + " WHERE USER_ID=" + str(user_id) + ';')
                 #cur.execute("UPDATE CHARACTERS SET INVENTORY=" + str(hero.inventory) + " WHERE USER_ID=" + str(user_id) + ';')
                 #cur.execute("UPDATE CHARACTERS SET ABILITIES=" + str(hero.abilities) + " WHERE USER_ID=" + str(user_id) + ';')
+
+                #3 types of QUESTS
                 con.commit()
     con.close()
 
@@ -190,6 +192,8 @@ def fetch_character_data():
                         #myHero.equipped_items = row[29]
                         #myHero.inventory = row[30]
                         #myHero.abilities = row[31]
+
+                        #3 types of quests
                         ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
                         break
     con.close() 

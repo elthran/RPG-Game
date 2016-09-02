@@ -101,19 +101,32 @@
       </form>
     {% endif %}
 
-    {% if current_quests %}
+    {% if quest_log %}
       <h1>Current Quests</h1>
-      {% for quest in current_quests %}
-        <br><b>{{ quest[0] }}</b> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Part:{{ quest[1] }}<br>
-        {{ paragraph }}
-      {% endfor %}
-    {% endif %}
-    {% if completed_quests %}
+      {% if current_quests %}
+        {% for quest in current_quests %}
+          <br><b>{{ quest[0] }}</b> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;(Stage: {{ quest[1] }})<br>
+        {% endfor %}
+      {% else %}
+        No current quests.
+      {% endif %}
+      <h1>Current Errands</h1>
+      {% if errands %}
+        {% for errand in errands %}
+          <br><b>{{ errand }}</b>
+        {% endfor %}
+      {% else %}
+        No current errands.
+      {% endif %}
       <h1>Completed Quests</h1>
-      {% for quest in completed_quests %}
-        <br><b>{{ quest }}</b><br>
-        {{ paragraph }}
-      {% endfor %}
+      {% if completed_quests %}
+        {% for quest in completed_quests %}
+          <br><b>{{ quest }}</b><br>
+          {{ paragraph }}
+        {% endfor %}
+      {% else %}
+        No completed quests.
+      {% endif %}
     {% endif %}
 	
 	{% if admin %}

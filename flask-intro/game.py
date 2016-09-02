@@ -71,6 +71,7 @@ class Hero(object):
         self.inventory = []
         self.abilities = []
 
+        self.errands = []
         self.current_quests = []
         self.completed_quests = []
         

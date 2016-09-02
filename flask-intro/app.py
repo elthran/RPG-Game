@@ -320,7 +320,7 @@ def battle():
 def store_greeting(page_title = "Store"):
     page_heading = "Good day sir! What can I get for you?"
     page_image = "store"
-    page_links = [("Enter the ", "/store_armoury", "armoury", "."), ("Enter the ", "/store_weaponry", "weapons", ".")]
+    page_links = [("Take a look at the ", "/store_armoury", "armour", "."), ("Let's see what ", "/store_weaponry", "weapons", " are for sale.")]
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
 
 @app.route('/town')
@@ -341,7 +341,7 @@ def store_armoury():
     page_title = "Store"
     page_heading = "Check out our new armour!"
     page_image = "store"
-    page_links = [("Enter the ", "/store_weaponry", "weapons", ".")]
+    page_links = [("Let me see the ", "/store_weaponry", "weapons", " instead.")]
     items_for_sale = [("Medium Tunic", "25"), ("Strong Tunic", "35")]
     paragraph = ""
     items_being_bought = []
@@ -378,11 +378,11 @@ def store_weaponry():
     page_title = "Store"
     page_heading = "Careful! Our weapons are sharp."
     page_image = "store"
-    page_links = [("Enter the ", "/store_armoury", "armoury", ".")]
+    page_links = [("I think I'd rather look at your ", "/store_armoury", "armour", " selection.")]
     items_for_sale = [("Medium Axe", "35"), ("Strong Axe", "55"), ("OK Axe", "50")]
     paragraph = ""
     items_being_bought = []
-    items_bought = []
+    items_bought = [] 
     cost = 0
     if request.method == 'POST':
         for item in range (0, int(request.form[items_for_sale[0][0]])):
@@ -419,9 +419,9 @@ def tavern():
     paragraph = "Greetings traveler! What can I get for you today?"
     page_links = [("Return to ", "/tavern", "tavern", ".")] # I wish it looked like this
     dialogue_options = {"Drink": "Buy a drink for 25 gold. (This fully heals you)"}
-    if not any("Collect 2 Wolf Pelts for the Bartender" in quest_pair for quest_pair in myHero.current_quests) and "Collect 2 Wolf Pelts for the Bartender" not in myHero.completed_quests:
+    if "Collect 2 Wolf Pelts for the Bartender" not in myHero.errands and "Collect 2 Wolf Pelts for the Bartender" not in myHero.completed_quests:
         dialogue_options["Jobs"] = "Ask if there are any jobs you can do."
-    if any("Collect 2 Wolf Pelts for the Bartender" in quest_pair for quest_pair in myHero.current_quests):
+    if "Collect 2 Wolf Pelts for the Bartender" in myHero.errands:
         if any(item.name == "Wolf Pelt" and item.amount_owned >= 2 for item in myHero.inventory):
             dialogue_options["HandInQuest"] = "Give the bartender 2 wolf pelts."
         else:
@@ -439,12 +439,12 @@ def tavern():
             else:
                 page_heading = "Pay me 25 gold first if you want to see your drink."
         elif tavern_choice == "Jobs":
-            myHero.current_quests.append(("Collect 2 Wolf Pelts for the Bartender", [0]))
+            myHero.errands.append("Collect 2 Wolf Pelts for the Bartender")
             page_heading = "The bartender has asked you to find 2 wolf pelts!"
             page_image = ""
         elif tavern_choice == "HandInQuest":
             myHero.gold += 5000
-            myHero.current_quests = [(name, stage) for name, stage in myHero.current_quests if name != "Collect 2 Wolf Pelts for the Bartender"]
+            myHero.errands = [(name, stage) for name, stage in myHero.current_quests if name != "Collect 2 Wolf Pelts for the Bartender"]
             myHero.completed_quests.append(("Collect 2 Wolf Pelts for the Bartender"))
             page_heading = "You have given the bartender 2 wolf pelts and completed your quest! He has rewarded you with 5000 gold."
         elif tavern_choice == "QuestNotFinished":
@@ -458,13 +458,14 @@ def journal():
     page_title = "Journal"
     current_quests = myHero.current_quests
     completed_quests = myHero.completed_quests
+    errands = myHero.errands
     if current_quests == []:
-        current_quests = [""]
-        paragraph = "No current quests."
+        current_quests = False
+    if errands == []:
+        errands = False
     if completed_quests == []:
-        completed_quests = [""]
-        paragraph = "No current quests."
-    return render_template('home.html', myHero=myHero, current_quests=current_quests, completed_quests=completed_quests, paragraph=paragraph)  # return a string
+        completed_quests = False
+    return render_template('home.html', myHero=myHero, quest_log=True, current_quests=current_quests, errands=errands, completed_quests=completed_quests)  # return a string
     
 
     
