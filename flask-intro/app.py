@@ -427,12 +427,17 @@ def tavern():
         else:
             dialogue_options["QuestNotFinished"] = "I'm still looking for the 2 wolf pelts."
     if "Collect 2 Wolf Pelts for the Bartender" in myHero.completed_quests:
-        if any(quest[0] == "Become an apprentice at the tavern." for quest in myHero.current_quests):
+        if any(quest[0] == "Become an apprentice at the tavern." and quest[2] == 1 for quest in myHero.current_quests):
             if any(item.name == "Copper Coin" and item.amount_owned >= 2 for item in myHero.inventory):
                 dialogue_options["HandInQuest2"] = "Give the bartender 2 copper coins."
             else:
                 dialogue_options["QuestNotFinished"] = "I'm still looking for the two copper coins."
-        else:
+        elif any(quest[0] == "Become an apprentice at the tavern." and quest[2] == 2 for quest in myHero.current_quests):
+            if any(item.name == "Spider Leg" and item.amount_owned >= 1 for item in myHero.inventory):
+                dialogue_options["HandInQuest3"] = "Give the bartender a spider leg."
+            else:
+                dialogue_options["QuestNotFinished"] = "I'm still looking for the spider leg."
+        elif "Become an apprentice at the tavern." not in myHero.completed_quests:
             dialogue_options["Jobs2"] = "Do you have any other jobs you need help with?"
     if request.method == 'POST':
         tavern=False
@@ -464,6 +469,10 @@ def tavern():
             myHero.current_quests[0][1] = "Now the bartender wants you to find a spider leg."
             myHero.current_quests[0][2] += 1
             page_heading = "Fantastic! Now I just need a spider leg."
+        elif tavern_choice == "HandInQuest3":
+            myHero.current_quests = [quest for quest in myHero.current_quests if quest[0] != "Become an apprentice at the tavern."]
+            myHero.completed_quests.append("Become an apprentice at the tavern.")
+            page_heading = "You are now my apprentice!"
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, tavern=tavern, bottom_page_links=page_links, dialogue_options=dialogue_options)  # return a string
 
 @app.route('/journal')
