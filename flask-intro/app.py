@@ -37,7 +37,8 @@ def login_required(f):
 def command(cmd=None):
     # cmd (string type)is an item name, sent from the javascript code in html
     # it is the item that will get equipped/unequiped
-    for item in myHero.inventory:
+    equippable_items = [item for item in myHero.inventory if item.equippable == True]
+    for item in equippable_items: 
         if cmd == item.name:
             myHero.equipped_items.append(item)
             myHero.inventory.remove(item)

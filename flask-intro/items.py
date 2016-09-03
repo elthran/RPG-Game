@@ -19,6 +19,7 @@ class Weapon(Item):
         self.min_damage = min_damage
         self.max_damage = max_damage
         self.attack_speed = attack_speed
+        self.equippable = True
 		
     def update_stats(self):
         self.myHero.min_damage += self.min_damage
@@ -29,6 +30,7 @@ class Garment(Item):
     def __init__(self, name, myHero, buy_price, health_modifier):
         super(Garment, self).__init__(name, myHero, buy_price)
         self.health_modifier = health_modifier
+        self.equippable = True
 
     def update_stats(self):
         self.myHero.max_health += self.health_modifier
@@ -38,3 +40,7 @@ class Quest_Item(Item):
     def __init__(self, name, myHero, buy_price):
         super(Quest_Item, self).__init__(name, myHero, buy_price)
         self.amount_owned = 1
+        self.equippable = False
+
+    def update_stats(self):
+        pass
