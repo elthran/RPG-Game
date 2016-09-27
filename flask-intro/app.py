@@ -247,8 +247,23 @@ def barracks():
     else:
         page_heading = "Welcome to the arena " + myHero.character_name +"!"
         page_image = "arena"
-        page_links = [("Compete in the ","/arena","arena","."), ("Battle another ","/under_construction","player",".")]
+        page_links = [("Compete in the ", "/arena","arena", ".(temporary)"), ("Pay to ", "/spar", "spar", " against the trainer."), ("Battle another ", "/under_construction", "player",".")]
     return render_template('home.html', page_title="Barracks", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links)  # return a string
+
+@app.route('/spar')
+@login_required
+def spar():
+    spar_cost = 50
+    spar_benefit = 5
+    if myHero.gold < spar_cost:
+        page_heading = "You do not have enough gold to spar."
+    else:
+        myHero.gold -= spar_cost
+        myHero.current_exp += spar_benefit
+        page_heading = str("You spend some time sparring with the trainer at the barracks. You spend " + str(spar_cost) + " gold and gain " + str(spar_benefit) + " experience.")
+    return render_template('home.html', page_title="Sparring Room", page_heading=page_heading, myHero=myHero, game=game)  # return a string
+
+
 
 @app.route('/arena')
 @login_required
