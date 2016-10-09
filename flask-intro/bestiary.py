@@ -37,3 +37,5 @@ def monster_generator(level):
     monster = Monster(name, species, level)
     monster.combat_stats()
     return monster
+
+bestiary_data = [("Wolf", "5", "Wolf")]

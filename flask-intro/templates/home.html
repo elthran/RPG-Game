@@ -27,18 +27,24 @@
       </u1>
       <h3>
         <li><a href=/home>Profile</a></li>
+        <li><a href=/town>Town</a></li>
+        <li><a href=/quest_log>Journal</a></li>
+        <li><a href=/bestiary>Bestiary</a></li>
         <li><a href=/under_construction>Inventory</a></li>
         <li><a href=/under_construction>Abilities</a></li>
-        <li><a href=/town>Town</a></li>
-        <li><a href=/journal>Journal</a></li>
         <li><a href=/under_construction>Users</a></li>
 		<li><a href=/admin>Admin</a></li>
         <li><a href=/logout>Logout</a></li>
       </h3>
-
     </div>
 
+{% if journal %}
+<!-- Add a top bar here -->
+{% endif %}
+
+
   <div class="content">
+
 
     {% if page_heading %}
     <h1>{{ page_heading }}</h1>
@@ -128,6 +134,14 @@
       {% else %}
         No completed quests.
       {% endif %}
+    {% endif %}
+
+    {% if bestiary %}
+      <h1 style="text-align:center;">Bestiary</h1>
+      <h2>Entry:</h2><br>
+      Name: {{ bestiary_name }}<br><br>
+      Age: {{ bestiary_age }}<br><br>
+      <img src="static/images/{{ bestiary_picture }}.jpg" alt="Bestiary Picture" style="width:100px;height:100px;">
     {% endif %}
 	
 	{% if admin %}
