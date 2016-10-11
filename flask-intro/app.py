@@ -15,14 +15,11 @@ from database import *
 import sqlite3
 import hashlib
 
-
-
 # create the application object
 app = Flask(__name__)
 
 app.secret_key = 'starcraft'
 		
-# login required decorator
 def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -53,23 +50,7 @@ def command(cmd=None):
             return "success", 200, {'Content-Type': 'text/plain'} #//
         
     return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
-
        
-# use decorators to link the function to a url	
-@app.route('/home')
-@login_required
-def home():
-    #fetch_character_data()
-    myHero.update_secondary_attributes()
-    update_time(myHero)
-    # If it's a new character, send them to cerate_character url
-    if myHero.character_name == "Unknown":
-        return redirect(url_for('create_character'))
-    # If they have leveled up, send them to level_up url
-    elif myHero.attribute_points > 0:
-        return redirect(url_for('level_up'))
-    return render_template('home.html', page_title="Profile", myHero=myHero, home=True)  # return a string'
-
 @app.route('/level_up', methods=['GET', 'POST'])
 @login_required
 def level_up():
@@ -124,6 +105,65 @@ def level_up():
     return render_template('home.html', page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero, primary_attributes=primary_attributes)
 
 # use decorators to link the function to a url
+# route for handling the login page logic
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        completion = validate(username, password)
+        if completion ==False:
+            error = 'Invalid Credentials. Please try again.'
+        else:
+            session['logged_in'] = True
+            flash("LOG IN SUCCESSFUL")
+            session['id'] = get_user_id(username)
+            fetch_character_data()
+            return redirect(url_for('home'))
+    return render_template('login.html', error=error, login=True)
+
+# route for handling the account creation page logic
+@app.route('/password_recovery', methods=['GET', 'POST'])
+def password_recovery():
+    error = "Password Not Found"
+
+    if request.method == 'POST':
+        username = request.form['username']
+        
+        con = sqlite3.connect('static/user.db')
+        with con:
+            cur = con.cursor()
+            cur.execute("SELECT * FROM Users")
+            rows = cur.fetchall()
+            for row in rows:
+                if row[0] == username:
+                    error = "We found your password, but it was hashed into this: " + row[1] + ". We are unable to decode the jargon. Sorry, please restart the game!"
+        con.close()
+    return render_template('login.html', error=error, password_recovery=True)
+
+# route for handling the account creation page logic
+@app.route('/create_account', methods=['GET', 'POST'])
+def create_account():
+    error = None    
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        add_new_user(username, password)
+        add_new_character("Unknown","None")
+        user_id = get_user_id(username)
+        update_character(user_id,myHero) # slightly redundant, fix laterrr
+        return redirect(url_for('login'))
+    return render_template('login.html', error=error, create_account=True)
+	
+@app.route('/logout')
+@login_required
+def logout():
+    update_character(session['id'],myHero) ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
+    session.pop('logged_in', None)
+    flash("Thank you for playing! Your have successfully logged out.")
+    return redirect(url_for('login'))
+
 @app.route('/create_character', methods=['GET', 'POST'])
 @login_required
 def create_character():
@@ -176,118 +216,6 @@ def create_character():
     else:
         return render_template('create_character.html', page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, conversation=conversation, display=display)  # render a template  
 
-# use decorators to link the function to a url
-# route for handling the login page logic
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    error = None
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        completion = validate(username, password)
-        if completion ==False:
-            error = 'Invalid Credentials. Please try again.'
-        else:
-            session['logged_in'] = True
-            flash("LOG IN SUCCESSFUL")
-            session['id'] = get_user_id(username)
-            fetch_character_data()
-            return redirect(url_for('home'))
-    return render_template('login.html', error=error, login=True)
-
-# route for handling the account creation page logic
-@app.route('/password_recovery', methods=['GET', 'POST'])
-def password_recovery():
-    error = "Password Not Found"
-
-    if request.method == 'POST':
-        username = request.form['username']
-        
-        con = sqlite3.connect('static/user.db')
-        with con:
-            cur = con.cursor()
-            cur.execute("SELECT * FROM Users")
-            rows = cur.fetchall()
-            for row in rows:
-                if row[0] == username:
-                    error = "We found your password, but it was hashed into this: " + row[1] + ". We are unable to decode the jargon. Sorry, please restart the game!"
-        con.close()
-    return render_template('login.html', error=error, password_recovery=True)
-
-# route for handling the account creation page logic
-@app.route('/create_account', methods=['GET', 'POST'])
-def create_account():
-    error = None    
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        add_new_user(username, password)
-        add_new_character("Unknown","None")
-        user_id = get_user_id(username)
-        update_character(user_id,myHero) # slightly redundant, fix laterrr
-        return redirect(url_for('login'))
-    return render_template('login.html', error=error, create_account=True)
-	
-	
-@app.route('/logout')
-@login_required
-def logout():
-    update_character(session['id'],myHero) ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
-    session.pop('logged_in', None)
-    flash("Thank you for playing! Your have successfully logged out.")
-    return redirect(url_for('login'))
-
-@app.route('/barracks')
-@login_required
-def barracks():
-    if myHero.current_health <= 0:
-        page_heading = "Your hero is currently dead."
-        page_image = "dead"
-        page_links = ["","","",""]
-    else:
-        page_heading = "Welcome to the arena " + myHero.character_name +"!"
-        page_image = "arena"
-        page_links = [("Compete in the ", "/arena","arena", ".(temporary)"), ("Pay to ", "/spar", "spar", " against the trainer."), ("Battle another ", "/under_construction", "player",".")]
-    return render_template('home.html', page_title="Barracks", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links)  # return a string
-
-@app.route('/spar')
-@login_required
-def spar():
-    spar_cost = 50
-    spar_benefit = 5
-    if myHero.gold < spar_cost:
-        page_heading = "You do not have enough gold to spar."
-    else:
-        myHero.gold -= spar_cost
-        myHero.current_exp += spar_benefit
-        page_heading = str("You spend some time sparring with the trainer at the barracks. You spend " + str(spar_cost) + " gold and gain " + str(spar_benefit) + " experience.")
-    return render_template('home.html', page_title="Sparring Room", page_heading=page_heading, myHero=myHero, game=game)  # return a string
-
-
-
-@app.route('/arena')
-@login_required
-def arena():
-    if not game.has_enemy or game.enemy.current_health <= 0:
-        enemy = monster_generator(myHero.age)
-        if enemy.name == "Wolf":
-            enemy.items_rewarded.append((Quest_Item("Wolf Pelt", myHero, 50)))
-        if enemy.name == "Scout":
-            enemy.items_rewarded.append((Quest_Item("Copper Coin", myHero, 50)))
-        if enemy.name == "Spider":
-            enemy.items_rewarded.append((Quest_Item("Spider Leg", myHero, 50)))
-        game.set_enemy(enemy)
-    page_heading = "Welcome to the arena " + myHero.character_name +"!"
-    page_image = str(game.enemy.name)
-    conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
-                    ("Level: ", str(game.enemy.level), "Combat Details"),
-                    ("Damage: ", str(str(game.enemy.min_damage) + " - " + str(game.enemy.max_damage))),
-                    ("Attack Speed: ", str(game.enemy.attack_speed)),
-                    ("Health: ", str(str(game.enemy.current_health) + " / " + str(game.enemy.max_health))),
-                    ("Accuracy: ", str(str(game.enemy.accuracy) + "%"))]
-    page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
-    return render_template('home.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, status_display=conversation)  # return a string
-
 @app.route('/battle')
 @login_required
 def battle():
@@ -331,13 +259,152 @@ def battle():
     update_character(session['id'],myHero)
     return render_template('home.html', page_title=page_title, page_heading=page_heading, myHero=myHero, enemy=enemy, status_display=conversation, page_links=page_links)  # return a string
 
-@app.route('/store_greeting')
+@app.route('/reset_character')
 @login_required
-def store_greeting(page_title = "Store"):
-    page_heading = "Good day sir! What can I get for you?"
-    page_image = "store"
-    page_links = [("Take a look at the ", "/store_armoury", "armour", "."), ("Let's see what ", "/store_weaponry", "weapons", " are for sale.")]
-    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
+def reset_character():
+    myHero.character_name = "Unknown"
+    myHero.character_class = "None" 
+    myHero.age = 1
+    myHero.attribute_points = 0
+    myHero.current_xp = 0
+    myHero.max_xp = 0
+    myHero.attribute_points = 0
+    myHero.strength = 1
+    myHero.resilience = 1
+    myHero.vitality = 1
+    myHero.fortitude = 1
+    myHero.reflexes = 1
+    myHero.agility = 1
+    myHero.perception = 1
+    myHero.wisdom = 1
+    myHero.divinity = 1
+    myHero.charisma = 1
+    myHero.survivalism = 1
+    myHero.fortuity = 1
+    myHero.abilities = []
+    myHero.gold = 500
+    myHero.update_secondary_attributes()
+    return redirect(url_for('home'))  # return a string
+
+@app.route('/admin',methods=['GET', 'POST'])
+@login_required
+def admin():
+    page_title = "Admin"
+    page_heading = "Use this page to set values"
+    page_image = "town"
+    if request.method == 'POST':
+        myHero.strength = convert_input(request.form["Strength"])
+        myHero.resilience = convert_input(request.form["Resilience"])
+        myHero.vitality = convert_input(request.form["Vitality"])
+        myHero.fortitude = convert_input(request.form["Fortitude"])
+        myHero.reflexes = convert_input(request.form["Reflexes"])
+        myHero.agility = convert_input(request.form["Agility"])
+        myHero.perception = convert_input(request.form["Perception"])
+        myHero.wisdom = convert_input(request.form["Wisdom"])
+        myHero.divinity = convert_input(request.form["Divinity"])
+        myHero.charisma = convert_input(request.form["Charisma"])
+        myHero.survivalism = convert_input(request.form["Survivalism"])
+        myHero.fortuity = convert_input(request.form["Fortuity"])
+        myHero.age = convert_input(request.form["Age"])
+        myHero.current_exp = convert_input(request.form["Current_exp"])
+        myHero.max_exp = convert_input(request.form["Max_exp"])
+        myHero.renown = convert_input(request.form["Renown"])
+        myHero.virtue = convert_input(request.form["Virtue"])
+        myHero.charisma = convert_input(request.form["Charisma"])
+        myHero.devotion = convert_input(request.form["Devotion"])
+        myHero.gold = convert_input(request.form["Gold"])
+        myHero.basic_ability_points = convert_input(request.form["Basic_ability_points"])
+        myHero.class_ability_points = convert_input(request.form["Class_ability_points"])
+        myHero.specialization_ability_points = convert_input(request.form["Specialization_ability_points"])
+        myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
+        myHero.attribute_points = convert_input(request.form["Attribute_points"])
+        myHero.current_endurance = convert_input(request.form["Endurance"])
+        myHero.update_secondary_attributes()
+        update_character(session['id'],myHero)
+        return redirect(url_for('home'))
+
+    admin = [("Strength", myHero.strength),
+                          ("Resilience", myHero.resilience),
+                          ("Vitality", myHero.vitality),
+                          ("Fortitude", myHero.fortitude),
+                          ("Reflexes", myHero.reflexes),
+                          ("Agility", myHero.agility),
+                          ("Perception", myHero.perception),
+                          ("Wisdom", myHero.wisdom),
+                          ("Divinity", myHero.divinity),
+                          ("Charisma", myHero.charisma),
+                          ("Survivalism", myHero.survivalism),
+                          ("Fortuity", myHero.fortuity),
+                          ("Age", myHero.age),  
+                          ("Current_exp", myHero.current_exp),
+                          ("Max_exp", myHero.max_exp),
+                          ("Renown", myHero.renown),
+                          ("Virtue", myHero.virtue),
+                          ("Charisma", myHero.charisma),
+                          ("Devotion", myHero.devotion),
+                          ("Gold", myHero.gold),
+                          ("Basic_ability_points", myHero.basic_ability_points),
+                          ("Class_ability_points", myHero.class_ability_points),
+                          ("Specialization_ability_points", myHero.specialization_ability_points),
+                          ("Pantheonic_ability_points", myHero.pantheonic_ability_points),
+                          ("Attribute_points", myHero.attribute_points),
+                          ("Endurance",myHero.current_endurance)]
+    
+    return render_template('home.html', page_title=page_title, page_heading=page_heading, page_image=page_image, myHero=myHero, admin=admin)  # return a string
+
+
+### PROFILE/DISPLAY FUNCTIONS
+
+@app.route('/home')
+@login_required
+def home():
+    #fetch_character_data()
+    myHero.update_secondary_attributes()
+    update_time(myHero)
+    # If it's a new character, send them to cerate_character url
+    if myHero.character_name == "Unknown":
+        return redirect(url_for('create_character'))
+    # If they have leveled up, send them to level_up url
+    elif myHero.attribute_points > 0:
+        return redirect(url_for('level_up'))
+    return render_template('home.html', page_title="Profile", myHero=myHero, home=True)  # return a string'
+
+@app.route('/quest_log')
+@login_required
+def quest_log():
+    paragraph = ""
+    page_title = "Quest Log"
+    current_quests = myHero.current_quests
+    completed_quests = myHero.completed_quests
+    errands = myHero.errands
+    if current_quests == []:
+        current_quests = False
+    if errands == []:
+        errands = False
+    if completed_quests == []:
+        completed_quests = False
+    return render_template('home.html', myHero=myHero, journal=True, quest_log=True, page_title=page_title, current_quests=current_quests, errands=errands, completed_quests=completed_quests)  # return a string
+
+@app.route('/bestiary')
+@login_required
+def bestiary():
+    paragraph = ""
+    page_title = "Bestiary"
+    return render_template('home.html', myHero=myHero, journal=True, bestiary=True, page_title=page_title, bestiary_name=bestiary_data[0][0], bestiary_age=bestiary_data[0][1], bestiary_picture=bestiary_data[0][2])  # return a string
+     
+@app.route('/under_construction')
+@login_required
+def under_construction():
+    page_title = "Under Construction"
+    page_heading = "This page is not complete yet."
+    page_image = "under_construction"
+    return render_template('home.html', page_title=page_title, page_heading=page_heading, page_image=page_image, myHero=myHero)  # return a string
+
+### END OF PROFILE/DISPLAY FUNCTIONS
+
+
+
+### STARTING TOWN FUNCTIONS
 
 @app.route('/town')
 @login_required
@@ -349,9 +416,69 @@ def town(page_title = "Town"):
                   ("/barracks", "Barracks"),
                   ("/under_construction", "Marketplace"),
                   ("/tavern", "Tavern", "Other"),
-                  ("/under_mans_hut", "Old Man's Hut")]
+                  ("/old_mans_hut", "Old Man's Hut")]
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, town_links=town_links)  # return a string
 
+@app.route('/barracks')
+@login_required
+def barracks():
+    if myHero.current_health <= 0:
+        page_heading = "Your hero is currently dead."
+        page_image = "dead"
+        page_links = ["","","",""]
+    else:
+        page_heading = "Welcome to the arena " + myHero.character_name +"!"
+        page_image = "arena"
+        page_links = [("Compete in the ", "/arena","arena", ".(temporary)"), ("Pay to ", "/spar", "spar", " against the trainer."), ("Battle another ", "/under_construction", "player",".")]
+    return render_template('home.html', page_title="Barracks", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links)  # return a string
+
+#From /barracks
+@app.route('/spar')
+@login_required
+def spar():
+    spar_cost = 50
+    spar_benefit = 5
+    if myHero.gold < spar_cost:
+        page_heading = "You do not have enough gold to spar."
+    else:
+        myHero.gold -= spar_cost
+        myHero.current_exp += spar_benefit
+        page_heading = str("You spend some time sparring with the trainer at the barracks. You spend " + str(spar_cost) + " gold and gain " + str(spar_benefit) + " experience.")
+    return render_template('home.html', page_title="Sparring Room", page_heading=page_heading, myHero=myHero, game=game)  # return a string
+
+#From /barracks
+@app.route('/arena')
+@login_required
+def arena():
+    if not game.has_enemy or game.enemy.current_health <= 0:
+        enemy = monster_generator(myHero.age)
+        if enemy.name == "Wolf":
+            enemy.items_rewarded.append((Quest_Item("Wolf Pelt", myHero, 50)))
+        if enemy.name == "Scout":
+            enemy.items_rewarded.append((Quest_Item("Copper Coin", myHero, 50)))
+        if enemy.name == "Spider":
+            enemy.items_rewarded.append((Quest_Item("Spider Leg", myHero, 50)))
+        game.set_enemy(enemy)
+    page_heading = "Welcome to the arena " + myHero.character_name +"!"
+    page_image = str(game.enemy.name)
+    conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
+                    ("Level: ", str(game.enemy.level), "Combat Details"),
+                    ("Damage: ", str(str(game.enemy.min_damage) + " - " + str(game.enemy.max_damage))),
+                    ("Attack Speed: ", str(game.enemy.attack_speed)),
+                    ("Health: ", str(str(game.enemy.current_health) + " / " + str(game.enemy.max_health))),
+                    ("Accuracy: ", str(str(game.enemy.accuracy) + "%"))]
+    page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
+    return render_template('home.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, status_display=conversation)  # return a string
+
+@app.route('/store_greeting')
+@login_required
+def store_greeting(page_title = "Store"):
+    page_heading = "Good day sir! What can I get for you?"
+    page_image = "store"
+    page_links = [("Take a look at the ", "/store_armoury", "armour", "."), ("Let's see what ", "/store_weaponry", "weapons", " are for sale.")]
+    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
+
+#From /store_greeting
 @app.route('/store_armoury', methods=['GET', 'POST'])
 @login_required
 def store_armoury():
@@ -389,6 +516,7 @@ def store_armoury():
             paragraph = "You can't afford it."
     return render_template('home.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links, paragraph=paragraph)  # return a string
 
+#From /store_greeting
 @app.route('/store_weaponry', methods=['GET', 'POST'])
 @login_required
 def store_weaponry():
@@ -492,138 +620,18 @@ def tavern():
             page_heading = "You are now my apprentice!"
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, tavern=tavern, bottom_page_links=page_links, dialogue_options=dialogue_options)  # return a string
 
-@app.route('/quest_log')
+@app.route('/old_mans_hut')
 @login_required
-def quest_log():
-    paragraph = ""
-    page_title = "Quest Log"
-    current_quests = myHero.current_quests
-    completed_quests = myHero.completed_quests
-    errands = myHero.errands
-    if current_quests == []:
-        current_quests = False
-    if errands == []:
-        errands = False
-    if completed_quests == []:
-        completed_quests = False
-    return render_template('home.html', myHero=myHero, journal=True, quest_log=True, page_title=page_title, current_quests=current_quests, errands=errands, completed_quests=completed_quests)  # return a string
-    
-@app.route('/bestiary')
-@login_required
-def bestiary():
-    paragraph = ""
-    page_title = "Bestiary"
-    return render_template('home.html', myHero=myHero, journal=True, bestiary=True, page_title=page_title, bestiary_name=bestiary_data[0][0], bestiary_age=bestiary_data[0][1], bestiary_picture=bestiary_data[0][2])  # return a string
-        
-@app.route('/reset_character')
-@login_required
-def reset_character():
-    myHero.character_name = "Unknown"
-    myHero.character_class = "None" 
-    myHero.age = 1
-    myHero.attribute_points = 0
-    myHero.current_xp = 0
-    myHero.max_xp = 0
-    myHero.attribute_points = 0
-    myHero.strength = 1
-    myHero.resilience = 1
-    myHero.vitality = 1
-    myHero.fortitude = 1
-    myHero.reflexes = 1
-    myHero.agility = 1
-    myHero.perception = 1
-    myHero.wisdom = 1
-    myHero.divinity = 1
-    myHero.charisma = 1
-    myHero.survivalism = 1
-    myHero.fortuity = 1
-    myHero.abilities = []
-    myHero.gold = 500
-    myHero.update_secondary_attributes()
-    return redirect(url_for('home'))  # return a string
-
-@app.route('/under_mans_hut')
-@login_required
-def under_mans_hut():
+def old_mans_hut():
     page_heading = "Old Man's Hut"
     page_image = "hut"
     paragraph = "Nice to see you again kid. What do you need?"
     return render_template('home.html', myHero=myHero, page_title="Old Man's Hut", page_heading=page_heading, page_image=page_image, paragraph=paragraph)  # return a string
 
+### END OF STARTING TOWN FUNCTIONS
 
-@app.route('/under_construction')
-@login_required
-def under_construction():
-    page_title = "Under Construction"
-    page_heading = "This page is not complete yet."
-    page_image = "under_construction"
-    return render_template('home.html', page_title=page_title, page_heading=page_heading, page_image=page_image, myHero=myHero)  # return a string
 
-@app.route('/admin',methods=['GET', 'POST'])
-@login_required
-def admin():
-    page_title = "Admin"
-    page_heading = "Use this page to set values"
-    page_image = "town"
-    if request.method == 'POST':
-        myHero.strength = convert_input(request.form["Strength"])
-        myHero.resilience = convert_input(request.form["Resilience"])
-        myHero.vitality = convert_input(request.form["Vitality"])
-        myHero.fortitude = convert_input(request.form["Fortitude"])
-        myHero.reflexes = convert_input(request.form["Reflexes"])
-        myHero.agility = convert_input(request.form["Agility"])
-        myHero.perception = convert_input(request.form["Perception"])
-        myHero.wisdom = convert_input(request.form["Wisdom"])
-        myHero.divinity = convert_input(request.form["Divinity"])
-        myHero.charisma = convert_input(request.form["Charisma"])
-        myHero.survivalism = convert_input(request.form["Survivalism"])
-        myHero.fortuity = convert_input(request.form["Fortuity"])
-        myHero.age = convert_input(request.form["Age"])
-        myHero.current_exp = convert_input(request.form["Current_exp"])
-        myHero.max_exp = convert_input(request.form["Max_exp"])
-        myHero.renown = convert_input(request.form["Renown"])
-        myHero.virtue = convert_input(request.form["Virtue"])
-        myHero.charisma = convert_input(request.form["Charisma"])
-        myHero.devotion = convert_input(request.form["Devotion"])
-        myHero.gold = convert_input(request.form["Gold"])
-        myHero.basic_ability_points = convert_input(request.form["Basic_ability_points"])
-        myHero.class_ability_points = convert_input(request.form["Class_ability_points"])
-        myHero.specialization_ability_points = convert_input(request.form["Specialization_ability_points"])
-        myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
-        myHero.attribute_points = convert_input(request.form["Attribute_points"])
-        myHero.current_endurance = convert_input(request.form["Endurance"])
-        myHero.update_secondary_attributes()
-        update_character(session['id'],myHero)
-        return redirect(url_for('home'))
 
-    admin = [("Strength", myHero.strength),
-                          ("Resilience", myHero.resilience),
-                          ("Vitality", myHero.vitality),
-                          ("Fortitude", myHero.fortitude),
-                          ("Reflexes", myHero.reflexes),
-                          ("Agility", myHero.agility),
-                          ("Perception", myHero.perception),
-                          ("Wisdom", myHero.wisdom),
-                          ("Divinity", myHero.divinity),
-                          ("Charisma", myHero.charisma),
-                          ("Survivalism", myHero.survivalism),
-                          ("Fortuity", myHero.fortuity),
-                          ("Age", myHero.age),  
-                          ("Current_exp", myHero.current_exp),
-                          ("Max_exp", myHero.max_exp),
-                          ("Renown", myHero.renown),
-                          ("Virtue", myHero.virtue),
-                          ("Charisma", myHero.charisma),
-                          ("Devotion", myHero.devotion),
-                          ("Gold", myHero.gold),
-                          ("Basic_ability_points", myHero.basic_ability_points),
-                          ("Class_ability_points", myHero.class_ability_points),
-                          ("Specialization_ability_points", myHero.specialization_ability_points),
-                          ("Pantheonic_ability_points", myHero.pantheonic_ability_points),
-                          ("Attribute_points", myHero.attribute_points),
-                          ("Endurance",myHero.current_endurance)]
-    
-    return render_template('home.html', page_title=page_title, page_heading=page_heading, page_image=page_image, myHero=myHero, admin=admin)  # return a string
 
 
 # start the server with the 'run()' method
