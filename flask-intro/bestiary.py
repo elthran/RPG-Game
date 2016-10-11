@@ -38,4 +38,4 @@ def monster_generator(level):
     monster.combat_stats()
     return monster
 
-bestiary_data = [("Wolf", "5", "Wolf")]
+bestiary_data = [("Wolf", "5", "Wolf"),("Spider", "6", "Spider")]

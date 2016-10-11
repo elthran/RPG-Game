@@ -348,7 +348,8 @@ def town(page_title = "Town"):
     town_links = [("/store_greeting", "Blacksmith", "Shops"),
                   ("/barracks", "Barracks"),
                   ("/under_construction", "Marketplace"),
-                  ("/tavern", "Tavern", "Other")]
+                  ("/tavern", "Tavern", "Other"),
+                  ("/under_mans_hut", "Old Man's Hut")]
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, town_links=town_links)  # return a string
 
 @app.route('/store_armoury', methods=['GET', 'POST'])
@@ -507,7 +508,6 @@ def quest_log():
         completed_quests = False
     return render_template('home.html', myHero=myHero, journal=True, quest_log=True, page_title=page_title, current_quests=current_quests, errands=errands, completed_quests=completed_quests)  # return a string
     
-
 @app.route('/bestiary')
 @login_required
 def bestiary():
@@ -515,7 +515,6 @@ def bestiary():
     page_title = "Bestiary"
     return render_template('home.html', myHero=myHero, journal=True, bestiary=True, page_title=page_title, bestiary_name=bestiary_data[0][0], bestiary_age=bestiary_data[0][1], bestiary_picture=bestiary_data[0][2])  # return a string
         
-
 @app.route('/reset_character')
 @login_required
 def reset_character():
@@ -542,6 +541,15 @@ def reset_character():
     myHero.gold = 500
     myHero.update_secondary_attributes()
     return redirect(url_for('home'))  # return a string
+
+@app.route('/under_mans_hut')
+@login_required
+def under_mans_hut():
+    page_heading = "Old Man's Hut"
+    page_image = "hut"
+    paragraph = "Nice to see you again kid. What do you need?"
+    return render_template('home.html', myHero=myHero, page_title="Old Man's Hut", page_heading=page_heading, page_image=page_image, paragraph=paragraph)  # return a string
+
 
 @app.route('/under_construction')
 @login_required
