@@ -193,6 +193,7 @@ def create_character():
             myHero.inventory.append(starting_items[3])
             myHero.wisdom += 6
             myHero.perception += 1
+            myHero.abilities.append(Ability("Arcane Intellect", myHero, arcane_adjective))
         elif fathers_job == "Hunter":
             myHero.inventory.append(starting_items[1])
             myHero.inventory.append(starting_items[4])

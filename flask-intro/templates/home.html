@@ -205,7 +205,7 @@ Name: {{ myHero.character_name}}
 <h1>Abilities</h1>
 <h2>
 {% for ability in myHero.abilities %} 
-{{ ability.name }}
+{{ ability.name }} &nbsp; Class: {{ ability.display_name }} &nbsp; Level: {{ ability.level }}/{{ ability.max_level }}<br>
 {% endfor %}
 </h2>
 
