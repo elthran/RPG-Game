@@ -128,7 +128,7 @@ def create_random_hero():
     myHero.update_secondary_attributes
     
     # Abilities & Items (Temporary)
-    test_ability = Ability("Stone Skin", myHero, skin_adjective)
+    test_ability = Ability("Stone Skin", myHero, 5)
     myHero.abilities.append(test_ability)
     
     # Refresh Hero
