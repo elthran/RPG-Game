@@ -504,7 +504,7 @@ def store_armoury():
             myHero.gold -= cost
             for item in items_being_bought:
                 paragraph += item
-                dummy_item = Weapon(item, myHero, 5, 5)
+                dummy_item = Garment(item, myHero, 5, 25)
                 items_bought.append(dummy_item)
             for item in items_bought:
                 myHero.inventory.append(item)
@@ -542,7 +542,7 @@ def store_weaponry():
             myHero.gold -= cost
             for item in items_being_bought:
                 paragraph += item
-                dummy_item = Weapon(item, myHero, 5, 5)
+                dummy_item = Weapon(item, myHero, 5, 5, 10, 1)
                 items_bought.append(dummy_item)
             for item in items_bought:
                 myHero.inventory.append(item)
