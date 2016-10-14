@@ -12,6 +12,7 @@ overflow:hidden;
   clear:both;
 }
 
+
 h1 {
     font-size: 40px;
     color: #08edb2;
@@ -28,63 +29,92 @@ p{
 }
 
 
+/******* content ******/
 
-
-.content {
-  width: 75%;
+#content {
+  width: 80%;
   padding-top: 60px;
   float: right;
-background-color:white;
 }
 
-.content img {
+#content img {
   opacity:1;
   border-radius: 50%;
 
 }
 
-.sidebar{
+
+
+.nav ul {
+  list-style: none;
+  background-color: #333;
+  padding-left: 30px;
+  margin: 0;
+  display:inline-block;
+  width:100px;
+  }
+
+ 
+
+.nav li a {
+  display:block;
+   text-decoration: none;
+   padding:14px 16px;
+  color: #fff;
+  transition: .3s background-color;
+}
+
+.nav a:hover {
+  background-color: #005f5f;
+}
+ 
+.nav a.active {
+  background-color: #fff;
+  color: #444;
+  cursor: default;
+}
+
+
+/*****side bar *******/
+
+#sidebar {
   width:20%;
   position:fixed;
-  color:#E6E6FA;
   height:100%;
-  padding-top: 60px;
-  height:850px;
-  background: #A8DD9C;
-  background: -moz-linear-gradient(45deg, rgba(168,221,156,1) 0%, rgba(0,128,128,1) 100%); /* ff3.6+ */
-background: -webkit-gradient(linear, left bottom, right top, color-stop(0%, rgba(168,221,156,1)), color-stop(100%, rgba(0,128,128,1))); /* safari4+,chrome */
-background: -webkit-linear-gradient(45deg, rgba(168,221,156,1) 0%, rgba(0,128,128,1) 100%); /* safari5.1+,chrome10+ */
-background: -o-linear-gradient(45deg, rgba(168,221,156,1) 0%, rgba(0,128,128,1) 100%); /* opera 11.10+ */
-background: -ms-linear-gradient(45deg, rgba(168,221,156,1) 0%, rgba(0,128,128,1) 100%); /* ie10+ */
-background: linear-gradient(45deg, rgba(168,221,156,1) 0%, rgba(0,128,128,1) 100%); /* w3c */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#008080', endColorstr='#A8DD9C',GradientType=1 ); /* ie6-9 */
-
-
+  background: url(images/back.jpg);
 }
 
-.sidebar ul{
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+.sidebarinfo {
+ color:white;
+}
+ 
+
+#sidebar ul{
+   overflow: hidden; 
     list-style: none;
+     line-height: 20px;
+        color: :white;
 }
 
-.sidebar li{
-    padding:20px;
-     position: relative;
+#sidebar li{
     list-style-type: none;
+    padding-bottom: 14px;
+
 }
 
-.sidebar a{
-        display: block;
-        font-size: 0.5em;
-        position: absolute;
-        bottom: 0;
-        left: 0;
+.sidebarmenu li {
+   line-height: 30px;
 }
+
+.sidebarmenu a{
+ font-size: 20px;
+ color:#e5c100;
+}
+
 
 a:hover {
     color: #339966;
     text-decoration: none;
+    position: relative;
+    z-index: 2;
 }

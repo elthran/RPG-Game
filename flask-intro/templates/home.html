@@ -12,20 +12,22 @@
 
   <body>
   <div id="page">
-    <div class="sidebar">
-      <u1>
+
+    <div id="sidebar">
+      <div class="sidebarinfo">
         <img src="static/images/character.jpg" alt="Sample" style="width:100px;height:100px;">
-        <p>
-        <br>Name: {{ myHero.name}}
-        <br>Age: {{ myHero.age }}
-        <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
-        <br>Health: {{ myHero.current_health }} / {{ myHero.max_health }}
-        <br>Sanctity: {{ myHero.current_sanctity }} / {{ myHero.max_sanctity }}
-        <br>Endurance: {{ myHero.current_endurance }} / {{ myHero.max_endurance }}
-        <br>Gold: {{ myHero.gold }}
-        </p>
-      </u1>
-      <h3>
+        <ul>
+        <li>Name: {{ myHero.name}} </li>
+        <li>Age: {{ myHero.age }}</li>
+        <li>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}</li>
+        <li>Health: {{ myHero.current_health }} / {{ myHero.max_health }}</li></li>
+        <li>Sanctity: {{ myHero.current_sanctity }} / {{ myHero.max_sanctity }}
+        <li>Endurance: {{ myHero.current_endurance }} / {{ myHero.max_endurance }}</li>
+        <li>Gold: {{ myHero.gold }}</li>
+        </ul>
+      </div>
+      <div class="sidebarmenu">
+        <ul>
         <li><a href=/home>Profile</a></li>
         <li><a href=/town>Town</a></li>
         <li><a href=/quest_log>Journal</a></li>
@@ -35,20 +37,24 @@
         <li><a href=/under_construction>Users</a></li>
 		<li><a href=/admin>Admin</a></li>
         <li><a href=/logout>Logout</a></li>
-      </h3>
-    </div>
+        </ul>
+      </div>
+     
+
+ 
+  <div class="content">
 
 {% if journal %}
-<!-- Add a top bar here -->
+<div id="content">
+     <div class="nav">
+     <ul>
+     <li><a href=/Quest>Quest</a></li>
+      <li><a href=/Bestiary>Bestiary</a></li>
+        <li><a href=/People>People</a></li>
+        <li><a href=/Map>Map</a></li>
+     </ul>
+    </div>
 {% endif %}
-
-<div class="topbar">
- <u1>
-  <li><a href=/quest_log>Journal</a></li>
-  <li><a href=/bestiary>Bestiary</a></li>
-</div>
-
-  <div class="content">
 
 
     {% if page_heading %}
