@@ -392,7 +392,31 @@ def bestiary():
     paragraph = ""
     page_title = "Bestiary"
     return render_template('home.html', myHero=myHero, journal=True, bestiary=True, page_title=page_title, bestiary_name=bestiary_data[0][0], bestiary_age=bestiary_data[0][1], bestiary_picture=bestiary_data[0][2])  # return a string
-     
+
+@app.route('/people_log')
+@login_required
+def people_log():
+    paragraph = ""
+    page_title = "People"
+    page_heading = "People"
+    return render_template('home.html', myHero=myHero, journal=True, page_title=page_title, page_heading=page_heading)  # return a string
+
+@app.route('/map_log')
+@login_required
+def map_log():
+    paragraph = ""
+    page_title = "Map"
+    page_heading = "Map"
+    return render_template('home.html', myHero=myHero, journal=True, page_title=page_title, page_heading=page_heading)  # return a string
+
+@app.route('/achievement_log')
+@login_required
+def achievement_log():
+    paragraph = ""
+    page_title = "Achievements"
+    page_heading = "Achievements"
+    return render_template('home.html', myHero=myHero, journal=True, page_title=page_title, page_heading=page_heading)  # return a string
+
 @app.route('/under_construction')
 @login_required
 def under_construction():

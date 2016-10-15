@@ -31,7 +31,6 @@
         <li><a href=/home>Profile</a></li>
         <li><a href=/town>Town</a></li>
         <li><a href=/quest_log>Journal</a></li>
-        <li><a href=/bestiary>Bestiary</a></li>
         <li><a href=/under_construction>Inventory</a></li>
         <li><a href=/under_construction>Abilities</a></li>
         <li><a href=/under_construction>Users</a></li>
@@ -39,22 +38,22 @@
         <li><a href=/logout>Logout</a></li>
         </ul>
       </div>
-     
-
- 
-  <div class="content">
+</div>
 
 {% if journal %}
 <div id="content">
      <div class="nav">
      <ul>
-     <li><a href=/Quest>Quest</a></li>
-      <li><a href=/Bestiary>Bestiary</a></li>
-        <li><a href=/People>People</a></li>
-        <li><a href=/Map>Map</a></li>
+       <li><a href=/quest_log>Quests</a></li>
+       <li><a href=/bestiary>Bestiary</a></li>
+       <li><a href=/people_log>People</a></li>
+       <li><a href=/map_log>Map</a></li>
+       <li><a href=/achievement_log>Achievements</a></li>
      </ul>
     </div>
 {% endif %}
+
+ <div id="content">
 
 
     {% if page_heading %}
