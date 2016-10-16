@@ -21,12 +21,11 @@ class Ability(object):
 
     def update_stats(self):
         if self.name == "Stone Skin":
-            self.myHero.max_health += 15
+            self.myHero.max_health += 15 * self.level
         if self.name == "Arcane Intellect":
-            self.myHero.max_sanctity += 50
+            self.myHero.max_sanctity += 50 * self.level
         if self.name == "Giant Strength":
-            self.myHero.strength += 15
-
+            self.myHero.strength += 15 * self.level
 
 all_abilities = [Ability("Arcane Intellect", "Null", 0),
                  Ability("Stone Skin", "Null", 0),

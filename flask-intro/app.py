@@ -40,15 +40,35 @@ def command(cmd=None):
         if cmd == item.name:
             myHero.equipped_items.append(item)
             myHero.inventory.remove(item)
-            render_template('home.html', page_title="Profile", myHero=myHero, home=True)
+            render_template('home.html')
             return "success", 200, {'Content-Type': 'text/plain'} #//
         
     for item in myHero.equipped_items:
         if cmd == item.name:
             myHero.inventory.append(item)
             myHero.equipped_items.remove(item)
-            render_template('home.html', page_title="Profile", myHero=myHero, home=True)
+            render_template('home.html')
             return "success", 200, {'Content-Type': 'text/plain'} #//
+
+    learnable_known_abilities = [ability for ability in myHero.abilities if ability.level < ability.max_level]
+    for ability in learnable_known_abilities:
+        if cmd == ability.name:
+            for known_ability in myHero.abilities:
+                if known_ability.name == ability.name:
+                    myHero.known_ability.level += 1
+            render_template('home.html')
+            return "success", 200, {'Content-Type': 'text/plain'} #//
+            
+    unknown_abilities = []
+    for ability in all_abilities:
+        if not any(known_ability.name == ability.name for known_ability in myHero.abilities):
+            unknown_abilities.append(ability)
+    for ability in unknown_abilities:
+        if cmd == ability.name:
+            myHero.abilities.append(Ability(ability.name, myHero, 1))
+            render_template('home.html')
+            return "success", 200, {'Content-Type': 'text/plain'} #//
+            
         
     return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
        
@@ -378,12 +398,9 @@ def ability_tree():
     page_title = "Abilities"
     unknown_abilities = []
     for ability in all_abilities:
-        if any(known_ability.name == ability.name for known_ability in myHero.abilities):
-            pass
-        else:
+        if not any(known_ability.name == ability.name for known_ability in myHero.abilities):
             unknown_abilities.append(ability)
     return render_template('home.html', myHero=myHero, ability_tree=True, unknown_abilities=unknown_abilities, page_title=page_title)  # return a string
-
 
 @app.route('/quest_log')
 @login_required
