@@ -378,7 +378,9 @@ def ability_tree():
     page_title = "Abilities"
     unknown_abilities = []
     for ability in all_abilities:
-        if any(known_ability.name != ability.name for known_ability in myHero.abilities):
+        if any(known_ability.name == ability.name for known_ability in myHero.abilities):
+            pass
+        else:
             unknown_abilities.append(ability)
     return render_template('home.html', myHero=myHero, ability_tree=True, unknown_abilities=unknown_abilities, page_title=page_title)  # return a string
 
