@@ -12,6 +12,7 @@ from game import *
 from battle import *
 from bestiary import *
 from database import *
+from abilities import *
 import sqlite3
 import hashlib
 
@@ -369,6 +370,18 @@ def home():
     elif myHero.attribute_points > 0:
         return redirect(url_for('level_up'))
     return render_template('home.html', page_title="Profile", myHero=myHero, home=True)  # return a string'
+
+@app.route('/ability_tree')
+@login_required
+def ability_tree():
+    paragraph = ""
+    page_title = "Abilities"
+    unknown_abilities = []
+    for ability in all_abilities:
+        if any(known_ability.name != ability.name for known_ability in myHero.abilities):
+            unknown_abilities.append(ability)
+    return render_template('home.html', myHero=myHero, ability_tree=True, unknown_abilities=unknown_abilities, page_title=page_title)  # return a string
+
 
 @app.route('/quest_log')
 @login_required

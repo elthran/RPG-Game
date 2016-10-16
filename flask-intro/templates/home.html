@@ -32,7 +32,7 @@
         <li><a href=/town>Town</a></li>
         <li><a href=/quest_log>Journal</a></li>
         <li><a href=/under_construction>Inventory</a></li>
-        <li><a href=/under_construction>Abilities</a></li>
+        <li><a href=/ability_tree>Abilities</a></li>
         <li><a href=/under_construction>Users</a></li>
 		<li><a href=/admin>Admin</a></li>
         <li><a href=/logout>Logout</a></li>
@@ -93,6 +93,18 @@
     {% for town_link in town_links %}
       <h1>{{ town_link[2] }}</h1><h2><a href="{{ town_link[0] }}">{{ town_link[1] }}</a></h2>
     {% endfor %}
+
+    {% if ability_tree %}
+      <h1 style="text-align:center;">Abilities</h1>
+      <h2 style="text-align:left;">Known</h2>
+      {% for ability in myHero.abilities %}
+        {{ ability.name }} {{ ability.display_name }}<br>
+      {% endfor %}
+      <h2 style="text-align:left;">Unknown</h2>
+      {% for ability in unknown_abilities %}<br>
+        {{ ability.name }}
+      {% endfor %}
+    {% endif %}
 
     {% if primary_attributes %}
       <form method="post" action="" autocomplete="off">

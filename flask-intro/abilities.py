@@ -24,6 +24,10 @@ class Ability(object):
             self.myHero.max_health += 15
         if self.name == "Arcane Intellect":
             self.myHero.max_sanctity += 50
+        if self.name == "Giant Strength":
+            self.myHero.strength += 15
 
-    
-    
+
+all_abilities = [Ability("Arcane Intellect", "Null", 0),
+                 Ability("Stone Skin", "Null", 0),
+                 Ability("Giant Strength", "Null", 0)]
