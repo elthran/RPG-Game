@@ -35,6 +35,7 @@ def login_required(f):
 def command(cmd=None):
     # cmd (string type)is an item name, sent from the javascript code in html
     # it is the item that will get equipped/unequiped
+
     equippable_items = [item for item in myHero.inventory if item.equippable == True]
     for item in equippable_items: 
         if cmd == item.name:
@@ -53,9 +54,11 @@ def command(cmd=None):
     learnable_known_abilities = [ability for ability in myHero.abilities if ability.level < ability.max_level]
     for ability in learnable_known_abilities:
         if cmd == ability.name:
-            for known_ability in myHero.abilities:
-                if known_ability.name == ability.name:
-                    myHero.known_ability.level += 1
+            for i in range(0,len(myHero.abilities)):
+                if myHero.abilities[i].name == ability.name:
+                    myHero.abilities[i].level += 1
+                    print("ability level is now: " + str(myHero.abilities[i].level))
+                    
             render_template('home.html')
             return "success", 200, {'Content-Type': 'text/plain'} #//
             
@@ -68,7 +71,6 @@ def command(cmd=None):
             myHero.abilities.append(Ability(ability.name, myHero, 1))
             render_template('home.html')
             return "success", 200, {'Content-Type': 'text/plain'} #//
-            
         
     return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
        
