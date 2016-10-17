@@ -475,7 +475,8 @@ def town(page_title = "Town"):
                   ("/barracks", "Barracks"),
                   ("/under_construction", "Marketplace"),
                   ("/tavern", "Tavern", "Other"),
-                  ("/old_mans_hut", "Old Man's Hut")]
+                  ("/old_mans_hut", "Old Man's Hut"),
+                  ("/leave_town", "Village Gate", "Outskirts")]
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, town_links=town_links)  # return a string
 
 @app.route('/barracks')
@@ -686,6 +687,14 @@ def old_mans_hut():
     page_image = "hut"
     paragraph = "Nice to see you again kid. What do you need?"
     return render_template('home.html', myHero=myHero, page_title="Old Man's Hut", page_heading=page_heading, page_image=page_image, paragraph=paragraph)  # return a string
+
+@app.route('/leave_town')
+@login_required
+def leave_town():
+    page_heading = "Village Gate"
+    conversation = [("City Guard: ", "You are too young to be out on your own.")]
+    page_links = [("Return to the ", "/town", "city", ".")]
+    return render_template('home.html', myHero=myHero, page_heading=page_heading, conversation=conversation, page_links=page_links)  # return a string
 
 ### END OF STARTING TOWN FUNCTIONS
 
