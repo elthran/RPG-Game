@@ -31,6 +31,10 @@ class Ability(object):
         if self.name == "Sage":
             self.myHero.experience_gain_modifier += 0.05 * self.level
 
+    def update_display(self):
+        self.display_name = self.adjective[self.level - 1]
+        self.learn_name = self.adjective[self.level]
+
 all_abilities = [Ability("Arcane Intellect", "Null", 5, "Increases Sanctity by 50 for each level."),
                  Ability("Stone Skin", "Null", 5, "Increases Health by 15 for each level."),
                  Ability("Giant Strength", "Null", 5, "Increases Strength by 15 for each level."),

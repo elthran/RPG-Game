@@ -57,6 +57,7 @@ def command(cmd=None):
             for i in range(0,len(myHero.abilities)):
                 if myHero.abilities[i].name == ability.name:
                     myHero.abilities[i].level += 1
+                    myHero.abilities[i].update_display()
                     print("ability level is now: " + str(myHero.abilities[i].level))
                     
             render_template('home.html')
