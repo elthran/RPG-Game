@@ -99,6 +99,11 @@ class Hero(object):
         self.barter = 5 * self.charisma
         self.oration = 4 * self.charisma + self.wisdom
         self.luck = 5 * self.fortuity                  # A percentage
+
+        # Hidden attributes
+        self.experience_gain_modifier = 1
+        self.gold_gain_modifier = 1
+        
         for ability in self.abilities:
             ability.update_stats()
         for item in self.equipped_items:

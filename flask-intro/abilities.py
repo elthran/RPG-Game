@@ -26,7 +26,10 @@ class Ability(object):
             self.myHero.max_sanctity += 50 * self.level
         if self.name == "Giant Strength":
             self.myHero.max_damage += 15 * self.level
+        if self.name == "Sage":
+            self.myHero.experience_gain_modifier += 0.05 * self.level
 
 all_abilities = [Ability("Arcane Intellect", "Null", 0),
                  Ability("Stone Skin", "Null", 0),
-                 Ability("Giant Strength", "Null", 0),]
+                 Ability("Giant Strength", "Null", 0),
+                 Ability("Sage", "Null", 0)]

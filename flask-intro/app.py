@@ -263,7 +263,7 @@ def battle():
     else:
         myHero.current_endurance -= required_endurance
         game.has_enemy = False
-        myHero.current_exp += game.enemy.experience_rewarded
+        myHero.current_exp += game.enemy.experience_rewarded * myHero.experience_gain_modifier
         if len(game.enemy.items_rewarded) > 0:
             for item in game.enemy.items_rewarded:
                 if not any(items.name == item.name for items in myHero.inventory):
@@ -502,7 +502,7 @@ def spar():
         page_heading = "You do not have enough gold to spar."
     else:
         myHero.gold -= spar_cost
-        myHero.current_exp += spar_benefit
+        myHero.current_exp += spar_benefit * myHero.experience_gain_modifier
         page_heading = str("You spend some time sparring with the trainer at the barracks. You spend " + str(spar_cost) + " gold and gain " + str(spar_benefit) + " experience.")
     return render_template('home.html', page_title="Sparring Room", page_heading=page_heading, myHero=myHero, game=game)  # return a string
 
