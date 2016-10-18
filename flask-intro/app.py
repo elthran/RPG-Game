@@ -68,7 +68,7 @@ def command(cmd=None):
             unknown_abilities.append(ability)
     for ability in unknown_abilities:
         if cmd == ability.name:
-            myHero.abilities.append(Ability(ability.name, myHero, 1))
+            myHero.abilities.append(Ability(ability.name, myHero, ability.max_level, ability.description))
             render_template('home.html')
             return "success", 200, {'Content-Type': 'text/plain'} #//
         
@@ -477,6 +477,7 @@ def town(page_title = "Town"):
                   ("/tavern", "Tavern", "Other"),
                   ("/old_mans_hut", "Old Man's Hut"),
                   ("/leave_town", "Village Gate", "Outskirts")]
+    print("ABILITY LEVEL", myHero.abilities[0].level)
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, town_links=town_links)  # return a string
 
 @app.route('/barracks')

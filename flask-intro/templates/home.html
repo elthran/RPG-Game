@@ -98,11 +98,11 @@
       <h1 style="text-align:center;">Abilities</h1>
       <h2 style="text-align:left;">Known</h2>
       {% for ability in myHero.abilities %}
-        {{ ability.name }} {{ ability.display_name }} &emsp;  <button class="command command-{{ ability.name }}" value="{{ ability.name }}">Learn</button><br>
+        <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.learn_name }}: {{ ability.description }}" style="background:url('static/images/{{ ability.name }}.jpg'); height:70px; width:70px"></button><br>
       {% endfor %}
       <h2 style="text-align:left;">Unknown</h2>
       {% for ability in unknown_abilities %}
-        {{ ability.name }} &emsp;  <button class="command command-{{ ability.name }}" value="{{ ability.name }}">Learn</button><br>
+        <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.display_name }}: {{ ability.description }}" style="background:url('static/images/{{ ability.name }}.jpg'); height:70px; width:70px"></button><br>
       {% endfor %}
     {% endif %}
 
@@ -225,7 +225,7 @@ Name: {{ myHero.character_name}}
 <h1>Abilities</h1>
 <h2>
 {% for ability in myHero.abilities %} 
-{{ ability.name }} {{ ability.display_name }}<br>
+{{ ability.name }} {{ ability.display_name }}  &nbsp;  &nbsp;  &nbsp; Level: {{ ability.level }}<br>
 {% endfor %}
 </h2>
 

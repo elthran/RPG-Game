@@ -10,13 +10,15 @@ class Ability(object):
     # hero : The Hero who owns the item
 	# buy_price : Price to buy the item
 	# level_req : level requirment
-    def __init__(self, name, myHero, max_level):
+    def __init__(self, name, myHero, max_level, description):
         self.name = name
         self.myHero = myHero
         self.level = 1
         self.max_level = max_level
+        self.description = description
         self.adjective = ["I","II","III","IV", "V"]
         self.display_name = self.adjective[self.level - 1]
+        self.learn_name = self.adjective[self.level]
         self.requirements = []
 
     def update_stats(self):
@@ -29,7 +31,7 @@ class Ability(object):
         if self.name == "Sage":
             self.myHero.experience_gain_modifier += 0.05 * self.level
 
-all_abilities = [Ability("Arcane Intellect", "Null", 0),
-                 Ability("Stone Skin", "Null", 0),
-                 Ability("Giant Strength", "Null", 0),
-                 Ability("Sage", "Null", 0)]
+all_abilities = [Ability("Arcane Intellect", "Null", 5, "Increases Sanctity by 50 for each level."),
+                 Ability("Stone Skin", "Null", 5, "Increases Health by 15 for each level."),
+                 Ability("Giant Strength", "Null", 5, "Increases Strength by 15 for each level."),
+                 Ability("Sage", "Null", 5, "Increases Experience Gain by 5% for each level.")]
