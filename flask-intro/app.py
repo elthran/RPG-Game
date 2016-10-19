@@ -58,8 +58,7 @@ def command(cmd=None):
                 if myHero.abilities[i].name == ability.name:
                     myHero.abilities[i].level += 1
                     myHero.abilities[i].update_display()
-                    print("ability level is now: " + str(myHero.abilities[i].level))
-                    
+            myHero.update_secondary_attributes()
             render_template('home.html')
             return "success", 200, {'Content-Type': 'text/plain'} #//
             
@@ -70,6 +69,7 @@ def command(cmd=None):
     for ability in unknown_abilities:
         if cmd == ability.name:
             myHero.abilities.append(Ability(ability.name, myHero, ability.max_level, ability.description))
+            myHero.update_secondary_attributes()
             render_template('home.html')
             return "success", 200, {'Content-Type': 'text/plain'} #//
         
@@ -217,7 +217,6 @@ def create_character():
             myHero.inventory.append(starting_items[3])
             myHero.wisdom += 6
             myHero.perception += 1
-            myHero.abilities.append(Ability("Arcane Intellect", myHero, 3))
         elif fathers_job == "Hunter":
             myHero.inventory.append(starting_items[1])
             myHero.inventory.append(starting_items[4])
@@ -478,7 +477,6 @@ def town(page_title = "Town"):
                   ("/tavern", "Tavern", "Other"),
                   ("/old_mans_hut", "Old Man's Hut"),
                   ("/leave_town", "Village Gate", "Outskirts")]
-    print("ABILITY LEVEL", myHero.abilities[0].level)
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, town_links=town_links)  # return a string
 
 @app.route('/barracks')

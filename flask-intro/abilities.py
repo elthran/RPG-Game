@@ -30,6 +30,8 @@ class Ability(object):
             self.myHero.max_damage += 15 * self.level
         if self.name == "Sage":
             self.myHero.experience_gain_modifier += 0.05 * self.level
+        if self.name == "The Donkey":
+            self.myHero.max_carrying_capacity += 5 * self.level
 
     def update_display(self):
         self.display_name = self.adjective[self.level - 1]
@@ -38,4 +40,5 @@ class Ability(object):
 all_abilities = [Ability("Arcane Intellect", "Null", 5, "Increases Sanctity by 50 for each level."),
                  Ability("Stone Skin", "Null", 5, "Increases Health by 15 for each level."),
                  Ability("Giant Strength", "Null", 5, "Increases Strength by 15 for each level."),
-                 Ability("Sage", "Null", 5, "Increases Experience Gain by 5% for each level.")]
+                 Ability("Sage", "Null", 5, "Increases Experience Gain by 5% for each level."),
+                 Ability("The Donkey", "Null", 3, "Increases carrying capacity by 5 for each level.")]

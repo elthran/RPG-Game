@@ -130,16 +130,7 @@ class Hero(object):
 # Temporary Function to create a random hero
 def create_random_hero():
     myHero = Hero()
-    myHero.update_secondary_attributes
-    
-    # Abilities & Items (Temporary)
-    test_ability = Ability("Stone Skin", myHero, 5, "Increases Strength by 15 for each level.")
-    myHero.abilities.append(test_ability)
-    myHero.abilities[0].level = 1
-    print("ABILITY LEVEL",myHero.abilities[0].level)
-    
-    # Refresh Hero
-    myHero.update_secondary_attributes
+    myHero.update_secondary_attributes    
     return myHero
 # End of temporary functions
 

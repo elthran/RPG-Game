@@ -97,13 +97,14 @@
     {% if ability_tree %}
       <h1 style="text-align:center;">Abilities</h1>
       <h2 style="text-align:left;">Known</h2>
-      {% for ability in myHero.abilities %}
-        <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.learn_name }}: {{ ability.description }}" style="background:url('static/images/{{ ability.name }}.jpg'); height:70px; width:70px"></button><img src="static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;"><br>
-      {% endfor %}
+        {% for ability in myHero.abilities %}
+          <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.learn_name }}: {{ ability.description }}" style="background:url('static/images/{{ ability.name }}.jpg'); height:70px; width:70px"></button><img src="static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;"><br>
+        {% endfor %}
+      <h2 style="text-align:left;">Mastered</h2>
       <h2 style="text-align:left;">Unknown</h2>
-      {% for ability in unknown_abilities %}
-        <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.display_name }}: {{ ability.description }}" style="background:url('static/images/{{ ability.name }}.jpg'); height:70px; width:70px"></button><img src="static/images/0.jpg" alt="?" style="width:25px;height:25px;"><br>
-      {% endfor %}
+        {% for ability in unknown_abilities %}
+          <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.display_name }}: {{ ability.description }}" style="background:url('static/images/{{ ability.name }}.jpg'); height:70px; width:70px"></button><img src="static/images/0.jpg" alt="?" style="width:25px;height:25px;"><br>
+        {% endfor %}
     {% endif %}
 
     {% if primary_attributes %}
@@ -221,13 +222,6 @@ Name: {{ myHero.character_name}}
 <td><h2>Faith: {{ myHero.faith }}</h2></td>
 </tr>
 </table>
-
-<h1>Abilities</h1>
-<h2>
-{% for ability in myHero.abilities %} 
-{{ ability.name }} {{ ability.display_name }}<br>
-{% endfor %}
-</h2>
 
 <h1>Equipped Item(s):</h1>
 
