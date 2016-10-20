@@ -97,10 +97,13 @@
     {% if ability_tree %}
       <h1 style="text-align:center;">Abilities</h1>
       <h2 style="text-align:left;">Known</h2>
-        {% for ability in myHero.abilities %}
+        {% for ability in learnable_abilities %}
           <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.learn_name }}: {{ ability.description }}" style="background:url('static/images/{{ ability.name }}.jpg'); height:70px; width:70px"></button><img src="static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;"><br>
         {% endfor %}
       <h2 style="text-align:left;">Mastered</h2>
+        {% for ability in mastered_abilities %}
+          <img src="static/images/{{ ability.name }}.jpg"; height:70px; width:70px"><img src="static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;"><br>
+        {% endfor %}
       <h2 style="text-align:left;">Unknown</h2>
         {% for ability in unknown_abilities %}
           <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.display_name }}: {{ ability.description }}" style="background:url('static/images/{{ ability.name }}.jpg'); height:70px; width:70px"></button><img src="static/images/0.jpg" alt="?" style="width:25px;height:25px;"><br>

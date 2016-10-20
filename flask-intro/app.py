@@ -399,10 +399,17 @@ def ability_tree():
     paragraph = ""
     page_title = "Abilities"
     unknown_abilities = []
+    learnable_abilities = []
+    mastered_abilities = []
     for ability in all_abilities:
         if not any(known_ability.name == ability.name for known_ability in myHero.abilities):
             unknown_abilities.append(ability)
-    return render_template('home.html', myHero=myHero, ability_tree=True, unknown_abilities=unknown_abilities, page_title=page_title)  # return a string
+    for ability in myHero.abilities:
+        if ability.level < ability.max_level:
+            learnable_abilities.append(ability)
+        else:
+            mastered_abilities.append(ability)
+    return render_template('home.html', myHero=myHero, ability_tree=True, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)  # return a string
 
 @app.route('/quest_log')
 @login_required
