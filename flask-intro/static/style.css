@@ -73,11 +73,18 @@ p{
 }
 
 
+.rightside {
+  float:right;
+  overflow-y: scroll;
+}
+
+
 /*****side bar *******/
 
 #sidebar {
   width:15%;
   position:fixed;
+  overflow-y: scroll;
   height:100%;
   background-image: url(images/back.jpg);
 }
