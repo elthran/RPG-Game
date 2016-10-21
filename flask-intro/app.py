@@ -432,7 +432,7 @@ def quest_log():
 def bestiary():
     paragraph = ""
     page_title = "Bestiary"
-    return render_template('home.html', myHero=myHero, journal=True, bestiary=True, page_title=page_title, bestiary_name=bestiary_data[0][0], bestiary_age=bestiary_data[0][1], bestiary_picture=bestiary_data[0][2])  # return a string
+    return render_template('home.html', myHero=myHero, journal=True, bestiary=True, page_title=page_title, bestiary_data=bestiary_data, bestiary_name=bestiary_data[0][0], bestiary_age=bestiary_data[0][1], bestiary_picture=bestiary_data[0][2])  # return a string
 
 @app.route('/people_log')
 @login_required

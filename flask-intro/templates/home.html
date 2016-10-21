@@ -38,10 +38,10 @@
         <li><a href=/logout>Logout</a></li>
         </ul>
       </div>
-</div>
+    </div>
 
 {% if journal %}
-<div id="content">
+  <div id="content">
      <div class="nav">
      <ul>
        <li><a href=/quest_log>Quests</a></li>
@@ -51,6 +51,7 @@
        <li><a href=/achievement_log>Achievements</a></li>
      </ul>
     </div>
+  </div>
 {% endif %}
 
  <div id="content">
@@ -164,10 +165,12 @@
 
     {% if bestiary %}
       <h1 style="text-align:center;">Bestiary</h1>
-      <h2>Entry:</h2><br>
-      Name: {{ bestiary_name }}<br><br>
-      Age: {{ bestiary_age }}<br><br>
-      <img src="static/images/{{ bestiary_picture }}.jpg" alt="Bestiary Picture" style="width:100px;height:100px;">
+      {% for monster in bestiary_data %}  
+        <h2>Entry:</h2><br>
+        Name: {{ monster[0] }}<br><br>
+        Age: {{ monster[1] }}<br><br>
+        <img src="static/images/{{ monster[2] }}.jpg" alt="Bestiary Picture" style="width:100px;height:100px;">
+      {% endfor %}
     {% endif %}
 	
 	{% if admin %}
