@@ -56,18 +56,6 @@
 
  <div id="content">
 
- <div class="rightside">
-      <ul>
-        <li><a href=/home>Profile</a></li>
-        <li><a href=/town>Town</a></li>
-        <li><a href=/quest_log>Journal</a></li>
-        <li><a href=/under_construction>Inventory</a></li>
-        <li><a href=/ability_tree>Abilities</a></li>
-        <li><a href=/admin>Admin</a></li>
-        <li><a href=/under_construction>Users</a></li>
-        <li><a href=/logout>Logout</a></li>
-        </ul>
-    </div>
     {% if page_heading %}
     <h1>{{ page_heading }}</h1>
     {% endif %}
@@ -175,12 +163,19 @@
     {% endif %}
 
     {% if bestiary %}
+ <div class="rightside">
+{% for monster in bestiary_data %}
+      <ul>
+        <li>{{ monster[0] }}</li>
+        </ul>
+{% endfor %}
+    </div>
       <h1 style="text-align:center;">Bestiary</h1>
       {% for monster in bestiary_data %}  
         <h2>Entry:</h2><br>
         Name: {{ monster[0] }}<br><br>
         Age: {{ monster[1] }}<br><br>
-        <img src="static/images/{{ monster[2] }}.jpg" alt="Bestiary Picture" style="width:100px;height:100px;">
+        <img src="static/images/{{ monster[2] }}.jpg" alt="{{ monster[0] }} Picture" style="width:100px;height:100px;">
       {% endfor %}
     {% endif %}
 	
