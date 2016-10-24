@@ -45,7 +45,7 @@
      <div class="nav">
      <ul>
        <li><a href=/quest_log>Quests</a></li>
-       <li><a href=/bestiary>Bestiary</a></li>
+       <li><a href=/bestiary/Wolf>Bestiary</a></li>
        <li><a href=/people_log>People</a></li>
        <li><a href=/map_log>Map</a></li>
        <li><a href=/achievement_log>Achievements</a></li>
@@ -166,17 +166,15 @@
  <div class="rightside">
 {% for monster in bestiary_data %}
       <ul>
-        <li>{{ monster[0] }}</li>
+        <li><button class="command command-{{ monster[0] }}" value="{{ monster[0] }}">{{ monster[0]}}</button><br></li>
         </ul>
 {% endfor %}
     </div>
       <h1 style="text-align:center;">Bestiary</h1>
-      {% for monster in bestiary_data %}  
-        <h2>Entry:</h2><br>
-        Name: {{ monster[0] }}<br><br>
-        Age: {{ monster[1] }}<br><br>
-        <img src="static/images/{{ monster[2] }}.jpg" alt="{{ monster[0] }} Picture" style="width:100px;height:100px;">
-      {% endfor %}
+      <h2>Entry:</h2><br>
+        Name: {{ current_beast[0] }}<br><br>
+        Age: {{ current_beast[1] }}<br><br>
+        <img src="static/images/{{ current_beast[2] }}.jpg" alt="{{ current_beast[0] }} Picture" style="width:100px;height:100px;">
     {% endif %}
 	
 	{% if admin %}

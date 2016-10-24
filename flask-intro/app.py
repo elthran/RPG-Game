@@ -34,8 +34,9 @@ def login_required(f):
 @app.route('/<cmd>') # need to make sure this doesn't conflict with other routes
 def command(cmd=None):
     # cmd (string type)is an item name, sent from the javascript code in html
-    # it is the item that will get equipped/unequiped
 
+
+    # it is the item that will get equipped/unequiped
     equippable_items = [item for item in myHero.inventory if item.equippable == True]
     for item in equippable_items: 
         if cmd == item.name:
@@ -51,6 +52,7 @@ def command(cmd=None):
             render_template('home.html')
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
+    # ability
     learnable_known_abilities = [ability for ability in myHero.abilities if ability.level < ability.max_level]
     for ability in learnable_known_abilities:
         if cmd == ability.name:
@@ -72,7 +74,11 @@ def command(cmd=None):
             myHero.update_secondary_attributes()
             render_template('home.html')
             return "success", 200, {'Content-Type': 'text/plain'} #//
-        
+
+    for monster in bestiary_data:
+        if cmd == monster[0]:
+            current_beast = monster[0]
+            render_template('bestiary.html', current_beast=current_beast)
     return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
        
 @app.route('/level_up', methods=['GET', 'POST'])
@@ -431,12 +437,15 @@ def quest_log():
         completed_quests = False
     return render_template('home.html', myHero=myHero, journal=True, quest_log=True, page_title=page_title, current_quests=current_quests, errands=errands, completed_quests=completed_quests)  # return a string
 
-@app.route('/bestiary')
+@app.route('/bestiary/<current_beast>')
 @login_required
-def bestiary():
+def bestiary(current_beast):
+    for bi in bestiary_data:
+        if bi[0] == current_beast:
+            this_beast = current_beast
     paragraph = ""
     page_title = "Bestiary"
-    return render_template('home.html', myHero=myHero, journal=True, bestiary=True, page_title=page_title, bestiary_data=bestiary_data, bestiary_name=bestiary_data[0][0], bestiary_age=bestiary_data[0][1], bestiary_picture=bestiary_data[0][2])  # return a string
+    return render_template('home.html', myHero=myHero, journal=True, bestiary=True, page_title=page_title, bestiary_data=bestiary_data, current_beast=this_beast)  # return a string
 
 @app.route('/people_log')
 @login_required
