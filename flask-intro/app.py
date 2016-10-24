@@ -173,11 +173,15 @@ def create_account():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        add_new_user(username, password)
-        add_new_character("Unknown","None")
-        user_id = get_user_id(username)
-        update_character(user_id,myHero) # slightly redundant, fix laterrr
-        return redirect(url_for('login'))
+        temp_id = get_user_id(username)
+        if temp_id == -1:
+            add_new_user(username, password)
+            add_new_character("Unknown","None")
+            user_id = get_user_id(username)
+            update_character(user_id,myHero) # slightly redundant, fix laterrr
+            return redirect(url_for('login'))
+        else:
+            error = "Usename already exists!"  
     return render_template('login.html', error=error, create_account=True)
 	
 @app.route('/logout')

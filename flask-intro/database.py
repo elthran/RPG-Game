@@ -79,6 +79,8 @@ def get_user_id(username):
                 cur.execute('SELECT USER_ID FROM USERS WHERE USERNAME = ' + '"' + username +'";' ) # needs to be changed 
                 row = cur.fetchall()
     con.close()
+    if (len(row) == 0):
+        return -1
     return row[0][0]
     
 
