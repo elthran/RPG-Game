@@ -436,12 +436,16 @@ def quest_log():
 @app.route('/bestiary/<current_beast>')
 @login_required
 def bestiary(current_beast):
-    for monster in bestiary_data:
-        if monster[0] == current_beast:
-            display_beast = monster
+    if current_beast == "default":
+        current_beast = None
+    else:
+        for monster in bestiary_data:
+            if monster[0] == current_beast:
+                current_beast = monster
+                break
     paragraph = ""
     page_title = "Bestiary"
-    return render_template('home.html', myHero=myHero, journal=True, bestiary=True, page_title=page_title, bestiary_data=bestiary_data, current_beast=display_beast)  # return a string
+    return render_template('home.html', myHero=myHero, journal=True, bestiary=True, page_title=page_title, bestiary_data=bestiary_data, current_beast=current_beast)  # return a string
 
 @app.route('/people_log')
 @login_required

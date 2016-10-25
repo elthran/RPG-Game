@@ -45,7 +45,7 @@
      <div class="nav">
      <ul>
        <li><a href=/quest_log>Quests</a></li>
-       <li><a href=/bestiary/Wolf>Bestiary</a></li>
+       <li><a href=/bestiary/default>Bestiary</a></li>
        <li><a href=/people_log>People</a></li>
        <li><a href=/map_log>Map</a></li>
        <li><a href=/achievement_log>Achievements</a></li>
@@ -163,18 +163,22 @@
     {% endif %}
 
     {% if bestiary %}
- <div class="rightside">
-{% for monster in bestiary_data %}
-      <ul>
-        <li><a href=/bestiary/{{ monster[0] }}>{{ monster[0] }}</a></li>
-        </ul>
-{% endfor %}
+      <div class="rightside">
+        {% for monster in bestiary_data %}
+          <ul>
+            <li><a href=/bestiary/{{ monster[0] }}>{{ monster[0] }}</a></li>
+          </ul>
+        {% endfor %}
     </div>
       <h1 style="text-align:center;">Bestiary</h1>
-      <h2>Entry:</h2><br>
-        Name: {{ current_beast[0] }}<br><br>
-        Age: {{ current_beast[1] }}<br><br>
-        <img src="static/images/{{ current_beast[0] }}_display_picture.jpg" alt="{{ current_beast[0] }} Picture" style="width:100px;height:100px;">
+        {% if current_beast %}
+          <h2>Entry:</h2><br>
+          Name: {{ current_beast[0] }}<br><br>
+          Age: {{ current_beast[1] }}<br><br>
+          <img src="static/images/{{ current_beast[0] }}_display_picture.jpg" alt="{{ current_beast[0] }} Picture" style="width:100px;height:100px;">
+        {% else %}
+          Here is a list of all of the beasts you have encountered!
+        {% endif %}
     {% endif %}
 	
 	{% if admin %}
