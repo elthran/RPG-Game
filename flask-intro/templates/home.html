@@ -7,7 +7,7 @@
     {% endif %}
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="static/style.css" rel="stylesheet" media="screen">
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" media="screen">
   </head>
 
   <body>
@@ -166,7 +166,7 @@
  <div class="rightside">
 {% for monster in bestiary_data %}
       <ul>
-        <li><button class="command command-{{ monster[0] }}" value="{{ monster[0] }}">{{ monster[0]}}</button><br></li>
+        <li><a href=/bestiary/{{ monster[0] }}>{{ monster[0] }}</a></li>
         </ul>
 {% endfor %}
     </div>
@@ -174,7 +174,7 @@
       <h2>Entry:</h2><br>
         Name: {{ current_beast[0] }}<br><br>
         Age: {{ current_beast[1] }}<br><br>
-        <img src="static/images/{{ current_beast[2] }}.jpg" alt="{{ current_beast[0] }} Picture" style="width:100px;height:100px;">
+        <img src="static/images/{{ current_beast[0] }}_display_picture.jpg" alt="{{ current_beast[0] }} Picture" style="width:100px;height:100px;">
     {% endif %}
 	
 	{% if admin %}

@@ -75,10 +75,6 @@ def command(cmd=None):
             render_template('home.html')
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
-    for monster in bestiary_data:
-        if cmd == monster[0]:
-            current_beast = monster[0]
-            render_template('bestiary.html', current_beast=current_beast)
     return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
        
 @app.route('/level_up', methods=['GET', 'POST'])
@@ -440,12 +436,12 @@ def quest_log():
 @app.route('/bestiary/<current_beast>')
 @login_required
 def bestiary(current_beast):
-    for bi in bestiary_data:
-        if bi[0] == current_beast:
-            this_beast = current_beast
+    for monster in bestiary_data:
+        if monster[0] == current_beast:
+            display_beast = monster
     paragraph = ""
     page_title = "Bestiary"
-    return render_template('home.html', myHero=myHero, journal=True, bestiary=True, page_title=page_title, bestiary_data=bestiary_data, current_beast=this_beast)  # return a string
+    return render_template('home.html', myHero=myHero, journal=True, bestiary=True, page_title=page_title, bestiary_data=bestiary_data, current_beast=display_beast)  # return a string
 
 @app.route('/people_log')
 @login_required
