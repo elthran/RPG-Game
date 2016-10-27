@@ -491,7 +491,7 @@ def town(page_title = "Town"):
     page_heading = "You are in the Starting Town."
     page_image = "town"
     paragraph = "The starting town. There are many places to visit within the town. Have a look!"
-    town_links = [("/store_greeting", "Blacksmith", "Shops"),
+    town_links = [("/store/greeting", "Blacksmith", "Shops"),
                   ("/barracks", "Barracks"),
                   ("/under_construction", "Marketplace"),
                   ("/tavern", "Tavern", "Other"),
@@ -550,23 +550,24 @@ def arena():
     page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
     return render_template('home.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, status_display=conversation)  # return a string
 
-@app.route('/store_greeting')
+@app.route('/store/<inventory>')
 @login_required
-def store_greeting(page_title = "Store"):
-    page_heading = "Good day sir! What can I get for you?"
-    page_image = "store"
-    page_links = [("Take a look at the ", "/store_armoury", "armour", "."), ("Let's see what ", "/store_weaponry", "weapons", " are for sale.")]
-    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
-
-#From /store_greeting
-@app.route('/store_armoury', methods=['GET', 'POST'])
-@login_required
-def store_armoury():
+def store(inventory):
     page_title = "Store"
-    page_heading = "Check out our new armour!"
+    if inventory == "greeting":
+        page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]
+        page_heading = "Good day sir! What can I get for you?"
+        page_image = "store"
+        return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
+    elif inventory == "armoury":
+        page_heading = "Check out our new armour!"
+        page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
+        items_for_sale = [("Medium Tunic", "25"), ("Strong Tunic", "35")]
+    elif inventory == "weaponry":
+        page_heading = "Careful! Our weapons are sharp."
+        page_links = [("I think I'd rather look at your ", "/store/armoury", "armour", " selection.")]
+        items_for_sale = [("Medium Axe", "35"), ("Strong Axe", "55")]
     page_image = "store"
-    page_links = [("Let me see the ", "/store_weaponry", "weapons", " instead.")]
-    items_for_sale = [("Medium Tunic", "25"), ("Strong Tunic", "35")]
     paragraph = ""
     items_being_bought = []
     items_bought = []
@@ -584,44 +585,6 @@ def store_armoury():
             for item in items_being_bought:
                 paragraph += item
                 dummy_item = Garment(item, myHero, 5, 25)
-                items_bought.append(dummy_item)
-            for item in items_bought:
-                myHero.inventory.append(item)
-            paragraph += " for " + str(cost) + " gold."
-        elif len(items_being_bought) == 0:
-            paragraph = ""
-        else:
-            items_being_bought = []
-            cost = 0
-            paragraph = "You can't afford it."
-    return render_template('home.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links, paragraph=paragraph)  # return a string
-
-#From /store_greeting
-@app.route('/store_weaponry', methods=['GET', 'POST'])
-@login_required
-def store_weaponry():
-    page_title = "Store"
-    page_heading = "Careful! Our weapons are sharp."
-    page_image = "store"
-    page_links = [("I think I'd rather look at your ", "/store_armoury", "armour", " selection.")]
-    items_for_sale = [("Medium Axe", "35"), ("Strong Axe", "55"), ("OK Axe", "50")]
-    paragraph = ""
-    items_being_bought = []
-    items_bought = [] 
-    cost = 0
-    if request.method == 'POST':
-        for item in range (0, int(request.form[items_for_sale[0][0]])):
-            items_being_bought.append(items_for_sale[0][0])
-            cost += int(items_for_sale[0][1])
-        for item in range (0, int(request.form[items_for_sale[1][0]])):
-            items_being_bought.append(items_for_sale[1][0])
-            cost += int(items_for_sale[1][1])
-        if cost <= myHero.gold and len(items_being_bought) > 0:
-            paragraph += "You have bought "
-            myHero.gold -= cost
-            for item in items_being_bought:
-                paragraph += item
-                dummy_item = Weapon(item, myHero, 5, 5, 10, 1)
                 items_bought.append(dummy_item)
             for item in items_bought:
                 myHero.inventory.append(item)
