@@ -562,11 +562,11 @@ def store(inventory):
     elif inventory == "armoury":
         page_heading = "Check out our new armour!"
         page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
-        items_for_sale = [("Medium Tunic", "25"), ("Strong Tunic", "35")]
+        items_for_sale = [("Medium Tunic", "5"), ("Strong Tunic", "10")]
     elif inventory == "weaponry":
         page_heading = "Careful! Our weapons are sharp."
         page_links = [("I think I'd rather look at your ", "/store/armoury", "armour", " selection.")]
-        items_for_sale = [("Medium Axe", "35"), ("Strong Axe", "55")]
+        items_for_sale = [("Medium Axe", "5"), ("Strong Axe", "10")]
     page_image = "store"
     paragraph = ""
     items_being_bought = []
