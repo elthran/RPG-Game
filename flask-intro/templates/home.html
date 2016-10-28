@@ -78,12 +78,10 @@
 
     {% if items_for_sale %}
       <h2>Here is our list of items:</h2>
-      <form method="post" action="">
       {% for item in items_for_sale %}
-        {{ item[0] }} &nbsp; <input type="number" placeholder="0" name="{{ item[0] }}" min="0" max="99" title="Numbers only" value="0"> &nbsp; <b>Cost:</b> {{ item[1] }}<br>
-      {% endfor %}
-      <input class="btn btn-default" type="submit" value="Submit">
-      </form>
+        {{ item[0] }} ({{ item[1] }})
+        <button class="command command-{{ item[0] }}" value="{{ item[0] }}">Buy</button><br>
+      {% endfor %}        
     {% endif %}
 
     {% for link in page_links %}

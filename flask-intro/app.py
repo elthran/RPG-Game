@@ -35,7 +35,6 @@ def login_required(f):
 def command(cmd=None):
     # cmd (string type)is an item name, sent from the javascript code in html
 
-
     # it is the item that will get equipped/unequiped
     equippable_items = [item for item in myHero.inventory if item.equippable == True]
     for item in equippable_items: 
@@ -75,6 +74,13 @@ def command(cmd=None):
             render_template('home.html')
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
+    # store
+    for item in all_store_items:
+        if cmd == item[0] and myHero.gold >= item[1]:
+            myHero.inventory.append(item)
+            myHero.gold -= item[1]
+            return "success", 200, {'Content-Type': 'text/plain'} #//
+        
     return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
        
 @app.route('/level_up', methods=['GET', 'POST'])
@@ -568,34 +574,7 @@ def store(inventory):
         page_links = [("I think I'd rather look at your ", "/store/armoury", "armour", " selection.")]
         items_for_sale = [("Medium Axe", "5"), ("Strong Axe", "10")]
     page_image = "store"
-    paragraph = ""
-    items_being_bought = []
-    items_bought = []
-    cost = 0
-    if request.method == 'POST':
-        for item in range (0, int(request.form[items_for_sale[0][0]])):
-            items_being_bought.append(items_for_sale[0][0])
-            cost += int(items_for_sale[0][1])
-        for item in range (0, int(request.form[items_for_sale[1][0]])):
-            items_being_bought.append(items_for_sale[1][0])
-            cost += int(items_for_sale[1][1])
-        if cost <= myHero.gold and len(items_being_bought) > 0:
-            paragraph += "You have bought "
-            myHero.gold -= cost
-            for item in items_being_bought:
-                paragraph += item
-                dummy_item = Garment(item, myHero, 5, 25)
-                items_bought.append(dummy_item)
-            for item in items_bought:
-                myHero.inventory.append(item)
-            paragraph += " for " + str(cost) + " gold."
-        elif len(items_being_bought) == 0:
-            paragraph = ""
-        else:
-            items_being_bought = []
-            cost = 0
-            paragraph = "You can't afford it."
-    return render_template('home.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links, paragraph=paragraph)  # return a string
+    return render_template('home.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
 
 @app.route('/tavern', methods=['GET', 'POST'])
 @login_required

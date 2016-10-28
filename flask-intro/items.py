@@ -44,3 +44,5 @@ class Quest_Item(Item):
 
     def update_stats(self):
         pass
+
+all_store_items = [("Medium Axe", 5), ("Strong Axe", 60), ("Medium Tunic", 5), ("Strong Tunic", 10)]
