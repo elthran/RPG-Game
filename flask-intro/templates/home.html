@@ -15,7 +15,7 @@
 
     <div id="sidebar">
       <div class="sidebarinfo">
-        <img src="static/images/character.jpg" alt="Sample" style="width:100px;height:100px;">
+        <img src="/static/images/character.jpg" alt="Sample" style="width:100px;height:100px;">
         <ul>
         <li>Name: {{ myHero.name}} </li>
         <li>Age: {{ myHero.age }}</li>
@@ -61,7 +61,7 @@
     {% endif %}
 
     {% if page_image %}
-    <img src="static/images/{{ page_image }}.jpg" alt="{{ page_image }}" style="width:304px;height:228px;">
+    <img src="/static/images/{{ page_image }}.jpg" alt="{{ page_image }}" style="width:304px;height:228px;">
     {% endif %}
 
     {% if paragraph %}
@@ -96,15 +96,15 @@
       <h1 style="text-align:center;">Abilities</h1>
       <h2 style="text-align:left;">Known</h2>
         {% for ability in learnable_abilities %}
-          <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.learn_name }}: {{ ability.description }}" style="background:url('static/images/{{ ability.name }}.jpg'); height:70px; width:70px"></button><img src="static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;"><br>
+          <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.learn_name }}: {{ ability.description }}" style="background:url('static/images/{{ ability.name }}.jpg'); height:70px; width:70px"></button><img src="/static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;"><br>
         {% endfor %}
       <h2 style="text-align:left;">Mastered</h2>
         {% for ability in mastered_abilities %}
-          <img src="static/images/{{ ability.name }}.jpg"; height:70px; width:70px"><img src="static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;"><br>
+          <img src="/static/images/{{ ability.name }}.jpg"; height:70px; width:70px"><img src="/static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;"><br>
         {% endfor %}
       <h2 style="text-align:left;">Unknown</h2>
         {% for ability in unknown_abilities %}
-          <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.display_name }}: {{ ability.description }}" style="background:url('static/images/{{ ability.name }}.jpg'); height:70px; width:70px"></button><img src="static/images/0.jpg" alt="?" style="width:25px;height:25px;"><br>
+          <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.display_name }}: {{ ability.description }}" style="background:url('static/images/{{ ability.name }}.jpg'); height:70px; width:70px"></button><img src="/static/images/0.jpg" alt="?" style="width:25px;height:25px;"><br>
         {% endfor %}
     {% endif %}
 
@@ -173,7 +173,7 @@
           <h2>Entry:</h2><br>
           Name: {{ current_beast[0] }}<br><br>
           Age: {{ current_beast[1] }}<br><br>
-          <img src="static/images/{{ current_beast[0] }}_display_picture.jpg" alt="{{ current_beast[0] }} Picture" style="width:100px;height:100px;">
+          <img src="/static/images/{{ current_beast[0] }}_display_picture.jpg" alt="{{ current_beast[0] }} Picture" style="width:100px;height:100px;">
         {% else %}
           Here is a list of all of the beasts you have encountered!
         {% endif %}

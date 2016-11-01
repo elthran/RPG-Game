@@ -41,7 +41,6 @@ def command(cmd=None):
         if cmd == item.name:
             myHero.equipped_items.append(item)
             myHero.inventory.remove(item)
-            render_template('home.html')
             return "success", 200, {'Content-Type': 'text/plain'} #//
         
     for item in myHero.equipped_items:
@@ -60,7 +59,6 @@ def command(cmd=None):
                     myHero.abilities[i].level += 1
                     myHero.abilities[i].update_display()
             myHero.update_secondary_attributes()
-            render_template('home.html')
             return "success", 200, {'Content-Type': 'text/plain'} #//
             
     unknown_abilities = []
@@ -71,7 +69,6 @@ def command(cmd=None):
         if cmd == ability.name:
             myHero.abilities.append(Ability(ability.name, myHero, ability.max_level, ability.description))
             myHero.update_secondary_attributes()
-            render_template('home.html')
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # store
