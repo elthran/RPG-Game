@@ -73,9 +73,11 @@ def command(cmd=None):
 
     # store
     for item in all_store_items:
-        if cmd == item[0] and myHero.gold >= item[1]:
-            myHero.inventory.append(item)
-            myHero.gold -= item[1]
+        if cmd == item.name and myHero.gold >= item.buy_price:
+            newItem = item
+            newItem.update_owner(myHero)
+            myHero.inventory.append(newItem)
+            myHero.gold -= item.buy_price
             return "success", 200, {'Content-Type': 'text/plain'} #//
         
     return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them

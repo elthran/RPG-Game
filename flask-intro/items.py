@@ -10,6 +10,9 @@ class Item(object):
         self.myHero = myHero
         self.buy_price = buy_price
 
+    def update_owner(self, myHero):
+        self.myHero = myHero
+
 
 # Subclass of Item
 # (Other comments about it)
@@ -45,4 +48,4 @@ class Quest_Item(Item):
     def update_stats(self):
         pass
 
-all_store_items = [("Medium Axe", 5), ("Strong Axe", 60), ("Medium Tunic", 5), ("Strong Tunic", 10)]
+all_store_items = [Weapon("Medium Axe", "Temporary", 5, 30, 60, 1), Weapon("Strong Axe", "Temporary", 60, 300, 600, 2), Garment("Medium Tunic", "Temporary", 5, 25), Garment("Strong Tunic", "Temporary", 10, 250)]
