@@ -559,6 +559,7 @@ def arena():
 @login_required
 def store(inventory):
     page_title = "Store"
+    items_for_sale = []
     if inventory == "greeting":
         page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]
         page_heading = "Good day sir! What can I get for you?"
@@ -567,11 +568,15 @@ def store(inventory):
     elif inventory == "armoury":
         page_heading = "Check out our new armour!"
         page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
-        items_for_sale = [("Medium Tunic", "5"), ("Strong Tunic", "10")]
+        for item in all_store_items:
+            if item.name == "Medium Tunic" or item.name == "Strong Tunic":
+                items_for_sale.append(item)
     elif inventory == "weaponry":
         page_heading = "Careful! Our weapons are sharp."
         page_links = [("I think I'd rather look at your ", "/store/armoury", "armour", " selection.")]
-        items_for_sale = [("Medium Axe", "5"), ("Strong Axe", "10")]
+        for item in all_store_items:
+            if item.name == "Medium Axe" or item.name == "Strong Axe":
+                items_for_sale.append(item)
     page_image = "store"
     return render_template('home.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
 

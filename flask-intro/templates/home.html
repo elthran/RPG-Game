@@ -79,8 +79,8 @@
     {% if items_for_sale %}
       <h2>Here is our list of items:</h2>
       {% for item in items_for_sale %}
-        {{ item[0] }} ({{ item[1] }})
-        <button class="command command-{{ item[0] }}" value="{{ item[0] }}">Buy</button><br>
+        {{ item.name }} ({{ item.buy_price }})
+        <button class="command command-{{ item.name }}" value="{{ item.name }}">Buy</button><br>
       {% endfor %}        
     {% endif %}
 
