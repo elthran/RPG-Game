@@ -490,18 +490,22 @@ def under_construction():
 
 ### STARTING TOWN FUNCTIONS
 
-@app.route('/town')
+@app.route('/town/<town_name>')
 @login_required
-def town(page_title = "Town"):
-    page_heading = "You are in the Starting Town."
+def town(town_name):
+    page_title = str(town_name)
+    page_heading = "You are in " + page_title
     page_image = "town"
-    paragraph = "The starting town. There are many places to visit within the town. Have a look!"
-    town_links = [("/store/greeting", "Blacksmith", "Shops"),
-                  ("/barracks", "Barracks"),
-                  ("/under_construction", "Marketplace"),
-                  ("/tavern", "Tavern", "Other"),
-                  ("/old_mans_hut", "Old Man's Hut"),
-                  ("/leave_town", "Village Gate", "Outskirts")]
+    paragraph = page_title + ". There are many places to visit within the town. Have a look!"
+    if town_name == "placeholder_name":
+        town_links = [("/store/greeting", "Blacksmith", "Shops"),
+                      ("/barracks", "Barracks"),
+                      ("/under_construction", "Marketplace"),
+                      ("/tavern", "Tavern", "Other"),
+                      ("/old_mans_hut", "Old Man's Hut"),
+                      ("/leave_town", "Village Gate", "Outskirts")]
+    if town_name == "temporary_second_town":
+        town_links = [("/store/greeting", "Blacksmith", "Shops")]   
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, town_links=town_links)  # return a string
 
 @app.route('/barracks')
