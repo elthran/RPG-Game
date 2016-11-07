@@ -20,33 +20,33 @@ Game Objects (from other module maybe?) I am just going to start with Location a
 """
 
 class Location:
-	#Globals
-	def __init__(self):
-		pass
-	def display(self):
-		pass
-		
+    #Globals
+    def __init__(self):
+        pass
+    def display(self):
+        pass
+        
 def Town(Location):
-	def __init__(self, name):
-		self.name = name
-		self.locations = self.get_locations()
-		
-	def get_locations(self):
-		
-		with open("data\town." + name + ".txt", 'r') as f:
-			data = f.read()
-			return Town.parse(data)
-		
-	def display(self):
-		"""Return an html object of the town built from a template.
-		
-		This should be able to be "popped" into the main post-login site in the content section.
-		"""
-		pass
-	
-	def parse(data):
-		pass
-		
+    def __init__(self, name):
+        self.name = name
+        self.locations = self.get_locations()
+        
+    def get_locations(self):
+        
+        with open("data\town." + name + ".txt", 'r') as f:
+            data = f.read()
+            return Town.parse(data)
+        
+    def display(self):
+        """Return an html object of the town built from a template.
+        
+        This should be able to be "popped" into the main post-login site in the content section.
+        """
+        pass
+    
+    def parse(data):
+        pass
+        
 """
 Old code
 @app.route('/town/<town_name>')

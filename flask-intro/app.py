@@ -20,8 +20,11 @@ import hashlib
 app = Flask(__name__)
 
 app.secret_key = 'starcraft'
-		
+        
 def login_required(f):
+    """Set certain pages as requiring a login to visit.
+    
+    This should redirect you to the login page."""
     @wraps(f)
     def wrap(*args, **kwargs):
         if 'logged_in' in session:
@@ -190,7 +193,7 @@ def create_account():
         else:
             error = "Usename already exists!"  
     return render_template('login.html', error=error, create_account=True)
-	
+    
 @app.route('/logout')
 @login_required
 def logout():
