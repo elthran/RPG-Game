@@ -1,16 +1,22 @@
-@Shops
-Blacksmith
-Barracks
-Marketplace
+default = "default" #or some kind of shortcut anyways.
 
-@Other
-Tavern
-Old Man's Hut
+shops = {"Blacksmith": "Gerald's Ironworks", "Barracks": default, "Marketplace": default}
 
-@Outskirts
-Village Gate
+other = {"Tavern": default, "Old Man's Hut": "Home of Master Wenzdar"}
+
+outskirts = {"Village Gate": default}
 
 """
+## v.03
+Hopefully at some point I could build a location "editor" that would automate the process of creating
+and editing python dictionary objects or a simple way to put the same data in a database like
+a point and click and type html form or something.
+
+## v.02
+If the blacksmith is a generic blacksmith it would then load all items for the generic blacksmith
+class. If it was custom to this town it could load town.Thornwall.Gerald's Ironworks(a.k.a the Thornwall blacksmith shop.)
+
+## v.01
 A Python comment ...
 
 Maybe this file should even be a python module?
