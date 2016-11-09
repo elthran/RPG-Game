@@ -5,6 +5,9 @@
 #                                                                              #
 #//////////////////////////////////////////////////////////////////////////////#
 
+""" this is basically the init file that sets up some things"""
+
+
 import math
 from flask import request
 from items import *

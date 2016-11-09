@@ -34,6 +34,7 @@ def login_required(f):
             return redirect(url_for('login'))
     return wrap
 
+# This gets called anytime html uses <button class="command>
 @app.route('/<cmd>') # need to make sure this doesn't conflict with other routes
 def command(cmd=None):
     # cmd (string type)is an item name, sent from the javascript code in html
@@ -84,7 +85,8 @@ def command(cmd=None):
             return "success", 200, {'Content-Type': 'text/plain'} #//
         
     return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
-       
+
+# This gets called anytime you level up     
 @app.route('/level_up', methods=['GET', 'POST'])
 @login_required
 def level_up():
@@ -193,7 +195,8 @@ def create_account():
         else:
             error = "Usename already exists!"  
     return render_template('login.html', error=error, create_account=True)
-    
+
+# this gets called if you press "logout"
 @app.route('/logout')
 @login_required
 def logout():
@@ -202,6 +205,7 @@ def logout():
     flash("Thank you for playing! Your have successfully logged out.")
     return redirect(url_for('login'))
 
+# this gets called if you are logged in and there is no character info stored
 @app.route('/create_character', methods=['GET', 'POST'])
 @login_required
 def create_character():
@@ -254,6 +258,7 @@ def create_character():
     else:
         return render_template('create_character.html', page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, conversation=conversation, display=display)  # render a template  
 
+# this gets called if you fight in the arena
 @app.route('/battle')
 @login_required
 def battle():
@@ -297,6 +302,7 @@ def battle():
     update_character(session['id'],myHero)
     return render_template('home.html', page_title=page_title, page_heading=page_heading, myHero=myHero, enemy=enemy, status_display=conversation, page_links=page_links)  # return a string
 
+# this is a temp button that can call this to erase your chracter information and redirect you to the create character page
 @app.route('/reset_character')
 @login_required
 def reset_character():
@@ -324,6 +330,7 @@ def reset_character():
     myHero.update_secondary_attributes()
     return redirect(url_for('home'))  # return a string
 
+# this is a temporary page that lets you modify any attributes for testing
 @app.route('/admin',methods=['GET', 'POST'])
 @login_required
 def admin():
@@ -491,7 +498,7 @@ def under_construction():
 
 
 
-### STARTING TOWN FUNCTIONS
+### TOWN FUNCTIONS
 
 @app.route('/town/<town_name>')
 @login_required
