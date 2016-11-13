@@ -678,6 +678,10 @@ def leave_town():
 
 ### END OF STARTING TOWN FUNCTIONS
 
+###testing by Marlen ####
+@app.route('/')
+def main():
+    return render_template('main.html')
 
 
 
