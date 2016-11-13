@@ -462,13 +462,19 @@ def bestiary(current_beast):
     page_title = "Bestiary"
     return render_template('home.html', myHero=myHero, journal=True, bestiary=True, page_title=page_title, bestiary_data=bestiary_data, current_beast=current_beast)  # return a string
 
-@app.route('/people_log')
+@app.route('/people_log/<current_npc>')
 @login_required
-def people_log():
+def people_log(current_npc):
+    if current_npc == "default":
+        current_npc = None
+    else:
+        for npc in npc_data:
+            if npc[0] == current_npc:
+                current_npc = npc
+                break
     paragraph = ""
     page_title = "People"
-    page_heading = "People"
-    return render_template('home.html', myHero=myHero, journal=True, page_title=page_title, page_heading=page_heading)  # return a string
+    return render_template('home.html', myHero=myHero, journal=True, people_log=True, page_title=page_title, npc_data=npc_data, current_npc=current_npc)  # return a string
 
 @app.route('/map_log')
 @login_required

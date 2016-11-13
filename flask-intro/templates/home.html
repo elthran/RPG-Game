@@ -47,7 +47,7 @@
      <ul>
        <li><a href=/quest_log>Quests</a></li>
        <li><a href=/bestiary/default>Bestiary</a></li>
-       <li><a href=/people_log>People</a></li>
+       <li><a href=/people_log/default>People</a></li>
        <li><a href=/map_log>Map</a></li>
        <li><a href=/achievement_log>Achievements</a></li>
      </ul>
@@ -177,6 +177,25 @@
           <img src="/static/images/{{ current_beast[0] }}_display_picture.jpg" alt="{{ current_beast[0] }} Picture" style="width:100px;height:100px;">
         {% else %}
           Here is a list of all of the beasts you have encountered!
+        {% endif %}
+    {% endif %}
+
+    {% if people_log %}
+      <div class="rightside">
+        {% for npc in npc_data %}
+          <ul>
+            <li><a href=/people_log/{{ npc[0] }}>{{ npc[0] }}</a></li>
+          </ul>
+        {% endfor %}
+    </div>
+      <h1 style="text-align:center;">People Log</h1>
+        {% if current_npc %}
+          <h2>Entry:</h2><br>
+          Name: {{ current_npc[0] }}<br><br>
+          Age: {{ current_npc[1] }}<br><br>
+          Race: {{ current_npc[2] }}
+        {% else %}
+          Here is a list of all of the notable people you have encountered!
         {% endif %}
     {% endif %}
 	
