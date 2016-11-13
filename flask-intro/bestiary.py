@@ -39,3 +39,4 @@ def monster_generator(level):
     return monster
 
 bestiary_data = [("Wolf", "5", "Wolf"),("Spider", "6", "Spider"),("Goblin", "12", "Goblin")]
+npc_data = [("Old Man", "Unknown", "Human"), ("", "", "")]
