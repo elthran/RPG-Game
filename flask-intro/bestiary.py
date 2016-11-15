@@ -8,14 +8,14 @@
 import random
 
 class Monster(object):
-    def __init__(self, monster_id, name, species, level):
+    def __init__(self, monster_id, name, species, level, strength, vitality, experience_rewarded):
         self.monster_id = monster_id
         self.name = name
         self.species = species
         self.level = level
-        self.strength = 1 + self.level
-        self.vitality = 1 + self.level
-        self.experience_rewarded = 5 + level
+        self.strength = strength
+        self.vitality = vitality
+        self.experience_rewarded = experience_rewarded
         self.items_rewarded = []
 
     def combat_stats(self):        
@@ -31,13 +31,18 @@ class Monster(object):
     def __repr__(self):
         return "\nName: %s\nDamage: %s" % (self.name, self.damage)
 
+class NPC(object):
+    def __init__(self, npc_id, name, race, age):
+        self.npc_id = npc_id
+        self.name = name
+        self.race = race
+        self.age = age
+
 def monster_generator(level):
-    name_and_species = {"Wolf":"Beast","Scout":"Goblin","Spider":"Beast"}
-    name = random.choice(list(name_and_species.keys()))
-    species = name_and_species[name]
-    monster = Monster("1", name, species, level)
+    monster = random.choice(bestiary_data)
+    monster.level = level
     monster.combat_stats()
     return monster
 
-bestiary_data = [Monster("001", "Alpha Wolf", "Wolf", 2), Monster("002", "Goblin Scout", "Goblin", 3), Monster("003", "Spiderling", "Spider", 1)]
-npc_data = [("Old Man", "Unknown", "Human"), ("", "", "")]
+bestiary_data = [Monster("001", "Alpha Wolf", "Wolf", 2, 2, 2, 3), Monster("002", "Goblin Scout", "Goblin", 3, 3, 3, 5), Monster("003", "Spiderling", "Spider", 1, 1, 1, 2)]
+npc_data = [NPC("01", "Old Man", "Human", 87)]

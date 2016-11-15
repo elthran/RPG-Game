@@ -469,7 +469,7 @@ def people_log(current_npc):
         current_npc = None
     else:
         for npc in npc_data:
-            if npc[0] == current_npc:
+            if npc.npc_id == current_npc:
                 current_npc = npc
                 break
     paragraph = ""
