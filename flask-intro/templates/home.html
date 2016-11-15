@@ -165,16 +165,17 @@
       <div class="rightside">
         {% for monster in bestiary_data %}
           <ul>
-            <li><a href=/bestiary/{{ monster[0] }}>{{ monster[0] }}</a></li>
+            <li><a href=/bestiary/{{ monster.monster_id }}>{{ monster.name }}</a></li>
           </ul>
         {% endfor %}
     </div>
       <h1 style="text-align:center;">Bestiary</h1>
-        {% if current_beast %}
+        {% if current_monster %}
           <h2>Entry:</h2><br>
-          Name: {{ current_beast[0] }}<br><br>
-          Age: {{ current_beast[1] }}<br><br>
-          <img src="/static/images/{{ current_beast[0] }}_display_picture.jpg" alt="{{ current_beast[0] }} Picture" style="width:100px;height:100px;">
+          Name: {{ current_monster.name }}<br><br>
+          Age: {{ current_monster.level }}<br><br>
+          Type: {{ current_monster.species }} <br><br>
+          <img src="/static/images/{{ current_monster.name }}_display_picture.jpg" alt="{{ current_monster.name }} Picture" style="width:100px;height:100px;">
         {% else %}
           Here is a list of all of the beasts you have encountered!
         {% endif %}

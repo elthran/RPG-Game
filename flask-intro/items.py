@@ -9,6 +9,7 @@ class Item(object):
         self.name = name
         self.myHero = myHero
         self.buy_price = buy_price
+        self.equippable = False
 
     def update_owner(self, myHero):
         self.myHero = myHero
@@ -43,7 +44,6 @@ class Quest_Item(Item):
     def __init__(self, name, myHero, buy_price):
         super(Quest_Item, self).__init__(name, myHero, buy_price)
         self.amount_owned = 1
-        self.equippable = False
 
     def update_stats(self):
         pass

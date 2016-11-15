@@ -448,19 +448,19 @@ def quest_log():
         completed_quests = False
     return render_template('home.html', myHero=myHero, journal=True, quest_log=True, page_title=page_title, current_quests=current_quests, errands=errands, completed_quests=completed_quests)  # return a string
 
-@app.route('/bestiary/<current_beast>')
+@app.route('/bestiary/<current_monster_id>')
 @login_required
-def bestiary(current_beast):
-    if current_beast == "default":
-        current_beast = None
+def bestiary(current_monster_id):
+    if current_monster_id == "default":
+        current_monster = None
     else:
         for monster in bestiary_data:
-            if monster[0] == current_beast:
-                current_beast = monster
+            if monster.monster_id == current_monster_id:
+                current_monster = monster
                 break
     paragraph = ""
     page_title = "Bestiary"
-    return render_template('home.html', myHero=myHero, journal=True, bestiary=True, page_title=page_title, bestiary_data=bestiary_data, current_beast=current_beast)  # return a string
+    return render_template('home.html', myHero=myHero, journal=True, bestiary=True, page_title=page_title, bestiary_data=bestiary_data, current_monster=current_monster)  # return a string
 
 @app.route('/people_log/<current_npc>')
 @login_required
@@ -607,7 +607,10 @@ def tavern():
     page_title = "Tavern"
     page_heading = "You enter the Red Dragon Inn."
     page_image = "bartender"
-    paragraph = "Greetings traveler! What can I get for you today?"
+    if "Become an apprentice at the tavern." in myHero.completed_quests:
+        paragraph = "Welcome, my apprentice!"
+    else:
+        paragraph = "Greetings traveler! What can I get for you today?"
     page_links = [("Return to ", "/tavern", "tavern", ".")] # I wish it looked like this
     dialogue_options = {"Drink": "Buy a drink for 25 gold. (This fully heals you)"}
     if "Collect 2 Wolf Pelts for the Bartender" not in myHero.errands and "Collect 2 Wolf Pelts for the Bartender" not in myHero.completed_quests:
