@@ -256,13 +256,13 @@ Name: {{ myHero.character_name}}
 </table>
 
 <h1>Equipped Item(s):</h1>
-
 <h2>{% for item in myHero.equipped_items %}  
 <br>{{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
 {% endfor %}</h2>
+
 <h1>Inventory:</h1>
 <h2>{% for item in myHero.inventory %}   
-<br>{{ item.amount_owned }} {{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Equip</button>
+<br>{{ item.amount_owned }} {{ item.name }} &emsp; {% if item.equippable %} <button class="command command-{{ item.name }}" value="{{ item.name }}">Equip</button>{% endif %}
 {% endfor %}
 </h2>
 
