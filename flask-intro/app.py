@@ -43,7 +43,14 @@ def command(cmd=None):
     equippable_items = [item for item in myHero.inventory if item.equippable == True]
     for item in equippable_items: 
         if cmd == item.name:
-            myHero.equipped_items.append(item)
+            if type(item) == Garment:
+                while len(myHero.chest_equipped) > 0:
+                    for item in myHero.chest_equipped:
+                        myHero.inventory.append(item)
+                        myHero.chest_equipped.remove(item)
+                myHero.chest_equipped.append(item)
+            else:
+                myHero.equipped_items.append(item)
             myHero.inventory.remove(item)
             return "success", 200, {'Content-Type': 'text/plain'} #//
         
@@ -51,7 +58,12 @@ def command(cmd=None):
         if cmd == item.name:
             myHero.inventory.append(item)
             myHero.equipped_items.remove(item)
-            render_template('home.html')
+            return "success", 200, {'Content-Type': 'text/plain'} #//
+
+    for item in myHero.chest_equipped:
+        if cmd == item.name:
+            myHero.inventory.append(item)
+            myHero.chest_equipped.remove(item)
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # ability

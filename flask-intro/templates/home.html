@@ -261,6 +261,11 @@ Name: {{ myHero.character_name}}
 <br>{{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
 {% endfor %}</h2>
 
+<h1>Equipped Chest Armour(s):</h1>
+<h2>{% for item in myHero.chest_equipped %}  
+<br>{{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
+{% endfor %}</h2>
+
 <h1>Inventory:</h1>
 <h2>{% for item in myHero.inventory %}   
 <br>{{ item.amount_owned }} {{ item.name }} &emsp; {% if item.equippable %} <button class="command command-{{ item.name }}" value="{{ item.name }}">Equip</button>{% endif %}

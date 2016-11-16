@@ -73,6 +73,7 @@ class Hero(object):
         self.equipped_items = []
         self.inventory = []
         self.abilities = []
+        self.chest_equipped = []
 
         self.errands = []
         self.current_quests = []
