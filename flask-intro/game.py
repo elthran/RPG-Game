@@ -78,6 +78,9 @@ class Hero(object):
         self.errands = []
         self.current_quests = []
         self.completed_quests = []
+        self.completed_achievements = []
+
+        self.wolf_kills = 0
         
     # Sets damage
     def update_secondary_attributes(self):
@@ -156,6 +159,7 @@ myHero.inventory.append(Quest_Item("Copper Coin", myHero, 50))
 for item in myHero.inventory:
     item.amount_owned = 5
 # ~~~~~~~~~~
+kill_achievements = [("Kill a wolf", "wolf_kills", 1)]
 
 	
 

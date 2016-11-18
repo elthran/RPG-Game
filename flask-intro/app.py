@@ -293,6 +293,10 @@ def battle():
         page_heading = "You have died."
     else:
         myHero.current_endurance -= required_endurance
+        if game.enemy.species == "Wolf":
+            myHero.wolf_kills += 1
+            if "Kill a wolf" not in myHero.completed_achievements:
+                myHero.completed_achievements.append("Kill a wolf")
         game.has_enemy = False
         myHero.current_exp += game.enemy.experience_rewarded * myHero.experience_gain_modifier
         if len(game.enemy.items_rewarded) > 0:
@@ -501,8 +505,7 @@ def map_log():
 def achievement_log():
     paragraph = ""
     page_title = "Achievements"
-    page_heading = "Achievements"
-    return render_template('home.html', myHero=myHero, journal=True, page_title=page_title, page_heading=page_heading)  # return a string
+    return render_template('home.html', myHero=myHero, journal=True, achievement_log=True, completed_achievements=myHero.completed_achievements, page_title=page_title)  # return a string
 
 @app.route('/under_construction')
 @login_required
