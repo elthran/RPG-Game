@@ -226,32 +226,55 @@ class EasyDatabase():
         """Build the tables needed by the game.
         
         This should be upgraded to make it more human readable and editable .... maybe an external xml/spreadsheet/excel file?
-        """
-        self.write("CREATE TABLE USERS(USERNAME TEXT PRIMARY KEY NOT NULL, PASSWORD TEXT NOT NULL, user_id integer)")
-        self.write("CREATE TABLE characters(user_id number primary key, character_name text,age number, character_class number, specialization text, house text, current_exp number, max_exp number, renown number, virtue number, devotion number, gold number, basic_ability_points number, class_ability_points number, specialization_ability_points number, pantheonic_ability_points number, attribute_points number, strength number, resilience number, vitality number, fortitude number, reflexes number, agility number, perception number, wisdom number, divinity number, charisma number, survivalism number, fortuity number, equipped_items number[], inventory number[], abilities number[], previous_login_time datetime current_timestamp, current_time datetime current_timestamp, previous_time datetime current_timestamp, endurance number)")
         
-    def write(self, *args, **kwargs):
+        NOTE: User_ID field removed and replaced with automatic ROWID
+        """
+        basic_tables = ("CREATE TABLE USERS(USERNAME TEXT PRIMARY KEY NOT NULL, PASSWORD TEXT NOT NULL)",
+            "CREATE TABLE characters(user_id number primary key, character_name text,age number, character_class number, specialization text, house text, current_exp number, max_exp number, renown number, virtue number, devotion number, gold number, basic_ability_points number, class_ability_points number, specialization_ability_points number, pantheonic_ability_points number, attribute_points number, strength number, resilience number, vitality number, fortitude number, reflexes number, agility number, perception number, wisdom number, divinity number, charisma number, survivalism number, fortuity number, equipped_items number[], inventory number[], abilities number[], previous_login_time datetime current_timestamp, current_time datetime current_timestamp, previous_time datetime current_timestamp, endurance number)",
+            "CREATE TABLE COUNTERS (NUMBER_OF TEXT, AMOUNT INTEGER)",)
+            
+        #Deal with use case where table alread exists ... not very exacting ...
+        for table in basic_tables:
+            try:
+                self.write(table)
+            except sqlite3.OperationalError as e:
+                if 'table' in e.args[0] and 'already exists' in e.args[0]:
+                    pass
+        
+        #self.write("INSERT INTO COUNTERS VALUES('users', 0)") Doesn't work yet
+        
+    def write(self, sql_string=None, *args, **kwargs):
         """Open connection and excute SQL statement then commit and close.
         
         This defaults to excecuting if only on argument is passed ... it is very insecure.
+        NOTE: *args should be a list of tuples ... or maybe it already is? I shall test.
         """
         conn = sqlite3.connect(self.name)
         c = conn.cursor()
-        if len(args[0]) is 1:
-            c.execute(args)
+        if sql_string and args is ():
+            c.execute(sql_string)
+        elif sql_string:
+            c.executemany(sql_string, args)
         ###Make this generic###
-        """
-        cur.execute('UPDATE CHARACTERS SET CHARACTER_NAME="' + hero.character_name + '" WHERE USER_ID=' + str(user_id) + ';')
-        cur.execute("UPDATE CHARACTERS SET AGE=" + str(hero.age) + " WHERE USER_ID=" + str(user_id) + ';')
-        cur.execute('UPDATE CHARACTERS SET CHARACTER_CLASS="' + hero.character_class + '" WHERE USER_ID=' + str(user_id) + ';')
-        cur.execute('UPDATE CHARACTERS SET SPECIALIZATION="' + str(hero.specialization) + '" WHERE USER_ID='+ str(user_id) + ';')
-        cur.execute('UPDATE CHARACTERS SET HOUSE="' + str(hero.house) + '" WHERE USER_ID=' + str(user_id) + ';')
-        cur.execute("UPDATE CHARACTERS SET CURRENT_EXP=" + str(hero.current_exp) + " WHERE USER_ID=" + str(user_id) + ';')
-        cur.execute("UPDATE CHARACTERS SET MAX_EXP=" + str(hero.max_exp) + " WHERE USER_ID=" + str(user_id) + ';')
-        cur.execute("UPDATE CHARACTERS SET RENOWN=" + str(hero.renown) + " WHERE USER_ID=" + str(user_id) + ';')
-        """
         conn.commit()
         conn.close
+        
+    def read(self, sql_string=None, *args, **kwargs):
+        """Open connection and execute SQL statement then read data ... close then return data.
+        
+        NOTE: no database commit happens in this funciton.
+        """
+        data = None
+        conn = sqlite3.connect(self.name)
+        c = conn.cursor()
+        if sql_string:
+            c.execute(sql_string)
+            data = c.fetchall() ##Improve the efficiency here##
+        conn.close
+        print('data:', repr(data))
+        exit('testing read function') ##Only remove if you know how this works.
+        return data
+        
             
     def save_game(self, character):
         """Save all of the new data a character has generated.
@@ -262,14 +285,30 @@ class EasyDatabase():
         pass
         
     def add_new_user(self, username, password):
-        pass
-        cur.execute("SELECT * FROM Users")
-        rows = cur.fetchall()
-        new_user_id = len(rows)+1
-        cur.execute('INSERT INTO USERS VALUES ("' + username + '","' + str(hashlib.md5(password.encode()).hexdigest()) + '",' +str(new_user_id) + ');' ) # needs to be changed 
-        con.commit()
+        hashed_password = str(hashlib.md5(password.encode()).hexdigest())
+        self.write("INSERT INTO USERS VALUES (?,?)", (username, hashed_password))
+    
+    def increase_user_count(self):
+        """Increase the number of user in the game.
+        
+        This value is can be track in a separate table.
+        NOT IMPLEMENTED.
+        """
+        count = self.read("SELECT * FROM COUNTERS WHERE NUMBER_OF=USERS")
+        self.write("INSERT INTO COUNTERS VALUES ?", count)
+    
+    def max_user_id(self):
+        """Get the number of user of the game.
+        
+        This value is can be track in a separate table.
+        NOT IMPLEMENTED.
+        """
+        return self.read("SELECT * FROM COUNTERS")
+    
+    def now():
+        return datetime.datetime.now()
 
 ### testing
 if __name__ == "__main__":
     test_database = EasyDatabase('static/test.db')
-    #test_database.add_new_user('Marlen', 'Brunner') #I should be able to add a bunch of users from a text file.
+    test_database.add_new_user('Marlen', 'Brunner') #I should be able to add a bunch of users from a text file.
