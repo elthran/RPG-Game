@@ -199,3 +199,77 @@ def fetch_character_data():
                         ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
                         break
     con.close() 
+
+### Marlen --- testing ###
+"""I am going to try and make an easy version of the current database. There will be all of the old code
+but to add stuff will be simpler (I hope). I am just going to flesh out the concept. It won't work for a while.
+"""
+
+class EasyDatabase():
+    """A more human usuable database.
+    
+    Implement by:
+    game_database = EasyDatabase('static/user.db') #The databases name.
+    
+    It might be a good idea to have separate user, location and item databases .... just in case one breaks?
+    """
+    def __init__(self, name):
+        """Set up a basic database for the game.
+        
+        This should include creating all of the basic tables and (possibly) populating this database with any data the game needs
+        to run.
+        """
+        self.name = name
+        self.build_basic_tables()
+    
+    def build_basic_tables(self):
+        """Build the tables needed by the game.
+        
+        This should be upgraded to make it more human readable and editable .... maybe an external xml/spreadsheet/excel file?
+        """
+        self.write("CREATE TABLE USERS(USERNAME TEXT PRIMARY KEY NOT NULL, PASSWORD TEXT NOT NULL, user_id integer)")
+        self.write("CREATE TABLE characters(user_id number primary key, character_name text,age number, character_class number, specialization text, house text, current_exp number, max_exp number, renown number, virtue number, devotion number, gold number, basic_ability_points number, class_ability_points number, specialization_ability_points number, pantheonic_ability_points number, attribute_points number, strength number, resilience number, vitality number, fortitude number, reflexes number, agility number, perception number, wisdom number, divinity number, charisma number, survivalism number, fortuity number, equipped_items number[], inventory number[], abilities number[], previous_login_time datetime current_timestamp, current_time datetime current_timestamp, previous_time datetime current_timestamp, endurance number)")
+        
+    def write(self, *args, **kwargs):
+        """Open connection and excute SQL statement then commit and close.
+        
+        This defaults to excecuting if only on argument is passed ... it is very insecure.
+        """
+        conn = sqlite3.connect(self.name)
+        c = conn.cursor()
+        if len(args[0]) is 1:
+            c.execute(args)
+        ###Make this generic###
+        """
+        cur.execute('UPDATE CHARACTERS SET CHARACTER_NAME="' + hero.character_name + '" WHERE USER_ID=' + str(user_id) + ';')
+        cur.execute("UPDATE CHARACTERS SET AGE=" + str(hero.age) + " WHERE USER_ID=" + str(user_id) + ';')
+        cur.execute('UPDATE CHARACTERS SET CHARACTER_CLASS="' + hero.character_class + '" WHERE USER_ID=' + str(user_id) + ';')
+        cur.execute('UPDATE CHARACTERS SET SPECIALIZATION="' + str(hero.specialization) + '" WHERE USER_ID='+ str(user_id) + ';')
+        cur.execute('UPDATE CHARACTERS SET HOUSE="' + str(hero.house) + '" WHERE USER_ID=' + str(user_id) + ';')
+        cur.execute("UPDATE CHARACTERS SET CURRENT_EXP=" + str(hero.current_exp) + " WHERE USER_ID=" + str(user_id) + ';')
+        cur.execute("UPDATE CHARACTERS SET MAX_EXP=" + str(hero.max_exp) + " WHERE USER_ID=" + str(user_id) + ';')
+        cur.execute("UPDATE CHARACTERS SET RENOWN=" + str(hero.renown) + " WHERE USER_ID=" + str(user_id) + ';')
+        """
+        conn.commit()
+        conn.close
+            
+    def save_game(self, character):
+        """Save all of the new data a character has generated.
+        
+        This should check for changes and only save new data (if that is quicker).
+        Basically the update_character method with less duplications.
+        """
+        pass
+        
+    def add_new_user(self, username, password):
+        pass
+        cur.execute("SELECT * FROM Users")
+        rows = cur.fetchall()
+        new_user_id = len(rows)+1
+        cur.execute('INSERT INTO USERS VALUES ("' + username + '","' + str(hashlib.md5(password.encode()).hexdigest()) + '",' +str(new_user_id) + ');' ) # needs to be changed 
+        con.commit()
+
+### testing
+if __name__ == "__main__":
+    test_database = EasyDatabase('static/test.db')
+    #test_database.add_new_user('Marlen', 'Brunner') #I should be able to add a bunch of users from a text file.
