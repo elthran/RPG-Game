@@ -205,13 +205,24 @@ def fetch_character_data():
 but to add stuff will be simpler (I hope). I am just going to flesh out the concept. It won't work for a while.
 """
 
+import os
+# These are imported in the original code.
+# import sqlite3
+# import hashlib
+# import datetime 
+
 class EasyDatabase():
     """A more human usuable database.
     
     Implement by:
-    game_database = EasyDatabase('static/user.db') #The databases name.
+    game_database = EasyDatabase('static/user2.db') #The databases name.
     
     It might be a good idea to have separate user, location and item databases .... just in case one breaks?
+    
+    How to use:
+        In the various places that originally used from database import *, now use from database import EasyDatabase as EzDB or something.
+    Then create a database in the main app. When the user provides input call the relavent method on the games database object.
+    
     """
     def __init__(self, name):
         """Set up a basic database for the game.
@@ -230,24 +241,61 @@ class EasyDatabase():
         NOTE: User_ID field removed and replaced with automatic ROWID
         """
         basic_tables = ("CREATE TABLE USERS(USERNAME TEXT PRIMARY KEY NOT NULL, PASSWORD TEXT NOT NULL)",
-            "CREATE TABLE characters(user_id number primary key, character_name text,age number, character_class number, specialization text, house text, current_exp number, max_exp number, renown number, virtue number, devotion number, gold number, basic_ability_points number, class_ability_points number, specialization_ability_points number, pantheonic_ability_points number, attribute_points number, strength number, resilience number, vitality number, fortitude number, reflexes number, agility number, perception number, wisdom number, divinity number, charisma number, survivalism number, fortuity number, equipped_items number[], inventory number[], abilities number[], previous_login_time datetime current_timestamp, current_time datetime current_timestamp, previous_time datetime current_timestamp, endurance number)",
-            "CREATE TABLE COUNTERS (NUMBER_OF TEXT, AMOUNT INTEGER)",)
+            """CREATE TABLE characters(
+            username text primary key,
+            character_name text,
+            character_class number,
+            age number,
+            specialization text,
+            house text,
+            current_exp number,
+            max_exp number,
+            renown number,
+            virtue number,
+            devotion number,
+            gold number,
+            basic_ability_points number,
+            class_ability_points number,
+            specialization_ability_points number,
+            pantheonic_ability_points number,
+            attribute_points number,
+            strength number,
+            resilience number,
+            vitality number,
+            fortitude number,
+            reflexes number,
+            agility number,
+            perception number,
+            wisdom number,
+            divinity number,
+            charisma number,
+            survivalism number,
+            fortuity number,
+            equipped_items number[],
+            inventory number[],
+            abilities number[],
+            previous_login_time datetime current_timestamp,
+            current_time datetime current_timestamp,
+            previous_time datetime current_timestamp,
+            endurance number)""",) #Dam ugly .. I think it might look nice in a spreadsheet file ... :)
             
         #Deal with use case where table alread exists ... not very exacting ...
         for table in basic_tables:
             try:
-                self.write(table)
+                self._write(table)
             except sqlite3.OperationalError as e:
                 if 'table' in e.args[0] and 'already exists' in e.args[0]:
                     pass
         
-        #self.write("INSERT INTO COUNTERS VALUES('users', 0)") Doesn't work yet
         
-    def write(self, sql_string=None, *args, **kwargs):
+    def _write(self, sql_string=None, *args, **kwargs):
         """Open connection and excute SQL statement then commit and close.
         
         This defaults to excecuting if only on argument is passed ... it is very insecure.
         NOTE: *args should be a list of tuples ... or maybe it already is? I shall test.
+        
+        This function when properly implemented should really be one of the few places actual SQL gets used ...
+        All the INSERTS and SHIT should be in here.
         """
         conn = sqlite3.connect(self.name)
         c = conn.cursor()
@@ -257,20 +305,23 @@ class EasyDatabase():
             c.executemany(sql_string, args)
         ###Make this generic###
         conn.commit()
-        conn.close
+        conn.close()
         
-    def read(self, sql_string=None, *args, **kwargs):
-        """Open connection and execute SQL statement then read data ... close then return data.
+    def _read(self, sql_string=None, *args, **kwargs):
+        """Open connection and execute SQL statement then read data ... close then return data as a dictionary
         
         NOTE: no database commit happens in this funciton.
         """
         data = None
         conn = sqlite3.connect(self.name)
+        
+        conn.row_factory = sqlite3.Row #Some kind of fancy use of sqlite3 class variables that makes fetchall return a dictionary.
+        
         c = conn.cursor()
         if sql_string:
             c.execute(sql_string)
-            data = c.fetchall() ##Improve the efficiency here##
-        conn.close
+            data = c.fetchall() ##This is a dictionary object apparently .. Improve the efficiency here##
+        conn.close()
         print('data:', repr(data))
         exit('testing read function') ##Only remove if you know how this works.
         return data
@@ -284,31 +335,50 @@ class EasyDatabase():
         """
         pass
         
-    def add_new_user(self, username, password):
+    def create_user(self, username, password):
+        """Add a new user to the database.
+        
+        This should auto-validate as username is the primary key. 
+        I can't decide if this should return False on failure or raise an error .. I went with raise error.
+        I will build a custom exception at some point too ...
+        """
         hashed_password = str(hashlib.md5(password.encode()).hexdigest())
-        self.write("INSERT INTO USERS VALUES (?,?)", (username, hashed_password))
+        try:
+            self._write("INSERT INTO USERS VALUES (?,?)", (username, hashed_password))
+        except sqlite3.IntegrityError as e:
+            if e.args[0] == 'UNIQUE constraint failed: USERS.USERNAME':
+                raise Exception("Username '{}' already exists.".format(username)) #raise error if already in use.
     
-    def increase_user_count(self):
-        """Increase the number of user in the game.
+    def create_character(self, username, character, classname):
+        """Add a new character to a users account.
         
-        This value is can be track in a separate table.
-        NOT IMPLEMENTED.
-        """
-        count = self.read("SELECT * FROM COUNTERS WHERE NUMBER_OF=USERS")
-        self.write("INSERT INTO COUNTERS VALUES ?", count)
-    
-    def max_user_id(self):
-        """Get the number of user of the game.
+        ??Only one character at a time? or multiple characters?
+        I will build for one only ...
         
-        This value is can be track in a separate table.
-        NOT IMPLEMENTED.
+        NOTE: Updates current_time
         """
-        return self.read("SELECT * FROM COUNTERS")
+        try:
+            now = EasyDatabase.now()
+            self._write("INSERT INTO CHARACTERS(username, character_name, character_class, current_time) VALUES (?,?,?,?)",
+                (username, character, classname, now))
+        except sqlite3.IntegrityError as e:
+            raise Exception("User '{}' already has a character.".format(username))
     
     def now():
-        return datetime.datetime.now()
+        return str(datetime.datetime.now())
+    
+    def _wipe_database(self):
+        os.remove(self.name)
 
 ### testing
 if __name__ == "__main__":
-    test_database = EasyDatabase('static/test.db')
-    test_database.add_new_user('Marlen', 'Brunner') #I should be able to add a bunch of users from a text file.
+    db = EasyDatabase('static/Users2.db')
+    try:
+        db.create_user('Marlen', 'Brunner') #I should be able to add a bunch of users from a text file.
+        db.create_character("Marlen", "Haldon", "Wizard")
+    except Exception as e:
+        print(e.args[0])
+    
+    ##Wipe the database.
+    #db._wipe_database()
+    
