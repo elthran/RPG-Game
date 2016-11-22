@@ -204,7 +204,7 @@
       <h1>Achievements</h1>
       {% if completed_achievements %}
         {% for achievement in completed_achievements %}
-          <h2><br><b>{{ achievement }}</b></h2>
+          <h2><br><b>{{ achievement[0] }}  &nbsp; &nbsp; &nbsp; (+{{ achievement[1] }} experience)</b></h2>
         {% endfor %}
       {% else %}
         No completed achievements.

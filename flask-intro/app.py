@@ -301,7 +301,8 @@ def battle():
                 break
         if newMonster:
             myHero.kill_quests[game.enemy.species] = 1
-            myHero.completed_achievements.append("Kill a " + game.enemy.species)
+            myHero.completed_achievements.append(("Kill a " + game.enemy.species, "5"))
+            myHero.current_exp += 5
         game.has_enemy = False
         myHero.current_exp += game.enemy.experience_rewarded * myHero.experience_gain_modifier
         if len(game.enemy.items_rewarded) > 0:
