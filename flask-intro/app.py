@@ -293,10 +293,15 @@ def battle():
         page_heading = "You have died."
     else:
         myHero.current_endurance -= required_endurance
-        if game.enemy.species == "Wolf":
-            myHero.wolf_kills += 1
-            if "Kill a wolf" not in myHero.completed_achievements:
-                myHero.completed_achievements.append("Kill a wolf")
+        newMonster = True
+        for key, value in myHero.kill_quests.items():
+            if key == game.enemy.species:
+                myHero.kill_quests[key] += 1
+                newMonster = False
+                break
+        if newMonster:
+            myHero.kill_quests[game.enemy.species] = 1
+            myHero.completed_achievements.append("Kill a " + game.enemy.species)
         game.has_enemy = False
         myHero.current_exp += game.enemy.experience_rewarded * myHero.experience_gain_modifier
         if len(game.enemy.items_rewarded) > 0:

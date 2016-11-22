@@ -213,6 +213,10 @@
       {% for achievement in kill_achievements %}
           <h2><br><b>{{ achievement[0] }}</b></h2>
       {% endfor %}
+      <h1> Current Kill Statistics </h1> 
+         {% for key, value in myHero.kill_quests.items() %}
+              {{ key }}: {{ value }}<br>
+         {% endfor %}
     {% endif %}
 	
 	{% if admin %}

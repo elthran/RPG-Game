@@ -34,7 +34,7 @@ class Game(object):
 class Hero(object):
     def __init__(self, user_name="Unknown"):
         self.user_name = user_name
-        self.character_name = "Unknown"
+        self.character_name = "Temp"
         self.age = 7
         self.character_class = "None"
         self.specialization = "None"
@@ -52,9 +52,9 @@ class Hero(object):
         self.pantheonic_ability_points = 0
         
         self.attribute_points = 0
-        self.strength = 1
+        self.strength = 100
         self.resilience = 1
-        self.vitality = 1
+        self.vitality = 100
         self.fortitude = 1
         self.reflexes = 1
         self.agility = 1
@@ -79,6 +79,7 @@ class Hero(object):
         self.current_quests = []
         self.completed_quests = []
         self.completed_achievements = []
+        self.kill_quests = {}
 
         self.wolf_kills = 0
         
