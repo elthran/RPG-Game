@@ -274,7 +274,7 @@ def create_character():
 @app.route('/battle')
 @login_required
 def battle():
-    required_endurance = 5 # Todo: 5 is just a dummy number for testing
+    required_endurance = 1 # T
     
     page_title = "Battle"
     page_heading = "Fighting"
@@ -297,6 +297,13 @@ def battle():
         for key, value in myHero.kill_quests.items():
             if key == game.enemy.species:
                 myHero.kill_quests[key] += 1
+                if myHero.kill_quests[key] == 2:
+                    for achievement in myHero.completed_achievements:
+                        if achievement[0] == "Kill a " + game.enemy.species:
+                            myHero.completed_achievements.remove(achievement)
+                            break
+                    myHero.completed_achievements.append(("Kill two " + game.enemy.species_plural, "10"))
+                    myHero.current_exp += 10
                 newMonster = False
                 break
         if newMonster:

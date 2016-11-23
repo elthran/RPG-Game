@@ -8,10 +8,11 @@
 import random
 
 class Monster(object):
-    def __init__(self, monster_id, name, species, level, strength, vitality, experience_rewarded):
+    def __init__(self, monster_id, name, species, species_plural, level, strength, vitality, experience_rewarded):
         self.monster_id = monster_id
         self.name = name
         self.species = species
+        self.species_plural = species_plural
         self.level = level
         self.strength = strength
         self.vitality = vitality
@@ -44,5 +45,5 @@ def monster_generator(level):
     monster.combat_stats()
     return monster
 
-bestiary_data = [Monster("001", "Alpha Wolf", "Wolf", 2, 2, 2, 3), Monster("002", "Goblin Scout", "Goblin", 3, 3, 3, 5), Monster("003", "Spiderling", "Spider", 1, 1, 1, 2)]
+bestiary_data = [Monster("001", "Alpha Wolf", "Wolf", "Wolves", 2, 2, 2, 3), Monster("002", "Goblin Scout", "Goblin", "Goblins", 3, 3, 3, 5), Monster("003", "Spiderling", "Spider", "Spiders", 1, 1, 1, 2)]
 npc_data = [NPC("01", "Old Man", "Human", 87)]

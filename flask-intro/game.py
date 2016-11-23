@@ -125,7 +125,7 @@ class Hero(object):
     def level_up(self, attribute_points, current_exp, max_exp):
         if self.current_exp < self.max_exp:
             return
-        self.current_exp = 0
+        self.current_exp -= self.max_exp
         self.max_exp = math.floor(1.5 * self.max_exp)
         self.attribute_points += 3
         self.age += 1
