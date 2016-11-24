@@ -29,6 +29,7 @@
       <div class="sidebarmenu">
         <ul>
         <li><a href=/home>Profile</a></li>
+        <li><a href=/inventory_page>Inventory</a></li>
         <li><a href=/town/placeholder_name>Town</a></li>
         <li><a href=/quest_log>Journal</a></li>
         <li><a href=/under_construction>Inventory</a></li>
@@ -92,6 +93,33 @@
     {% for town_link in town_links %}
       <h1>{{ town_link[2] }}</h1><h2><a href="{{ town_link[0] }}">{{ town_link[1] }}</a></h2>
     {% endfor %}
+
+    {% if inventory_page %}
+      <h1>Equipped:</h1>
+      {% for item in myHero.equipped_items %} 
+        {% if item.chest_armour %}
+          <h2>Chest Armour:</h2>
+          {{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}" "background-color:lightgreen">Unequip</button>   
+        {% endif %}
+        {% if item.head_armour %}
+          <h2>Head Armour:</h2>
+          {{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
+        {% endif %}
+        {% if item.leg_armour %}
+          <h2>Leg Armour:</h2>
+          {{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
+        {% endif %}
+      {% endfor %}
+      <h1>Inventory:</h1>
+      {% for item in myHero.inventory %}  
+        <br>{{ item.amount_owned }} {{ item.name }} &emsp; {% if item.equippable %} 
+{% if item.improvement %}
+         <button class="command command-{{ item.name }}" value="{{ item.name }}"><img src='/static/images/equip_button2.jpg')></button>
+{% else %}
+<button class="command command-{{ item.name }}" value="{{ item.name }}"><img src='/static/images/equip_button.jpg')></button>
+{% endif %}{% endif %}
+      {% endfor %}
+    {% endif %}
 
     {% if ability_tree %}
       <h1 style="text-align:center;">Abilities</h1>
@@ -274,28 +302,6 @@ Name: {{ myHero.character_name}}
 <td><h2>Faith: {{ myHero.faith }}</h2></td>
 </tr>
 </table>
-
-{% for item in myHero.equipped_items %} 
-  {% if item.chest_armour %}
-    <h1>Equipped Chest Armour:</h1>
-      <h2>{{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button></h2>
-  {% endif %}
-  {% if item.head_armour %}
-    <h1>Equipped Head Armour:</h1>
-      <h2>{{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button></h2>
-  {% endif %}
-  {% if item.leg_armour %}
-    <h1>Equipped Leg Armour:</h1>
-      <h2>{{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button></h2>
-  {% endif %}
-{% endfor %}
-
-<h1>Inventory:</h1>
-<h2>{% for item in myHero.inventory %}   
-<br>{{ item.amount_owned }} {{ item.name }} &emsp; {% if item.equippable %} <button class="command command-{{ item.name }}" value="{{ item.name }}">Equip</button>{% endif %}
-{% endfor %}
-</h2>
-
 
 <h1>Attributes</h1>
 <h2><title="Damage and carrying capacity">Strength</>: {{ myHero.strength }}

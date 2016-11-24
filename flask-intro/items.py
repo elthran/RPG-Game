@@ -29,6 +29,14 @@ class Weapon(Item):
         self.myHero.min_damage += self.min_damage
         self.myHero.max_damage += self.max_damage
         self.myHero.attack_speed += self.attack_speed
+
+    def check_if_improvement(self):
+            self.improvement = True
+            for equipped_item in self.myHero.equipped_items:
+                if type(equipped_item) is type(self):
+                    if equipped_item.attack_speed > self.attack_speed:
+                        self.improvement = False
+                    break
 		
 class Garment(Item):
     def __init__(self, name, myHero, buy_price, health_modifier):
@@ -38,6 +46,14 @@ class Garment(Item):
 
     def update_stats(self):
         self.myHero.max_health += self.health_modifier
+
+    def check_if_improvement(self):
+            self.improvement = True
+            for equipped_item in self.myHero.equipped_items:
+                if type(equipped_item) is type(self):
+                    if equipped_item.health_modifier > self.health_modifier:
+                        self.improvement = False
+                    break
 
 class Chest_Armour(Garment):
         def __init__(self, name, myHero, buy_price, health_modifier):
@@ -58,6 +74,7 @@ class Quest_Item(Item):
     def __init__(self, name, myHero, buy_price):
         super(Quest_Item, self).__init__(name, myHero, buy_price)
         self.amount_owned = 1
+        self.equippable = False
 
     def update_stats(self):
         pass

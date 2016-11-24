@@ -434,6 +434,16 @@ def home():
         return redirect(url_for('level_up'))
     return render_template('home.html', page_title="Profile", myHero=myHero, home=True)  # return a string'
 
+@app.route('/inventory_page')
+@login_required
+def inventory_page():
+    paragraph = ""
+    page_title = "Inventory"
+    for item in myHero.inventory:
+        if item.equippable:
+            item.check_if_improvement()
+    return render_template('home.html', myHero=myHero, inventory_page=True, page_title=page_title)  # return a string
+
 @app.route('/ability_tree')
 @login_required
 def ability_tree():
