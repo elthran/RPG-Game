@@ -43,14 +43,11 @@ def command(cmd=None):
     equippable_items = [item for item in myHero.inventory if item.equippable == True]
     for item in equippable_items: 
         if cmd == item.name:
-            if type(item) == Garment:
-                while len(myHero.chest_equipped) > 0:
-                    for item in myHero.chest_equipped:
-                        myHero.inventory.append(item)
-                        myHero.chest_equipped.remove(item)
-                myHero.chest_equipped.append(item)
-            else:
-                myHero.equipped_items.append(item)
+            for equipped_item in myHero.equipped_items:
+                if type(equipped_item) is type(item):
+                    myHero.equipped_items.remove(equipped_item)
+                    myHero.inventory.append(equipped_item)
+            myHero.equipped_items.append(item)
             myHero.inventory.remove(item)
             return "success", 200, {'Content-Type': 'text/plain'} #//
         
@@ -58,12 +55,6 @@ def command(cmd=None):
         if cmd == item.name:
             myHero.inventory.append(item)
             myHero.equipped_items.remove(item)
-            return "success", 200, {'Content-Type': 'text/plain'} #//
-
-    for item in myHero.chest_equipped:
-        if cmd == item.name:
-            myHero.inventory.append(item)
-            myHero.chest_equipped.remove(item)
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # ability
@@ -617,13 +608,13 @@ def store(inventory):
         page_heading = "Check out our new armour!"
         page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
         for item in all_store_items:
-            if item.name == "Medium Tunic" or item.name == "Strong Tunic":
+            if isinstance(item, Garment):
                 items_for_sale.append(item)
     elif inventory == "weaponry":
         page_heading = "Careful! Our weapons are sharp."
         page_links = [("I think I'd rather look at your ", "/store/armoury", "armour", " selection.")]
         for item in all_store_items:
-            if item.name == "Medium Axe" or item.name == "Strong Axe":
+            if isinstance(item, Weapon):
                 items_for_sale.append(item)
     page_image = "store"
     return render_template('home.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string

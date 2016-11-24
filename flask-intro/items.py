@@ -39,6 +39,20 @@ class Garment(Item):
     def update_stats(self):
         self.myHero.max_health += self.health_modifier
 
+class Chest_Armour(Garment):
+        def __init__(self, name, myHero, buy_price, health_modifier):
+            super(Chest_Armour, self).__init__(name, myHero, buy_price, health_modifier)
+            self.chest_armour = True
+
+class Head_Armour(Garment):
+        def __init__(self, name, myHero, buy_price, health_modifier):
+            super(Head_Armour, self).__init__(name, myHero, buy_price, health_modifier)
+            self.head_armour = True
+
+class Leg_Armour(Garment):
+        def __init__(self, name, myHero, buy_price, health_modifier):
+            super(Leg_Armour, self).__init__(name, myHero, buy_price, health_modifier)
+            self.leg_armour = True
 
 class Quest_Item(Item):
     def __init__(self, name, myHero, buy_price):
@@ -48,4 +62,4 @@ class Quest_Item(Item):
     def update_stats(self):
         pass
 
-all_store_items = [Weapon("Medium Axe", "Temporary", 5, 30, 60, 1), Weapon("Strong Axe", "Temporary", 60, 300, 600, 2), Garment("Medium Tunic", "Temporary", 5, 25), Garment("Strong Tunic", "Temporary", 10, 250)]
+all_store_items = [Weapon("Medium Axe", "Temporary", 5, 30, 60, 1), Weapon("Strong Axe", "Temporary", 60, 300, 600, 2), Leg_Armour("Medium Pants", "Temporary", 7, 25), Chest_Armour("Medium Tunic", "Temporary", 2, 25), Chest_Armour("Strong Tunic", "Temporary", 5, 250), Head_Armour("Test Helmet", "Temporary", 1, 1)]
