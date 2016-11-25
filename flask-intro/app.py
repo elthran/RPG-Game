@@ -618,7 +618,7 @@ def store(inventory):
         page_heading = "Check out our new armour!"
         page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
         for item in all_store_items:
-            if isinstance(item, Garment):
+            if isinstance(item, Garment) or isinstance(item, Jewelry):
                 items_for_sale.append(item)
     elif inventory == "weaponry":
         page_heading = "Careful! Our weapons are sharp."

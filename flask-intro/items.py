@@ -37,7 +37,8 @@ class Weapon(Item):
                     if equipped_item.attack_speed > self.attack_speed:
                         self.improvement = False
                     break
-		
+
+# New Class		
 class Garment(Item):
     def __init__(self, name, myHero, buy_price, health_modifier):
         super(Garment, self).__init__(name, myHero, buy_price)
@@ -70,6 +71,41 @@ class Leg_Armour(Garment):
             super(Leg_Armour, self).__init__(name, myHero, buy_price, health_modifier)
             self.leg_armour = True
 
+class Feet_Armour(Garment):
+        def __init__(self, name, myHero, buy_price, health_modifier):
+            super(Feet_Armour, self).__init__(name, myHero, buy_price, health_modifier)
+            self.feet_armour = True
+
+class Arm_Armour(Garment):
+        def __init__(self, name, myHero, buy_price, health_modifier):
+            super(Arm_Armour, self).__init__(name, myHero, buy_price, health_modifier)
+            self.arm_armour = True
+
+class Hand_Armour(Garment):
+        def __init__(self, name, myHero, buy_price, health_modifier):
+            super(Hand_Armour, self).__init__(name, myHero, buy_price, health_modifier)
+            self.hand_armour = True
+
+class Jewelry(Item):
+    def __init__(self, name, myHero, buy_price):
+        super(Jewelry, self).__init__(name, myHero, buy_price)
+        self.equippable = True
+
+# New Class
+class Ring(Jewelry):
+        def __init__(self, name, myHero, buy_price):
+            super(Ring, self).__init__(name, myHero, buy_price)
+            self.ring = True
+
+        def check_if_improvement(self):
+            self.improvement = True
+            for equipped_item in self.myHero.equipped_items:
+                if type(equipped_item) is type(self):
+                    if equipped_item.health_modifier > self.health_modifier:
+                        self.improvement = False
+                    break
+
+# New Class
 class Quest_Item(Item):
     def __init__(self, name, myHero, buy_price):
         super(Quest_Item, self).__init__(name, myHero, buy_price)
@@ -79,4 +115,14 @@ class Quest_Item(Item):
     def update_stats(self):
         pass
 
-all_store_items = [Weapon("Medium Axe", "Temporary", 5, 30, 60, 1), Weapon("Strong Axe", "Temporary", 60, 300, 600, 2), Leg_Armour("Medium Pants", "Temporary", 7, 25), Chest_Armour("Medium Tunic", "Temporary", 2, 25), Chest_Armour("Strong Tunic", "Temporary", 5, 250), Head_Armour("Test Helmet", "Temporary", 1, 1)]
+all_store_items = [Weapon("Medium Axe", "Temporary", 5, 30, 60, 1),
+                   Weapon("Strong Axe", "Temporary", 60, 300, 600, 2),
+                   Leg_Armour("Medium Pants", "Temporary", 7, 25),
+                   Chest_Armour("Medium Tunic", "Temporary", 2, 25),
+                   Chest_Armour("Strong Tunic", "Temporary", 5, 250),
+                   Head_Armour("Weak Helmet", "Temporary", 2, 1),
+                   Head_Armour("Medium Helmet", "Temporary", 4, 3),
+                   Feet_Armour("Test Boots", "Temporary", 3, 3),
+                   Arm_Armour("Test Sleeves", "Temporary", 4, 5),
+                   Hand_Armour("Test Gloves", "Temporary", 5, 7),
+                   Ring("Test Ring", "Temporary", 8)]

@@ -98,15 +98,31 @@
       <h1>Equipped:</h1>
       {% for item in myHero.equipped_items %} 
         {% if item.chest_armour %}
-          <h2>Chest Armour:</h2>
+          <h2>Shirt:</h2>
           {{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}" "background-color:lightgreen">Unequip</button>   
         {% endif %}
         {% if item.head_armour %}
-          <h2>Head Armour:</h2>
+          <h2>Helmet:</h2>
           {{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
         {% endif %}
         {% if item.leg_armour %}
-          <h2>Leg Armour:</h2>
+          <h2>Pants:</h2>
+          {{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
+        {% endif %}
+        {% if item.feet_armour %}
+          <h2>Shoes:</h2>
+          {{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
+        {% endif %}
+        {% if item.arm_armour %}
+          <h2>Sleeves:</h2>
+          {{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
+        {% endif %}
+        {% if item.hand_armour %}
+          <h2>Gloves:</h2>
+          {{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
+        {% endif %}
+        {% if item.ring %}
+          <h2>Rings:</h2>
           {{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
         {% endif %}
       {% endfor %}
