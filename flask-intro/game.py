@@ -34,7 +34,7 @@ class Game(object):
 class Hero(object):
     def __init__(self, user_name="Unknown"):
         self.user_name = user_name
-        self.character_name = "Temp"
+        self.character_name = "Admin"
         self.age = 7
         self.character_class = "None"
         self.specialization = "None"
@@ -52,9 +52,9 @@ class Hero(object):
         self.pantheonic_ability_points = 0
         
         self.attribute_points = 0
-        self.strength = 100
+        self.strength = 1
         self.resilience = 1
-        self.vitality = 100
+        self.vitality = 1
         self.fortitude = 1
         self.reflexes = 1
         self.agility = 1
@@ -138,6 +138,10 @@ class Hero(object):
 # Temporary Function to create a random hero
 def create_random_hero():
     myHero = Hero()
+    myHero.strength = 50
+    myHero.vitality = 50
+    myHero.fortitude = 50
+    myHero.gold = 5000
     myHero.update_secondary_attributes    
     return myHero
 # End of temporary functions
@@ -159,8 +163,6 @@ myHero.inventory.append(Quest_Item("Spider Leg", myHero, 50))
 myHero.inventory.append(Quest_Item("Copper Coin", myHero, 50))
 for item in myHero.inventory:
     item.amount_owned = 5
-# ~~~~~~~~~~
-kill_achievements = [("Kill a wolf", "wolf_kills", 1)]
 
 	
 

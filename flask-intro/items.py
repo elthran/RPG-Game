@@ -38,6 +38,21 @@ class Weapon(Item):
                         self.improvement = False
                     break
 
+class Right_Handed(Weapon):
+    def __init__(self, name, myHero, buy_price, min_damage, max_damage, attack_speed):
+        super(Right_Handed, self).__init__(name, myHero, buy_price, min_damage, max_damage, attack_speed)
+        self.right_handed = True
+
+class Left_Handed(Weapon):
+    def __init__(self, name, myHero, buy_price, min_damage, max_damage, attack_speed):
+        super(Left_Handed, self).__init__(name, myHero, buy_price, min_damage, max_damage, attack_speed)
+        self.left_handed = True
+
+class Two_Handed(Weapon):
+    def __init__(self, name, myHero, buy_price, min_damage, max_damage, attack_speed):
+        super(Two_Handed, self).__init__(name, myHero, buy_price, min_damage, max_damage, attack_speed)
+        self.two_handed = True
+
 # New Class		
 class Garment(Item):
     def __init__(self, name, myHero, buy_price, health_modifier):
@@ -115,8 +130,11 @@ class Quest_Item(Item):
     def update_stats(self):
         pass
 
-all_store_items = [Weapon("Medium Axe", "Temporary", 5, 30, 60, 1),
-                   Weapon("Strong Axe", "Temporary", 60, 300, 600, 2),
+all_store_items = [Right_Handed("Small Dagger", "Temporary", 5, 30, 60, 1),
+                   Right_Handed("Big Dagger", "Temporary", 10, 300, 600, 2),
+                   Left_Handed("Small Shield", "Temporary", 10, 300, 600, 2),
+                   Two_Handed("Small Polearm", "Temporary", 5, 30, 60, 1),
+                   Two_Handed("Medium Polearm", "Temporary", 5, 30, 60, 1),
                    Leg_Armour("Medium Pants", "Temporary", 7, 25),
                    Chest_Armour("Medium Tunic", "Temporary", 2, 25),
                    Chest_Armour("Strong Tunic", "Temporary", 5, 250),

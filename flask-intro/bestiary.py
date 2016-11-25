@@ -45,5 +45,7 @@ def monster_generator(level):
     monster.combat_stats()
     return monster
 
-bestiary_data = [Monster("001", "Alpha Wolf", "Wolf", "Wolves", 2, 2, 2, 3), Monster("002", "Goblin Scout", "Goblin", "Goblins", 3, 3, 3, 5), Monster("003", "Spiderling", "Spider", "Spiders", 1, 1, 1, 2)]
+bestiary_data = [Monster("001", "Alpha Wolf", "Wolf", "Wolves", 2, 2, 2, 3),
+                 Monster("002", "Goblin Scout", "Goblin", "Goblins", 3, 3, 3, 5),
+                 Monster("003", "Spiderling", "Spider", "Spiders", 1, 1, 1, 2)]
 npc_data = [NPC("01", "Old Man", "Human", 87)]

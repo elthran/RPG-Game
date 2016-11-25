@@ -97,9 +97,21 @@
     {% if inventory_page %}
       <h1>Equipped:</h1>
       {% for item in myHero.equipped_items %} 
+        {% if item.right_handed %}
+          <h2>Right Hand:</h2>
+          {{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>   
+        {% endif %}
+        {% if item.left_handed %}
+          <h2>Left Hand:</h2>
+          {{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>   
+        {% endif %}
+        {% if item.two_handed %}
+          <h2>Both Hands:</h2>
+          {{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>   
+        {% endif %}
         {% if item.chest_armour %}
           <h2>Shirt:</h2>
-          {{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}" "background-color:lightgreen">Unequip</button>   
+          {{ item.name }} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>   
         {% endif %}
         {% if item.head_armour %}
           <h2>Helmet:</h2>
@@ -281,6 +293,7 @@ Gold Modifier: {{ myHero.gold_gain_modifier }}<br>
 	
 	
 {% if home %}
+<p align="right"><a href="/reset_character">Reset Character</a></p>
 <h1>General Statistics</h1>
 <h2> 
 Name: {{ myHero.character_name}}
@@ -331,8 +344,6 @@ Name: {{ myHero.character_name}}
 <br>Survivalism: {{ myHero.survivalism }}
 <br>Fortuity: {{ myHero.fortuity }}
 </h2>
-<h1><a href="/reset_character">Reset Character</a></h1>
-
 {% endif %}
 
 
