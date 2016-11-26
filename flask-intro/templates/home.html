@@ -32,7 +32,6 @@
         <li><a href=/inventory_page>Inventory</a></li>
         <li><a href=/town/placeholder_name>Town</a></li>
         <li><a href=/quest_log>Journal</a></li>
-        <li><a href=/under_construction>Inventory</a></li>
         <li><a href=/ability_tree>Abilities</a></li>
         <li><a href=/admin>Admin</a></li>
         <li><a href=/under_construction>Users</a></li>
@@ -82,7 +81,7 @@
       <h2>Here is our list of items:</h2>
       {% for item in items_for_sale %}
         {{ item.name }} ({{ item.buy_price }})
-        <button class="command command-{{ item.name }}" value="{{ item.name }}">Buy</button><br>
+        <button class="command command-{{ item.buy_name }}" value="{{ item.buy_name }}">Buy</button><br>
       {% endfor %}        
     {% endif %}
 
@@ -143,6 +142,9 @@
         <br>{{ item.amount_owned }} {{ item.name }} &emsp; 
         {% if item.equippable %} 
           <button class="command command-{{ item.name }}" value="{{ item.name }}">Equip</button>
+        {% endif %}
+        {% if item.consumable %}
+          <button class="command command-{{ item.name }}" value="{{ item.name }}">Consume</button>
         {% endif %}
       {% endfor %}
     {% endif %}

@@ -1,5 +1,3 @@
-
-
 class Item(object):
     # name : Name of the Item, e.x. "power bracelet"
     # hero : The Hero who owns the item
@@ -7,16 +5,16 @@ class Item(object):
 	# level_req : level requirment
     def __init__(self, name, myHero, buy_price):
         self.name = name
+        self.buy_name = self.name + "_buy"
         self.myHero = myHero
         self.buy_price = buy_price
         self.equippable = False
+        self.consumable = False
 
     def update_owner(self, myHero):
         self.myHero = myHero
 
-
 # Subclass of Item
-# (Other comments about it)
 class Weapon(Item):
     def __init__(self, name, myHero, buy_price, min_damage, max_damage, attack_speed):
         super(Weapon, self).__init__(name, myHero, buy_price)
@@ -101,12 +99,12 @@ class Hand_Armour(Garment):
             super(Hand_Armour, self).__init__(name, myHero, buy_price, health_modifier)
             self.hand_armour = True
 
+# New Class
 class Jewelry(Item):
     def __init__(self, name, myHero, buy_price):
         super(Jewelry, self).__init__(name, myHero, buy_price)
         self.equippable = True
 
-# New Class
 class Ring(Jewelry):
         def __init__(self, name, myHero, buy_price):
             super(Ring, self).__init__(name, myHero, buy_price)
@@ -119,6 +117,16 @@ class Ring(Jewelry):
                     if equipped_item.health_modifier > self.health_modifier:
                         self.improvement = False
                     break
+
+# Subclass of Item
+class Consumable(Item):
+    def __init__(self, name, myHero, buy_price, healing_amount):
+        super(Consumable, self).__init__(name, myHero, buy_price)
+        self.healing_amount = healing_amount
+        self.consumable = True
+		
+    def apply_effect(self):
+        self.myHero.current_health += self.healing_amount
 
 # New Class
 class Quest_Item(Item):
@@ -144,3 +152,6 @@ all_store_items = [Right_Handed("Small Dagger", "Temporary", 5, 30, 60, 1),
                    Arm_Armour("Test Sleeves", "Temporary", 4, 5),
                    Hand_Armour("Test Gloves", "Temporary", 5, 7),
                    Ring("Test Ring", "Temporary", 8)]
+
+all_marketplace_items = [Consumable("Minor Health Potion", "Temporary", 3, 10),
+                         Consumable("Major Health Potion", "Temporary", 6, 20)]

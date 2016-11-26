@@ -39,10 +39,9 @@ def login_required(f):
 def command(cmd=None):
     # cmd (string type)is an item name, sent from the javascript code in html
 
-    # it is the item that will get equipped/unequiped
-    equippable_items = [item for item in myHero.inventory if item.equippable == True]
-    for item in equippable_items: 
-        if cmd == item.name:
+    # EQUIP ITEMS
+    for item in myHero.inventory: 
+        if cmd == item.name and item.equippable == True:
             for equipped_item in myHero.equipped_items:
                 if type(equipped_item) is type(item):
                     myHero.equipped_items.remove(equipped_item)
@@ -50,14 +49,21 @@ def command(cmd=None):
             myHero.equipped_items.append(item)
             myHero.inventory.remove(item)
             return "success", 200, {'Content-Type': 'text/plain'} #//
-        
+
+    # UNEQUIP ITEMS  
     for item in myHero.equipped_items:
         if cmd == item.name:
             myHero.inventory.append(item)
             myHero.equipped_items.remove(item)
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
-    # ability
+    # CONSUME ITEMS
+    for item in myHero.inventory:
+        if cmd == item.name and item.consumable == True:
+            myHero.consume_item(item.name)
+            return "success", 200, {'Content-Type': 'text/plain'} #//
+
+    # UPGRADE ABILITIES
     learnable_known_abilities = [ability for ability in myHero.abilities if ability.level < ability.max_level]
     for ability in learnable_known_abilities:
         if cmd == ability.name:
@@ -66,8 +72,9 @@ def command(cmd=None):
                     myHero.abilities[i].level += 1
                     myHero.abilities[i].update_display()
             myHero.update_secondary_attributes()
-            return "success", 200, {'Content-Type': 'text/plain'} #//
-            
+            return "success", 200, {'Content-Type': 'text/plain'} #//         
+
+    # LEARN NEW ABILITIES       
     unknown_abilities = []
     for ability in all_abilities:
         if not any(known_ability.name == ability.name for known_ability in myHero.abilities):
@@ -78,9 +85,18 @@ def command(cmd=None):
             myHero.update_secondary_attributes()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
-    # store
+    # BUY FROM BLACKSMITH
     for item in all_store_items:
-        if cmd == item.name and myHero.gold >= item.buy_price:
+        if cmd == item.buy_name and myHero.gold >= item.buy_price:
+            newItem = item
+            newItem.update_owner(myHero)
+            myHero.inventory.append(newItem)
+            myHero.gold -= item.buy_price
+            return "success", 200, {'Content-Type': 'text/plain'} #//
+
+    # BUY FROM MARKETPLACE
+    for item in all_marketplace_items:
+        if cmd == item.buy_name and myHero.gold >= item.buy_price:
             newItem = item
             newItem.update_owner(myHero)
             myHero.inventory.append(newItem)
@@ -314,11 +330,11 @@ def battle():
                     for items in myHero.inventory:
                         if items.name == item.name:
                             items.amount_owned += 1
-        myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
+        level_up = myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
         page_title = "Victory!"
         page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience!"
         page_links = [("Compete in the ","/arena","arena","."), ("Go back to the ","/barracks","barracks","."), ("Return to your ","/home","profile"," page.")]
-        if myHero.current_exp == 0:
+        if level_up:
             page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience. You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
      
@@ -350,7 +366,8 @@ def reset_character():
     myHero.fortuity = 1
     myHero.abilities = []
     myHero.gold = 500
-    myHero.update_secondary_attributes()
+    myHero.update_secondary_attributes
+    myHero.refresh_character
     return redirect(url_for('home'))  # return a string
 
 # this is a temporary page that lets you modify any attributes for testing
@@ -548,7 +565,7 @@ def town(town_name):
     if town_name == "placeholder_name":
         town_links = [("/store/greeting", "Blacksmith", "Shops"),
                       ("/barracks", "Barracks"),
-                      ("/under_construction", "Marketplace"),
+                      ("/marketplace/greeting", "Marketplace"),
                       ("/tavern", "Tavern", "Other"),
                       ("/old_mans_hut", "Old Man's Hut"),
                       ("/leave_town", "Village Gate", "Outskirts")]
@@ -700,6 +717,24 @@ def tavern():
             myHero.completed_quests.append("Become an apprentice at the tavern.")
             page_heading = "You are now my apprentice!"
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, tavern=tavern, bottom_page_links=page_links, dialogue_options=dialogue_options)  # return a string
+
+@app.route('/marketplace/<inventory>')
+@login_required
+def marketplace(inventory):
+    page_title = "Marketplace"
+    items_for_sale = []
+    page_image = "marketplace"
+    if inventory == "greeting":
+        page_links = [("Take a look at our ", "/marketplace/general", "selection", "."), ("Return to ", "/town/placeholder_name", "town", ".")]
+        page_heading = "Good day sir! What can I get for you?"
+        return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
+    elif inventory == "general":
+        page_heading = "Check out our new potion!"
+        page_links = [("Let me go back to the ", "/marketplace/greeting", "marketplace", " instead.")]
+        for item in all_marketplace_items:
+            if isinstance(item, Consumable):
+                items_for_sale.append(item)
+    return render_template('home.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
 
 @app.route('/old_mans_hut')
 @login_required

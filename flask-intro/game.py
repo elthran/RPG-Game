@@ -117,20 +117,34 @@ class Hero(object):
             ability.update_stats()
         for item in self.equipped_items:
             item.update_stats()
+
         self.current_sanctity = self.max_sanctity
-        self.current_health = self.max_health
+        self.current_health = self.max_health - 70 # TEMP WHILE TESTING POTIONS
         self.current_endurance = self.max_endurance
         self.current_carrying_capacity = self.max_carrying_capacity
+
+    def refresh_character(self):
+        # used to fully heal
+        pass
 
     # updates field variables when hero levels up
     def level_up(self, attribute_points, current_exp, max_exp):
         if self.current_exp < self.max_exp:
-            return
+            return False
         self.current_exp -= self.max_exp
         self.max_exp = math.floor(1.5 * self.max_exp)
         self.attribute_points += 3
         self.age += 1
         self.update_secondary_attributes()
+        return True
+
+    def consume_item(self, item_name):
+        for my_item in self.inventory:
+            print(my_item)
+            if my_item.name == item_name:
+                my_item.apply_effect()
+                self.inventory.remove(my_item)
+                break
 
     def __repr__(self):
         return "\nName: %s" % (self.name)
@@ -143,7 +157,8 @@ def create_random_hero():
     myHero.vitality = 50
     myHero.fortitude = 50
     myHero.gold = 5000
-    myHero.update_secondary_attributes    
+    myHero.update_secondary_attributes
+    myHero.refresh_character
     return myHero
 # End of temporary functions
 
