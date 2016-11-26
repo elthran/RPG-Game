@@ -300,6 +300,9 @@ def battle():
         if newMonster:
             myHero.kill_quests[game.enemy.species] = 1
             myHero.completed_achievements.append(("Kill a " + game.enemy.species, "5"))
+            for monster in bestiary_data:
+                if monster.name == game.enemy.name:
+                    myHero.bestiary.append(monster)
             myHero.current_exp += 5
         game.has_enemy = False
         myHero.current_exp += game.enemy.experience_rewarded * myHero.experience_gain_modifier
@@ -711,7 +714,7 @@ def old_mans_hut():
 def leave_town():
     page_heading = "Village Gate"
     conversation = [("City Guard: ", "You are too young to be out on your own.")]
-    page_links = [("Return to the ", "/town", "city", ".")]
+    page_links = [("Return to the ", "/town/placeholder_name", "city", ".")]
     return render_template('home.html', myHero=myHero, page_heading=page_heading, conversation=conversation, page_links=page_links)  # return a string
 
 ### END OF STARTING TOWN FUNCTIONS

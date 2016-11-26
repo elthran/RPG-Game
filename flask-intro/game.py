@@ -80,6 +80,7 @@ class Hero(object):
         self.completed_quests = []
         self.completed_achievements = []
         self.kill_quests = {}
+        self.bestiary = []
 
         self.wolf_kills = 0
         

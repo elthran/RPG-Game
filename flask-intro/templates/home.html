@@ -217,7 +217,7 @@
 
     {% if bestiary %}
       <div class="rightside">
-        {% for monster in bestiary_data %}
+        {% for monster in myHero.bestiary %}
           <ul>
             <li><a href=/bestiary/{{ monster.monster_id }}>{{ monster.name }}</a></li>
           </ul>
