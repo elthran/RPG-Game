@@ -118,7 +118,7 @@ class Hero(object):
         for item in self.equipped_items:
             item.update_stats()
 
-        self.current_sanctity = self.max_sanctity
+        self.current_sanctity = self.max_sanctity - 70 # TEMP WHILE TESTING POTIONS
         self.current_health = self.max_health - 70 # TEMP WHILE TESTING POTIONS
         self.current_endurance = self.max_endurance
         self.current_carrying_capacity = self.max_carrying_capacity
@@ -140,7 +140,6 @@ class Hero(object):
 
     def consume_item(self, item_name):
         for my_item in self.inventory:
-            print(my_item)
             if my_item.name == item_name:
                 my_item.apply_effect()
                 self.inventory.remove(my_item)
@@ -169,9 +168,6 @@ def create_random_hero():
 myHero = create_random_hero()
 game = Game(myHero)
 enemy = monster_generator(myHero.age)
-starting_items = [Weapon("Chipped Axe", myHero, 65, 2, 6, -0.5), Weapon("Chipped Dagger", myHero, 50, 2, 3, 0.5), Weapon("Old Staff", myHero, 65, 2, 4, -0.5),
-                  Garment("Cloth Tunic", myHero, 25, 5), Garment("Ripped Tunic", myHero, 65, 15)]
-blacksmith_items = [Garment("Ripped Tunic", myHero, 25, 35), Garment("Medium Tunic", myHero, 25, 35), Garment("Strong Tunic", myHero, 25, 35)]
 
 # Super temporary while testing quests
 myHero.inventory.append(Quest_Item("Wolf Pelt", myHero, 50))

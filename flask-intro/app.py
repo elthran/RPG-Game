@@ -244,30 +244,22 @@ def create_character():
     elif request.method == 'POST' and fathers_job == None:
         fathers_job = request.form["character_class"]
         if fathers_job == "Brute":
-            myHero.inventory.append(starting_items[0])
-            myHero.inventory.append(starting_items[4])
             myHero.strength += 3
             myHero.resilience += 1
             myHero.vitality += 1
             myHero.fortitude += 1
         elif fathers_job == "Scholar":
-            myHero.inventory.append(starting_items[3])
             myHero.wisdom += 6
             myHero.perception += 1
         elif fathers_job == "Hunter":
-            myHero.inventory.append(starting_items[1])
-            myHero.inventory.append(starting_items[4])
             myHero.agility += 3
             myHero.reflexes += 1
             myHero.survivalism += 2
         elif fathers_job == "Merchant":
-            myHero.inventory.append(starting_items[3])
             myHero.gold += 75
             myHero.charisma += 5
             myHero.fortuity += 1
         elif fathers_job == "Priest":
-            myHero.inventory.append(starting_items[3])
-            myHero.inventory.append(starting_items[2])
             myHero.divinity += 5
             myHero.wisdom += 1
     if myHero.character_name != "Unknown" and fathers_job != None:

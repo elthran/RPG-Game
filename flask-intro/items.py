@@ -120,13 +120,19 @@ class Ring(Jewelry):
 
 # Subclass of Item
 class Consumable(Item):
-    def __init__(self, name, myHero, buy_price, healing_amount):
+    def __init__(self, name, myHero, buy_price, healing_amount=0, sanctity_amount=0):
         super(Consumable, self).__init__(name, myHero, buy_price)
         self.healing_amount = healing_amount
+        self.sanctity_amount = sanctity_amount
         self.consumable = True
 		
     def apply_effect(self):
         self.myHero.current_health += self.healing_amount
+        self.myHero.current_sanctity += self.sanctity_amount
+        if self.myHero.current_health > self.myHero.max_health:
+            self.myHero.current_health = self.myHero.max_health
+        if self.myHero.current_sanctity > self.myHero.max_sanctity:
+            self.myHero.current_sanctity = self.myHero.max_sanctity
 
 # New Class
 class Quest_Item(Item):
@@ -153,5 +159,6 @@ all_store_items = [Right_Handed("Small Dagger", "Temporary", 5, 30, 60, 1),
                    Hand_Armour("Test Gloves", "Temporary", 5, 7),
                    Ring("Test Ring", "Temporary", 8)]
 
-all_marketplace_items = [Consumable("Minor Health Potion", "Temporary", 3, 10),
-                         Consumable("Major Health Potion", "Temporary", 6, 20)]
+all_marketplace_items = [Consumable("Minor Health Potion", "Temporary", 3, healing_amount=10),
+                         Consumable("Major Health Potion", "Temporary", 6, healing_amount=50),
+                         Consumable("Major Faith Potion", "Temporary", 6, sanctity_amount=50)]
