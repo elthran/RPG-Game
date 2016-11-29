@@ -60,7 +60,9 @@ def command(cmd=None):
     # CONSUME ITEMS
     for item in myHero.inventory:
         if cmd == item.name and item.consumable == True:
-            myHero.consume_item(item.name)
+            item.amount_owned -= 1
+            if item.amount_owned <= 0:
+                myHero.consume_item(item.name)
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # UPGRADE ABILITIES
@@ -97,9 +99,15 @@ def command(cmd=None):
     # BUY FROM MARKETPLACE
     for item in all_marketplace_items:
         if cmd == item.buy_name and myHero.gold >= item.buy_price:
-            newItem = item
-            newItem.update_owner(myHero)
-            myHero.inventory.append(newItem)
+            for my_item in myHero.inventory:
+                if my_item.name == item.name:
+                    my_item.amount_owned += 1
+                    break
+            else:
+                newItem = item
+                newItem.update_owner(myHero)
+                myHero.inventory.append(newItem)
+                newItem.amount_owned = 1
             myHero.gold -= item.buy_price
             return "success", 200, {'Content-Type': 'text/plain'} #//
         

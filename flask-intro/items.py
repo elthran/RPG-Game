@@ -3,11 +3,12 @@ class Item(object):
     # hero : The Hero who owns the item
 	# buy_price : Price to buy the item
 	# level_req : level requirment
-    def __init__(self, name, myHero, buy_price):
+    def __init__(self, name, myHero, buy_price, amount_owned=1):
         self.name = name
         self.buy_name = self.name + "_buy"
         self.myHero = myHero
         self.buy_price = buy_price
+        self.amount_owned = amount_owned
         self.equippable = False
         self.consumable = False
 
@@ -15,27 +16,34 @@ class Item(object):
         self.myHero = myHero
 
 # Subclass of Item
-class Weapon(Item):
+class Equippable(Item):
+    def __init__(self, name, myHero, buy_price, durability=10):
+        super(Equippable, self).__init__(name, myHero, buy_price)
+        self.equippable = True
+        self.durability = durability
+
+    def update_stats(self):
+        self.myHero.min_damage += self.min_damage
+        self.myHero.max_damage += self.max_damage
+        self.myHero.attack_speed += self.attack_speed
+        self.myHero.max_health += self.health_modifier
+
+    def check_if_improvement(self):
+        self.improvement = True
+        for equipped_item in self.myHero.equipped_items:
+            if type(equipped_item) is type(self):
+                if equipped_item.health_modifier > self.health_modifier:
+                    self.improvement = False
+                break
+
+# Subclass of Item
+class Weapon(Equippable):
     def __init__(self, name, myHero, buy_price, min_damage, max_damage, attack_speed):
         super(Weapon, self).__init__(name, myHero, buy_price)
         self.min_damage = min_damage
         self.max_damage = max_damage
         self.attack_speed = attack_speed
-        self.equippable = True
 		
-    def update_stats(self):
-        self.myHero.min_damage += self.min_damage
-        self.myHero.max_damage += self.max_damage
-        self.myHero.attack_speed += self.attack_speed
-
-    def check_if_improvement(self):
-            self.improvement = True
-            for equipped_item in self.myHero.equipped_items:
-                if type(equipped_item) is type(self):
-                    if equipped_item.attack_speed > self.attack_speed:
-                        self.improvement = False
-                    break
-
 class Right_Handed(Weapon):
     def __init__(self, name, myHero, buy_price, min_damage, max_damage, attack_speed):
         super(Right_Handed, self).__init__(name, myHero, buy_price, min_damage, max_damage, attack_speed)
@@ -52,22 +60,10 @@ class Two_Handed(Weapon):
         self.two_handed = True
 
 # New Class		
-class Garment(Item):
+class Garment(Equippable):
     def __init__(self, name, myHero, buy_price, health_modifier):
         super(Garment, self).__init__(name, myHero, buy_price)
         self.health_modifier = health_modifier
-        self.equippable = True
-
-    def update_stats(self):
-        self.myHero.max_health += self.health_modifier
-
-    def check_if_improvement(self):
-            self.improvement = True
-            for equipped_item in self.myHero.equipped_items:
-                if type(equipped_item) is type(self):
-                    if equipped_item.health_modifier > self.health_modifier:
-                        self.improvement = False
-                    break
 
 class Chest_Armour(Garment):
         def __init__(self, name, myHero, buy_price, health_modifier):
@@ -100,23 +96,14 @@ class Hand_Armour(Garment):
             self.hand_armour = True
 
 # New Class
-class Jewelry(Item):
+class Jewelry(Equippable):
     def __init__(self, name, myHero, buy_price):
         super(Jewelry, self).__init__(name, myHero, buy_price)
-        self.equippable = True
 
 class Ring(Jewelry):
         def __init__(self, name, myHero, buy_price):
             super(Ring, self).__init__(name, myHero, buy_price)
             self.ring = True
-
-        def check_if_improvement(self):
-            self.improvement = True
-            for equipped_item in self.myHero.equipped_items:
-                if type(equipped_item) is type(self):
-                    if equipped_item.health_modifier > self.health_modifier:
-                        self.improvement = False
-                    break
 
 # Subclass of Item
 class Consumable(Item):
@@ -138,11 +125,6 @@ class Consumable(Item):
 class Quest_Item(Item):
     def __init__(self, name, myHero, buy_price):
         super(Quest_Item, self).__init__(name, myHero, buy_price)
-        self.amount_owned = 1
-        self.equippable = False
-
-    def update_stats(self):
-        pass
 
 all_store_items = [Right_Handed("Small Dagger", "Temporary", 5, 30, 60, 1),
                    Right_Handed("Big Dagger", "Temporary", 10, 300, 600, 2),

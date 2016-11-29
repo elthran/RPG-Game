@@ -139,7 +139,7 @@
       {% endfor %}
       <h1>Inventory:</h1>
       {% for item in myHero.inventory %}  
-        <br>{{ item.amount_owned }} {{ item.name }} &emsp; 
+        <br>{% if not item.equippable %}{{ item.amount_owned }}{% endif %} {{ item.name }} {% if item.equippable %} -- Durability: {{ item.durability }}/{{ item.durability }}{% endif %}&emsp; 
         {% if item.equippable %} 
           <button class="command command-{{ item.name }}" value="{{ item.name }}">Equip</button>
         {% endif %}
