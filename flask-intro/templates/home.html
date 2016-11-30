@@ -96,15 +96,15 @@
     {% if inventory_page %}
       <h1>Equipped:</h1>
       {% for item in myHero.equipped_items %} 
-        {% if item.right_handed %}
+        {% if item.one_handed_weapon %}
           <h2>Right Hand:</h2>
           {{ item.name }} -- Durability: {{ item.durability }}/{{ item.durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>   
         {% endif %}
-        {% if item.left_handed %}
+        {% if item.shield %}
           <h2>Left Hand:</h2>
           {{ item.name }}-- Durability: {{ item.durability }}/{{ item.durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>   
         {% endif %}
-        {% if item.two_handed %}
+        {% if item.two_handed_weapon %}
           <h2>Both Hands:</h2>
           {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>   
         {% endif %}

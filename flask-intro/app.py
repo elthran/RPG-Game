@@ -43,6 +43,15 @@ def command(cmd=None):
     for item in myHero.inventory: 
         if cmd == item.name and item.equippable == True:
             for equipped_item in myHero.equipped_items:
+                if item.two_handed_weapon and (equipped_item.shield or equipped_item.one_handed_weapon):
+                    myHero.equipped_items.remove(equipped_item)
+                    myHero.inventory.append(equipped_item)
+                if item.one_handed_weapon and equipped_item.two_handed_weapon:
+                    myHero.equipped_items.remove(equipped_item)
+                    myHero.inventory.append(equipped_item)
+                if item.shield and equipped_item.two_handed_weapon:
+                    myHero.equipped_items.remove(equipped_item)
+                    myHero.inventory.append(equipped_item)
                 if type(equipped_item) is type(item):
                     myHero.equipped_items.remove(equipped_item)
                     myHero.inventory.append(equipped_item)

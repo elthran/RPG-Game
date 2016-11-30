@@ -40,7 +40,11 @@ class Weapon(Equippable):
         self.min_damage = min_damage
         self.max_damage = max_damage
         self.attack_speed = attack_speed
-
+        self.weapon = True
+        self.one_handed_weapon = False
+        self.shield = False
+        self.two_handed_weapon = False
+        
     def update_stats(self):
         if self.broken:
             return None
@@ -48,20 +52,21 @@ class Weapon(Equippable):
         self.myHero.max_damage += self.max_damage
         self.myHero.attack_speed += self.attack_speed
 		
-class Right_Handed(Weapon):
+class One_Handed_Weapon(Weapon):
     def __init__(self, name, myHero, buy_price, min_damage, max_damage, attack_speed):
-        super(Right_Handed, self).__init__(name, myHero, buy_price, min_damage, max_damage, attack_speed)
-        self.right_handed = True
+        super(One_Handed_Weapon, self).__init__(name, myHero, buy_price, min_damage, max_damage, attack_speed)
+        self.one_handed_weapon = True
 
-class Left_Handed(Weapon):
+class Shield(Weapon):
     def __init__(self, name, myHero, buy_price, min_damage, max_damage, attack_speed):
-        super(Left_Handed, self).__init__(name, myHero, buy_price, min_damage, max_damage, attack_speed)
-        self.left_handed = True
+        super(Shield, self).__init__(name, myHero, buy_price, min_damage, max_damage, attack_speed)
+        self.shield = True
+        self.weapon = False
 
-class Two_Handed(Weapon):
+class Two_Handed_Weapon(Weapon):
     def __init__(self, name, myHero, buy_price, min_damage, max_damage, attack_speed):
-        super(Two_Handed, self).__init__(name, myHero, buy_price, min_damage, max_damage, attack_speed)
-        self.two_handed = True
+        super(Two_Handed_Weapon, self).__init__(name, myHero, buy_price, min_damage, max_damage, attack_speed)
+        self.two_handed_weapon = True
 
 # New Class		
 class Garment(Equippable):
@@ -135,11 +140,11 @@ class Quest_Item(Item):
     def __init__(self, name, myHero, buy_price):
         super(Quest_Item, self).__init__(name, myHero, buy_price)
 
-all_store_items = [Right_Handed("Small Dagger", "Temporary", 5, 30, 60, 1),
-                   Right_Handed("Big Dagger", "Temporary", 10, 300, 600, 2),
-                   Left_Handed("Small Shield", "Temporary", 10, 300, 600, 2),
-                   Two_Handed("Small Polearm", "Temporary", 5, 30, 60, 1),
-                   Two_Handed("Medium Polearm", "Temporary", 5, 30, 60, 1),
+all_store_items = [One_Handed_Weapon("Small Dagger", "Temporary", 5, 30, 60, 1),
+                   One_Handed_Weapon("Big Dagger", "Temporary", 10, 300, 600, 2),
+                   Shield("Small Shield", "Temporary", 10, 300, 600, 2),
+                   Two_Handed_Weapon("Small Polearm", "Temporary", 5, 30, 60, 1),
+                   Two_Handed_Weapon("Medium Polearm", "Temporary", 5, 30, 60, 1),
                    Leg_Armour("Medium Pants", "Temporary", 7, 25),
                    Chest_Armour("Medium Tunic", "Temporary", 2, 25),
                    Chest_Armour("Strong Tunic", "Temporary", 5, 250),
