@@ -17,22 +17,19 @@ class Item(object):
 
 # Subclass of Item
 class Equippable(Item):
-    def __init__(self, name, myHero, buy_price, durability=10):
+    def __init__(self, name, myHero, buy_price, max_durability=3, item_rating=10):
         super(Equippable, self).__init__(name, myHero, buy_price)
         self.equippable = True
-        self.durability = durability
-
-    def update_stats(self):
-        self.myHero.min_damage += self.min_damage
-        self.myHero.max_damage += self.max_damage
-        self.myHero.attack_speed += self.attack_speed
-        self.myHero.max_health += self.health_modifier
+        self.broken = False
+        self.max_durability = max_durability
+        self.durability = self.max_durability
+        self.item_rating = item_rating
 
     def check_if_improvement(self):
         self.improvement = True
         for equipped_item in self.myHero.equipped_items:
             if type(equipped_item) is type(self):
-                if equipped_item.health_modifier > self.health_modifier:
+                if equipped_item.item_rating > self.item_rating:
                     self.improvement = False
                 break
 
@@ -43,6 +40,13 @@ class Weapon(Equippable):
         self.min_damage = min_damage
         self.max_damage = max_damage
         self.attack_speed = attack_speed
+
+    def update_stats(self):
+        if self.broken:
+            return None
+        self.myHero.min_damage += self.min_damage
+        self.myHero.max_damage += self.max_damage
+        self.myHero.attack_speed += self.attack_speed
 		
 class Right_Handed(Weapon):
     def __init__(self, name, myHero, buy_price, min_damage, max_damage, attack_speed):
@@ -64,6 +68,11 @@ class Garment(Equippable):
     def __init__(self, name, myHero, buy_price, health_modifier):
         super(Garment, self).__init__(name, myHero, buy_price)
         self.health_modifier = health_modifier
+
+    def update_stats(self):
+        if self.broken:
+            return None
+        self.myHero.max_health += self.health_modifier
 
 class Chest_Armour(Garment):
         def __init__(self, name, myHero, buy_price, health_modifier):

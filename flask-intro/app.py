@@ -48,6 +48,7 @@ def command(cmd=None):
                     myHero.inventory.append(equipped_item)
             myHero.equipped_items.append(item)
             myHero.inventory.remove(item)
+            myHero.update_secondary_attributes()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # UNEQUIP ITEMS  
@@ -55,6 +56,7 @@ def command(cmd=None):
         if cmd == item.name:
             myHero.inventory.append(item)
             myHero.equipped_items.remove(item)
+            myHero.update_secondary_attributes()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # CONSUME ITEMS
@@ -300,6 +302,10 @@ def battle():
         page_heading = "You have died."
     else:
         myHero.current_endurance -= required_endurance
+        for item in myHero.equipped_items:
+            item.durability -= 1
+            if item.durability <= 0:
+                item.broken = True
         newMonster = True
         for key, value in myHero.kill_quests.items():
             if key == game.enemy.species:
@@ -366,7 +372,7 @@ def reset_character():
     myHero.fortuity = 1
     myHero.abilities = []
     myHero.gold = 500
-    myHero.update_secondary_attributes
+    myHero.update_secondary_attributes()
     myHero.refresh_character
     return redirect(url_for('home'))  # return a string
 
