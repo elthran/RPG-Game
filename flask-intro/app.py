@@ -42,19 +42,23 @@ def command(cmd=None):
     # EQUIP ITEMS
     for item in myHero.inventory: 
         if cmd == item.name and item.equippable == True:
+            equipped_items_to_remove = []
             for equipped_item in myHero.equipped_items:
                 if item.two_handed_weapon and (equipped_item.shield or equipped_item.one_handed_weapon):
-                    myHero.equipped_items.remove(equipped_item)
+                    equipped_items_to_remove.append(equipped_item)
                     myHero.inventory.append(equipped_item)
                 if item.one_handed_weapon and equipped_item.two_handed_weapon:
-                    myHero.equipped_items.remove(equipped_item)
+                    equipped_items_to_remove.append(equipped_item)
                     myHero.inventory.append(equipped_item)
                 if item.shield and equipped_item.two_handed_weapon:
-                    myHero.equipped_items.remove(equipped_item)
+                    equipped_items_to_remove.append(equipped_item)
                     myHero.inventory.append(equipped_item)
                 if type(equipped_item) is type(item):
-                    myHero.equipped_items.remove(equipped_item)
+                    equipped_items_to_remove.append(equipped_item)
                     myHero.inventory.append(equipped_item)
+            
+			# deletes the items in equipped_items_to_remove from myHero.equipped_items 
+            myHero.equipped_items = [x for x in myHero.equipped_items if x not in equipped_items_to_remove]
             myHero.equipped_items.append(item)
             myHero.inventory.remove(item)
             myHero.update_secondary_attributes()
