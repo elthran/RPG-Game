@@ -82,6 +82,9 @@ class Hero(object):
         self.kill_quests = {}
         self.bestiary = []
 
+        self.known_locations = []
+        self.current_location = None
+
         self.wolf_kills = 0
         
     # Sets damage

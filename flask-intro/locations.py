@@ -19,18 +19,53 @@ Game Objects (from other module maybe?) I am just going to start with Location a
 --display
 """
 
-class Location:
+class Location(object):
     #Globals
-    def __init__(self):
-        pass
-    def display(self):
-        pass
-        
-def Town(Location):
     def __init__(self, name):
         self.name = name
-        self.locations = self.get_locations()
+        self.location_type = None
+        pass
+
+class World_Map(Location):
+    def __init__(self, name):
+        super(World_Map, self).__init__(name)
+        self.location_type = "World Map"
+        self.page_title = self.name
+        self.page_heading = "You are wandering in the world"
+        self.page_image = "map"
+        self.paragraph = "Be safe"
+        self.places_of_interest = [("/Town/Thornwall", "Thornwall"),
+                          ("/Cave/Samplecave", "Samplecave")]
         
+class Town(Location):
+    def __init__(self, name):
+        super(Town, self).__init__(name)
+        self.location_type = "Town"
+        self.page_title = self.name
+        self.page_heading = "You are in " + self.name
+        self.page_image = "town"
+        self.paragraph = "There are many places to visit within the town. Have a look!"
+        self.places_of_interest = [("/store/greeting", "Blacksmith", "Shops"),
+                                  ("/barracks", "Barracks"),
+                                  ("/marketplace/greeting", "Marketplace"),
+                                  ("/tavern", "Tavern", "Other"),
+                                  ("/old_mans_hut", "Old Man's Hut"),
+                                  ("/leave_town", "Village Gate", "Outskirts"),
+                                  ("/World_Map", "World Map")]
+
+class Cave(Location):
+    def __init__(self, name):
+        super(Cave, self).__init__(name)
+        self.location_type = "Cave"
+        self.page_title = self.name
+        self.page_heading = "You are in a cave called " + self.name
+        self.page_image = "cave"
+        self.paragraph = "There are many scary places to die within the cave. Have a look!"
+        self.places_of_interest = [("/Town/Thornwall", "Thornwall"),
+                          ("/World_Map", "World Map")]
+
+
+"""
     def get_locations(self):
         
         with open("data\town." + name + ".txt", 'r') as f:
@@ -38,32 +73,14 @@ def Town(Location):
             return Town.parse(data)
         
     def display(self):
-        """Return an html object of the town built from a template.
+        Return an html object of the town built from a template.
         
         This should be able to be "popped" into the main post-login site in the content section.
-        """
         pass
     
     def parse(data):
         pass
+"""
         
-"""
-Old code
-@app.route('/town/<town_name>')
-@login_required
-def town(town_name):
-    page_title = str(town_name)
-    page_heading = "You are in " + page_title
-    page_image = "town"
-    paragraph = page_title + ". There are many places to visit within the town. Have a look!"
-    if town_name == "placeholder_name":
-        town_links = [("/store/greeting", "Blacksmith", "Shops"),
-                      ("/barracks", "Barracks"),
-                      ("/under_construction", "Marketplace"),
-                      ("/tavern", "Tavern", "Other"),
-                      ("/old_mans_hut", "Old Man's Hut"),
-                      ("/leave_town", "Village Gate", "Outskirts")]
-    if town_name == "temporary_second_town":
-        town_links = [("/store/greeting", "Blacksmith", "Shops")]   
-    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, town_links=town_links)
-"""
+game_locations = [World_Map("Starting Country"), Town("Thornwall"), Cave("Samplecave")]
+

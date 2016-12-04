@@ -30,7 +30,7 @@
         <ul>
         <li><a href=/home>Profile</a></li>
         <li><a href=/inventory_page>Inventory</a></li>
-        <li><a href=/town/placeholder_name>Town</a></li>
+        <li><a href=/{{ myHero.current_location.location_type }}/{{ myHero.current_location.name }}>{{ myHero.current_location.location_type }}</a></li>
         <li><a href=/quest_log>Journal</a></li>
         <li><a href=/ability_tree>Abilities</a></li>
         <li><a href=/admin>Admin</a></li>
@@ -89,7 +89,7 @@
     <h2>{{ link[0] }}<a href="{{ link[1] }}">{{ link[2] }}</a>{{ link[3] }}</h2>
     {% endfor %}
 
-    {% for town_link in town_links %}
+    {% for town_link in places_of_interest %}
       <h1>{{ town_link[2] }}</h1><h2><a href="{{ town_link[0] }}">{{ town_link[1] }}</a></h2>
     {% endfor %}
 
