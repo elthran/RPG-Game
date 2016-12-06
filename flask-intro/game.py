@@ -84,6 +84,7 @@ class Hero(object):
 
         self.known_locations = []
         self.current_location = None
+        self.current_city = None
 
         self.wolf_kills = 0
         

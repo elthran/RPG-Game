@@ -467,7 +467,7 @@ def home():
     myHero.update_secondary_attributes()
     update_time(myHero)
     if myHero.current_location == None:
-        myHero.current_location = game_locations[1]
+        myHero.current_location = game_locations[0]
     # If it's a new character, send them to cerate_character url
     if myHero.character_name == "Unknown":
         return redirect(url_for('create_character'))
@@ -580,35 +580,49 @@ def under_construction():
 @app.route('/Town/<town_name>')
 @login_required
 def town(town_name):
-    myHero.current_location = game_locations[1]
-    page_title = myHero.current_location.page_title
-    page_heading = myHero.current_location.page_heading
-    page_image = myHero.current_location.page_image
-    paragraph = myHero.current_location.paragraph
-    places_of_interest = myHero.current_location.places_of_interest
+    for city in myHero.current_location.map_cities:
+        if city.name == town_name:
+            myHero.current_city = city
+    page_title = myHero.current_city.page_title
+    page_heading = myHero.current_city.page_heading
+    page_image = myHero.current_city.page_image
+    paragraph = myHero.current_city.paragraph
+    places_of_interest = myHero.current_city.places_of_interest
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest )  # return a string
 
 @app.route('/Cave/<cave_name>') # Test function while experimenting with locations
 @login_required
 def cave(cave_name):
-    myHero.current_location = game_locations[2]
-    page_title = myHero.current_location.page_title
-    page_heading = myHero.current_location.page_heading
-    page_image = myHero.current_location.page_image
-    paragraph = myHero.current_location.paragraph
-    places_of_interest = myHero.current_location.places_of_interest
+    for city in myHero.current_location.map_cities:
+        if city.name == cave_name:
+            myHero.current_city = city
+    page_title = myHero.current_city.page_title
+    page_heading = myHero.current_city.page_heading
+    page_image = myHero.current_city.page_image
+    paragraph = myHero.current_city.paragraph
+    places_of_interest = myHero.current_city.places_of_interest
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest)  # return a string
 
-@app.route('/World_Map') # Test function while experimenting with locations
+@app.route('/World_Map/<current_world>/<coordinates>') # Test function while experimenting with locations
 @login_required
-def world_map():
+def world_map(current_world, coordinates):
+    if coordinates == "east":
+        myHero.current_location.map_coordinates[0] += 1
+    if coordinates == "west":
+        myHero.current_location.map_coordinates[0] -= 1
+    if coordinates == "north":
+        myHero.current_location.map_coordinates[1] += 1
+    if coordinates == "south":
+        myHero.current_location.map_coordinates[1] -= 1
     myHero.current_location = game_locations[0]
+    myHero.current_city = None
     page_title = myHero.current_location.page_title
     page_heading = myHero.current_location.page_heading
     page_image = myHero.current_location.page_image
     paragraph = myHero.current_location.paragraph
+    move_on_the_map = myHero.current_location.show_directions()
     places_of_interest = myHero.current_location.places_of_interest
-    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest)  # return a string
+    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest, move_on_the_map=move_on_the_map)  # return a string
 
 @app.route('/barracks')
 @login_required
