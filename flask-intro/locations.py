@@ -27,23 +27,29 @@ class Location(object):
         pass
 
 class World_Map(Location):
-    def __init__(self, name, map_coordinates=[0,0]):
+    def __init__(self, name, all_map_coordinates):
         super(World_Map, self).__init__(name)
         self.location_type = "World_Map"
-        self.map_coordinates = map_coordinates
+        self.map_coordinates = [0,0]
+        self.all_map_coordinates = all_map_coordinates
         self.all_map_cities = [Town("Thornwall", self.name), Cave("Samplecave", self.name)]
         self.map_cities = []
         self.page_title = self.name
         self.page_heading = "You are wandering in the world"
         self.page_image = "map"
         self.paragraph = "Be safe"
+        self.page_image = "map1"
         self.places_of_interest = []
 
     def show_directions(self):
-        directions = [("north", "North"), ("east", "East")]
-        if self.map_coordinates[0] > 0:
+        directions = []
+        if any((coordinate[0] == (self.map_coordinates[0] + 1) and coordinate[1] == self.map_coordinates[1]) for coordinate in self.all_map_coordinates):
+            directions.append(("east", "East"))
+        if any((coordinate[0] == (self.map_coordinates[0] - 1) and coordinate[1] == self.map_coordinates[1]) for coordinate in self.all_map_coordinates):
             directions.append(("west", "West"))
-        if self.map_coordinates[1] > 0:
+        if any((coordinate[1] == (self.map_coordinates[1] + 1) and coordinate[0] == self.map_coordinates[0]) for coordinate in self.all_map_coordinates):
+            directions.append(("north", "North"))
+        if any((coordinate[1] == (self.map_coordinates[1] - 1) and coordinate[0] == self.map_coordinates[0]) for coordinate in self.all_map_coordinates):
             directions.append(("south", "South"))
         self.map_cities = [city for city in self.all_map_cities if city.location_coordinate == self.map_coordinates]
         if len(self.map_cities) > 0:
@@ -101,5 +107,5 @@ class Cave(Location):
         pass
 """
         
-game_locations = [World_Map("Test_World")]
+game_locations = [World_Map("Test_World", [(0,0), (0,2), (1,0), (1,1), (1, 2), (2, 1), (3, 1)])]
 
