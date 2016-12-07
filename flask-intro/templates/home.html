@@ -78,10 +78,10 @@
     {% endfor %}
 
     {% if move_on_the_map %}
-    <h1>My location is {{ myHero.current_world.current_location.name }}</h1>
+    <h1>I am at {{ myHero.current_world.current_location.name }}</h1>
     <p>TESTING: THERE IS A TOWN AT location 5 AND A CAVE AT location 2
       {% for move in move_on_the_map %}
-        <br><h1>MOVE <a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ move }}>{{ move }}</a></h1>
+        <h1>MOVE TO <a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ move }}>{{ move }}</a></h1>
       {% endfor %}
     {% endif %}
 

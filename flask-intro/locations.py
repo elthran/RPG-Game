@@ -57,7 +57,7 @@ class World_Map(Location):
     # temporarily location_id is the same as the index in the list of all_map_locations
     def find_location(self, location_id):
         id = int(location_id)
-        if (id == 999): # To be Dealt with later
+        if (id == self.id): # To be Dealt with later
             id = 0
         return self.all_map_locations[int(id)]
         
@@ -116,7 +116,8 @@ class Cave(Location):
 #   init function later)
 #
 #------------------------------------
-TEST_WORLD_ID = 999 # ...
+TEST_WORLD_ID = 999 # ... 
+
 test_locations = []
 
 '''
