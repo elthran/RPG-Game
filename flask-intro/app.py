@@ -469,8 +469,7 @@ def home():
 
     # initialize current_world
     if myHero.current_world == None:
-        game_world = game_worlds[0]
-        myHero.current_world = game_world
+        myHero.current_world = game_worlds[0]
     # If it's a new character, send them to cerate_character url
     if myHero.character_name == "Unknown":
         return redirect(url_for('create_character'))
@@ -606,11 +605,11 @@ def cave(cave_name):
     places_of_interest = myHero.current_city.places_of_interest
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest)  # return a string
 
-@app.route('/World_Map/<current_world>/<next_location_id>') # Test function while experimenting with locations
+@app.route('/World_Map/<current_world>/<location_id>') # Test function while experimenting with locations
 @login_required
-def world_map(current_world, next_location_id):
+def world_map(current_world, location_id):
     myHero.current_world = game_worlds[0]
-    myHero.current_world.current_location = myHero.current_world.find_location(next_location_id)
+    myHero.current_world.current_location = myHero.current_world.find_location(location_id)
     myHero.current_city = None
     page_title = myHero.current_world.page_title
     page_heading = myHero.current_world.page_heading
