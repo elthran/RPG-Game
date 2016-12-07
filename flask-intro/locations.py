@@ -27,18 +27,18 @@ class Location(object):
         pass
 
 class World_Map(Location):
-    def __init__(self, name, all_map_coordinates):
+    def __init__(self, name, all_map_coordinates, all_map_cities):
         super(World_Map, self).__init__(name)
         self.location_type = "World_Map"
         self.map_coordinates = [0,0]
         self.all_map_coordinates = all_map_coordinates
-        self.all_map_cities = [Town("Thornwall", self.name), Cave("Samplecave", self.name)]
+        self.all_map_cities = all_map_cities
         self.map_cities = []
         self.page_title = self.name
         self.page_heading = "You are wandering in the world"
         self.page_image = "map"
         self.paragraph = "Be safe"
-        self.page_image = "map1"
+        self.page_image = name
         self.places_of_interest = []
 
     def show_directions(self):
@@ -107,5 +107,5 @@ class Cave(Location):
         pass
 """
         
-game_locations = [World_Map("Test_World", [(0,0), (0,2), (1,0), (1,1), (1, 2), (2, 1), (3, 1)])]
+game_locations = [World_Map("Test_World", [(0,0), (0,2), (1,0), (1,1), (1, 2), (2, 1), (3, 1)], [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
 
