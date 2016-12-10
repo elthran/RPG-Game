@@ -5,10 +5,11 @@
 #                                                                              #
 #//////////////////////////////////////////////////////////////////////////////#
 
-from app import *
+from app import * #Commenting this out will probably break everything ...
 import sqlite3
 import hashlib
-import datetime   
+import datetime
+import os
 
 # Every second_per_endurance seconds, endurance will recover by 1
 second_per_endurance = 10
@@ -204,12 +205,7 @@ def fetch_character_data():
 """I am going to try and make an easy version of the current database. There will be all of the old code
 but to add stuff will be simpler (I hope). I am just going to flesh out the concept. It won't work for a while.
 """
-
-import os
-# These are imported in the original code.
-# import sqlite3
-# import hashlib
-# import datetime 
+ 
 
 class EasyDatabase():
     """A more human usuable database.
@@ -238,9 +234,13 @@ class EasyDatabase():
         
         This should be upgraded to make it more human readable and editable .... maybe an external xml/spreadsheet/excel file?
         
-        NOTE: User_ID field removed and replaced with automatic ROWID
+        NOTE: User_ID field removed and replaced 'username' as a primary key ... I think it is a good idea?
         """
-        basic_tables = ("CREATE TABLE USERS(USERNAME TEXT PRIMARY KEY NOT NULL, PASSWORD TEXT NOT NULL)",
+        basic_tables = (
+            """CREATE TABLE USERS(
+            USERNAME TEXT PRIMARY KEY NOT NULL,
+            PASSWORD TEXT NOT NULL)""",
+            
             """CREATE TABLE characters(
             username text primary key,
             character_name text,
@@ -279,7 +279,8 @@ class EasyDatabase():
             previous_time datetime current_timestamp,
             endurance number)""",) #Dam ugly .. I think it might look nice in a spreadsheet file ... :)
             
-        #Deal with use case where table alread exists ... not very exacting ...
+        #Deal with use case where table alread exists ... not very exacting (by which I mean it may fail randomly) ...
+        #This failure has been explicitly silenced ...
         for table in basic_tables:
             try:
                 self._write(table)
@@ -291,11 +292,11 @@ class EasyDatabase():
     def _write(self, sql_string=None, *args, **kwargs):
         """Open connection and excute SQL statement then commit and close.
         
-        This defaults to excecuting if only on argument is passed ... it is very insecure.
+        This defaults to excecuting if only an argument is passed ... it is very insecure.
         NOTE: *args should be a list of tuples ... or maybe it already is? I shall test.
         
         This function when properly implemented should really be one of the few places actual SQL gets used ...
-        All the INSERTS and SHIT should be in here.
+        All the INSERTS and SHIT should be in here. 
         """
         conn = sqlite3.connect(self.name)
         c = conn.cursor()
@@ -307,23 +308,47 @@ class EasyDatabase():
         conn.commit()
         conn.close()
         
-    def _read(self, sql_string=None, *args, **kwargs):
-        """Open connection and execute SQL statement then read data ... close then return data as a dictionary
+    def _read(self, *args, **kwargs):
+        """Execute a prebaked SQL statement that returns pythonic data types.
         
-        NOTE: no database commit happens in this funciton.
+        This is an internal database function only.  Other modules should call things like 'validate' or 'update_character'
+        Those functions should call this.
+        
+        ##All of the SQL will be inside the read function!! 
+        
+        Ok so this is my latest idea.
+        kwargs should be a dictionary of various types of basic database functions.
+        
+        Usage:
+        db = EasyDatabase('static/Users2.db') #Make a database!
+        db.validate(username, password) #Use an external function.
+        -->Inside validate:
+        password = self._read(username, read_password=True) #Execute SQL 'read a password' statement and return the password.
+        
+        NOTE: The kwargs variable is a mini language for the game that allows the user to execute specific SQL requests that
+        have been preconstructed.
+        NOTE2: no database commit happens in this funciton.
         """
-        data = None
+        data = {}
         conn = sqlite3.connect(self.name)
         
-        conn.row_factory = sqlite3.Row #Some kind of fancy use of sqlite3 class variables that makes fetchall return a dictionary.
+        #I think this will come in realy hand at some point but I don't know how to use it yet.
+        # conn.row_factory = sqlite3.Row #Some kind of fancy use of sqlite3 class variables that makes fetchall return a dictionary.
+        # data = c.fetchall() #This combined with the row_factory is a dictionary object apparently .. which will come in handy someday.
         
         c = conn.cursor()
-        if sql_string:
-            c.execute(sql_string)
-            data = c.fetchall() ##This is a dictionary object apparently .. Improve the efficiency here##
+            
+        if kwargs['read_password']:
+            c.execute("SELECT password FROM USERS WHERE username=?", args)
+            try:
+                data = c.fetchone()[0]
+            except TypeError:
+                data = "no_match_found"
+        elif kwargs['some_other_usefull_function']:
+            #Do another SQL statement! and return the result in python please!
+            pass
+            
         conn.close()
-        print('data:', repr(data))
-        exit('testing read function') ##Only remove if you know how this works.
         return data
         
             
@@ -369,15 +394,31 @@ class EasyDatabase():
     
     def _wipe_database(self):
         os.remove(self.name)
+        
+    def validate(self, username, password):
+        """Check if username and password match return True if they do.
+        
+        Passwords are stored in hashed form so ...
+        hash the test password and compare with the retrieved one.
+        """
+
+        return  self._read(username, read_password=True) == hashlib.md5(password.encode()).hexdigest()
+        
+        
 
 ### testing
 if __name__ == "__main__":
     db = EasyDatabase('static/Users2.db')
-    try:
-        db.create_user('Marlen', 'Brunner') #I should be able to add a bunch of users from a text file.
-        db.create_character("Marlen", "Haldon", "Wizard")
-    except Exception as e:
-        print(e.args[0])
+    # try:
+        # db.create_user('Marlen', 'Brunner') #I should be able to add a bunch of users from a text file.
+        # db.create_character("Marlen", "Haldon", "Wizard")
+    # except Exception as e:
+        # print(e.args[0])
+    
+    username = 'Marlen'
+    password = "Brunner"
+    #db._read(username, read_password=True)
+    print("password valid?", db.validate(username, password))
     
     ##Wipe the database.
     #db._wipe_database()
