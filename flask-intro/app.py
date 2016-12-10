@@ -22,6 +22,8 @@ import hashlib
 app = Flask(__name__)
 
 app.secret_key = 'starcraft'
+
+UserDatabase = EasyDatabase('static/User.db')
         
 def login_required(f):
     """Set certain pages as requiring a login to visit.
@@ -193,7 +195,6 @@ def login():
     Access data from the static/user.db using the EasyDatabase class.
     """
     
-    UserDatabase = EasyDatabase('static/User.db')
     error = None
     if request.method == 'POST':
         username = request.form['username']

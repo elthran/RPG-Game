@@ -283,13 +283,13 @@ class EasyDatabase():
         #This failure has been explicitly silenced ...
         for table in basic_tables:
             try:
-                self._write(table)
+                self._write(table, build_tables=True)
             except sqlite3.OperationalError as e:
                 if 'table' in e.args[0] and 'already exists' in e.args[0]:
                     pass
         
         
-    def _write(self, sql_string=None, *args, **kwargs):
+    def _write(self, *args, **kwargs):
         """Open connection and excute SQL statement then commit and close.
         
         This defaults to excecuting if only an argument is passed ... it is very insecure.
@@ -298,13 +298,29 @@ class EasyDatabase():
         This function when properly implemented should really be one of the few places actual SQL gets used ...
         All the INSERTS and SHIT should be in here. 
         """
+        
         conn = sqlite3.connect(self.name)
         c = conn.cursor()
-        if sql_string and args is ():
-            c.execute(sql_string)
-        elif sql_string:
-            c.executemany(sql_string, args)
-        ###Make this generic###
+        
+        def insert_user():
+            print(len(args))
+            c.execute("INSERT INTO USERS VALUES (?,?)", args)
+            
+        def build_tables():
+            c.execute(args[0])
+            
+        def insert_character():
+            c.execute("INSERT INTO CHARACTERS(username, character_name, character_class, current_time) VALUES (?,?,?,?)", args)
+        
+        options = {'insert_user': insert_user,
+            'build_tables': build_tables,
+            'insert_character': insert_character
+        }
+        
+        for key in kwargs:
+            if kwargs[key]:
+                options[key]()
+        
         conn.commit()
         conn.close()
         
@@ -337,26 +353,42 @@ class EasyDatabase():
         # data = c.fetchall() #This combined with the row_factory is a dictionary object apparently .. which will come in handy someday.
         
         c = conn.cursor()
-            
-        if kwargs['read_password']:
+              
+        def read_password():
             c.execute("SELECT password FROM USERS WHERE username=?", args)
             try:
-                data = c.fetchone()[0]
+                return c.fetchone()[0]
             except TypeError:
-                data = "no_match_found"
-        elif kwargs['some_other_usefull_function']:
+                return "no_match_found"
+        
+        def read_rowid():
+            c.execute("SELECT ROWID FROM USERS WHERE username=?", args)
+            return c.fetchone()[0]
+            
+        def some_other_usefull_function():
             #Do another SQL statement! and return the result in python please!
             pass
-            
+        
+        #Yes this is kind of slow but the whole exec/compile is a whole nother problem.
+        options = {'read_password' : read_password,
+                'read_rowid' : read_rowid,
+                'some_other_usefull_function': some_other_usefull_function
+                }
+        
+        #Executes functions listed above (and arbitrary SQL so get rid of that yes?)
+        #And like really really don't use exec or compile or any of those ok?.
+        for key in kwargs:
+            if kwargs[key]:
+                data = options[key]()
         conn.close()
         return data
         
             
-    def save_game(self, character):
+    def update_character(self, character):
         """Save all of the new data a character has generated.
         
         This should check for changes and only save new data (if that is quicker).
-        Basically the update_character method with less duplications.
+        Basically the update_character function with less duplications.
         """
         pass
         
@@ -369,7 +401,7 @@ class EasyDatabase():
         """
         hashed_password = str(hashlib.md5(password.encode()).hexdigest())
         try:
-            self._write("INSERT INTO USERS VALUES (?,?)", (username, hashed_password))
+            self._write(username, password, insert_user=True)
         except sqlite3.IntegrityError as e:
             if e.args[0] == 'UNIQUE constraint failed: USERS.USERNAME':
                 raise Exception("Username '{}' already exists.".format(username)) #raise error if already in use.
@@ -384,8 +416,7 @@ class EasyDatabase():
         """
         try:
             now = EasyDatabase.now()
-            self._write("INSERT INTO CHARACTERS(username, character_name, character_class, current_time) VALUES (?,?,?,?)",
-                (username, character, classname, now))
+            self._write(username, character, classname, now, insert_character=True)
         except sqlite3.IntegrityError as e:
             raise Exception("User '{}' already has a character.".format(username))
     
@@ -403,23 +434,34 @@ class EasyDatabase():
         """
 
         return  self._read(username, read_password=True) == hashlib.md5(password.encode()).hexdigest()
+    
+    def get_user_id(self, username):
+        """Return the ID of a given user.
+        
+        This corresponds to the ROWID from SQL.
+        The user must exist ... but since this should only be called after the user has logged in it should be redundant?
+        """
+        return self._read(username, read_rowid=True)
         
         
 
 ### testing
 if __name__ == "__main__":
     db = EasyDatabase('static/Users2.db')
-    # try:
+    try:
         # db.create_user('Marlen', 'Brunner') #I should be able to add a bunch of users from a text file.
-        # db.create_character("Marlen", "Haldon", "Wizard")
-    # except Exception as e:
-        # print(e.args[0])
+        db.create_character("Marlen", "Haldon", "Wizard")
+    except Exception as e:
+        print(e.args[0])
     
     username = 'Marlen'
     password = "Brunner"
-    #db._read(username, read_password=True)
-    print("password valid?", db.validate(username, password))
+    # db._read(username, read_password=True)
+    # print("password valid?", db.validate(username, password))
+    
+    # print(db.get_user_id(username))
+    # db.create_user(username, password)
     
     ##Wipe the database.
-    #db._wipe_database()
+    # db._wipe_database()
     
