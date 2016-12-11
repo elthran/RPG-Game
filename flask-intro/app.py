@@ -11,16 +11,19 @@ from functools import wraps
 from game import *
 from battle import *
 from bestiary import *
-from database import *
+from database import * #Phase this out as EasyDatabase class grows.
 from abilities import *
 from locations import *
 import sqlite3
 import hashlib
 
+
 # create the application object
 app = Flask(__name__)
 
 app.secret_key = 'starcraft'
+
+UserDatabase = EasyDatabase('static/User.db')
         
 def login_required(f):
     """Set certain pages as requiring a login to visit.
@@ -187,19 +190,24 @@ def level_up():
 # route for handling the login page logic
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """Allow user to login if username and password match.
+    
+    Access data from the static/user.db using the EasyDatabase class.
+    """
+    
     error = None
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        completion = validate(username, password)
-        if completion ==False:
-            error = 'Invalid Credentials. Please try again.'
-        else:
+        if UserDatabase.validate(username, password):
             session['logged_in'] = True
             flash("LOG IN SUCCESSFUL")
             session['id'] = get_user_id(username)
             fetch_character_data()
             return redirect(url_for('home'))
+        else:
+            error = 'Invalid Credentials. Please try again.'
+            
     return render_template('login.html', error=error, login=True)
 
 # route for handling the account creation page logic
@@ -466,9 +474,15 @@ def home():
     #fetch_character_data()
     myHero.update_secondary_attributes()
     update_time(myHero)
+<<<<<<< HEAD
     # initialize current_world
     if myHero.current_world == None:
         game_world = game_worlds[0]
+=======
+
+    # initialize current_world
+    if myHero.current_world == None:
+>>>>>>> 57de2172e0aa81a34937ab07c88b55b31a1fac1c
         myHero.current_world = game_worlds[0]
     # If it's a new character, send them to cerate_character url
     if myHero.character_name == "Unknown":
