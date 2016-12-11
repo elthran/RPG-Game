@@ -474,15 +474,12 @@ def home():
     #fetch_character_data()
     myHero.update_secondary_attributes()
     update_time(myHero)
-<<<<<<< HEAD
-    # initialize current_world
+ # initialize current_world
     if myHero.current_world == None:
         game_world = game_worlds[0]
-=======
 
     # initialize current_world
     if myHero.current_world == None:
->>>>>>> 57de2172e0aa81a34937ab07c88b55b31a1fac1c
         myHero.current_world = game_worlds[0]
     # If it's a new character, send them to cerate_character url
     if myHero.character_name == "Unknown":

@@ -34,10 +34,7 @@ class World_Map(Location):
         self.location_type = "World_Map"
         #self.map_coordinates = [0,0]
         #self.all_map_ids = all_map_ids
-<<<<<<< HEAD
-=======
 
->>>>>>> 57de2172e0aa81a34937ab07c88b55b31a1fac1c
         self.all_map_locations = all_map_locations
         self.current_location = all_map_locations[0]
         self.map_cities = []
@@ -50,11 +47,8 @@ class World_Map(Location):
 
     def show_directions(self):
         directions = self.current_location.adjacent_locations
-<<<<<<< HEAD
         if directions == []:
             directions = [1,2,3]
-=======
->>>>>>> 57de2172e0aa81a34937ab07c88b55b31a1fac1c
         self.map_cities = [location for location in self.all_map_locations if (location == self.current_location and (location.location_type == "Town" or location.location_type == "Cave"))] # too long, but will refactor later
         if len(self.map_cities) > 0:
             self.places_of_interest = [("/" + self.map_cities[0].location_type + "/" + self.map_cities[0].name, self.map_cities[0].name)]
@@ -123,8 +117,7 @@ class Cave(Location):
     def parse(data):
         pass
 """
-<<<<<<< HEAD
-        
+
 
  #------------------------------------
  #
@@ -159,7 +152,7 @@ test_locations2 = []
  +Creepy Cave at location 2
  +'''
 
-for i in range(0, 11):
+for i in range(0, 12):
     test_location = Location("location " + str(i),i)
     test_locations2.append(test_location)
     
@@ -167,7 +160,6 @@ test_locations2[5] = Town("5: Thornwall", 5, "Test_World")
 test_locations2[2] = Cave("2: Creepy cave", 2, "Test_World")
 
 """ Define all connections
-=======
 
 #------------------------------------
 #
@@ -209,7 +201,6 @@ test_locations[5] = Town("Thornwall", 5, "Test_World")
 test_locations[2] = Cave("Creepy cave", 2, "Test_World")
 
 # Define all connections
->>>>>>> 57de2172e0aa81a34937ab07c88b55b31a1fac1c
 test_locations[0].adjacent_locations = [1, 3, 5]
 test_locations[1].adjacent_locations = [0, 2, 5]
 test_locations[2].adjacent_locations = [1]
@@ -219,7 +210,6 @@ test_locations[5].adjacent_locations = [0, 1, 6, 8, 9]
 test_locations[6].adjacent_locations = [5, 7, 9]
 test_locations[7].adjacent_locations = [6]
 test_locations[8].adjacent_locations = [5]
-<<<<<<< HEAD
 test_locations[9].adjacent_locations = [5, 6]"""
 
 test_locations2[1].adjacent_locations = [2, 3, 4]
@@ -236,11 +226,6 @@ test_locations2[10].adjacent_locations = [6]
 game_worlds = [World_Map("Test_World2", TEST_WORLD_ID2, test_locations2)]
 #game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
 #game_worlds = [World_Map("Test_World", TEST_WORLD_ID, test_locations)]
-=======
-test_locations[9].adjacent_locations = [5, 6]
-
-game_worlds = [World_Map("Test_World", TEST_WORLD_ID, test_locations)]
 
 #game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
->>>>>>> 57de2172e0aa81a34937ab07c88b55b31a1fac1c
 
