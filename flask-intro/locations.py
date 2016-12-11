@@ -21,18 +21,21 @@ Game Objects (from other module maybe?) I am just going to start with Location a
 
 class Location(object):
     #Globals
-    def __init__(self, name):
+    def __init__(self, name, id):
         self.name = name
+        self.id = id
         self.location_type = None
+        self.adjacent_locations = []
         pass
 
 class World_Map(Location):
-    def __init__(self, name, all_map_coordinates, all_map_cities):
-        super(World_Map, self).__init__(name)
+    def __init__(self, name, id, all_map_locations):
+        super(World_Map, self).__init__(name, id)
         self.location_type = "World_Map"
-        self.map_coordinates = [0,0]
-        self.all_map_coordinates = all_map_coordinates
-        self.all_map_cities = all_map_cities
+        #self.map_coordinates = [0,0]
+        #self.all_map_ids = all_map_ids
+        self.all_map_locations = all_map_locations
+        self.current_location = all_map_locations[0]
         self.map_cities = []
         self.page_title = self.name
         self.page_heading = "You are wandering in the world"
@@ -42,29 +45,30 @@ class World_Map(Location):
         self.places_of_interest = []
 
     def show_directions(self):
-        directions = []
-        if any((coordinate[0] == (self.map_coordinates[0] + 1) and coordinate[1] == self.map_coordinates[1]) for coordinate in self.all_map_coordinates):
-            directions.append(("east", "East"))
-        if any((coordinate[0] == (self.map_coordinates[0] - 1) and coordinate[1] == self.map_coordinates[1]) for coordinate in self.all_map_coordinates):
-            directions.append(("west", "West"))
-        if any((coordinate[1] == (self.map_coordinates[1] + 1) and coordinate[0] == self.map_coordinates[0]) for coordinate in self.all_map_coordinates):
-            directions.append(("north", "North"))
-        if any((coordinate[1] == (self.map_coordinates[1] - 1) and coordinate[0] == self.map_coordinates[0]) for coordinate in self.all_map_coordinates):
-            directions.append(("south", "South"))
-        self.map_cities = [city for city in self.all_map_cities if city.location_coordinate == self.map_coordinates]
+        directions = self.current_location.adjacent_locations
+        if directions == []:
+            directions = [1,2,3]
+        self.map_cities = [location for location in self.all_map_locations if (location == self.current_location and (location.location_type == "Town" or location.location_type == "Cave"))] # too long, but will refactor later
         if len(self.map_cities) > 0:
             self.places_of_interest = [("/" + self.map_cities[0].location_type + "/" + self.map_cities[0].name, self.map_cities[0].name)]
         else:
             self.places_of_interest = []
         return directions
+
+# temporarily location_id is the same as the index in the list of all_map_locations
+    def find_location(self, location_id):
+        id = int(location_id)
+        if (id == self.id): # To be Dealt with later
+            id = 0
+        return self.all_map_locations[int(id)]
             
         
 class Town(Location):
-    def __init__(self, name, location_world):
-        super(Town, self).__init__(name)
+    def __init__(self, name, id, location_world):
+        super(Town, self).__init__(name, id)
         self.location_type = "Town"
         self.location_world = location_world
-        self.location_coordinate = [0,0]
+        #self.location_coordinate = [0,0]
         self.page_title = self.name
         self.page_heading = "You are in " + self.name
         self.page_image = "town"
@@ -75,19 +79,19 @@ class Town(Location):
                                   ("/tavern", "Tavern", "Other"),
                                   ("/old_mans_hut", "Old Man's Hut"),
                                   ("/leave_town", "Village Gate", "Outskirts"),
-                                  ("/World_Map/" + self.location_world + "/" + str(self.location_coordinate[0]) + str(self.location_coordinate[1]), "World Map")]
+                                  ("/World_Map/" + self.location_world + "/" + str(self.id), "World Map")]
 
 class Cave(Location):
-    def __init__(self, name, location_world):
-        super(Cave, self).__init__(name)
+    def __init__(self, name, id, location_world):
+        super(Cave, self).__init__(name, id)
         self.location_type = "Cave"
         self.location_world = location_world
-        self.location_coordinate = [1,1]
+        #self.location_coordinate = [1,1]
         self.page_title = self.name
         self.page_heading = "You are in a cave called " + self.name
         self.page_image = "cave"
         self.paragraph = "There are many scary places to die within the cave. Have a look!"
-        self.places_of_interest = [("/World_Map/" + self.location_world + "/" + str(self.location_coordinate[0]) + str(self.location_coordinate[1]), "World Map")]
+        self.places_of_interest = [("/World_Map/" + self.location_world + "/" + str(self.id), "World Map")]
 
 
 """
@@ -107,5 +111,71 @@ class Cave(Location):
         pass
 """
         
-game_locations = [World_Map("Test_World", [(0,0), (0,2), (1,0), (1,1), (1, 2), (2, 1), (3, 1)], [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
+
+ #------------------------------------
+ #
+ #  Initializing Game Worlds 
+ #  (To be moved to a common 
+ #   init function later)
+ #
+ #------------------------------------
+TEST_WORLD_ID = 999 # ...
+TEST_WORLD_ID2 = 998 # ...
+test_locations = []
+test_locations2 = []
+
+'''
+ +Test Map Visual Representation:
+ +
+ +0 ---- 1 ---- 2 (Creepy Cave)
+ +| \    |
+ +|  \   |
+ +|   \  |
+ +3    \ |
+ +|     5 ---- 6 ---- 7 
+ +|    / \     |
+ +4   /   \    |
+ +   /     \   |
+ +  /       \  |
+ + /         \ |
+ +8           9
+ +
+ +
+ +Thornwall at location 5
+ +Creepy Cave at location 2
+ +'''
+
+for i in range(0, 11):
+    test_location = Location("location " + str(i),i)
+    test_locations2.append(test_location)
+    
+test_locations2[5] = Town("5: Thornwall", 5, "Test_World")
+test_locations2[2] = Cave("2: Creepy cave", 2, "Test_World")
+
+""" Define all connections
+test_locations[0].adjacent_locations = [1, 3, 5]
+test_locations[1].adjacent_locations = [0, 2, 5]
+test_locations[2].adjacent_locations = [1]
+test_locations[3].adjacent_locations = [0, 4]
+test_locations[4].adjacent_locations = [3]
+test_locations[5].adjacent_locations = [0, 1, 6, 8, 9]
+test_locations[6].adjacent_locations = [5, 7, 9]
+test_locations[7].adjacent_locations = [6]
+test_locations[8].adjacent_locations = [5]
+test_locations[9].adjacent_locations = [5, 6]"""
+
+test_locations2[1].adjacent_locations = [2, 3, 4]
+test_locations2[2].adjacent_locations = [1, 5]
+test_locations2[3].adjacent_locations = [1, 4]
+test_locations2[4].adjacent_locations = [1, 3, 5, 7]
+test_locations2[5].adjacent_locations = [2, 4, 6, 8]
+test_locations2[6].adjacent_locations = [5, 9, 10]
+test_locations2[7].adjacent_locations = [4, 8]
+test_locations2[8].adjacent_locations = [5, 7, 9]
+test_locations2[9].adjacent_locations = [6, 8]
+test_locations2[10].adjacent_locations = [6]
+
+game_worlds = [World_Map("Test_World2", TEST_WORLD_ID2, test_locations2)]
+#game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
+#game_worlds = [World_Map("Test_World", TEST_WORLD_ID, test_locations)]
 

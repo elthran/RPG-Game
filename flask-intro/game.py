@@ -83,7 +83,7 @@ class Hero(object):
         self.bestiary = []
 
         self.known_locations = []
-        self.current_location = None
+        self.current_world = None
         self.current_city = None
 
         self.wolf_kills = 0

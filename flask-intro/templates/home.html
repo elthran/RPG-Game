@@ -31,9 +31,9 @@
         <li><a href=/home>Profile</a></li>
         <li><a href=/inventory_page>Inventory</a></li>
         {% if myHero.current_city %}
-          <li><a href=/{{ myHero.current_city.location_type }}/{{ myHero.current_city.name }}>{{ myHero.current_city.location_type }}</a></li>
-        {% else %}
-          <li><a href=/{{ myHero.current_location.location_type }}/{{ myHero.current_location.name }}/{{ myHero.current_location.map_coordinates[0] }}{{ myHero.current_location.map_coordinates[1] }}>{{ myHero.current_location.location_type }}</a></li>
+           <li><a href=/{{ myHero.current_city.location_type }}/{{ myHero.current_city.name }}>{{ myHero.current_world.location_type }}</a></li>
+          {% else %}
+          <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_world.id }}>{{ myHero.current_world.location_type }}</a></li>
         {% endif %}
         <li><a href=/quest_log>Journal</a></li>
         <li><a href=/ability_tree>Abilities</a></li>
@@ -78,10 +78,10 @@
     {% endfor %}
 
     {% if move_on_the_map %}
-    <h1>My location is {{ myHero.current_location.map_coordinates[0] }},{{ myHero.current_location.map_coordinates[1] }}</h1>
-    <p>TESTING: THERE IS A TOWN AT (0,0) AND A CAVE AT (1,1)
+      *Cave at 2 and City at 5*
+      <h1>I am at {{ myHero.current_world.current_location.name }}</h1>
       {% for move in move_on_the_map %}
-        <br><h1>MOVE <a href=/{{ myHero.current_location.location_type }}/{{ myHero.current_location.name }}/{{ move[0] }}>{{ move[1] }}</a></h1>
+        <br><h1>MOVE TO <a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ move }}>{{ move }}</a></h1>
       {% endfor %}
     {% endif %}
 
