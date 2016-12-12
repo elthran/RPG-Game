@@ -242,7 +242,7 @@ class EasyDatabase():
             PASSWORD TEXT NOT NULL)""",
             
             """CREATE TABLE characters(
-            username text primary key,
+            User_ID integer primary key,
             character_name text,
             character_class number,
             age number,
@@ -279,14 +279,13 @@ class EasyDatabase():
             previous_time datetime current_timestamp,
             endurance number)""",) #Dam ugly .. I think it might look nice in a spreadsheet file ... :)
             
-        #Deal with use case where table alread exists ... not very exacting (by which I mean it may fail randomly) ...
+        #Deal with use case where table already exists ... not very exacting (by which I mean it may fail randomly) ...
         #This failure has been explicitly silenced ...
         for table in basic_tables:
             try:
                 self._write(table, build_tables=True)
             except sqlite3.OperationalError as e:
-                if 'table' in e.args[0] and 'already exists' in e.args[0]:
-                    pass
+                print(e.args)
         
         
     def _write(self, *args, **kwargs):
@@ -310,11 +309,24 @@ class EasyDatabase():
             c.execute(args[0])
             
         def insert_character():
-            c.execute("INSERT INTO CHARACTERS(username, character_name, character_class, current_time) VALUES (?,?,?,?)", args)
+            c.execute("INSERT INTO CHARACTERS(user_id, character_name, character_class, current_time) VALUES (?,?,?,?)", args)
+        
+        def update_character():
+            """This sql statement should be built using string formating but should still be secure using ?? for data values ..?
+            
+            UPDATE table_name
+            SET column1 = value1, column2 = value2...., columnN = valueN
+            WHERE [condition];
+            """
+            c.execute("""Update CHARACTERS set 
+            {}=? WHERE ROWID=?
+            """.format('username'), ('Marlen', 1))
+            
         
         options = {'insert_user': insert_user,
             'build_tables': build_tables,
-            'insert_character': insert_character
+            'insert_character': insert_character,
+            'update_character': update_character,
         }
         
         for key in kwargs:
@@ -384,12 +396,21 @@ class EasyDatabase():
         return data
         
             
-    def update_character(self, character):
+    def update_character(self, user_id, hero):
         """Save all of the new data a character has generated.
         
         This should check for changes and only save new data (if that is quicker).
         Basically the update_character function with less duplications.
+        
+        Ok ....
+        atributes is an ordered list
+        hero should have a ordered list of attributes
+        rowid should extracted from character table using username?
+        Basically update all colums in a give row ...
         """
+        attributes = 'username','Me', 1
+        
+        self._write(attributes, update_character=True)
         pass
         
     def create_user(self, username, password):
@@ -406,7 +427,7 @@ class EasyDatabase():
             if e.args[0] == 'UNIQUE constraint failed: USERS.USERNAME':
                 raise Exception("Username '{}' already exists.".format(username)) #raise error if already in use.
     
-    def create_character(self, username, character, classname):
+    def create_character(self, user_id, character, classname):
         """Add a new character to a users account.
         
         ??Only one character at a time? or multiple characters?
@@ -416,7 +437,7 @@ class EasyDatabase():
         """
         try:
             now = EasyDatabase.now()
-            self._write(username, character, classname, now, insert_character=True)
+            self._write(user_id, character, classname, now, insert_character=True)
         except sqlite3.IntegrityError as e:
             raise Exception("User '{}' already has a character.".format(username))
     
@@ -432,7 +453,7 @@ class EasyDatabase():
         Passwords are stored in hashed form so ...
         hash the test password and compare with the retrieved one.
         """
-
+        
         return  self._read(username, read_password=True) == hashlib.md5(password.encode()).hexdigest()
     
     def get_user_id(self, username):
@@ -448,20 +469,29 @@ class EasyDatabase():
 ### testing
 if __name__ == "__main__":
     db = EasyDatabase('static/Users2.db')
-    try:
+    # try:
         # db.create_user('Marlen', 'Brunner') #I should be able to add a bunch of users from a text file.
-        db.create_character("Marlen", "Haldon", "Wizard")
-    except Exception as e:
-        print(e.args[0])
+        # user_id = db.get_user_id("Marlen")
+        # db.create_character(user_id, "Haldon", "Wizard")
+    # except Exception as e:
+        # print(e.args[0])
     
-    username = 'Marlen'
-    password = "Brunner"
+    # username = 'Marlen'
+    # password = "Brunner"
     # db._read(username, read_password=True)
     # print("password valid?", db.validate(username, password))
     
     # print(db.get_user_id(username))
     # db.create_user(username, password)
     
+    # db.update_character(1, "Haldon")
+    
     ##Wipe the database.
     # db._wipe_database()
+   
+    db.name = 'static/User.db'
+    username = 'marlen'
+    password = "brunner"
+    print(db._read(username, read_password=True))
+    print("password valid?", db.validate(username, password))
     

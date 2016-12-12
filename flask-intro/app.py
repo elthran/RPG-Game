@@ -22,8 +22,6 @@ import hashlib
 app = Flask(__name__)
 
 app.secret_key = 'starcraft'
-
-UserDatabase = EasyDatabase('static/User.db')
         
 def login_required(f):
     """Set certain pages as requiring a login to visit.
@@ -821,6 +819,14 @@ def main():
 
 # start the server with the 'run()' method
 if __name__ == '__main__':
+    # import os
+    
+    #Set Current Working Directory (CWD) to the home of this file.
+    #This should make all other files import relative to this file fixing the Database doesn't exist problem.
+    
+    # os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    
+    UserDatabase = EasyDatabase('static/User.db')
     app.run(debug=True)
 
 
