@@ -31,8 +31,8 @@
         <li><a href=/home>Profile</a></li>
         <li><a href=/inventory_page>Inventory</a></li>
         {% if myHero.current_city %}
-           <li><a href=/{{ myHero.current_city.location_type }}/{{ myHero.current_city.name }}>{{ myHero.current_world.location_type }}</a></li>
-          {% else %}
+           <li><a href=/{{ myHero.current_city.location_type }}/{{ myHero.current_city.name }}>{{ myHero.current_city.name }}</a></li>
+        {% else %}
           <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_world.id }}>{{ myHero.current_world.location_type }}</a></li>
         {% endif %}
         <li><a href=/quest_log>Journal</a></li>

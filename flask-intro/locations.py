@@ -36,7 +36,7 @@ class World_Map(Location):
         #self.all_map_ids = all_map_ids
 
         self.all_map_locations = all_map_locations
-        self.current_location = all_map_locations[0]
+        self.current_location = None
         self.map_cities = []
         self.page_title = self.name
         self.page_heading = "You are wandering in the world"
@@ -57,13 +57,6 @@ class World_Map(Location):
         return directions
 
 # temporarily location_id is the same as the index in the list of all_map_locations
-    def find_location(self, location_id):
-        id = int(location_id)
-        if (id == self.id): # To be Dealt with later
-            id = 0
-        return self.all_map_locations[int(id)]
-            
-    # temporarily location_id is the same as the index in the list of all_map_locations
     def find_location(self, location_id):
         id = int(location_id)
         if (id == self.id): # To be Dealt with later
@@ -126,8 +119,6 @@ class Cave(Location):
  #   init function later)
  #
  #------------------------------------
-TEST_WORLD_ID = 999 # ...
-TEST_WORLD_ID2 = 998 # ...
 test_locations = []
 test_locations2 = []
 
@@ -223,7 +214,7 @@ test_locations2[8].adjacent_locations = [5, 7, 9]
 test_locations2[9].adjacent_locations = [6, 8]
 test_locations2[10].adjacent_locations = [6]
 
-game_worlds = [World_Map("Test_World2", TEST_WORLD_ID2, test_locations2)]
+game_worlds = [World_Map("Test_World2", 1, test_locations2)]
 #game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
 #game_worlds = [World_Map("Test_World", TEST_WORLD_ID, test_locations)]
 

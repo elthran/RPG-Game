@@ -46,15 +46,16 @@ def command(cmd=None):
         if cmd == item.name and item.equippable == True:
             equipped_items_to_remove = []
             for equipped_item in myHero.equipped_items:
-                if item.two_handed_weapon and (equipped_item.shield or equipped_item.one_handed_weapon):
-                    equipped_items_to_remove.append(equipped_item)
-                    myHero.inventory.append(equipped_item)
-                if item.one_handed_weapon and equipped_item.two_handed_weapon:
-                    equipped_items_to_remove.append(equipped_item)
-                    myHero.inventory.append(equipped_item)
-                if item.shield and equipped_item.two_handed_weapon:
-                    equipped_items_to_remove.append(equipped_item)
-                    myHero.inventory.append(equipped_item)
+                if type(item) is Weapon:
+                    if item.two_handed_weapon and (equipped_item.shield or equipped_item.one_handed_weapon):
+                        equipped_items_to_remove.append(equipped_item)
+                        myHero.inventory.append(equipped_item)
+                    if item.one_handed_weapon and equipped_item.two_handed_weapon:
+                        equipped_items_to_remove.append(equipped_item)
+                        myHero.inventory.append(equipped_item)
+                    if item.shield and equipped_item.two_handed_weapon:
+                        equipped_items_to_remove.append(equipped_item)
+                        myHero.inventory.append(equipped_item)
                 if type(equipped_item) is type(item):
                     equipped_items_to_remove.append(equipped_item)
                     myHero.inventory.append(equipped_item)
@@ -475,9 +476,6 @@ def home():
  # initialize current_world
     if myHero.current_world == None:
         game_world = game_worlds[0]
-
-    # initialize current_world
-    if myHero.current_world == None:
         myHero.current_world = game_worlds[0]
     # If it's a new character, send them to cerate_character url
     if myHero.character_name == "Unknown":
