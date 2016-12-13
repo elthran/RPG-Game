@@ -213,7 +213,7 @@ test_locations2[8].adjacent_locations = [5, 7, 9]
 test_locations2[9].adjacent_locations = [6, 8]
 test_locations2[10].adjacent_locations = [6]
 
-game_worlds = [World_Map("Test_World2", 1, test_locations2)]
+game_worlds = [World_Map("Test_World2", 5, test_locations2)]
 #game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
 #game_worlds = [World_Map("Test_World", TEST_WORLD_ID, test_locations)]
 
