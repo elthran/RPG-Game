@@ -23,12 +23,13 @@ class Location(object):
     #Globals
     def __init__(self, name, id):
         self.name = name
-        self.id = id
+        self.id = id 
         self.location_type = None
         self.adjacent_locations = []
         pass
 
 class World_Map(Location):
+	# id : initial location id, must be on the map
     def __init__(self, name, id, all_map_locations):
         super(World_Map, self).__init__(name, id)
         self.location_type = "World_Map"
@@ -59,8 +60,6 @@ class World_Map(Location):
 # temporarily location_id is the same as the index in the list of all_map_locations
     def find_location(self, location_id):
         id = int(location_id)
-        if (id == self.id): # To be Dealt with later
-            id = 0
         return self.all_map_locations[int(id)]
         
 class Town(Location):
