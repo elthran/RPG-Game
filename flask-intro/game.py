@@ -50,7 +50,7 @@ class Hero(object):
         self.class_ability_points = 0
         self.specialization_ability_points = 0
         self.pantheonic_ability_points = 0
-        
+
         self.attribute_points = 0
         self.strength = 1
         self.resilience = 1
@@ -69,7 +69,7 @@ class Hero(object):
         self.current_health = 0
         self.current_endurance = 0
         self.current_carrying_capacity = 0
-        
+
         self.equipped_items = []
         self.inventory = []
         self.abilities = []
@@ -87,7 +87,7 @@ class Hero(object):
         self.current_city = None
 
         self.wolf_kills = 0
-        
+
     # Sets damage
     def update_secondary_attributes(self):
         self.min_damage = self.strength
@@ -116,7 +116,7 @@ class Hero(object):
         # Hidden attributes
         self.experience_gain_modifier = 1
         self.gold_gain_modifier = 1
-        
+
         for ability in self.abilities:
             ability.update_stats()
         for item in self.equipped_items:
@@ -173,7 +173,7 @@ def create_random_hero():
     return myHero
 # End of temporary functions
 
-    
+
 
 
 # initialization
@@ -188,6 +188,5 @@ myHero.inventory.append(Quest_Item("Copper Coin", myHero, 50))
 for item in myHero.inventory:
     item.amount_owned = 5
 
-	
 
 

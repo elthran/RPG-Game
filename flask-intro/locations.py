@@ -23,7 +23,7 @@ class Location(object):
     #Globals
     def __init__(self, name, id):
         self.name = name
-        self.id = id 
+        self.id = id
         self.location_type = None
         self.adjacent_locations = []
         pass
@@ -61,7 +61,7 @@ class World_Map(Location):
     def find_location(self, location_id):
         id = int(location_id)
         return self.all_map_locations[int(id)]
-        
+
 class Town(Location):
     def __init__(self, name, id, location_world):
         super(Town, self).__init__(name, id)
@@ -95,17 +95,17 @@ class Cave(Location):
 
 """
     def get_locations(self):
-        
+
         with open("data\town." + name + ".txt", 'r') as f:
             data = f.read()
             return Town.parse(data)
-        
+
     def display(self):
         Return an html object of the town built from a template.
-        
+
         This should be able to be "popped" into the main post-login site in the content section.
         pass
-    
+
     def parse(data):
         pass
 """
@@ -113,8 +113,8 @@ class Cave(Location):
 
  #------------------------------------
  #
- #  Initializing Game Worlds 
- #  (To be moved to a common 
+ #  Initializing Game Worlds
+ #  (To be moved to a common
  #   init function later)
  #
  #------------------------------------
@@ -129,7 +129,7 @@ test_locations2 = []
  +|  \   |
  +|   \  |
  +3    \ |
- +|     5 ---- 6 ---- 7 
+ +|     5 ---- 6 ---- 7
  +|    / \     |
  +4   /   \    |
  +   /     \   |
@@ -145,7 +145,7 @@ test_locations2 = []
 for i in range(0, 12):
     test_location = Location("location " + str(i),i)
     test_locations2.append(test_location)
-    
+
 test_locations2[5] = Town("5: Thornwall", 5, "Test_World")
 test_locations2[2] = Cave("2: Creepy cave", 2, "Test_World")
 
@@ -153,12 +153,12 @@ test_locations2[2] = Cave("2: Creepy cave", 2, "Test_World")
 
 #------------------------------------
 #
-#  Initializing Game Worlds 
-#  (To be moved to a common 
+#  Initializing Game Worlds
+#  (To be moved to a common
 #   init function later)
 #
 #------------------------------------
-TEST_WORLD_ID = 999 # ... 
+TEST_WORLD_ID = 999 # ...
 
 test_locations = []
 
@@ -170,7 +170,7 @@ Test Map Visual Representation:
 |  \   |
 |   \  |
 3    \ |
-|     5 ---- 6 ---- 7 
+|     5 ---- 6 ---- 7
 |    / \     |
 4   /   \    |
    /     \   |
@@ -186,7 +186,7 @@ Creepy Cave at location 2
 for i in range(0,10):
     test_location = Location("location " + str(i),i)
     test_locations.append(test_location)
-    
+
 test_locations[5] = Town("Thornwall", 5, "Test_World")
 test_locations[2] = Cave("Creepy cave", 2, "Test_World")
 

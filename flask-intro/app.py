@@ -26,10 +26,10 @@ import hashlib
 app = Flask(__name__)
 
 app.secret_key = 'starcraft'
-        
+
 def login_required(f):
     """Set certain pages as requiring a login to visit.
-    
+
     This should redirect you to the login page."""
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -46,7 +46,7 @@ def command(cmd=None):
     # cmd (string type)is an item name, sent from the javascript code in html
 
     # EQUIP ITEMS
-    for item in myHero.inventory: 
+    for item in myHero.inventory:
         if cmd == item.name and item.equippable == True:
             equipped_items_to_remove = []
             for equipped_item in myHero.equipped_items:
@@ -63,15 +63,15 @@ def command(cmd=None):
                 if type(equipped_item) is type(item):
                     equipped_items_to_remove.append(equipped_item)
                     myHero.inventory.append(equipped_item)
-            
-			# deletes the items in equipped_items_to_remove from myHero.equipped_items 
+
+			# deletes the items in equipped_items_to_remove from myHero.equipped_items
             myHero.equipped_items = [x for x in myHero.equipped_items if x not in equipped_items_to_remove]
             myHero.equipped_items.append(item)
             myHero.inventory.remove(item)
             myHero.update_secondary_attributes()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
-    # UNEQUIP ITEMS  
+    # UNEQUIP ITEMS
     for item in myHero.equipped_items:
         if cmd == item.name:
             myHero.inventory.append(item)
@@ -96,9 +96,9 @@ def command(cmd=None):
                     myHero.abilities[i].level += 1
                     myHero.abilities[i].update_display()
             myHero.update_secondary_attributes()
-            return "success", 200, {'Content-Type': 'text/plain'} #//         
+            return "success", 200, {'Content-Type': 'text/plain'} #//
 
-    # LEARN NEW ABILITIES       
+    # LEARN NEW ABILITIES
     unknown_abilities = []
     for ability in all_abilities:
         if not any(known_ability.name == ability.name for known_ability in myHero.abilities):
@@ -132,10 +132,10 @@ def command(cmd=None):
                 newItem.amount_owned = 1
             myHero.gold -= item.buy_price
             return "success", 200, {'Content-Type': 'text/plain'} #//
-        
+
     return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
 
-# This gets called anytime you level up     
+# This gets called anytime you level up
 @app.route('/level_up', methods=['GET', 'POST'])
 @login_required
 def level_up():
@@ -153,7 +153,7 @@ def level_up():
         survivalism = convert_input(request.form["Survivalism"])
         fortuity = convert_input(request.form["Fortuity"])
         total_points_spent = sum([strength, resilience, vitality, fortitude, reflexes, agility, perception, wisdom, divinity, charisma, survivalism, fortuity])
-        if total_points_spent <= myHero.attribute_points:            
+        if total_points_spent <= myHero.attribute_points:
             myHero.strength += strength
             myHero.resilience += resilience
             myHero.vitality += vitality
@@ -194,7 +194,7 @@ def level_up():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Allow user to login if username and password match.
-    
+
     Access data from the static/user.db using the EasyDatabase class.
     """
     error = None
@@ -212,7 +212,7 @@ def login():
             return redirect(url_for('home'))
         else:
             error = 'Invalid Credentials. Please try again.'
-            
+
     return render_template('login.html', error=error, login=True)
 
 # route for handling the account creation page logic
@@ -222,7 +222,7 @@ def password_recovery():
 
     if request.method == 'POST':
         username = request.form['username']
-        
+
         con = sqlite3.connect('static/user.db')
         with con:
             cur = con.cursor()
@@ -237,7 +237,7 @@ def password_recovery():
 # route for handling the account creation page logic
 @app.route('/create_account', methods=['GET', 'POST'])
 def create_account():
-    error = None    
+    error = None
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -249,7 +249,7 @@ def create_account():
             database.update_character(user_id, myHero) # slightly redundant, fix laterrr
             return redirect(url_for('login'))
         else:
-            error = "Username already exists!"  
+            error = "Username already exists!"
     return render_template('login.html', error=error, create_account=True)
 
 # this gets called if you press "logout"
@@ -304,25 +304,25 @@ def create_character():
         database.update_character(session['id'],myHero)
         return redirect(url_for('home'))
     else:
-        return render_template('create_character.html', page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, conversation=conversation, display=display)  # render a template  
+        return render_template('create_character.html', page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, conversation=conversation, display=display)  # render a template
 
 # this gets called if you fight in the arena
 @app.route('/battle')
 @login_required
 def battle():
     required_endurance = 1 # T
-    
+
     page_title = "Battle"
     page_heading = "Fighting"
     print("running function: battle2")
-    
+
     page_links = [("Return to your ","home","profile"," page.")]
     if myHero.current_endurance < required_endurance:
         page_title = "Battle"
         page_heading = "Not enough endurance, wait a bit!"
         return render_template('home.html', page_title=page_title, myHero=myHero, page_heading=page_heading, page_links=page_links)
-    
-    myHero.current_health,game.enemy.current_health,conversation = battle_logic(myHero,game.enemy)    
+
+    myHero.current_health,game.enemy.current_health,conversation = battle_logic(myHero,game.enemy)
     if myHero.current_health == 0:
         myHero.current_endurance -= required_endurance
         page_title = "Defeat!"
@@ -370,7 +370,7 @@ def battle():
         if level_up:
             page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience. You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
-     
+
     database.update_character(session['id'],myHero)
     return render_template('home.html', page_title=page_title, page_heading=page_heading, myHero=myHero, enemy=enemy, status_display=conversation, page_links=page_links)  # return a string
 
@@ -379,7 +379,7 @@ def battle():
 @login_required
 def reset_character():
     myHero.character_name = "Unknown"
-    myHero.character_class = "None" 
+    myHero.character_class = "None"
     myHero.age = 1
     myHero.attribute_points = 0
     myHero.current_xp = 0
@@ -453,7 +453,7 @@ def admin():
                           ("Charisma", myHero.charisma),
                           ("Survivalism", myHero.survivalism),
                           ("Fortuity", myHero.fortuity),
-                          ("Age", myHero.age),  
+                          ("Age", myHero.age),
                           ("Current_exp", myHero.current_exp),
                           ("Max_exp", myHero.max_exp),
                           ("Renown", myHero.renown),
@@ -467,7 +467,7 @@ def admin():
                           ("Pantheonic_ability_points", myHero.pantheonic_ability_points),
                           ("Attribute_points", myHero.attribute_points),
                           ("Endurance",myHero.current_endurance)]
-    
+
     return render_template('home.html', page_title=page_title, page_heading=page_heading, page_image=page_image, myHero=myHero, admin=admin)  # return a string
 
 
@@ -824,12 +824,12 @@ def main():
 # start the server with the 'run()' method
 if __name__ == '__main__':
     # import os
-    
+
     #Set Current Working Directory (CWD) to the home of this file.
     #This should make all other files import relative to this file fixing the Database doesn't exist problem.
-    
+
     # os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    
+
     UserDatabase = EasyDatabase('static/User.db')
     app.run(debug=True)
 
