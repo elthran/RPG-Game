@@ -235,50 +235,52 @@ class EasyDatabase():
         
         This should be upgraded to make it more human readable and editable .... maybe an external xml/spreadsheet/excel file?
         
-        NOTE: User_ID field removed and replaced 'username' as a primary key ... I think it is a good idea?
+        NOTE: I am using the ROW_ID as the primary key for both tables. It is invisible.
+        The user_id
         """
         basic_tables = (
-            """CREATE TABLE USERS(
-            USERNAME TEXT PRIMARY KEY NOT NULL,
-            PASSWORD TEXT NOT NULL)""",
+            """CREATE TABLE users(
+            username TEXT PRIMARY KEY NOT NULL,
+            password TEXT NOT NULL,
+            email TEXT)""",
             
             """CREATE TABLE characters(
-            User_ID integer primary key,
-            character_name text,
-            character_class number,
-            age number,
-            specialization text,
-            house text,
-            current_exp number,
-            max_exp number,
-            renown number,
-            virtue number,
-            devotion number,
-            gold number,
-            basic_ability_points number,
-            class_ability_points number,
-            specialization_ability_points number,
-            pantheonic_ability_points number,
-            attribute_points number,
-            strength number,
-            resilience number,
-            vitality number,
-            fortitude number,
-            reflexes number,
-            agility number,
-            perception number,
-            wisdom number,
-            divinity number,
-            charisma number,
-            survivalism number,
-            fortuity number,
+            user_id INTEGER KEY NOT NULL,
+            character_name TEXT,
+            character_class INTEGER,
+            age INTEGER,
+            specialization TEXT,
+            house TEXT,
+            current_exp INTEGER,
+            max_exp INTEGER,
+            renown INTEGER,
+            virtue INTEGER,
+            devotion INTEGER,
+            gold INTEGER,
+            basic_ability_points INTEGER,
+            class_ability_points INTEGER,
+            specialization_ability_points INTEGER,
+            pantheonic_ability_points INTEGER,
+            attribute_points INTEGER,
+            strength INTEGER,
+            resilience INTEGER,
+            vitality INTEGER,
+            fortitude INTEGER,
+            reflexes INTEGER,
+            agility INTEGER,
+            perception INTEGER,
+            wisdom INTEGER,
+            divinity INTEGER,
+            charisma INTEGER,
+            survivalism INTEGER,
+            fortuity INTEGER,
             equipped_items number[],
             inventory number[],
             abilities number[],
-            previous_login_time datetime current_timestamp,
-            current_time datetime current_timestamp,
-            previous_time datetime current_timestamp,
-            endurance number)""",) #Dam ugly .. I think it might look nice in a spreadsheet file ... :)
+            previous_login_time DATETIME CURRENT_TIMESTAMP,
+            current_time DATETIME CURRENT_TIMESTAMP,
+            previous_time DATETIME CURRENT_TIMESTAMP,
+            endurance INTEGER)""",) #Dam ugly .. I think it might look nice in a spreadsheet file ... :)
             
         #Deal with use case where table already exists ... not very exacting (by which I mean it may fail randomly) ...
         #This failure has been explicitly silenced ...
@@ -306,8 +308,10 @@ class EasyDatabase():
         c = conn.cursor()
         
         def insert_user():
-            print(len(args))
-            c.execute("INSERT INTO USERS VALUES (?,?)", args)
+            if len(args) == 2: #No email provide ...
+                c.execute("INSERT INTO USERS VALUES (?,?, null)", args)
+            else:
+                c.execute("INSERT INTO USERS VALUES (?,?,?)", args)
             
         def build_tables():
             c.execute(args[0])
@@ -417,10 +421,13 @@ class EasyDatabase():
         self._write(attributes, update_character=True)
         pass
         
-    def create_user(self, username, password):
+    def add_new_user(self, username, password):
         """Add a new user to the database.
         
-        This should auto-validate as username is the primary key. 
+        This should auto-validate as username is the primary key.
+        
+        NOTE: row_id is now used as user_id
+        
         I can't decide if this should return False on failure or raise an error .. I went with raise error.
         I will build a custom exception at some point too ...
         """
@@ -431,7 +438,7 @@ class EasyDatabase():
             if e.args[0] == 'UNIQUE constraint failed: USERS.USERNAME':
                 raise Exception("Username '{}' already exists.".format(username)) #raise error if already in use.
     
-    def create_character(self, user_id, character, classname):
+    def add_new_character(self, user_id, character, classname):
         """Add a new character to a users account.
         
         ??Only one character at a time? or multiple characters?
@@ -448,7 +455,7 @@ class EasyDatabase():
     def now():
         return str(datetime.datetime.now())
     
-    def _wipe_database(self):
+    def _delete_database(self):
         os.remove(self.name)
         
     def validate(self, username, password):
@@ -468,6 +475,16 @@ class EasyDatabase():
         """
         return self._read(username, read_rowid=True)
         
+### Possible import data from spreadsheet
+"""
+Use https://github.com/pyexcel/pyexcel-ods3
+
+Style would be read file from ....
+sheet name = table name
+row 1 is list of table colums
+rows 2+ .... would be data rows
+??? Or something?
+"""
         
 
 ### testing
@@ -482,34 +499,10 @@ if __name__ == "__main__":
     --replicate update_character
     --replicate fetch_character_data
     --replicate get_user_id
+    
     --Change user id to row id.
     """
-    pass
-    # db = EasyDatabase('static/Users2.db')
-    # try:
-        # db.create_user('Marlen', 'Brunner') #I should be able to add a bunch of users from a text file.
-        # user_id = db.get_user_id("Marlen")
-        # db.create_character(user_id, "Haldon", "Wizard")
-    # except Exception as e:
-        # print(e.args[0])
+    import tests.database_tests
     
-    # username = 'Marlen'
-    # password = "Brunner"
-    # db._read(username, read_password=True)
-    # print("password valid?", db.validate(username, password))
-    
-    # print(db.get_user_id(username))
-    # db.create_user(username, password)
-    
-    # db.update_character(1, "Haldon")
-    
-    ##Wipe the database.
-    # db._wipe_database()
-   
-    # db.name = 'static/User.db'
-    # username = 'marlen'
-    # password = "brunner"
-    # print(db._read(username, read_password=True))
-    # print("password valid?", db.validate(username, password))
     
     

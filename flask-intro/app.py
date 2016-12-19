@@ -205,8 +205,10 @@ def login():
             session['logged_in'] = True
             flash("LOG IN SUCCESSFUL")
             session['id'] = database.get_user_id(username)
+            ### I would like to find a way to get rid of this use of global variables.
             global myHero
             myHero = database.fetch_character_data(myHero, session)
+            ###
             return redirect(url_for('home'))
         else:
             error = 'Invalid Credentials. Please try again.'
@@ -244,7 +246,7 @@ def create_account():
             database.add_new_user(username, password)
             database.add_new_character("Unknown","None")
             user_id = database.get_user_id(username)
-            database.update_character(user_id,myHero) # slightly redundant, fix laterrr
+            database.update_character(user_id, myHero) # slightly redundant, fix laterrr
             return redirect(url_for('login'))
         else:
             error = "Username already exists!"  
