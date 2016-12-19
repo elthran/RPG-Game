@@ -149,8 +149,16 @@ class Hero(object):
                 self.inventory.remove(my_item)
                 break
 
-    def __repr__(self):
-        return "\nName: %s" % (self.name)
+    def __str__(self):
+        """Return python representation of Hero opject
+        """
+        # for e in dir(self):
+            # print(e, self.e) #Where e is each element of self ... some kind of compile/execute ...?
+        data = """Character belonging to user: '{}'.
+
+The character has attributes: ...""".format(self.user_name)
+        return data
+        # return "\nName: %s" % (self.name)
 
 
 # Temporary Function to create a random hero

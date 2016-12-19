@@ -5,7 +5,7 @@
 #                                                                              #
 #//////////////////////////////////////////////////////////////////////////////#
 
-from app import * #Commenting this out will probably break everything ...
+# from app import * #Commenting this out will probably break everything ...
 import sqlite3
 import hashlib
 import datetime
@@ -18,7 +18,7 @@ second_per_endurance = 10
 def check_password(hashed_password, user_password):
     return hashed_password == hashlib.md5(user_password.encode()).hexdigest()
 
-def update_time(hero):
+def update_time(hero, session):
     con = sqlite3.connect('static/user.db')
     now = datetime.datetime.now()
     with con:
@@ -148,58 +148,59 @@ def update_character(user_id, hero): ######### MODIFY HERE TO ADD MORE THINGS TO
                 con.commit()
     con.close()
 
-def fetch_character_data():
+def fetch_character_data(hero, session):
     con = sqlite3.connect('static/user.db')
     with con:
-                cur = con.cursor()
-                cur.execute('SELECT * FROM characters WHERE user_id = ' + str(session['id']) + ';')
-                rows = cur.fetchall()
-                for row in rows:
-                    id = row[0] 
-                    if id==session['id']:
-                        myHero.character_name = row[1]
-                        myHero.age = row[2]
-                        myHero.character_class = row[3]
-                        myHero.specialization = row[4]
-                        myHero.house = row[5]
-                        myHero.current_exp = row[6]
-                        myHero.max_exp = row[7]
-                        myHero.renown = row[8]
-                        myHero.virtue = row[9]
-                        myHero.devotion = row[10]
-                        myHero.gold = row[11]
+        cur = con.cursor()
+        cur.execute('SELECT * FROM characters WHERE user_id = ' + str(session['id']) + ';')
+        rows = cur.fetchall()
+        for row in rows:
+            id = row[0] 
+            if id==session['id']:
+                hero.character_name = row[1]
+                hero.age = row[2]
+                hero.character_class = row[3]
+                hero.specialization = row[4]
+                hero.house = row[5]
+                hero.current_exp = row[6]
+                hero.max_exp = row[7]
+                hero.renown = row[8]
+                hero.virtue = row[9]
+                hero.devotion = row[10]
+                hero.gold = row[11]
 
-                        myHero.basic_ability_points = row[12]
-                        myHero.class_ability_points = row[13]
-                        myHero.specialization_ability_points = row[14]
-                        myHero.pantheonic_ability_points = row[15]
-                        
-                        myHero.attribute_points = row[16]
-                        myHero.strength = row[17]
-                        myHero.resilience = row[18]
-                        myHero.vitality = row[19]
-                        myHero.fortitude = row[20]
-                        myHero.reflexes = row[21]
-                        myHero.agility = row[22]
-                        myHero.perception = row[23]
-                        myHero.wisdom = row[24]
-                        myHero.divinity = row[25]
-                        myHero.charisma = row[26]
-                        myHero.survivalism = row[27]
-                        myHero.fortuity = row[28]
+                hero.basic_ability_points = row[12]
+                hero.class_ability_points = row[13]
+                hero.specialization_ability_points = row[14]
+                hero.pantheonic_ability_points = row[15]
+                
+                hero.attribute_points = row[16]
+                hero.strength = row[17]
+                hero.resilience = row[18]
+                hero.vitality = row[19]
+                hero.fortitude = row[20]
+                hero.reflexes = row[21]
+                hero.agility = row[22]
+                hero.perception = row[23]
+                hero.wisdom = row[24]
+                hero.divinity = row[25]
+                hero.charisma = row[26]
+                hero.survivalism = row[27]
+                hero.fortuity = row[28]
 
-                        #myHero.current_endurance = 
-                        #myHero.current_health =
-                        #myHero.current_sanctity =
-                        
-                        #myHero.equipped_items = row[29]
-                        #myHero.inventory = row[30]
-                        #myHero.abilities = row[31]
+                #myHero.current_endurance = 
+                #myHero.current_health =
+                #myHero.current_sanctity =
+                
+                #myHero.equipped_items = row[29]
+                #myHero.inventory = row[30]
+                #myHero.abilities = row[31]
 
-                        #3 types of quests
-                        ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
-                        break
-    con.close() 
+                #3 types of quests
+                ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
+                break
+    con.close()
+    return hero
 
 ### Marlen --- testing ###
 """I am going to try and make an easy version of the current database. There will be all of the old code
@@ -285,7 +286,10 @@ class EasyDatabase():
             try:
                 self._write(table, build_tables=True)
             except sqlite3.OperationalError as e:
-                print(e.args)
+                if 'already exists' in e.args[0]:
+                    pass #Do nothing if the table exists.
+                else:
+                    raise(e) #Some other error that you need to deal with :)
         
         
     def _write(self, *args, **kwargs):
@@ -468,7 +472,20 @@ class EasyDatabase():
 
 ### testing
 if __name__ == "__main__":
-    db = EasyDatabase('static/Users2.db')
+    """
+    Currently working on ... replacing all database.py function with class methods in EasyDatabase.
+    
+    TODO
+    --replicate update_time
+    --replicate add_new_user
+    --replicate add_new_character
+    --replicate update_character
+    --replicate fetch_character_data
+    --replicate get_user_id
+    --Change user id to row id.
+    """
+    pass
+    # db = EasyDatabase('static/Users2.db')
     # try:
         # db.create_user('Marlen', 'Brunner') #I should be able to add a bunch of users from a text file.
         # user_id = db.get_user_id("Marlen")
@@ -489,9 +506,10 @@ if __name__ == "__main__":
     ##Wipe the database.
     # db._wipe_database()
    
-    db.name = 'static/User.db'
-    username = 'marlen'
-    password = "brunner"
-    print(db._read(username, read_password=True))
-    print("password valid?", db.validate(username, password))
+    # db.name = 'static/User.db'
+    # username = 'marlen'
+    # password = "brunner"
+    # print(db._read(username, read_password=True))
+    # print("password valid?", db.validate(username, password))
+    
     
