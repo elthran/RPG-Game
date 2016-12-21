@@ -32,8 +32,12 @@ class Game(object):
         self.has_enemy = True
 
 class Hero(object):
-    def __init__(self, user_name="Unknown"):
-        self.user_name = user_name
+    def __init__(self, user_id=0):
+        """Make a new Hero object.
+
+        NOTE: user_id of zero is nobody ever. The minimum user_id is 1. :)
+        """
+        self.user_id = user_id
         self.character_name = "Admin"
         self.age = 7
         self.character_class = "None"
@@ -156,7 +160,7 @@ class Hero(object):
             # print(e, self.e) #Where e is each element of self ... some kind of compile/execute ...?
         data = """Character belonging to user: '{}'.
 
-The character has attributes: ...""".format(self.user_name)
+The character has attributes: ...""".format(self.user_id)
         return data
         # return "\nName: %s" % (self.name)
 

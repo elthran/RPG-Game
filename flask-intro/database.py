@@ -10,6 +10,7 @@ import sqlite3
 import hashlib
 import datetime
 import os
+from game import Hero
 
 # Every second_per_endurance seconds, endurance will recover by 1
 second_per_endurance = 10
@@ -234,53 +235,20 @@ class EasyDatabase():
         """Build the tables needed by the game.
 
         This should be upgraded to make it more human readable and editable .... maybe an external xml/spreadsheet/excel file?
+        See https://www.draw.io/#LJacob%27s%20game for the table concepts (well it isn't quite using this yet but it will be).
 
         NOTE: I am using the ROW_ID as the primary key for both tables. It is invisible.
-        The user_id
         """
-        basic_tables = (
+        basic_tables = [
             """CREATE TABLE users(
             username TEXT PRIMARY KEY NOT NULL,
             password TEXT NOT NULL,
-            email TEXT)""",
+            email TEXT)"""]
 
-            """CREATE TABLE characters(
-            user_id INTEGER KEY NOT NULL,
-            character_name TEXT,
-            character_class INTEGER,
-            age INTEGER,
-            specialization TEXT,
-            house TEXT,
-            current_exp INTEGER,
-            max_exp INTEGER,
-            renown INTEGER,
-            virtue INTEGER,
-            devotion INTEGER,
-            gold INTEGER,
-            basic_ability_points INTEGER,
-            class_ability_points INTEGER,
-            specialization_ability_points INTEGER,
-            pantheonic_ability_points INTEGER,
-            attribute_points INTEGER,
-            strength INTEGER,
-            resilience INTEGER,
-            vitality INTEGER,
-            fortitude INTEGER,
-            reflexes INTEGER,
-            agility INTEGER,
-            perception INTEGER,
-            wisdom INTEGER,
-            divinity INTEGER,
-            charisma INTEGER,
-            survivalism INTEGER,
-            fortuity INTEGER,
-            equipped_items number[],
-            inventory number[],
-            abilities number[],
-            previous_login_time DATETIME CURRENT_TIMESTAMP,
-            current_time DATETIME CURRENT_TIMESTAMP,
-            previous_time DATETIME CURRENT_TIMESTAMP,
-            endurance INTEGER)""",) #Dam ugly .. I think it might look nice in a spreadsheet file ... :)
+        #Dam ugly .. I think it might look nice in a spreadsheet file ... :)
+
+        char_table = self._build_char_table(Hero())
+        basic_tables.append(char_table)
 
         #Deal with use case where table already exists ... not very exacting (by which I mean it may fail randomly) ...
         #This failure has been explicitly silenced ...
@@ -319,22 +287,37 @@ class EasyDatabase():
         def insert_character():
             c.execute("INSERT INTO CHARACTERS(user_id, character_name, character_class, current_time) VALUES (?,?,?,?)", args)
 
-        def update_character():
+        def update_char_table():
             """This sql statement should be built using string formating but should still be secure using ?? for data values ..?
 
             UPDATE table_name
-            SET column1 = value1, column2 = value2...., columnN = valueN
+            SET col1 = ?, col2 = ?, ...., colN = ?
             WHERE [condition];
+
+            executemany("UPDATE characters
+            SET col1=?, col2=?
+            WHERE ROWID=?
+            argument format should be [[val1,id], [val2,id], [val3,id], ...] while the columns must be built
+            using string formating. These names need to be checked for validity.
+
+            I wanted to have the column as a variable. You can't see: https://stackoverflow.com/questions/29335050/sqlite3-updating-row-defined-by-a-variable
+
             """
-            c.execute("""Update CHARACTERS set
-            {}=? WHERE ROWID=?
-            """.format('username'), ('Marlen', 1))
+
+            columns = args[0]
+            vars_and_id = args[1]
+
+            # check if columns are in table ... if not then raise error do to possible injection attack.
+            # requite manual overide.
+            # self.check_for_injection(columns)
+            sql_statement = EasyDatabase._build_update_table(columns)
+            c.execute(sql_statement, vars_and_id)
 
 
         options = {'insert_user': insert_user,
             'build_tables': build_tables,
             'insert_character': insert_character,
-            'update_character': update_character,
+            'update_char_table': update_char_table,
         }
 
         for key in kwargs:
@@ -381,18 +364,18 @@ class EasyDatabase():
             except TypeError:
                 return "no_match_found"
 
-        def read_rowid():
+        def read_users_rowid():
             c.execute("SELECT ROWID FROM USERS WHERE username=?", args)
             return c.fetchone()[0]
 
-        def some_other_usefull_function():
-            #Do another SQL statement! and return the result in python please!
-            pass
+        def read_characters_rowid():
+            c.execute("SELECT ROWID FROM CHARACTERS WHERE user_id=? AND character_name=?", args)
+            return c.fetchone()[0]
 
         #Yes this is kind of slow but the whole exec/compile is a whole nother problem.
         options = {'read_password' : read_password,
-                'read_rowid' : read_rowid,
-                'some_other_usefull_function': some_other_usefull_function
+                'read_users_rowid' : read_users_rowid,
+                'read_characters_rowid': read_characters_rowid
                 }
 
         #Executes functions listed above (and arbitrary SQL so get rid of that yes?)
@@ -411,15 +394,37 @@ class EasyDatabase():
         Basically the update_character function with less duplications.
 
         Ok ....
-        atributes is an ordered list
-        hero should have a ordered list of attributes
+        attributes is an ordered list
+        hero is a Hero Class object ... should have a ordered list of attributes
         rowid should extracted from character table using username?
         Basically update all colums in a give row ...
-        """
-        attributes = 'username','Me', 1
 
-        self._write(attributes, update_character=True)
-        pass
+        Arguments format should be columns , [val1, val2, val3, ... valN, id]
+
+        NOTE: data must be 'cleaned'! until I switch over to using SQLAlchemy. https://stackoverflow.com/questions/2047814/is-it-possible-to-store-python-class-objects-in-sqlite
+        """
+
+        char_id = self._read(user_id, hero.character_name, read_characters_rowid=True)
+        cols = list(vars(hero).keys())
+        params = []
+        for var in vars(hero).values():
+            params.append(EasyDatabase._clean(var))
+        params.append(char_id)
+
+        self._write(cols, params, update_char_table=True)
+
+    def _clean(obj):
+        """Returns an sqlite3.InterfaceError supported type for all python objects.
+
+        Currently int and str are left alone and everything else is converted to a string.
+        I should use SQLAlchemy ...
+        """
+        if type(obj) is type(int()):
+            return obj
+        elif type(obj) is type(str()):
+            return obj
+        else:
+            return str(obj)
 
     def add_new_user(self, username, password):
         """Add a new user to the database.
@@ -433,7 +438,7 @@ class EasyDatabase():
         """
         hashed_password = str(hashlib.md5(password.encode()).hexdigest())
         try:
-            self._write(username, password, insert_user=True)
+            self._write(username, hashed_password, insert_user=True)
         except sqlite3.IntegrityError as e:
             if e.args[0] == 'UNIQUE constraint failed: USERS.USERNAME':
                 raise Exception("Username '{}' already exists.".format(username)) #raise error if already in use.
@@ -465,7 +470,7 @@ class EasyDatabase():
         hash the test password and compare with the retrieved one.
         """
 
-        return  self._read(username, read_password=True) == hashlib.md5(password.encode()).hexdigest()
+        return  self._read(username, read_password=True) == str(hashlib.md5(password.encode()).hexdigest())
 
     def get_user_id(self, username):
         """Return the ID of a given user.
@@ -473,7 +478,52 @@ class EasyDatabase():
         This corresponds to the ROWID from SQL.
         The user must exist ... but since this should only be called after the user has logged in it should be redundant?
         """
-        return self._read(username, read_rowid=True)
+        return self._read(username, read_users_rowid=True)
+
+    def _build_char_table(self, hero):
+        """Generate a database table based on attributes of the Hero Class.
+
+        This should allow me to avoid updating the database every time anyone changes what a
+        Hero looks like.
+
+        NOTE: the time attributes have been added in separately.
+        """
+        basic_columns = ',\n'.join(column for column in EasyDatabase.generate_column_headings(hero))
+        special_columns = ' DATETIME CURRENT_TIMESTAMP,\n'.join(["previous_login_time", "current_time", "previous_time"]) + \
+            ' DATETIME CURRENT_TIMESTAMP'
+        return """CREATE TABLE characters(\n{},\n{})""".format(basic_columns, special_columns)
+
+
+    def _build_update_table(cols):
+        """Return SQL statement for updating the character table based on a list of columns.
+
+        Looks like: UPDATE characters SET {col1} = ?, {col2} = ?, {col3} = ?, ... WHERE ROWID=?
+        """
+        return """UPDATE characters SET {} WHERE ROWID=?""".format(', '.join(col + '=?' for col in cols))
+
+    def generate_column_headings(obj):
+        """Build a table's column headings from a python objects variables.
+
+        Currently only supports data types TEXT and INTEGER and and pythonic type() (whatever that is).
+
+        User_ID is a special case of "INTEGER KEY NOT NULL"
+
+        NOTE: vars(obj) is a dictionary of variable/value pairs for a given object.
+        """
+        sql_data_type = ''
+        for key in vars(obj).keys():
+            data_type = type(vars(obj)[key])
+            if data_type == type(str()):
+                sql_data_type = "TEXT"
+            elif data_type == type(int()):
+                sql_data_type = "INTEGER"
+            else:
+                sql_data_type = "python_object_as_string"
+            if key is 'user_id':
+                yield "{} {}".format(key, "INTEGER KEY NOT NULL")
+            else:
+                yield '{} {}'.format(key, sql_data_type)
+
 
 ### Possible import data from spreadsheet
 """
@@ -502,6 +552,7 @@ if __name__ == "__main__":
 
     --Change user id to row id.
     """
+
     import tests.database_tests
 
 
