@@ -20,6 +20,7 @@ class Ability(object):
         self.display_name = self.adjective[self.level - 1]
         self.learn_name = self.adjective[self.level]
         self.requirements = []
+        self.ability_type = "Unknown"
 
     def update_stats(self):
         if self.name == "Stone Skin":
@@ -38,8 +39,29 @@ class Ability(object):
         if self.level < self.max_level:
             self.learn_name = self.adjective[self.level]
 
-all_abilities = [Ability("Arcane Intellect", "Null", 5, "Increases Sanctity by 50 for each level."),
-                 Ability("Stone Skin", "Null", 5, "Increases Health by 15 for each level."),
-                 Ability("Giant Strength", "Null", 5, "Increases Strength by 15 for each level."),
-                 Ability("Sage", "Null", 5, "Increases Experience Gain by 5% for each level."),
-                 Ability("The Donkey", "Null", 3, "Increases carrying capacity by 5 for each level.")]
+class Basic_Ability(Ability):
+    def __init__(self, name, myHero, max_level, description):
+        super(Basic_Ability, self).__init__(name, myHero, max_level, description)
+        self.ability_type = "basic"
+
+class Archetype_Ability(Ability):
+    def __init__(self, name, myHero, max_level, description):
+        super(Archetype_Ability, self).__init__(name, myHero, max_level, description)
+        self.ability_type = "archetype"
+
+class Class_Ability(Ability):
+    def __init__(self, name, myHero, max_level, description):
+        super(Class_Ability, self).__init__(name, myHero, max_level, description)
+        self.ability_type = "class"
+
+class Religious_Ability(Ability):
+    def __init__(self, name, myHero, max_level, description):
+        super(Religious_Ability, self).__init__(name, myHero, max_level, description)
+        self.ability_type = "religious"
+    
+
+all_abilities = [Basic_Ability("Arcane Intellect", "Null", 5, "Increases Sanctity by 50 for each level."),
+                 Archetype_Ability("Stone Skin", "Null", 5, "Increases Health by 15 for each level."),
+                 Class_Ability("Giant Strength", "Null", 5, "Increases Strength by 15 for each level."),
+                 Class_Ability("Sage", "Null", 5, "Increases Experience Gain by 5% for each level."),
+                 Religious_Ability("The Donkey", "Null", 3, "Increases carrying capacity by 5 for each level.")]

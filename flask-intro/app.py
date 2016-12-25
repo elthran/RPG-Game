@@ -501,23 +501,40 @@ def inventory_page():
             item.check_if_improvement()
     return render_template('home.html', myHero=myHero, inventory_page=True, page_title=page_title)  # return a string
 
-@app.route('/ability_tree')
+@app.route('/ability_tree/<spec>')
 @login_required
-def ability_tree():
+def ability_tree(spec):
     paragraph = ""
     page_title = "Abilities"
+    basic_ability_tree,archetype_ability_tree,class_ability_tree,religious_ability_tree = False, False, False, False
     unknown_abilities = []
     learnable_abilities = []
     mastered_abilities = []
+    if spec == "basic":
+        basic_ability_tree = True
+    if spec == "archetype":
+        archetype_ability_tree = True
+    if spec == "class":
+        class_ability_tree = True
+    if spec == "religious":
+        religious_ability_tree = True
+    # Create a list of unlearned abilities
     for ability in all_abilities:
         if not any(known_ability.name == ability.name for known_ability in myHero.abilities):
-            unknown_abilities.append(ability)
+            if ability.ability_type == spec:
+                unknown_abilities.append(ability)
+    # Create a list of learned abilities
     for ability in myHero.abilities:
-        if ability.level < ability.max_level:
-            learnable_abilities.append(ability)
-        else:
-            mastered_abilities.append(ability)
-    return render_template('home.html', myHero=myHero, ability_tree=True, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)  # return a string
+        if ability.ability_type == spec:
+            # Add these to known but non-mastered abilities
+            if ability.level < ability.max_level:
+                learnable_abilities.append(ability)
+            # Add these to mastered abilities
+            else:
+                mastered_abilities.append(ability)
+    return render_template('home.html', myHero=myHero, ability_pages=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)  # return a string
+
+
 
 @app.route('/quest_log')
 @login_required

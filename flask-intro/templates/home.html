@@ -36,7 +36,7 @@
           <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_world.id }}>{{ myHero.current_world.location_type }}</a></li>
         {% endif %}
         <li><a href=/quest_log>Journal</a></li>
-        <li><a href=/ability_tree>Abilities</a></li>
+        <li><a href=/ability_tree/basic>Abilities</a></li>
         <li><a href=/admin>Admin</a></li>
         <li><a href=/under_construction>Users</a></li>
         <li><a href=/logout>Logout</a></li>
@@ -54,6 +54,19 @@
        <li><a href=/people_log/default>People</a></li>
        <li><a href=/map_log>Map</a></li>
        <li><a href=/achievement_log>Achievements</a></li>
+     </ul>
+    </div>
+  </div>
+{% endif %}
+
+{% if ability_pages %}
+  <div id="content">
+     <div class="nav">
+     <ul>
+       <li><a href=/ability_tree/basic>Basic Skills</a></li>
+       <li><a href=/ability_tree/archetype>Archetype Advancements</a></li>
+       <li><a href=/ability_tree/class>Class Abilities</a></li>
+       <li><a href=/ability_tree/religious>Religious Blessings</a></li>
      </ul>
     </div>
   </div>
@@ -161,19 +174,23 @@
       {% endfor %}
     {% endif %}
 
-    {% if ability_tree %}
+    {% if ability_pages %}
+*TESTING* Here are your known abilities:
+{% for ability in myHero.abilities %}
+<br><br>Ability: {{ ability.name }}<br>Level: {{ability.level }}<br>Type: {{ ability.ability_type }}
+{% endfor %}
       <h1 style="text-align:center;">Abilities</h1>
+      <h2 style="text-align:left;">Unknown</h2>
+        {% for ability in unknown_abilities %}
+          <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.display_name }}: {{ ability.description }}">{{ ability.name }}</button><img src="/static/images/0.jpg" alt="?" style="width:25px;height:25px;"><br>
+        {% endfor %}
       <h2 style="text-align:left;">Known</h2>
         {% for ability in learnable_abilities %}
-          <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.learn_name }}: {{ ability.description }}" style="background:url('static/images/{{ ability.name }}.jpg'); height:70px; width:70px"></button><img src="/static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;"><br>
+          <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.learn_name }}: {{ ability.description }}">{{ ability.name }}</button><img src="/static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;"><br>
         {% endfor %}
       <h2 style="text-align:left;">Mastered</h2>
         {% for ability in mastered_abilities %}
           <img src="/static/images/{{ ability.name }}.jpg"; height:70px; width:70px"><img src="/static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;"><br>
-        {% endfor %}
-      <h2 style="text-align:left;">Unknown</h2>
-        {% for ability in unknown_abilities %}
-          <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.display_name }}: {{ ability.description }}" style="background:url('static/images/{{ ability.name }}.jpg'); height:70px; width:70px"></button><img src="/static/images/0.jpg" alt="?" style="width:25px;height:25px;"><br>
         {% endfor %}
     {% endif %}
 
