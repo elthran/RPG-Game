@@ -16,7 +16,7 @@ class Ability(object):
         self.level = 1
         self.max_level = max_level
         self.description = description
-        self.adjective = ["I","II","III","IV", "V"]
+        self.adjective = ["I","II","III","IV", "V", "VI"]
         self.display_name = self.adjective[self.level - 1]
         self.learn_name = self.adjective[self.level]
         self.requirements = []
