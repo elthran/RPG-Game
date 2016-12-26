@@ -105,7 +105,8 @@ def command(cmd=None):
             unknown_abilities.append(ability)
     for ability in unknown_abilities:
         if cmd == ability.name:
-            myHero.abilities.append(Ability(ability.name, myHero, ability.max_level, ability.description))
+            ability.update_owner(myHero)
+            myHero.abilities.append(ability)
             myHero.update_secondary_attributes()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 

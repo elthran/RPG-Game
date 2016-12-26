@@ -177,7 +177,7 @@
     {% if ability_pages %}
 *TESTING* Here are your known abilities:
 {% for ability in myHero.abilities %}
-<br><br>Ability: {{ ability.name }}<br>Level: {{ability.level }}<br>Type: {{ ability.ability_type }}
+<br><br>Ability(<b>{{ ability.ability_type }}</b>): {{ ability.name }}<br>Level: {{ability.level }}/{{ ability.max_level }}
 {% endfor %}
       <h1 style="text-align:center;">Abilities</h1>
       <h2 style="text-align:left;">Unknown</h2>

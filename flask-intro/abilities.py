@@ -39,6 +39,9 @@ class Ability(object):
         if self.level < self.max_level:
             self.learn_name = self.adjective[self.level]
 
+    def update_owner(self, myHero):
+        self.myHero = myHero
+
 class Basic_Ability(Ability):
     def __init__(self, name, myHero, max_level, description):
         super(Basic_Ability, self).__init__(name, myHero, max_level, description)
