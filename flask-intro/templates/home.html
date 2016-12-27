@@ -179,6 +179,7 @@
 {% for ability in myHero.abilities %}
 <br><br>Ability(<b>{{ ability.ability_type }}</b>): {{ ability.name }}<br>Level: {{ability.level }}/{{ ability.max_level }}
 {% endfor %}
+<br>Ability Points: {{ myHero.ability_points }}
       <h1 style="text-align:center;">Abilities</h1>
       <h2 style="text-align:left;">Unknown</h2>
         {% for ability in unknown_abilities %}
@@ -329,7 +330,9 @@ Gold Modifier: {{ myHero.gold_gain_modifier }}<br>
 <h2> 
 Name: {{ myHero.character_name}}
 <br>Age: {{ myHero.age }}
-<br>Class: {{ myHero.character_class }}
+<br>Archetype: {{ myHero.archetype }}
+<br>Specialization: {{ myHero.specialization }}
+<br>Religion: {{ myHero.religion }}
 <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
 <br>Carrying Capacity: {{ myHero.current_carrying_capacity }} / {{ myHero.max_carrying_capacity }}
 <br>Gold: {{ myHero.gold }}

@@ -40,8 +40,9 @@ class Hero(object):
         self.user_id = user_id
         self.character_name = "Admin"
         self.age = 7
-        self.character_class = "None"
+        self.archetype = "None"
         self.specialization = "None"
+        self.religion = "None"
         self.house = "None"
         self.current_exp = 0
         self.max_exp = 10
@@ -74,6 +75,7 @@ class Hero(object):
         self.current_endurance = 0
         self.current_carrying_capacity = 0
 
+        self.ability_points = 5
         self.equipped_items = []
         self.inventory = []
         self.abilities = []
@@ -97,7 +99,7 @@ class Hero(object):
         self.min_damage = self.strength
         self.max_damage = self.strength + self.agility
         self.attack_speed = 2 * self.agility + self.reflexes
-        self.attack_accuracy = 3 * self.agility         # A percentage
+        self.attack_accuracy = 30 * self.agility         # A percentage
         self.first_strike = 3 * self.agility + self.reflexes         # A percentage
         self.critical_hit = 5 * self.agility         # A percentage
         self.defence_modifier = 3 * self.resilience         # A percentage
@@ -118,22 +120,19 @@ class Hero(object):
         self.luck = 5 * self.fortuity                  # A percentage
 
         # Hidden attributes
-        self.experience_gain_modifier = 1
-        self.gold_gain_modifier = 1
+        self.experience_gain_modifier = 1 # This is the percentage of exp you gain
+        self.gold_gain_modifier = 1 # This is the percentage of gold you gain
 
         for ability in self.abilities:
             ability.update_stats()
         for item in self.equipped_items:
             item.update_stats()
 
-        self.current_sanctity = self.max_sanctity - 70 # TEMP WHILE TESTING POTIONS
-        self.current_health = self.max_health - 70 # TEMP WHILE TESTING POTIONS
+    def refresh_character(self):
+        self.current_sanctity = self.max_sanctity
+        self.current_health = self.max_health
         self.current_endurance = self.max_endurance
         self.current_carrying_capacity = self.max_carrying_capacity
-
-    def refresh_character(self):
-        # used to fully heal
-        pass
 
     # updates field variables when hero levels up
     def level_up(self, attribute_points, current_exp, max_exp):
@@ -143,6 +142,7 @@ class Hero(object):
         self.max_exp = math.floor(1.5 * self.max_exp)
         self.attribute_points += 3
         self.age += 1
+        self.ability_points += 2
         self.update_secondary_attributes()
         return True
 
@@ -168,12 +168,9 @@ The character has attributes: ...""".format(self.user_id)
 # Temporary Function to create a random hero
 def create_random_hero():
     myHero = Hero()
-    myHero.strength = 50
-    myHero.vitality = 50
-    myHero.fortitude = 50
     myHero.gold = 5000
-    myHero.update_secondary_attributes
-    myHero.refresh_character
+    myHero.update_secondary_attributes()
+    myHero.refresh_character()
     return myHero
 # End of temporary functions
 

@@ -90,11 +90,12 @@ def command(cmd=None):
     # UPGRADE ABILITIES
     learnable_known_abilities = [ability for ability in myHero.abilities if ability.level < ability.max_level]
     for ability in learnable_known_abilities:
-        if cmd == ability.name:
+        if cmd == ability.name and  myHero.ability_points > 0:
             for i in range(0,len(myHero.abilities)):
                 if myHero.abilities[i].name == ability.name:
                     myHero.abilities[i].level += 1
                     myHero.abilities[i].update_display()
+                    myHero.ability_points -= 1
             myHero.update_secondary_attributes()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
@@ -104,10 +105,11 @@ def command(cmd=None):
         if not any(known_ability.name == ability.name for known_ability in myHero.abilities):
             unknown_abilities.append(ability)
     for ability in unknown_abilities:
-        if cmd == ability.name:
+        if cmd == ability.name and myHero.ability_points > 0:
             ability.update_owner(myHero)
             myHero.abilities.append(ability)
             myHero.update_secondary_attributes()
+            myHero.ability_points -= 1
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # BUY FROM BLACKSMITH
@@ -174,6 +176,7 @@ def level_up():
             database.update_character(session['id'],myHero)
             return redirect(url_for('home'))
     myHero.update_secondary_attributes()
+    myHero.refresh_character()
     page_heading = "You have leveled up!"
     paragraph = "Choose how you would like to distribute your attribute points."
     primary_attributes = [("Strength", myHero.strength),
@@ -280,7 +283,7 @@ def create_character():
         conversation = [("Stranger: ", "Where do you come from, child?")]
         display = False
     elif request.method == 'POST' and fathers_job == None:
-        fathers_job = request.form["character_class"]
+        fathers_job = request.form["archetype"]
         if fathers_job == "Brute":
             myHero.strength += 3
             myHero.resilience += 1
@@ -301,7 +304,7 @@ def create_character():
             myHero.divinity += 5
             myHero.wisdom += 1
     if myHero.character_name != "Unknown" and fathers_job != None:
-        myHero.character_class = fathers_job
+        myHero.archetype = fathers_job
         database.update_character(session['id'],myHero)
         return redirect(url_for('home'))
     else:
