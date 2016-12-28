@@ -168,6 +168,7 @@ The character has attributes: ...""".format(self.user_id)
 # Temporary Function to create a random hero
 def create_random_hero():
     myHero = Hero()
+    myHero.name = "Unknown"
     myHero.gold = 5000
     myHero.update_secondary_attributes()
     myHero.refresh_character()

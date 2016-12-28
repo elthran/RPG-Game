@@ -382,29 +382,8 @@ def battle():
 @app.route('/reset_character')
 @login_required
 def reset_character():
-    myHero.character_name = "Unknown"
-    myHero.character_class = "None"
-    myHero.age = 1
-    myHero.attribute_points = 0
-    myHero.current_xp = 0
-    myHero.max_xp = 0
-    myHero.attribute_points = 0
-    myHero.strength = 1
-    myHero.resilience = 1
-    myHero.vitality = 1
-    myHero.fortitude = 1
-    myHero.reflexes = 1
-    myHero.agility = 1
-    myHero.perception = 1
-    myHero.wisdom = 1
-    myHero.divinity = 1
-    myHero.charisma = 1
-    myHero.survivalism = 1
-    myHero.fortuity = 1
-    myHero.abilities = []
-    myHero.gold = 500
-    myHero.update_secondary_attributes()
-    myHero.refresh_character
+    myHero = create_random_hero()
+    game = Game(myHero)
     return redirect(url_for('home'))  # return a string
 
 # this is a temporary page that lets you modify any attributes for testing
@@ -829,7 +808,7 @@ def old_mans_hut():
 def leave_town():
     page_heading = "Village Gate"
     conversation = [("City Guard: ", "You are too young to be out on your own.")]
-    page_links = [("Return to the ", "/town/placeholder_name", "city", ".")]
+    page_links = [("Return to the ", "/town/" + myHero.current_city.name, "city", ".")]
     return render_template('home.html', myHero=myHero, page_heading=page_heading, conversation=conversation, page_links=page_links)  # return a string
 
 ### END OF STARTING TOWN FUNCTIONS

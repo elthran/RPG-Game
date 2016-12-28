@@ -23,16 +23,10 @@ class Ability(object):
         self.ability_type = "Unknown"
 
     def update_stats(self):
-        if self.name == "Stone Skin":
-            self.myHero.max_health += 15 * self.level
-        if self.name == "Arcane Intellect":
-            self.myHero.max_sanctity += 50 * self.level
-        if self.name == "Giant Strength":
-            self.myHero.max_damage += 15 * self.level
-        if self.name == "Sage":
-            self.myHero.experience_gain_modifier += 0.05 * self.level
-        if self.name == "The Donkey":
-            self.myHero.max_carrying_capacity += 5 * self.level
+        if self.name == "Determination":
+            self.myHero.max_endurance += 3 * self.level
+        if self.name == "Salubrity":
+            self.myHero.max_health += 4 * self.level
 
     def update_display(self):
         self.display_name = self.adjective[self.level - 1]
@@ -63,8 +57,5 @@ class Religious_Ability(Ability):
         self.ability_type = "religious"
     
 
-all_abilities = [Basic_Ability("Arcane Intellect", "Null", 5, "Increases Sanctity by 50 for each level."),
-                 Archetype_Ability("Stone Skin", "Null", 5, "Increases Health by 15 for each level."),
-                 Class_Ability("Giant Strength", "Null", 5, "Increases Strength by 15 for each level."),
-                 Class_Ability("Sage", "Null", 5, "Increases Experience Gain by 5% for each level."),
-                 Religious_Ability("The Donkey", "Null", 3, "Increases carrying capacity by 5 for each level.")]
+all_abilities = [Basic_Ability("Determination", "Null", 5, "Increases Endurance by 3 for each level."),
+                 Basic_Ability("Salubrity", "Null", 5, "Increases Health by 4 for each level.")]

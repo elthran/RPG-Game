@@ -158,4 +158,4 @@ all_store_items = [One_Handed_Weapon("Small Dagger", "Temporary", 5, 30, 60, 1),
 all_marketplace_items = [Consumable("Minor Health Potion", "Temporary", 3, healing_amount=10),
                          Consumable("Major Health Potion", "Temporary", 6, healing_amount=50),
                          Consumable("Major Faith Potion", "Temporary", 6, sanctity_amount=50),
-                         Consumable("Major Sex Potion", "Temporary", 6000, sanctity_amount=50)]
+                         Consumable("Major Awesome Max Potion", "Temporary", 6000, sanctity_amount=50)]
