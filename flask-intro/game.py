@@ -40,9 +40,9 @@ class Hero(object):
         self.user_id = user_id
         self.character_name = "Admin"
         self.age = 7
-        self.archetype = "None"
-        self.specialization = "None"
-        self.religion = "None"
+        self.archetype = "Woodsman"
+        self.specialization = "Hunter"
+        self.religion = "Dryarch"
         self.house = "None"
         self.current_exp = 0
         self.max_exp = 10

@@ -44,7 +44,22 @@ def login_required(f):
 @app.route('/<cmd>') # need to make sure this doesn't conflict with other routes
 def command(cmd=None):
     # cmd (string type)is an item name, sent from the javascript code in html
-
+    
+    # TEST CODE DELETE SOON
+    if cmd == "forgoth":
+        myHero.religion = "Forgoth"
+    if cmd == "dryarch":
+        myHero.religion = "Dryarch"
+    if cmd == "woodsman":
+        myHero.archetype = "Woodsman"
+    if cmd == "priest":
+        myHero.archetype = "Priest"
+    if cmd == "hunter":
+        myHero.specialization = "Hunter"
+    if cmd == "trapper":
+        myHero.specialization = "Trapper"
+    # END OF TEST CODE
+    
     # EQUIP ITEMS
     for item in myHero.inventory:
         if cmd == item.name and item.equippable == True:
@@ -505,7 +520,17 @@ def ability_tree(spec):
     for ability in all_abilities:
         if not any(known_ability.name == ability.name for known_ability in myHero.abilities):
             if ability.ability_type == spec:
-                unknown_abilities.append(ability)
+                if spec == "archetype":
+                    if ability.archetype == myHero.archetype or ability.archetype == "All":
+                        unknown_abilities.append(ability)
+                elif spec == "class":
+                    if ability.specialization == myHero.specialization or ability.specialization=="All":
+                        unknown_abilities.append(ability)
+                elif spec == "religious":
+                    if ability.religion == myHero.religion or ability.religion == "All":
+                        unknown_abilities.append(ability)
+                else:
+                    unknown_abilities.append(ability)
     # Create a list of learned abilities
     for ability in myHero.abilities:
         if ability.ability_type == spec:
