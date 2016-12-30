@@ -51,8 +51,9 @@ class Hero(object):
         self.devotion = 0
         self.gold = 50
 
+        self.ability_points = 5 #TEMP. Soon will use the 4 values below
         self.basic_ability_points = 0
-        self.class_ability_points = 0
+        self.archetype_ability_points = 0
         self.specialization_ability_points = 0
         self.pantheonic_ability_points = 0
 
@@ -75,7 +76,6 @@ class Hero(object):
         self.current_endurance = 0
         self.current_carrying_capacity = 0
 
-        self.ability_points = 5
         self.equipped_items = []
         self.inventory = []
         self.abilities = []

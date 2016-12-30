@@ -174,7 +174,6 @@
     {% endif %}
 
     {% if ability_pages %}
-
       <br>Ability Points: {{ myHero.ability_points }}
       <h1 style="text-align:center;">Abilities</h1>
       {% if archetype_ability_tree %}Choose Archetype (Currently {{ myHero.archetype }}): <button class="command command-woodsman" value="woodsman">Woodsman</button><button class="command command-priest" value="priest">Priest</button><br> You are a <b>{{ myHero.archetype }}</b>{% endif %}
@@ -286,7 +285,7 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
         {% endif %}
     {% endif %}
 
-    {% if achievement_log%}
+    {% if achievement_log %}
       <h1>Achievements</h1>
       {% if completed_achievements %}
         {% for achievement in completed_achievements %}
@@ -304,7 +303,14 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
               {{ key }}: {{ value }}<br>
          {% endfor %}
     {% endif %}
-	
+
+    {% if map_log %}
+      <h1>Maps</h1>
+      {% for map in myHero.known_locations %}
+        {{ map }}
+      {% endfor %}
+    {% endif %}
+
 	{% if admin %}
       <form method="post" action="" autocomplete="off">
       {% for attribute in admin %}

@@ -146,8 +146,8 @@ for i in range(0, 12):
     test_location = Location("location " + str(i),i)
     test_locations2.append(test_location)
 
-test_locations2[5] = Town("5: Thornwall", 5, "Test_World")
-test_locations2[2] = Cave("2: Creepy cave", 2, "Test_World")
+test_locations2[5] = Town("Thornwall", 5, "Test_World")
+test_locations2[2] = Cave("Creepy cave", 2, "Test_World")
 
 """ Define all connections
 

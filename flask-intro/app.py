@@ -430,7 +430,7 @@ def admin():
         myHero.devotion = convert_input(request.form["Devotion"])
         myHero.gold = convert_input(request.form["Gold"])
         myHero.basic_ability_points = convert_input(request.form["Basic_ability_points"])
-        myHero.class_ability_points = convert_input(request.form["Class_ability_points"])
+        myHero.archetype_ability_points = convert_input(request.form["Archetype_ability_points"])
         myHero.specialization_ability_points = convert_input(request.form["Specialization_ability_points"])
         myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
         myHero.attribute_points = convert_input(request.form["Attribute_points"])
@@ -460,7 +460,7 @@ def admin():
                           ("Devotion", myHero.devotion),
                           ("Gold", myHero.gold),
                           ("Basic_ability_points", myHero.basic_ability_points),
-                          ("Class_ability_points", myHero.class_ability_points),
+                          ("Archetype_ability_points", myHero.archetype_ability_points),
                           ("Specialization_ability_points", myHero.specialization_ability_points),
                           ("Pantheonic_ability_points", myHero.pantheonic_ability_points),
                           ("Attribute_points", myHero.attribute_points),
@@ -516,29 +516,24 @@ def ability_tree(spec):
         class_ability_tree = True
     if spec == "religious":
         religious_ability_tree = True
-    # Create a list of unlearned abilities
     for ability in all_abilities:
-        if not any(known_ability.name == ability.name for known_ability in myHero.abilities):
-            if ability.ability_type == spec:
-                if spec == "archetype":
-                    if ability.archetype == myHero.archetype or ability.archetype == "All":
-                        unknown_abilities.append(ability)
-                elif spec == "class":
-                    if ability.specialization == myHero.specialization or ability.specialization=="All":
-                        unknown_abilities.append(ability)
-                elif spec == "religious":
-                    if ability.religion == myHero.religion or ability.religion == "All":
-                        unknown_abilities.append(ability)
-                else:
+        if not any(known_ability.name == ability.name for known_ability in myHero.abilities) and ability.ability_type == spec: # Create a list of unlearned abilities and it will only check abilities for the current page you are on (basic, archetype, specialization, religion)
+            if spec == "archetype": # If you are on the archetype page, we further narrow it down to your archetype and "all"
+                if ability.archetype == myHero.archetype or ability.archetype == "All":
                     unknown_abilities.append(ability)
-    # Create a list of learned abilities
-    for ability in myHero.abilities:
-        if ability.ability_type == spec:
-            # Add these to known but non-mastered abilities
-            if ability.level < ability.max_level:
-                learnable_abilities.append(ability)
-            # Add these to mastered abilities
+            elif spec == "class": # If you are on the specialization page, we further narrow it down to your specialization and "all"
+                if ability.specialization == myHero.specialization or ability.specialization=="All":
+                    unknown_abilities.append(ability)
+            elif spec == "religious": # If you are on the religion page, we further narrow it down to your religion and "all"
+                if ability.religion == myHero.religion or ability.religion == "All":
+                    unknown_abilities.append(ability)
             else:
+                unknown_abilities.append(ability)
+    for ability in myHero.abilities: # Create a list of learned abilities
+        if ability.ability_type == spec:
+            if ability.level < ability.max_level: # Add these to known, but non-mastered abilities
+                learnable_abilities.append(ability)
+            else: # Add these to mastered abilities
                 mastered_abilities.append(ability)
     return render_template('home.html', myHero=myHero, ability_pages=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)  # return a string
 
@@ -593,8 +588,7 @@ def people_log(current_npc):
 def map_log():
     paragraph = ""
     page_title = "Map"
-    page_heading = "Map"
-    return render_template('home.html', myHero=myHero, journal=True, page_title=page_title, page_heading=page_heading)  # return a string
+    return render_template('home.html', myHero=myHero, journal=True, map_log=True, page_title=page_title)  # return a string
 
 @app.route('/achievement_log')
 @login_required
@@ -647,6 +641,8 @@ def cave(cave_name):
 @login_required
 def world_map(current_world, location_id):
     myHero.current_world = game_worlds[0]
+    myHero.known_locations.append(current_world)
+    print(myHero.known_locations)
     myHero.current_world.current_location = myHero.current_world.find_location(location_id)
     myHero.current_city = None
     page_title = myHero.current_world.page_title
@@ -809,7 +805,7 @@ def marketplace(inventory):
     items_for_sale = []
     page_image = "marketplace"
     if inventory == "greeting":
-        page_links = [("Take a look at our ", "/marketplace/general", "selection", "."), ("Return to ", "/town/placeholder_name", "town", ".")]
+        page_links = [("Take a look at our ", "/marketplace/general", "selection", "."), ("Return to ", "/Town/" + myHero.current_city.name, "town", ".")]
         page_heading = "Good day sir! What can I get for you?"
         return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
     elif inventory == "general":
@@ -833,7 +829,7 @@ def old_mans_hut():
 def leave_town():
     page_heading = "Village Gate"
     conversation = [("City Guard: ", "You are too young to be out on your own.")]
-    page_links = [("Return to the ", "/town/" + myHero.current_city.name, "city", ".")]
+    page_links = [("Return to the ", "/Town/" + myHero.current_city.name, "city", ".")]
     return render_template('home.html', myHero=myHero, page_heading=page_heading, conversation=conversation, page_links=page_links)  # return a string
 
 ### END OF STARTING TOWN FUNCTIONS
