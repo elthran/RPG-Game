@@ -75,7 +75,8 @@ class Hero(object):
         self.current_health = 0
         self.current_endurance = 0
         self.current_carrying_capacity = 0
-
+        self.max_health = 0
+		
         self.equipped_items = []
         self.inventory = []
         self.abilities = []
@@ -111,13 +112,16 @@ class Hero(object):
         self.spiritual_resistance = 2 * self.resilience + 2 * self.divinity         # A percentage
         self.stealth_skill = self.agility + self.reflexes + self.perception        # A percentage
         self.faith = self.divinity
-        self.max_health = 5 * self.vitality + self.resilience
+
         self.max_sanctity = 5 * self.divinity
         self.max_endurance = 5 * self.fortitude
         self.max_carrying_capacity = 3 * self.strength + 2 * self.fortitude
         self.barter = 5 * self.charisma
         self.oration = 4 * self.charisma + self.wisdom
         self.luck = 5 * self.fortuity                  # A percentage
+
+        old_health = self.max_health
+        self.max_health = 5 * self.vitality + self.resilience
 
         # Hidden attributes
         self.experience_gain_modifier = 1 # This is the percentage of exp you gain
@@ -127,6 +131,16 @@ class Hero(object):
             ability.update_stats()
         for item in self.equipped_items:
             item.update_stats()
+
+        # When you update max_health, current health will also change by the same amount
+        max_health_change = self.max_health - old_health
+        print("delta health    max health      old health")
+        print(str(max_health_change) + "     " + str(self.max_health) + "    " + str(old_health))
+        if max_health_change != 0: 
+            self.current_health += max_health_change	
+        if self.current_health < 0:
+            self.current_health = 0	        
+        
 
     def refresh_character(self):
         self.current_sanctity = self.max_sanctity
@@ -143,6 +157,7 @@ class Hero(object):
         self.attribute_points += 3
         self.age += 1
         self.ability_points += 2
+        self.current_health = self.max_health
         self.update_secondary_attributes()
         return True
 
