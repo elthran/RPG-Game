@@ -134,8 +134,6 @@ class Hero(object):
 
         # When you update max_health, current health will also change by the same amount
         max_health_change = self.max_health - old_health
-        print("delta health    max health      old health")
-        print(str(max_health_change) + "     " + str(self.max_health) + "    " + str(old_health))
         if max_health_change != 0: 
             self.current_health += max_health_change	
         if self.current_health < 0:

@@ -399,6 +399,8 @@ def battle():
 def reset_character():
     myHero = create_random_hero()
     game = Game(myHero)
+    print("I have this much gold:")
+    print(myHero.gold)
     return redirect(url_for('home'))  # return a string
 
 # this is a temporary page that lets you modify any attributes for testing
