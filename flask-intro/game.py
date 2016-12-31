@@ -164,7 +164,9 @@ class Hero(object):
         for my_item in self.inventory:
             if my_item.name == item_name:
                 my_item.apply_effect()
-                self.inventory.remove(my_item)
+                my_item.amount_owned -= 1
+                if my_item.amount_owned == 0:
+                    self.inventory.remove(my_item)
                 break
 
     def __str__(self):
