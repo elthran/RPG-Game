@@ -58,6 +58,7 @@ class Hero(object):
         self.pantheonic_ability_points = 0
 
         self.attribute_points = 0
+        self.primary_attributes = {"Strength": 1, "Resilience": 1, "Vitality": 1, "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1, "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1}
         self.strength = 1
         self.resilience = 1
         self.vitality = 1
@@ -97,31 +98,31 @@ class Hero(object):
 
     # Sets damage
     def update_secondary_attributes(self):
-        self.min_damage = self.strength
-        self.max_damage = self.strength + self.agility
-        self.attack_speed = 2 * self.agility + self.reflexes
-        self.attack_accuracy = 30 * self.agility         # A percentage
-        self.first_strike = 3 * self.agility + self.reflexes         # A percentage
-        self.critical_hit = 5 * self.agility         # A percentage
-        self.defence_modifier = 3 * self.resilience         # A percentage
-        self.evade_chance = 4 * self.reflexes + self.agility         # A percentage
-        self.parry_chance = 3 * self.reflexes + 2 * self.agility + self.perception         # A percentage
-        self.block_chance = 2 * self.reflexes + self.agility        # A percentage
-        self.block_reduction = self.strength # + shield type/size         # A percentage
-        self.poisin_resistance = 5 * self.resilience         # A percentage
-        self.spiritual_resistance = 2 * self.resilience + 2 * self.divinity         # A percentage
-        self.stealth_skill = self.agility + self.reflexes + self.perception        # A percentage
-        self.faith = self.divinity
+        self.min_damage = self.primary_attributes["Strength"]
+        self.max_damage = self.primary_attributes["Strength"] + self.primary_attributes["Agility"]
+        self.attack_speed = 2 * self.primary_attributes["Agility"] + self.primary_attributes["Reflexes"]
+        self.attack_accuracy = 30 * self.primary_attributes["Agility"]         # A percentage
+        self.first_strike = 3 * self.primary_attributes["Agility"] + self.primary_attributes["Reflexes"]        # A percentage
+        self.critical_hit = 5 * self.primary_attributes["Agility"]         # A percentage
+        self.defence_modifier = 3 * self.primary_attributes["Resilience"]         # A percentage
+        self.evade_chance = 4 * self.reflexes + self.primary_attributes["Agility"]         # A percentage
+        self.parry_chance = 3 * self.reflexes + 2 * self.primary_attributes["Agility"] + self.perception         # A percentage
+        self.block_chance = 2 * self.reflexes + self.primary_attributes["Agility"]       # A percentage
+        self.block_reduction = self.primary_attributes["Strength"] # + shield type/size         # A percentage
+        self.poisin_resistance = 5 * self.primary_attributes["Resilience"]          # A percentage
+        self.spiritual_resistance = 2 * self.primary_attributes["Resilience"]  + 2 * self.primary_attributes["Divinity"]         # A percentage
+        self.stealth_skill = self.primary_attributes["Agility"] + self.primary_attributes["Reflexes"]  + self.primary_attributes["Perception"]         # A percentage
+        self.faith = self.primary_attributes["Divinity"]
 
-        self.max_sanctity = 5 * self.divinity
-        self.max_endurance = 5 * self.fortitude
-        self.max_carrying_capacity = 3 * self.strength + 2 * self.fortitude
-        self.barter = 5 * self.charisma
-        self.oration = 4 * self.charisma + self.wisdom
-        self.luck = 5 * self.fortuity                  # A percentage
+        self.max_sanctity = 5 * self.primary_attributes["Divinity"]
+        self.max_endurance = 5 * self.primary_attributes["Fortitude"]
+        self.max_carrying_capacity = 3 * self.primary_attributes["Strength"] + 2 * self.primary_attributes["Fortitude"]
+        self.barter = 5 * self.primary_attributes["Charisma"]
+        self.oration = 4 * self.primary_attributes["Charisma"] + self.primary_attributes["Wisdom"]
+        self.luck = 5 * self.primary_attributes["Fortuity"]                 # A percentage
 
-        old_health = self.max_health
-        self.max_health = 5 * self.vitality + self.resilience
+        previous_max_health = self.max_health
+        self.max_health = 5 * self.primary_attributes["Vitality"] + self.primary_attributes["Resilience"]
 
         # Hidden attributes
         self.experience_gain_modifier = 1 # This is the percentage of exp you gain
@@ -133,7 +134,7 @@ class Hero(object):
             item.update_stats()
 
         # When you update max_health, current health will also change by the same amount
-        max_health_change = self.max_health - old_health
+        max_health_change = self.max_health - previous_max_health
         if max_health_change != 0: 
             self.current_health += max_health_change	
         if self.current_health < 0:

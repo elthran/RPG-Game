@@ -44,20 +44,36 @@ def login_required(f):
 @app.route('/<cmd>') # need to make sure this doesn't conflict with other routes
 def command(cmd=None):
     # cmd (string type)is an item name, sent from the javascript code in html
+
+    #Level Up Commands
+    for attribute in myHero.primary_attributes:
+        if cmd == attribute:
+            myHero.primary_attributes[attribute] += 1
+            myHero.attribute_points -= 1
+            myHero.update_secondary_attributes()
+            myHero.refresh_character()
+            return "success", 200, {'Content-Type': 'text/plain'} #//
+    #End of Level Up Commands
     
     # TEST CODE DELETE SOON
     if cmd == "forgoth":
         myHero.religion = "Forgoth"
+        return "success", 200, {'Content-Type': 'text/plain'} #//
     if cmd == "dryarch":
         myHero.religion = "Dryarch"
+        return "success", 200, {'Content-Type': 'text/plain'} #//
     if cmd == "woodsman":
         myHero.archetype = "Woodsman"
+        return "success", 200, {'Content-Type': 'text/plain'} #//
     if cmd == "priest":
         myHero.archetype = "Priest"
+        return "success", 200, {'Content-Type': 'text/plain'} #//
     if cmd == "hunter":
         myHero.specialization = "Hunter"
+        return "success", 200, {'Content-Type': 'text/plain'} #//
     if cmd == "trapper":
         myHero.specialization = "Trapper"
+        return "success", 200, {'Content-Type': 'text/plain'} #//
     # END OF TEST CODE
     
     # EQUIP ITEMS
@@ -153,60 +169,15 @@ def command(cmd=None):
 
     return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
 
-# This gets called anytime you level up
+# This gets called anytime you have attribute points to spend
 @app.route('/level_up', methods=['GET', 'POST'])
 @login_required
 def level_up():
-    if request.method == 'POST':
-        strength = convert_input(request.form["Strength"])
-        resilience = convert_input(request.form["Resilience"])
-        vitality = convert_input(request.form["Vitality"])
-        fortitude = convert_input(request.form["Fortitude"])
-        reflexes = convert_input(request.form["Reflexes"])
-        agility = convert_input(request.form["Agility"])
-        perception = convert_input(request.form["Perception"])
-        wisdom = convert_input(request.form["Wisdom"])
-        divinity = convert_input(request.form["Divinity"])
-        charisma = convert_input(request.form["Charisma"])
-        survivalism = convert_input(request.form["Survivalism"])
-        fortuity = convert_input(request.form["Fortuity"])
-        total_points_spent = sum([strength, resilience, vitality, fortitude, reflexes, agility, perception, wisdom, divinity, charisma, survivalism, fortuity])
-        if total_points_spent <= myHero.attribute_points:
-            myHero.strength += strength
-            myHero.resilience += resilience
-            myHero.vitality += vitality
-            myHero.fortitude += fortitude
-            myHero.reflexes += reflexes
-            myHero.agility += agility
-            myHero.perception += perception
-            myHero.wisdom += wisdom
-            myHero.divinity += divinity
-            myHero.charisma += charisma
-            myHero.survivalism += survivalism
-            myHero.fortuity += fortuity
-            myHero.attribute_points -= total_points_spent
-        else:
-            error = "Spend less points."
-        if myHero.attribute_points <= 0:
-            database.update_character(session['id'],myHero)
-            return redirect(url_for('home'))
-    myHero.update_secondary_attributes()
-    myHero.refresh_character()
+    if myHero.attribute_points == 0:   # This needs to be here or it will stay on this page when you spend your last point.
+        return redirect(url_for('home'))
     page_heading = "You have leveled up!"
     paragraph = "Choose how you would like to distribute your attribute points."
-    primary_attributes = [("Strength", myHero.strength),
-                          ("Resilience", myHero.resilience),
-                          ("Vitality", myHero.vitality),
-                          ("Fortitude", myHero.fortitude),
-                          ("Reflexes", myHero.reflexes),
-                          ("Agility", myHero.agility),
-                          ("Perception", myHero.perception),
-                          ("Wisdom", myHero.wisdom),
-                          ("Divinity", myHero.divinity),
-                          ("Charisma", myHero.charisma),
-                          ("Survivalism", myHero.survivalism),
-                          ("Fortuity", myHero.fortuity)]
-    return render_template('home.html', page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero, primary_attributes=primary_attributes)
+    return render_template('home.html', level_up=True, page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
 
 # use decorators to link the function to a url
 # route for handling the login page logic
@@ -411,18 +382,6 @@ def admin():
     page_heading = "Use this page to set values"
     page_image = "town"
     if request.method == 'POST':
-        myHero.strength = convert_input(request.form["Strength"])
-        myHero.resilience = convert_input(request.form["Resilience"])
-        myHero.vitality = convert_input(request.form["Vitality"])
-        myHero.fortitude = convert_input(request.form["Fortitude"])
-        myHero.reflexes = convert_input(request.form["Reflexes"])
-        myHero.agility = convert_input(request.form["Agility"])
-        myHero.perception = convert_input(request.form["Perception"])
-        myHero.wisdom = convert_input(request.form["Wisdom"])
-        myHero.divinity = convert_input(request.form["Divinity"])
-        myHero.charisma = convert_input(request.form["Charisma"])
-        myHero.survivalism = convert_input(request.form["Survivalism"])
-        myHero.fortuity = convert_input(request.form["Fortuity"])
         myHero.age = convert_input(request.form["Age"])
         myHero.current_exp = convert_input(request.form["Current_exp"])
         myHero.max_exp = convert_input(request.form["Max_exp"])
@@ -441,19 +400,7 @@ def admin():
         database.update_character(session['id'],myHero)
         return redirect(url_for('home'))
 
-    admin = [("Strength", myHero.strength),
-                          ("Resilience", myHero.resilience),
-                          ("Vitality", myHero.vitality),
-                          ("Fortitude", myHero.fortitude),
-                          ("Reflexes", myHero.reflexes),
-                          ("Agility", myHero.agility),
-                          ("Perception", myHero.perception),
-                          ("Wisdom", myHero.wisdom),
-                          ("Divinity", myHero.divinity),
-                          ("Charisma", myHero.charisma),
-                          ("Survivalism", myHero.survivalism),
-                          ("Fortuity", myHero.fortuity),
-                          ("Age", myHero.age),
+    admin = [("Age", myHero.age),
                           ("Current_exp", myHero.current_exp),
                           ("Max_exp", myHero.max_exp),
                           ("Renown", myHero.renown),

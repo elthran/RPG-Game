@@ -194,15 +194,11 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
         {% endfor %}
     {% endif %}
 
-    {% if primary_attributes %}
-      <form method="post" action="" autocomplete="off">
-      {% for attribute in primary_attributes %}
-        <label for="name">{{ attribute[0] }}: {{ attribute[1] }}</label>
-        <input type="number" name="{{ attribute[0] }}" min="0" max="{{ myHero.attribute_points }}" title="Numbers only" value="0"><br>
+    {% if level_up %}
+      You have {{ myHero.attribute_points }} points remaing to spend.<br><br>
+      {% for attribute,value in myHero.primary_attributes.items() %}
+        {{ attribute }}: {{ value }}    <button class="command command-{{ attribute }}" value="{{ attribute }}" title="{{ attribute }}">+1</button><br>
       {% endfor %}
-    <input class="btn btn-default" type="submit" value="Submit">
-    <h1>&emsp; &emsp; &emsp; &emsp; <b>Points remaining {{ myHero.attribute_points }}</b></h1>
-      </form>
     {% endif %}
 
     {% if tavern %}
@@ -370,19 +366,10 @@ Name: {{ myHero.character_name}}
 </tr>
 </table>
 
-<h1>Attributes</h1>
-<h2><title="Damage and carrying capacity">Strength</>: {{ myHero.strength }}
-<br>Resilience: {{ myHero.resilience }}
-<br>Vitality: {{ myHero.vitality }}
-<br>Fortitude: {{ myHero.fortitude }}
-<br>Reflexes: {{ myHero.reflexes }}
-<br>Agility: {{ myHero.agility }}
-<br>Perception: {{ myHero.perception }}
-<br>Wisdom: {{ myHero.wisdom }}
-<br>Divinity: {{ myHero.divinity }}
-<br>Charisma: {{ myHero.charisma }}
-<br>Survivalism: {{ myHero.survivalism }}
-<br>Fortuity: {{ myHero.fortuity }}
+<h1>Attributes</h1><h2>
+{% for attribute,value in myHero.primary_attributes.items() %}
+{{ attribute }}: {{ value }}<br>
+{% endfor %}</h2>
 </h2>
 {% endif %}
 
