@@ -197,7 +197,7 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
     {% if ability_pages_use %}
       <h1 style="text-align:center;">All Known Abilities</h1>
       {% for ability in learnable_abilities %}
-        {{ ability.name }}<img src="/static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;">: {{ ability.description }}{% if ability.activated %}<button class="command command-{{ ability.name }}_use" value="{{ ability.name }}_use" title="Use {{ ability.name }}">   Use</button>{% endif %}<br>
+        {{ ability.name }}<img src="/static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;">: {{ ability.description }}{% if ability.activated %}<button class="command command-{{ ability.name }}_use" value="{{ ability.name }}_use" title="Use {{ ability.name }}">   Use</button> (Costs {{ ability.cost }} Sanctity){% endif %}<br>
       {% endfor %}
     {% endif %}
 

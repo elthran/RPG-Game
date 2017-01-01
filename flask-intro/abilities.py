@@ -10,7 +10,7 @@ class Ability(object):
     # hero : The Hero who owns the item
 	# buy_price : Price to buy the item
 	# level_req : level requirment
-    def __init__(self, name, myHero, max_level, description, activated=False):
+    def __init__(self, name, myHero, max_level, description, activated=False, cost=0):
         self.name = name
         self.myHero = myHero
         self.level = 1
@@ -22,16 +22,19 @@ class Ability(object):
         self.requirements = []
         self.ability_type = "Unknown"
         self.activated = activated
+        self.cost = cost
 
     def update_stats(self):
         if self.name == "Determination":
             self.myHero.max_endurance += 3 * self.level
         if self.name == "Salubrity":
             self.myHero.max_health += 4 * self.level
-        if self.activated == True:
-            print("ACTIVATE THIS BITCH")
 
     def activate(self):
+        if self.myHero.current_sanctity < self.cost:
+            return
+        else:
+            self.myHero.current_sanctity -= self.cost
         if self.name == "Gain Gold to Test":
             self.myHero.gold += 3 * self.level
 
@@ -44,8 +47,8 @@ class Ability(object):
         self.myHero = myHero
 
 class Basic_Ability(Ability):
-    def __init__(self, name, myHero, max_level, description, activated):
-        super(Basic_Ability, self).__init__(name, myHero, max_level, description, activated)
+    def __init__(self, name, myHero, max_level, description, activated, cost):
+        super(Basic_Ability, self).__init__(name, myHero, max_level, description, activated, cost)
         self.ability_type = "basic"
 
 class Archetype_Ability(Ability):
@@ -67,9 +70,9 @@ class Religious_Ability(Ability):
         self.religion = religion
 
 
-all_abilities = [Basic_Ability("Determination", "Null", 5, "Increases Endurance by 3 for each level.", False),
-                 Basic_Ability("Salubrity", "Null", 5, "Increases Health by 4 for each level.", False),
-                 Basic_Ability("Gain Gold to Test", "Null", 5, "Gain 3 gold for each level, every time you actvate this ability.", True),
+all_abilities = [Basic_Ability("Determination", "Null", 5, "Increases Endurance by 3 for each level.", False, 0),
+                 Basic_Ability("Salubrity", "Null", 5, "Increases Health by 4 for each level.", False, 0),
+                 Basic_Ability("Gain Gold to Test", "Null", 5, "Gain 3 gold for each level, every time you actvate this ability.", True, 2),
                  Archetype_Ability("Survivalism", "Null", 10, "Increases survivalism by 1 for each level.", "Woodsman", False),
                  Archetype_Ability("Piety", "Null", 10, "Increases divinity by 1 for each level.", "Priest", False),
                  Archetype_Ability("Sagacious", "Null", 10, "Increases experience gained by 5% for each level.", False),

@@ -51,7 +51,7 @@ class Hero(object):
         self.devotion = 0
         self.gold = 50
 
-        self.ability_points = 5 #TEMP. Soon will use the 4 values below
+        self.ability_points = 3 #TEMP. Soon will use the 4 values below
         self.basic_ability_points = 0
         self.archetype_ability_points = 0
         self.specialization_ability_points = 0
