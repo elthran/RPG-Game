@@ -43,7 +43,7 @@ class Hero(object):
         self.archetype = "Woodsman"
         self.specialization = "Hunter"
         self.religion = "Dryarch"
-        self.house = "None"
+        self.house = "Unknown"
         self.current_exp = 0
         self.max_exp = 10
         self.renown = 0
@@ -170,15 +170,18 @@ class Hero(object):
                 break
 
     def __str__(self):
-        """Return python representation of Hero opject
+        """Return string representation of Hero opject.
         """
-        # for e in dir(self):
-            # print(e, self.e) #Where e is each element of self ... some kind of compile/execute ...?
-        data = """Character belonging to user: '{}'.
-
-The character has attributes: ...""".format(self.user_id)
+        
+        data = "Character object with attributes:"
+        atts = []
+        for key in vars(self).keys():
+            atts.append('{}: {} -> type: {}'.format(key, repr(vars(self)[key]), type(vars(self)[key])))
+        data = '\n'.join(atts)
         return data
-        # return "\nName: %s" % (self.name)
+    
+    def __eq__(self, other): 
+        return self.__dict__ == other.__dict__
 
 
 # Temporary Function to create a random hero

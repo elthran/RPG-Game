@@ -44,6 +44,10 @@ def test_add_new_character():
     tear_down(db)
 
 def test_validate():
+    """Test if the validate function in the Database class works.
+    
+    NOTE: my first real unit test!
+    """
     db = set_up()
     username = 'Marlen'
     password = "Brunner"
@@ -58,7 +62,7 @@ def test_update_character():
     hero = Hero()
     hero.user_id = 1
     hero.character_name = "Haldon"
-    hero.character_class = "Wizard"
+    hero.archetype = "Wizard"
     hero.age = 25
     hero.vitality = 56
     db.update_character(1, hero)
@@ -66,14 +70,30 @@ def test_update_character():
     # assert db.fetch_character_data(row_id=1) == hero
     tear_down(db)
 
-    ##Wipe the database.
-    # db._wipe_database()
-
-    # db.name = 'static/User.db'
-    # username = 'marlen'
-    # password = "brunner"
-    # print(db._read(username, read_password=True))
-    # print("password valid?", db.validate(username, password))
+def test_fetch_character_data():
+    db = set_up()
+    db.add_new_user('Marlen', 'Brunner')
+    db.add_new_character(1, "Haldon", "Wizard")
+    hero = Hero()
+    hero.user_id = 1
+    hero.character_name = "Haldon"
+    hero.archetype = "Wizard"
+    hero.age = 25
+    hero.vitality = 56
+    db.update_character(1, hero)
+    assert db.fetch_character_data(hero.user_id, hero.character_name) == hero
+    tear_down(db)
+    
+def dict_diff(left, right):
+    """Tell if two dicts are the same, return differences.
+    
+    Use: print(dict_diff(hero.__dict__, hero2.__dict__))
+    """
+    diff = dict()
+    diff['left_only'] = set(left) - set(right)
+    diff['right_only'] = set(right) - set(left)
+    diff['different'] = {k for k in set(left) & set(right) if left[k]!=right[k]}
+    return diff
 
 
 def run_all():
@@ -88,6 +108,7 @@ def run_all():
     test_add_new_character()
     test_validate()
     test_update_character()
+    test_fetch_character_data()
     print("No Errors, yay!")
 
 run_all()

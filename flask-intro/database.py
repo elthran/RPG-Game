@@ -11,6 +11,7 @@ import hashlib
 import datetime
 import os
 from game import Hero
+import ast
 
 # Every second_per_endurance seconds, endurance will recover by 1
 second_per_endurance = 10
@@ -181,6 +182,8 @@ def fetch_character_data(hero, session):
 ### Marlen --- testing ###
 """I am going to try and make an easy version of the current database. There will be all of the old code
 but to add stuff will be simpler (I hope). I am just going to flesh out the concept. It won't work for a while.
+
+Use "reflection" to port old database to new one. It's really cool I promise :).
 """
 
 
@@ -212,7 +215,7 @@ class EasyDatabase():
         This should be upgraded to make it more human readable and editable .... maybe an external xml/spreadsheet/excel file?
         See https://www.draw.io/#LJacob%27s%20game for the table concepts (well it isn't quite using this yet but it will be).
 
-        NOTE: I am using the ROW_ID as the primary key for both tables. It is invisible.
+        NOTE: I am using the ROWID as the primary key for both tables. It is invisible.
         """
         basic_tables = [
             """CREATE TABLE users(
@@ -260,7 +263,7 @@ class EasyDatabase():
             c.execute(args[0])
 
         def insert_character():
-            c.execute("INSERT INTO CHARACTERS(user_id, character_name, character_class, current_time) VALUES (?,?,?,?)", args)
+            c.execute("INSERT INTO CHARACTERS(user_id, character_name, archetype, current_time) VALUES (?,?,?,?)", args)
 
         def update_char_table():
             """This sql statement should be built using string formating but should still be secure using ?? for data values ..?
@@ -346,11 +349,23 @@ class EasyDatabase():
         def read_characters_rowid():
             c.execute("SELECT ROWID FROM CHARACTERS WHERE user_id=? AND character_name=?", args)
             return c.fetchone()[0]
+            
+        def read_character_data():
+            """Rebuild Hero object from database and return it.
+            
+            NOTE: redefines cursor!
+            "SELECT * FROM CHARACTERS WHERE ROWID=?"
+            """
+            conn.row_factory = sqlite3.Row
+            c = conn.cursor()
+            c.execute("SELECT * FROM CHARACTERS WHERE ROWID=?", args)
+            return c.fetchone()
 
         #Yes this is kind of slow but the whole exec/compile is a whole nother problem.
         options = {'read_password' : read_password,
                 'read_users_rowid' : read_users_rowid,
-                'read_characters_rowid': read_characters_rowid
+                'read_characters_rowid': read_characters_rowid,
+                'read_character_data': read_character_data,
                 }
 
         #Executes functions listed above (and arbitrary SQL so get rid of that yes?)
@@ -393,12 +408,15 @@ class EasyDatabase():
 
         Currently int and str are left alone and everything else is converted to a string.
         I should use SQLAlchemy ...
+        Lol. I totally attemted to recreate a basic ORM from scratch.
         """
         if type(obj) is type(int()):
             return obj
         elif type(obj) is type(str()):
             return obj
         else:
+            #This should/will end up using recursion any time a python object is hit that is not
+            #one of the base objects listed above.
             return str(obj)
 
     def add_new_user(self, username, password):
@@ -406,7 +424,7 @@ class EasyDatabase():
 
         This should auto-validate as username is the primary key.
 
-        NOTE: row_id is now used as user_id
+        NOTE: rowid is now used as user_id
 
         I can't decide if this should return False on failure or raise an error .. I went with raise error.
         I will build a custom exception at some point too ...
@@ -498,6 +516,38 @@ class EasyDatabase():
                 yield "{} {}".format(key, "INTEGER KEY NOT NULL")
             else:
                 yield '{} {}'.format(key, sql_data_type)
+                
+    def fetch_character_data(self, user_id, character_name):
+        """Pull hero object from database and return it based on user_id and character_name.
+        
+        Could user user_name and character name instead ...
+        
+        NOTE: makes use of ast.literal_eval which is supposedly safe unlike eval ...?
+        NOTE2: currently may mess up time objects?
+        NOTE3: Testing has revealed that some keys are in the Character table but not in the
+            Hero class ... this should be fixed, see TESTING ONLY!!
+        """
+        char_id = self._read(user_id, character_name, read_characters_rowid=True)
+        
+        r = self._read(char_id, read_character_data=True)
+        hero = Hero()
+        
+        #DateTime objects are currently ingnored ...
+        for key in r.keys():
+            if key in vars(hero).keys():
+                try:
+                    vars(hero)[key] = ast.literal_eval(r[key])
+                except:
+                    vars(hero)[key] = r[key]
+            else:
+                # TESTING ONLY!!
+                #some kind of value added to character table that is not in hero class but should be.
+                #print("ERROR: '{}' in Character table but not an attribute of the Hero class".format(key))
+                pass
+                
+            
+        return hero
+
 
 
 ### Possible import data from spreadsheet
