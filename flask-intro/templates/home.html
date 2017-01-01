@@ -58,7 +58,7 @@
   </div>
 {% endif %}
 
-{% if ability_pages %}
+{% if ability_pages_learn %}
   <div id="content">
      <div class="nav">
      <ul>
@@ -173,7 +173,7 @@
       {% endfor %}
     {% endif %}
 
-    {% if ability_pages %}
+    {% if ability_pages_learn %}
       <br>Ability Points: {{ myHero.ability_points }}
       <h1 style="text-align:center;">Abilities</h1>
       {% if archetype_ability_tree %}Choose Archetype (Currently {{ myHero.archetype }}): <button class="command command-woodsman" value="woodsman">Woodsman</button><button class="command command-priest" value="priest">Priest</button><br> You are a <b>{{ myHero.archetype }}</b>{% endif %}
@@ -192,6 +192,13 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
         {% for ability in mastered_abilities %}
           <img src="/static/images/{{ ability.name }}.jpg"; height:70px; width:70px"><img src="/static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;"> {{ ability.description }}<br>
         {% endfor %}
+    {% endif %}
+
+    {% if ability_pages_use %}
+      <h1 style="text-align:center;">All Known Abilities</h1>
+      {% for ability in learnable_abilities %}
+        {{ ability.name }}<img src="/static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;">: {{ ability.description }}{% if ability.activated %}<button class="command command-{{ ability.name }}_use" value="{{ ability.name }}_use" title="Use {{ ability.name }}">   Use</button>{% endif %}<br>
+      {% endfor %}
     {% endif %}
 
     {% if level_up %}

@@ -136,6 +136,13 @@ def command(cmd=None):
             myHero.ability_points -= 1
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
+    #USE ABILITIES (ACTIVATED ONES)
+    for ability in myHero.abilities:
+        this_command = ability.name + "_use"
+        if cmd == this_command:
+            ability.activate()
+            return "success", 200, {'Content-Type': 'text/plain'} #//
+
     # BUY FROM BLACKSMITH
     for item in all_store_items:
         if cmd == item.buy_name and myHero.gold >= item.buy_price:
@@ -458,27 +465,29 @@ def ability_tree(spec):
         class_ability_tree = True
     if spec == "religious":
         religious_ability_tree = True
-    for ability in all_abilities:
-        if not any(known_ability.name == ability.name for known_ability in myHero.abilities) and ability.ability_type == spec: # Create a list of unlearned abilities and it will only check abilities for the current page you are on (basic, archetype, specialization, religion)
-            if spec == "archetype": # If you are on the archetype page, we further narrow it down to your archetype and "all"
-                if ability.archetype == myHero.archetype or ability.archetype == "All":
-                    unknown_abilities.append(ability)
-            elif spec == "class": # If you are on the specialization page, we further narrow it down to your specialization and "all"
-                if ability.specialization == myHero.specialization or ability.specialization=="All":
-                    unknown_abilities.append(ability)
-            elif spec == "religious": # If you are on the religion page, we further narrow it down to your religion and "all"
-                if ability.religion == myHero.religion or ability.religion == "All":
-                    unknown_abilities.append(ability)
-            else:
-                unknown_abilities.append(ability)
     for ability in myHero.abilities: # Create a list of learned abilities
         if ability.ability_type == spec:
             if ability.level < ability.max_level: # Add these to known, but non-mastered abilities
                 learnable_abilities.append(ability)
             else: # Add these to mastered abilities
                 mastered_abilities.append(ability)
-    return render_template('home.html', myHero=myHero, ability_pages=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)  # return a string
-
+    if myHero.ability_points > 0:
+        for ability in all_abilities:
+            if not any(known_ability.name == ability.name for known_ability in myHero.abilities) and ability.ability_type == spec: # Create a list of unlearned abilities and it will only check abilities for the current page you are on (basic, archetype, specialization, religion)
+                if spec == "archetype": # If you are on the archetype page, we further narrow it down to your archetype and "all"
+                    if ability.archetype == myHero.archetype or ability.archetype == "All":
+                        unknown_abilities.append(ability)
+                elif spec == "class": # If you are on the specialization page, we further narrow it down to your specialization and "all"
+                    if ability.specialization == myHero.specialization or ability.specialization=="All":
+                        unknown_abilities.append(ability)
+                elif spec == "religious": # If you are on the religion page, we further narrow it down to your religion and "all"
+                    if ability.religion == myHero.religion or ability.religion == "All":
+                        unknown_abilities.append(ability)
+                else:
+                    unknown_abilities.append(ability)
+        return render_template('home.html', myHero=myHero, ability_pages=True, ability_pages_learn=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)  # return a string
+    return render_template('home.html', myHero=myHero, ability_pages=True, ability_pages_use=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)  # return a string
+    
 
 
 @app.route('/quest_log')
