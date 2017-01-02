@@ -47,13 +47,13 @@ class Ability(object):
         self.myHero = myHero
 
 class Basic_Ability(Ability):
-    def __init__(self, name, myHero, max_level, description, activated, cost):
-        super(Basic_Ability, self).__init__(name, myHero, max_level, description, activated, cost)
-        self.ability_type = "basic"
+    def __init__(self, self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ability_type = 'basic'
 
 class Archetype_Ability(Ability):
-    def __init__(self, name, myHero, max_level, description, activated, archetype="All"):
-        super(Archetype_Ability, self).__init__(name, myHero, max_level, description, activated)
+    def __init__(self, *args, archetype="All", **kwargs):
+        super().__init__(*args, **kwargs)
         self.ability_type = "archetype"
         self.archetype = archetype
 
