@@ -18,6 +18,7 @@ from database import EasyDatabase #Phase this in ...
 import database #On the way out ...
 from abilities import *
 from locations import *
+from secondary_attributes import *
 import sqlite3
 import hashlib
 

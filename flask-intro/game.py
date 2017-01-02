@@ -13,6 +13,7 @@ from flask import request
 from items import *
 from bestiary import *
 from abilities import *
+from secondary_attributes import *
 
 # function used in '/level_up'
 def convert_input(x):
@@ -98,32 +99,29 @@ class Hero(object):
 
     # Sets damage
     def update_secondary_attributes(self):
-        self.min_damage = self.primary_attributes["Strength"]
-        self.max_damage = self.primary_attributes["Strength"] + self.primary_attributes["Agility"]
-        self.attack_speed = 2 * self.primary_attributes["Agility"] + self.primary_attributes["Reflexes"]
-        self.attack_accuracy = 30 * self.primary_attributes["Agility"]         # A percentage
-        self.first_strike = 3 * self.primary_attributes["Agility"] + self.primary_attributes["Reflexes"]        # A percentage
-        self.critical_hit = 5 * self.primary_attributes["Agility"]         # A percentage
-        self.defence_modifier = 3 * self.primary_attributes["Resilience"]         # A percentage
-        self.evade_chance = 4 * self.reflexes + self.primary_attributes["Agility"]         # A percentage
-        self.parry_chance = 3 * self.reflexes + 2 * self.primary_attributes["Agility"] + self.perception         # A percentage
-        self.block_chance = 2 * self.reflexes + self.primary_attributes["Agility"]       # A percentage
-        self.block_reduction = self.primary_attributes["Strength"] # + shield type/size         # A percentage
-        self.poisin_resistance = 5 * self.primary_attributes["Resilience"]          # A percentage
-        self.spiritual_resistance = 2 * self.primary_attributes["Resilience"]  + 2 * self.primary_attributes["Divinity"]         # A percentage
-        self.stealth_skill = self.primary_attributes["Agility"] + self.primary_attributes["Reflexes"]  + self.primary_attributes["Perception"]         # A percentage
-        self.faith = self.primary_attributes["Divinity"]
-
-        self.max_sanctity = 5 * self.primary_attributes["Divinity"]
-        self.max_endurance = 5 * self.primary_attributes["Fortitude"]
-        self.max_carrying_capacity = 3 * self.primary_attributes["Strength"] + 2 * self.primary_attributes["Fortitude"]
-        self.barter = 5 * self.primary_attributes["Charisma"]
-        self.oration = 4 * self.primary_attributes["Charisma"] + self.primary_attributes["Wisdom"]
-        self.luck = 5 * self.primary_attributes["Fortuity"]                 # A percentage
-
+        self.max_damage = update_maximum_damage(self)
+        self.min_damage = update_minimum_damage(self)
+        self.attack_speed = update_attack_speed(self)
+        self.attack_accuracy = update_attack_accuracy(self)
+        self.first_strike = update_first_strike_chance(self)
+        self.critical_hit = update_critical_hit_chance(self)
+        self.critical_hit_modifier = update_critical_hit_modifier(self)
+        self.defence_modifier = update_defence_modifier(self)
+        self.evade_chance = update_evade_chance(self)
+        self.parry_chance = update_parry_chance(self)
+        self.riposte_chance = update_riposte_chance(self)
+        self.block_chance = update_block_chance(self)
+        self.block_reduction = update_block_reduction(self)
+        self.stealth_skill = update_stealth_skill(self)
+        self.faith = update_faith(self)
+        self.max_sanctity = update_maximum_sanctity(self)
+        self.max_endurance = update_maximum_endurance(self)
+        self.max_carrying_capacity = update_carrying_capacity(self)
+        self.barter = update_bartering(self)
+        self.oration = update_oration(self)
+        self.luck = update_luck_chance(self)
         previous_max_health = self.max_health
-        self.max_health = 5 * self.primary_attributes["Vitality"] + self.primary_attributes["Resilience"]
-
+        self.max_health = update_maximum_health(self)
         # Hidden attributes
         self.experience_gain_modifier = 1 # This is the percentage of exp you gain
         self.gold_gain_modifier = 1 # This is the percentage of gold you gain
@@ -140,7 +138,6 @@ class Hero(object):
         if self.current_health < 0:
             self.current_health = 0	        
         
-
     def refresh_character(self):
         self.current_sanctity = self.max_sanctity
         self.current_health = self.max_health
