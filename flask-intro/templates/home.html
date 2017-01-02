@@ -203,7 +203,7 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
 
     {% if level_up %}
       You have {{ myHero.attribute_points }} points remaing to spend.<br><br>
-      {% for attribute,value in myHero.primary_attributes.items() %}
+      {% for attribute,value in myHero.get_primary_attributes() %}
         {{ attribute }}: {{ value }}    <button class="command command-{{ attribute }}" value="{{ attribute }}" title="{{ attribute }}">+1</button><br>
       {% endfor %}
     {% endif %}

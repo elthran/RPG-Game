@@ -172,13 +172,16 @@ class Hero(object):
         
         data = "Character object with attributes:"
         atts = []
-        for key in vars(self).keys():
+        for key in sorted(vars(self).keys()):
             atts.append('{}: {} -> type: {}'.format(key, repr(vars(self)[key]), type(vars(self)[key])))
         data = '\n'.join(atts)
         return data
     
     def __eq__(self, other): 
         return self.__dict__ == other.__dict__
+        
+    def get_primary_attributes(self):
+        return sorted(self.primary_attributes.items())
 
 
 # Temporary Function to create a random hero
