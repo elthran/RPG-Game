@@ -183,22 +183,41 @@ def fetch_character_data(hero, session):
 """I am going to try and make an easy version of the current database. There will be all of the old code
 but to add stuff will be simpler (I hope). I am just going to flesh out the concept. It won't work for a while.
 
-Use "reflection" to port old database to new one. It's really cool I promise :).
+??Use "reflection" to port old database to new one. It's really cool I promise :).
 """
 
 
 class EasyDatabase():
     """A more human usuable database.
 
+    Basic principles:
+        Hide SQL calls inside internal methods such a _write and _read.
+        External methods should take simple input such as username and password.
+        All connections to database should occur inside _read and _write.    
+    
     Implement by:
     game_database = EasyDatabase('static/user2.db') #The databases name.
 
     It might be a good idea to have separate user, location and item databases .... just in case one breaks?
 
     How to use:
-        In the various places that originally used from database import *, now use from database import EasyDatabase as EzDB or something.
-    Then create a database in the main app. When the user provides input call the relavent method on the games database object.
-
+        Before: from database import *
+        Now: from database import EasyDatabase
+    
+    eg.
+    UserDatabase = EasyDatabase('static/User.db')
+    In game usage:
+        UserDatabase.validate(username, password)
+        
+    Note: EasyDatabase cannot store objects if an attribute is string "None". Boolean None is just fine :).
+    Please use something like "Unknown" instead
+    eg.
+    
+    class Hero():
+        def __init__(self, money):
+            specialization = "None" #Will NOT work
+            specialization = None #Will work
+            specialization = "Uknown" #Will work
     """
     def __init__(self, name):
         """Set up a basic database for the game.
@@ -263,7 +282,7 @@ class EasyDatabase():
             c.execute(args[0])
 
         def insert_character():
-            c.execute("INSERT INTO CHARACTERS(user_id, character_name, archetype, current_time) VALUES (?,?,?,?)", args)
+            c.execute("INSERT INTO CHARACTERS(user_id, character_name, archetype, timestamp) VALUES (?,?,?,?)", args)
 
         def update_char_table():
             """This sql statement should be built using string formating but should still be secure using ?? for data values ..?
@@ -290,12 +309,19 @@ class EasyDatabase():
             # self.check_for_injection(columns)
             sql_statement = EasyDatabase._build_update_table(columns)
             c.execute(sql_statement, vars_and_id)
+       
+        def update_endurance():
+            c.execute('UPDATE CHARACTERS SET current_endurance=? WHERE ROWID=?', args)
 
+        def update_timestamp():
+            c.execute('UPDATE CHARACTERS SET timestamp=? WHERE ROWID=?', args)
 
         options = {'insert_user': insert_user,
             'build_tables': build_tables,
             'insert_character': insert_character,
             'update_char_table': update_char_table,
+            'update_endurance': update_endurance,
+            'update_timestamp': update_timestamp,
         }
 
         for key in kwargs:
@@ -360,12 +386,17 @@ class EasyDatabase():
             c = conn.cursor()
             c.execute("SELECT * FROM CHARACTERS WHERE ROWID=?", args)
             return c.fetchone()
+            
+        def read_character_timestamp():
+            c.execute("SELECT timestamp FROM CHARACTERS WHERE ROWID=?", args)
+            return c.fetchone()[0]
 
         #Yes this is kind of slow but the whole exec/compile is a whole nother problem.
         options = {'read_password' : read_password,
                 'read_users_rowid' : read_users_rowid,
                 'read_characters_rowid': read_characters_rowid,
                 'read_character_data': read_character_data,
+                'read_character_timestamp': read_character_timestamp,
                 }
 
         #Executes functions listed above (and arbitrary SQL so get rid of that yes?)
@@ -442,7 +473,7 @@ class EasyDatabase():
         ??Only one character at a time? or multiple characters?
         I will build for one only ...
 
-        NOTE: Updates current_time
+        NOTE: Updates timestamp
         """
         try:
             now = EasyDatabase.now()
@@ -451,9 +482,17 @@ class EasyDatabase():
             raise Exception("User '{}' already has a character.".format(username))
 
     def now():
-        return str(datetime.datetime.now())
+        """Return current UTC time as datatime object in string form.
+        
+        NOTE: I am using UTC as we are working in different time zones and I think it might screw up otherwise.
+        """
+        return datetime.datetime.utcnow()
 
     def _delete_database(self):
+        """Deletes current database file.
+        
+        Use with caution, mainly for testing.
+        """
         os.remove(self.name)
 
     def validate(self, username, password):
@@ -462,7 +501,6 @@ class EasyDatabase():
         Passwords are stored in hashed form so ...
         hash the test password and compare with the retrieved one.
         """
-
         return  self._read(username, read_password=True) == str(hashlib.md5(password.encode()).hexdigest())
 
     def get_user_id(self, username):
@@ -482,8 +520,7 @@ class EasyDatabase():
         NOTE: the time attributes have been added in separately.
         """
         basic_columns = ',\n'.join(column for column in EasyDatabase.generate_column_headings(hero))
-        special_columns = ' DATETIME CURRENT_TIMESTAMP,\n'.join(["previous_login_time", "current_time", "previous_time"]) + \
-            ' DATETIME CURRENT_TIMESTAMP'
+        special_columns = 'timestamp UTC DATETIME CURRENT_TIMESTAMP'
         return """CREATE TABLE characters(\n{},\n{})""".format(basic_columns, special_columns)
 
 
@@ -491,6 +528,7 @@ class EasyDatabase():
         """Return SQL statement for updating the character table based on a list of columns.
 
         Looks like: UPDATE characters SET {col1} = ?, {col2} = ?, {col3} = ?, ... WHERE ROWID=?
+        WORRY: cols should be safe as it is a list pulled from the hero class?
         """
         return """UPDATE characters SET {} WHERE ROWID=?""".format(', '.join(col + '=?' for col in cols))
 
@@ -504,7 +542,7 @@ class EasyDatabase():
         NOTE: vars(obj) is a dictionary of variable/value pairs for a given object.
         """
         sql_data_type = ''
-        for key in vars(obj).keys():
+        for key in sorted(vars(obj).keys()):
             data_type = type(vars(obj)[key])
             if data_type == type(str()):
                 sql_data_type = "TEXT"
@@ -544,11 +582,69 @@ class EasyDatabase():
                 #some kind of value added to character table that is not in hero class but should be.
                 #print("ERROR: '{}' in Character table but not an attribute of the Hero class".format(key))
                 pass
-                
-            
+                            
         return hero
+        
+    def _get_character_rowid(self, name, user_id):
+        """Return ROWID of character from database based on characters name and user_id.
+        
+        NOTE: the character name should be the name of the characters hero object.
+        eg. hero.character_name
+        
+        Suggestion: change character_name to just 'name'?
+        """
+        return self._read(user_id, name, read_characters_rowid=True)
+        
+    
+    def _get_charaters_current_timestamp(self, rowid):
+        """Return the character's last updated timestamp return as datatime.
+        
+        This is used to calculate the change in character endurance.
+        """
+        timestamp = self._read(rowid, read_character_timestamp=True)
+        return datetime.datetime.strptime(timestamp,'%Y-%m-%d %H:%M:%S.%f')
+        
+    def _update_endurance(self, value, rowid):
+        """Update a characters endurance base on rowid.
+        """
+        self._write(value, rowid, update_endurance=True)
 
-
+    def _update_timestamp(self, rowid):
+        """Updates characters timestamp to now based on rowid.
+        
+        """
+        self._write(EasyDatabase.now(), rowid, update_timestamp=True)
+        
+    def update_time(self, hero, user_id):
+        """Update the hero game time clock and endurance values.
+        
+        This increases the hero's endurance by the difference between past timestamp and current time.
+        NOTE: Updates current timestamp in charater table but only if endurance changes.
+        Which may not be a good idea but ...
+        
+        NOTE: Must update both hero.current_endurance and current_endurance in Character table
+        or update hero then run update_character. I did the first one.
+        """
+        
+        char_id = self._get_character_rowid(hero.character_name, user_id)
+        
+        #Possible confusion ... hero.current_endurance being updated in old code but
+        #is already current?
+        
+        timestamp = self._get_charaters_current_timestamp(char_id)
+        time_diff = (EasyDatabase.now() - timestamp).total_seconds()
+        endurance_increment = int(time_diff / second_per_endurance)
+        new_endurance = hero.current_endurance + endurance_increment
+        
+        if hero.current_endurance != hero.max_endurance and endurance_increment:
+            if new_endurance < hero.max_endurance:
+                hero.current_endurance = new_endurance
+            else:
+                hero.current_endurance = hero.max_endurance
+            self._update_endurance(hero.current_endurance, char_id)
+            self._update_timestamp(char_id)
+            
+        
 
 ### Possible import data from spreadsheet
 """
@@ -569,13 +665,6 @@ if __name__ == "__main__":
 
     TODO
     --replicate update_time
-    --replicate add_new_user
-    --replicate add_new_character
-    --replicate update_character
-    --replicate fetch_character_data
-    --replicate get_user_id
-
-    --Change user id to row id.
     """
 
     import tests.database_tests

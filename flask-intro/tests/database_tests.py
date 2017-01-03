@@ -1,5 +1,7 @@
 from database import EasyDatabase
 from game import Hero
+import time
+
 
 """
 This program runs as a test suite for the EasyDatabase class when it is imported.
@@ -18,19 +20,25 @@ def tear_down(database):
     database._delete_database()
 
 def test_EasyDatabase_init():
+    """Note yet implemented: Check if database is actually created.
+    """
     db = set_up()
     # print(db)
     assert db #looks like it is supposed to ... that will be hard ... :P
     tear_down(db)
 
 def test_add_new_user():
-        db = set_up()
-        db.add_new_user('Marlen', 'Brunner') #I should be able to add a bunch of users from a text file.
-        assert 1 #Check if database has a user called Marlen with a password of Brunner in it.
-        tear_down(db)
+    """Note yet implemented: Check if new user is added at to database.
+    """
+    db = set_up()
+    db.add_new_user('Marlen', 'Brunner') #I should be able to add a bunch of users from a text file.
+    assert 1 #Check if database has a user called Marlen with a password of Brunner in it.
+    tear_down(db)
 
 
 def test_get_user_id():
+    """Test if user is stored correctly.
+    """
     db = set_up()
     db.add_new_user('Marlen', 'Brunner')
     user_id = db.get_user_id("Marlen")
@@ -38,9 +46,13 @@ def test_get_user_id():
     tear_down(db)
 
 def test_add_new_character():
+    """Check if character that is created has a user_id of 1.
+    """
     db = set_up()
-    db.add_new_character(1, "Haldon", "Wizard")
-    assert 1 #Check if character is created that has a user_id of 1.
+    user_id = 1
+    character_name = "Haldon"
+    db.add_new_character(user_id, "Haldon", "Wizard")
+    assert db._read(user_id, character_name, read_characters_rowid=True) == 1 
     tear_down(db)
 
 def test_validate():
@@ -66,8 +78,7 @@ def test_update_character():
     hero.age = 25
     hero.vitality = 56
     db.update_character(1, hero)
-    # I have to build this method ... *sigh*
-    # assert db.fetch_character_data(row_id=1) == hero
+    assert hero == db.fetch_character_data(hero.user_id, hero.character_name)
     tear_down(db)
 
 def test_fetch_character_data():
@@ -88,6 +99,7 @@ def dict_diff(left, right):
     """Tell if two dicts are the same, return differences.
     
     Use: print(dict_diff(hero.__dict__, hero2.__dict__))
+    NOTE: not a test ... just used for testing.
     """
     diff = dict()
     diff['left_only'] = set(left) - set(right)
@@ -95,6 +107,21 @@ def dict_diff(left, right):
     diff['different'] = {k for k in set(left) & set(right) if left[k]!=right[k]}
     return diff
 
+def test_update_time():
+    db = set_up()
+    db.add_new_user('Marlen', 'Brunner')
+    db.add_new_character(1, "Haldon", "Wizard")
+    hero = Hero()
+    hero.user_id = 1
+    hero.character_name = "Haldon"
+    hero.archetype = "Wizard"
+    hero.age = 25
+    hero.vitality = 56
+    db.update_character(1, hero)
+    db.update_time(hero, 1)
+    
+    assert 1 #not implemented
+    # tear_down(db)
 
 def run_all():
     """Run all tests in the module.
@@ -109,6 +136,7 @@ def run_all():
     test_validate()
     test_update_character()
     test_fetch_character_data()
+    test_update_time()
     print("No Errors, yay!")
 
 run_all()

@@ -96,6 +96,7 @@ class Hero(object):
         self.current_city = None
 
         self.wolf_kills = 0
+        self.update_secondary_attributes()
 
     # Sets damage
     def update_secondary_attributes(self):
