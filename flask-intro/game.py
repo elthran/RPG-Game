@@ -105,7 +105,7 @@ class Hero(object):
         self.attack_speed = update_attack_speed(self)
         self.attack_accuracy = update_attack_accuracy(self)
         self.first_strike = update_first_strike_chance(self)
-        self.critical_hit = update_critical_hit_chance(self)
+        self.critical_hit_chance = update_critical_hit_chance(self)
         self.critical_hit_modifier = update_critical_hit_modifier(self)
         self.defence_modifier = update_defence_modifier(self)
         self.evade_chance = update_evade_chance(self)
@@ -120,6 +120,7 @@ class Hero(object):
         self.max_carrying_capacity = update_carrying_capacity(self)
         self.barter = update_bartering(self)
         self.oration = update_oration(self)
+        self.knowledge = update_knowledge(self)
         self.luck = update_luck_chance(self)
         previous_max_health = self.max_health
         self.max_health = update_maximum_health(self)

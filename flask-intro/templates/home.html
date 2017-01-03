@@ -361,15 +361,35 @@ Name: {{ myHero.character_name}}
 </tr>
 <tr>
 <td><h2>Defence: {{ myHero.defence_modifier }}%</h2></td>
-<td><h2>Evade: {{ myHero.evade_chance }}%</h2></td>
+<td><h2>Evade Chance: {{ myHero.evade_chance }}%</h2></td>
 </tr>
 <tr>
-<td><h2>Critical Hit: {{ myHero.critical_hit }}%</h2></td>
+<td><h2>Critical Hit Chance: {{ myHero.critical_hit_chance }}%</h2></td>
+<td><h2>Critical Hit Modifier: {{ myHero.critical_hit_modifier }}</h2></td>
+</tr>
+<tr>
 <td><h2>First Strike: {{ myHero.first_strike }}%</h2></td>
+<td><h2>Stealth: {{ myHero.stealth_skill }}%</h2></td>
+</tr>
+<tr>
+<td><h2>Parry Chance: {{ myHero.parry_chance }}%</h2></td>
+<td><h2>Riposte Chance: {{ myHero.riposte_chance }}%</h2></td>
+</tr>
+<tr>
+<td><h2>Block Chance: {{ myHero.block_chance }}%</h2></td>
+<td><h2>Block Reduction: {{ myHero.block_reduction }}%</h2></td>
+</tr>
+<tr>
+<td><h2>Bartering Skill: {{ myHero.barter }}%</h2></td>
+<td><h2>Oration Skills: {{ myHero.oration }}%</h2></td>
 </tr>
 <tr>
 <td><h2>Sanctity: {{ myHero.current_sanctity }} / {{ myHero.max_sanctity }}</h2></td>
 <td><h2>Faith: {{ myHero.faith }}</h2></td>
+</tr>
+<tr>
+<td><h2>Knowledge: {{ myHero.knowledge }}</h2></td>
+<td><h2>Luck: {{ myHero.luck }}%</h2></td>
 </tr>
 </table>
 
