@@ -9,28 +9,33 @@
     - Set up the ratio of attributes
     - Scale the attribute
     - (Optional) Round the decimal place if needed
-    That way you can easily either adjust the ratio or you can adjust the scaling!"""
+    That way you can easily either adjust the ratio or you can adjust the scaling!
+
+    y = -(10c / (ax + 10)) + c  => the smaller a is, the slower it reaches the cap, c
+    y = a sin(cx) + bx  => where b is slope, a is steepness, and c is frequency
+
+    """
 
 import math
 
 def update_minimum_damage(myHero):
     """ Minimum amount of damage you can do when hitting an opponent """
     minimum_damage = (5 * myHero.primary_attributes["Strength"]) + (1 * myHero.primary_attributes["Agility"])
-    minimum_damage = 0.15 * minimum_damage
+    minimum_damage = 0.1 * math.sin(minimum_damage) + 0.2 * minimum_damage
     minimum_damage = math.floor(minimum_damage)
     return minimum_damage
 
 def update_maximum_damage(myHero):
     """ Maximum amount of damage you can do when hitting an opponent """
     maximum_damage = (1 * myHero.primary_attributes["Strength"]) + (4 * myHero.primary_attributes["Agility"])
-    maximum_damage = 0.15 * maximum_damage + update_minimum_damage(myHero)
+    maximum_damage = 0.2 * math.sin(maximum_damage) + 0.3 * maximum_damage + update_minimum_damage(myHero)
     maximum_damage = math.floor(maximum_damage)
     return maximum_damage
 
 def update_attack_speed(myHero):
     """ Not sure yet. """
     attack_speed = (7 * myHero.primary_attributes["Agility"]) + (2 * myHero.primary_attributes["Reflexes"])
-    attack_speed = (attack_speed ** 0.5) / 100
+    attack_speed = 0.01 * math.sin(attack_speed) + 0.02 * attack_speed
     attack_speed = round(attack_speed, 2)
     return attack_speed
 
@@ -106,7 +111,7 @@ def update_block_reduction(myHero):
 def update_stealth_skill(myHero):
     """ Chance of being undetected """
     stealth_skill = (5 * myHero.primary_attributes["Reflexes"]) + (3 * myHero.primary_attributes["Perception"]) + (2 * myHero.primary_attributes["Agility"])
-    stealth_skill = stealth_skill ** 0.2
+    stealth_skill = - (400 / (stealth_skill * 0.1 + 10)) + 40
     stealth_skill = round(stealth_skill, 2)
     return stealth_skill
 
