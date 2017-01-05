@@ -36,83 +36,84 @@ def update_attack_speed(myHero):
     """ Not sure yet. """
     attack_speed = (7 * myHero.primary_attributes["Agility"]) + (2 * myHero.primary_attributes["Reflexes"])
     attack_speed = 0.01 * math.sin(attack_speed) + 0.02 * attack_speed
-    attack_speed = round(attack_speed, 2)
+    attack_speed = math.floor(attack_speed)
     return attack_speed
 
 def update_attack_accuracy(myHero):
     """ Chance of successfully hitting an enemy in combat """
     attack_accuracy = (8 * myHero.primary_attributes["Agility"]) + (3 * myHero.primary_attributes["Reflexes"]) + (1 * myHero.primary_attributes["Perception"])
-    attack_accuracy = (5 * attack_accuracy) ** 0.5
-    attack_accuracy = round(attack_accuracy, 2)
+    attack_accuracy = - (500 / (attack_accuracy * 0.12 + 10)) + 50
+    attack_accuracy = math.floor(attack_accuracy)
     return attack_accuracy
 
 def update_first_strike_chance(myHero):
     """ Not sure yet. """
     first_strike_chance = (5 * myHero.primary_attributes["Agility"]) + (2 * myHero.primary_attributes["Reflexes"])
-    first_strike_chance = (5 * first_strike_chance) ** 0.4
-    first_strike_chance = round(first_strike_chance, 2)
+    first_strike_chance = - (300 / (first_strike_chance * 0.07 + 10)) + 30
+    first_strike_chance = math.floor(first_strike_chance)
     return first_strike_chance
 
 def update_critical_hit_chance(myHero):
     """ Chance of hitting the enemy in a critical location, causing bonus damage """
     critical_hit_chance = (7 * myHero.primary_attributes["Agility"]) + (2 * myHero.primary_attributes["Perception"])
-    critical_hit_chance = (5 * critical_hit_chance) ** 0.6
-    critical_hit_chance = round(critical_hit_chance, 2)
+    critical_hit_chance = - (300 / (critical_hit_chance * 0.07 + 10)) + 30
+    critical_hit_chance = math.floor(critical_hit_chance)
     return critical_hit_chance
 
 def update_critical_hit_modifier(myHero):
     """ How much extra damage you do when you critical hit """
     critical_hit_modifier = (1 * update_maximum_damage(myHero)) + (5 * myHero.primary_attributes["Agility"])
-    critical_hit_modifier = 1.5 * critical_hit_modifier
+    critical_hit_modifier = 0.05 * math.sin(critical_hit_modifier) + 0.007 * critical_hit_modifier + 1
+    critical_hit_modifier = round(critical_hit_modifier, 1)
     return critical_hit_modifier
 
 def update_defence_modifier(myHero):
     """ The % of damage reduced when hit """
     defence_modifier = (6 * myHero.primary_attributes["Resilience"])
-    defence_modifier = defence_modifier ** 0.3
-    defence_modifier = round(defence_modifier, 2)
+    defence_modifier = - (350 / (defence_modifier * 0.09 + 10)) + 35
+    defence_modifier = math.floor(defence_modifier)
     return defence_modifier
 
 def update_evade_chance(myHero):
     """ Chance to dodge an attack in combat """
     evade_chance = (5 * myHero.primary_attributes["Reflexes"]) + (2 * myHero.primary_attributes["Perception"])
-    evade_chance = evade_chance ** 0.25
-    evade_chance = round(evade_chance, 2)
+    evade_chance = - (250 / (evade_chance * 0.08 + 10)) + 25
+    evade_chance = math.floor(evade_chance)
     return evade_chance
 
 def update_parry_chance(myHero):
     """ Chance to parry when fighting with a weapon """
     parry_chance = (5 * myHero.primary_attributes["Reflexes"]) + (1 * myHero.primary_attributes["Agility"]) + (3 * myHero.primary_attributes["Perception"])
-    parry_chance = parry_chance ** 0.3
-    parry_chance = round(parry_chance, 2)
+    parry_chance = - (400 / (parry_chance * 0.1 + 10)) + 40
+    parry_chance = math.floor(parry_chance)
     return parry_chance
 
 def update_riposte_chance(myHero):
     """ Chance of counter attacking after a successful parry """
     riposte_chance = (5 * myHero.primary_attributes["Agility"]) + (3 * myHero.primary_attributes["Perception"]) + (1 * myHero.primary_attributes["Reflexes"])
-    riposte_chance = riposte_chance ** 0.3
-    riposte_chance = round(riposte_chance, 2)
+    riposte_chance = - (400 / (riposte_chance * 0.1 + 10)) + 40
+    riposte_chance = math.floor(riposte_chance)
     return riposte_chance
 
 def update_block_chance(myHero):
     """ Chance to blck when using a shield """
     block_chance = (5 * myHero.primary_attributes["Reflexes"]) + (3 * myHero.primary_attributes["Agility"]) + (2 * myHero.primary_attributes["Strength"])
-    block_chance = block_chance ** 0.4
-    block_chance = round(block_chance, 2)
+    block_chance = - (400 / (block_chance * 0.08 + 10)) + 40
+    block_chance = math.floor(block_chance)
     return block_chance
 
 def update_block_reduction(myHero):
     """ Percent of damage reduced when you successfully block """
     block_reduction = (2 * myHero.primary_attributes["Strength"]) + (2 * myHero.primary_attributes["Resilience"])
     block_reduction = block_reduction ** 0.75
-    block_reduction = round(block_reduction, 2)
+    block_reduction = math.floor(block_reduction)
     return block_reduction
 
 def update_stealth_skill(myHero):
     """ Chance of being undetected """
     stealth_skill = (5 * myHero.primary_attributes["Reflexes"]) + (3 * myHero.primary_attributes["Perception"]) + (2 * myHero.primary_attributes["Agility"])
-    stealth_skill = - (400 / (stealth_skill * 0.1 + 10)) + 40
-    stealth_skill = round(stealth_skill, 2)
+    stealth_skill = - (250 / (stealth_skill * 0.05 + 10)) + 25
+    stealth_skill = math.floor(stealth_skill)
     return stealth_skill
 
 def update_faith(myHero):
@@ -126,14 +127,14 @@ def update_bartering(myHero):
     """ A modifier to the price you pay at stores """
     bartering = (9 * myHero.primary_attributes["Charisma"]) + (1 * myHero.primary_attributes["Wisdom"])
     bartering = (bartering ** 0.6)
-    bartering = round(bartering, 2)
+    bartering = math.floor(bartering)
     return bartering
 
 def update_oration(myHero):
     """ Determines success rate of dialogue as well as which dialogue options are open to you """
     oration = (5 * myHero.primary_attributes["Charisma"]) + (3 * myHero.primary_attributes["Wisdom"])
     oration = (oration ** 0.5)
-    oration = round(oration, 2)
+    oration = math.floor(oration)
     return oration
 
 def update_knowledge(myHero):
@@ -146,8 +147,8 @@ def update_knowledge(myHero):
 def update_luck_chance(myHero):
     """ This can be applied to almost anything in the game. Chance for a really lucky outcome """
     luck_chance = (5 * myHero.primary_attributes["Fortuity"])
-    luck_chance = (luck_chance ** 0.25) / 100
-    luck_chance = round(luck_chance, 2)
+    luck_chance = - (50 / (luck_chance * 0.01 + 10)) + 5
+    luck_chance = math.floor(luck_chance)
     return luck_chance
 
 def update_maximum_sanctity(myHero):

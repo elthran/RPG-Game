@@ -37,6 +37,21 @@ def monster_archetype_high_health(monster):
     monster.fortuity = random.randint(5,10) * 0.01 * monster.attribute_points
     return monster
 
+def monster_archetype_high_damage(monster):
+    monster.vitality = random.randint(15,20) * 0.01 * monster.attribute_points
+    monster.strength = random.randint(45,55) * 0.01 * monster.attribute_points
+    monster.resilience = random.randint(5,10) * 0.01 * monster.attribute_points
+    monster.fortitude = random.randint(5,10) * 0.01 * monster.attribute_points
+    monster.reflexes = random.randint(5,10) * 0.01 * monster.attribute_points
+    monster.agility = random.randint(25,30) * 0.01 * monster.attribute_points
+    monster.perception = random.randint(5,10) * 0.01 * monster.attribute_points
+    monster.wisdom = random.randint(5,10) * 0.01 * monster.attribute_points
+    monster.divinity = random.randint(5,10) * 0.01 * monster.attribute_points
+    monster.charisma = random.randint(5,10) * 0.01 * monster.attribute_points
+    monster.survivalism = random.randint(5,10) * 0.01 * monster.attribute_points
+    monster.fortuity = random.randint(5,10) * 0.01 * monster.attribute_points
+    return monster
+
 class Monster(object):
     def __init__(self, monster_id, name, species, species_plural, level, archetype):
         self.monster_id = monster_id
@@ -61,7 +76,7 @@ class Monster(object):
         self.experience_rewarded = level * 2
         self.items_rewarded = []
 
-    def combat_stats(self):        
+    def set_combat_stats(self):        
         self.current_health = math.floor(self.vitality * 2)
         self.max_health = self.current_health
         self.min_damage = math.floor(self.strength * 2)
@@ -82,11 +97,13 @@ def monster_generator(level):
         monster = monster_archetype_basic(monster)
     if monster.archetype == "high health":
         monster = monster_archetype_high_health(monster)
-    monster.combat_stats()
+    if monster.archetype == "high damage":
+        monster = monster_archetype_high_damage(monster)
+    monster.set_combat_stats()
     return monster
 
 bestiary_data = [Monster("001", "Alpha Wolf", "Wolf", "Wolves", level=1, archetype="high health"),
-                 Monster("002", "Goblin Scout", "Goblin", "Goblins", level=1, archetype="basic"),
+                 Monster("002", "Goblin Scout", "Goblin", "Goblins", level=1, archetype="high damage"),
                  Monster("003", "Spiderling", "Spider", "Spiders", level=1, archetype="basic")]
 
 
