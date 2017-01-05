@@ -369,8 +369,16 @@ class EasyDatabase():
                 return "no_match_found"
 
         def read_users_rowid():
+            """Reads the users id from the ROWID column.
+            
+            NOTE: return None if user doesn't exist.
+            """
             c.execute("SELECT ROWID FROM USERS WHERE username=?", args)
-            return c.fetchone()[0]
+            id = c.fetchone()
+            if id:
+               return id[0]
+            return None
+                
 
         def read_characters_rowid():
             c.execute("SELECT ROWID FROM CHARACTERS WHERE user_id=? AND character_name=?", args)
@@ -390,6 +398,10 @@ class EasyDatabase():
         def read_character_timestamp():
             c.execute("SELECT timestamp FROM CHARACTERS WHERE ROWID=?", args)
             return c.fetchone()[0]
+        
+        def read_character_name():
+            c.execute("SELECT character_name FROM CHARACTERS WHERE ROWID=?", args)
+            return c.fetchone()[0]
 
         #Yes this is kind of slow but the whole exec/compile is a whole nother problem.
         options = {'read_password' : read_password,
@@ -397,6 +409,7 @@ class EasyDatabase():
                 'read_characters_rowid': read_characters_rowid,
                 'read_character_data': read_character_data,
                 'read_character_timestamp': read_character_timestamp,
+                'read_character_name': read_character_name,
                 }
 
         #Executes functions listed above (and arbitrary SQL so get rid of that yes?)
@@ -425,7 +438,11 @@ class EasyDatabase():
         NOTE: data must be 'cleaned'! until I switch over to using SQLAlchemy. https://stackoverflow.com/questions/2047814/is-it-possible-to-store-python-class-objects-in-sqlite
         """
 
-        char_id = self._read(user_id, hero.character_name, read_characters_rowid=True)
+        try:
+            char_id = self._read(user_id, hero.character_name, read_characters_rowid=True)
+        except TypeError as e:
+            #Assume that character has had a name change! And is being created!
+            char_id = self._read(user_id, "Unknown", read_characters_rowid=True)
         cols = list(vars(hero).keys())
         params = []
         for var in vars(hero).values():
@@ -448,7 +465,9 @@ class EasyDatabase():
         else:
             #This should/will end up using recursion any time a python object is hit that is not
             #one of the base objects listed above.
-            return str(obj)
+            print("This should be a list of ids and open a new table and stor the data there.")
+            exit("main error")
+            return str(obj.id)
 
     def add_new_user(self, username, password):
         """Add a new user to the database.
@@ -549,7 +568,7 @@ class EasyDatabase():
             elif data_type == type(int()):
                 sql_data_type = "INTEGER"
             else:
-                sql_data_type = "python_object_as_string"
+                sql_data_type = "python_object"
             if key is 'user_id':
                 yield "{} {}".format(key, "INTEGER KEY NOT NULL")
             else:
@@ -570,6 +589,9 @@ class EasyDatabase():
         r = self._read(char_id, read_character_data=True)
         hero = Hero()
         
+        print("I need this to convert the data back into python data types")
+        print("Main Abilities, Items, etc.")
+        exit('fix here too')
         #DateTime objects are currently ingnored ...
         for key in r.keys():
             if key in vars(hero).keys():
@@ -643,6 +665,17 @@ class EasyDatabase():
                 hero.current_endurance = hero.max_endurance
             self._update_endurance(hero.current_endurance, char_id)
             self._update_timestamp(char_id)
+    
+    
+    def fetch_character_name(self, user_id):
+        """Get the character's name based on the user_id.
+        
+        This is a bug and requires the user_id to equal the rowID of the character.
+        It prevents the User from having multiple characters.
+        To avoid this you would have to direct the USER to a select character page.
+        """
+        
+        return self._read(user_id, read_character_name=True)
             
         
 

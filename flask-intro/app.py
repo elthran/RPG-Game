@@ -11,11 +11,7 @@ from flask import Flask, render_template, redirect, url_for, request, session, f
 from functools import wraps
 from battle import *
 from bestiary import *
-# from game import *
-# from database import * # Phase this out as EasyDatabase class grows.
-# Currently stilll uses update_time, add_new_user, add_new_character, update_character, fetch_character_data, get_user_id
-from database import EasyDatabase #Phase this in ...
-import database #On the way out ...
+from saveable_objects import EZDB #Phase this in ...
 from abilities import *
 from locations import *
 from secondary_attributes import *
@@ -192,14 +188,16 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if UserDatabase.validate(username, password):
+        if database.validate(username, password):
             session['logged_in'] = True
             flash("LOG IN SUCCESSFUL")
             session['id'] = database.get_user_id(username)
-            ### I would like to find a way to get rid of this use of global variables.
-            global myHero
-            myHero = database.fetch_character_data(myHero, session)
-            ###
+            
+            #I recommend a dialogue here to select the specific hero that the user wants to play with.
+            #Or a page redirect whatever ...
+            
+            myHero = database.fetch_hero(username)
+            
             return redirect(url_for('home'))
         else:
             error = 'Invalid Credentials. Please try again.'
@@ -232,22 +230,20 @@ def create_account():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        temp_id = database.get_user_id(username)
-        if temp_id == -1:
-            database.add_new_user(username, password)
-            database.add_new_character("Unknown","None")
-            user_id = database.get_user_id(username)
-            database.update_character(user_id, myHero) # slightly redundant, fix laterrr
-            return redirect(url_for('login'))
-        else:
+        if database.get_user_id(username):
             error = "Username already exists!"
+        else:
+            database.add_new_user(username, password)
+            database.add_new_character(username_or_id=username)
+            return redirect(url_for('login'))
+
     return render_template('login.html', error=error, create_account=True)
 
 # this gets called if you press "logout"
 @app.route('/logout')
 @login_required
 def logout():
-    database.update_character(session['id'],myHero) ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
+    database.update() ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
     session.pop('logged_in', None)
     flash("Thank you for playing! Your have successfully logged out.")
     return redirect(url_for('login'))
@@ -292,7 +288,6 @@ def create_character():
             myHero.wisdom += 1
     if myHero.character_name != "Unknown" and fathers_job != None:
         myHero.archetype = fathers_job
-        database.update_character(session['id'],myHero)
         return redirect(url_for('home'))
     else:
         return render_template('create_character.html', page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, conversation=conversation, display=display)  # render a template
@@ -362,7 +357,6 @@ def battle():
             page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience. You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
 
-    database.update_character(session['id'],myHero)
     return render_template('home.html', page_title=page_title, page_heading=page_heading, myHero=myHero, enemy=enemy, status_display=conversation, page_links=page_links)  # return a string
 
 # this is a temp button that can call this to erase your chracter information and redirect you to the create character page
@@ -398,7 +392,6 @@ def admin():
         myHero.attribute_points = convert_input(request.form["Attribute_points"])
         myHero.current_endurance = convert_input(request.form["Endurance"])
         myHero.update_secondary_attributes()
-        database.update_character(session['id'],myHero)
         return redirect(url_for('home'))
 
     admin = [("Age", myHero.age),
@@ -424,15 +417,14 @@ def admin():
 @app.route('/home')
 @login_required
 def home():
-    #myHero = database.fetch_character_data(myHero, session)
     myHero.update_secondary_attributes()
-    database.update_time(myHero, session)
+    database.update_time(myHero.id) #Or is this supposed to update the time of all hero objects?
  # initialize current_world
     if myHero.current_world == None:
         game_world = game_worlds[0]
         myHero.current_world = game_worlds[0]
     # If it's a new character, send them to cerate_character url
-    if myHero.character_name == "Unknown":
+    if myHero.character_name == None:
         return redirect(url_for('create_character'))
     # If they have leveled up, send them to level_up url
     elif myHero.attribute_points > 0:
@@ -803,7 +795,8 @@ if __name__ == '__main__':
 
     # os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    UserDatabase = EasyDatabase('static/User.db')
+    database = EZDB('sqlite:///static/test_database.db', debug=False)
+    myHero = myHero #This allows myHero to be global variable in this module/file without magic. I think.
     app.run(debug=True)
 
 

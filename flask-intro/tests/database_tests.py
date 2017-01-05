@@ -1,4 +1,5 @@
 from database import EasyDatabase
+from saveable_objects import EZDB, User, pr
 from game import Hero
 import time
 
@@ -14,13 +15,19 @@ I am using this tutorial http://docs.python-guide.org/en/latest/writing/tests/
 """
 
 def set_up():
-    return EasyDatabase('static/test_database.db')
+    #return EasyDatabase('static/test_database.db')
+    return EZDB('sqlite:///static/test_database.db', debug=False)
 
 def tear_down(database):
+    database.session.close()
+    database.engine.dispose()
     database._delete_database()
 
-def test_EasyDatabase_init():
+def test__init():
     """Note yet implemented: Check if database is actually created.
+    
+    This checks if init method throws any errors.
+    If it doesn't then the init is assumed to be valid.
     """
     db = set_up()
     # print(db)
@@ -28,11 +35,14 @@ def test_EasyDatabase_init():
     tear_down(db)
 
 def test_add_new_user():
-    """Note yet implemented: Check if new user is added at to database.
+    """Check if new user is added at to database.
+    
+    Check if database has a user called Marlen with a password of Brunner in it.
     """
     db = set_up()
     db.add_new_user('Marlen', 'Brunner') #I should be able to add a bunch of users from a text file.
-    assert 1 #Check if database has a user called Marlen with a password of Brunner in it.
+    user = db.session.query(User).filter_by(id=1).first()
+    assert user.username == 'Marlen'
     tear_down(db)
 
 
@@ -49,10 +59,13 @@ def test_add_new_character():
     """Check if character that is created has a user_id of 1.
     """
     db = set_up()
+    db.add_new_user('Marlen', 'Brunner')
     user_id = 1
     character_name = "Haldon"
     db.add_new_character(user_id, "Haldon", "Wizard")
-    assert db._read(user_id, character_name, read_characters_rowid=True) == 1 
+    db.add_new_character(user_id, "Haldon", "Welder")
+    user = db.session.query(User).filter_by(id=1).first()
+    assert user.heroes[1].archetype == 'Welder'
     tear_down(db)
 
 def test_validate():
@@ -64,35 +77,32 @@ def test_validate():
     username = 'Marlen'
     password = "Brunner"
     db.add_new_user(username, password)
-    assert db.validate(username, password) == True
+    assert db.validate(username, password)
     tear_down(db)
-
-def test_update_character():
+    
+def test_fetch_hero():
     db = set_up()
     db.add_new_user('Marlen', 'Brunner')
     db.add_new_character(1, "Haldon", "Wizard")
-    hero = Hero()
-    hero.user_id = 1
-    hero.character_name = "Haldon"
-    hero.archetype = "Wizard"
-    hero.age = 25
-    hero.vitality = 56
-    db.update_character(1, hero)
-    assert hero == db.fetch_character_data(hero.user_id, hero.character_name)
+    db.add_new_character(1, "Haldon", "Welder")
+    hero1 = db.fetch_hero("Marlen") #Username only
+    hero2 = db.fetch_hero(1) #User id only
+    hero3 = db.fetch_hero(character_name_or_id=1) #character id only, note providing username is redundant.
+    hero4 = db.fetch_hero("Marlen", "Haldon") #Username and character name
+    hero5 = db.fetch_hero(1, "Haldon") #User id and character name
+    assert hero1.character_name == "Haldon"
+    assert hero1 == hero2 == hero3 == hero4 == hero5
     tear_down(db)
 
-def test_fetch_character_data():
+def test_update():
     db = set_up()
     db.add_new_user('Marlen', 'Brunner')
     db.add_new_character(1, "Haldon", "Wizard")
-    hero = Hero()
-    hero.user_id = 1
-    hero.character_name = "Haldon"
-    hero.archetype = "Wizard"
-    hero.age = 25
-    hero.vitality = 56
-    db.update_character(1, hero)
-    assert db.fetch_character_data(hero.user_id, hero.character_name) == hero
+    hero = db.fetch_hero("Marlen", "Haldon")
+    hero.archetype = "Welder"
+    # db.update() #NOTE: update function is now redundant! Only use on program exit. 
+    # The fetch_hero in the next line actually updates the hero in the database.
+    assert db.fetch_hero(character_name_or_id=1).archetype == "Welder"
     tear_down(db)
     
 def dict_diff(left, right):
@@ -111,17 +121,15 @@ def test_update_time():
     db = set_up()
     db.add_new_user('Marlen', 'Brunner')
     db.add_new_character(1, "Haldon", "Wizard")
-    hero = Hero()
-    hero.user_id = 1
-    hero.character_name = "Haldon"
-    hero.archetype = "Wizard"
-    hero.age = 25
-    hero.vitality = 56
-    db.update_character(1, hero)
-    db.update_time(hero, 1)
-    
+    hero = db.fetch_hero(character_name_or_id=1)
+    oldtime = hero.current_time
+    sleep(11)
+    db.update_time(hero)
+    print(hero.current_time - oldtime)
+    exit("testing in database_tests update_time")
     assert 1 #not implemented
     # tear_down(db)
+    
 
 def run_all():
     """Run all tests in the module.
@@ -129,14 +137,15 @@ def run_all():
     The test currently only fail if the code is broken ... not if the info is invalid.
     I hope to use an assert statement at some point in each test to make sure the output is correct as well.
     """
-    test_EasyDatabase_init()
+    test__init()
     test_add_new_user()
     test_get_user_id()
     test_add_new_character()
     test_validate()
-    test_update_character()
-    test_fetch_character_data()
+    test_fetch_hero()
+    test_update()
     test_update_time()
+    
     print("No Errors, yay!")
 
 run_all()

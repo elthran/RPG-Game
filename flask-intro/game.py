@@ -39,7 +39,7 @@ class Hero(object):
         NOTE: user_id of zero is nobody ever. The minimum user_id is 1. :)
         """
         self.user_id = user_id
-        self.character_name = "Admin"
+        self.character_name = "Unknown"
         self.age = 7
         self.archetype = "Woodsman"
         self.specialization = "Hunter"
