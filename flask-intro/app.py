@@ -652,7 +652,7 @@ def arena():
                     ("Damage: ", str(str(game.enemy.min_damage) + " - " + str(game.enemy.max_damage))),
                     ("Attack Speed: ", str(game.enemy.attack_speed)),
                     ("Health: ", str(str(game.enemy.current_health) + " / " + str(game.enemy.max_health))),
-                    ("Accuracy: ", str(str(game.enemy.accuracy) + "%"))]
+                    ("Accuracy: ", str(str(game.enemy.attack_accuracy) + "%"))]
     page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
     return render_template('home.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, status_display=conversation)  # return a string
 

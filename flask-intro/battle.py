@@ -17,8 +17,8 @@ import math, random
 
 # gives a list of distribution of the chance to strike a certain number of times
 def get_distribution(atk_s,def_s):
-    atk_s = float(atk_s)
-    def_s = float(def_s)
+    atk_s = float(atk_s) + 1
+    def_s = float(def_s) + 1
     ratio = max(atk_s/def_s,def_s/atk_s)
     cap = int(math.ceil(ratio))
     sub_cap = cap - 1
@@ -72,7 +72,7 @@ def battle_logic(myHero,enemy):
             # Enemy attacks first
             if myHero.evade_chance > random.randint(0,100):
                 combat_log.append(("Hero:", "I have dodged your attack."))
-            elif enemy.accuracy < random.randint(0,100):
+            elif enemy.attack_accuracy < random.randint(0,100):
                 combat_log.append(("Enemy:", "I have swung and missed an attack."))
             else:
                 enemy_damage = math.ceil((random.randint(enemy.min_damage, enemy.max_damage)) * ((100 - myHero.defence_modifier) / 100)) # Calculate enemy's damage

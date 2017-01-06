@@ -60,19 +60,6 @@ class Hero(object):
 
         self.attribute_points = 0
         self.primary_attributes = {"Strength": 1, "Resilience": 1, "Vitality": 1, "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1, "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1}
-        self.strength = 1
-        self.resilience = 1
-        self.vitality = 1
-        self.fortitude = 1
-        self.reflexes = 1
-        self.agility = 1
-        self.perception = 1
-        self.wisdom = 1
-        self.divinity = 1
-        self.charisma = 1
-        self.survivalism = 1
-        self.fortuity = 1
-
         self.current_sanctity = 0
         self.current_health = 0
         self.current_endurance = 0

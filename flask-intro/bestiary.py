@@ -6,50 +6,21 @@
 #//////////////////////////////////////////////////////////////////////////////#
 
 import random, math
+from secondary_attributes import *
 
 def monster_archetype_basic(monster):
-    monster.vitality = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.strength = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.resilience = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.fortitude = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.reflexes = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.agility = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.perception = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.wisdom = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.divinity = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.charisma = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.survivalism = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.fortuity = random.randint(20,25) * 0.01 * monster.attribute_points
-    return monster
-
-def monster_archetype_high_health(monster):
-    monster.vitality = random.randint(50,60) * 0.01 * monster.attribute_points
-    monster.strength = random.randint(10,15) * 0.01 * monster.attribute_points
-    monster.resilience = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.fortitude = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.reflexes = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.agility = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.perception = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.wisdom = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.divinity = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.charisma = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.survivalism = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.fortuity = random.randint(5,10) * 0.01 * monster.attribute_points
-    return monster
-
-def monster_archetype_high_damage(monster):
-    monster.vitality = random.randint(15,20) * 0.01 * monster.attribute_points
-    monster.strength = random.randint(45,55) * 0.01 * monster.attribute_points
-    monster.resilience = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.fortitude = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.reflexes = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.agility = random.randint(25,30) * 0.01 * monster.attribute_points
-    monster.perception = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.wisdom = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.divinity = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.charisma = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.survivalism = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.fortuity = random.randint(5,10) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Vitality"] = random.randint(20,25) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Strength"] = random.randint(20,25) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Resilience"] = random.randint(20,25) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Fortitude"] = random.randint(20,25) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Reflexes"] = random.randint(20,25) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Agility"] = random.randint(20,25) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Perception"] = random.randint(20,25) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Wisdom"] = random.randint(20,25) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Divinity"] = random.randint(20,25) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Charisma"] = random.randint(20,25) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Survivalism"] = random.randint(20,25) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Fortuity"] = random.randint(20,25) * 0.01 * monster.attribute_points
     return monster
 
 class Monster(object):
@@ -60,31 +31,33 @@ class Monster(object):
         self.species_plural = species_plural
         self.level = level
         self.attribute_points = level * 2
-        self.strength = 1
-        self.resilience = 1
-        self.vitality = 1
-        self.fortitude = 1
-        self.reflexes = 1
-        self.agility = 1
-        self.perception = 1
-        self.wisdom = 1
-        self.divinity = 1
-        self.charisma = 1
-        self.survivalism = 1
-        self.fortuity = 1
+        self.primary_attributes = {"Strength": 1, "Resilience": 1, "Vitality": 1, "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1, "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1}
         self.archetype = archetype
         self.experience_rewarded = level * 2
         self.items_rewarded = []
 
-    def set_combat_stats(self):        
-        self.current_health = math.floor(self.vitality * 2)
-        self.max_health = self.current_health
-        self.min_damage = math.floor(self.strength * 2)
-        self.max_damage = math.floor(self.agility * 2 + self.min_damage)
-        self.attack_speed = self.agility * 0.05
-        self.accuracy = 25 + self.level
-        self.evade_chance = 5 + self.level
-        self.defence_modifier = 5 + self.level
+    def update_monster_secondary_attributes(self):        
+        self.max_damage = update_monster_maximum_damage(self)
+        self.min_damage = update_monster_minimum_damage(self)
+        self.attack_speed = update_monster_attack_speed(self)
+        self.attack_accuracy = update_monster_attack_accuracy(self)
+        self.first_strike = update_monster_first_strike_chance(self)
+        self.critical_hit_chance = update_monster_critical_hit_chance(self)
+        self.critical_hit_modifier = update_monster_critical_hit_modifier(self)
+        self.defence_modifier = update_monster_defence_modifier(self)
+        self.evade_chance = update_monster_evade_chance(self)
+        self.parry_chance = update_monster_parry_chance(self)
+        self.riposte_chance = update_monster_riposte_chance(self)
+        self.block_chance = update_monster_block_chance(self)
+        self.block_reduction = update_monster_block_reduction(self)
+        self.stealth_skill = update_monster_stealth_skill(self)
+        self.faith = update_monster_faith(self)
+        self.max_sanctity = update_monster_maximum_sanctity(self)
+        self.luck = update_monster_luck_chance(self)
+        self.max_health = update_monster_maximum_health(self)
+
+        self.current_health = self.max_health
+        self.current_sanctity = self.max_sanctity
 
     def __repr__(self):
         return "\nName: %s\nDamage: %s" % (self.name, self.damage)
@@ -95,15 +68,11 @@ def monster_generator(level):
     monster.attribute_points = 2 * monster.level
     if monster.archetype == "basic":
         monster = monster_archetype_basic(monster)
-    if monster.archetype == "high health":
-        monster = monster_archetype_high_health(monster)
-    if monster.archetype == "high damage":
-        monster = monster_archetype_high_damage(monster)
-    monster.set_combat_stats()
+    monster.update_monster_secondary_attributes()
     return monster
 
-bestiary_data = [Monster("001", "Alpha Wolf", "Wolf", "Wolves", level=1, archetype="high health"),
-                 Monster("002", "Goblin Scout", "Goblin", "Goblins", level=1, archetype="high damage"),
+bestiary_data = [Monster("001", "Alpha Wolf", "Wolf", "Wolves", level=1, archetype="basic"),
+                 Monster("002", "Goblin Scout", "Goblin", "Goblins", level=1, archetype="basic"),
                  Monster("003", "Spiderling", "Spider", "Spiders", level=1, archetype="basic")]
 
 
