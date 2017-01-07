@@ -10,7 +10,9 @@ These test suites should run on import.
 I am using this tutorial http://docs.python-guide.org/en/latest/writing/tests/
 """
 
+def pr(*args):
+    return print(args[0], repr(args[-1]))
+    
 import tests.database_tests
-
-#import tests.app_tests
-#import tests.game_tests
+# import tests.app_tests
+# import tests.game_tests

@@ -1,6 +1,6 @@
-from database import EasyDatabase
-from saveable_objects import EZDB, User, pr
-from game import Hero
+from database import EZDB
+from game import Hero, User
+from test_all import pr
 import time
 
 
@@ -15,7 +15,6 @@ I am using this tutorial http://docs.python-guide.org/en/latest/writing/tests/
 """
 
 def set_up():
-    #return EasyDatabase('static/test_database.db')
     return EZDB('sqlite:///static/test_database.db', debug=False)
 
 def tear_down(database):
@@ -122,13 +121,14 @@ def test_update_time():
     db.add_new_user('Marlen', 'Brunner')
     db.add_new_character(1, "Haldon", "Wizard")
     hero = db.fetch_hero(character_name_or_id=1)
-    oldtime = hero.current_time
-    sleep(11)
+    hero.timestamp -= datetime.timedelta(seconds=11)
+    oldtime = hero.timestamp 
+    #time.sleep(11)
     db.update_time(hero)
-    print(hero.current_time - oldtime)
+    print(hero.timestamp - oldtime)
     exit("testing in database_tests update_time")
     assert 1 #not implemented
-    # tear_down(db)
+    tear_down(db)
     
 
 def run_all():

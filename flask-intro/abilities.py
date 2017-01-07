@@ -6,6 +6,7 @@
 #//////////////////////////////////////////////////////////////////////////////#
 
 class Ability(object):
+    __tablename = "abilities"
     # name : Name of the Item, e.x. "power bracelet"
     # hero : The Hero who owns the item
 	# buy_price : Price to buy the item

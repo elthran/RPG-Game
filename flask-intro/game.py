@@ -5,8 +5,10 @@
 #                                                                              #
 #//////////////////////////////////////////////////////////////////////////////#
 
-""" this is basically the init file that sets up some things"""
+"""Objects used in the database and the game.
 
+Suggestion: change name to game_objects.py
+"""
 
 import math
 from flask import request
@@ -15,13 +17,53 @@ from bestiary import *
 from abilities import *
 from secondary_attributes import *
 
+try:
+    from sqlalchemy.ext.declarative import declarative_base
+    #Initialize SQLAlchemy base class.
+    Base = declarative_base()
+    #What this actually means or does I have no idea but it is neccessary. And I know how to use it.
+    
+    from sqlalchemy import Column, Integer, String, DateTime
+
+    from sqlalchemy import ForeignKey
+    from sqlalchemy.orm import relationship
+    
+    from sqlalchemy import orm
+except ImportError:
+    exit("Open a command prompt and type: pip install sqlalchemy.")
+    
+import datetime
+
+# from saveable_objects import PrimaryAttributeList
+
+
 # function used in '/level_up'
+#Fix ME! Or put me in a class as a method or something.
 def convert_input(x):
     try:
         x = int(x)
     except:
         x = 0
     return x
+    
+#Custom constants for primary_attributes list. 
+AGILITY = 0
+CHARISMA = 1
+DIVINITY = 2
+FORTITUDE = 3
+FORTUITY = 4
+PERCEPTION = 5
+REFLEXES = 6
+RESILIENCE = 7
+STRENGTH = 8
+SURVIVALISM = 10
+VITALITY = 11
+WISDOM = 11
+
+"""
+USE: primary_attributes[AGILITY] == value of agility stored in list at position 0
+primary_attributes[FORTITUDE] == value of fortitude stored in list at position 4
+"""    
 
 class Game(object):
     def __init__(self, hero):
@@ -32,74 +74,117 @@ class Game(object):
         self.enemy = enemy
         self.has_enemy = True
 
-class Hero(object):
-    def __init__(self, user_id=0):
-        """Make a new Hero object.
 
-        NOTE: user_id of zero is nobody ever. The minimum user_id is 1. :)
+class User(Base):
+    """User class holds data about the current gamer.
+    
+    This is database ready and connects to the Hero class.
+    """
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True)
+    username = Column(String, unique=True, nullable=False)
+    password = Column(String, nullable=False)
+    email = Column(String)
+    
+    heroes = relationship("Hero", order_by='Hero.id', back_populates='user')
+
+    def __repr__(self):
+       return "<User(username='{}', password='{}', email='{}')>" .format(
+                        self.username, self.password, self.email)
+                        
+                        
+class Hero(Base):
+    """Store data about the Hero/Character object.
+    
+    TODO: Builds secondary_attributes on_load constructor.
+    """
+    __tablename__ = 'heroes'
+    
+    id = Column(Integer, primary_key=True)
+    character_name = Column(String, nullable=False)
+    age = Column(Integer, default=7)
+    archetype = Column(String, default="Woodsman")
+    specialization = Column(String, default="Hunter")
+    religion = Column(String, default="Dryarch")
+    house = Column(String, default="Unknown")
+    current_exp = Column(Integer, default=0)
+    max_exp = Column(Integer, default=10)
+    renown = Column(Integer, default=0)
+    virtue = Column(Integer, default=0)
+    devotion = Column(Integer, default=0)
+    gold = Column(Integer, default=50)
+    
+    ability_points= Column(Integer, default=3) #TEMP. Soon will use the 4 values below
+    basic_ability_points = Column(Integer, default=0)
+    archetype_ability_points = Column(Integer, default=0)
+    specialization_ability_points = Column(Integer, default=0)
+    pantheonic_ability_points = Column(Integer, default=0)
+    
+    attribute_points = Column(Integer, default=0)
+        
+    current_sanctity = Column(Integer, default=0)
+    current_health = Column(Integer, default=0)
+    current_endurance = Column(Integer, default=0)
+    current_carrying_capacity = Column(Integer, default=0)
+    max_health = Column(Integer, default=0)
+    
+    #Time code
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow())
+    
+    #Not yet implemented
+    # self.strength = 1
+    # self.resilience = 1
+    # self.vitality = 1
+    # self.fortitude = 1
+    # self.reflexes = 1
+    # self.agility = 1
+    # self.perception = 1
+    # self.wisdom = 1
+    # self.divinity = 1
+    # self.charisma = 1
+    # self.survivalism = 1
+    # self.fortuity = 1
+    # self.equipped_items = []
+    # self.inventory = []
+    # self.abilities = []
+    # self.chest_equipped = []
+
+    # self.errands = []
+    # self.current_quests = []
+    # self.completed_quests = []
+    # self.completed_achievements = []
+    # self.kill_quests = {}
+    # self.bestiary = []
+
+    # self.known_locations = []
+    # self.current_world = None #Type?
+    # self.current_city = None #Type?
+
+    # self.wolf_kills = 0
+    # self.update_secondary_attributes() #Use @reconstructor decorator from sqlalchemy.orm
+    #End of not yet implemented
+    
+    
+    user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship("User", back_populates="heroes")
+    
+    primary_attributes = relationship("PrimaryAttributeList", uselist=False, back_populates="hero")
+    
+    def __repr__(self): 
+        """Return string data about Hero object.
         """
-        self.user_id = user_id
-        self.character_name = "Unknown"
-        self.age = 7
-        self.archetype = "Woodsman"
-        self.specialization = "Hunter"
-        self.religion = "Dryarch"
-        self.house = "Unknown"
-        self.current_exp = 0
-        self.max_exp = 10
-        self.renown = 0
-        self.virtue = 0
-        self.devotion = 0
-        self.gold = 50
-
-        self.ability_points = 3 #TEMP. Soon will use the 4 values below
-        self.basic_ability_points = 0
-        self.archetype_ability_points = 0
-        self.specialization_ability_points = 0
-        self.pantheonic_ability_points = 0
-
-        self.attribute_points = 0
-        self.primary_attributes = {"Strength": 1, "Resilience": 1, "Vitality": 1, "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1, "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1}
-        self.strength = 1
-        self.resilience = 1
-        self.vitality = 1
-        self.fortitude = 1
-        self.reflexes = 1
-        self.agility = 1
-        self.perception = 1
-        self.wisdom = 1
-        self.divinity = 1
-        self.charisma = 1
-        self.survivalism = 1
-        self.fortuity = 1
-
-        self.current_sanctity = 0
-        self.current_health = 0
-        self.current_endurance = 0
-        self.current_carrying_capacity = 0
-        self.max_health = 0
-		
-        self.equipped_items = []
-        self.inventory = []
-        self.abilities = []
-        self.chest_equipped = []
-
-        self.errands = []
-        self.current_quests = []
-        self.completed_quests = []
-        self.completed_achievements = []
-        self.kill_quests = {}
-        self.bestiary = []
-
-        self.known_locations = []
-        self.current_world = None
-        self.current_city = None
-
-        self.wolf_kills = 0
-        self.update_secondary_attributes()
+        atts = []
+        for key in self.__table__.columns.keys():
+            atts.append('{}={}'.format(key, getattr(self, key)))
+        
+        data = "<Hero(" + ', '.join(atts) + ')>'
+        return data 
 
     # Sets damage
-    def update_secondary_attributes(self):
+    #OLD NAME: update_secondary_attributes
+    @orm.reconstructor
+    def init_on_load(self):
         self.max_damage = update_maximum_damage(self)
         self.min_damage = update_minimum_damage(self)
         self.attack_speed = update_attack_speed(self)
@@ -137,7 +222,7 @@ class Hero(object):
         if max_health_change != 0: 
             self.current_health += max_health_change	
         if self.current_health < 0:
-            self.current_health = 0	        
+            self.current_health = 0  
         
     def refresh_character(self):
         self.current_sanctity = self.max_sanctity
@@ -183,7 +268,60 @@ class Hero(object):
         
     def get_primary_attributes(self):
         return sorted(self.primary_attributes.items())
+        
 
+class PrimaryAttributeList(Base):
+    """The list of primary attributes of a Hero object.
+    
+    This list pretends to be a dictionary and so is subscriptable, see __getitem__ method.
+    
+    There is a simpler way to do this: http://docs.sqlalchemy.org/en/latest/orm/collections.html?highlight=instrumented#dictionary-collections
+    But I used this instead as it allows me to use case insensitive keyword names.
+    And because it didn't make sense the first time I read it.
+    """
+    __tablename__ = "primary_attributes"
+    
+    id = Column(Integer, primary_key=True)
+    agility = Column(Integer, default=1)
+    charisma = Column(Integer, default=1)
+    divinity = Column(Integer, default=1)
+    fortitude = Column(Integer, default=1)
+    fortuity = Column(Integer, default=1)
+    perception = Column(Integer, default=1)
+    reflexes = Column(Integer, default=1)
+    resilience = Column(Integer, default=1)
+    strength = Column(Integer, default=1)
+    survivalism = Column(Integer, default=1)
+    vitality = Column(Integer, default=1)
+    wisdom = Column(Integer, default=1)
+    
+    hero_id = Column(Integer, ForeignKey('heroes.id'))
+    hero = relationship("Hero", back_populates='primary_attributes')
+    
+    def __getitem__(self, key):
+        """Allows the PrimaryAttributeList to be subscriptable.
+        
+        USE: primary_attributes['strength'] gets primary_attributes.strength
+        
+        !Important! NOT case sensitive!
+        So: primary_attributes['strength'] == primary_attributes['Strength'] = primary_attributes['stREnGtH']
+        """
+        return getattr(self, key.lower())
+    
+    def __repr__(self):
+        """Returns string representation of PrimaryAttributeList.
+        
+        NOTE: this is actually a list but behaves like a dictionary too, but is case insensitive.
+        """
+        atts = []
+        for key in self.__table__.columns.keys():
+            atts.append('{}={}'.format(key, getattr(self, key)))
+        
+        data = "<PrimaryAttributeList(" + ', '.join(atts) + ')>'
+        return data
+
+
+        
 
 # Temporary Function to create a random hero
 def create_random_hero():
@@ -199,16 +337,16 @@ def create_random_hero():
 
 
 # initialization
-myHero = create_random_hero()
-game = Game(myHero)
-enemy = monster_generator(myHero.age)
+# myHero = create_random_hero()
+# game = Game(myHero)
+# enemy = monster_generator(myHero.age)
 
 # Super temporary while testing quests
-myHero.inventory.append(Quest_Item("Wolf Pelt", myHero, 50))
-myHero.inventory.append(Quest_Item("Spider Leg", myHero, 50))
-myHero.inventory.append(Quest_Item("Copper Coin", myHero, 50))
-for item in myHero.inventory:
-    item.amount_owned = 5
+# myHero.inventory.append(Quest_Item("Wolf Pelt", myHero, 50))
+# myHero.inventory.append(Quest_Item("Spider Leg", myHero, 50))
+# myHero.inventory.append(Quest_Item("Copper Coin", myHero, 50))
+# for item in myHero.inventory:
+    # item.amount_owned = 5
 
 
 

@@ -418,7 +418,7 @@ def admin():
 @login_required
 def home():
     myHero.update_secondary_attributes()
-    database.update_time(myHero.id) #Or is this supposed to update the time of all hero objects?
+    database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
  # initialize current_world
     if myHero.current_world == None:
         game_world = game_worlds[0]
