@@ -13,6 +13,20 @@ I am using this tutorial http://docs.python-guide.org/en/latest/writing/tests/
 def pr(*args):
     return print(args[0], repr(args[-1]))
     
+
+def dict_diff(left, right):
+    """Tell if two dicts are the same, return differences.
+    
+    Use: print(dict_diff(hero.__dict__, hero2.__dict__))
+    NOTE: not a test ... just used for testing.
+    """
+    diff = dict()
+    diff['left_only'] = set(left) - set(right)
+    diff['right_only'] = set(right) - set(left)
+    diff['different'] = {k for k in set(left) & set(right) if left[k]!=right[k]}
+    return diff
+    
+    
 import tests.database_tests
 # import tests.app_tests
 # import tests.game_tests

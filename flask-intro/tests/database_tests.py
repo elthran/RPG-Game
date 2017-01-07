@@ -1,7 +1,7 @@
 from database import EZDB
 from game import Hero, User
 from test_all import pr
-import time
+import datetime
 
 
 """
@@ -103,18 +103,7 @@ def test_update():
     # The fetch_hero in the next line actually updates the hero in the database.
     assert db.fetch_hero(character_name_or_id=1).archetype == "Welder"
     tear_down(db)
-    
-def dict_diff(left, right):
-    """Tell if two dicts are the same, return differences.
-    
-    Use: print(dict_diff(hero.__dict__, hero2.__dict__))
-    NOTE: not a test ... just used for testing.
-    """
-    diff = dict()
-    diff['left_only'] = set(left) - set(right)
-    diff['right_only'] = set(right) - set(left)
-    diff['different'] = {k for k in set(left) & set(right) if left[k]!=right[k]}
-    return diff
+
 
 def test_update_time():
     db = set_up()
@@ -123,11 +112,8 @@ def test_update_time():
     hero = db.fetch_hero(character_name_or_id=1)
     hero.timestamp -= datetime.timedelta(seconds=11)
     oldtime = hero.timestamp 
-    #time.sleep(11)
     db.update_time(hero)
-    print(hero.timestamp - oldtime)
-    exit("testing in database_tests update_time")
-    assert 1 #not implemented
+    assert hero.current_endurance == 1 #May fail on very slow machines do too slow code execution.
     tear_down(db)
     
 

@@ -8,6 +8,12 @@ Mainly using the tutorial at: http://docs.sqlalchemy.org/en/latest/orm/tutorial.
 """
 
 try:
+    #Base is the initialize SQLAlchemy base class. It is used to set up the table metadata.
+    #Used like so in the __init__ method: Base.metadata.create_all(engine)
+    #What this actually means or does I have no idea but it is neccessary. And I know how to use it.
+    #!Important!: Base can only be defined in ONE location and ONE location ONLY!
+    from saveable_objects import Base
+
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker
 except ImportError:
@@ -18,12 +24,9 @@ import datetime
 import os #Testing only
 
 #Internal game modules
-from game import Base, User, Hero, PrimaryAttributeList
+from game import User, Hero, PrimaryAttributeList
 from abilities import Ability
-#Base is the initialize SQLAlchemy base class. It is used to set up the table metadata.
-#Used like so in the __init__ method: Base.metadata.create_all(engine)
-#What this actually means or does I have no idea but it is neccessary. And I know how to use it.
-#!Important!: Base can only be defined in ONE location and ONE location ONLY!
+
 
 #Constants#
 SECOND_PER_ENDURANCE = 10
@@ -125,8 +128,12 @@ class EZDB:
         """
         return datetime.datetime.utcnow()
     
+    #Marked for renaming as it effects Hero endurance as well as time.
+    #Consider update_endurance_and_time()
+    #Or update_game_clock
+    #Or update_hero_clock
     def update_time(self, hero):
-        """Update the game time clock of a specifi Hero and endurance values.
+        """Update the game time clock of a specific Hero and endurance values.
         
         This increases the hero's endurance by the difference between past timestamp and current time.
         NOTE: Updates current timestamp in charater table but only if has been incremented.
@@ -144,7 +151,7 @@ class EZDB:
         
         if endurance_increment: #Only update if endurance has been incremented.
             hero.timestamp = EZDB.now()
-        self.session.update()
+        self.session.commit()
         
     
     def _delete_database(self):

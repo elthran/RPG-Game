@@ -75,7 +75,7 @@ def command(cmd=None):
     
     for item in myHero.inventory:
         if cmd == item.name:
-            if item.equippable == True:            # EQUIP ITEMS
+            if item.equiptable:            # EQUIP ITEMS
                 equipped_items_to_remove = []
                 for equipped_item in myHero.equipped_items:
                     if type(item) is Weapon:
@@ -437,7 +437,7 @@ def inventory_page():
     paragraph = ""
     page_title = "Inventory"
     for item in myHero.inventory:
-        if item.equippable:
+        if item.equiptable:
             item.check_if_improvement()
     return render_template('home.html', myHero=myHero, inventory_page=True, page_title=page_title)  # return a string
 

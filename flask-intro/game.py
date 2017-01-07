@@ -12,17 +12,13 @@ Suggestion: change name to game_objects.py
 
 import math
 from flask import request
-from items import *
+# from items import *
 from bestiary import *
 # from abilities import Ability, Archetype_Ability, Class_Ability, Religious_Ability
 from secondary_attributes import *
 
 try:
-    from sqlalchemy.ext.declarative import declarative_base
-    #Initialize SQLAlchemy base class.
-    Base = declarative_base()
-    #What this actually means or does I have no idea but it is neccessary. And I know how to use it.
-    
+    from saveable_objects import Base
     from sqlalchemy import Table, Column, Integer, String, DateTime
 
     from sqlalchemy import ForeignKey
@@ -62,10 +58,10 @@ USE: primary_attributes[AGILITY] == value of agility stored in list at position 
 primary_attributes[FORTITUDE] == value of fortitude stored in list at position 4
 """
 
-heroes_ablities_association_table = Table('heroes_ablities_association', Base.metadata,
-    Column('heroes_id', Integer, ForeignKey('heroes.id')),
-    Column('abilities_id', Integer, ForeignKey('abilities.id'))
-)
+# heroes_ablities_association_table = Table('heroes_ablities_association', Base.metadata,
+    # Column('heroes_id', Integer, ForeignKey('heroes.id')),
+    # Column('abilities_id', Integer, ForeignKey('abilities.id'))
+# )
 
 class Game(object):
     def __init__(self, hero):
@@ -89,7 +85,7 @@ class User(Base):
     password = Column(String, nullable=False)
     email = Column(String)
     
-    heroes = relationship("Hero", order_by='Hero.id', back_populates='user')
+    heroes = relationship("Hero", order_by='Hero.character_name', back_populates='user')
 
     def __repr__(self):
        return "<User(username='{}', password='{}', email='{}')>" .format(
@@ -127,6 +123,9 @@ class Hero(Base):
         
     current_sanctity = Column(Integer, default=0)
     current_health = Column(Integer, default=0)
+    
+    #Marked for rename
+    #Consider "endurance" instead.
     current_endurance = Column(Integer, default=0)
     current_carrying_capacity = Column(Integer, default=0)
     max_health = Column(Integer, default=0)
@@ -140,7 +139,10 @@ class Hero(Base):
     
     primary_attributes = relationship("PrimaryAttributeList", uselist=False, back_populates="hero")
     
-    abilities = relationship("Ability", heroes_ablities_association_table, back_populates="heroes")
+    #Having problems with order by:
+    
+    abilities = relationship("Ability", order_by="Ability.name", back_populates="myHero")
+    items = relationship("Item", order_by="Item.name", back_populates="myHero")
     
     def not_yet_implemented():
         self.strength = 1
@@ -191,6 +193,9 @@ class Hero(Base):
         
         See: init_on_load() in SQLAlchemy
         """
+        #Make a list of the equitapped items or if none are equipt return empty list.
+        self.equipped_items = [item for item in self.items if item.equiptable] or []
+
         self.max_damage = update_maximum_damage(self)
         self.min_damage = update_minimum_damage(self)
         self.attack_speed = update_attack_speed(self)
