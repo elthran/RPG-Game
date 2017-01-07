@@ -9,18 +9,18 @@ import random, math
 from secondary_attributes import *
 
 def monster_archetype_basic(monster):
-    monster.primary_attributes["Vitality"] = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Strength"] = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Resilience"] = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Fortitude"] = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Reflexes"] = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Agility"] = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Perception"] = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Wisdom"] = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Divinity"] = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Charisma"] = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Survivalism"] = random.randint(20,25) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Fortuity"] = random.randint(20,25) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Vitality"] = random.randint(15,20) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Strength"] = random.randint(15,20) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Resilience"] = random.randint(10,15) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Fortitude"] = random.randint(10,15) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Reflexes"] = random.randint(10,15) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Agility"] = random.randint(10,15) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Perception"] = random.randint(5,10) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Wisdom"] = random.randint(5,10) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Divinity"] = random.randint(5,10) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Charisma"] = random.randint(5,10) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Survivalism"] = random.randint(5,10) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Fortuity"] = random.randint(5,10) * 0.01 * monster.attribute_points
     return monster
 
 class Monster(object):

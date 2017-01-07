@@ -105,7 +105,7 @@ def update_block_chance(myHero):
 def update_block_reduction(myHero):
     """ Percent of damage reduced when you successfully block """
     block_reduction = (2 * myHero.primary_attributes["Strength"]) + (2 * myHero.primary_attributes["Resilience"])
-    block_reduction = block_reduction ** 0.75
+    block_reduction = - (400 / (block_reduction * 0.08 + 10)) + 40
     block_reduction = math.floor(block_reduction)
     return block_reduction
 
@@ -119,28 +119,28 @@ def update_stealth_skill(myHero):
 def update_faith(myHero):
     """ Spell Power/Damage """
     faith = (5 * myHero.primary_attributes["Divinity"]) + (1 * myHero.primary_attributes["Wisdom"])
-    faith = (0.2 * faith) ** 0.9
+    faith = 0.1 * math.sin(faith) + 0.2 * faith
     faith = math.floor(faith)
     return faith
 
 def update_bartering(myHero):
     """ A modifier to the price you pay at stores """
     bartering = (9 * myHero.primary_attributes["Charisma"]) + (1 * myHero.primary_attributes["Wisdom"])
-    bartering = (bartering ** 0.6)
+    bartering = - (250 / (bartering * 0.05 + 10)) + 25
     bartering = math.floor(bartering)
     return bartering
 
 def update_oration(myHero):
     """ Determines success rate of dialogue as well as which dialogue options are open to you """
     oration = (5 * myHero.primary_attributes["Charisma"]) + (3 * myHero.primary_attributes["Wisdom"])
-    oration = (oration ** 0.5)
+    oration = - (250 / (oration * 0.05 + 10)) + 25
     oration = math.floor(oration)
     return oration
 
 def update_knowledge(myHero):
     """ Determines how much your character knows about the world """
     knowledge = (10 * myHero.primary_attributes["Wisdom"]) + (1 * myHero.primary_attributes["Perception"])
-    knowledge = knowledge ** 0.5
+    knowledge = 0.1 * math.sin(knowledge) + 0.2 * knowledge
     knowledge = math.floor(knowledge)
     return knowledge
 
@@ -154,28 +154,28 @@ def update_luck_chance(myHero):
 def update_maximum_sanctity(myHero):
     """ Basically your mana. Required to cast spells and use abilities. Should slowly recover over time. """
     maximum_sanctity = (5 * myHero.primary_attributes["Divinity"]) + (1 * myHero.primary_attributes["Wisdom"]) + 3
-    maximum_sanctity = (0.8 * maximum_sanctity) ** 0.9
+    maximum_sanctity = 0.1 * math.sin(maximum_sanctity) + 0.2 * maximum_sanctity
     maximum_sanctity = math.floor(maximum_sanctity)
     return maximum_sanctity
 
 def update_maximum_health(myHero):
     """ How much health your Hero has. At zero, you die. """
     maximum_health = (10 * myHero.primary_attributes["Vitality"]) + (2 * myHero.primary_attributes["Resilience"]) + (1 * myHero.primary_attributes["Strength"]) + 10
-    maximum_health = (0.9 * maximum_health) ** 0.9
+    maximum_health = 0.1 * math.sin(maximum_health) + 0.25 * maximum_health
     maximum_health = math.floor(maximum_health)
     return maximum_health
 
 def update_maximum_endurance(myHero):
     """ How many actions you can perform, such as moving on the map or fighting. It slowly recovers over time. """
     maximum_endurance = (5 * myHero.primary_attributes["Fortitude"]) + (1 * myHero.primary_attributes["Resilience"]) + (1 * myHero.primary_attributes["Strength"]) + 25
-    maximum_endurance = (0.5 * maximum_endurance) ** 0.6
+    maximum_endurance = 0.1 * math.sin(maximum_endurance) + 0.05 * maximum_endurance + 4
     maximum_endurance = math.floor(maximum_endurance)
     return maximum_endurance
 
 def update_carrying_capacity(myHero):
     """ How much you can carry in your inventory + items equipped. """
     carrying_capacity = (5 * myHero.primary_attributes["Strength"]) + (4 * myHero.primary_attributes["Resilience"])
-    carrying_capacity = carrying_capacity ** 0.6
+    carrying_capacity = 0.1 * math.sin(carrying_capacity) + 0.08 * carrying_capacity
     carrying_capacity = math.floor(carrying_capacity)
     return carrying_capacity
 
