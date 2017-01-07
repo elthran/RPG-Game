@@ -59,9 +59,15 @@ class EZDB:
         """Return the id of the user by username from the User's table.
         
         """
-        return self.session.query(User).filter_by(username=username).first().id
-    
-    
+        try:
+            return self.session.query(User).filter_by(username=username).first().id
+        except AttributeError as e:
+            print(e)
+            if str(e) == "'NoneType' object has no attribute 'id'":
+                return
+            else:
+                raise e
+                
     def add_new_user(self, username, password, email=''):
         """Add a user to the username with a given a unique username and a password.
         
@@ -90,8 +96,15 @@ class EZDB:
     def validate(self, username, password):
         """Check if password if valid for user.
         """
-        hashed_password = self.session.query(User).filter_by(username=username).first().password
-        return  hashed_password == hashlib.md5(password.encode()).hexdigest()
+        try:
+            hashed_password = self.session.query(User).filter_by(username=username).first().password
+            return  hashed_password == hashlib.md5(password.encode()).hexdigest()
+        except AttributeError as e:
+            if str(e) == "'NoneType' object has no attribute 'password'":
+                return
+            else:
+                raise e
+        
         
     def fetch_hero(self, username_or_id=None, character_name_or_id=None):
         """Return live hero objected based on username_or_id and character_name.
@@ -99,7 +112,7 @@ class EZDB:
         If no character_name is passed just return first hero.
         Note: Providing a username when you have the hero/character id is redundant.
         """
-
+        
         if character_name_or_id and isinstance(character_name_or_id, int):
             if username_or_id:
                 exit("Providing a username when you have the hero/character id is redundant.")
@@ -111,7 +124,6 @@ class EZDB:
         if character_name_or_id:
             return self.session.query(Hero).filter_by(user_id=username_or_id, character_name=character_name_or_id).first()
         return self.session.query(User).filter_by(id=username_or_id).first().heroes[0]
-                   
     
     def update(self):
         """Commit current session.

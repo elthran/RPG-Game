@@ -11,7 +11,7 @@ from flask import Flask, render_template, redirect, url_for, request, session, f
 from functools import wraps
 from battle import *
 from bestiary import *
-from saveable_objects import EZDB #Phase this in ...
+from database import EZDB
 from abilities import *
 from locations import *
 from secondary_attributes import *
@@ -199,6 +199,7 @@ def login():
             myHero = database.fetch_hero(username)
             
             return redirect(url_for('home'))
+        #Marked for upgrade, consider checking if user exists and redirect to account creation page.
         else:
             error = 'Invalid Credentials. Please try again.'
 
@@ -795,8 +796,9 @@ if __name__ == '__main__':
 
     # os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+    
     database = EZDB('sqlite:///static/test_database.db', debug=False)
-    myHero = myHero #This allows myHero to be global variable in this module/file without magic. I think.
+    myHero = Hero() #This allows myHero to be global variable in this module/file without magic. I think.
     app.run(debug=True)
 
 

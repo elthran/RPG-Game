@@ -100,7 +100,7 @@ class Hero(Base):
     __tablename__ = 'heroes'
     
     id = Column(Integer, primary_key=True)
-    character_name = Column(String, nullable=False)
+    character_name = Column(String) #Was nullable=False now it isn't. I hope that is a good idea.
     age = Column(Integer, default=7)
     archetype = Column(String, default="Woodsman")
     specialization = Column(String, default="Hunter")
