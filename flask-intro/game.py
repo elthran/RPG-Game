@@ -14,7 +14,7 @@ import math
 from flask import request
 from items import *
 from bestiary import *
-from abilities import *
+# from abilities import Ability, Archetype_Ability, Class_Ability, Religious_Ability
 from secondary_attributes import *
 
 try:
@@ -23,7 +23,7 @@ try:
     Base = declarative_base()
     #What this actually means or does I have no idea but it is neccessary. And I know how to use it.
     
-    from sqlalchemy import Column, Integer, String, DateTime
+    from sqlalchemy import Table, Column, Integer, String, DateTime
 
     from sqlalchemy import ForeignKey
     from sqlalchemy.orm import relationship
@@ -33,9 +33,6 @@ except ImportError:
     exit("Open a command prompt and type: pip install sqlalchemy.")
     
 import datetime
-
-# from saveable_objects import PrimaryAttributeList
-
 
 # function used in '/level_up'
 #Fix ME! Or put me in a class as a method or something.
@@ -63,7 +60,12 @@ WISDOM = 11
 """
 USE: primary_attributes[AGILITY] == value of agility stored in list at position 0
 primary_attributes[FORTITUDE] == value of fortitude stored in list at position 4
-"""    
+"""
+
+heroes_ablities_association_table = Table('heroes_ablities_association', Base.metadata,
+    Column('heroes_id', Integer, ForeignKey('heroes.id')),
+    Column('abilities_id', Integer, ForeignKey('abilities.id'))
+)
 
 class Game(object):
     def __init__(self, hero):
@@ -132,44 +134,44 @@ class Hero(Base):
     #Time code
     timestamp = Column(DateTime, default=datetime.datetime.utcnow())
     
-    #Not yet implemented
-    # self.strength = 1
-    # self.resilience = 1
-    # self.vitality = 1
-    # self.fortitude = 1
-    # self.reflexes = 1
-    # self.agility = 1
-    # self.perception = 1
-    # self.wisdom = 1
-    # self.divinity = 1
-    # self.charisma = 1
-    # self.survivalism = 1
-    # self.fortuity = 1
-    # self.equipped_items = []
-    # self.inventory = []
-    # self.abilities = []
-    # self.chest_equipped = []
-
-    # self.errands = []
-    # self.current_quests = []
-    # self.completed_quests = []
-    # self.completed_achievements = []
-    # self.kill_quests = {}
-    # self.bestiary = []
-
-    # self.known_locations = []
-    # self.current_world = None #Type?
-    # self.current_city = None #Type?
-
-    # self.wolf_kills = 0
-    # self.update_secondary_attributes() #Use @reconstructor decorator from sqlalchemy.orm
-    #End of not yet implemented
-    
-    
+    #Relationships
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship("User", back_populates="heroes")
     
     primary_attributes = relationship("PrimaryAttributeList", uselist=False, back_populates="hero")
+    
+    abilities = relationship("Ability", heroes_ablities_association_table, back_populates="heroes")
+    
+    def not_yet_implemented():
+        self.strength = 1
+        self.resilience = 1
+        self.vitality = 1
+        self.fortitude = 1
+        self.reflexes = 1
+        self.agility = 1
+        self.perception = 1
+        self.wisdom = 1
+        self.divinity = 1
+        self.charisma = 1
+        self.survivalism = 1
+        self.fortuity = 1
+        self.equipped_items = []
+        self.inventory = []
+        self.abilities = []
+        self.chest_equipped = []
+
+        self.errands = []
+        self.current_quests = []
+        self.completed_quests = []
+        self.completed_achievements = []
+        self.kill_quests = {}
+        self.bestiary = []
+
+        self.known_locations = []
+        self.current_world = None #Type?
+        self.current_city = None #Type?
+
+        self.wolf_kills = 0
     
     def __repr__(self): 
         """Return string data about Hero object.
@@ -184,7 +186,11 @@ class Hero(Base):
     # Sets damage
     #OLD NAME: update_secondary_attributes
     @orm.reconstructor
-    def init_on_load(self):
+    def update_secondary_attributes(self):
+        """Update secondary attributes of Hero object on database load.
+        
+        See: init_on_load() in SQLAlchemy
+        """
         self.max_damage = update_maximum_damage(self)
         self.min_damage = update_minimum_damage(self)
         self.attack_speed = update_attack_speed(self)
@@ -305,6 +311,9 @@ class PrimaryAttributeList(Base):
         
         !Important! NOT case sensitive!
         So: primary_attributes['strength'] == primary_attributes['Strength'] = primary_attributes['stREnGtH']
+        
+        Oh an using game constants you can also use primary_attributes[STRENGTH] and it should work ... though
+        this is untested.
         """
         return getattr(self, key.lower())
     
@@ -319,9 +328,7 @@ class PrimaryAttributeList(Base):
         
         data = "<PrimaryAttributeList(" + ', '.join(atts) + ')>'
         return data
-
-
-        
+      
 
 # Temporary Function to create a random hero
 def create_random_hero():

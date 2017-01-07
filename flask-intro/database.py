@@ -19,6 +19,7 @@ import os #Testing only
 
 #Internal game modules
 from game import Base, User, Hero, PrimaryAttributeList
+from abilities import Ability
 #Base is the initialize SQLAlchemy base class. It is used to set up the table metadata.
 #Used like so in the __init__ method: Base.metadata.create_all(engine)
 #What this actually means or does I have no idea but it is neccessary. And I know how to use it.
