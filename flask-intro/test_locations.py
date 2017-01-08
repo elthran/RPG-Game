@@ -6,6 +6,7 @@ from sqlalchemy import ARRAY
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
+from sqlalchemy import orm
 
 class AdjacentLocation(Base):
     __tablename__ = "adjacent_location"
@@ -13,14 +14,11 @@ class AdjacentLocation(Base):
     value = Column(Integer, nullable=False)
     location_id = Column(Integer, ForeignKey('location.id'))
     
-    def __init__(self, values):
-        print(values)
-        if len(values) == 1:
-            self.value=values[0]
-        else:
-            for value in values:
-                self += [AdjacentLocation([value])]
-                print(self)
+    def __init__(self, value):
+        self.value = value
+        
+    def __repr__(self):
+        return str(self.value)
 
 class Location(Base):
     __tablename__ = "location"
@@ -34,7 +32,27 @@ class Location(Base):
         'polymorphic_on':location_type
     }
     
-    adjacent_locations = relationship('AdjacentLocation')
+    dummy_adjacent_locations = relationship('AdjacentLocation')
+    adjacent_locations = []
+    
+    def __setattr__(self, key, value):
+        """Sets the attributes of Location class.
+        
+        Special case: if attribute is "adjacent_location" then attribute takes a list
+        of integers and sets it to a list of AdjacentLocation objects
+        """
+        if key is "adjacent_locations":
+            assert type(value) == type([])
+            self._add_adjacent_locations(value)
+        
+        super().__setattr__(key, value)
+    
+    @orm.reconstructor
+    def init_on_load(self):
+        self.adjacent_locations = [element.value for element in dummy_adjacent_locations]
+    
+    def _add_adjacent_locations(self, values):
+        self.dummy_adjacent_locations = [AdjacentLocation(value) for value in values]
     
 class World_Map(Location):
     """World map database ready class.
@@ -175,16 +193,16 @@ test_locations[7].adjacent_locations = [6]
 test_locations[8].adjacent_locations = [5]
 test_locations[9].adjacent_locations = [5, 6]"""
 
-test_locations2[1].adjacent_locations = AdjacentLocation([2, 3, 4])
-# test_locations2[2].adjacent_locations = [1, 5]
-# test_locations2[3].adjacent_locations = [1, 4]
-# test_locations2[4].adjacent_locations = [1, 3, 5, 7]
-# test_locations2[5].adjacent_locations = [2, 4, 6, 8]
-# test_locations2[6].adjacent_locations = [5, 9, 10]
-# test_locations2[7].adjacent_locations = [4, 8]
-# test_locations2[8].adjacent_locations = [5, 7, 9]
-# test_locations2[9].adjacent_locations = [6, 8]
-# test_locations2[10].adjacent_locations = [6]
+test_locations2[1].adjacent_locations = [2, 3, 4]
+test_locations2[2].adjacent_locations = [1, 5]
+test_locations2[3].adjacent_locations = [1, 4]
+test_locations2[4].adjacent_locations = [1, 3, 5, 7]
+test_locations2[5].adjacent_locations = [2, 4, 6, 8]
+test_locations2[6].adjacent_locations = [5, 9, 10]
+test_locations2[7].adjacent_locations = [4, 8]
+test_locations2[8].adjacent_locations = [5, 7, 9]
+test_locations2[9].adjacent_locations = [6, 8]
+test_locations2[10].adjacent_locations = [6]
 
 game_worlds = [World_Map(name="Test_World2", current_location_id=5, all_map_locations=test_locations2)]
 for location in game_worlds[0].all_map_locations:
