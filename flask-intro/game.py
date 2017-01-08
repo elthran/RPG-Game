@@ -39,7 +39,7 @@ class Hero(object):
         NOTE: user_id of zero is nobody ever. The minimum user_id is 1. :)
         """
         self.user_id = user_id
-        self.character_name = "Admin"
+        self.name = "Admin"
         self.age = 7
         self.archetype = "Woodsman"
         self.specialization = "Hunter"
@@ -87,8 +87,8 @@ class Hero(object):
 
     # Sets damage
     def update_secondary_attributes(self):
-        self.max_damage = update_maximum_damage(self)
-        self.min_damage = update_minimum_damage(self)
+        self.maximum_damage = update_maximum_damage(self)
+        self.minimum_damage = update_minimum_damage(self)
         self.attack_speed = update_attack_speed(self)
         self.attack_accuracy = update_attack_accuracy(self)
         self.first_strike = update_first_strike_chance(self)

@@ -37,8 +37,8 @@ class Monster(object):
         self.items_rewarded = []
 
     def update_monster_secondary_attributes(self):        
-        self.max_damage = update_monster_maximum_damage(self)
-        self.min_damage = update_monster_minimum_damage(self)
+        self.maximum_damage = update_monster_maximum_damage(self)
+        self.minimum_damage = update_monster_minimum_damage(self)
         self.attack_speed = update_monster_attack_speed(self)
         self.attack_accuracy = update_monster_attack_accuracy(self)
         self.first_strike = update_monster_first_strike_chance(self)
@@ -60,7 +60,7 @@ class Monster(object):
         self.current_sanctity = self.max_sanctity
 
     def __repr__(self):
-        return "\nName: %s\nDamage: %s" % (self.name, self.damage)
+        return "\nName: %s\nDamage: %s-%s\nHealth: %s/%s\nAttack Speed: %s\nAccuracy: %s" % (self.name, self.minimum_damage, self.maximum_damage, self.current_health, self.max_health, self.attack_speed, self.attack_accuracy)
 
 def monster_generator(level):
     monster = random.choice(bestiary_data)

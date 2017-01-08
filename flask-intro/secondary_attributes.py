@@ -35,14 +35,14 @@ def update_maximum_damage(myHero):
 def update_attack_speed(myHero):
     """ Not sure yet. """
     attack_speed = (7 * myHero.primary_attributes["Agility"]) + (2 * myHero.primary_attributes["Reflexes"])
-    attack_speed = 0.01 * math.sin(attack_speed) + 0.02 * attack_speed
-    attack_speed = math.floor(attack_speed)
+    attack_speed = - (10 / (attack_speed * 0.006 + 10)) + 1
+    attack_speed = round(attack_speed, 2)
     return attack_speed
 
 def update_attack_accuracy(myHero):
     """ Chance of successfully hitting an enemy in combat """
     attack_accuracy = (8 * myHero.primary_attributes["Agility"]) + (3 * myHero.primary_attributes["Reflexes"]) + (1 * myHero.primary_attributes["Perception"])
-    attack_accuracy = - (500 / (attack_accuracy * 0.12 + 10)) + 50
+    attack_accuracy = - (500 / (attack_accuracy * 0.08 + 10)) + 50
     attack_accuracy = math.floor(attack_accuracy)
     return attack_accuracy
 
@@ -188,22 +188,22 @@ def update_carrying_capacity(myHero):
 def update_monster_minimum_damage(monster):
     """ Minimum amount of damage you can do when hitting an opponent """
     minimum_damage = (5 * monster.primary_attributes["Strength"]) + (1 * monster.primary_attributes["Agility"])
-    minimum_damage = 0.1 * math.sin(minimum_damage) + 0.2 * minimum_damage
+    minimum_damage = 0.05 * math.sin(minimum_damage) + 0.15 * minimum_damage
     minimum_damage = math.floor(minimum_damage)
     return minimum_damage
 
 def update_monster_maximum_damage(monster):
     """ Maximum amount of damage you can do when hitting an opponent """
     maximum_damage = (1 * monster.primary_attributes["Strength"]) + (4 * monster.primary_attributes["Agility"])
-    maximum_damage = 0.2 * math.sin(maximum_damage) + 0.3 * maximum_damage + update_minimum_damage(monster)
+    maximum_damage = 0.125 * math.sin(maximum_damage) + 0.225 * maximum_damage + update_minimum_damage(monster)
     maximum_damage = math.floor(maximum_damage)
     return maximum_damage
 
 def update_monster_attack_speed(monster):
     """ Not sure yet. """
     attack_speed = (7 * monster.primary_attributes["Agility"]) + (2 * monster.primary_attributes["Reflexes"])
-    attack_speed = 0.01 * math.sin(attack_speed) + 0.02 * attack_speed
-    attack_speed = math.floor(attack_speed)
+    attack_speed = - (10 / (attack_speed * 0.006 + 10)) + 1
+    attack_speed = round(attack_speed, 2)
     return attack_speed
 
 def update_monster_attack_accuracy(monster):
@@ -307,7 +307,7 @@ def update_monster_maximum_sanctity(monster):
 def update_monster_maximum_health(monster):
     """ How much health your Hero has. At zero, you die. """
     maximum_health = (10 * monster.primary_attributes["Vitality"]) + (2 * monster.primary_attributes["Resilience"]) + (1 * monster.primary_attributes["Strength"]) + 10
-    maximum_health = (0.9 * maximum_health) ** 0.9
+    maximum_health = 0.1 * math.sin(maximum_health) + 0.1 * maximum_health
     maximum_health = math.floor(maximum_health)
     return maximum_health
 

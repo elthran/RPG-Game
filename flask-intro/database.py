@@ -107,7 +107,7 @@ def update_character(user_id, hero): ######### MODIFY HERE TO ADD MORE THINGS TO
 
     with con:
                 cur = con.cursor()
-                cur.execute('UPDATE CHARACTERS SET CHARACTER_NAME="' + hero.character_name + '" WHERE USER_ID=' + str(user_id) + ';')
+                cur.execute('UPDATE CHARACTERS SET CHARACTER_NAME="' + hero.name + '" WHERE USER_ID=' + str(user_id) + ';')
                 cur.execute("UPDATE CHARACTERS SET AGE=" + str(hero.age) + " WHERE USER_ID=" + str(user_id) + ';')
                 cur.execute('UPDATE CHARACTERS SET CHARACTER_CLASS="' + hero.archetype + '" WHERE USER_ID=' + str(user_id) + ';')
                 cur.execute('UPDATE CHARACTERS SET SPECIALIZATION="' + str(hero.specialization) + '" WHERE USER_ID='+ str(user_id) + ';')

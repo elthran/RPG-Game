@@ -263,8 +263,8 @@ def create_character():
     page_image = "beached"
     paragraph = "You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. A firm and inquisitive voice pierces the air."
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
-    if request.method == 'POST' and myHero.character_name == "Unknown":
-        myHero.character_name = request.form["character_name"]
+    if request.method == 'POST' and myHero.name == "Unknown":
+        myHero.name = request.form["name"]
         page_image = "old_man"
         paragraph = None
         conversation = [("Stranger: ", "Where do you come from, child?")]
@@ -272,25 +272,17 @@ def create_character():
     elif request.method == 'POST' and fathers_job == None:
         fathers_job = request.form["archetype"]
         if fathers_job == "Brute":
-            myHero.strength += 3
-            myHero.resilience += 1
-            myHero.vitality += 1
-            myHero.fortitude += 1
+            myHero.primary_attributes["Strength"] += 3
         elif fathers_job == "Scholar":
-            myHero.wisdom += 6
-            myHero.perception += 1
+            myHero.primary_attributes["Wisdom"] += 3
         elif fathers_job == "Hunter":
-            myHero.agility += 3
-            myHero.reflexes += 1
-            myHero.survivalism += 2
+            myHero.primary_attributes["Survivalism"] += 3
         elif fathers_job == "Merchant":
-            myHero.gold += 75
-            myHero.charisma += 5
-            myHero.fortuity += 1
+            myHero.primary_attributes["Charisma"] += 2
+            myHero.gold += 50
         elif fathers_job == "Priest":
-            myHero.divinity += 5
-            myHero.wisdom += 1
-    if myHero.character_name != "Unknown" and fathers_job != None:
+            myHero.primary_attributes["Divinity"] += 3
+    if myHero.name != "Unknown" and fathers_job != None:
         myHero.archetype = fathers_job
         database.update_character(session['id'],myHero)
         return redirect(url_for('home'))
@@ -432,7 +424,7 @@ def home():
         game_world = game_worlds[0]
         myHero.current_world = game_worlds[0]
     # If it's a new character, send them to cerate_character url
-    if myHero.character_name == "Unknown":
+    if myHero.name == "Unknown":
         return redirect(url_for('create_character'))
     # If they have leveled up, send them to level_up url
     elif myHero.attribute_points > 0:
