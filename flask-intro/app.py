@@ -236,6 +236,7 @@ def create_account():
         else:
             database.add_new_user(username, password)
             database.add_new_character(username_or_id=username)
+            # database.add_world_map_to_hero() maybe?
             return redirect(url_for('login'))
 
     return render_template('login.html', error=error, create_account=True)
@@ -796,8 +797,9 @@ if __name__ == '__main__':
 
     # os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    
-    database = EZDB('sqlite:///static/test_database.db', debug=False)
+    #Marked for rename
+    #I need a better name that "database.db"
+    database = EZDB('sqlite:///static/database.db', debug=False)
     myHero = Hero() #This allows myHero to be global variable in this module/file without magic. I think.
     app.run(debug=True)
 
