@@ -33,11 +33,16 @@ except ImportError:
     exit("Open a command prompt and type: pip install sqlalchemy.")
 
 class Location(Base):
-    __tablename__ = "locations"
+    __tablename__ = "location"
     
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
     location_type = Column(String)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':'location',
+        'polymorphic_on':location_type
+    }
     
     #Marked for restructure
     #Consider using ARRAY(Location) and just have a list of locations
@@ -48,7 +53,7 @@ class Location(Base):
     world_map_id = Column(Integer, ForeignKey('world_map.id'))
 
 
-class World_Map(Base):
+class World_Map(Location):
     """World map database ready class.
     
     Notes:
@@ -56,17 +61,19 @@ class World_Map(Base):
         id : initial location id, must be on the map
     """
     __tablename__ = "world_map"
+    
+    id = Column(Integer, ForeignKey('location.id'), primary_key=True)
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True, nullable=False)
-    location_type = Column(String, default="World_Map")
+    __mapper_args__ = {
+        'polymorphic_identity':'World_Map',
+    }
     places_of_interest = ARRAY(String)
     current_location_id = Column(Integer, nullable=False)
-    
+
     #Relationships
     all_map_locations = relationship("Location")
-    town = relationship("Town", uselist=False, back_populates="location_world")
-    cave = relationship("Cave", uselist=False, back_populates="location_world")
+    # town = relationship("Town", uselist=False, back_populates="location_world")
+    # cave = relationship("Cave", uselist=False, back_populates="location_world")
     heroes = relationship("Hero", back_populates="current_world")
     
     
@@ -96,7 +103,7 @@ class World_Map(Base):
         return directions
         
 
-class Town(Base):
+class Town(Location):
     """Town object database ready class.
     
     This object is currently for only one town. It would require a bit of work to make it an actual
@@ -104,13 +111,15 @@ class Town(Base):
     """
     __tablename__ = "town"
     
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True, nullable=False)
-    location_type = Column(String, default="Town")
+    id = Column(Integer, ForeignKey('location.id'), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':'Town',
+    }
     
     #Relationships
-    world_map_id = Column(Integer, ForeignKey('world_map.id'))
-    location_world = relationship("World_Map", back_populates="town")
+    # world_map_id = Column(Integer, ForeignKey('world_map.id'))
+    # location_world = relationship("World_Map", back_populates="town")
     heroes = relationship("Hero", back_populates="current_city")
     
     @orm.reconstructor
@@ -132,16 +141,18 @@ class Town(Base):
                                   ("/World_Map/" + self.location_world + "/" + str(self.id), "World Map")]
         
 
-class Cave(Base):
+class Cave(Location):
     __tablename__ = "cave"
     
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True, nullable=False)
-    location_type = Column(String, default="Cave")
+    id = Column(Integer, ForeignKey('location.id'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity':'Cave',
+    }
     
     #Relationships
-    world_map_id = Column(Integer, ForeignKey('world_map.id'))
-    location_world = relationship("World_Map", back_populates="cave")
+    # world_map_id = Column(Integer, ForeignKey('world_map.id'))
+    # location_world = relationship("World_Map", back_populates="cave")
     
     @orm.reconstructor
     def init_on_load(self):

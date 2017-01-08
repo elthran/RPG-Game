@@ -1,5 +1,6 @@
 from database import EZDB
 from game import Hero, User
+import locations
 from test_all import pr
 import datetime
 
@@ -115,6 +116,18 @@ def test_update_time():
     db.update_time(hero)
     assert hero.current_endurance == 1 #May fail on very slow machines do too slow code execution.
     tear_down(db)
+
+def test_add_world_map():
+    db = set_up()
+    db.add_new_user('Marlen', 'Brunner')
+    db.add_new_character(1, "Haldon", "Wizard")
+    hero = db.fetch_hero(character_name_or_id=1)
+    pr(hero.current_world)
+    hero.current_world = locations.game_worlds[0]
+    pr(hero.current_world)
+    exit("test_add_world_map")
+    assert 0
+    tear_down(db)
     
 
 def run_all():
@@ -131,6 +144,7 @@ def run_all():
     test_fetch_hero()
     test_update()
     test_update_time()
+    test_add_world_map()
     
     print("No Errors, yay!")
 

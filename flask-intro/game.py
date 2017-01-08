@@ -30,8 +30,6 @@ except ImportError:
     
 import datetime
 
-from items import Item
-
 # function used in '/level_up'
 #Fix ME! Or put me in a class as a method or something.
 def convert_input(x):
