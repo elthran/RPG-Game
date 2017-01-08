@@ -26,6 +26,8 @@ import os #Testing only
 #Internal game modules
 from game import User, Hero, PrimaryAttributeList
 from abilities import Ability
+from locations import Location, World_Map, Town, Cave
+from items import Item
 
 
 #Constants#
@@ -124,6 +126,7 @@ class EZDB:
         if character_name_or_id:
             return self.session.query(Hero).filter_by(user_id=username_or_id, character_name=character_name_or_id).first()
         return self.session.query(User).filter_by(id=username_or_id).first().heroes[0]
+    
     
     def update(self):
         """Commit current session.

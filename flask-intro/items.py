@@ -32,13 +32,13 @@ class Item(Base):
     #Marked for deletion as unnessary string manipulation.
     buy_name = Column(String, default=name + "_buy")
     
-    #Marked for restructering as causes conflics with multiple heroes?
+    #Marked for restructuring as causes conflics with multiple heroes?
     amount_owned = Column(Integer, default=1)
     equiptable = Column(Boolean, default=False)
     consumable = Column(Boolean, default=False)
     
     hero_id = Column(Integer, ForeignKey("heroes.id"))
-    myHero = relationship("Hero", back_populates="items")
+    myHero = relationship("Hero", back_populates="inventory")
     
     def __init__(self, name, myHero, buy_price, amount_owned=1):
         self.name = name
@@ -51,6 +51,21 @@ class Item(Base):
 
     def update_owner(self, myHero):
         self.myHero = myHero
+        
+    def __repr__(self): 
+        """Return string data about Item object.
+        """
+        atts = []
+        column_headers = self.__table__.columns.keys()
+        extra_attributes = [key for key in vars(self).keys() if key not in column_headers]
+        for key in column_headers:
+            atts.append('{}={}'.format(key, repr(getattr(self, key))))
+            
+        for key in sorted(extra_attributes):
+            atts.append('{}={}'.format(key, repr(getattr(self, key))))
+        
+        data = "<Item(" + ', '.join(atts) + ')>'
+        return data
 
 # Subclass of Item
 class Equiptable(Item):

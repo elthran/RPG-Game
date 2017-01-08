@@ -196,7 +196,7 @@ def login():
             #I recommend a dialogue here to select the specific hero that the user wants to play with.
             #Or a page redirect whatever ...
             
-            myHero = database.fetch_hero(username)
+            session['hero_id'] = database.fetch_hero(username).id #Gets the hero's id.
             
             return redirect(url_for('home'))
         #Marked for upgrade, consider checking if user exists and redirect to account creation page.
@@ -418,7 +418,7 @@ def admin():
 @app.route('/home')
 @login_required
 def home():
-    myHero.update_secondary_attributes()
+    myHero = database.fetch_hero(session['hero_id'])
     database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
  # initialize current_world
     if myHero.current_world == None:

@@ -19,7 +19,7 @@ from secondary_attributes import *
 
 try:
     from saveable_objects import Base
-    from sqlalchemy import Table, Column, Integer, String, DateTime
+    from sqlalchemy import Table, Column, Integer, String, DateTime, ARRAY
 
     from sqlalchemy import ForeignKey
     from sqlalchemy.orm import relationship
@@ -29,6 +29,8 @@ except ImportError:
     exit("Open a command prompt and type: pip install sqlalchemy.")
     
 import datetime
+
+from items import Item
 
 # function used in '/level_up'
 #Fix ME! Or put me in a class as a method or something.
@@ -136,13 +138,17 @@ class Hero(Base):
     #Relationships
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship("User", back_populates="heroes")
-    
     primary_attributes = relationship("PrimaryAttributeList", uselist=False, back_populates="hero")
-    
-    #Having problems with order by:
-    
     abilities = relationship("Ability", order_by="Ability.name", back_populates="myHero")
-    items = relationship("Item", order_by="Item.name", back_populates="myHero")
+    
+    world_map_id = Column(Integer, ForeignKey('world_map.id'))
+    current_world = relationship("World_Map", back_populates="heroes")
+    
+    town_id = Column(Integer, ForeignKey('town.id'))
+    current_city = relationship("Town", back_populates="heroes")
+    
+    #inventor is list of character's items.
+    inventory = relationship("Item", order_by="Item.name", back_populates="myHero")
     
     def not_yet_implemented():
         self.strength = 1
@@ -157,11 +163,8 @@ class Hero(Base):
         self.charisma = 1
         self.survivalism = 1
         self.fortuity = 1
-        self.equipped_items = []
-        self.inventory = []
-        self.abilities = []
+        
         self.chest_equipped = []
-
         self.errands = []
         self.current_quests = []
         self.completed_quests = []
@@ -170,31 +173,18 @@ class Hero(Base):
         self.bestiary = []
 
         self.known_locations = []
-        self.current_world = None #Type?
-        self.current_city = None #Type?
-
         self.wolf_kills = 0
     
-    def __repr__(self): 
-        """Return string data about Hero object.
-        """
-        atts = []
-        for key in self.__table__.columns.keys():
-            atts.append('{}={}'.format(key, getattr(self, key)))
-        
-        data = "<Hero(" + ', '.join(atts) + ')>'
-        return data 
 
     # Sets damage
-    #OLD NAME: update_secondary_attributes
     @orm.reconstructor
     def update_secondary_attributes(self):
         """Update secondary attributes of Hero object on database load.
         
         See: init_on_load() in SQLAlchemy
         """
-        #Make a list of the equitapped items or if none are equipt return empty list.
-        self.equipped_items = [item for item in self.items if item.equiptable] or []
+        #Make a list of the equipped items or if none are equipt return empty list.
+        self.equipped_items = [item for item in self.inventory if item.equiptable] or []
 
         self.max_damage = update_maximum_damage(self)
         self.min_damage = update_minimum_damage(self)
@@ -263,16 +253,21 @@ class Hero(Base):
                     self.inventory.remove(my_item)
                 break
 
-    def __str__(self):
-        """Return string representation of Hero opject.
+           
+    def __repr__(self): 
+        """Return string data about Hero object.
         """
-        
-        data = "Character object with attributes:"
         atts = []
-        for key in sorted(vars(self).keys()):
-            atts.append('{}: {} -> type: {}'.format(key, repr(vars(self)[key]), type(vars(self)[key])))
-        data = '\n'.join(atts)
-        return data
+        column_headers = self.__table__.columns.keys()
+        extra_attributes = [key for key in vars(self).keys() if key not in column_headers]
+        for key in column_headers:
+            atts.append('{}={}'.format(key, repr(getattr(self, key))))
+            
+        for key in sorted(extra_attributes):
+            atts.append('{}={}'.format(key, repr(getattr(self, key))))
+        
+        data = "<Hero(" + ', '.join(atts) + ')>'
+        return data 
     
     def __eq__(self, other): 
         return self.__dict__ == other.__dict__

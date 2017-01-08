@@ -88,6 +88,23 @@ class Ability(Base):
 
     def update_owner(self, myHero):
         self.myHero = myHero
+        
+    
+    def __repr__(self): 
+        """Return string data about Ability object.
+        """
+        atts = []
+        column_headers = self.__table__.columns.keys()
+        extra_attributes = [key for key in vars(self).keys() if key not in column_headers]
+        for key in column_headers:
+            atts.append('{}={}'.format(key, repr(getattr(self, key))))
+            
+        for key in sorted(extra_attributes):
+            atts.append('{}={}'.format(key, repr(getattr(self, key))))
+        
+        data = "<Ability(" + ', '.join(atts) + ')>'
+        return data
+        
 
 class Archetype_Ability(Ability):
     def __init__(self, *args, archetype="All", **kwargs):

@@ -19,55 +19,106 @@ Game Objects (from other module maybe?) I am just going to start with Location a
 --display
 """
 
-class Location(object):
-    #Globals
-    def __init__(self, name, id):
-        self.name = name
-        self.id = id
-        self.location_type = None
-        self.adjacent_locations = []
-        pass
+try:
+    #!Important!: Base can only be defined in ONE location and ONE location ONLY!
+    #Well ... ok, but for simplicity sake just pretend that that is true.
+    from saveable_objects import Base
+    
+    from sqlalchemy import Column, Integer, String, Boolean, ARRAY
+    from sqlalchemy import ForeignKey
+    from sqlalchemy.orm import relationship
+    from sqlalchemy import orm
+    from sqlalchemy import CheckConstraint
+except ImportError:
+    exit("Open a command prompt and type: pip install sqlalchemy.")
 
-class World_Map(Location):
-	# id : initial location id, must be on the map
-    def __init__(self, name, id, all_map_locations):
-        super(World_Map, self).__init__(name, id)
-        self.location_type = "World_Map"
-        #self.map_coordinates = [0,0]
-        #self.all_map_ids = all_map_ids
+class Location(Base):
+    __tablename__ = "locations"
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True, nullable=False)
+    location_type = Column(String)
+    
+    #Marked for restructure
+    #Consider using ARRAY(Location) and just have a list of locations
+    #Or ARRAY and use Location id's
+    adjacent_locations = ARRAY(Integer)
+    
+    #Relationships
+    world_map_id = Column(Integer, ForeignKey('world_map.id'))
 
-        self.all_map_locations = all_map_locations
-        self.current_location = None
-        self.map_cities = []
+
+class World_Map(Base):
+    """World map database ready class.
+    
+    Notes:
+        current_location is a location object in the all_map_locations list.
+        id : initial location id, must be on the map
+    """
+    __tablename__ = "world_map"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True, nullable=False)
+    location_type = Column(String, default="World_Map")
+    places_of_interest = ARRAY(String)
+    current_location_id = Column(Integer, nullable=False)
+    
+    #Relationships
+    all_map_locations = relationship("Location")
+    town = relationship("Town", uselist=False, back_populates="location_world")
+    cave = relationship("Cave", uselist=False, back_populates="location_world")
+    heroes = relationship("Hero", back_populates="current_world")
+    
+    
+    @orm.reconstructor
+    def init_on_load(self):
+        """Build derived attributes of object on database load.
+        
+        See: init_on_load() in SQLAlchemy
+        """
+        self.current_location = self.all_map_locations[int(self.current_location_id)]
+        self.map_cities = [location for location in self.all_map_locations if (location == self.current_location and (location.location_type == "Town" or location.location_type == "Cave"))] # too long, but will refactor later 
         self.page_title = self.name
         self.page_heading = "You are wandering in the world"
         self.page_image = "map"
         self.paragraph = "Be safe"
-        self.page_image = name
-        self.places_of_interest = []
+        self.page_image = self.name
+    
 
     def show_directions(self):
         directions = self.current_location.adjacent_locations
         if directions == []:
             directions = [1,2,3]
-        self.map_cities = [location for location in self.all_map_locations if (location == self.current_location and (location.location_type == "Town" or location.location_type == "Cave"))] # too long, but will refactor later
         if len(self.map_cities) > 0:
             self.places_of_interest = [("/" + self.map_cities[0].location_type + "/" + self.map_cities[0].name, self.map_cities[0].name)]
         else:
             self.places_of_interest = []
         return directions
+        
 
-# temporarily location_id is the same as the index in the list of all_map_locations
-    def find_location(self, location_id):
-        id = int(location_id)
-        return self.all_map_locations[int(id)]
-
-class Town(Location):
-    def __init__(self, name, id, location_world):
-        super(Town, self).__init__(name, id)
-        self.location_type = "Town"
-        self.location_world = location_world
-        #self.location_coordinate = [0,0]
+class Town(Base):
+    """Town object database ready class.
+    
+    This object is currently for only one town. It would require a bit of work to make it an actual
+    generic "Town" object that could be used for any town you want.
+    """
+    __tablename__ = "town"
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True, nullable=False)
+    location_type = Column(String, default="Town")
+    
+    #Relationships
+    world_map_id = Column(Integer, ForeignKey('world_map.id'))
+    location_world = relationship("World_Map", back_populates="town")
+    heroes = relationship("Hero", back_populates="current_city")
+    
+    @orm.reconstructor
+    def init_on_load(self):
+        """Build derived attributes of object on database load.
+        
+        See: init_on_load() in SQLAlchemy
+        """
         self.page_title = self.name
         self.page_heading = "You are in " + self.name
         self.page_image = "town"
@@ -79,13 +130,21 @@ class Town(Location):
                                   ("/old_mans_hut", "Old Man's Hut"),
                                   ("/leave_town", "Village Gate", "Outskirts"),
                                   ("/World_Map/" + self.location_world + "/" + str(self.id), "World Map")]
+        
 
-class Cave(Location):
-    def __init__(self, name, id, location_world):
-        super(Cave, self).__init__(name, id)
-        self.location_type = "Cave"
-        self.location_world = location_world
-        #self.location_coordinate = [1,1]
+class Cave(Base):
+    __tablename__ = "cave"
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True, nullable=False)
+    location_type = Column(String, default="Cave")
+    
+    #Relationships
+    world_map_id = Column(Integer, ForeignKey('world_map.id'))
+    location_world = relationship("World_Map", back_populates="cave")
+    
+    @orm.reconstructor
+    def init_on_load(self):
         self.page_title = self.name
         self.page_heading = "You are in a cave called " + self.name
         self.page_image = "cave"
@@ -141,13 +200,13 @@ test_locations2 = []
  +Thornwall at location 5
  +Creepy Cave at location 2
  +'''
-
+ 
 for i in range(0, 12):
-    test_location = Location("location " + str(i),i)
+    test_location = Location(name=("location " + str(i)),id=i)
     test_locations2.append(test_location)
 
-test_locations2[5] = Town("Thornwall", 5, "Test_World")
-test_locations2[2] = Cave("Creepy cave", 2, "Test_World")
+test_locations2[5] = Town(name="Thornwall", id=5)
+test_locations2[2] = Cave(name="Creepy cave", id=2)
 
 """ Define all connections
 
@@ -213,7 +272,7 @@ test_locations2[8].adjacent_locations = [5, 7, 9]
 test_locations2[9].adjacent_locations = [6, 8]
 test_locations2[10].adjacent_locations = [6]
 
-game_worlds = [World_Map("Test_World2", 5, test_locations2)]
+game_worlds = [World_Map(name="Test_World2", current_location_id=5, all_map_locations=test_locations2)]
 #game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
 #game_worlds = [World_Map("Test_World", TEST_WORLD_ID, test_locations)]
 

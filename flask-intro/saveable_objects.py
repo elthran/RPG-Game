@@ -21,8 +21,8 @@ try:
 except ImportError:
     exit("Open a command prompt and type: pip install sqlalchemy.")
 
-from abilities import Ability
-from items import Item
+# from abilities import Ability
+# from items import Item
 
 # heroes_ablities_association_table = Table('heroes_ablities_association', Base.metadata,
     # Column('heroes_id', Integer, ForeignKey('heroes.id')),
