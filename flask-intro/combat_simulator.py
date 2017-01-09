@@ -15,56 +15,42 @@ from game import *
 from bestiary import *
 import math, random
 
-# gives a list of distribution of the chance to strike a certain number of times
-def determine_attacker(character1 ,character2, last_attacker):
-    if last_attacker and last_attacker.name == character1.name:
-        return character2
-    else:
-        return character1
+def determine_attacker_defender(character1 ,character2):
+    character1_chance = (0.5 + (character1.attack_speed - character2.attack_speed) / 2) * 100
+    if character1_chance >= random.randint(0,100):
+        return character1, character2
+    return character2, character1
 
-def determine_attack_success(attacker, defender):
+def determine_attack_success(attacker, defender):   # Need to check for each type of possible miss separately.
     if attacker.attack_accuracy < random.randint(0,35):
         return False
     return True
 
-def determine_damage(attacker, defender):
+def determine_damage(attacker, defender):   # Need raw damage, then separate functions for reducing damage.
     attack_damage = random.randint(attacker.minimum_damage, attacker.maximum_damage)
     attack_damage = attack_damage * (1 - defender.defence_modifier / 100)
+    attack_damage = math.floor(attack_damage)
     return attack_damage
-
 
 def battle_logic(character1 ,character2):
     print(character1.name + " Health: " + str(character1.current_health) + "\n" + character2.name + " Health: " + str(character2.current_health) + "\n")
-    #combat_log = []
-    #combat_log.append(("Enemy HP:", str(enemy.current_health) + "/" + str(enemy.max_health)))
-    #combat_log.append(("Hero HP:", str(myHero.current_health) + "/" + str(myHero.max_health)))
-    current_attacker = None
     while character1.current_health > 0 and character2.current_health > 0:
-        if determine_attacker(character1, character2, current_attacker) == character1:
-            current_attacker = character1
-            if determine_attack_success(character1, character2):
-                print("                           " + character1.name + " has HIT!!!!!!")
-                character2.current_health -= determine_damage(character1, character2)
-            else:
-                print(character1.name + " misses " + character2.name)
-        elif determine_attacker(character1 ,character2, current_attacker) == character2:
-            current_attacker = character2
-            if determine_attack_success(character2, character1):
-                print("                           " + character2.name + " has HIT!!!!!!")
-                character1.current_health -= determine_damage(character2, character1)
-            else:
-                print(character2.name + " misses " + character1.name)
+        attacker,defender = determine_attacker_defender(character1, character2)
+        if determine_attack_success(attacker, defender):
+            print("                           " + attacker.name + " has HIT!!!!!!")
+            defender.current_health -= determine_damage(attacker, defender)
         else:
-            print("Can't determine attacker")
-        print(character1.name + " Health: " + str(character1.current_health) + "\n" + character2.name + " Health: " + str(character2.current_health) + "\n\n")
+            print(attacker.name + " misses " + defender.name)
+        print(attacker.name + " Health: " + str(attacker.current_health) + "\n" + defender.name + " Health: " + str(defender.current_health) + "\n\n")
     if character1.current_health <= 0:
         print(character1.name + " is dead")
     else:
         print(character2.name + " is dead")
 
-monster = monster_generator(10)
+monster = monster_generator(7)
 battle_hero = Hero()
 battle_hero.update_secondary_attributes()
 battle_hero.refresh_character()
 print(monster)
+print("\nName: " + battle_hero.name,"\nDamage: " + str(battle_hero.minimum_damage) + "-" + str(battle_hero.maximum_damage), "\nHealth: " + str(battle_hero.current_health) + "/" + str(battle_hero.max_health), "\nAttack Speed: " + str(battle_hero.attack_speed), "\nAccuracy: " + str(battle_hero.attack_accuracy) + "\n")
 battle_logic(battle_hero, monster)

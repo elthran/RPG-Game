@@ -188,14 +188,14 @@ def update_carrying_capacity(myHero):
 def update_monster_minimum_damage(monster):
     """ Minimum amount of damage you can do when hitting an opponent """
     minimum_damage = (5 * monster.primary_attributes["Strength"]) + (1 * monster.primary_attributes["Agility"])
-    minimum_damage = 0.05 * math.sin(minimum_damage) + 0.15 * minimum_damage
+    minimum_damage = 0.02 * math.sin(minimum_damage) + 0.1 * minimum_damage
     minimum_damage = math.floor(minimum_damage)
     return minimum_damage
 
 def update_monster_maximum_damage(monster):
     """ Maximum amount of damage you can do when hitting an opponent """
     maximum_damage = (1 * monster.primary_attributes["Strength"]) + (4 * monster.primary_attributes["Agility"])
-    maximum_damage = 0.125 * math.sin(maximum_damage) + 0.225 * maximum_damage + update_minimum_damage(monster)
+    maximum_damage = 0.05 * math.sin(maximum_damage) + 0.125 * maximum_damage + update_minimum_damage(monster)
     maximum_damage = math.floor(maximum_damage)
     return maximum_damage
 
@@ -209,7 +209,7 @@ def update_monster_attack_speed(monster):
 def update_monster_attack_accuracy(monster):
     """ Chance of successfully hitting an enemy in combat """
     attack_accuracy = (8 * monster.primary_attributes["Agility"]) + (3 * monster.primary_attributes["Reflexes"]) + (1 * monster.primary_attributes["Perception"])
-    attack_accuracy = - (500 / (attack_accuracy * 0.12 + 10)) + 50
+    attack_accuracy = - (500 / (attack_accuracy * 0.05 + 10)) + 50
     attack_accuracy = math.floor(attack_accuracy)
     return attack_accuracy
 
