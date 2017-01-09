@@ -56,10 +56,10 @@ class BaseList(Base):
     
     def __init__(self, value):
         self.value = value
-        if type(value) is type(str):
-            str_value = value
-        elif type(value) is type(int):
-            int_value = value
+        if type(value) is type(str()):
+            self.str_value = value
+        elif type(value) is type(int()):
+            self.int_value = value
         
     @orm.reconstructor
     def init_on_load(self):
@@ -68,10 +68,25 @@ class BaseList(Base):
         Currently implements the str_value attribute.
         Currently implements the int_value attribute.
         """
-        self.value = int_value or str_value
+        self.value = self.int_value or self.str_value
+    
+    def __str__(self):
+        return repr(self.value)
         
-    def __repr__(self):
-        return "DatabaseListElement[{}]".format(repr(self.value))
+    def __repr__(self): 
+        """Returns string representation of object.
+        """
+        atts = []
+        column_headers = self.__table__.columns.keys()
+        extra_attributes = [key for key in vars(self).keys() if key not in column_headers]
+        for key in column_headers:
+            atts.append('{}={}'.format(key, repr(getattr(self, key))))
+            
+        for key in sorted(extra_attributes):
+            atts.append('{}={}'.format(key, repr(getattr(self, key))))
+        
+        data = "<{}({})>".format('BaseList', ', '.join(atts))
+        return data
 
 #Marked for refractor
 #Consider implementing different adjacent_locations attribute that is a list of locations
@@ -117,8 +132,8 @@ class Location(Base):
         Currently implements the adjacent_locations attribute.
         Currently implements the places_of_interest attribute.
         """
-        self.adjacent_locations = [element.value for element in dummy_adjacent_locations]
-        self.places_of_interest = [element.value for element in dummy_places_of_interest]
+        self.adjacent_locations = [element.value for element in self.dummy_adjacent_locations]
+        self.places_of_interest = [element.value for element in self.dummy_places_of_interest]
     
     def _add_adjacent_locations(self, values):
         """Store adjacent_locations assignment as a list of attributes.
@@ -129,6 +144,40 @@ class Location(Base):
         """Store places_of_interest assignment as a list of attributes.
         """
         self.dummy_places_of_interest = [BaseList(value) for value in values]
+        
+    def __str__(self): 
+        """Returns string representation of object.
+        """
+        atts = []
+        column_headers = self.__table__.columns.keys()
+        extra_attributes = [key for key in vars(self).keys()
+            if key not in column_headers
+            if key != '_sa_instance_state'
+            if 'dummy' not in key]
+        for key in column_headers:
+            atts.append('{}={}'.format(key, repr(getattr(self, key))))
+            
+        for key in sorted(extra_attributes):
+            atts.append('{}={}'.format(key, repr(getattr(self, key))))
+        
+        data = "<{}({})>".format(self.location_type, ', '.join(atts))
+        return data
+        
+        
+    def __repr__(self): 
+        """Returns string representation of object.
+        """
+        atts = []
+        column_headers = self.__table__.columns.keys()
+        extra_attributes = [key for key in vars(self).keys() if key not in column_headers]
+        for key in column_headers:
+            atts.append('{}={}'.format(key, repr(getattr(self, key))))
+            
+        for key in sorted(extra_attributes):
+            atts.append('{}={}'.format(key, repr(getattr(self, key))))
+        
+        data = "<{}({})>".format(self.location_type, ', '.join(atts))
+        return data
 
 
 class World_Map(Location):
@@ -158,7 +207,7 @@ class World_Map(Location):
     current_location_id = Column(Integer, nullable=False) 
     towns = relationship("Town", foreign_keys='[Town.id]', back_populates="location_world")
     caves = relationship("Cave", foreign_keys='[Cave.id]', back_populates="location_world")
-    # heroes = relationship("Hero", back_populates="current_world")
+    heroes = relationship("Hero", back_populates="current_world")
     
     
     def __init__(self, name="Test_World2", current_location_id=None, all_map_locations=[]):
@@ -408,6 +457,9 @@ game_worlds = [World_Map(name="Test_World2", current_location_id=5, all_map_loca
 #game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
 if __name__ == "__main__":
     """For testing run module.
+    
+    Because of circular imports I can't work out how to import the test suite here ....
+    
     """
-    import tests.locations_tests.py
+    # import tests.locations_tests
     

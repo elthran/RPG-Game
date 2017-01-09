@@ -1,9 +1,8 @@
-
-# from locations import Base
-from locations import Location
-from locations import World_Map, Town, Cave
+from locations import Town, Location, World_Map, Base, Cave
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from test_all import pr
+import os
 
 """
 This program runs as a test suite for the locations module when it is imported.
@@ -17,7 +16,22 @@ I am using this tutorial http://docs.python-guide.org/en/latest/writing/tests/
 
 
 
-def setup():
+def setup(echo=False):
+    database = 'sqlite:///tests/test.db'
+    engine = create_engine(database, echo=echo)
+    file_name = database[10:]
+    Base.metadata.create_all(engine, checkfirst=True)
+    Session = sessionmaker(bind=engine)
+    return Session(), engine, file_name
+
+def teardown(session, engine, file_name, delete=True):
+    session.close()
+    engine.dispose()
+    if delete:
+        os.remove(file_name)
+
+
+def not_used():
     test_locations = []
     test_locations2 = []
 
@@ -113,28 +127,48 @@ def setup():
     test_locations2[9].adjacent_locations = [6, 8]
     test_locations2[10].adjacent_locations = [6]
 
-    game_world = [World_Map(name="Test_World2", current_location_id=5, all_map_locations=test_locations2)]
+    game_worlds = [World_Map(name="Test_World2", current_location_id=5, all_map_locations=test_locations2)]
     return game_worlds
     
-    
-    test_locations2 = locations.test_locations2
-    map = locations.game_worlds[0]
-    for location in map.all_map_locations:
-        print(location.name, location.location_type, location.adjacent_locations)
+def test_location_all():
+    game_worlds = setup()
+    test_locations2 = game_worlds[0].all_map_locations
+    map = game_worlds[0]
+    # for location in map.all_map_locations:
+        # print(location.name, location.location_type, location.adjacent_locations)
 
     cave = test_locations2[2]
     town = test_locations2[5]
-    print(map.caves)
-    print(cave.location_world)
-    print(map.towns)
-    print(town.location_world)
+    # print(map.caves)
+    # print(cave.location_world)
+    # print(map.towns)
+    # print(town.location_world)
         
-    # engine = create_engine('sqlite:///:memory:', echo=True)
-    # Base.metadata.create_all(engine, checkfirst=True)
-    # Session = sessionmaker(bind=engine)
-    # session = Session()
+    engine = create_engine('sqlite:///:memory:', echo=True)
+    Base.metadata.create_all(engine, checkfirst=True)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # session.add(map)
 
+def test_adjacent_locations(session, engine, filename):
+    # home = Location(name="Home")
+    # session.add(home)
+    # session.commit()
+    home2 = session.query(Location).filter_by(name='Home').first()
+    home2.adjacent_locations = [2, 3, 4]
+    session.add(home2)
+    session.commit()
+    home3 = session.query(Location).filter_by(name='Home').first()
+    # assert home.adjacent_locations == 
+    assert home2.adjacent_locations == home3.adjacent_locations == [2, 3, 4]
+    
+def test_town(session, engine, file_name):
+    pass
+    
 def run_all():
-    setup()
+    session, engine, filename = setup()
+    test_adjacent_locations(session, engine, filename)
+    teardown(session, engine, filename, delete=False)
+    print("All locations_tests passed. No Errors, yay!")
     
 run_all()

@@ -146,6 +146,6 @@ def run_all():
     test_update_time()
     test_add_world_map()
     
-    print("No Errors, yay!")
+    print("All database_tests passed. No Errors, yay!")
 
 run_all()
