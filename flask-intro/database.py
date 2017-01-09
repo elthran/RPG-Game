@@ -178,35 +178,7 @@ class EZDB:
                             
                         
 if __name__ == "__main__":
-
-    """Methods to replicated:
-    update_time
-    check_password
-    validate
-    add_new_user - Done!
-    get_user_id - Done!
-    add_new_character
-    update_character
-    fetch_character_data
-    """
-    
     import tests.database_tests.py
-    
-    # ezdb = EZDB()
-    
-    # print('###################')
-    # username = 'marlen'
-    # password = 'brunner'
-    # ezdb.add_new_user(username, password)
-    # id = ezdb.get_user_id(username)
-    # pr('ID:', id)
-    # pr(m_user.username)
-    # session.add(m_user)
-    
-    
-    # our_user = EzDB.get_user_by_username(session, 'marlen')
-    # print(our_user.username)
-    # print(m_user is our_user)
     
     
     

@@ -23,15 +23,59 @@ try:
     #!Important!: Base can only be defined in ONE location and ONE location ONLY!
     #Well ... ok, but for simplicity sake just pretend that that is true.
     from saveable_objects import Base
-    
-    from sqlalchemy import Column, Integer, String, Boolean, ARRAY
+    from sqlalchemy import Column, Integer, String, Boolean
     from sqlalchemy import ForeignKey
     from sqlalchemy.orm import relationship
     from sqlalchemy import orm
-    from sqlalchemy import CheckConstraint
+
+    ####!IMPORTANT!####
+    #Sqlite does not implement sqlalchemy.ARRAY so don't try and use it.
 except ImportError:
     exit("Open a command prompt and type: pip install sqlalchemy.")
 
+class BaseList(Base):
+    """Stores list objects in database.
+    
+    To implement:
+    1. add line in this class: parent_id = Column(Integer, ForeignKey('parent.id'))
+    2. add line in foreign class: dummy_children = relationship("BaseList")
+    3. add __setattr__ method in foreign class
+    4. build init_on_load method in foreign class
+    5. build _add_children method in foreign class
+    
+    See Location (locations.py) class for implementation.
+    """
+    __tablename__ = "base_list"
+    id = Column(Integer, primary_key=True)
+    int_value = Column(Integer)
+    str_value = Column(String)
+    value = None
+    
+    
+    location_id = Column(Integer, ForeignKey('location.id'))
+    
+    def __init__(self, value):
+        self.value = value
+        if type(value) is type(str):
+            str_value = value
+        elif type(value) is type(int):
+            int_value = value
+        
+    @orm.reconstructor
+    def init_on_load(self):
+        """Build extra data attributes on object load.
+        
+        Currently implements the str_value attribute.
+        Currently implements the int_value attribute.
+        """
+        self.value = int_value or str_value
+        
+    def __repr__(self):
+        return "DatabaseListElement[{}]".format(repr(self.value))
+
+#Marked for refractor
+#Consider implementing different adjacent_locations attribute that is a list of locations
+#Consider using a grid and implementing (x,y) coordinates for each location.
 class Location(Base):
     __tablename__ = "location"
     
@@ -40,17 +84,51 @@ class Location(Base):
     location_type = Column(String)
     
     __mapper_args__ = {
-        'polymorphic_identity':'location',
+        'polymorphic_identity':'Location',
         'polymorphic_on':location_type
     }
     
-    #Marked for restructure
-    #Consider using ARRAY(Location) and just have a list of locations
-    #Or ARRAY and use Location id's
-    adjacent_locations = ARRAY(Integer)
+    dummy_adjacent_locations = relationship('BaseList')
+    adjacent_locations = []
+    dummy_places_of_interest = relationship('BaseList')
+    places_of_interest = []
     
-    #Relationships
-    world_map_id = Column(Integer, ForeignKey('world_map.id'))
+    def __setattr__(self, key, value):
+        """Sets the attributes of Location class.
+        
+        Special case: if attribute is "adjacent_location" then attribute takes a list
+        of integers and sets it to a list of BaseList elements
+        Special case: if attribute is "places_of_interest" then attribute takes a list
+        of integers and sets it to a list of BaseList elements
+        """
+        if key is "adjacent_locations":
+            assert type(value) == type([])
+            self._add_adjacent_locations(value)
+        elif key is "places_of_interest":
+            assert type(value) == type([])
+            self._add_places_of_interest(value)
+        
+        super().__setattr__(key, value)
+    
+    @orm.reconstructor
+    def init_on_load(self):
+        """Build extra data attributes on object load.
+        
+        Currently implements the adjacent_locations attribute.
+        Currently implements the places_of_interest attribute.
+        """
+        self.adjacent_locations = [element.value for element in dummy_adjacent_locations]
+        self.places_of_interest = [element.value for element in dummy_places_of_interest]
+    
+    def _add_adjacent_locations(self, values):
+        """Store adjacent_locations assignment as a list of attributes.
+        """
+        self.dummy_adjacent_locations = [BaseList(value) for value in values]
+    
+    def _add_places_of_interest(self, values):
+        """Store places_of_interest assignment as a list of attributes.
+        """
+        self.dummy_places_of_interest = [BaseList(value) for value in values]
 
 
 class World_Map(Location):
@@ -64,17 +142,36 @@ class World_Map(Location):
     
     id = Column(Integer, ForeignKey('location.id'), primary_key=True)
 
+    page_heading = Column(String, default="You are wandering in the world")
+    page_image = Column(String, default="map")
+    paragraph = Column(String, default="Be safe")
+
     __mapper_args__ = {
         'polymorphic_identity':'World_Map',
     }
-    places_of_interest = ARRAY(String)
+    
     current_location_id = Column(Integer, nullable=False)
 
     #Relationships
+    #Should be a list of all location objects that the World_Map contains.
     all_map_locations = relationship("Location")
-    # town = relationship("Town", uselist=False, back_populates="location_world")
-    # cave = relationship("Cave", uselist=False, back_populates="location_world")
-    heroes = relationship("Hero", back_populates="current_world")
+    current_location_id = Column(Integer, nullable=False) 
+    towns = relationship("Town", foreign_keys='[Town.id]', back_populates="location_world")
+    caves = relationship("Cave", foreign_keys='[Cave.id]', back_populates="location_world")
+    # heroes = relationship("Hero", back_populates="current_world")
+    
+    
+    def __init__(self, name="Test_World2", current_location_id=None, all_map_locations=[]):
+        """Build World_Map extend attributes.
+        
+        Sets up caves attribute.
+        """
+        self.name = name
+        self.current_location_id = current_location_id
+        self.all_map_locations = all_map_locations
+        self.caves = [location for location in all_map_locations if location.location_type == "Cave"]
+        self.towns = [location for location in all_map_locations if location.location_type == "Town"]
+        
     
     
     @orm.reconstructor
@@ -85,10 +182,8 @@ class World_Map(Location):
         """
         self.current_location = self.all_map_locations[int(self.current_location_id)]
         self.map_cities = [location for location in self.all_map_locations if (location == self.current_location and (location.location_type == "Town" or location.location_type == "Cave"))] # too long, but will refactor later 
+        
         self.page_title = self.name
-        self.page_heading = "You are wandering in the world"
-        self.page_image = "map"
-        self.paragraph = "Be safe"
         self.page_image = self.name
     
 
@@ -118,9 +213,9 @@ class Town(Location):
     }
     
     #Relationships
-    # world_map_id = Column(Integer, ForeignKey('world_map.id'))
-    # location_world = relationship("World_Map", back_populates="town")
-    heroes = relationship("Hero", back_populates="current_city")
+    world_map_id = Column(Integer, ForeignKey('world_map.id'))
+    location_world = relationship("World_Map", foreign_keys=[world_map_id], back_populates="towns")
+    # heroes = relationship("Hero", back_populates="current_city")
     
     @orm.reconstructor
     def init_on_load(self):
@@ -128,6 +223,8 @@ class Town(Location):
         
         See: init_on_load() in SQLAlchemy
         """
+        #Marked for restructure
+        #Consider adding these during creation or making them column defaults
         self.page_title = self.name
         self.page_heading = "You are in " + self.name
         self.page_image = "town"
@@ -151,16 +248,37 @@ class Cave(Location):
     }
     
     #Relationships
-    # world_map_id = Column(Integer, ForeignKey('world_map.id'))
-    # location_world = relationship("World_Map", back_populates="cave")
+    world_map_id = Column(Integer, ForeignKey('world_map.id'))
+    location_world = relationship("World_Map", foreign_keys=[world_map_id], back_populates="caves")
+   
     
     @orm.reconstructor
     def init_on_load(self):
+        """Runs on object load from database.
+        """
+        #Marked for restructure.
+        #Consider making defaults in columns
         self.page_title = self.name
         self.page_heading = "You are in a cave called " + self.name
         self.page_image = "cave"
         self.paragraph = "There are many scary places to die within the cave. Have a look!"
-        self.places_of_interest = [("/World_Map/" + self.location_world + "/" + str(self.id), "World Map")]
+        self.places_of_interest = [("/World_Map/" + str(self.location_world) + "/" + str(self.id), "World Map")]
+        
+    
+    def __repr__(self): 
+        """Returns string representation of object.
+        """
+        atts = []
+        column_headers = self.__table__.columns.keys()
+        extra_attributes = [key for key in vars(self).keys() if key not in column_headers]
+        for key in column_headers:
+            atts.append('{}={}'.format(key, repr(getattr(self, key))))
+            
+        for key in sorted(extra_attributes):
+            atts.append('{}={}'.format(key, repr(getattr(self, key))))
+        
+        data = "<{}({})>".format(self.location_type, ', '.join(atts))
+        return data
 
 
 """
@@ -288,4 +406,8 @@ game_worlds = [World_Map(name="Test_World2", current_location_id=5, all_map_loca
 #game_worlds = [World_Map("Test_World", TEST_WORLD_ID, test_locations)]
 
 #game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
-
+if __name__ == "__main__":
+    """For testing run module.
+    """
+    import tests.locations_tests.py
+    
