@@ -22,7 +22,6 @@ Game Objects (from other module maybe?) I am just going to start with Location a
 try:
     #!Important!: Base can only be defined in ONE location and ONE location ONLY!
     #Well ... ok, but for simplicity sake just pretend that that is true.
-    from saveable_objects import Base
     from sqlalchemy import Column, Integer, String, Boolean
     from sqlalchemy import ForeignKey
     from sqlalchemy.orm import relationship
@@ -30,8 +29,10 @@ try:
 
     ####!IMPORTANT!####
     #Sqlite does not implement sqlalchemy.ARRAY so don't try and use it.
-except ImportError:
-    exit("Open a command prompt and type: pip install sqlalchemy.")
+except ImportError as e:
+    exit("Open a command prompt and type: pip install sqlalchemy."), e
+    
+from base_classes import Base
 
 class BaseList(Base):
     """Stores list objects in database.
@@ -207,7 +208,6 @@ class World_Map(Location):
     current_location_id = Column(Integer, nullable=False) 
     towns = relationship("Town", foreign_keys='[Town.id]', back_populates="location_world")
     caves = relationship("Cave", foreign_keys='[Cave.id]', back_populates="location_world")
-    heroes = relationship("Hero", back_populates="current_world")
     
     
     def __init__(self, name="Test_World2", current_location_id=None, all_map_locations=[]):
@@ -264,7 +264,7 @@ class Town(Location):
     #Relationships
     world_map_id = Column(Integer, ForeignKey('world_map.id'))
     location_world = relationship("World_Map", foreign_keys=[world_map_id], back_populates="towns")
-    # heroes = relationship("Hero", back_populates="current_city")
+   
     
     @orm.reconstructor
     def init_on_load(self):

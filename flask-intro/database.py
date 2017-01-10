@@ -9,15 +9,15 @@ Mainly using the tutorial at: http://docs.sqlalchemy.org/en/latest/orm/tutorial.
 
 try:
     from sqlalchemy import create_engine
-    #Base is the initialize SQLAlchemy base class. It is used to set up the table metadata.
-    #Used like so in the __init__ method: Base.metadata.create_all(engine)
-    #What this actually means or does I have no idea but it is neccessary. And I know how to use it.
-    #!Important!: Base can only be defined in ONE location and ONE location ONLY!
-    import saveable_objects
-
     from sqlalchemy.orm import sessionmaker
-except ImportError:
-    exit("Open a command prompt and type: pip install sqlalchemy.")
+except ImportError as e:
+    exit("Open a command prompt and type: pip install sqlalchemy."), e
+
+#Base is the initialize SQLAlchemy base class. It is used to set up the table metadata.
+#Used like so in the __init__ method: Base.metadata.create_all(engine)
+#What this actually means or does I have no idea but it is neccessary. And I know how to use it.
+#!Important!: Base can only be defined in ONE location and ONE location ONLY!
+import base_classes
 
 import hashlib
 import datetime
@@ -26,8 +26,9 @@ import os #Testing only
 #Internal game modules
 from game import User, Hero, PrimaryAttributeList
 from abilities import Ability
-from locations import Location, World_Map#, Town, Cave
+from locations import Location, World_Map, Town, Cave
 from items import Item
+import complex_relationships
 
 
 #Constants#
@@ -50,7 +51,7 @@ class EZDB:
         engine = create_engine(database, echo=debug)
         self.file_name = database[10:]
         
-        saveable_objects.Base.metadata.create_all(engine, checkfirst=True)
+        base_classes.Base.metadata.create_all(engine, checkfirst=True)
         Session = sessionmaker(bind=engine)
         
         self.engine = engine

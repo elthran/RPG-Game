@@ -10,23 +10,22 @@
 Suggestion: change name to game_objects.py
 """
 
-import math
-from flask import request
-# from items import *
-from bestiary import *
-# from abilities import Ability, Archetype_Ability, Class_Ability, Religious_Ability
-from secondary_attributes import *
-
 try:
-    from saveable_objects import Base
-    from sqlalchemy import Table, Column, Integer, String, DateTime, ARRAY
+    from sqlalchemy import Table, Column, Integer, String, DateTime
 
     from sqlalchemy import ForeignKey
     from sqlalchemy.orm import relationship
     
     from sqlalchemy import orm
-except ImportError:
-    exit("Open a command prompt and type: pip install sqlalchemy.")
+except ImportError as e:
+    exit("Open a command prompt and type: pip install sqlalchemy."), e
+    
+from base_classes import Base
+
+import math
+from flask import request
+from bestiary import *
+from secondary_attributes import *
     
 import datetime
 
@@ -57,11 +56,6 @@ WISDOM = 11
 USE: primary_attributes[AGILITY] == value of agility stored in list at position 0
 primary_attributes[FORTITUDE] == value of fortitude stored in list at position 4
 """
-
-# heroes_ablities_association_table = Table('heroes_ablities_association', Base.metadata,
-    # Column('heroes_id', Integer, ForeignKey('heroes.id')),
-    # Column('abilities_id', Integer, ForeignKey('abilities.id'))
-# )
 
 class Game(object):
     def __init__(self, hero):
@@ -137,16 +131,7 @@ class Hero(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship("User", back_populates="heroes")
     primary_attributes = relationship("PrimaryAttributeList", uselist=False, back_populates="hero")
-    abilities = relationship("Ability", order_by="Ability.name", back_populates="myHero")
-    
-    world_map_id = Column(Integer, ForeignKey('world_map.id'))
-    current_world = relationship("World_Map", back_populates="heroes")
-    
-    town_id = Column(Integer, ForeignKey('town.id'))
-    current_city = relationship("Town", back_populates="heroes")
-    
-    #inventor is list of character's items.
-    inventory = relationship("Item", order_by="Item.name", back_populates="myHero")
+
     
     def not_yet_implemented():
         self.strength = 1

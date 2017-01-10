@@ -1,7 +1,12 @@
-from locations import Town, Location, World_Map, Base, Cave
+from base_classes import Base
+import locations
+from locations import Location, Cave, Town, World_Map
+import complex_relationships
+import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from test_all import pr
+from database import EZDB
 import os
 
 """
@@ -14,21 +19,13 @@ NOTE: every time I define a test I add it to the run_all function.
 I am using this tutorial http://docs.python-guide.org/en/latest/writing/tests/
 """
 
+def set_up():
+    return EZDB('sqlite:///tests/test.db', debug=False)
 
-
-def setup(echo=False):
-    database = 'sqlite:///tests/test.db'
-    engine = create_engine(database, echo=echo)
-    file_name = database[10:]
-    Base.metadata.create_all(engine, checkfirst=True)
-    Session = sessionmaker(bind=engine)
-    return Session(), engine, file_name
-
-def teardown(session, engine, file_name, delete=True):
-    session.close()
-    engine.dispose()
-    if delete:
-        os.remove(file_name)
+def tear_down(database):
+    database.session.close()
+    database.engine.dispose()
+    database._delete_database()
 
 
 def not_used():
@@ -150,25 +147,47 @@ def test_location_all():
     session = Session()
     # session.add(map)
 
-def test_adjacent_locations(session, engine, filename):
-    # home = Location(name="Home")
-    # session.add(home)
-    # session.commit()
-    home2 = session.query(Location).filter_by(name='Home').first()
+def test_adjacent_locations():
+    db = set_up()
+    home = Location(name="Home")
+    db.session.add(home)
+    try:
+        db.session.commit()
+    except Exception as e:
+        if 'UNIQUE constraint failed' in e.args[0]:
+            db.session.rollback()
+        else:
+            raise e
+    home2 = db.session.query(Location).filter_by(name='Home').first()
     home2.adjacent_locations = [2, 3, 4]
-    session.add(home2)
-    session.commit()
-    home3 = session.query(Location).filter_by(name='Home').first()
-    # assert home.adjacent_locations == 
-    assert home2.adjacent_locations == home3.adjacent_locations == [2, 3, 4]
+    db.session.add(home2)
+    try:
+        db.session.commit()
+    except Exception as e:
+        if 'UNIQUE constraint failed' in e.args[0]:
+            db.session.rollback()
+        else:
+            raise e
+    home3 = db.session.query(Location).filter_by(name='Home').first()
+    assert home.adjacent_locations == home2.adjacent_locations == home3.adjacent_locations == [2, 3, 4]
+    assert home == home2 == home3
+    tear_down(db)
     
-def test_town(session, engine, file_name):
-    pass
+def test_add_world_map():
+    db = set_up()
+    db.add_new_user('Marlen', 'Brunner')
+    db.add_new_character(1, "Haldon", "Wizard")
+    hero = db.fetch_hero(character_name_or_id=1)
+    pr(hero.current_world)
+    hero.current_world = locations.game_worlds[0]
+    pr(hero.current_world)
+    exit("test_add_world_map")
+    assert 0
+    tear_down(db)
     
 def run_all():
-    session, engine, filename = setup()
-    test_adjacent_locations(session, engine, filename)
-    teardown(session, engine, filename, delete=False)
+    test_adjacent_locations()
+    test_add_world_map()
     print("All locations_tests passed. No Errors, yay!")
     
 run_all()

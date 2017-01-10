@@ -1,15 +1,16 @@
 try:
-    #!Important!: Base can only be defined in ONE location and ONE location ONLY!
-    #Well ... ok, but for simplicity sake just pretend that that is true.
-    from saveable_objects import Base
-    
     from sqlalchemy import Column, Integer, String, Boolean
     from sqlalchemy import ForeignKey
     from sqlalchemy.orm import relationship
     from sqlalchemy import orm
 except ImportError:
     exit("Open a command prompt and type: pip install sqlalchemy.")
+    
+#!Important!: Base can only be defined in ONE location and ONE location ONLY!
+#Well ... ok, but for simplicity sake just pretend that that is true.
+from base_classes import Base
 
+# exit('********Item: inheritance not implemented********')
 
 class Item(Base):
     """Item object base class.
@@ -36,9 +37,7 @@ class Item(Base):
     amount_owned = Column(Integer, default=1)
     equiptable = Column(Boolean, default=False)
     consumable = Column(Boolean, default=False)
-    
-    hero_id = Column(Integer, ForeignKey("heroes.id"))
-    myHero = relationship("Hero", back_populates="inventory")
+ 
     
     def __init__(self, name, myHero, buy_price, amount_owned=1):
         self.name = name

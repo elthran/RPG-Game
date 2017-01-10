@@ -18,8 +18,8 @@ try:
 
     # from sqlalchemy import ForeignKey
     # from sqlalchemy.orm import relationship
-except ImportError:
-    exit("Open a command prompt and type: pip install sqlalchemy.")
+except ImportError as e:
+    exit("Open a command prompt and type: pip install sqlalchemy."), e
 
 # from abilities import Ability
 # from items import Item

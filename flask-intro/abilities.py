@@ -6,17 +6,18 @@
 #//////////////////////////////////////////////////////////////////////////////#
 
 try:
-    #!Important!: Base can only be defined in ONE location and ONE location ONLY!
-    #Well ... ok, but for simplicity sake just pretend that that is true.
-    from saveable_objects import Base
-    
     from sqlalchemy import Column, Integer, String, Boolean
     from sqlalchemy import ForeignKey
     from sqlalchemy.orm import relationship
     from sqlalchemy import orm
-except ImportError:
-    exit("Open a command prompt and type: pip install sqlalchemy.")
-
+except ImportError as e:
+    exit("Open a command prompt and type: pip install sqlalchemy."), e
+    
+#!Important!: Base can only be defined in ONE location and ONE location ONLY!
+#Well ... ok, but for simplicity sake just pretend that that is true.
+from base_classes import Base
+    
+# exit('********Ability: inheritance not implemented********')
 
 class Ability(Base):
     """Ability object base class.
@@ -40,13 +41,10 @@ class Ability(Base):
     description = Column(String, nullable=False) #Maybe description should be unique? use: unique=True as keyword.
     
     #Note: Original code used default of "Unknown"
-    #I chopped the BasicAbility class as redundant.
+    #I chopped the BasicAbility class as redundant. Now I am going to have to add the fucker back in.
     ability_type = Column(String, default="basic") 
     activated = Column(Boolean, default=False)
     cost = Column(Integer, default=0)
-    
-    hero_id = Column(Integer, ForeignKey("heroes.id"))
-    myHero = relationship("Hero", back_populates="abilities")
     
     
     def __init__(self, name, myHero, max_level, description, activated=False, cost=0):
