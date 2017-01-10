@@ -270,24 +270,16 @@ def create_character():
     elif request.method == 'POST' and fathers_job == None:
         fathers_job = request.form["archetype"]
         if fathers_job == "Brute":
-            myHero.strength += 3
-            myHero.resilience += 1
-            myHero.vitality += 1
-            myHero.fortitude += 1
+            myHero.primary_attributes["Strength"] += 3
         elif fathers_job == "Scholar":
-            myHero.wisdom += 6
-            myHero.perception += 1
+            myHero.primary_attributes["Wisdom"] += 3
         elif fathers_job == "Hunter":
-            myHero.agility += 3
-            myHero.reflexes += 1
-            myHero.survivalism += 2
+            myHero.primary_attributes["Survivalism"] += 3
         elif fathers_job == "Merchant":
-            myHero.gold += 75
-            myHero.charisma += 5
-            myHero.fortuity += 1
+            myHero.primary_attributes["Charisma"] += 2
+            myHero.gold += 50
         elif fathers_job == "Priest":
-            myHero.divinity += 5
-            myHero.wisdom += 1
+            myHero.primary_attributes["Divinity"] += 3
     if myHero.character_name != "Unknown" and fathers_job != None:
         myHero.archetype = fathers_job
         return redirect(url_for('home'))
@@ -401,7 +393,7 @@ def admin():
                           ("Max_exp", myHero.max_exp),
                           ("Renown", myHero.renown),
                           ("Virtue", myHero.virtue),
-                          ("Charisma", myHero.charisma),
+                          ("Charisma", myHero.primary_attributes["Charisma"]),
                           ("Devotion", myHero.devotion),
                           ("Gold", myHero.gold),
                           ("Basic_ability_points", myHero.basic_ability_points),
@@ -643,11 +635,25 @@ def arena():
     page_image = str(game.enemy.name)
     conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
                     ("Level: ", str(game.enemy.level), "Combat Details"),
-                    ("Damage: ", str(str(game.enemy.min_damage) + " - " + str(game.enemy.max_damage))),
+                    ("Damage: ", str(game.enemy.min_damage) + " - " + str(game.enemy.max_damage)),
                     ("Attack Speed: ", str(game.enemy.attack_speed)),
-                    ("Health: ", str(str(game.enemy.current_health) + " / " + str(game.enemy.max_health))),
-                    ("Accuracy: ", str(str(game.enemy.accuracy) + "%"))]
-    page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
+                    ("Accuracy: ", str(game.enemy.attack_accuracy) + "%"),
+                    ("First Strike: ", str(game.enemy.first_strike) + "%"),
+                    ("Critical Hit Chance: ", str(game.enemy.critical_hit_chance) + "%"),
+                    ("Critical Hit Modifier: ", str(game.enemy.critical_hit_modifier)),
+                    ("Defence: ", str(game.enemy.defence_modifier) + "%"),
+                    ("Evade: ", str(game.enemy.evade_chance) + "%"),
+                    ("Parry: ", str(game.enemy.parry_chance) + "%"),
+                    ("Riposte: ", str(game.enemy.riposte_chance) + "%"),
+                    ("Block Chance: ", str(game.enemy.block_chance) + "%"),
+                    ("Block Reduction: ", str(game.enemy.block_reduction) + "%"),
+                    ("Stealth: ", str(game.enemy.stealth_skill) + "%"),
+                    ("Faith: ", str(game.enemy.faith)),
+                    ("Sanctity: ", str(game.enemy.current_sanctity) + "/" + str(game.enemy.max_sanctity)),
+                    ("Luck: ", str(game.enemy.luck)),
+                    ("Health: ", str(game.enemy.current_health) + " / " + str(game.enemy.max_health))]
+    
+	page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
     return render_template('home.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, status_display=conversation)  # return a string
 
 @app.route('/store/<inventory>')
