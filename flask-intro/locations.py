@@ -53,7 +53,7 @@ class BaseList(Base):
     value = None
     
     
-    location_id = Column(Integer, ForeignKey('location.id'))
+    location_id = Column(Integer, ForeignKey('base_location.id'))
     
     def __init__(self, value):
         self.value = value
@@ -89,19 +89,17 @@ class BaseList(Base):
         data = "<{}({})>".format('BaseList', ', '.join(atts))
         return data
 
-#Marked for refractor
-#Consider implementing different adjacent_locations attribute that is a list of locations
-#Consider using a grid and implementing (x,y) coordinates for each location.
-class Location(Base):
-    __tablename__ = "location"
+
+class BaseLocation(Base):
+    __tablename__ = "base_location"
     
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
-    location_type = Column(String)
+    type = Column(String)
     
     __mapper_args__ = {
-        'polymorphic_identity':'Location',
-        'polymorphic_on':location_type
+        'polymorphic_identity':'BaseLocation',
+        'polymorphic_on':type
     }
     
     dummy_adjacent_locations = relationship('BaseList')
@@ -126,6 +124,7 @@ class Location(Base):
         
         super().__setattr__(key, value)
     
+    
     @orm.reconstructor
     def init_on_load(self):
         """Build extra data attributes on object load.
@@ -135,17 +134,21 @@ class Location(Base):
         """
         self.adjacent_locations = [element.value for element in self.dummy_adjacent_locations]
         self.places_of_interest = [element.value for element in self.dummy_places_of_interest]
+        self.location_type = self.type
+    
     
     def _add_adjacent_locations(self, values):
         """Store adjacent_locations assignment as a list of attributes.
         """
         self.dummy_adjacent_locations = [BaseList(value) for value in values]
     
+    
     def _add_places_of_interest(self, values):
         """Store places_of_interest assignment as a list of attributes.
         """
         self.dummy_places_of_interest = [BaseList(value) for value in values]
-        
+    
+    
     def __str__(self): 
         """Returns string representation of object.
         """
@@ -161,7 +164,7 @@ class Location(Base):
         for key in sorted(extra_attributes):
             atts.append('{}={}'.format(key, repr(getattr(self, key))))
         
-        data = "<{}({})>".format(self.location_type, ', '.join(atts))
+        data = "<{}({})>".format(self.type, ', '.join(atts))
         return data
         
         
@@ -177,11 +180,28 @@ class Location(Base):
         for key in sorted(extra_attributes):
             atts.append('{}={}'.format(key, repr(getattr(self, key))))
         
-        data = "<{}({})>".format(self.location_type, ', '.join(atts))
+        data = "<{}({})>".format(self.type, ', '.join(atts))
         return data
 
+        
+#Marked for refractor
+#Consider implementing different adjacent_locations attribute that is a list of locations
+#Consider using a grid and implementing (x,y) coordinates for each location.
+class Location(BaseLocation):
+    __tablename__ = "location"
+    
+    id = Column(Integer, ForeignKey('base_location.id'), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':'Location'
+    }
+    
+    #relationship
+    world_map_id = Column(Integer, ForeignKey('world_map.id'))
+    location_world = relationship("World_Map", foreign_keys=[world_map_id], back_populates="locations")
 
-class World_Map(Location):
+
+class World_Map(BaseLocation):
     """World map database ready class.
     
     Notes:
@@ -190,7 +210,9 @@ class World_Map(Location):
     """
     __tablename__ = "world_map"
     
-    id = Column(Integer, ForeignKey('location.id'), primary_key=True)
+    world_map_id = Column('id', Integer, primary_key=True)
+    base_location_id = Column(Integer, ForeignKey('base_location.id'), primary_key=True)
+    
 
     page_heading = Column(String, default="You are wandering in the world")
     page_image = Column(String, default="map")
@@ -204,10 +226,12 @@ class World_Map(Location):
 
     #Relationships
     #Should be a list of all location objects that the World_Map contains.
-    all_map_locations = relationship("Location")
-    current_location_id = Column(Integer, nullable=False) 
-    towns = relationship("Town", foreign_keys='[Town.id]', back_populates="location_world")
-    caves = relationship("Cave", foreign_keys='[Cave.id]', back_populates="location_world")
+    # all_map_locations = relationship("Location", foreign_keys='[Location.world_map_id]',
+        # back_populates="location_world") 
+        
+    locations = relationship("Location", foreign_keys="Location.world_map_id", back_populates="location_world")
+    # towns = relationship("Towns", foreign_keys="Town.world_map_id", back_populates="location_world")
+    # caves = relationship("Caves", foreign_keys="Cave.world_map_id", back_populates="location_world")
     
     
     def __init__(self, name="Test_World2", current_location_id=None, all_map_locations=[]):
@@ -218,8 +242,6 @@ class World_Map(Location):
         self.name = name
         self.current_location_id = current_location_id
         self.all_map_locations = all_map_locations
-        self.caves = [location for location in all_map_locations if location.location_type == "Cave"]
-        self.towns = [location for location in all_map_locations if location.location_type == "Town"]
         
     
     
@@ -230,10 +252,14 @@ class World_Map(Location):
         See: init_on_load() in SQLAlchemy
         """
         self.current_location = self.all_map_locations[int(self.current_location_id)]
-        self.map_cities = [location for location in self.all_map_locations if (location == self.current_location and (location.location_type == "Town" or location.location_type == "Cave"))] # too long, but will refactor later 
+        self.map_cities = [location for location in self.all_map_locations if (location == self.current_location and (location.location_type == "Town" or location.location_type == "Cave"))] # too long, but will refactor later
+        
+        self.towns = [location for location in self.all_map_locations if location.type == "Town"]
+        self.caves = [location for location in self.all_map_locations if location.type == "Cave"]
         
         self.page_title = self.name
         self.page_image = self.name
+        self.location_type = self.type
     
 
     def show_directions(self):
@@ -262,8 +288,8 @@ class Town(Location):
     }
     
     #Relationships
-    world_map_id = Column(Integer, ForeignKey('world_map.id'))
-    location_world = relationship("World_Map", foreign_keys=[world_map_id], back_populates="towns")
+    # world_map_id = Column(Integer, ForeignKey('world_map.id'))
+    # location_world = relationship("World_Map", foreign_keys=[world_map_id], back_populates="towns")
    
     
     @orm.reconstructor
@@ -274,6 +300,7 @@ class Town(Location):
         """
         #Marked for restructure
         #Consider adding these during creation or making them column defaults
+        self.location_type = self.type
         self.page_title = self.name
         self.page_heading = "You are in " + self.name
         self.page_image = "town"
@@ -297,8 +324,8 @@ class Cave(Location):
     }
     
     #Relationships
-    world_map_id = Column(Integer, ForeignKey('world_map.id'))
-    location_world = relationship("World_Map", foreign_keys=[world_map_id], back_populates="caves")
+    # world_map_id = Column(Integer, ForeignKey('world_map.id'))
+    # location_world = relationship("World_Map", foreign_keys=[world_map_id], back_populates="caves")
    
     
     @orm.reconstructor
@@ -307,6 +334,7 @@ class Cave(Location):
         """
         #Marked for restructure.
         #Consider making defaults in columns
+        self.location_type = self.type
         self.page_title = self.name
         self.page_heading = "You are in a cave called " + self.name
         self.page_image = "cave"

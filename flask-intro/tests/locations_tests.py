@@ -5,6 +5,7 @@ import complex_relationships
 import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import inspect
 from test_all import pr
 from database import EZDB
 import os
@@ -150,27 +151,47 @@ def test_location_all():
 def test_adjacent_locations():
     db = set_up()
     home = Location(name="Home")
+    # mapper = inspect(Location)
+    # for e in mapper.relationships:
+        # print(e)
+    # exit()
     db.session.add(home)
-    try:
-        db.session.commit()
-    except Exception as e:
-        if 'UNIQUE constraint failed' in e.args[0]:
-            db.session.rollback()
-        else:
-            raise e
+    db.session.commit()
     home2 = db.session.query(Location).filter_by(name='Home').first()
     home2.adjacent_locations = [2, 3, 4]
     db.session.add(home2)
-    try:
-        db.session.commit()
-    except Exception as e:
-        if 'UNIQUE constraint failed' in e.args[0]:
-            db.session.rollback()
-        else:
-            raise e
+    db.session.commit()
     home3 = db.session.query(Location).filter_by(name='Home').first()
     assert home.adjacent_locations == home2.adjacent_locations == home3.adjacent_locations == [2, 3, 4]
     assert home == home2 == home3
+    tear_down(db)
+    
+def test_town():
+    db = set_up()
+    town = Town(name="Thornwall")
+    db.session.add(town)
+    db.session.commit()
+    town2 = db.session.query(Town).filter_by(name="Thornwall").first()
+    assert town == town2
+    tear_down(db)
+    
+def test_cave():
+    db = set_up()
+    cave = Cave(name="Creepy Cave")
+    db.session.add(cave)
+    db.session.commit()
+    cave2 = db.session.query(Cave).filter_by(name="Creepy Cave").first()
+    assert cave == cave2
+    tear_down(db)
+    
+def test_world_map():
+    db = set_up()
+    map = World_Map(name="Picatanin")
+    db.session.add(map)
+    db.session.commit()
+    map2 = db.session.query(World_Map).filter_by(name="Picatanin").first()
+    print(map2)
+    assert map == map2
     tear_down(db)
     
 def test_add_world_map():
@@ -178,16 +199,20 @@ def test_add_world_map():
     db.add_new_user('Marlen', 'Brunner')
     db.add_new_character(1, "Haldon", "Wizard")
     hero = db.fetch_hero(character_name_or_id=1)
-    pr(hero.current_world)
+    print(hero.current_world)
+    print(type(locations.game_worlds[0]))
     hero.current_world = locations.game_worlds[0]
-    pr(hero.current_world)
+    print(hero.current_world)
     exit("test_add_world_map")
     assert 0
     tear_down(db)
     
 def run_all():
     test_adjacent_locations()
-    test_add_world_map()
+    test_town()
+    test_cave()
+    test_world_map()
+    # test_add_world_map()
     print("All locations_tests passed. No Errors, yay!")
     
 run_all()
