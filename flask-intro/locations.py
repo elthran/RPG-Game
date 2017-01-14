@@ -7,16 +7,32 @@ Author: Marlen Brunner
 can be inserted into the main website.
 
 Basic layout should be:
-Game Objects (from other module maybe?) I am just going to start with Location as "progenitor".
--Location
---Town
----Shop
-----display
----Blacksmith, etc.
----display
---leave
---enter
---display
+Map
+    WorldMap
+    TownMap
+    CaveMap
+    LocationMap
+Location
+    Town
+    Cave
+Display
+    ...?
+    
+Each object should have separte data and display properties.
+eg.
+
+Town
+    id
+    name
+    adjacent_locations
+    location_world
+    display
+        page_title
+        page_heading
+        page_image
+        paragraph
+        places_of_interest
+    
 """
 
 try:
@@ -222,7 +238,7 @@ class World_Map(BaseLocation):
         'polymorphic_identity':'World_Map',
     }
     
-    current_location_id = Column(Integer, nullable=False)
+    current_location_id = Column(Integer)
 
     #Relationships
     #Should be a list of all location objects that the World_Map contains.
@@ -234,14 +250,14 @@ class World_Map(BaseLocation):
     # caves = relationship("Caves", foreign_keys="Cave.world_map_id", back_populates="location_world")
     
     
-    def __init__(self, name="Test_World2", current_location_id=None, all_map_locations=[]):
-        """Build World_Map extend attributes.
+    # def __init__(self, name="Test_World2", current_location_id=None, all_map_locations=[]):
+        # """Build World_Map extend attributes.
         
-        Sets up caves attribute.
-        """
-        self.name = name
-        self.current_location_id = current_location_id
-        self.all_map_locations = all_map_locations
+        # Sets up caves attribute.
+        # """
+        # self.name = name
+        # self.current_location_id = current_location_id
+        # self.all_map_locations = all_map_locations
         
     
     

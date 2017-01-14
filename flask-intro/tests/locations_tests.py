@@ -187,6 +187,8 @@ def test_cave():
 def test_world_map():
     db = set_up()
     map = World_Map(name="Picatanin")
+    print(map)
+    exit()
     db.session.add(map)
     db.session.commit()
     map2 = db.session.query(World_Map).filter_by(name="Picatanin").first()
@@ -208,10 +210,14 @@ def test_add_world_map():
     tear_down(db)
     
 def run_all():
-    test_adjacent_locations()
-    test_town()
-    test_cave()
-    test_world_map()
+    db = set_up()
+    try:
+        test_adjacent_locations()
+        test_town()
+        test_cave()
+        test_world_map()
+    finally:
+        tear_down(db)
     # test_add_world_map()
     print("All locations_tests passed. No Errors, yay!")
     
