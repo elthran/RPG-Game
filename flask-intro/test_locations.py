@@ -213,6 +213,7 @@ class Display(Base):
         self.page_image = obj.type.lower()
         self.paragraph = paragraph
         self.places_of_interest = places_of_interest
+         
     
     def __str__(self):
         return """
@@ -232,7 +233,9 @@ class Display(Base):
 class Location(Base):
     """Create a place a character can travel to that is storable in the database.
     
-    Note: adjacent_locations is now a list of locations.
+    Note: adjacent_locations is a list of integers. Note a list of locations, I could figure out how to do that.
+    Maybe when I implement x,y coordinates for each location it could calculate the adjacent ones
+    automatically.
     Note: 'locaton_type' is now 'type'. But you can still use location_type because orm.synonym! ... bam!
     
     Use:
@@ -249,6 +252,10 @@ class Location(Base):
     map_id = Column(Integer, ForeignKey('map.id'))
     map = relationship("Map", back_populates="locations")
     location_world = orm.synonym('map')
+    
+    current_location_map_id = Column(Integer, ForeignKey('world_map.id'))
+    current_location_map = relationship("Map", back_populates="current_location")
+     
         
     __mapper_args__ = {
         'polymorphic_identity':'Location',
@@ -331,7 +338,7 @@ class Map(Base):
     location_type = orm.synonym('type')
     
     
-    current_location = relationship("Location", uselist=False)
+    current_location = relationship("Location", uselist=False, back_populates="current_location_map")
     
     locations = relationship("Location", back_populates="map")
     all_map_locations = orm.synonym('locations')
@@ -356,26 +363,6 @@ class Map(Base):
         """
         self._adjacent_locations = [BaseListElement(value) for value in values]
         
-    
-    #Marked for rebuild
-    #Cause I don't no what it does.
-    def show_directions(self):
-        directions = self.current_location.adjacent_locations
-        if directions == []:
-            directions = [1,2,3]
-        self.map_cities = [location for location in self.all_map_locations if (location == self.current_location and (location.location_type == "Town" or location.location_type == "Cave"))] # too long, but will refactor later
-        if len(self.map_cities) > 0:
-            self.places_of_interest = [("/" + self.map_cities[0].location_type + "/" + self.map_cities[0].name, self.map_cities[0].name)]
-        else:
-            self.places_of_interest = []
-        return directions
-        
-        
-    # temporarily location_id is the same as the index in the list of all_map_locations
-    def find_location(self, location_id):
-        id = int(location_id)
-        return self.all_map_locations[int(id)]
-        
         
     def __str__(self):
         return """<{}(id={}, name='{}', type='{}', current_location='{}' adjacent_locations={}""".format(
@@ -392,6 +379,28 @@ class WorldMap(Map):
     __mapper_args__ = {
         'polymorphic_identity':'WorldMap',
     }
+    
+    #Marked for rebuild
+    #Cause I don't no what it does.
+    def show_directions(self):
+        # print(self.display)
+        # exit('test show_directions')
+        directions = self.current_location.adjacent_locations
+        if directions == []:
+            directions = [1,2,3]
+        self.map_cities = [location for location in self.all_map_locations if (location == self.current_location and (location.type == "Town" or location.type == "Cave"))] # too long, but will refactor later
+        if len(self.map_cities) > 0:
+            self.display.places_of_interest = [("/{}/{}".format(self.map_cities[0].type, self.map_cities[0].name),
+            self.map_cities.name)]
+        else:
+            self.display.places_of_interest = []
+        return directions
+        
+        
+    # temporarily location_id is the same as the index in the list of all_map_locations
+    def find_location(self, location_id):
+        id = int(location_id)
+        return self.all_map_locations[int(id)]
     
     def __str__(self):
         return """<{}(id={}, name='{}', type='{}', current_location='{}', adjacent_locations={}, display={}""".format(
@@ -425,6 +434,12 @@ World_Map = WorldMap
  #   init function later)
  #
  #------------------------------------
+engine = create_engine('sqlite:///:memory:', echo=True)
+# engine = create_engine('sqlite:///tests/test.db', echo=False)
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+session = Session() 
+ 
 test_locations = []
 test_locations2 = []
 
@@ -458,13 +473,8 @@ town = test_locations2[5]
 test_locations2[2] = Cave(name="Creepy cave", id=2)
 cave = test_locations2[2]
 
-
-# engine = create_engine('sqlite:///:memory:', echo=True)
-engine = create_engine('sqlite:///tests/test.db', echo=False)
-Base.metadata.create_all(engine)
-Session = sessionmaker(bind=engine)
-session = Session()
 session.add_all(test_locations2)
+session.commit()
 
 """ Define all connections
 
@@ -532,6 +542,7 @@ test_locations2[10].adjacent_locations = [6]
 
 world = WorldMap(name="Test_World2", current_location=town, all_map_locations=test_locations2)
 session.add(world)
+session.commit()
 
 #Note: Displays must be added after all objects are defined. Or you get error that I was to lazy to fix.
 world.diplay = Display(world, page_heading="You are wandering in the world", paragraph="Be safe")
@@ -551,10 +562,14 @@ cave.display = Display(cave, page_heading="You are in a cave called {}".format(c
     places_of_interest=[("/World_Map/{}/{}".format(cave.location_world.name, cave.id), "World Map")])
 
 session.commit()
-print(world)
-print(town)
-print(cave)
-print(test_locations2[4])
+session.close()
+engine.dispose()
+# print(world)
+# print(town)
+# print(cave)
+# print(test_locations2[4])
+
+# print(world.show_directions())
 exit()
 
 game_worlds = [world]
