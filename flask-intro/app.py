@@ -14,6 +14,7 @@ from bestiary import *
 from database import EZDB
 from abilities import *
 from locations import *
+import complex_relationships
 from secondary_attributes import *
 import sqlite3
 import hashlib
@@ -653,7 +654,7 @@ def arena():
                     ("Luck: ", str(game.enemy.luck)),
                     ("Health: ", str(game.enemy.current_health) + " / " + str(game.enemy.max_health))]
     
-	page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
+    page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
     return render_template('home.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, status_display=conversation)  # return a string
 
 @app.route('/store/<inventory>')

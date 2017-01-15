@@ -13,8 +13,8 @@ import items
 #the old property will be discarded
 #Many Heroes -> one World_Map (bidirectional)
 game.Hero.world_map_id = Column(Integer, ForeignKey('world_map.id'))
-game.Hero.current_world = relationship("World_Map", back_populates="heroes")
-locations.World_Map.heroes = relationship("Hero", back_populates="current_world")
+game.Hero.current_world = relationship("WorldMap", back_populates="heroes")
+locations.WorldMap.heroes = relationship("Hero", back_populates="current_world")
 
 #Many Heroes -> one Town (bidirectional)
 game.Hero.town_id = Column(Integer, ForeignKey('town.id'))
