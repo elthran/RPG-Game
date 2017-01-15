@@ -8,11 +8,60 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" media="screen">
+
+    <script type="text/javascript">
+  function strength_updater(AR) 
+  {
+    document.querySelector('#strength_output').value = AR;
+    var select_strength = document.querySelector('#strength_output').value
+    console.log(select_strength);
+    
+}
+
+  function agility_updater(AR) 
+  {
+    document.querySelector('#agility_output').value = AR;
+    var select_agility = document.querySelector('#agility_output').value
+    console.log(select_agility);
+    }
+
+
+  function findTotal()
+  {
+    var arr = document.getElementsByName('Attributes');
+    var tot={{ myHero.attribute_points }};
+    
+       for(var i=0;i<arr.length;i++){
+        if(parseInt(arr[i].value))
+            tot -= parseInt(arr[i].value);
+    }
+
+  document.getElementById('total_points_spent').value = tot;
+	sumerror()
+}
+
+
+function sumerror()
+  {
+    var sum = document.getElementById('total_points_spent').value;
+	
+	if (sum < 0) 
+  {
+    document.getElementById('sumerror').value = '          You do not have enough points';
+	}
+  else {
+
+		document.getElementById('sumerror').value = '';
+	}
+	
+
+}
+</script>
+
   </head>
 
   <body>
   <div id="page">
-
     <div id="sidebar">
       <div class="sidebarinfo">
         <img src="/static/images/character.jpg" alt="Sample" style="width:100px;height:100px;">
@@ -403,22 +452,20 @@ Name: {{ myHero.character_name}}
 {% endif %}
 
 
-<br>
-
-
     {% if level_up %}
       You have {{ myHero.attribute_points }} points remaing to spend.<br><br><br><br>
 
 
-<form class="level_up_form">
+<form method="post" class="level_up_form">
     
-Strength: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="Strength" name="Attributes" step="1" oninput="strength_updater(value)" onchange="findTotal()">
+Strength: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="Attributes1" name="Attributes" step="1" oninput="strength_updater(value)" onchange="findTotal()">
 
   <output for="Strength" id="strength_output">0</output> (Current: {{ myHero.primary_attributes["Strength"] }})</br>
 	
-Agility: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="Agility" name="Attributes" step="1" oninput="agility_updater(value)" onchange="findTotal()">
+Agility: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="Attributes2" name="Attributes" step="1" oninput="agility_updater(value)" onchange="findTotal()">
   <output for="Agility" id="agility_output">0</output> (Current: {{ myHero.primary_attributes["Agility"] }})</br>
 	
+<input class="btn btn-default" type="submit" value="Save">
 </form>
 
 
@@ -439,57 +486,6 @@ Agility: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="
 </html>
 
 
-<script type="text/javascript">
-
-  function strength_updater(AR) 
-  {
-    document.querySelector('#strength_output').value = AR;
-    var select_strength = document.querySelector('#strength_output').value
-    console.log(select_strength);
-    
-}
-
-  function agility_updater(AR) 
-  {
-    document.querySelector('#agility_output').value = AR;
-    var select_agility = document.querySelector('#agility_output').value
-    console.log(select_agility);
-    }
-
-
-  function findTotal()
-  {
-    var arr = document.getElementsByName('Attributes');
-    var tot={{ myHero.attribute_points }};
-    
-       for(var i=0;i<arr.length;i++){
-        if(parseInt(arr[i].value))
-            tot -= parseInt(arr[i].value);
-    }
-
-  document.getElementById('total_points_spent').value = tot;
-	sumerror()
-}
-
-
-function sumerror()
-  {
-    var sum = document.getElementById('total_points_spent').value;
-	
-	if (sum < 0) 
-  {
-    document.getElementById('sumerror').value = '          You do not have enough points';
-	}
-  else {
-
-		document.getElementById('sumerror').value = '';
-	}
-	
-
-}
-
-
-</script>
 
 
 <script>

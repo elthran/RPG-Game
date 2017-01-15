@@ -178,6 +178,11 @@ def level_up():
         return redirect(url_for('home'))
     page_heading = "You have leveled up!"
     paragraph = "Choose how you would like to distribute your attribute points."
+    if request.method == 'POST':
+        myHero.primary_attributes["Strength"] += convert_input(request.form["Attributes"])
+        #myHero.primary_attributes["Agility"] += convert_input(request.form["Agility"])
+        myHero.attribute_points -= convert_input(request.form["Attributes"])
+        return redirect(url_for('home'))
     return render_template('home.html', level_up=True, page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
 
 # use decorators to link the function to a url
