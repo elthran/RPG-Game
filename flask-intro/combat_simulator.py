@@ -87,13 +87,11 @@ def battle_logic(character1 ,character2):
         combat_log.append(character1.name + " is dead")
     else:
         combat_log.append(character2.name + " is dead")
-        
-    for item in combat_log:
-        print(item)
+    return myHero.current_health,enemy.current_health,combat_log
 
 
 
-""" Test functions below. Not needed for the final product """
+""" Test functions below. Not needed for the final product
 monster = monster_generator(7)
 battle_hero = Hero()
 battle_hero.update_secondary_attributes()
@@ -101,3 +99,4 @@ battle_hero.refresh_character()
 print(monster)
 print("\nName: " + battle_hero.name,"\nDamage: " + str(battle_hero.minimum_damage) + "-" + str(battle_hero.maximum_damage), "\nHealth: " + str(battle_hero.current_health) + "/" + str(battle_hero.max_health), "\nAttack Speed: " + str(battle_hero.attack_speed), "\nAccuracy: " + str(battle_hero.attack_accuracy) + "\n")
 battle_logic(battle_hero, monster)
+"""

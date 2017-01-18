@@ -9,7 +9,7 @@ from game import * #Must go befor login method???
 # import the Flask class from the flask module
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from functools import wraps
-from battle import *
+from combat_simulator import *
 from bestiary import *
 # from game import *
 # from database import * # Phase this out as EasyDatabase class grows.
@@ -181,7 +181,8 @@ def level_up():
     if request.method == 'POST':
         myHero.primary_attributes["Strength"] += convert_input(request.form["Attributes"])
         #myHero.primary_attributes["Agility"] += convert_input(request.form["Agility"])
-        myHero.attribute_points -= convert_input(request.form["Attributes"])
+        points_being_spent = convert_input(request.form["Attributes"])
+        myHero.attribute_points -= points_being_spent
         return redirect(url_for('home'))
     return render_template('home.html', level_up=True, page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
 
@@ -360,7 +361,7 @@ def battle():
             page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
 
     database.update_character(session['id'],myHero)
-    return render_template('home.html', page_title=page_title, page_heading=page_heading, myHero=myHero, enemy=enemy, status_display=conversation, page_links=page_links)  # return a string
+    return render_template('home.html', page_title=page_title, page_heading=page_heading, myHero=myHero, enemy=enemy, battle_results=conversation, page_links=page_links)  # return a string
 
 # this is a temp button that can call this to erase your chracter information and redirect you to the create character page
 @app.route('/reset_character')
@@ -485,8 +486,6 @@ def ability_tree(spec):
                     unknown_abilities.append(ability)
         return render_template('home.html', myHero=myHero, ability_pages=True, ability_pages_learn=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)  # return a string
     return render_template('home.html', myHero=myHero, ability_pages=True, ability_pages_use=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)  # return a string
-    
-
 
 @app.route('/quest_log')
 @login_required
@@ -610,7 +609,7 @@ def barracks():
         page_image = "dead"
         page_links = ["","","",""]
     else:
-        page_heading = "Welcome to the arena " + myHero.character_name +"!"
+        page_heading = "Welcome to the arena " + myHero.name+"!"
         page_image = "arena"
         page_links = [("Compete in the ", "/arena","arena", ".(temporary)"), ("Pay to ", "/spar", "spar", " against the trainer."), ("Battle another ", "/under_construction", "player",".")]
     return render_template('home.html', page_title="Barracks", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links)  # return a string
@@ -642,11 +641,11 @@ def arena():
         if enemy.name == "Spider":
             enemy.items_rewarded.append((Quest_Item("Spider Leg", myHero, 50)))
         game.set_enemy(enemy)
-    page_heading = "Welcome to the arena " + myHero.character_name +"!"
+    page_heading = "Welcome to the arena " + myHero.name +"!"
     page_image = str(game.enemy.name)
     conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
                     ("Level: ", str(game.enemy.level), "Combat Details"),
-                    ("Damage: ", str(game.enemy.min_damage) + " - " + str(game.enemy.max_damage)),
+                    ("Damage: ", str(game.enemy.minimum_damage) + " - " + str(game.enemy.maximum_damage)),
                     ("Attack Speed: ", str(game.enemy.attack_speed)),
                     ("Accuracy: ", str(game.enemy.attack_accuracy) + "%"),
                     ("First Strike: ", str(game.enemy.first_strike) + "%"),

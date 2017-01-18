@@ -75,7 +75,7 @@ def battle_logic(myHero,enemy):
             elif enemy.attack_accuracy < random.randint(0,100):
                 combat_log.append(("Enemy:", "I have swung and missed an attack."))
             else:
-                enemy_damage = math.ceil((random.randint(enemy.min_damage, enemy.max_damage)) * ((100 - myHero.defence_modifier) / 100)) # Calculate enemy's damage
+                enemy_damage = math.ceil((random.randint(enemy.minimum_damage, enemy.maximum_damage)) * ((100 - myHero.defence_modifier) / 100)) # Calculate enemy's damage
                 enemy_damage = 2
                 combat_log.append(("Enemy", "hits you for " + str(enemy_damage) + " damage."))
                 myHero.current_health -= enemy_damage
@@ -89,7 +89,7 @@ def battle_logic(myHero,enemy):
             elif myHero.attack_accuracy < random.randint(0,100):
                 combat_log.append(("You", "swing and miss."))
             else:
-                myHero_damage = math.ceil((random.randint(myHero.min_damage, myHero.max_damage)) * ((100 - enemy.defence_modifier) / 100)) # Calculate hero's damage
+                myHero_damage = math.ceil((random.randint(myHero.minimum_damage, myHero.maximum_damage)) * ((100 - enemy.defence_modifier) / 100)) # Calculate hero's damage
                 myHero_damage = 2
                 combat_log.append(("You", "hit the enemy for " + str(myHero_damage) + " damage."))
                 enemy.current_health -= myHero_damage

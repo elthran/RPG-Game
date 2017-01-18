@@ -138,6 +138,10 @@ function sumerror()
     <br><b>{{ text[0] }}</b> {{ text[1] }}<br>
     {% endfor %}
 
+    {% for result in battle_results %}
+       {{ result }}<br>
+    {% endfor %}
+
     {% if move_on_the_map %}
       *Cave at 2 and City at 5*
       <h1>I am at {{ myHero.current_world.current_location.name }}</h1>
