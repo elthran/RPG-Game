@@ -530,7 +530,7 @@ test_locations2[10].adjacent_locations = [6]
 world = WorldMap(name="Test_World2", current_location=town, all_map_locations=test_locations2)
 
 #Note: Displays must be added after all objects are defined. Or you get error that I was to lazy to fix.
-world.diplay = Display(world, page_heading="You are wandering in the world", paragraph="Be safe")
+world.display = Display(world, page_heading="You are wandering in the world", paragraph="Be safe")
 
 
 town.display = Display(town, page_heading="You are in {}".format(town.name),

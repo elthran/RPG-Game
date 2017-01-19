@@ -13,24 +13,20 @@ import items
 #the old property will be discarded
 #Many Heroes -> one World_Map (bidirectional)
 game.Hero.world_map_id = Column(Integer, ForeignKey('world_map.id'))
-game.Hero.current_world = relationship("WorldMap", back_populates="heroes")
-locations.WorldMap.heroes = relationship("Hero", back_populates="current_world")
+locations.WorldMap.heroes = relationship("Hero", backref="current_world")
 
 #Many Heroes -> one Town (bidirectional)
 game.Hero.town_id = Column(Integer, ForeignKey('town.id'))
-game.Hero.current_city = relationship("Town", back_populates="heroes")
-locations.Town.heroes = relationship("Hero", back_populates="current_city")
+locations.Town.heroes = relationship("Hero", backref="current_city")
 
 #One Hero -> many abilities (bidirectional)
 abilities.Ability.hero_id = Column(Integer, ForeignKey("heroes.id"))
-abilities.Ability.myHero = relationship("Hero", back_populates="abilities")
-game.Hero.abilities = relationship("Ability", order_by="Ability.name", back_populates="myHero")
+game.Hero.abilities = relationship("Ability", order_by="Ability.name", backref="myHero")
 
 #One Hero -> many inventory items (bidirectional) Note: (inventory == items)    
 #inventory is list of character's items.
 items.Item.hero_id = Column(Integer, ForeignKey("heroes.id"))
-items.Item.myHero = relationship("Hero", back_populates="inventory")
-game.Hero.inventory = relationship("Item", order_by="Item.name", back_populates="myHero")
+game.Hero.inventory = relationship("Item", order_by="Item.name", backref="myHero")
 
 #World_Map relationships
 # locations.Location.world_map_id = Column(Integer, ForeignKey('world_map.id'))

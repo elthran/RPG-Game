@@ -26,7 +26,7 @@ import os #Testing only
 #Internal game modules
 from game import User, Hero, PrimaryAttributeList
 from abilities import Ability
-from locations import Location, World_Map, Town, Cave
+from locations import Location, WorldMap, Town, Cave
 from items import Item
 import complex_relationships
 
