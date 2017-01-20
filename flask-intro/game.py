@@ -130,7 +130,7 @@ class Hero(Base):
     #Relationships
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship("User", back_populates="heroes")
-    primary_attributes = relationship("PrimaryAttributeList", uselist=False, back_populates="hero")
+    primary_attributes = relationship("PrimaryAttributeList", uselist=False, backref="hero")
 
     
     def not_yet_implemented():
@@ -285,7 +285,6 @@ class PrimaryAttributeList(Base):
     wisdom = Column(Integer, default=1)
     
     hero_id = Column(Integer, ForeignKey('heroes.id'))
-    hero = relationship("Hero", back_populates='primary_attributes')
     
     def __getitem__(self, key):
         """Allows the PrimaryAttributeList to be subscriptable.
@@ -293,7 +292,7 @@ class PrimaryAttributeList(Base):
         USE: primary_attributes['strength'] gets primary_attributes.strength
         
         !Important! NOT case sensitive!
-        So: primary_attributes['strength'] == primary_attributes['Strength'] = primary_attributes['stREnGtH']
+        So: primary_attributes['strength'] == primary_attributes['Strength'] == primary_attributes['stREnGtH']
         
         Oh an using game constants you can also use primary_attributes[STRENGTH] and it should work ... though
         this is untested.

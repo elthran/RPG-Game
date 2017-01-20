@@ -28,11 +28,3 @@ game.Hero.abilities = relationship("Ability", order_by="Ability.name", backref="
 items.Item.hero_id = Column(Integer, ForeignKey("heroes.id"))
 game.Hero.inventory = relationship("Item", order_by="Item.name", backref="myHero")
 
-#World_Map relationships
-# locations.Location.world_map_id = Column(Integer, ForeignKey('world_map.id'))
-# locations.Location.location_world = relationship("World_Map", foreign_keys=[world_map_id], back_populates="locations")
-# locations.World_Map.locations = relationship("Location", foreign_keys="Location.world_map_id", back_populates="location_world")
-
-#etc.
-# locations.World_Map.towns = relationship("Towns", foreign_keys="Town.world_map_id", back_populates="location_world")
-# locations.World_Map.caves = relationship("Caves", foreign_keys="Cave.world_map_id", back_populates="location_world")

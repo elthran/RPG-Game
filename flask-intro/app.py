@@ -262,13 +262,14 @@ def create_character():
     page_image = "beached"
     paragraph = "You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. A firm and inquisitive voice pierces the air."
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
-    if request.method == 'POST' and myHero.character_name == "Unknown":
+    if request.method == 'POST' and myHero.character_name == None:
         myHero.character_name = request.form["character_name"]
         page_image = "old_man"
         paragraph = None
         conversation = [("Stranger: ", "Where do you come from, child?")]
         display = False
     elif request.method == 'POST' and fathers_job == None:
+        pdb.set_trace()
         fathers_job = request.form["archetype"]
         if fathers_job == "Brute":
             myHero.primary_attributes["Strength"] += 3
@@ -281,7 +282,7 @@ def create_character():
             myHero.gold += 50
         elif fathers_job == "Priest":
             myHero.primary_attributes["Divinity"] += 3
-    if myHero.character_name != "Unknown" and fathers_job != None:
+    if myHero.character_name != None and fathers_job != None:
         myHero.archetype = fathers_job
         return redirect(url_for('home'))
     else:
@@ -797,6 +798,7 @@ def main():
 
 # start the server with the 'run()' method
 if __name__ == '__main__':
+    import pdb
     # import os
 
     #Set Current Working Directory (CWD) to the home of this file.
@@ -807,7 +809,16 @@ if __name__ == '__main__':
     #Marked for rename
     #I need a better name that "database.db"
     database = EZDB('sqlite:///static/database.db', debug=False)
+    
+    #I know there is a better way ... primary_attributes should be defined on initialization.
     myHero = Hero() #This allows myHero to be global variable in this module/file without magic. I think.
+    myHero.primary_attributes = PrimaryAttributeList()
+    print)
+    
+    #Because hero is easier for me to type.
+    #Note: they are the same object!
+    hero = myHero
+    
     app.run(debug=True)
 
 

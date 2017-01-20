@@ -8,40 +8,23 @@ NOTE: every time I define a test I add it to the run_all function.
 I am using this tutorial https://docs.python.org/2/library/unittest.html
 '''
 
-import os,sys,inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir) 
+def testPrimaryAttributesList():
+    exit("""
+    primary_attributes["Strength"] += 3 -> Default of strenght is None until object is saved! Then it is 1.
+    So this is like saying None += 3 which fails
+    
+    primary_attributes["Strength"] = 3 -> Does not support item assignment.
+    See @hybrid_property and @value.setter!
+    """)
+    
+def run_all():
+    """Run all tests in the module.
 
-import game
-import unittest
+    The test currently only fail if the code is broken ... not if the info is invalid.
+    I hope to use an assert statement at some point in each test to make sure the output is correct as well.
+    """
+    testPrimaryAttributesList()
+    
+    print("All game_tests passed. No Errors, yay!")
 
-class TestStringMethods(unittest.TestCase):
-
-    def test_convert_input(self):
-        self.assertEqual(game.convert_input(2), 2)
-        self.assertEqual(game.convert_input("2"), 2)
-        self.assertEqual(game.convert_input("string"), 0)
-
-    # Code given by the tutorial
-    def test_isupper(self):
-        self.assertTrue('FOO'.isupper())
-        self.assertFalse('Foo'.isupper())
-
-    # Code given by the tutorial	
-    def test_split(self):
-        s = 'hello world'
-        self.assertEqual(s.split(), ['hello', 'world'])
-        # check that s.split fails when the separator is not a string
-        with self.assertRaises(TypeError):
-            s.split(2)
-
-def set_up():
-    test_hero = Hero()
-    test_hero.name = "Unknown"
-    test_hero.gold = 5000
-    test_hero.update_secondary_attributes()
-    test_hero.refresh_character()
-			
-if __name__ == '__main__':
-    unittest.main()
+run_all()
