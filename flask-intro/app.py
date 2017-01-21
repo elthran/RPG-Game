@@ -44,6 +44,7 @@ def command(cmd=None):
     # cmd (string type)is an item name, sent from the javascript code in html
 
     #Level Up Commands
+    # pdb.set_trace()
     for attribute in myHero.primary_attributes:
         if cmd == attribute:
             myHero.primary_attributes[attribute] += 1
@@ -196,7 +197,7 @@ def login():
             
             #I recommend a dialogue here to select the specific hero that the user wants to play with.
             #Or a page redirect whatever ...
-            
+            # pdb.set_trace()
             session['hero_id'] = database.fetch_hero(username).id #Gets the hero's id.
             
             return redirect(url_for('home'))
@@ -269,7 +270,7 @@ def create_character():
         conversation = [("Stranger: ", "Where do you come from, child?")]
         display = False
     elif request.method == 'POST' and fathers_job == None:
-        pdb.set_trace()
+        # pdb.set_trace()
         fathers_job = request.form["archetype"]
         if fathers_job == "Brute":
             myHero.primary_attributes["Strength"] += 3
@@ -413,6 +414,8 @@ def admin():
 @app.route('/home')
 @login_required
 def home():
+    # pdb.set_trace()
+    global myHero
     myHero = database.fetch_hero(session['hero_id'])
     database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
  # initialize current_world
@@ -813,7 +816,6 @@ if __name__ == '__main__':
     #I know there is a better way ... primary_attributes should be defined on initialization.
     myHero = Hero() #This allows myHero to be global variable in this module/file without magic. I think.
     myHero.primary_attributes = PrimaryAttributeList()
-    print)
     
     #Because hero is easier for me to type.
     #Note: they are the same object!

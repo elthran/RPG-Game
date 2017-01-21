@@ -286,6 +286,15 @@ class PrimaryAttributeList(Base):
     
     hero_id = Column(Integer, ForeignKey('heroes.id'))
     
+    all = [agility, charisma, divinity, fortitude, fortuity, perception, reflexes, resilience,
+        strength, survivalism, vitality, wisdom]
+        
+    #List of all attribute names. Used for for looping.
+    all_attribute_names = ['agility', 'charisma', 'divinity', 'fortitude', 'fortuity', 'perception',
+        'reflexes', 'resilience', 'strength', 'survivalism', 'vitality', 'wisdom']
+           
+    
+    # @hybrid_property
     def __getitem__(self, key):
         """Allows the PrimaryAttributeList to be subscriptable.
         
@@ -294,10 +303,40 @@ class PrimaryAttributeList(Base):
         !Important! NOT case sensitive!
         So: primary_attributes['strength'] == primary_attributes['Strength'] == primary_attributes['stREnGtH']
         
-        Oh an using game constants you can also use primary_attributes[STRENGTH] and it should work ... though
-        this is untested.
+        NOTE: nonintuitive use of 1 as None. This sets default value but in a bizar and confusing way.
         """
-        return getattr(self, key.lower())
+        if type(key) is type(str()):
+            attr = getattr(self, key.lower())
+            if attr:
+                return attr
+            return 1
+        # When using for loops.
+        elif type(key) is type(int()):
+            return self.all_attribute_names[key]
+        else:
+            raise Exception('TypeError: can only be int or str.')
+
+
+    # @__setitem__.setter
+    def __setitem__(self, key, item):
+        """Allows the PrimaryAttributeList to be subscriptable.
+        
+        USE: primary_attributes['strength'] gets primary_attributes.strength
+        
+        !Important! NOT case sensitive!
+        So: primary_attributes['strength'] == primary_attributes['Strength'] == primary_attributes['stREnGtH']
+        """
+        if type(key) is type(str()):
+            setattr(self, key.lower(), item)
+        elif type(key) is type(int()):
+            pdb.set_trace()        
+        else:
+            raise Exception('TypeError: keys must be of type string.')  
+            
+    
+    def items(self):
+        return ((key, self[key]) for key in self.all_attribute_names)
+        
     
     def __repr__(self):
         """Returns string representation of PrimaryAttributeList.

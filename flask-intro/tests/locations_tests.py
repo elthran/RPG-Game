@@ -2,13 +2,12 @@ from base_classes import Base
 import locations
 from locations import Location, Cave, Town, World_Map
 import complex_relationships
-from sqlalchemy import inspect
 from test_all import pr
 from database import EZDB
-import os
+import pdb
 
 """
-This program runs as a test suite for the locations module when it is imported.
+This program runs as a test suite for the locations.py module when it is imported.
 This modules is run using  :>python locations_tests.py
 
 These tests should run when the module is imported.
@@ -28,10 +27,7 @@ def tear_down(database):
 def test_adjacent_locations():
     db = set_up()
     home = Location(name="Home")
-    # mapper = inspect(Location)
-    # for e in mapper.relationships:
-        # print(e)
-    # exit()
+    # pdb.set_trace()
     db.session.add(home)
     db.session.commit()
     home2 = db.session.query(Location).filter_by(name='Home').first()
