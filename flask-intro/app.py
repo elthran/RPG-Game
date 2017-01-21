@@ -9,7 +9,7 @@ from game import * #Must go befor login method???
 # import the Flask class from the flask module
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from functools import wraps
-from battle import *
+from combat_simulator import *
 from bestiary import *
 from database import EZDB
 from abilities import *
@@ -176,6 +176,12 @@ def level_up():
         return redirect(url_for('home'))
     page_heading = "You have leveled up!"
     paragraph = "Choose how you would like to distribute your attribute points."
+    if request.method == 'POST':
+        myHero.primary_attributes["Strength"] += convert_input(request.form["Attributes"])
+        #myHero.primary_attributes["Agility"] += convert_input(request.form["Agility"])
+        points_being_spent = convert_input(request.form["Attributes"])
+        myHero.attribute_points -= points_being_spent
+        return redirect(url_for('home'))
     return render_template('home.html', level_up=True, page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
 
 # use decorators to link the function to a url
@@ -640,7 +646,7 @@ def arena():
     page_image = str(game.enemy.name)
     conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
                     ("Level: ", str(game.enemy.level), "Combat Details"),
-                    ("Damage: ", str(game.enemy.min_damage) + " - " + str(game.enemy.max_damage)),
+                    ("Damage: ", str(game.enemy.minimum_damage) + " - " + str(game.enemy.maximum_damage)),
                     ("Attack Speed: ", str(game.enemy.attack_speed)),
                     ("Accuracy: ", str(game.enemy.attack_accuracy) + "%"),
                     ("First Strike: ", str(game.enemy.first_strike) + "%"),
