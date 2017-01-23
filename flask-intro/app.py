@@ -566,6 +566,7 @@ def town(town_name):
     for location in myHero.current_world.all_map_locations:
         if location.name == town_name:
             myHero.current_city = location
+            break
     page_title = myHero.current_city.display.page_title
     page_heading = myHero.current_city.display.page_heading
     page_image = myHero.current_city.display.page_image
@@ -576,9 +577,13 @@ def town(town_name):
 @app.route('/Cave/<cave_name>') # Test function while experimenting with locations
 @login_required
 def cave(cave_name):
+    #Marked for refractor as ineficient if easy to understand.
+    #Maybe a search function?
+    #myHero.current_city = myHero.current_world.get_city(cave_name)?
     for location in myHero.current_world.all_map_locations:
         if location.name == cave_name:
             myHero.current_city = location
+            break
     page_title = myHero.current_city.display.page_title
     page_heading = myHero.current_city.display.page_heading
     page_image = myHero.current_city.display.page_image

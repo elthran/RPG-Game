@@ -16,11 +16,15 @@ import items
 game.Hero.world_map_id = Column(Integer, ForeignKey('world_map.id'))
 locations.WorldMap.heroes = relationship("Hero", backref="current_world")
 
-#Many Heroes -> one Town (bidirectional)
-game.Hero.town_id = Column(Integer, ForeignKey('town.id'))
-locations.Town.heroes = relationship("Hero", backref="current_city")
+#Many Heroes -> one Location (bidirectional) (Town or Cave)
+#Maybe I should have a City object that extends Location that is the Ancestor for Town and Cave?
+game.Hero.city_id = Column(Integer, ForeignKey('location.id'))
+locations.Location.heroes = relationship("Hero", backref="current_city")
+
+
 
 #Many Heroes -> many known Maps? (unidirectional)
+#Maybe this should be a One Hero -> Many Maps ...
 known_locations_association_table = Table('known_locations_association', Base.metadata,
     Column('heroes_id', Integer, ForeignKey('heroes.id')),
     Column('map_id', Integer, ForeignKey('map.id'))
