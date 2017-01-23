@@ -87,7 +87,7 @@ def battle_logic(character1 ,character2):
         combat_log.append(character1.name + " is dead")
     else:
         combat_log.append(character2.name + " is dead")
-    return myHero.current_health,enemy.current_health,combat_log
+    return character1.current_health, character2.current_health,combat_log
 
 
 

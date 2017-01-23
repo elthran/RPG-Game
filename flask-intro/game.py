@@ -24,9 +24,6 @@ from base_classes import Base
 
 import math
 from flask import request
-from items import *
-from bestiary import *
-from abilities import *
 from secondary_attributes import *
     
 import datetime
@@ -96,7 +93,9 @@ class Hero(Base):
     __tablename__ = 'heroes'
     
     id = Column(Integer, primary_key=True)
-    character_name = Column(String) #Was nullable=False now it isn't. I hope that is a good idea.
+    name = Column(String) #Was nullable=False now it isn't. I hope that is a good idea.
+    character_name = orm.synonym('name')  
+    
     age = Column(Integer, default=7)
     archetype = Column(String, default="Woodsman")
     specialization = Column(String, default="Hunter")
@@ -118,13 +117,13 @@ class Hero(Base):
     attribute_points = Column(Integer, default=0)
         
     current_sanctity = Column(Integer, default=0)
-    current_health = Column(Integer, default=0)
+    current_health = Column(Integer, default=10)
     
     #Marked for rename
     #Consider "endurance" instead.
     current_endurance = Column(Integer, default=0)
     current_carrying_capacity = Column(Integer, default=0)
-    max_health = Column(Integer, default=0)
+    max_health = Column(Integer, default=10)
     
     #Time code
     timestamp = Column(DateTime, default=datetime.datetime.utcnow())
@@ -172,7 +171,9 @@ class Hero(Base):
         self.equipped_items = [item for item in self.inventory if item.equiptable] or []
 
         self.max_damage = update_maximum_damage(self)
+        self.maximum_damage = self.max_damage #Synonym for max_damage
         self.min_damage = update_minimum_damage(self)
+        self.minimum_damage = self.min_damage #Synonym for min_damage
         self.attack_speed = update_attack_speed(self)
         self.attack_accuracy = update_attack_accuracy(self)
         self.first_strike = update_first_strike_chance(self)
@@ -364,20 +365,6 @@ def create_random_hero():
     return myHero
 # End of temporary functions
 
-
-
-
-# initialization
-# myHero = create_random_hero()
-# game = Game(myHero)
-# enemy = monster_generator(myHero.age)
-
-# Super temporary while testing quests
-# myHero.inventory.append(Quest_Item("Wolf Pelt", myHero, 50))
-# myHero.inventory.append(Quest_Item("Spider Leg", myHero, 50))
-# myHero.inventory.append(Quest_Item("Copper Coin", myHero, 50))
-# for item in myHero.inventory:
-    # item.amount_owned = 5
 
 
 

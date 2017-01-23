@@ -5,7 +5,8 @@
 #                                                                              #
 #//////////////////////////////////////////////////////////////////////////////#
 
-from game import * #Must go befor login method???
+# from game import * #Must go befor login method???
+from game import Hero, Game
 # import the Flask class from the flask module
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from functools import wraps
@@ -13,7 +14,8 @@ from combat_simulator import *
 from bestiary import *
 from database import EZDB
 from abilities import *
-from locations import *
+from items import Quest_Item
+import locations
 import complex_relationships
 from secondary_attributes import *
 import sqlite3
@@ -312,7 +314,7 @@ def battle():
         page_heading = "Not enough endurance, wait a bit!"
         return render_template('home.html', page_title=page_title, myHero=myHero, page_heading=page_heading, page_links=page_links)
 
-    myHero.current_health,game.enemy.current_health,conversation = battle_logic(myHero,game.enemy)
+    myHero.current_health, game.enemy.current_health,conversation = battle_logic(myHero,game.enemy)
     if myHero.current_health == 0:
         myHero.current_endurance -= required_endurance
         page_title = "Defeat!"
@@ -426,7 +428,7 @@ def home():
     database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
  # initialize current_world
     if myHero.current_world == None:
-        myHero.current_world = game_worlds[0]
+        myHero.current_world = locations.game_worlds[0]
         database.update()
     # If it's a new character, send them to cerate_character url
     if myHero.character_name == None:
@@ -572,6 +574,7 @@ def town(town_name):
     page_image = myHero.current_city.display.page_image
     paragraph = myHero.current_city.display.paragraph
     places_of_interest = myHero.current_city.display.places_of_interest
+    database.update()
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest )  # return a string
 
 @app.route('/Cave/<cave_name>') # Test function while experimenting with locations
@@ -589,6 +592,7 @@ def cave(cave_name):
     page_image = myHero.current_city.display.page_image
     paragraph = myHero.current_city.display.paragraph
     places_of_interest = myHero.current_city.display.places_of_interest
+    database.update()
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest)  # return a string
 
 @app.route('/WorldMap/<current_world>/<location_id>') # Test function while experimenting with locations
@@ -841,12 +845,24 @@ if __name__ == '__main__':
     database = EZDB('sqlite:///static/database.db', debug=False)
     
     #I know there is a better way ... primary_attributes should be defined on initialization.
-    myHero = Hero() #This allows myHero to be global variable in this module/file without magic. I think.
+    #This allows myHero to be global variable in this module/file without magic. I think.
+    myHero = Hero(gold=5000, age=7, current_health=10) 
     myHero.primary_attributes = PrimaryAttributeList()
     
     #Because hero is easier for me to type.
     #Note: they are the same object!
     hero = myHero
+    
+    # initialization
+    game = Game(hero)
+    enemy = monster_generator(hero.age)
+
+    # Super temporary while testing quests
+    myHero.inventory.append(Quest_Item("Wolf Pelt", myHero, 50))
+    myHero.inventory.append(Quest_Item("Spider Leg", myHero, 50))
+    myHero.inventory.append(Quest_Item("Copper Coin", myHero, 50))
+    for item in myHero.inventory:
+        item.amount_owned = 5
     
     app.run(debug=True)
 
