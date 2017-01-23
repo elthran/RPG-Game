@@ -279,8 +279,8 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
       <h1>Current Quests</h1>
       {% if current_quests %}
         {% for quest in current_quests %}
-          <h2><br><b>{{ quest[0] }}</b> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;(Stage: {{ quest[2] }})</h2>
-          {{ quest[1] }}
+          <h2><br><b>{{ quest.name }}</b></h2>
+          {{ quest.current_description }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;(Stage: {{ quest.display_stage }}/{{ quest.stages }})
         {% endfor %}
       {% else %}
         No current quests.
@@ -296,7 +296,7 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
       <h1>Completed Quests</h1>
       {% if completed_quests %}
         {% for quest in completed_quests %}
-          <br><b>{{ quest }}</b><br>
+          <br><b>{{ quest.name }}</b><br>
           {{ paragraph }}
         {% endfor %}
       {% else %}

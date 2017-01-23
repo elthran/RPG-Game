@@ -19,6 +19,7 @@ import database #On the way out ...
 from abilities import *
 from locations import *
 from secondary_attributes import *
+from quests import *
 import sqlite3
 import hashlib
 
@@ -429,6 +430,17 @@ def home():
     if myHero.current_world == None:
         game_world = game_worlds[0]
         myHero.current_world = game_worlds[0]
+    if len(myHero.current_quests) == 0:
+        new_quest = Quest("The Fisherman", myHero, stages=3, stage_descriptions=["Go to the hut and talk to the old man", "Stage 2", "Stage 3"])
+        new_quest.update_owner(myHero)
+        new_quest.update_quest_stage()
+        myHero.current_quests.append(new_quest)
+        print("0 quest")
+    else:
+        print("more than 1")
+        for quest in myHero.current_quests:
+            quest.advance_quest()
+        myHero.current_quests = [quest for quest in myHero.current_quests if quest.completed == False]
     # If it's a new character, send them to cerate_character url
     if myHero.name == "Unknown":
         return redirect(url_for('create_character'))
