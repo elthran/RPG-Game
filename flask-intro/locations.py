@@ -50,6 +50,7 @@ except ImportError as e:
 #Well ... ok, but for simplicity sake just pretend that that is true.
 from base_classes import Base
 
+import pdb
 
 class BaseListElement(Base):
     """Stores list objects in database.
@@ -135,7 +136,7 @@ class PlaceOfInterest(Base):
      ("/tavern", "Tavern", "Other"),
      ("/old_mans_hut", "Old Man's Hut"),
      ("/leave_town", "Village Gate", "Outskirts"),
-     ("/World_Map/" + self.location_world + "/" + str(self.id), "World Map")]
+     ("/WorldMap/" + self.location_world + "/" + str(self.id), "World Map")]
      
      Note: each url can have many places. When printed it would look like the above.
     """
@@ -245,11 +246,12 @@ class Location(Base):
     location_type = orm.synonym('type')
     
     map_id = Column(Integer, ForeignKey('map.id'))
-    map = relationship("Map", back_populates="locations")
+    map = relationship("Map", foreign_keys=[map_id], back_populates="locations")
     location_world = orm.synonym('map')
     
-    current_location_map_id = Column(Integer, ForeignKey('world_map.id'))
-    current_location_map = relationship("Map", back_populates="current_location")
+    current_location_map_id = Column(Integer, ForeignKey('map.id'))
+    current_location_map = relationship("Map", foreign_keys=[current_location_map_id],
+        back_populates="current_location")
      
         
     __mapper_args__ = {
@@ -285,8 +287,7 @@ class Location(Base):
 class Town(Location):
     """Town object database ready class.
     
-    This object is currently for only one town. It would require a bit of work to make it an actual
-    generic "Town" object that could be used for any town you want.
+    Basically adds a display and identity of "Town" to the location object.
     """
     __tablename__ = "town"
     
@@ -305,6 +306,10 @@ class Town(Location):
         
 
 class Cave(Location):
+    """Cave object database ready class.
+    
+    Basically adds a display and identity of "Cave" to the location object.
+    """
     __tablename__ = "cave"
     
     id = Column(Integer, ForeignKey('location.id'), primary_key=True)
@@ -333,9 +338,10 @@ class Map(Base):
     location_type = orm.synonym('type')
     
     
-    current_location = relationship("Location", uselist=False, back_populates="current_location_map")
+    current_location = relationship("Location", uselist=False, foreign_keys='[Location.current_location_map_id]',
+        back_populates="current_location_map")
     
-    locations = relationship("Location", back_populates="map")
+    locations = relationship("Location", foreign_keys='[Location.map_id]', back_populates="map")
     all_map_locations = orm.synonym('locations')
         
     __mapper_args__ = {
@@ -378,24 +384,32 @@ class WorldMap(Map):
     #Marked for rebuild
     #Cause I don't no what it does.
     def show_directions(self):
-        # print(self.display)
-        # exit('test show_directions')
+        """Return a list of directions you can go from your current_location.
+        
+        ALSO! modifies the attribute map_cities and places_of_interest.
+        map_cities is only a single value of either a cave or a town.
+        """
         directions = self.current_location.adjacent_locations
         if directions == []:
             directions = [1,2,3]
-        self.map_cities = [location for location in self.all_map_locations if (location == self.current_location and (location.type == "Town" or location.type == "Cave"))] # too long, but will refactor later
-        if len(self.map_cities) > 0:
-            self.display.places_of_interest = [("/{}/{}".format(self.map_cities[0].type, self.map_cities[0].name),
-            self.map_cities.name)]
-        else:
-            self.display.places_of_interest = []
+            
+        self.map_cities = []    
+        if self.current_location.type in ["Town", "Cave"]:
+            self.map_cities = [self.current_location]
+        
+        # self.map_cities = [location for location in self.all_map_locations if (location == self.current_location and (location.location_type == "Town" or location.location_type == "Cave"))]
+
+        if self.map_cities:
+            city = self.map_cities[0]
+            self.display.places_of_interest = [("/{}/{}".format(city.type, city.name), city.name)]
+                
         return directions
         
         
     # temporarily location_id is the same as the index in the list of all_map_locations
     def find_location(self, location_id):
         id = int(location_id)
-        return self.all_map_locations[int(id)]
+        return self.all_map_locations[id]
     
     def __str__(self):
         return """<{}(id={}, name='{}', type='{}', current_location='{}', adjacent_locations={}, display={}""".format(
@@ -532,7 +546,6 @@ world = WorldMap(name="Test_World2", current_location=town, all_map_locations=te
 #Note: Displays must be added after all objects are defined. Or you get error that I was to lazy to fix.
 world.display = Display(world, page_heading="You are wandering in the world", paragraph="Be safe")
 
-
 town.display = Display(town, page_heading="You are in {}".format(town.name),
     paragraph="There are many places to visit within the town. Have a look!",
     places_of_interest=[("/store/greeting", "Blacksmith", "Shops"),
@@ -541,11 +554,11 @@ town.display = Display(town, page_heading="You are in {}".format(town.name),
         ("/tavern", "Tavern", "Other"),
         ("/old_mans_hut", "Old Man's Hut"),
         ("/leave_town", "Village Gate", "Outskirts"),
-        ("/World_Map/{}/{}".format(town.location_world.name, town.id), "World Map")])
+        ("/WorldMap/{}/{}".format(town.location_world.name, town.id), "World Map")])
         
 cave.display = Display(cave, page_heading="You are in a cave called {}".format(cave.name),
     paragraph="There are many scary places to die within the cave. Have a look!",
-    places_of_interest=[("/World_Map/{}/{}".format(cave.location_world.name, cave.id), "World Map")])
+    places_of_interest=[("/WorldMap/{}/{}".format(cave.location_world.name, cave.id), "World Map")])
 
 game_worlds = [world]
 #game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]

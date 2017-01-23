@@ -1,6 +1,6 @@
 from base_classes import Base
 import locations
-from locations import Location, Cave, Town, World_Map
+from locations import Location, Cave, Town, WorldMap, Display
 import complex_relationships
 from test_all import pr
 from database import EZDB
@@ -27,7 +27,6 @@ def tear_down(database):
 def test_adjacent_locations():
     db = set_up()
     home = Location(name="Home")
-    # pdb.set_trace()
     db.session.add(home)
     db.session.commit()
     home2 = db.session.query(Location).filter_by(name='Home').first()
@@ -59,13 +58,12 @@ def test_cave():
     
 def test_world_map():
     db = set_up()
-    map = World_Map(name="Picatanin")
-    # print(map)
-    # exit()
+    map = WorldMap(name="Picatanin")
+    town = Town(name="Thornwall")
+    map.current_location = town
     db.session.add(map)
     db.session.commit()
-    map2 = db.session.query(World_Map).filter_by(name="Picatanin").first()
-    print(map2)
+    map2 = db.session.query(WorldMap).filter_by(name="Picatanin").first()
     assert map == map2
     tear_down(db)
     
@@ -74,12 +72,35 @@ def test_add_world_map():
     db.add_new_user('Marlen', 'Brunner')
     db.add_new_character(1, "Haldon", "Wizard")
     hero = db.fetch_hero(character_name_or_id=1)
-    print(hero.current_world)
-    print(type(locations.game_worlds[0]))
     hero.current_world = locations.game_worlds[0]
-    print(hero.current_world)
-    exit("test_add_world_map")
-    assert 0
+    current_world = db.session.query(WorldMap).filter_by(id=1).first()
+    assert hero.current_world == current_world
+    tear_down(db)
+    
+def test_show_directions():
+    db = set_up()
+    map = locations.game_worlds[0]
+    directions = map.show_directions()
+    
+    #This only works if map.current_location is a Town or Cave.
+    #Which it currently is in locations.game_worlds[0]
+    assert map.map_cities == [map.current_location]
+    pdb.set_trace()
+    assert str(map.display.places_of_interest) == "[(url='/Town/Thornwall', places=['Thornwall'])]"
+    tear_down(db)
+    
+def test_places_of_interest():
+    db = set_up()
+    town = locations.game_worlds[0].current_location
+    # ps = town.display.places_of_interest
+    # for p in ps:
+        # print(p.url, p.places)
+        
+    map = locations.game_worlds[0]
+    directions = map.show_directions()
+    ps = map.display.get_places_of_interest()
+    for p in ps:
+        print(p.url, p.places[0].name)
     tear_down(db)
     
 def run_all():
@@ -89,9 +110,11 @@ def run_all():
         test_town()
         test_cave()
         test_world_map()
+        test_add_world_map()
+        test_show_directions()
+        test_places_of_interest()
     finally:
         tear_down(db)
-    # test_add_world_map()
     print("All locations_tests passed. No Errors, yay!")
     
 run_all()

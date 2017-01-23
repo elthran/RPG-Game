@@ -169,13 +169,23 @@ class EZDB:
             hero.timestamp = EZDB.now()
         self.session.commit()
         
+    def get_world(self, name):
+        """Return WorldMap object from database using by name.
+        """
+        return self.session.query(WorldMap).filter_by(name=name).first()
     
     def _delete_database(self):
         """Deletes current database file.
         
         Use with caution, mainly for testing.
         """
-        os.remove(self.file_name)
+        try:
+            os.remove(self.file_name)
+        except FileNotFoundError:
+            #Ignore because the file has already been deleted.
+            pass
+        except PermissionError:
+            pass
                             
                         
 if __name__ == "__main__":

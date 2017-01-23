@@ -19,6 +19,9 @@ from secondary_attributes import *
 import sqlite3
 import hashlib
 
+#For testing!
+import pdb
+
 
 # create the application object
 app = Flask(__name__)
@@ -44,7 +47,6 @@ def command(cmd=None):
     # cmd (string type)is an item name, sent from the javascript code in html
 
     #Level Up Commands
-    # pdb.set_trace()
     for attribute in myHero.primary_attributes:
         if cmd == attribute:
             myHero.primary_attributes[attribute] += 1
@@ -203,7 +205,6 @@ def login():
             
             #I recommend a dialogue here to select the specific hero that the user wants to play with.
             #Or a page redirect whatever ...
-            # pdb.set_trace()
             session['hero_id'] = database.fetch_hero(username).id #Gets the hero's id.
             
             return redirect(url_for('home'))
@@ -246,7 +247,7 @@ def create_account():
             database.add_new_character(username_or_id=username)
             # database.add_world_map_to_hero() maybe?
             return redirect(url_for('login'))
-
+    database.update()
     return render_template('login.html', error=error, create_account=True)
 
 # this gets called if you press "logout"
@@ -270,13 +271,12 @@ def create_character():
     paragraph = "You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. A firm and inquisitive voice pierces the air."
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
     if request.method == 'POST' and myHero.character_name == None:
-        myHero.character_name = request.form["character_name"]
+        myHero.character_name = request.form["name"]
         page_image = "old_man"
         paragraph = None
         conversation = [("Stranger: ", "Where do you come from, child?")]
         display = False
     elif request.method == 'POST' and fathers_job == None:
-        # pdb.set_trace()
         fathers_job = request.form["archetype"]
         if fathers_job == "Brute":
             myHero.primary_attributes["Strength"] += 3
@@ -291,6 +291,7 @@ def create_character():
             myHero.primary_attributes["Divinity"] += 3
     if myHero.character_name != None and fathers_job != None:
         myHero.archetype = fathers_job
+        database.update()
         return redirect(url_for('home'))
     else:
         return render_template('create_character.html', page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, conversation=conversation, display=display)  # render a template
@@ -420,14 +421,13 @@ def admin():
 @app.route('/home')
 @login_required
 def home():
-    # pdb.set_trace()
     global myHero
     myHero = database.fetch_hero(session['hero_id'])
     database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
  # initialize current_world
     if myHero.current_world == None:
-        game_world = game_worlds[0]
         myHero.current_world = game_worlds[0]
+        database.update()
     # If it's a new character, send them to cerate_character url
     if myHero.character_name == None:
         return redirect(url_for('create_character'))
@@ -566,11 +566,11 @@ def town(town_name):
     for location in myHero.current_world.all_map_locations:
         if location.name == town_name:
             myHero.current_city = location
-    page_title = myHero.current_city.page_title
-    page_heading = myHero.current_city.page_heading
-    page_image = myHero.current_city.page_image
-    paragraph = myHero.current_city.paragraph
-    places_of_interest = myHero.current_city.places_of_interest
+    page_title = myHero.current_city.display.page_title
+    page_heading = myHero.current_city.display.page_heading
+    page_image = myHero.current_city.display.page_image
+    paragraph = myHero.current_city.display.paragraph
+    places_of_interest = myHero.current_city.display.places_of_interest
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest )  # return a string
 
 @app.route('/Cave/<cave_name>') # Test function while experimenting with locations
@@ -579,28 +579,41 @@ def cave(cave_name):
     for location in myHero.current_world.all_map_locations:
         if location.name == cave_name:
             myHero.current_city = location
-    page_title = myHero.current_city.page_title
-    page_heading = myHero.current_city.page_heading
-    page_image = myHero.current_city.page_image
-    paragraph = myHero.current_city.paragraph
-    places_of_interest = myHero.current_city.places_of_interest
+    page_title = myHero.current_city.display.page_title
+    page_heading = myHero.current_city.display.page_heading
+    page_image = myHero.current_city.display.page_image
+    paragraph = myHero.current_city.display.paragraph
+    places_of_interest = myHero.current_city.display.places_of_interest
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest)  # return a string
 
-@app.route('/World_Map/<current_world>/<location_id>') # Test function while experimenting with locations
+@app.route('/WorldMap/<current_world>/<location_id>') # Test function while experimenting with locations
 @login_required
 def world_map(current_world, location_id):
-    myHero.current_world = game_worlds[0]
+    """Set up World Map web page. Return html string/web page.
+    
+    I don't know where the arguments come from? Or why they are passed.
+    I will try and figure it out.
+    """
+    current_world = myHero.current_world
+    
+    #Updates current id. May be redundant. Or it may allow page to be dynamic.
+    #May have originally compensated for the lack of a database.
+    current_world.current_location = current_world.find_location(location_id)
+    
     myHero.known_locations.append(current_world)
-    print(myHero.known_locations)
-    myHero.current_world.current_location = myHero.current_world.find_location(location_id)
     myHero.current_city = None
-    page_title = myHero.current_world.page_title
-    page_heading = myHero.current_world.page_heading
-    page_image = myHero.current_world.page_image
-    paragraph = myHero.current_world.paragraph
-    move_on_the_map = myHero.current_world.show_directions()
-    places_of_interest = myHero.current_world.places_of_interest
-    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest, move_on_the_map=move_on_the_map)  # return a string
+    
+    #Debug Me! Use current_world.display?
+    # Check render of places_of_interest
+    page_title = current_world.display.page_title
+    page_heading = current_world.display.page_heading
+    page_image = current_world.display.page_image
+    paragraph = current_world.display.paragraph
+    move_on_the_map = current_world.show_directions()
+    places_of_interest = myHero.current_world.display.places_of_interest
+    
+    database.update()
+    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest, move_on_the_map=move_on_the_map)  
 
 @app.route('/barracks')
 @login_required
@@ -800,14 +813,17 @@ def leave_town():
 ###testing by Marlen ####
 @app.route('/')
 def main():
-    return render_template('main.html')
+    """Redirects user to a default first page
+    
+    Currently the login page.
+    """
+    return redirect(url_for('login'))
 
 
 
 
 # start the server with the 'run()' method
 if __name__ == '__main__':
-    import pdb
     # import os
 
     #Set Current Working Directory (CWD) to the home of this file.

@@ -82,7 +82,7 @@ function sumerror()
         {% if myHero.current_city %}
            <li><a href=/{{ myHero.current_city.location_type }}/{{ myHero.current_city.name }}>{{ myHero.current_city.name }}</a></li>
         {% else %}
-          <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_world.id }}>{{ myHero.current_world.location_type }}</a></li>
+          <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_world.current_location.id }}>{{ myHero.current_world.location_type }}</a></li>
         {% endif %}
         <li><a href=/quest_log>Journal</a></li>
         <li><a href=/ability_tree/basic>Abilities</a></li>
@@ -167,7 +167,7 @@ function sumerror()
     {% endfor %}
 
     {% for town_link in places_of_interest %}
-      <h1>{{ town_link[2] }}</h1><h2><a href="{{ town_link[0] }}">{{ town_link[1] }}</a></h2>
+      <h1>{{ town_link.places[0].name }}</h1><h2><a href="{{ town_link.url }}">{{ town_link.places[0].name }}</a></h2>
     {% endfor %}
 
     {% if inventory_page %}
