@@ -48,8 +48,8 @@ class Weapon(Equippable):
     def update_stats(self):
         if self.broken:
             return None
-        self.myHero.min_damage += self.min_damage
-        self.myHero.max_damage += self.max_damage
+        self.myHero.minimum_damage += self.min_damage
+        self.myHero.maximum_damage += self.max_damage
         self.myHero.attack_speed += self.attack_speed
 		
 class One_Handed_Weapon(Weapon):

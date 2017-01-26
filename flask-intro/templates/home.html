@@ -58,8 +58,8 @@ function sumerror()
 }
 </script>
 
-  </head>
 
+  </head>
   <body>
   <div id="page">
     <div id="sidebar">
@@ -278,10 +278,10 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
     {% if quest_log %}
       <h1>Current Quests</h1>
       {% if current_quests %}
-        {% for quest in current_quests %}
+        {% for quest in current_quests %}{% if not quest.completed %}
           <h2><br><b>{{ quest.name }}</b></h2>
           {{ quest.current_description }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;(Stage: {{ quest.display_stage }}/{{ quest.stages }})
-        {% endfor %}
+        {% endif %}{% endfor %}
       {% else %}
         No current quests.
       {% endif %}
@@ -295,10 +295,10 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
       {% endif %}
       <h1>Completed Quests</h1>
       {% if completed_quests %}
-        {% for quest in completed_quests %}
-          <br><b>{{ quest.name }}</b><br>
-          {{ paragraph }}
-        {% endfor %}
+        {% for quest in current_quests %}{% if quest.completed %}
+          <h2><br><b>{{ quest.name }}</b></h2>
+          (Reward: {{ quest.reward_xp }} xp)
+        {% endif %}{% endfor %}
       {% else %}
         No completed quests.
       {% endif %}

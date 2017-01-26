@@ -100,6 +100,9 @@ def command(cmd=None):
                 myHero.equipped_items.append(item)
                 myHero.inventory.remove(item)
                 myHero.update_secondary_attributes()
+                for quest in myHero.current_quests:
+                    if quest.name == "Equipping/Unequipping" and quest.current_stage == 0:
+                        quest.advance_quest()
                 return "success", 200, {'Content-Type': 'text/plain'} #//
             if item.consumable == True:                # CONSUME ITEMS
                 myHero.consume_item(item.name)
@@ -111,6 +114,9 @@ def command(cmd=None):
             myHero.inventory.append(item)
             myHero.equipped_items.remove(item)
             myHero.update_secondary_attributes()
+            for quest in myHero.current_quests:
+                    if quest.name == "Equipping/Unequipping" and quest.current_stage == 1:
+                        quest.advance_quest()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # UPGRADE ABILITIES
@@ -152,6 +158,9 @@ def command(cmd=None):
             newItem.update_owner(myHero)
             myHero.inventory.append(newItem)
             myHero.gold -= item.buy_price
+            for quest in myHero.current_quests:
+                if quest.name == "Get Acquainted with the Blacksmith" and quest.current_stage == 1:
+                    quest.advance_quest()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # BUY FROM MARKETPLACE
@@ -270,6 +279,9 @@ def create_character():
     page_image = "beached"
     paragraph = "You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. A firm and inquisitive voice pierces the air."
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
+    if len(myHero.current_quests) == 0:
+        for quest in testing_quests:
+            myHero.current_quests.append(quest)
     if request.method == 'POST' and myHero.name == "Unknown":
         myHero.name = request.form["name"]
         page_image = "old_man"
@@ -430,17 +442,6 @@ def home():
     if myHero.current_world == None:
         game_world = game_worlds[0]
         myHero.current_world = game_worlds[0]
-    if len(myHero.current_quests) == 0:
-        new_quest = Quest("The Fisherman", myHero, stages=3, stage_descriptions=["Go to the hut and talk to the old man", "Stage 2", "Stage 3"])
-        new_quest.update_owner(myHero)
-        new_quest.update_quest_stage()
-        myHero.current_quests.append(new_quest)
-        print("0 quest")
-    else:
-        print("more than 1")
-        for quest in myHero.current_quests:
-            quest.advance_quest()
-        myHero.current_quests = [quest for quest in myHero.current_quests if quest.completed == False]
     # If it's a new character, send them to cerate_character url
     if myHero.name == "Unknown":
         return redirect(url_for('create_character'))
@@ -681,6 +682,9 @@ def arena():
 @login_required
 def store(inventory):
     page_title = "Store"
+    for quest in myHero.current_quests:
+        if quest.name == "Get Acquainted with the Blacksmith" and quest.current_stage == 0:
+            quest.advance_quest()
     items_for_sale = []
     if inventory == "greeting":
         page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]
