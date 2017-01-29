@@ -24,9 +24,9 @@ class Quest(object):
         self.current_stage += 1
         self.display_stage = self.current_stage + 1
         if self.current_stage == self.stages:
-            self.myHero.completed_quests.append(self)
             self.myHero.current_exp += self.reward_xp
             self.completed = True
+            self.myHero.quest_notification = [self.name, self.reward_xp]
         else:
             self.update_quest_stage()
 
@@ -35,4 +35,4 @@ class Primary_Quest(Quest):
         super().__init__(*args, **kwargs)
 
 
-testing_quests = [Quest("Get Acquainted with the Blacksmith", myHero, stages=2, stage_descriptions=["Go talk to the blacksmith.", "Buy your first item."]), Quest("Equipping/Unequipping", myHero, stages=2, stage_descriptions=["Equip any item.", "Unequip any item."])]
+testing_quests = [Quest("Get Acquainted with the Blacksmith", myHero, stages=2, stage_descriptions=["Go talk to the blacksmith.", "Buy your first item."], reward_xp=7), Quest("Equipping/Unequipping", myHero, stages=2, stage_descriptions=["Equip any item.", "Unequip any item."])]

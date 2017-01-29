@@ -71,9 +71,8 @@ class Hero(object):
         self.abilities = []
         self.chest_equipped = []
 
-        self.errands = []
         self.current_quests = []
-        self.completed_quests = []
+        self.quest_notification = None
         self.completed_achievements = []
         self.kill_quests = {}
         self.bestiary = []
@@ -132,6 +131,9 @@ class Hero(object):
         self.current_health = self.max_health
         self.current_endurance = self.max_endurance
         self.current_carrying_capacity = self.max_carrying_capacity
+
+    def page_refresh_character(self):
+        self.quest_notification = None
 
     # updates field variables when hero levels up
     def level_up(self, attribute_points, current_exp, max_exp):

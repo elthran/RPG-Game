@@ -14,8 +14,7 @@
   {
     document.querySelector('#strength_output').value = AR;
     var select_strength = document.querySelector('#strength_output').value
-    console.log(select_strength);
-    
+    console.log(select_strength); 
 }
 
   function agility_updater(AR) 
@@ -24,7 +23,6 @@
     var select_agility = document.querySelector('#agility_output').value
     console.log(select_agility);
     }
-
 
   function findTotal()
   {
@@ -40,7 +38,6 @@
 	sumerror()
 }
 
-
 function sumerror()
   {
     var sum = document.getElementById('total_points_spent').value;
@@ -53,14 +50,24 @@ function sumerror()
 
 		document.getElementById('sumerror').value = '';
 	}
-	
-
 }
 </script>
 
 
   </head>
   <body>
+
+<script>
+// This is for the quest pop-up window. When the user clicks on div, open/close the popup
+function myFunction() {
+    var popup = document.getElementById('js_popupachievement');
+    popup.classList.toggle('show');
+}
+</script>
+
+  </head>
+  <body>
+
   <div id="page">
     <div id="sidebar">
       <div class="sidebarinfo">
@@ -121,6 +128,10 @@ function sumerror()
 {% endif %}
 
  <div id="content">
+
+{% if myHero.quest_notification %}
+    <div class="popup" onclick="myFunction()" style="color:red">You have complete a quest! (+{{ myHero.quest_notification[1] }}xp)<span class="popupachievement" id="js_popupachievement">{{ myHero.quest_notification[0] }}</span></div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
+{% endif %}
 
     {% if page_heading %}
     <h1>{{ page_heading }}</h1>
@@ -277,32 +288,16 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
 
     {% if quest_log %}
       <h1>Current Quests</h1>
-      {% if current_quests %}
-        {% for quest in current_quests %}{% if not quest.completed %}
+      {% for quest in myHero.current_quests %}{% if not quest.completed %}
           <h2><br><b>{{ quest.name }}</b></h2>
           {{ quest.current_description }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;(Stage: {{ quest.display_stage }}/{{ quest.stages }})
         {% endif %}{% endfor %}
-      {% else %}
-        No current quests.
-      {% endif %}
-      <h1>Current Errands</h1>
-      {% if errands %}
-        {% for errand in errands %}
-          <br><b>{{ errand }}</b>
-        {% endfor %}
-      {% else %}
-        No current errands.
-      {% endif %}
       <h1>Completed Quests</h1>
-      {% if completed_quests %}
-        {% for quest in current_quests %}{% if quest.completed %}
+      {% for quest in myHero.current_quests %}{% if quest.completed %}
           <h2><br><b>{{ quest.name }}</b></h2>
           (Reward: {{ quest.reward_xp }} xp)
         {% endif %}{% endfor %}
-      {% else %}
-        No completed quests.
-      {% endif %}
-    {% endif %}
+     {% endif %}
 
     {% if bestiary %}
       <div class="rightside">

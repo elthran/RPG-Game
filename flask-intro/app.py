@@ -503,18 +503,10 @@ def ability_tree(spec):
 @app.route('/quest_log')
 @login_required
 def quest_log():
+    myHero.page_refresh_character()
     paragraph = ""
     page_title = "Quest Log"
-    current_quests = myHero.current_quests
-    completed_quests = myHero.completed_quests
-    errands = myHero.errands
-    if current_quests == []:
-        current_quests = False
-    if errands == []:
-        errands = False
-    if completed_quests == []:
-        completed_quests = False
-    return render_template('home.html', myHero=myHero, journal=True, quest_log=True, page_title=page_title, current_quests=current_quests, errands=errands, completed_quests=completed_quests)  # return a string
+    return render_template('home.html', myHero=myHero, journal=True, quest_log=True, page_title=page_title)  # return a string
 
 @app.route('/bestiary/<current_monster_id>')
 @login_required
