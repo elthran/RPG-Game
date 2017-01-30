@@ -48,68 +48,9 @@ except ImportError as e:
 
 #!Important!: Base can only be defined in ONE location and ONE location ONLY!
 #Well ... ok, but for simplicity sake just pretend that that is true.
-from base_classes import Base
+from base_classes import Base, BaseListElement
 
 import pdb
-
-class BaseListElement(Base):
-    """Stores list objects in database.
-    
-    To implement:
-    1. add line in this class: parent_table_name_id = Column(Integer, ForeignKey('parent_table_name.id'))
-    2. add line in foreign class: _my_list = relationship("BaseListElement")
-    3. add method to foreign class:
-    @hybrid_property
-    def my_list(self):
-        '''Return a list of elements.
-        '''
-        return [element.value for element in self._my_list]
-
-    4. add method to foreign class:
-    @my_list.setter
-    def my_list(self, values):
-        '''Create list of BaseListElement objects.
-        '''
-        self._my_list = [BaseListElement(value) for value in values]
-    
-    See Location class for example implementation.
-    5. Probably a better way using decorators ...?
-    """
-    __tablename__ = "base_list"
-    id = Column(Integer, primary_key=True)
-    int_value = Column(Integer)
-    str_value = Column(String)    
-    
-    location_id = Column(Integer, ForeignKey('location.id'))
-    map_id = Column(Integer, ForeignKey('map.id'))
-    
-    def __init__(self, value):
-        """Build BaseListElement from value.
-        """
-        self.value = value
-    
-    
-    @hybrid_property
-    def value(self):
-        """Return value of list element.
-        
-        Can be string or integer.
-        """
-        return self.int_value or self.str_value
-
-
-    @value.setter
-    def value(self, value):
-        """Assign value to appropriate column.
-        
-        Currently implements the strings and integers.
-        """
-        if type(value) is type(str()):
-            self.str_value = value
-        elif type(value) is type(int()):
-            self.int_value = value
-        else:
-            raise "TypeError: BaseListElement does not accept type '{}':".format(type(value))
                         
 
 class Place(Base):
@@ -259,12 +200,6 @@ class Location(Base):
         'polymorphic_on':type
     }
     
-    #relationships
-    # display = etc. one to one.
-    # location_world one to one with WorldMap? but each WorldMap can have many locations ...?
-    #   so many to one it is!
-    # adjacent_locations = one to many relationship with self.
-    _adjacent_locations = relationship("BaseListElement")
     
     @hybrid_property
     def adjacent_locations(self):
@@ -348,8 +283,6 @@ class Map(Base):
         'polymorphic_identity':'Map',
         'polymorphic_on':type
     }
-    
-    _adjacent_locations = relationship("BaseListElement")
     
     @hybrid_property
     def adjacent_locations(self):

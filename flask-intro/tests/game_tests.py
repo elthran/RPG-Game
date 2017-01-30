@@ -12,12 +12,16 @@ from test_all import pr
 from database import EZDB
 from sqlalchemy import orm
 from sqlalchemy.ext.hybrid import hybrid_property
-from game import PrimaryAttributeList
+from game import Hero
+import complex_relationships
 
 import pdb
 
-def testPrimaryAttributeList():
+def testPrimaryAttributes():
     
+    hero = Hero()
+    print(hero.primary_attributes)
+    exit()
     pal = PrimaryAttributeList()
     pal["Strength"] += 3
     assert pal["Strength"] == 4
@@ -29,6 +33,11 @@ def testPrimaryAttributeList():
     assert repr(pal) == "<PrimaryAttributeList(id=None, agility=2, charisma=2, divinity=2, fortitude=2, fortuity=2, perception=2, reflexes=2, resilience=2, strength=2, survivalism=2, vitality=2, wisdom=2, hero_id=None)>"
     
     #NOTE: I should test this from a saving/loading perspective as well as it may not hold up.
+
+def testKillQuests():
+    pdb.set_trace()
+    hero = Hero()
+    hero.kill_quests['a'] = Hero.KillQuest('a', 'atext')
     
     
 def run_all():
@@ -37,9 +46,9 @@ def run_all():
     The test currently only fail if the code is broken ... not if the info is invalid.
     I hope to use an assert statement at some point in each test to make sure the output is correct as well.
     """
-    testPrimaryAttributeList()
+    testPrimaryAttributes()
+    # testKillQuests()
     
     print("All game_tests passed. No Errors, yay!")
-    exit()
 
 run_all()

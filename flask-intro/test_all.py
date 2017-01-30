@@ -28,7 +28,7 @@ def dict_diff(left, right):
     
 
 import tests.game_tests
-import tests.locations_tests
+# import tests.locations_tests
 
 # import tests.database_tests
 

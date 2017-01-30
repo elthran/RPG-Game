@@ -85,7 +85,6 @@ def test_show_directions():
     #This only works if map.current_location is a Town or Cave.
     #Which it currently is in locations.game_worlds[0]
     assert map.map_cities == [map.current_location]
-    pdb.set_trace()
     assert str(map.display.places_of_interest) == "[(url='/Town/Thornwall', places=['Thornwall'])]"
     tear_down(db)
     
@@ -98,9 +97,9 @@ def test_places_of_interest():
         
     map = locations.game_worlds[0]
     directions = map.show_directions()
-    ps = map.display.get_places_of_interest()
-    for p in ps:
-        print(p.url, p.places[0].name)
+    # ps = map.display.get_places_of_interest()
+    # for p in ps:
+        # print(p.url, p.places[0].name)
     tear_down(db)
     
 def run_all():

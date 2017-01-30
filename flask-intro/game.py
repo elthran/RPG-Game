@@ -17,10 +17,11 @@ try:
     from sqlalchemy.orm import relationship
     
     from sqlalchemy import orm
+    from sqlalchemy.orm.collections import attribute_mapped_collection
 except ImportError as e:
     exit("Open a command prompt and type: pip install sqlalchemy."), e
     
-from base_classes import Base
+from base_classes import Base, BaseDict
 
 import math
 from flask import request
@@ -77,8 +78,6 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
     email = Column(String)
-    
-    heroes = relationship("Hero", order_by='Hero.character_name', back_populates='user')
 
     def __repr__(self):
        return "<User(username='{}', password='{}', email='{}')>" .format(
@@ -129,9 +128,11 @@ class Hero(Base):
     timestamp = Column(DateTime, default=datetime.datetime.utcnow())
     
     #Relationships
-    user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship("User", back_populates="heroes")
-    primary_attributes = relationship("PrimaryAttributeList", uselist=False, backref="hero")
+    primary_attributes = BaseDict({"Strength": 1, "Resilience": 1, "Vitality": 1,
+        "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1,
+        "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1})
+    
+    kill_quests = BaseDict()
 
     
     def not_yet_implemented():
@@ -263,96 +264,7 @@ class Hero(Base):
         return sorted(self.primary_attributes.items())
         
 
-class PrimaryAttributeList(Base):
-    """The list of primary attributes of a Hero object.
     
-    This list pretends to be a dictionary and so is subscriptable, see __getitem__ method.
-    
-    There is a simpler way to do this: http://docs.sqlalchemy.org/en/latest/orm/collections.html?highlight=instrumented#dictionary-collections
-    But I used this instead as it allows me to use case insensitive keyword names.
-    And because it didn't make sense the first time I read it.
-    """
-    __tablename__ = "primary_attributes"
-    
-    id = Column(Integer, primary_key=True)
-    agility = Column(Integer, default=1)
-    charisma = Column(Integer, default=1)
-    divinity = Column(Integer, default=1)
-    fortitude = Column(Integer, default=1)
-    fortuity = Column(Integer, default=1)
-    perception = Column(Integer, default=1)
-    reflexes = Column(Integer, default=1)
-    resilience = Column(Integer, default=1)
-    strength = Column(Integer, default=1)
-    survivalism = Column(Integer, default=1)
-    vitality = Column(Integer, default=1)
-    wisdom = Column(Integer, default=1)
-    
-    hero_id = Column(Integer, ForeignKey('heroes.id'))
-    
-    all = [agility, charisma, divinity, fortitude, fortuity, perception, reflexes, resilience,
-        strength, survivalism, vitality, wisdom]
-        
-    #List of all attribute names. Used for for looping.
-    all_attribute_names = ['agility', 'charisma', 'divinity', 'fortitude', 'fortuity', 'perception',
-        'reflexes', 'resilience', 'strength', 'survivalism', 'vitality', 'wisdom']
-           
-    
-    # @hybrid_property
-    def __getitem__(self, key):
-        """Allows the PrimaryAttributeList to be subscriptable.
-        
-        USE: primary_attributes['strength'] gets primary_attributes.strength
-        
-        !Important! NOT case sensitive!
-        So: primary_attributes['strength'] == primary_attributes['Strength'] == primary_attributes['stREnGtH']
-        
-        NOTE: nonintuitive use of 1 as None. This sets default value but in a bizar and confusing way.
-        """
-        if type(key) is type(str()):
-            attr = getattr(self, key.lower())
-            if attr:
-                return attr
-            return 1
-        # When using for loops.
-        elif type(key) is type(int()):
-            return self.all_attribute_names[key]
-        else:
-            raise Exception('TypeError: can only be int or str.')
-
-
-    # @__setitem__.setter
-    def __setitem__(self, key, item):
-        """Allows the PrimaryAttributeList to be subscriptable.
-        
-        USE: primary_attributes['strength'] gets primary_attributes.strength
-        
-        !Important! NOT case sensitive!
-        So: primary_attributes['strength'] == primary_attributes['Strength'] == primary_attributes['stREnGtH']
-        """
-        if type(key) is type(str()):
-            setattr(self, key.lower(), item)
-        elif type(key) is type(int()):
-            pdb.set_trace()        
-        else:
-            raise Exception('TypeError: keys must be of type string.')  
-            
-    
-    def items(self):
-        return ((key, self[key]) for key in self.all_attribute_names)
-        
-    
-    def __repr__(self):
-        """Returns string representation of PrimaryAttributeList.
-        
-        NOTE: this is actually a list but behaves like a dictionary too, but is case insensitive.
-        """
-        atts = []
-        for key in self.__table__.columns.keys():
-            atts.append('{}={}'.format(key, getattr(self, key)))
-        
-        data = "<PrimaryAttributeList(" + ', '.join(atts) + ')>'
-        return data
       
 
 # Temporary Function to create a random hero

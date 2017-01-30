@@ -24,7 +24,7 @@ import datetime
 import os #Testing only
 
 #Internal game modules
-from game import User, Hero, PrimaryAttributeList
+from game import User, Hero
 from abilities import Ability
 from locations import Location, WorldMap, Town, Cave
 from items import Item
@@ -92,8 +92,7 @@ class EZDB:
             user = self.session.query(User).filter_by(id=username_or_id).first()
         else:
             user = self.session.query(User).filter_by(username=username_or_id).first()
-        self.session.add(Hero(character_name=character_name, archetype=archetype, user=user, 
-            primary_attributes=PrimaryAttributeList()))
+        self.session.add(Hero(character_name=character_name, archetype=archetype, user=user))
         self.session.commit()
     
     def validate(self, username, password):
