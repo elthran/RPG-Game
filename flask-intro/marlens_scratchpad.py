@@ -1,4 +1,4 @@
-from base_classes import Base
+from base_classes import Base, BaseDict
 from secondary_attributes import *
 
 class Hero(object):
@@ -293,6 +293,5 @@ print(primary_attributes)
 # for column in list(insp.columns):
     # print(repr(column))
 # hero_table.update(hero)
-
 
 

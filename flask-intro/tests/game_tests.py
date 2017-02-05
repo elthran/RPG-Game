@@ -17,27 +17,67 @@ import complex_relationships
 
 import pdb
 
+def setup():
+    return EZDB('sqlite:///tests/test.db', debug=False)
+
+def teardown(database):
+    database.session.close()
+    database.engine.dispose()
+    database._delete_database()
+
 def testPrimaryAttributes():
+    """Test hero primary_attributes
+
+    Tests increment
+    Tests that two heroes primary_attributes are not the same object (that one was anoying).
+    Tests that list iteration works.
+    Tests that data is retrieved as an ordered list when printing.
+    Tests this from a saving/loading perspective as well.
+    
+    NOTE: actual data order is dictionary random.
+    NOTE: query should occur using a new database object or it will simply return the old object
+    without actually pulling it from the database. I need to fix this in my other test suites.
+    """
     
     hero = Hero()
-    print(hero.primary_attributes)
-    exit()
-    pal = PrimaryAttributeList()
+    pal = hero.primary_attributes
     pal["Strength"] += 3
     assert pal["Strength"] == 4
     
-    pal = PrimaryAttributeList()
-    # pdb.set_trace()
-    for attribute in pal:
-        pal[attribute] += 1
-    assert repr(pal) == "<PrimaryAttributeList(id=None, agility=2, charisma=2, divinity=2, fortitude=2, fortuity=2, perception=2, reflexes=2, resilience=2, strength=2, survivalism=2, vitality=2, wisdom=2, hero_id=None)>"
+    hero2 = Hero()
+    pal2 = hero2.primary_attributes
+    assert id(pal) != id(pal2)    
     
-    #NOTE: I should test this from a saving/loading perspective as well as it may not hold up.
+    for attribute in pal2:
+        pal2[attribute] += 1
+    assert str(pal2) == "{'Agility': 2, 'Charisma': 2, 'Divinity': 2, 'Fortitude': 2, 'Fortuity': 2, 'Perception': 2, 'Reflexes': 2, 'Resilience': 2, 'Strength': 2, 'Survivalism': 2, 'Vitality': 2, 'Wisdom': 2}"
+    
+    #Test save/load
+    db = setup()
+    hero3 = Hero(name="Haldon")
+    db.session.add(hero3)
+    db.session.commit()
+    
+    db2 = setup()
+    hero4 = db2.session.query(Hero).filter_by(name='Haldon').first()
+    
+    assert hero3.primary_attributes == hero4.primary_attributes
+    teardown(db)
+    teardown(db2)
 
 def testKillQuests():
-    pdb.set_trace()
-    hero = Hero()
-    hero.kill_quests['a'] = Hero.KillQuest('a', 'atext')
+    db = setup()
+    hero = Hero(name="Haldon")
+    hero.kill_quests['Kill a wolf'] = "Find and kill a wolf!"
+    db.session.add(hero)
+    db.session.commit()
+    
+    db2 = setup()
+    hero2 = db2.session.query(Hero).filter_by(name='Haldon').first()
+    assert hero.kill_quests == hero2.kill_quests
+    teardown(db)
+    teardown(db2)
+    
     
     
 def run_all():
@@ -47,7 +87,7 @@ def run_all():
     I hope to use an assert statement at some point in each test to make sure the output is correct as well.
     """
     testPrimaryAttributes()
-    # testKillQuests()
+    testKillQuests()
     
     print("All game_tests passed. No Errors, yay!")
 

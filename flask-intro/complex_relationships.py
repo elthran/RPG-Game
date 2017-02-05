@@ -16,7 +16,6 @@ import items
 game.Hero.user_id = Column(Integer, ForeignKey('users.id'))
 game.User.heroes = relationship("Hero", order_by='Hero.character_name', backref='user')
 
-
 #Many Heroes -> one WorldMap (bidirectional)
 game.Hero.world_map_id = Column(Integer, ForeignKey('world_map.id'))
 locations.WorldMap.heroes = relationship("Hero", backref="current_world")
@@ -25,7 +24,6 @@ locations.WorldMap.heroes = relationship("Hero", backref="current_world")
 #Maybe I should have a City object that extends Location that is the Ancestor for Town and Cave?
 game.Hero.city_id = Column(Integer, ForeignKey('location.id'))
 locations.Location.heroes = relationship("Hero", backref="current_city")
-
 
 
 #Many Heroes -> many known Maps? (unidirectional)
@@ -44,6 +42,16 @@ game.Hero.abilities = relationship("Ability", order_by="Ability.name", backref="
 #inventory is list of character's items.
 items.Item.hero_id = Column(Integer, ForeignKey("heroes.id"))
 game.Hero.inventory = relationship("Item", order_by="Item.name", backref="myHero")
+
+#One Hero -> one primary_attribute dict
+base_classes.BaseDict.hero_id_primary_attr = Column(Integer, ForeignKey('heroes.id'))
+game.Hero.primary_attributes = relationship("BaseDict", uselist=False, 
+    foreign_keys="[BaseDict.hero_id_primary_attr]")
+
+#One Hero -> one quest list?
+base_classes.BaseDict.hero_id_kill_quests = Column(Integer, ForeignKey('heroes.id'))
+game.Hero.kill_quests = relationship("BaseDict", uselist=False,
+    foreign_keys="[BaseDict.hero_id_kill_quests]")
 
 
 #Locations -> base_classes

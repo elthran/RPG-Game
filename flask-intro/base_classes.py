@@ -21,6 +21,7 @@ from sqlalchemy import Table, MetaData, Column, Integer, String, Float, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import orm
     
     
 class BaseListElement(Base):
@@ -51,7 +52,8 @@ class BaseListElement(Base):
     int_value = Column(Integer)
     str_value = Column(String)    
     
-    dict_id = Column(Integer, ForeignKey('base_dict.id'))
+    dict_id_keys = Column(Integer, ForeignKey('base_dict.id'))
+    dict_id_values = Column(Integer, ForeignKey('base_dict.id'))
     
     def __init__(self, value):
         """Build BaseListElement from value.
@@ -90,28 +92,39 @@ class BaseListElement(Base):
 class BaseDict(Base):
     __tablename__ = "base_dict"
     id = Column(Integer, primary_key=True)
-    keys = relationship("BaseListElement")
-    values = relationship("BaseListElement")
+    keys = relationship("BaseListElement", foreign_keys="[BaseListElement.dict_id_keys]")
+    values = relationship("BaseListElement", foreign_keys="[BaseListElement.dict_id_values]")
     
     
     def __init__(self, dictionary={}):
-        self.items = {}
+        self.d_items = {}
         index = 0
         for x in dictionary.keys():
             self.keys.append(BaseListElement(x))
             self.values.append(BaseListElement(dictionary[x]))
-            self.items[x] = index
+            self.d_items[x] = index
             index += 1
             
-    def __getitem__(self, key):
-        index = self.items[key]
-        return self.values[index].value
+    @orm.reconstructor
+    def rebuild_d_items(self):
+        self.d_items = {}
+        for index in range(len(self.keys)):
+            key = self.keys[index].value
+            self.d_items[key] = index
         
+            
+    def __getitem__(self, key):
+        """Get value of key using a dict key name or list index.
+        """
+        index = self.d_items[key]
+        return self.values[index].value
+            
+            
     def __setitem__(self, key, item):
         """Change value at key or create key with value.
         """
         try:
-            index = self.items[key]
+            index = self.d_items[key]
             self.values.pop(index)
             self.values.insert(index, BaseListElement(item))
         except KeyError as ex:
@@ -124,18 +137,32 @@ class BaseDict(Base):
         index = len(self.keys)
         self.keys.append(BaseListElement(key))
         self.values.append(BaseListElement(item))
-        self.items[key] = index
+        self.d_items[key] = index
         
         
     def items(self):
         return ((self.keys[index].value, self.values[index].value) for index in range(len(self.keys)))
+        
+    def __iter__(self):
+        return (key for key in self.d_items)
+        
+    
+    def __eq__(self, obj):
+        """Check if two BaseDicts are equal.
+        
+        This checks if the second object is of type BaseDict and if they produce the same
+        string output. This is slow. It only works if the object returns a sorted string.
+        """
+        return type(self) == type(obj) and str(self) == str(obj)
                     
     
     def __str__(self):
         """Return pretty string version of data.
+        
+        NOTE: due to sorting this is quite slow.
         """
         
-        return "{" + ', '.join(['{}: {}'.format(self.keys[x], self.values[x]) for x in range(len(self.keys))]) + "}"
+        return "{" + ', '.join(sorted(['{}: {}'.format(self.keys[x], self.values[x]) for x in range(len(self.keys))])) + "}"
     
 
    

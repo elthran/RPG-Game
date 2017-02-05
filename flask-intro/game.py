@@ -127,12 +127,15 @@ class Hero(Base):
     #Time code
     timestamp = Column(DateTime, default=datetime.datetime.utcnow())
     
-    #Relationships
-    primary_attributes = BaseDict({"Strength": 1, "Resilience": 1, "Vitality": 1,
-        "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1,
-        "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1})
+    #Relationships: see complex_relationships.py
     
-    kill_quests = BaseDict()
+    def __init__(self, name=None):
+        self.name = name
+        self.primary_attributes = BaseDict({"Strength": 1, "Resilience": 1, "Vitality": 1,
+            "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1,
+            "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1})
+    
+        self.kill_quests = BaseDict()
 
     
     def not_yet_implemented():
