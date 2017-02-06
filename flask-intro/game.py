@@ -129,12 +129,14 @@ class Hero(Base):
     
     #Relationships: see complex_relationships.py
     
-    def __init__(self, name=None):
+    def __init__(self, name=None, archetype=None, user=None):
         self.name = name
+        self.archetype = archetype
+        self.user = user
+        
         self.primary_attributes = BaseDict({"Strength": 1, "Resilience": 1, "Vitality": 1,
             "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1,
             "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1})
-    
         self.kill_quests = BaseDict()
 
     
@@ -260,8 +262,8 @@ class Hero(Base):
         data = "<Hero(" + ', '.join(atts) + ')>'
         return data 
     
-    def __eq__(self, other): 
-        return self.__dict__ == other.__dict__
+    # def __eq__(self, other): 
+        # return self.__dict__ == other.__dict__
         
     def get_primary_attributes(self):
         return sorted(self.primary_attributes.items())

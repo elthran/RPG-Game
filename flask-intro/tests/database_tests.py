@@ -2,7 +2,6 @@ from database import EZDB
 from game import Hero, User
 import locations
 import complex_relationships
-from test_all import pr
 import datetime
 
 

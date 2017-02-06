@@ -864,6 +864,9 @@ if __name__ == '__main__':
     for item in myHero.inventory:
         item.amount_owned = 5
     
+    import prebuilt_objects
+    
+    
     app.run(debug=True)
 
 

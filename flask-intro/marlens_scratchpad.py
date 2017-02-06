@@ -136,8 +136,8 @@ class Hero(object):
         data = '\n'.join(atts)
         return data
     
-    def __eq__(self, other): 
-        return self.__dict__ == other.__dict__
+    # def __eq__(self, other): 
+        # return self.__dict__ == other.__dict__
         
     def get_primary_attributes(self):
         return sorted(self.primary_attributes.items())

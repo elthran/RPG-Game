@@ -107,6 +107,7 @@ class BaseDict(Base):
             
     @orm.reconstructor
     def rebuild_d_items(self):
+        # import pdb; pdb.set_trace()
         self.d_items = {}
         for index in range(len(self.keys)):
             key = self.keys[index].value
@@ -147,13 +148,8 @@ class BaseDict(Base):
         return (key for key in self.d_items)
         
     
-    def __eq__(self, obj):
-        """Check if two BaseDicts are equal.
-        
-        This checks if the second object is of type BaseDict and if they produce the same
-        string output. This is slow. It only works if the object returns a sorted string.
-        """
-        return type(self) == type(obj) and str(self) == str(obj)
+    # def __eq__(self, other): 
+        # return self.__dict__ == other.__dict__
                     
     
     def __str__(self):

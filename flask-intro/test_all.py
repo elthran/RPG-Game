@@ -26,10 +26,12 @@ def dict_diff(left, right):
     diff['different'] = {k for k in set(left) & set(right) if left[k]!=right[k]}
     return diff
     
-
-import tests.game_tests
-# import tests.locations_tests
-
+import unittest
+# unittest.main(module='tests.game_tests', verbosity=2)
 # import tests.database_tests
+unittest.main(module='tests.locations_tests', verbosity=2)
+
+
+
 
 # import tests.app_tests

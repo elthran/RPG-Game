@@ -18,6 +18,7 @@ game.User.heroes = relationship("Hero", order_by='Hero.character_name', backref=
 
 #Many Heroes -> one WorldMap (bidirectional)
 game.Hero.world_map_id = Column(Integer, ForeignKey('world_map.id'))
+# game.Hero.current_world = relationship("WorldMap", uselist=False, back)
 locations.WorldMap.heroes = relationship("Hero", backref="current_world")
 
 #Many Heroes -> one Location (bidirectional) (Town or Cave)
@@ -59,7 +60,7 @@ base_classes.BaseListElement.location_id = Column(Integer, ForeignKey('location.
 #relationships
     # display = etc. one to one.
     # location_world one to one with WorldMap? but each WorldMap can have many locations ...?
-    #   so many to one it is!
+    #   so maybe to one it is!
     # adjacent_locations = one to many relationship with self.
 locations.Location._adjacent_locations = relationship("BaseListElement")
 
