@@ -1,5 +1,5 @@
 from locations import Location, Cave, Town, WorldMap, Display
-import complex_relationships
+import complex_relationships #MUST be imported last.
 
 #------------------------------------
  #

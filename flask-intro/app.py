@@ -5,7 +5,7 @@
 #                                                                              #
 #//////////////////////////////////////////////////////////////////////////////#
 
-# from game import * #Must go befor login method???
+# from game import * #Must go before login method???
 from game import Hero, Game
 # import the Flask class from the flask module
 from flask import Flask, render_template, redirect, url_for, request, session, flash
@@ -16,8 +16,16 @@ from database import EZDB
 from abilities import *
 from items import Quest_Item
 import locations
-import complex_relationships
-from secondary_attributes import *
+
+#MUST be imported after all other game objects but before any of them are used.
+import complex_relationships 
+
+#Last module to be imported (of our custom ones)
+import prebuilt_objects
+
+#Marked for restructure: probably should only be used in Hero object (in game.py) directly.
+#If it is needed elsewhere the method should be moved to the Hero object.
+from secondary_attributes import * 
 import sqlite3
 import hashlib
 
@@ -428,7 +436,7 @@ def home():
     database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
  # initialize current_world
     if myHero.current_world == None:
-        myHero.current_world = locations.game_worlds[0]
+        myHero.current_world = prebuilt_objects.game_worlds[0]
         database.update()
     # If it's a new character, send them to cerate_character url
     if myHero.character_name == None:
@@ -847,7 +855,7 @@ if __name__ == '__main__':
     #I know there is a better way ... primary_attributes should be defined on initialization.
     #This allows myHero to be global variable in this module/file without magic. I think.
     myHero = Hero(gold=5000, age=7, current_health=10) 
-    myHero.primary_attributes = PrimaryAttributeList()
+    myHero.primary_attributes = PrimaryAttributeList() #Might be rundunant now ...
     
     #Because hero is easier for me to type.
     #Note: they are the same object!
@@ -863,8 +871,6 @@ if __name__ == '__main__':
     myHero.inventory.append(Quest_Item("Copper Coin", myHero, 50))
     for item in myHero.inventory:
         item.amount_owned = 5
-    
-    import prebuilt_objects
     
     
     app.run(debug=True)

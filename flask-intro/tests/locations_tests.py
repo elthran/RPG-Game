@@ -98,7 +98,7 @@ class LocationTestCase(unittest.TestCase):
         hero2 = self.db.session.query(Hero).filter_by(name="Haldon").first()
         self.assertEqual(str(hero2.current_world), "<WorldMap(id=1, name='Picatanin', type='WorldMap', current_location=None, adjacent_locations=[], locations=[], display=None>")
         
-    def test_locations_game_worlds(self):
+    def test_prebuilt_objects_game_worlds(self):
         """Test the creation of some prebuilt objects.
         
         !IMPORTANT! complex_relationships.py must be imported before location.py objects are used.
@@ -112,17 +112,22 @@ class LocationTestCase(unittest.TestCase):
         This will fail because all_map_locations will be a list object instead of 
         a "relationship" object.
         """
-        # """<WorldMap(id=None, name='Test_World2', type='WorldMap', current_location='Thornwall', adjacent_locations=[], locations=['location 0', 'location 1', 'Creepy cave', 'location 3', 'location 4', 'Thornwall', 'location 6', 'location 7', 'location 8', 'location 9', 'location 10', 'location 11'], display=
-    # <Display(
-        # page_title = 'Test_World2',
-        # page_heading = 'You are wandering in the world',
-        # page_image = 'worldmap',
-        # paragraph = 'Be safe',
-        # places_of_interest = []
-    # )>
-# >"""
         
         self.db.session.add(prebuilt_objects.game_worlds[0])
+        self.db.session.commit()
+
+        self.tearDown(delete=False)
+        self.setUp()
+        world2 = self.db.session.query(WorldMap).filter_by(name="Test_World2").first()
+        self.assertEqual(str(world2), """<WorldMap(id=1, name='Test_World2', type='WorldMap', current_location='Thornwall', adjacent_locations=[], locations=['location 0', 'location 1', 'Creepy cave', 'location 3', 'location 4', 'Thornwall', 'location 6', 'location 7', 'location 8', 'location 9', 'location 10', 'location 11'], display=
+    <Display(
+        page_title = 'Test_World2',
+        page_heading = 'You are wandering in the world',
+        page_image = 'worldmap',
+        paragraph = 'Be safe',
+        places_of_interest = []
+    )>
+>""")
         
     
 def test_show_directions():
