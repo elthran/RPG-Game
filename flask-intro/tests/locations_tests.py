@@ -5,6 +5,7 @@ from locations import Location, Cave, Town, WorldMap, Display
 from game import Hero
 import complex_relationships
 import prebuilt_objects
+import imp
 import pdb
 
 """
@@ -21,7 +22,15 @@ import unittest
 
 class LocationTestCase(unittest.TestCase):
     def setUp(self):
+        """Set up the generic environment for each test function.
+        
+        NOTE: Bizar bug that is related to the fact that prebuilt_objects
+        can only be used once. Once used in one test function it no longer exists. And so I reimport it.
+        """
         self.db = EZDB('sqlite:///tests/test.db', debug=False)
+        
+        global prebuilt_objects
+        imp.reload(prebuilt_objects)
 
     def tearDown(self, delete=True):
         self.db.session.close()
@@ -76,14 +85,14 @@ class LocationTestCase(unittest.TestCase):
     def test_world_map(self):
         map = WorldMap(name="Picatanin")
         town = Town(name="Thornwall")
-        map.current_location = town
+        map.locations.append(town)
         self.db.session.add(map)
         self.db.session.commit()
         
         self.tearDown(delete=False)
         self.setUp()
         map2 = self.db.session.query(WorldMap).filter_by(name="Picatanin").first()
-        self.assertEqual(str(map2), "<WorldMap(id=1, name='Picatanin', type='WorldMap', current_location='Thornwall', adjacent_locations=[], locations=[], display=None>")
+        self.assertEqual(str(map2), "<WorldMap(id=1, name='Picatanin', type='WorldMap', adjacent_locations=[], locations=['Thornwall'], display=None>")
     
     def test_add_world_map(self):
         hero = Hero(name="Haldon")
@@ -96,7 +105,7 @@ class LocationTestCase(unittest.TestCase):
         self.tearDown(delete=False)
         self.setUp()
         hero2 = self.db.session.query(Hero).filter_by(name="Haldon").first()
-        self.assertEqual(str(hero2.current_world), "<WorldMap(id=1, name='Picatanin', type='WorldMap', current_location=None, adjacent_locations=[], locations=[], display=None>")
+        self.assertEqual(str(hero2.current_world), "<WorldMap(id=1, name='Picatanin', type='WorldMap', adjacent_locations=[], locations=[], display=None>")
         
     def test_prebuilt_objects_game_worlds(self):
         """Test the creation of some prebuilt objects.
@@ -119,7 +128,7 @@ class LocationTestCase(unittest.TestCase):
         self.tearDown(delete=False)
         self.setUp()
         world2 = self.db.session.query(WorldMap).filter_by(name="Test_World2").first()
-        self.assertEqual(str(world2), """<WorldMap(id=1, name='Test_World2', type='WorldMap', current_location='Thornwall', adjacent_locations=[], locations=['location 0', 'location 1', 'Creepy cave', 'location 3', 'location 4', 'Thornwall', 'location 6', 'location 7', 'location 8', 'location 9', 'location 10', 'location 11'], display=
+        self.assertEqual(str(world2), """<WorldMap(id=1, name='Test_World2', type='WorldMap', adjacent_locations=[], locations=['location 0', 'location 1', 'Creepy cave', 'location 3', 'location 4', 'Thornwall', 'location 6', 'location 7', 'location 8', 'location 9', 'location 10', 'location 11'], display=
     <Display(
         page_title = 'Test_World2',
         page_heading = 'You are wandering in the world',
@@ -130,43 +139,32 @@ class LocationTestCase(unittest.TestCase):
 >""")
         
     
-def test_show_directions():
-    db = setup()
-    map = locations.game_worlds[0]
-    directions = map.show_directions()
-    
-    #This only works if map.current_location is a Town or Cave.
-    #Which it currently is in locations.game_worlds[0]
-    assert map.map_cities == [map.current_location]
-    assert str(map.display.places_of_interest) == "[(url='/Town/Thornwall', places=['Thornwall'])]"
-    teardown(db)
-    
-def test_places_of_interest():
-    db = setup()
-    town = locations.game_worlds[0].current_location
-    # ps = town.display.places_of_interest
-    # for p in ps:
-        # print(p.url, p.places)
+    def test_show_directions(self):
+        """Test the show directions function of the WorldMap object.
         
-    map = locations.game_worlds[0]
-    directions = map.show_directions()
-    # ps = map.display.get_places_of_interest()
-    # for p in ps:
-        # print(p.url, p.places[0].name)
-    teardown(db)
+        NOTE: during self.setUp() prebuilt_objects is reimported as it is erased each time it is used.
+        I don't know why.
+        """
+        map = prebuilt_objects.world
+        self.db.session.add(map)
+        self.db.session.commit()
+ 
+        directions = map.show_directions(prebuilt_objects.current_location)
+        # This only works if prebuilt_objects.current_location is a Town or Cave.
+        # Which it currently is.
+        self.assertEqual(map.map_cities, [prebuilt_objects.current_location])
+        
     
-# def run_all():
-    # db = setup()
-    # try:
-        # test_adjacent_locations()
-        # test_town()
-        # test_cave()
-        # test_world_map()
-        # test_add_world_map()
-        # test_show_directions()
-        # test_places_of_interest()
-    # finally:
-        # teardown(db)
-    # print("All locations_tests passed. No Errors, yay!")
+    def test_places_of_interest(self):
+        map = prebuilt_objects.world
+        self.db.session.add(map)
+        self.db.session.commit()
+ 
+        directions = map.show_directions(prebuilt_objects.current_location)
+        # This only works if prebuilt_objects.current_location is a Town or Cave.
+        # Which it currently is.
+        self.assertEqual(str(map.display.places_of_interest), "[(url='/Town/Thornwall', places=['Thornwall'])]")
+        
     
-# run_all()
+if __name__ == '__main__':
+    unittest.main()

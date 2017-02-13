@@ -106,7 +106,7 @@ test_locations2[8].adjacent_locations = [5, 7, 9]
 test_locations2[9].adjacent_locations = [6, 8]
 test_locations2[10].adjacent_locations = [6]
 
-world = WorldMap(name="Test_World2", current_location=town, all_map_locations=test_locations2)
+world = WorldMap(name="Test_World2", all_map_locations=test_locations2)
 
 #Note: Displays must be added after all objects are defined. Or you get error that I was to lazy to fix.
 world.display = Display(world, page_heading="You are wandering in the world", paragraph="Be safe")
@@ -125,7 +125,10 @@ cave.display = Display(cave, page_heading="You are in a cave called {}".format(c
     paragraph="There are many scary places to die within the cave. Have a look!",
     places_of_interest=[("/WorldMap/{}/{}".format(cave.location_world.name, cave.id), "World Map")])
 
-game_worlds = [world]
+current_location = town
+game_worlds = [world] #Just chop this out and use world instead.
+
+
 #game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
 #game_worlds = [World_Map("Test_World", TEST_WORLD_ID, test_locations)]
 

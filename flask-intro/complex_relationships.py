@@ -24,7 +24,12 @@ locations.WorldMap.heroes = relationship("Hero", backref="current_world")
 #Many Heroes -> one Location (bidirectional) (Town or Cave)
 #Maybe I should have a City object that extends Location that is the Ancestor for Town and Cave?
 game.Hero.city_id = Column(Integer, ForeignKey('location.id'))
-locations.Location.heroes = relationship("Hero", backref="current_city")
+locations.Location.heroes = relationship("Hero", foreign_keys="[Hero.city_id]", backref="current_city")
+
+#One Hero -> one current_location.
+locations.Location.hero_id_current_location = Column(Integer, ForeignKey('heroes.id'))
+game.Hero.current_location = relationship("Location", uselist=False,
+    foreign_keys="[Location.hero_id_current_location]")
 
 
 #Many Heroes -> many known Maps? (unidirectional)
@@ -64,6 +69,7 @@ base_classes.BaseListElement.location_id = Column(Integer, ForeignKey('location.
     # adjacent_locations = one to many relationship with self.
 locations.Location._adjacent_locations = relationship("BaseListElement")
 
+#Map relationships
 base_classes.BaseListElement.map_id = Column(Integer, ForeignKey('map.id'))
 locations.Map._adjacent_locations = relationship("BaseListElement")
 

@@ -183,11 +183,7 @@ class Location(Base):
     map_id = Column(Integer, ForeignKey('map.id'))
     map = relationship("Map", foreign_keys=[map_id], back_populates="locations")
     location_world = orm.synonym('map')
-    
-    current_location_map_id = Column(Integer, ForeignKey('map.id'))
-    current_location_map = relationship("Map", foreign_keys=[current_location_map_id],
-        back_populates="current_location")
-        
+         
     display = relationship("Display", uselist=False)
         
     def __init__(self, name, id=None):
@@ -264,10 +260,6 @@ class Map(Base):
     type = Column(String)
     location_type = orm.synonym('type')
     
-    
-    current_location = relationship("Location", uselist=False, foreign_keys='[Location.current_location_map_id]',
-        back_populates="current_location_map")
-    
     locations = relationship("Location", foreign_keys='[Location.map_id]', back_populates="map")
     all_map_locations = orm.synonym('locations')
     
@@ -295,9 +287,9 @@ class Map(Base):
     def __str__(self):
         locations = str([location.name for location in self.locations])
         try:
-            return """<{}(id={}, name='{}', type='{}', current_location='{}', adjacent_locations={}, locations={}, display={}>""".format(self.type, self.id, self.name, self.type, self.current_location.name, self.adjacent_locations, locations, self.display)
+            return """<{}(id={}, name='{}', type='{}', adjacent_locations={}, locations={}, display={}>""".format(self.type, self.id, self.name, self.type, self.adjacent_locations, locations, self.display)
         except AttributeError:
-            return """<{}(id={}, name='{}', type='{}', current_location=None, adjacent_locations={}, locations={}, display={}>""".format(self.type, self.id, self.name, self.type, self.adjacent_locations, locations, self.display)        
+            return """<{}(id={}, name='{}', type='{}', adjacent_locations={}, locations={}, display={}>""".format(self.type, self.id, self.name, self.type, self.adjacent_locations, locations, self.display)        
     
     
 class WorldMap(Map):
@@ -310,23 +302,25 @@ class WorldMap(Map):
     }
     
     #Marked for rebuild
-    #Cause I don't no what it does.
-    def show_directions(self):
+    #Creates attribute map_cities. Prehaps should be a relations?
+    #And map_cities should probably be map_city? Or some other name that actually explains
+    #what it does??
+    def show_directions(self, current_location):
         """Return a list of directions you can go from your current_location.
         
         ALSO! modifies the attribute map_cities and places_of_interest.
         map_cities is only a single value of either a cave or a town.
         """
-        directions = self.current_location.adjacent_locations
+        assert current_location in self.locations
+        
+        directions = current_location.adjacent_locations
         if directions == []:
             directions = [1,2,3]
             
         self.map_cities = []    
-        if self.current_location.type in ["Town", "Cave"]:
-            self.map_cities = [self.current_location]
+        if current_location.type in ["Town", "Cave"]:
+            self.map_cities = [current_location]
         
-        # self.map_cities = [location for location in self.all_map_locations if (location == self.current_location and (location.location_type == "Town" or location.location_type == "Cave"))]
-
         if self.map_cities:
             city = self.map_cities[0]
             self.display.places_of_interest = [("/{}/{}".format(city.type, city.name), city.name)]
@@ -340,26 +334,8 @@ class WorldMap(Map):
         return self.all_map_locations[id]
 
         
-#Just another synonym for backwards compatability        
-World_Map = WorldMap        
-    
-"""
-    def get_locations(self):
-
-        with open("data\town." + name + ".txt", 'r') as f:
-            data = f.read()
-            return Town.parse(data)
-
-    def display(self):
-        Return an html object of the town built from a template.
-
-        This should be able to be "popped" into the main post-login site in the content section.
-        pass
-
-    def parse(data):
-        pass
-"""
-
+#Just another synonym for backwards compatability (which id don't know if it even works?)       
+World_Map = WorldMap 
 
  
 if __name__ == "__main__":
@@ -369,5 +345,5 @@ if __name__ == "__main__":
     
     """
     # import tests.locations_tests
-    print('yay!')
+    pass
     

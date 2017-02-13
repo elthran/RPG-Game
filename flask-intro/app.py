@@ -611,11 +611,12 @@ def world_map(current_world, location_id):
     I don't know where the arguments come from? Or why they are passed.
     I will try and figure it out.
     """
+    pdb.set_trace()
     current_world = myHero.current_world
     
     #Updates current id. May be redundant. Or it may allow page to be dynamic.
     #May have originally compensated for the lack of a database.
-    current_world.current_location = current_world.find_location(location_id)
+    hero.current_location = current_world.find_location(location_id)
     
     myHero.known_locations.append(current_world)
     myHero.current_city = None
@@ -854,8 +855,7 @@ if __name__ == '__main__':
     
     #I know there is a better way ... primary_attributes should be defined on initialization.
     #This allows myHero to be global variable in this module/file without magic. I think.
-    myHero = Hero(gold=5000, age=7, current_health=10) 
-    myHero.primary_attributes = PrimaryAttributeList() #Might be rundunant now ...
+    myHero = Hero(gold=5000, age=7, current_health=10)
     
     #Because hero is easier for me to type.
     #Note: they are the same object!

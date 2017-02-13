@@ -129,15 +129,20 @@ class Hero(Base):
     
     #Relationships: see complex_relationships.py
     
-    def __init__(self, name=None, archetype=None, user=None):
-        self.name = name
-        self.archetype = archetype
-        self.user = user
+    def __init__(self, **kwargs):
+        """Initialize the Hero object.
+        
+        Currently only accepts keywords. Consider changing this.
+        Consider having some Non-null values?
+        """
         
         self.primary_attributes = BaseDict({"Strength": 1, "Resilience": 1, "Vitality": 1,
             "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1,
             "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1})
         self.kill_quests = BaseDict()
+        
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
 
     
     def not_yet_implemented():

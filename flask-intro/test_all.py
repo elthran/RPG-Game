@@ -60,20 +60,10 @@ def build_suite_of_all_tests(*modules):
 
 
 if __name__ == "__main__":
-    from tests import locations_tests, game_tests
-    # from tests import database_tests
+    from tests import locations_tests, game_tests#, database_tests
        
     all_tests_suite = build_suite_of_all_tests(game_tests, locations_tests)
     
     all_tests_runner = unittest.TextTestRunner(verbosity=2)
     all_tests_runner.run(all_tests_suite)
     
-    
-    
-    # print(all_tests_suite.countTestCases(), 'num of tests')
-    # print(os.path.dirname(os.path.abspath(__file__)) + '\\tests')
-
-
-
-
-# import tests.app_tests

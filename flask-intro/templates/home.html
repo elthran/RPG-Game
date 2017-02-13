@@ -82,7 +82,7 @@ function sumerror()
         {% if myHero.current_city %}
            <li><a href=/{{ myHero.current_city.location_type }}/{{ myHero.current_city.name }}>{{ myHero.current_city.name }}</a></li>
         {% else %}
-          <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_world.current_location.id }}>{{ myHero.current_world.location_type }}</a></li>
+          <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_location.id }}>{{ myHero.current_world.location_type }}</a></li>
         {% endif %}
         <li><a href=/quest_log>Journal</a></li>
         <li><a href=/ability_tree/basic>Abilities</a></li>
@@ -144,7 +144,7 @@ function sumerror()
 
     {% if move_on_the_map %}
       *Cave at 2 and City at 5*
-      <h1>I am at {{ myHero.current_world.current_location.name }}</h1>
+      <h1>I am at {{ myHero.current_location.name }}</h1>
       {% for move in move_on_the_map %}
         <br><h1>MOVE TO <a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ move }}>{{ move }}</a></h1>
       {% endfor %}
