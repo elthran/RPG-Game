@@ -95,37 +95,37 @@ class Hero(Base):
     name = Column(String) #Was nullable=False now it isn't. I hope that is a good idea.
     character_name = orm.synonym('name')  
     
-    age = Column(Integer, default=7)
-    archetype = Column(String, default="Woodsman")
-    specialization = Column(String, default="Hunter")
-    religion = Column(String, default="Dryarch")
-    house = Column(String, default="Unknown")
-    current_exp = Column(Integer, default=0)
-    max_exp = Column(Integer, default=10)
-    renown = Column(Integer, default=0)
-    virtue = Column(Integer, default=0)
-    devotion = Column(Integer, default=0)
-    gold = Column(Integer, default=50)
+    age = Column(Integer)
+    archetype = Column(String)
+    specialization = Column(String)
+    religion = Column(String)
+    house = Column(String)
+    current_exp = Column(Integer)
+    max_exp = Column(Integer)
+    renown = Column(Integer)
+    virtue = Column(Integer)
+    devotion = Column(Integer)
+    gold = Column(Integer)
     
-    ability_points= Column(Integer, default=3) #TEMP. Soon will use the 4 values below
-    basic_ability_points = Column(Integer, default=0)
-    archetype_ability_points = Column(Integer, default=0)
-    specialization_ability_points = Column(Integer, default=0)
-    pantheonic_ability_points = Column(Integer, default=0)
+    ability_points= Column(Integer)
+    basic_ability_points = Column(Integer)
+    archetype_ability_points = Column(Integer)
+    specialization_ability_points = Column(Integer)
+    pantheonic_ability_points = Column(Integer)
     
-    attribute_points = Column(Integer, default=0)
+    attribute_points = Column(Integer)
         
-    current_sanctity = Column(Integer, default=0)
-    current_health = Column(Integer, default=10)
+    current_sanctity = Column(Integer)
+    current_health = Column(Integer)
     
     #Marked for rename
     #Consider "endurance" instead.
-    current_endurance = Column(Integer, default=0)
-    current_carrying_capacity = Column(Integer, default=0)
-    max_health = Column(Integer, default=10)
+    current_endurance = Column(Integer)
+    current_carrying_capacity = Column(Integer)
+    max_health = Column(Integer)
     
     #Time code
-    timestamp = Column(DateTime, default=datetime.datetime.utcnow())
+    timestamp = Column(DateTime)
     
     #Relationships: see complex_relationships.py
     
@@ -134,6 +134,8 @@ class Hero(Base):
         
         Currently only accepts keywords. Consider changing this.
         Consider having some Non-null values?
+        Possible bug ... assignment of BaseDict in __init__
+        may destroy relationship?
         """
         
         self.primary_attributes = BaseDict({"Strength": 1, "Resilience": 1, "Vitality": 1,
@@ -141,8 +143,43 @@ class Hero(Base):
             "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1})
         self.kill_quests = BaseDict()
         
+        #Defaults will remain unchanged if no arguments are passed.
+        self.age = 7
+        self.archetype = "Woodsman"
+        self.specialization = "Hunter"
+        self.religion = "Dryarch"
+        self.house = "Unknown"
+        self.current_exp = 0
+        self.max_exp = 10
+        self.renown = 0
+        self.virtue = 0
+        self.devotion = 0
+        self.gold = 50
+    
+        self.ability_points = 3 #TEMP. Soon will use the 4 values below
+        self.basic_ability_points = 0
+        self.archetype_ability_points = 0
+        self.specialization_ability_points = 0
+        self.pantheonic_ability_points = 0
+    
+        self.attribute_points = 0
+        
+        self.current_sanctity = 0
+        self.current_health = 10
+    
+        #Marked for rename
+        #Consider "endurance" instead.
+        self.current_endurance = 0
+        self.current_carrying_capacity = 0
+        self.max_health = 10
+        
+        #Time code
+        self.timestamp = datetime.datetime.utcnow()
+        
         for key in kwargs:
             setattr(self, key, kwargs[key])
+        
+        self.update_secondary_attributes()
 
     
     def not_yet_implemented():
@@ -178,6 +215,7 @@ class Hero(Base):
         
         See: init_on_load() in SQLAlchemy
         """
+        # import pdb; pdb.set_trace()
         #Make a list of the equipped items or if none are equipt return empty list.
         self.equipped_items = [item for item in self.inventory if item.equiptable] or []
 
@@ -218,7 +256,7 @@ class Hero(Base):
 
         # When you update max_health, current health will also change by the same amount
         max_health_change = self.max_health - previous_max_health
-        if max_health_change != 0: 
+        if max_health_change: 
             self.current_health += max_health_change	
         if self.current_health < 0:
             self.current_health = 0	        
@@ -252,21 +290,25 @@ class Hero(Base):
                 break
 
            
-    def __repr__(self): 
+    def __str__(self): 
         """Return string data about Hero object.
         """
-        atts = []
+        
         column_headers = self.__table__.columns.keys()
-        extra_attributes = [key for key in vars(self).keys() if key not in column_headers]
-        for key in column_headers:
+        extra_attributes = [key for key in vars(self).keys()
+            if key not in column_headers
+            if key != "_sa_instance_state"]
+            
+        all_attributes = column_headers + sorted(extra_attributes)
+        atts = []
+        for key in all_attributes:
             atts.append('{}={}'.format(key, repr(getattr(self, key))))
             
-        for key in sorted(extra_attributes):
-            atts.append('{}={}'.format(key, repr(getattr(self, key))))
         
         data = "<Hero(" + ', '.join(atts) + ')>'
         return data 
     
+    #Enabling object equality had obscure problems that I couldn't fix.
     # def __eq__(self, other): 
         # return self.__dict__ == other.__dict__
         
@@ -276,7 +318,6 @@ class Hero(Base):
 
     
       
-
 # Temporary Function to create a random hero
 def create_random_hero():
     myHero = Hero()

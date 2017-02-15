@@ -16,6 +16,50 @@ import pdb
 
 import unittest
 
+class HeroTestCase(unittest.TestCase):
+    def setUp(self):
+        self.hero = Hero(name="Haldon")
+        self.db = EZDB('sqlite:///tests/test.db', debug=False)
+
+    def tearDown(self, delete=True):
+        self.db.session.close()
+        self.db.engine.dispose()
+        if delete:
+            self.db._delete_database()
+    
+    def rebuild_instance(self):
+        """Tidy up and rebuild database instance.
+
+        ... otherwise you may not be retrieving the actual data
+        from the database only from memory.
+        """
+        
+        self.db.session.commit()
+        self.tearDown(delete=False)
+        self.setUp()
+            
+    def test_hero(self):
+        """Prove that hero object builds and loads properly.
+        
+        Bug: Current and max health get reset from 10 to 5.
+        Bug2: Abilities, inventory and primary_attributes don't exist until the object is commited?
+        """
+        hero = Hero(name="Haldon")
+        print(type(hero.primary_attributes))
+        
+        self.db.session.add(hero)
+        self.db.session.commit()
+        
+        str_hero = str(hero)
+        
+        self.rebuild_instance()
+        
+        hero2 = self.db.session.query(Hero).filter_by(name="Haldon").first()
+        # self.maxDiff = None
+        self.assertEqual(str(hero2), str_hero)
+        
+        
+
 class PrimaryAttributesTestCase(unittest.TestCase):
     """Test hero primary_attributes
 
@@ -64,7 +108,7 @@ class PrimaryAttributesTestCase(unittest.TestCase):
         self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
         self.assertEqual(self.hero.primary_attributes["Strength"], 4)
 
-
+    #This belongs in hero test case.
     def testKillQuests(self):
         
         self.hero.kill_quests['Kill a wolf'] = "Find and kill a wolf!"
