@@ -8,34 +8,40 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" media="screen">
-
-    <script type="text/javascript">
-  function strength_updater(AR) 
-  {
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <script>
+      function strength_updater(AR) {
     document.querySelector('#strength_output').value = AR;
     var select_strength = document.querySelector('#strength_output').value
     console.log(select_strength); 
 }
-
-  function agility_updater(AR) 
-  {
+      function agility_updater(AR) {
     document.querySelector('#agility_output').value = AR;
     var select_agility = document.querySelector('#agility_output').value
     console.log(select_agility);
     }
+      function resilience_updater(AR) {
+    document.querySelector('#resilience_output').value = AR;
+    var select_resilience = document.querySelector('#resilience_output').value
+    console.log(select_resilience);
+    }
+      function vitality_updater(AR) {
+    document.querySelector('#vitality_output').value = AR;
+    var select_vitality = document.querySelector('#vitality_output').value
+    console.log(select_vitality);
+    }
 
   function findTotal()
   {
-    var arr = document.getElementsByName('Attributes');
-    var tot={{ myHero.attribute_points }};
-    
-       for(var i=0;i<arr.length;i++){
-        if(parseInt(arr[i].value))
-            tot -= parseInt(arr[i].value);
-    }
-
-  document.getElementById('total_points_spent').value = tot;
-	sumerror()
+    var strength = document.getElementById('strength_attribute');
+    var agility = document.getElementsByName('agility_attribute');
+    var resilience = document.getElementsByName('resilience_attribute');
+    var vitality = document.getElementsByName('vitality_attribute');
+    var selected_points = parseInt(strength_attribute.value) + parseInt(agility_attribute.value) + parseInt(resilience_attribute.value) + parseInt(vitality_attribute.value);
+    var tot= {{ myHero.attribute_points }};
+    tot -= selected_points;
+    document.getElementById('total_points_spent').value = tot;
+    sumerror()
 }
 
 function sumerror()
@@ -45,10 +51,13 @@ function sumerror()
 	if (sum < 0) 
   {
     document.getElementById('sumerror').value = '          You do not have enough points';
+    document.getElementById("level_button").disabled = true;
+
 	}
   else {
 
-		document.getElementById('sumerror').value = '';
+    document.getElementById('sumerror').value = '';
+    document.getElementById("level_button").disabled = false;
 	}
 }
 </script>
@@ -57,13 +66,6 @@ function sumerror()
   </head>
   <body>
 
-<script>
-// This is for the quest pop-up window. When the user clicks on div, open/close the popup
-function myFunction() {
-    var popup = document.getElementById('js_popupachievement');
-    popup.classList.toggle('show');
-}
-</script>
 
   </head>
   <body>
@@ -453,28 +455,20 @@ Name: {{ myHero.character_name}}
 
     {% if level_up %}
       You have {{ myHero.attribute_points }} points remaing to spend.<br><br><br><br>
-
-
-<form method="post" class="level_up_form">
-    
-Strength: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="Attributes1" name="Attributes" step="1" oninput="strength_updater(value)" onchange="findTotal()">
-
-  <output for="Strength" id="strength_output">0</output> (Current: {{ myHero.primary_attributes["Strength"] }})</br>
-	
-Agility: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="Attributes2" name="Attributes" step="1" oninput="agility_updater(value)" onchange="findTotal()">
-  <output for="Agility" id="agility_output">0</output> (Current: {{ myHero.primary_attributes["Agility"] }})</br>
-	
-<input class="btn btn-default" type="submit" value="Save">
-</form>
-
-
-
-<br>Points remaining:
-<output type="text" name="total" id="total_points_spent" value="{{ myHero.attribute_points }}"/>{{ myHero.attribute_points }}</output>
-
-<output type="text" name="sumerror" id="sumerror" value="" style="color:red;" /></output>
-
-
+      <form method="post" class="level_up_form">
+        Strength: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="strength_attribute" name="Strength" step="1" oninput="strength_updater(value)" onchange="findTotal()">
+                  <output for="Strength" id="strength_output">0</output> (Current: {{ myHero.primary_attributes["Strength"] }})</br>
+	Agility: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="agility_attribute" name="Agility" step="1" oninput="agility_updater(value)" onchange="findTotal()">
+                 <output for="Agility" id="agility_output">0</output> (Current: {{ myHero.primary_attributes["Agility"] }})</br>
+	Resilience: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="resilience_attribute" name="Resilience" step="1" oninput="resilience_updater(value)" onchange="findTotal()">
+                 <output for="Resilience" id="resilience_output">0</output> (Current: {{ myHero.primary_attributes["Resilience"] }})</br>
+	Vitality: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="vitality_attribute" name="Vitality" step="1" oninput="vitality_updater(value)" onchange="findTotal()">
+                 <output for="Vitality" id="vitality_output">0</output> (Current: {{ myHero.primary_attributes["Vitality"] }})</br>
+	<input class="btn btn-default" type="submit" value="Save" id="level_button">
+      </form>
+      <br>Points remaining:
+        <output type="text" name="total" id="total_points_spent" value="{{ myHero.attribute_points }}"/>{{ myHero.attribute_points }}</output>
+        <output type="text" name="sumerror" id="sumerror" value="" style="color:red;" /></output>
     {% endif %}
 
       {% for message in get_flashed_messages() %}

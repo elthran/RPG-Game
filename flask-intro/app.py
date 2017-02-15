@@ -189,9 +189,20 @@ def level_up():
     page_heading = "You have leveled up!"
     paragraph = "Choose how you would like to distribute your attribute points."
     if request.method == 'POST':
-        myHero.primary_attributes["Strength"] += convert_input(request.form["Attributes"])
-        #myHero.primary_attributes["Agility"] += convert_input(request.form["Agility"])
-        points_being_spent = convert_input(request.form["Attributes"])
+        myHero.primary_attributes["Strength"] += convert_input(request.form["Strength"])
+        myHero.primary_attributes["Agility"] += convert_input(request.form["Agility"])
+        myHero.primary_attributes["Resilience"] += convert_input(request.form["Resilience"])
+        myHero.primary_attributes["Vitality"] += convert_input(request.form["Vitality"])
+        #myHero.primary_attributes["Fortitude"] += convert_input(request.form["Fortitude"])
+        #myHero.primary_attributes["Reflexes"] += convert_input(request.form["Reflexes"])
+        #myHero.primary_attributes["Perception"] += convert_input(request.form["Perception"])
+        #myHero.primary_attributes["Wisdom"] += convert_input(request.form["Wisdom"])
+        #myHero.primary_attributes["Divinity"] += convert_input(request.form["Divinity"])
+        #myHero.primary_attributes["Charisma"] += convert_input(request.form["Charisma"])
+        #myHero.primary_attributes["Survivalism"] += convert_input(request.form["Survivalism"])
+        #myHero.primary_attributes["Fortuity"] += convert_input(request.form["Fortuity"])
+        points_being_spent = convert_input(request.form["Strength"]) + convert_input(request.form["Agility"]) + convert_input(request.form["Resilience"]) + convert_input(request.form["Vitality"])
+        #+ convert_input(request.form["Fortitude"] + convert_input(request.form["Reflexes"]) + convert_input(request.form["Perception"]) + convert_input(request.form["Wisdom"]) + convert_input(request.form["Divinity"]) +  convert_input(request.form["Charisma"]) + convert_input(request.form["Survivalism"]) + convert_input(request.form["Fortuity"]) 
         myHero.attribute_points -= points_being_spent
         return redirect(url_for('home'))
     return render_template('home.html', level_up=True, page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
