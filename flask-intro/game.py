@@ -300,23 +300,6 @@ class Hero(Base):
                     self.inventory.remove(my_item)
                 break
 
-           
-    def __str__(self): 
-        """Return string data about Hero object.
-        """
-        
-        data = set(vars(self).keys()) | set(self.__table__.columns.keys()) | \
-            set(self.__mapper__.relationships.keys())
-        
-        data.discard('_sa_instance_state')
-            
-        atts = []
-        for key in sorted(data):
-            atts.append('{}={}'.format(key, getattr(self, key)))
-            
-        
-        data = "<Hero(" + ', '.join(atts) + ')>'
-        return data
     
     def pprint(self):
         data = set(vars(self).keys()) | set(self.__table__.columns.keys()) | set(self.__mapper__.relationships.keys())

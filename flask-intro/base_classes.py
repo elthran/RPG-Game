@@ -5,7 +5,8 @@ store python objects conveniently in my version of the database.
 To solve this I am rewriting the whole thing with SQLAlchemy ORM.
 Mainly using the tutorial at: http://docs.sqlalchemy.org/en/latest/orm/tutorial.html
 
-This is just a testbed to develop new saveable objects for the database.
+This class is imported first and can be used to add generic methods to all database objects.
+Like a __str__ function that I can actually read.
 """
 
 try:
@@ -22,6 +23,36 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import orm
+
+#I didn't call this method __str__ as it would then overide the module string function.
+def string_of(self): 
+        """Return string data about a Database object.
+        """
+        
+        data = set(vars(self).keys()) | set(self.__table__.columns.keys()) | \
+            set(self.__mapper__.relationships.keys())
+        
+        data.discard('_sa_instance_state')
+            
+        atts = []
+        for key in sorted(data):
+            atts.append('{}={}'.format(key, getattr(self, key)))
+
+        return "<{}({})>".format(self.__class__.__name__, ', '.join(atts))
+        
+Base.__str__ = string_of
+
+#For testing.
+def pprint(self):
+        data = set(vars(self).keys()) | set(self.__table__.columns.keys()) | set(self.__mapper__.relationships.keys())
+        data.discard('_sa_instance_state')
+        
+        print("\n\n<{}(".format(self.__class__.__name__))
+        for key in sorted(data):
+            print('{}={}'.format(key, getattr(self, key)))
+        print(")>\n")
+        
+Base.pprint = pprint
     
     
 class BaseListElement(Base):
