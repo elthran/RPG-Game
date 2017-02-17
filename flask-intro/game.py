@@ -28,6 +28,7 @@ from flask import request
 from secondary_attributes import *
     
 import datetime
+import pdb
 
 # function used in '/level_up'
 #Fix ME! Or put me in a class as a method or something.
@@ -137,10 +138,11 @@ class Hero(Base):
         Possible bug ... assignment of BaseDict in __init__
         may destroy relationship?
         """
-        
+
         self.primary_attributes = BaseDict({"Strength": 1, "Resilience": 1, "Vitality": 1,
             "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1,
             "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1})
+
         self.kill_quests = BaseDict()
         
         #Defaults will remain unchanged if no arguments are passed.
@@ -164,14 +166,13 @@ class Hero(Base):
     
         self.attribute_points = 0
         
-        self.current_sanctity = 0
-        self.current_health = 10
-    
         #Marked for rename
-        #Consider "endurance" instead.
+        #Consider "endurance" or "health" instead.
+        #and then max_health and max_endurance as derived values.
+        self.current_sanctity = 0
+        self.current_health = 0
         self.current_endurance = 0
         self.current_carrying_capacity = 0
-        self.max_health = 10
         
         #Time code
         self.timestamp = datetime.datetime.utcnow()
@@ -215,7 +216,7 @@ class Hero(Base):
         
         See: init_on_load() in SQLAlchemy
         """
-        # import pdb; pdb.set_trace()
+
         #Make a list of the equipped items or if none are equipt return empty list.
         self.equipped_items = [item for item in self.inventory if item.equiptable] or []
 
@@ -243,8 +244,16 @@ class Hero(Base):
         self.oration = update_oration(self)
         self.knowledge = update_knowledge(self)
         self.luck = update_luck_chance(self)
-        previous_max_health = self.max_health
+        
+        #Marked for restructure
+        try:
+            previous_max_health = self.max_health
+        except KeyError:
+            pass
         self.max_health = update_maximum_health(self)
+        if not previous_max_health:
+                previous_max_health = self.max_health
+                
         # Hidden attributes
         self.experience_gain_modifier = 1 # This is the percentage of exp you gain
         self.gold_gain_modifier = 1 # This is the percentage of gold you gain
@@ -254,6 +263,8 @@ class Hero(Base):
         for item in self.equipped_items:
             item.update_stats()
 
+        #Marked for restructure:
+        #Move to refress character?
         # When you update max_health, current health will also change by the same amount
         max_health_change = self.max_health - previous_max_health
         if max_health_change: 
@@ -294,19 +305,27 @@ class Hero(Base):
         """Return string data about Hero object.
         """
         
-        column_headers = self.__table__.columns.keys()
-        extra_attributes = [key for key in vars(self).keys()
-            if key not in column_headers
-            if key != "_sa_instance_state"]
+        data = set(vars(self).keys()) | set(self.__table__.columns.keys()) | \
+            set(self.__mapper__.relationships.keys())
+        
+        data.discard('_sa_instance_state')
             
-        all_attributes = column_headers + sorted(extra_attributes)
         atts = []
-        for key in all_attributes:
-            atts.append('{}={}'.format(key, repr(getattr(self, key))))
+        for key in sorted(data):
+            atts.append('{}={}'.format(key, getattr(self, key)))
             
         
         data = "<Hero(" + ', '.join(atts) + ')>'
-        return data 
+        return data
+    
+    def pprint(self):
+        data = set(vars(self).keys()) | set(self.__table__.columns.keys()) | set(self.__mapper__.relationships.keys())
+        data.discard('_sa_instance_state')
+        
+        print("\n\n<Hero(")
+        for key in sorted(data):
+            print('{}={}'.format(key, getattr(self, key)))
+        print(")>\n")
     
     #Enabling object equality had obscure problems that I couldn't fix.
     # def __eq__(self, other): 

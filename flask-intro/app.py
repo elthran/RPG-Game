@@ -855,11 +855,11 @@ if __name__ == '__main__':
     
     #I know there is a better way ... primary_attributes should be defined on initialization.
     #This allows myHero to be global variable in this module/file without magic. I think.
-    myHero = Hero(gold=5000, age=7, current_health=10)
-    
+    myHero = Hero(gold=5000, age=7)
     #Because hero is easier for me to type.
     #Note: they are the same object!
     hero = myHero
+    hero.refresh_character()
     
     # initialization
     game = Game(hero)

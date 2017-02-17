@@ -41,22 +41,21 @@ class HeroTestCase(unittest.TestCase):
     def test_hero(self):
         """Prove that hero object builds and loads properly.
         
-        Bug: Current and max health get reset from 10 to 5.
-        Bug2: Abilities, inventory and primary_attributes don't exist until the object is commited?
+        NOTE: Max_health set by Primary Attributes values.
+        NOTE2: Relationships (Abilities, inventory and primary_attributes, etc.) are accessed by the
+        self.__mapper__.relationships.keys
+        
+        I will need to update all of the other database objects to account for relationships.
         """
         hero = Hero(name="Haldon")
-        print(type(hero.primary_attributes))
         
         self.db.session.add(hero)
         self.db.session.commit()
-        
         str_hero = str(hero)
-        
         self.rebuild_instance()
         
         hero2 = self.db.session.query(Hero).filter_by(name="Haldon").first()
-        # self.maxDiff = None
-        self.assertEqual(str(hero2), str_hero)
+        self.assertEqual(str_hero, str(hero2))
         
         
 
