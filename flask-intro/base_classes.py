@@ -24,33 +24,93 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import orm
 
+import pdb
+
 #I didn't call this method __str__ as it would then overide the module string function.
 def string_of(self): 
-        """Return string data about a Database object.
-        """
-        
-        data = set(vars(self).keys()) | set(self.__table__.columns.keys()) | \
-            set(self.__mapper__.relationships.keys())
-        
-        data.discard('_sa_instance_state')
-            
-        atts = []
-        for key in sorted(data):
-            atts.append('{}={}'.format(key, getattr(self, key)))
+    """Return string data about a Database object.
+    
+    Note: prints lists as list of ids.
+    Note2: key.lstrip('_') accesses _attributes as attributes due to my convention of using 
+    _value, @hybrid_property of value, @value.setter.
+    
+    I don't understand why I need all of these ... only that each one seems to hold
+    slightly different data than the others with some overlap.
+    
+    Not3: super class variables like 'type' and 'name' don't exist in WorldMap until they are
+    referenced as they are declared in Map...? I called super to fix this ... but it may
+    only allow ONE level of superclassing. Multi-level superclasses will probably fail.
+    """
 
-        return "<{}({})>".format(self.__class__.__name__, ', '.join(atts))
+    data = set(vars(self).keys()) | \
+        set(self.__table__.columns.keys()) | \
+        set(self.__mapper__.relationships.keys())
+        
+    try:
+        data |= set(vars(super(type(self), self)).keys())
+        data |= set(super(type(self), self).__table__.columns.keys())
+        data |= set(super(type(self), self).__mapper__.relationships.keys())
+    except AttributeError:
+        #If super is Base.
+        pass
+        
+    data.discard('_sa_instance_state')
+        
+    atts = []
+    for key in sorted(data):
+        key = key.lstrip('_')
+        value = getattr(self, key)
+        # pdb.set_trace()
+        if value and type(value) == orm.collections.InstrumentedList:
+            value = '[' + ', '.join(e.__class__.__name__ + '.id=' + str(e.id) for e in value) + ']'
+        elif value:
+            try:
+                value._sa_instance_state #Dummy call to test if value is a Database object.
+                value = str(value)
+            except AttributeError:
+                pass #The object is not a databse object.
+        atts.append('{}={}'.format(key, repr(value)))
+
+    return "<{}({})>".format(self.__class__.__name__, ', '.join(atts))
         
 Base.__str__ = string_of
 
 #For testing.
 def pprint(self):
-        data = set(vars(self).keys()) | set(self.__table__.columns.keys()) | set(self.__mapper__.relationships.keys())
-        data.discard('_sa_instance_state')
+    """Multi-line print of a database object -> good for object diff.
+    
+    Basically a string_of clone but one variable per line.
+    """
+    data = set(vars(self).keys()) | \
+        set(self.__table__.columns.keys()) | \
+        set(self.__mapper__.relationships.keys())
         
-        print("\n\n<{}(".format(self.__class__.__name__))
-        for key in sorted(data):
-            print('{}={}'.format(key, getattr(self, key)))
-        print(")>\n")
+    try:
+        data |= set(vars(super(type(self), self)).keys())
+        data |= set(super(type(self), self).__table__.columns.keys())
+        data |= set(super(type(self), self).__mapper__.relationships.keys())
+    except AttributeError:
+        #If super is Base.
+        pass
+        
+    data.discard('_sa_instance_state')
+    
+    print("\n\n<{}(".format(self.__class__.__name__))
+    for key in sorted(data):
+        key = key.lstrip('_')
+        value = getattr(self, key)
+        # pdb.set_trace()
+        if value and type(value) == orm.collections.InstrumentedList:
+            value = '[' + ', '.join(e.__class__.__name__ + '.id=' + str(e.id) for e in value) + ']'
+        elif value:
+            try:
+                value._sa_instance_state #Dummy call to test if value is a Database object.
+                value = str(value)
+            except AttributeError:
+                pass #The object is not a databse object.
+            
+        print('{}={}'.format(key, repr(value)))
+    print(")>\n")
         
 Base.pprint = pprint
     

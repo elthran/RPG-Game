@@ -69,7 +69,7 @@ class LocationTestCase(unittest.TestCase):
         self.tearDown(delete=False)
         self.setUp()
         town2 = self.db.session.query(Town).filter_by(name="Thornwall").first()
-        self.assertEqual(str(town2), "<Town(id=1, name='Thornwall', type='Town', map=None, adjacent_locations=[], display=None>")
+        self.assertEqual(str(town2), "<Town(adjacent_locations=[], display=None, hero_id_current_location=None, heroes=[], id=1, map=None, map_id=None, name='Thornwall', type='Town')>")
         
     
     def test_cave(self):
@@ -80,7 +80,7 @@ class LocationTestCase(unittest.TestCase):
         self.tearDown(delete=False)
         self.setUp()
         cave2 = self.db.session.query(Cave).filter_by(name="Creepy Cave").first()
-        self.assertEqual(str(cave2), "<Cave(id=1, name='Creepy Cave', type='Cave', map=None, adjacent_locations=[], display=None>")
+        self.assertEqual(str(cave2), "<Cave(adjacent_locations=[], display=None, hero_id_current_location=None, heroes=[], id=1, map=None, map_id=None, name='Creepy Cave', type='Cave')>")
     
     def test_world_map(self):
         map = WorldMap(name="Picatanin")
@@ -92,7 +92,7 @@ class LocationTestCase(unittest.TestCase):
         self.tearDown(delete=False)
         self.setUp()
         map2 = self.db.session.query(WorldMap).filter_by(name="Picatanin").first()
-        self.assertEqual(str(map2), "<WorldMap(id=1, name='Picatanin', type='WorldMap', adjacent_locations=[], locations=['Thornwall'], display=None>")
+        self.assertEqual(str(map2), "<WorldMap(adjacent_locations=[], display=None, heroes=[], id=1, locations='[Town.id=1]', name='Picatanin', type='WorldMap')>")
     
     def test_add_world_map(self):
         hero = Hero(name="Haldon")
@@ -105,7 +105,7 @@ class LocationTestCase(unittest.TestCase):
         self.tearDown(delete=False)
         self.setUp()
         hero2 = self.db.session.query(Hero).filter_by(name="Haldon").first()
-        self.assertEqual(str(hero2.current_world), "<WorldMap(id=1, name='Picatanin', type='WorldMap', adjacent_locations=[], locations=[], display=None>")
+        self.assertEqual(str(hero2.current_world), "<WorldMap(adjacent_locations=[], display=None, heroes='[Hero.id=1]', id=1, locations=[], name='Picatanin', type='WorldMap')>")
         
     def test_prebuilt_objects_game_worlds(self):
         """Test the creation of some prebuilt objects.
@@ -121,22 +121,18 @@ class LocationTestCase(unittest.TestCase):
         This will fail because all_map_locations will be a list object instead of 
         a "relationship" object.
         """
-        
-        self.db.session.add(prebuilt_objects.game_worlds[0])
+        world = prebuilt_objects.game_worlds[0]
+        self.db.session.add(world)
         self.db.session.commit()
+
+        str_world = str(world)
 
         self.tearDown(delete=False)
         self.setUp()
         world2 = self.db.session.query(WorldMap).filter_by(name="Test_World2").first()
-        self.assertEqual(str(world2), """<WorldMap(id=1, name='Test_World2', type='WorldMap', adjacent_locations=[], locations=['location 0', 'location 1', 'Creepy cave', 'location 3', 'location 4', 'Thornwall', 'location 6', 'location 7', 'location 8', 'location 9', 'location 10', 'location 11'], display=
-    <Display(
-        page_title = 'Test_World2',
-        page_heading = 'You are wandering in the world',
-        page_image = 'worldmap',
-        paragraph = 'Be safe',
-        places_of_interest = []
-    )>
->""")
+        self.maxDiff = None
+        
+        self.assertEqual(str(world2), str_world)
         
     
     def test_show_directions(self):

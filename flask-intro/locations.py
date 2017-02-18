@@ -146,7 +146,7 @@ class Display(Base):
         self.places_of_interest = places_of_interest
          
     
-    def __str__(self):
+    def __repr__(self):
         return """
     <{}(
         page_title = '{}',
@@ -212,11 +212,11 @@ class Location(Base):
         self._adjacent_locations = [BaseListElement(value) for value in values]
         
         
-    def __str__(self):
-        try:
-            return """<{}(id={}, name='{}', type='{}', map='{}', adjacent_locations={}, display={}>""".format(self.type, self.id, self.name, self.type, self.map.name, self.adjacent_locations, self.display)
-        except AttributeError:
-            return """<{}(id={}, name='{}', type='{}', map=None, adjacent_locations={}, display={}>""".format(self.type, self.id, self.name, self.type, self.adjacent_locations, self.display)
+    # def __str__(self):
+        # try:
+            # return """<{}(id={}, name='{}', type='{}', map='{}', adjacent_locations={}, display={}>""".format(self.type, self.id, self.name, self.type, self.map.name, self.adjacent_locations, self.display)
+        # except AttributeError:
+            # return """<{}(id={}, name='{}', type='{}', map=None, adjacent_locations={}, display={}>""".format(self.type, self.id, self.name, self.type, self.adjacent_locations, self.display)
     
     
 class Town(Location):
@@ -284,12 +284,12 @@ class Map(Base):
         self._adjacent_locations = [BaseListElement(value) for value in values]
         
         
-    def __str__(self):
-        locations = str([location.name for location in self.locations])
-        try:
-            return """<{}(id={}, name='{}', type='{}', adjacent_locations={}, locations={}, display={}>""".format(self.type, self.id, self.name, self.type, self.adjacent_locations, locations, self.display)
-        except AttributeError:
-            return """<{}(id={}, name='{}', type='{}', adjacent_locations={}, locations={}, display={}>""".format(self.type, self.id, self.name, self.type, self.adjacent_locations, locations, self.display)        
+    # def __str__(self):
+        # locations = str([location.name for location in self.locations])
+        # try:
+            # return """<{}(id={}, name='{}', type='{}', adjacent_locations={}, locations={}, display={}>""".format(self.type, self.id, self.name, self.type, self.adjacent_locations, locations, self.display)
+        # except AttributeError:
+            # return """<{}(id={}, name='{}', type='{}', adjacent_locations={}, locations={}, display={}>""".format(self.type, self.id, self.name, self.type, self.adjacent_locations, locations, self.display)        
     
     
 class WorldMap(Map):

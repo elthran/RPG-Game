@@ -51,10 +51,13 @@ class HeroTestCase(unittest.TestCase):
         
         self.db.session.add(hero)
         self.db.session.commit()
+        
         str_hero = str(hero)
         self.rebuild_instance()
         
         hero2 = self.db.session.query(Hero).filter_by(name="Haldon").first()
+        
+        # self.maxDiff = None
         self.assertEqual(str_hero, str(hero2))
         
         

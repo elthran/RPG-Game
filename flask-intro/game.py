@@ -80,9 +80,9 @@ class User(Base):
     password = Column(String, nullable=False)
     email = Column(String)
 
-    def __repr__(self):
-       return "<User(username='{}', password='{}', email='{}')>" .format(
-                        self.username, self.password, self.email)
+    # def __repr__(self):
+       # return "<User(username='{}', password='{}', email='{}')>" .format(
+                        # self.username, self.password, self.email)
                         
                         
 class Hero(Base):
@@ -299,16 +299,7 @@ class Hero(Base):
                 if my_item.amount_owned == 0:
                     self.inventory.remove(my_item)
                 break
-
-    
-    def pprint(self):
-        data = set(vars(self).keys()) | set(self.__table__.columns.keys()) | set(self.__mapper__.relationships.keys())
-        data.discard('_sa_instance_state')
-        
-        print("\n\n<Hero(")
-        for key in sorted(data):
-            print('{}={}'.format(key, getattr(self, key)))
-        print(")>\n")
+                
     
     #Enabling object equality had obscure problems that I couldn't fix.
     # def __eq__(self, other): 
