@@ -47,19 +47,18 @@ class HeroTestCase(unittest.TestCase):
         
         I will need to update all of the other database objects to account for relationships.
         """
-        hero = Hero(name="Haldon")
-        
-        self.db.session.add(hero)
+        self.db.session.add(self.hero)
         self.db.session.commit()
         
-        str_hero = str(hero)
+        str_hero = str(self.hero)        
+        
         self.rebuild_instance()
         
         hero2 = self.db.session.query(Hero).filter_by(name="Haldon").first()
         
         # self.maxDiff = None
-        self.assertEqual(str_hero, str(hero2))
-        
+              
+        self.assertEqual(str_hero, str(hero2))        
         
 
 class PrimaryAttributesTestCase(unittest.TestCase):

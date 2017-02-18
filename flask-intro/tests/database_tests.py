@@ -90,11 +90,15 @@ class DatabaseTestCase(unittest.TestCase):
         This goes for all? max/current hero attributes.
         """
         self.db.add_new_user('Marlen', 'Brunner')
+        self.rebuild_instance()
+        
         user_id = 1
         character_name = "Haldon"
         self.db.add_new_character(user_id, "Haldon", "Wizard")
+        self.rebuild_instance()
         self.db.add_new_character(user_id, "Haldon", "Welder")
         
+        self.rebuild_instance()
         welder = self.db.session.query(User).filter_by(id=1).first().heroes[1]
         str_welder = str(welder)
         
@@ -105,54 +109,66 @@ class DatabaseTestCase(unittest.TestCase):
         self.assertEqual(str(welder2), str_welder)
 
 
-def test_validate():
-    """Test if the validate function in the Database class works.
+    def test_validate(self):
+        """Test if the validate function in the Database class works.
+        
+        NOTE: my first real unit test!
+        """
+        
+        username = 'Marlen'
+        password = "Brunner"
+        self.db.add_new_user(username, password)
+        
+        self.rebuild_instance()
+        self.assertTrue(self.db.validate(username, password))
+        
     
-    NOTE: my first real unit test!
-    """
-    db = set_up()
-    username = 'Marlen'
-    password = "Brunner"
-    db.add_new_user(username, password)
-    assert db.validate(username, password)
-    tear_down(db)
-    
-def test_fetch_hero():
-    db = set_up()
-    db.add_new_user('Marlen', 'Brunner')
-    db.add_new_character(1, "Haldon", "Wizard")
-    db.add_new_character(1, "Haldon", "Welder")
-    hero1 = db.fetch_hero("Marlen") #Username only
-    hero2 = db.fetch_hero(1) #User id only
-    hero3 = db.fetch_hero(character_name_or_id=1) #character id only, note providing username is redundant.
-    hero4 = db.fetch_hero("Marlen", "Haldon") #Username and character name
-    hero5 = db.fetch_hero(1, "Haldon") #User id and character name
-    assert hero1.character_name == "Haldon"
-    assert hero1 == hero2 == hero3 == hero4 == hero5
-    tear_down(db)
+    def test_fetch_hero(self):
+        self.db.add_new_user('Marlen', 'Brunner')
+        self.db.add_new_character(1, "Haldon", "Wizard")
+        self.db.add_new_character(1, "Haldon", "Welder")
+        
+        self.rebuild_instance()
+        hero1 = self.db.fetch_hero("Marlen") #Username only
+        hero2 = self.db.fetch_hero(1) #User id only
+        hero3 = self.db.fetch_hero(character_name_or_id=1) #character id only, note providing username is redundant.
+        hero4 = self.db.fetch_hero("Marlen", "Haldon") #Username and character name
+        hero5 = self.db.fetch_hero(1, "Haldon") #User id and character name
+        
+        self.assertEqual(hero1.character_name, "Haldon")
+        self.assertEqual(hero1, hero2)
+        self.assertEqual(hero1, hero3)
+        self.assertEqual(hero1, hero4)
+        self.assertEqual(hero1, hero5)
 
-def test_update():
-    db = set_up()
-    db.add_new_user('Marlen', 'Brunner')
-    db.add_new_character(1, "Haldon", "Wizard")
-    hero = db.fetch_hero("Marlen", "Haldon")
-    hero.archetype = "Welder"
-    # db.update() #NOTE: update function is now redundant! Only use on program exit. 
-    # The fetch_hero in the next line actually updates the hero in the database.
-    assert db.fetch_hero(character_name_or_id=1).archetype == "Welder"
-    tear_down(db)
+    def test_update(self):
+        """Test update function.
+        
+        NOTE: update function is now mostly redundant! Only use on program exit. 
+        The fetch_hero line actually updates the hero in the database.
+        Consider running commit on program update as well. 
+        """
+        self.db.add_new_user('Marlen', 'Brunner')
+        self.db.add_new_character(1, "Haldon", "Wizard")
+        hero = self.db.fetch_hero("Marlen", "Haldon")
+        hero.archetype = "Welder"
+        self.db.update() 
+        
+        self.rebuild_instance()
+        hero2 = self.db.fetch_hero(character_name_or_id=1)
+        self.assertEqual(hero2.archetype, "Welder")
 
 
-def test_update_time():
-    db = set_up()
-    db.add_new_user('Marlen', 'Brunner')
-    db.add_new_character(1, "Haldon", "Wizard")
-    hero = db.fetch_hero(character_name_or_id=1)
-    hero.timestamp -= datetime.timedelta(seconds=11)
-    oldtime = hero.timestamp 
-    db.update_time(hero)
-    assert hero.current_endurance == 1 #May fail on very slow machines do too slow code execution.
-    tear_down(db)
+    def test_update_time(self):
+        """May fail on very slow machines do too slow code execution.
+        """
+        self.db.add_new_user('Marlen', 'Brunner')
+        self.db.add_new_character(1, "Haldon", "Wizard")
+        hero = self.db.fetch_hero(character_name_or_id=1)
+        hero.timestamp -= datetime.timedelta(seconds=11)
+        oldtime = hero.timestamp 
+        self.db.update_time(hero)
+        self.assertEqual(hero.current_endurance, 1)
     
 
 if __name__ == '__main__':

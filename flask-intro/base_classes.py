@@ -24,6 +24,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import orm
 
+import inspect
 import pdb
 
 #I didn't call this method __str__ as it would then overide the module string function.
@@ -113,7 +114,64 @@ def pprint(self):
     print(")>\n")
         
 Base.pprint = pprint
+
+def get_all_atts(self):
+    # inspect.getmro(self) #get all supers ... get all vars from this list?
+    # print(inspect.getmro(self))
+    data = set(vars(self).keys()) | \
+        set(self.__table__.columns.keys()) | \
+        set(self.__mapper__.relationships.keys())
+        
+    try:
+        data |= set(vars(super(type(self), self)).keys())
+        data |= set(super(type(self), self).__table__.columns.keys())
+        data |= set(super(type(self), self).__mapper__.relationships.keys())
+    except AttributeError:
+        #If super is Base.
+        pass
+        
+    data.discard('_sa_instance_state')
+    return data
+
+def is_equal(self, other):
+    """Test if two database objects are equal.
     
+    hero.is_equal(hero) vs. str(hero) == str(hero)
+    is_equal is 0.3 seconds faster over 1000 iterations than str == str.
+    So is_equal is not that useful. I would like it if it was 5-10 times faster.
+    """
+    data = get_all_atts(self)
+    other_data = get_all_atts(other)
+    
+    if not data == other_data:
+        return False   
+    
+    if not self.__class__.__name__ == other.__class__.__name__:
+        return False
+        
+    for key in sorted(data):
+        key = key.lstrip('_')
+        value = getattr(self, key)
+        other_value = getattr(other, key)
+                
+        #Add recursion in here :P        
+        # pdb.set_trace()
+        if value and type(value) == orm.collections.InstrumentedList:
+            value = '[' + ', '.join(e.__class__.__name__ + '.id=' + str(e.id) for e in value) + ']'
+            other_value = '[' + ', '.join(e.__class__.__name__ + '.id=' + str(e.id) for e in value) + ']'
+        elif value:
+            try:
+                value._sa_instance_state #Dummy call to test if value is a Database object.
+                value = str(value)
+                other_value = str(other_value)
+            except AttributeError:
+                pass #The object is not a databse object.
+            
+        if not value == other_value:
+            return False
+    return True
+    
+Base.is_equal = is_equal
     
 class BaseListElement(Base):
     """Stores list objects in database.

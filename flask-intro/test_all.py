@@ -56,9 +56,7 @@ def build_suite_of_all_tests(*modules):
         caseList.append(testSuite)
  
     return unittest.TestSuite(caseList)
-   
-
-
+    
 if __name__ == "__main__":
     from tests import locations_tests, game_tests, database_tests
     
@@ -71,4 +69,3 @@ if __name__ == "__main__":
     
     all_tests_runner = unittest.TextTestRunner(verbosity=2)
     all_tests_runner.run(all_tests_suite)
-    
