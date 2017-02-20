@@ -11,6 +11,7 @@ from base_classes import Base, BaseDict
 from database import EZDB
 from game import Hero
 import complex_relationships
+import prebuilt_objects
 
 import pdb
 
@@ -55,10 +56,21 @@ class HeroTestCase(unittest.TestCase):
         self.rebuild_instance()
         
         hero2 = self.db.session.query(Hero).filter_by(name="Haldon").first()
+        self.assertEqual(str_hero, str(hero2))  
+
+    def test_current_city(self):
+        self.hero.current_world = prebuilt_objects.world
+        self.hero.current_location = prebuilt_objects.current_location
+        self.hero.current_city = prebuilt_objects.current_location
+        self.db.session.add(self.hero)
+        self.db.session.commit()
+        str_hero = str(self.hero)        
+        str_city = str(self.hero.current_city)
         
-        # self.maxDiff = None
-              
-        self.assertEqual(str_hero, str(hero2))        
+        self.rebuild_instance()
+        hero2 = self.db.session.query(Hero).filter_by(name="Haldon").first()
+        self.assertEqual(str_hero, str(hero2))
+        self.assertEqual(str_city, str(hero2.current_city))
         
 
 class PrimaryAttributesTestCase(unittest.TestCase):

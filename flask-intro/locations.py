@@ -305,6 +305,7 @@ class WorldMap(Map):
     #Creates attribute map_cities. Prehaps should be a relations?
     #And map_cities should probably be map_city? Or some other name that actually explains
     #what it does??
+    #This function modifes the object and returns a value. It should only do one or the other.
     def show_directions(self, current_location):
         """Return a list of directions you can go from your current_location.
         

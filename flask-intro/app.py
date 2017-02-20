@@ -264,6 +264,8 @@ def create_account():
 @app.route('/logout')
 @login_required
 def logout():
+    pdb.set_trace()
+    hero.refresh_character()
     database.update() ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
     session.pop('logged_in', None)
     flash("Thank you for playing! Your have successfully logged out.")
@@ -434,9 +436,13 @@ def home():
     global myHero
     myHero = database.fetch_hero(session['hero_id'])
     database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
- # initialize current_world
+    
+    # pdb.set_trace()
+    #Consider moving this to the login function? Or instantiate during "create_account?"
+    # initialize current_world
     if myHero.current_world == None:
         myHero.current_world = prebuilt_objects.game_worlds[0]
+        myHero.current_location = prebuilt_objects.current_location
         database.update()
     # If it's a new character, send them to cerate_character url
     if myHero.character_name == None:
@@ -577,6 +583,7 @@ def town(town_name):
         if location.name == town_name:
             myHero.current_city = location
             break
+
     page_title = myHero.current_city.display.page_title
     page_heading = myHero.current_city.display.page_heading
     page_image = myHero.current_city.display.page_image
@@ -611,15 +618,23 @@ def world_map(current_world, location_id):
     I don't know where the arguments come from? Or why they are passed.
     I will try and figure it out.
     """
-    pdb.set_trace()
+    # pdb.set_trace()
+    
+    #Very important as current_world is a string variable and should be the object itself.
     current_world = myHero.current_world
     
     #Updates current id. May be redundant. Or it may allow page to be dynamic.
     #May have originally compensated for the lack of a database.
-    hero.current_location = current_world.find_location(location_id)
+    current_location = current_world.find_location(location_id)
     
-    myHero.known_locations.append(current_world)
-    myHero.current_city = None
+    #Needs to be reimplemented
+    # myHero.known_locations.append(current_world)
+    myHero.current_city = None #?
+    
+    move_on_the_map = current_world.show_directions(current_location)
+    myHero.current_location = current_location
+    database.update()
+    
     
     #Debug Me! Use current_world.display?
     # Check render of places_of_interest
@@ -627,10 +642,8 @@ def world_map(current_world, location_id):
     page_heading = current_world.display.page_heading
     page_image = current_world.display.page_image
     paragraph = current_world.display.paragraph
-    move_on_the_map = current_world.show_directions()
-    places_of_interest = myHero.current_world.display.places_of_interest
+    places_of_interest = current_world.display.places_of_interest
     
-    database.update()
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest, move_on_the_map=move_on_the_map)  
 
 @app.route('/barracks')
@@ -859,7 +872,6 @@ if __name__ == '__main__':
     #Because hero is easier for me to type.
     #Note: they are the same object!
     hero = myHero
-    hero.refresh_character()
     
     # initialization
     game = Game(hero)

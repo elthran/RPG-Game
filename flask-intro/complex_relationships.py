@@ -8,6 +8,8 @@ import locations
 import abilities
 import items
 
+from sqlalchemy.orm import backref
+
 #Hero relationships
 #Note singular/one side of relationship should be defined first or you will get
 #C:\Python35\lib\site-packages\sqlalchemy\orm\mapper.py:1654: SAWarning: 
@@ -18,18 +20,23 @@ game.User.heroes = relationship("Hero", order_by='Hero.character_name', backref=
 
 #Many Heroes -> one WorldMap (bidirectional)
 game.Hero.world_map_id = Column(Integer, ForeignKey('world_map.id'))
-# game.Hero.current_world = relationship("WorldMap", uselist=False, back)
 locations.WorldMap.heroes = relationship("Hero", backref="current_world")
 
+#One location -> Many Heroes.
 #Many Heroes -> one Location (bidirectional) (Town or Cave)
 #Maybe I should have a City object that extends Location that is the Ancestor for Town and Cave?
 game.Hero.city_id = Column(Integer, ForeignKey('location.id'))
-locations.Location.heroes = relationship("Hero", foreign_keys="[Hero.city_id]", backref="current_city")
+game.Hero.current_city = relationship("Location", foreign_keys='[Hero.city_id]', 
+    back_populates='heroes_by_city')
+locations.Location.heroes_by_city = relationship("Hero", foreign_keys='[Hero.city_id]',
+    back_populates="current_city")
 
-#One Hero -> one current_location.
-locations.Location.hero_id_current_location = Column(Integer, ForeignKey('heroes.id'))
-game.Hero.current_location = relationship("Location", uselist=False,
-    foreign_keys="[Location.hero_id_current_location]")
+#Many Heroes -> one current_location.
+game.Hero.current_location_id = Column(Integer, ForeignKey('location.id'))
+game.Hero.current_location = relationship("Location", foreign_keys='[Hero.current_location_id]',
+    back_populates='heroes_by_current_location')
+locations.Location.heroes_by_current_location = relationship("Hero", 
+    foreign_keys='[Hero.current_location_id]', back_populates="current_location")
 
 
 #Many Heroes -> many known Maps? (unidirectional)
@@ -51,13 +58,15 @@ game.Hero.inventory = relationship("Item", order_by="Item.name", backref="myHero
 
 #One Hero -> one primary_attribute dict
 base_classes.BaseDict.hero_id_primary_attr = Column(Integer, ForeignKey('heroes.id'))
-game.Hero.primary_attributes = relationship("BaseDict", uselist=False, 
-    foreign_keys="[BaseDict.hero_id_primary_attr]")
+base_classes.BaseDict.primary_attr_hero = relationship("Hero",
+    backref=backref("primary_attributes", uselist=False), foreign_keys="[BaseDict.hero_id_primary_attr]")
+# game.Hero.primary_attributes = relationship("BaseDict", uselist=False, 
+    # foreign_keys="[BaseDict.hero_id_primary_attr]")
 
 #One Hero -> one quest list?
 base_classes.BaseDict.hero_id_kill_quests = Column(Integer, ForeignKey('heroes.id'))
-game.Hero.kill_quests = relationship("BaseDict", uselist=False,
-    foreign_keys="[BaseDict.hero_id_kill_quests]")
+base_classes.BaseDict.kill_quests_hero = relationship("Hero", 
+    backref=backref("kill_quests", uselist=False), foreign_keys="[BaseDict.hero_id_kill_quests]")
 
 
 #Locations -> base_classes
@@ -73,3 +82,16 @@ locations.Location._adjacent_locations = relationship("BaseListElement")
 base_classes.BaseListElement.map_id = Column(Integer, ForeignKey('map.id'))
 locations.Map._adjacent_locations = relationship("BaseListElement")
 
+
+if __name__ == "__main__":
+    from sqlalchemy import inspect
+
+    def print_relations(model):
+        i = inspect(model)
+        for relation in i.relationships:
+                print(relation.direction.name)
+                print(relation.remote_side)
+                print(relation._reverse_property)
+                # print(dir(relation))
+                
+    print_relations(game.Hero)

@@ -181,6 +181,7 @@ class Hero(Base):
             setattr(self, key, kwargs[key])
         
         self.update_secondary_attributes()
+        self.refresh_character()
 
     
     def not_yet_implemented():
