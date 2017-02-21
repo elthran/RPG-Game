@@ -131,9 +131,9 @@ function sumerror()
 
  <div id="content">
 
-{% if myHero.quest_notification %}
-    <div class="popup" onclick="myFunction()" style="color:red">You have complete a quest! (+{{ myHero.quest_notification[1] }}xp)<span class="popupachievement" id="js_popupachievement">{{ myHero.quest_notification[0] }}</span></div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
-{% endif %}
+    {% if myHero.quest_notification %}
+      <div class="popup" onclick="quest_popup()" style="color:red">You have complete a quest! (+{{ myHero.quest_notification[1] }}xp)<span class="popupachievement" id="js_popupachievement">{{ myHero.quest_notification[0] }}</span></div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
+    {% endif %}
 
     {% if page_heading %}
     <h1>{{ page_heading }}</h1>
@@ -182,6 +182,26 @@ function sumerror()
     {% for town_link in places_of_interest %}
       <h1>{{ town_link[2] }}</h1><h2><a href="{{ town_link[0] }}">{{ town_link[1] }}</a></h2>
     {% endfor %}
+
+<script>
+function battle_popup() {
+    var x = document.getElementById('myDIV');
+    if (x.style.display === 'none') {
+        x.style.display = 'block';
+    } else {
+        x.style.display = 'none';
+    }
+}
+</script>
+
+    {% if battle_log %}
+      <button onclick="battle_popup()">Toggle Battle Log</button>
+      <div id="myDIV">
+      {% for line in battle_log %}
+        {{ line }}<br>
+      {% endfor %}
+      </div>
+    {% endif %}
 
     {% if inventory_page %}
       <h1>Equipped:</h1>
@@ -481,37 +501,4 @@ Name: {{ myHero.character_name}}
 
 
 
-<script>
-// Only run what comes next *after* the page has loaded
-addEventListener("DOMContentLoaded", function() {
-  // Grab all of the elements with a class of command
-  // (which all of the buttons we just created have)
-  var commandButtons = document.querySelectorAll(".command");
-  for (var i=0, l=commandButtons.length; i<l; i++) {
-    var button = commandButtons[i];
-    // For each button, listen for the "click" event
-    button.addEventListener("click", function(e) {
-      // When a click happens, stop the button
-      // from submitting our form (if we have one)
-      e.preventDefault();
 
-      var clickedButton = e.target;
-      var command = clickedButton.value;
-
-      // Now we need to send the data to our server
-      // without reloading the page - this is the domain of
-      // AJAX (Asynchronous JavaScript And XML)
-      // We will create a new request object
-      // and set up a handler for the response
-      var request = new XMLHttpRequest();
-      // We point the request at the appropriate command
-      request.open("GET", "/" + command, true);
-      // and then we send it off
-      request.send();
-	  location.reload();
-	  
-    });
-  }
-  
-}, true);
-</script>
