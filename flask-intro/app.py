@@ -335,7 +335,7 @@ def battle():
         page_heading = "Not enough endurance, wait a bit!"
         return render_template('home.html', page_title=page_title, myHero=myHero, page_heading=page_heading, page_links=page_links)
 
-    myHero.current_health,game.enemy.current_health,battle_log = battle_logic(myHero,game.enemy)
+    myHero.current_health,game.enemy.current_health,battle_log,battle_results = battle_logic(myHero,game.enemy)
     if myHero.current_health == 0:
         myHero.current_endurance -= required_endurance
         page_title = "Defeat!"
@@ -385,7 +385,7 @@ def battle():
             page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
 
     database.update_character(session['id'],myHero)
-    return render_template('home.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log, myHero=myHero, enemy=enemy, page_links=page_links)  # return a string
+    return render_template('home.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log, battle_results=battle_results, myHero=myHero, enemy=enemy, page_links=page_links)  # return a string
 
 # this is a temp button that can call this to erase your chracter information and redirect you to the create character page
 @app.route('/reset_character')

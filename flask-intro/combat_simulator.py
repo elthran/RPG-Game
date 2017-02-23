@@ -65,6 +65,7 @@ def determine_modified_damage(defender, raw_damage):
 def battle_logic(character1 ,character2):
     """ Runs the entire battle simulator """
     combat_log = [(character1.name + " Health: " + str(character1.current_health)), (character2.name + " Health: " + str(character2.current_health))]
+    battle_results = ""
     while character1.current_health > 0 and character2.current_health > 0:
         attacker,defender = determine_attacker_defender(character1, character2)
         attack_success = determine_attack_success(attacker, defender)
@@ -84,10 +85,10 @@ def battle_logic(character1 ,character2):
         else:
             combat_log.append(attack_success)
     if character1.current_health <= 0:
-        combat_log.append(character1.name + " is dead")
+        battle_results += (character1.name + " is dead")
     else:
-        combat_log.append(character2.name + " is dead")
-    return myHero.current_health,enemy.current_health,combat_log
+        battle_results += (character2.name + " is dead")
+    return myHero.current_health,enemy.current_health,combat_log,battle_results
 
 
 

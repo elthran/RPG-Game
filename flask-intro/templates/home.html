@@ -151,10 +151,6 @@ function sumerror()
     <br><b>{{ text[0] }}</b> {{ text[1] }}<br>
     {% endfor %}
 
-    {% for result in battle_results %}
-       {{ result }}<br>
-    {% endfor %}
-
     {% if move_on_the_map %}
       *Cave at 2 and City at 5*
       <h1>I am at {{ myHero.current_world.current_location.name }}</h1>
@@ -183,24 +179,14 @@ function sumerror()
       <h1>{{ town_link[2] }}</h1><h2><a href="{{ town_link[0] }}">{{ town_link[1] }}</a></h2>
     {% endfor %}
 
-<script>
-function battle_popup() {
-    var x = document.getElementById('myDIV');
-    if (x.style.display === 'none') {
-        x.style.display = 'block';
-    } else {
-        x.style.display = 'none';
-    }
-}
-</script>
-
     {% if battle_log %}
       <button onclick="battle_popup()">Toggle Battle Log</button>
-      <div id="myDIV">
-      {% for line in battle_log %}
-        {{ line }}<br>
-      {% endfor %}
+      <div id="battle_log_div_id">
+        {% for line in battle_log %}
+          {{ line }}<br>
+        {% endfor %}
       </div>
+      <br>{{ battle_results }}
     {% endif %}
 
     {% if inventory_page %}
