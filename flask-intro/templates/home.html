@@ -8,38 +8,41 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" media="screen">
-
-    <script type="text/javascript">
-  function strength_updater(AR) 
-  {
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <script>
+      function strength_updater(AR) {
     document.querySelector('#strength_output').value = AR;
     var select_strength = document.querySelector('#strength_output').value
-    console.log(select_strength);
-    
+    console.log(select_strength); 
 }
-
-  function agility_updater(AR) 
-  {
+      function agility_updater(AR) {
     document.querySelector('#agility_output').value = AR;
     var select_agility = document.querySelector('#agility_output').value
     console.log(select_agility);
     }
-
+      function resilience_updater(AR) {
+    document.querySelector('#resilience_output').value = AR;
+    var select_resilience = document.querySelector('#resilience_output').value
+    console.log(select_resilience);
+    }
+      function vitality_updater(AR) {
+    document.querySelector('#vitality_output').value = AR;
+    var select_vitality = document.querySelector('#vitality_output').value
+    console.log(select_vitality);
+    }
 
   function findTotal()
   {
-    var arr = document.getElementsByName('Attributes');
-    var tot={{ myHero.attribute_points }};
-    
-       for(var i=0;i<arr.length;i++){
-        if(parseInt(arr[i].value))
-            tot -= parseInt(arr[i].value);
-    }
-
-  document.getElementById('total_points_spent').value = tot;
-	sumerror()
+    var strength = document.getElementById('strength_attribute');
+    var agility = document.getElementsByName('agility_attribute');
+    var resilience = document.getElementsByName('resilience_attribute');
+    var vitality = document.getElementsByName('vitality_attribute');
+    var selected_points = parseInt(strength_attribute.value) + parseInt(agility_attribute.value) + parseInt(resilience_attribute.value) + parseInt(vitality_attribute.value);
+    var tot= {{ myHero.attribute_points }};
+    tot -= selected_points;
+    document.getElementById('total_points_spent').value = tot;
+    sumerror()
 }
-
 
 function sumerror()
   {
@@ -48,19 +51,25 @@ function sumerror()
 	if (sum < 0) 
   {
     document.getElementById('sumerror').value = '          You do not have enough points';
+    document.getElementById("level_button").disabled = true;
+
 	}
   else {
 
-		document.getElementById('sumerror').value = '';
+    document.getElementById('sumerror').value = '';
+    document.getElementById("level_button").disabled = false;
 	}
-	
-
 }
 </script>
 
-  </head>
 
+  </head>
   <body>
+
+
+  </head>
+  <body>
+
   <div id="page">
     <div id="sidebar">
       <div class="sidebarinfo">
@@ -122,6 +131,10 @@ function sumerror()
 
  <div id="content">
 
+    {% if myHero.quest_notification %}
+      <div class="popup" onclick="quest_popup()" style="color:red">You have complete a quest! (+{{ myHero.quest_notification[1] }}xp)<span class="popupachievement" id="js_popupachievement">{{ myHero.quest_notification[0] }}</span></div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
+    {% endif %}
+
     {% if page_heading %}
     <h1>{{ page_heading }}</h1>
     {% endif %}
@@ -136,10 +149,6 @@ function sumerror()
 
     {% for text in conversation %}
     <br><b>{{ text[0] }}</b> {{ text[1] }}<br>
-    {% endfor %}
-
-    {% for result in battle_results %}
-       {{ result }}<br>
     {% endfor %}
 
     {% if move_on_the_map %}
@@ -169,6 +178,16 @@ function sumerror()
     {% for town_link in places_of_interest %}
       <h1>{{ town_link.places[0].name }}</h1><h2><a href="{{ town_link.url }}">{{ town_link.places[0].name }}</a></h2>
     {% endfor %}
+
+    {% if battle_log %}
+      <button onclick="battle_popup()">Toggle Battle Log</button>
+      <div id="battle_log_div_id">
+        {% for line in battle_log %}
+          {{ line }}<br>
+        {% endfor %}
+      </div>
+      <br>{{ battle_results }}
+    {% endif %}
 
     {% if inventory_page %}
       <h1>Equipped:</h1>
@@ -277,32 +296,16 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
 
     {% if quest_log %}
       <h1>Current Quests</h1>
-      {% if current_quests %}
-        {% for quest in current_quests %}
-          <h2><br><b>{{ quest[0] }}</b> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;(Stage: {{ quest[2] }})</h2>
-          {{ quest[1] }}
-        {% endfor %}
-      {% else %}
-        No current quests.
-      {% endif %}
-      <h1>Current Errands</h1>
-      {% if errands %}
-        {% for errand in errands %}
-          <br><b>{{ errand }}</b>
-        {% endfor %}
-      {% else %}
-        No current errands.
-      {% endif %}
+      {% for quest in myHero.current_quests %}{% if not quest.completed %}
+          <h2><br><b>{{ quest.name }}</b></h2>
+          {{ quest.current_description }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;(Stage: {{ quest.display_stage }}/{{ quest.stages }})
+        {% endif %}{% endfor %}
       <h1>Completed Quests</h1>
-      {% if completed_quests %}
-        {% for quest in completed_quests %}
-          <br><b>{{ quest }}</b><br>
-          {{ paragraph }}
-        {% endfor %}
-      {% else %}
-        No completed quests.
-      {% endif %}
-    {% endif %}
+      {% for quest in myHero.current_quests %}{% if quest.completed %}
+          <h2><br><b>{{ quest.name }}</b></h2>
+          (Reward: {{ quest.reward_xp }} xp)
+        {% endif %}{% endfor %}
+     {% endif %}
 
     {% if bestiary %}
       <div class="rightside">
@@ -458,28 +461,20 @@ Name: {{ myHero.character_name}}
 
     {% if level_up %}
       You have {{ myHero.attribute_points }} points remaing to spend.<br><br><br><br>
-
-
-<form method="post" class="level_up_form">
-    
-Strength: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="Attributes1" name="Attributes" step="1" oninput="strength_updater(value)" onchange="findTotal()">
-
-  <output for="Strength" id="strength_output">0</output> (Current: {{ myHero.primary_attributes["Strength"] }})</br>
-	
-Agility: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="Attributes2" name="Attributes" step="1" oninput="agility_updater(value)" onchange="findTotal()">
-  <output for="Agility" id="agility_output">0</output> (Current: {{ myHero.primary_attributes["Agility"] }})</br>
-	
-<input class="btn btn-default" type="submit" value="Save">
-</form>
-
-
-
-<br>Points remaining:
-<output type="text" name="total" id="total_points_spent" value="{{ myHero.attribute_points }}"/>{{ myHero.attribute_points }}</output>
-
-<output type="text" name="sumerror" id="sumerror" value="" style="color:red;" /></output>
-
-
+      <form method="post" class="level_up_form">
+        Strength: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="strength_attribute" name="Strength" step="1" oninput="strength_updater(value)" onchange="findTotal()">
+                  <output for="Strength" id="strength_output">0</output> (Current: {{ myHero.primary_attributes["Strength"] }})</br>
+	Agility: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="agility_attribute" name="Agility" step="1" oninput="agility_updater(value)" onchange="findTotal()">
+                 <output for="Agility" id="agility_output">0</output> (Current: {{ myHero.primary_attributes["Agility"] }})</br>
+	Resilience: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="resilience_attribute" name="Resilience" step="1" oninput="resilience_updater(value)" onchange="findTotal()">
+                 <output for="Resilience" id="resilience_output">0</output> (Current: {{ myHero.primary_attributes["Resilience"] }})</br>
+	Vitality: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="vitality_attribute" name="Vitality" step="1" oninput="vitality_updater(value)" onchange="findTotal()">
+                 <output for="Vitality" id="vitality_output">0</output> (Current: {{ myHero.primary_attributes["Vitality"] }})</br>
+	<input class="btn btn-default" type="submit" value="Save" id="level_button">
+      </form>
+      <br>Points remaining:
+        <output type="text" name="total" id="total_points_spent" value="{{ myHero.attribute_points }}"/>{{ myHero.attribute_points }}</output>
+        <output type="text" name="sumerror" id="sumerror" value="" style="color:red;" /></output>
     {% endif %}
 
       {% for message in get_flashed_messages() %}
@@ -492,37 +487,4 @@ Agility: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="
 
 
 
-<script>
-// Only run what comes next *after* the page has loaded
-addEventListener("DOMContentLoaded", function() {
-  // Grab all of the elements with a class of command
-  // (which all of the buttons we just created have)
-  var commandButtons = document.querySelectorAll(".command");
-  for (var i=0, l=commandButtons.length; i<l; i++) {
-    var button = commandButtons[i];
-    // For each button, listen for the "click" event
-    button.addEventListener("click", function(e) {
-      // When a click happens, stop the button
-      // from submitting our form (if we have one)
-      e.preventDefault();
 
-      var clickedButton = e.target;
-      var command = clickedButton.value;
-
-      // Now we need to send the data to our server
-      // without reloading the page - this is the domain of
-      // AJAX (Asynchronous JavaScript And XML)
-      // We will create a new request object
-      // and set up a handler for the response
-      var request = new XMLHttpRequest();
-      // We point the request at the appropriate command
-      request.open("GET", "/" + command, true);
-      // and then we send it off
-      request.send();
-	  location.reload();
-	  
-    });
-  }
-  
-}, true);
-</script>

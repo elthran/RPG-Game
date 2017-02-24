@@ -279,6 +279,9 @@ class Hero(Base):
         self.current_endurance = self.max_endurance
         self.current_carrying_capacity = self.max_carrying_capacity
 
+    def page_refresh_character(self):
+        self.quest_notification = None
+
     # updates field variables when hero levels up
     def level_up(self, attribute_points, current_exp, max_exp):
         if self.current_exp < self.max_exp:
@@ -308,10 +311,8 @@ class Hero(Base):
         
     def get_primary_attributes(self):
         return sorted(self.primary_attributes.items())
-        
 
-    
-      
+
 # Temporary Function to create a random hero
 def create_random_hero():
     myHero = Hero()

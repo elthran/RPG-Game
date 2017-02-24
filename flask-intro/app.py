@@ -109,6 +109,9 @@ def command(cmd=None):
                 myHero.equipped_items.append(item)
                 myHero.inventory.remove(item)
                 myHero.update_secondary_attributes()
+                for quest in myHero.current_quests:
+                    if quest.name == "Equipping/Unequipping" and quest.current_stage == 0:
+                        quest.advance_quest()
                 return "success", 200, {'Content-Type': 'text/plain'} #//
             if item.consumable == True:                # CONSUME ITEMS
                 myHero.consume_item(item.name)
@@ -120,10 +123,12 @@ def command(cmd=None):
             myHero.inventory.append(item)
             myHero.equipped_items.remove(item)
             myHero.update_secondary_attributes()
+            for quest in myHero.current_quests:
+                    if quest.name == "Equipping/Unequipping" and quest.current_stage == 1:
+                        quest.advance_quest()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # UPGRADE ABILITIES
-    pdb.set_trace()
     learnable_known_abilities = [ability for ability in myHero.abilities if ability.level < ability.max_level]
     for ability in learnable_known_abilities:
         if cmd == ability.name and  myHero.ability_points > 0:
@@ -164,6 +169,9 @@ def command(cmd=None):
             newItem.update_owner(myHero)
             myHero.inventory.append(newItem)
             myHero.gold -= item.buy_price
+            for quest in myHero.current_quests:
+                if quest.name == "Get Acquainted with the Blacksmith" and quest.current_stage == 1:
+                    quest.advance_quest()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # BUY FROM MARKETPLACE
@@ -192,9 +200,20 @@ def level_up():
     page_heading = "You have leveled up!"
     paragraph = "Choose how you would like to distribute your attribute points."
     if request.method == 'POST':
-        myHero.primary_attributes["Strength"] += convert_input(request.form["Attributes"])
-        #myHero.primary_attributes["Agility"] += convert_input(request.form["Agility"])
-        points_being_spent = convert_input(request.form["Attributes"])
+        myHero.primary_attributes["Strength"] += convert_input(request.form["Strength"])
+        myHero.primary_attributes["Agility"] += convert_input(request.form["Agility"])
+        myHero.primary_attributes["Resilience"] += convert_input(request.form["Resilience"])
+        myHero.primary_attributes["Vitality"] += convert_input(request.form["Vitality"])
+        #myHero.primary_attributes["Fortitude"] += convert_input(request.form["Fortitude"])
+        #myHero.primary_attributes["Reflexes"] += convert_input(request.form["Reflexes"])
+        #myHero.primary_attributes["Perception"] += convert_input(request.form["Perception"])
+        #myHero.primary_attributes["Wisdom"] += convert_input(request.form["Wisdom"])
+        #myHero.primary_attributes["Divinity"] += convert_input(request.form["Divinity"])
+        #myHero.primary_attributes["Charisma"] += convert_input(request.form["Charisma"])
+        #myHero.primary_attributes["Survivalism"] += convert_input(request.form["Survivalism"])
+        #myHero.primary_attributes["Fortuity"] += convert_input(request.form["Fortuity"])
+        points_being_spent = convert_input(request.form["Strength"]) + convert_input(request.form["Agility"]) + convert_input(request.form["Resilience"]) + convert_input(request.form["Vitality"])
+        #+ convert_input(request.form["Fortitude"] + convert_input(request.form["Reflexes"]) + convert_input(request.form["Perception"]) + convert_input(request.form["Wisdom"]) + convert_input(request.form["Divinity"]) +  convert_input(request.form["Charisma"]) + convert_input(request.form["Survivalism"]) + convert_input(request.form["Fortuity"]) 
         myHero.attribute_points -= points_being_spent
         return redirect(url_for('home'))
     return render_template('home.html', level_up=True, page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
@@ -285,8 +304,11 @@ def create_character():
     page_image = "beached"
     paragraph = "You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. A firm and inquisitive voice pierces the air."
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
-    if request.method == 'POST' and myHero.character_name == None:
-        myHero.character_name = request.form["name"]
+    if len(myHero.current_quests) == 0:
+        for quest in testing_quests:
+            myHero.current_quests.append(quest)
+    if request.method == 'POST' and myHero.name == "Unknown":
+        myHero.name = request.form["name"]
         page_image = "old_man"
         paragraph = None
         conversation = [("Stranger: ", "Where do you come from, child?")]
@@ -327,7 +349,7 @@ def battle():
         page_heading = "Not enough endurance, wait a bit!"
         return render_template('home.html', page_title=page_title, myHero=myHero, page_heading=page_heading, page_links=page_links)
 
-    myHero.current_health, game.enemy.current_health,conversation = battle_logic(myHero,game.enemy)
+    myHero.current_health,game.enemy.current_health,battle_log,battle_results = battle_logic(myHero,game.enemy)
     if myHero.current_health == 0:
         myHero.current_endurance -= required_endurance
         page_title = "Defeat!"
@@ -376,7 +398,8 @@ def battle():
             page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience. You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
 
-    return render_template('home.html', page_title=page_title, page_heading=page_heading, myHero=myHero, enemy=enemy, status_display=conversation, page_links=page_links)  # return a string
+    database.update()
+    return render_template('home.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log, battle_results=battle_results, myHero=myHero, enemy=enemy, page_links=page_links)  # return a string
 
 # this is a temp button that can call this to erase your chracter information and redirect you to the create character page
 @app.route('/reset_character')
@@ -411,6 +434,7 @@ def admin():
         myHero.attribute_points = convert_input(request.form["Attribute_points"])
         myHero.current_endurance = convert_input(request.form["Endurance"])
         myHero.update_secondary_attributes()
+        database.update()
         return redirect(url_for('home'))
 
     admin = [("Age", myHero.age),
@@ -504,24 +528,14 @@ def ability_tree(spec):
                     unknown_abilities.append(ability)
         return render_template('home.html', myHero=myHero, ability_pages=True, ability_pages_learn=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)  # return a string
     return render_template('home.html', myHero=myHero, ability_pages=True, ability_pages_use=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)  # return a string
-    
-
 
 @app.route('/quest_log')
 @login_required
 def quest_log():
+    myHero.page_refresh_character()
     paragraph = ""
     page_title = "Quest Log"
-    current_quests = myHero.current_quests
-    completed_quests = myHero.completed_quests
-    errands = myHero.errands
-    if current_quests == []:
-        current_quests = False
-    if errands == []:
-        errands = False
-    if completed_quests == []:
-        completed_quests = False
-    return render_template('home.html', myHero=myHero, journal=True, quest_log=True, page_title=page_title, current_quests=current_quests, errands=errands, completed_quests=completed_quests)  # return a string
+    return render_template('home.html', myHero=myHero, journal=True, quest_log=True, page_title=page_title)  # return a string
 
 @app.route('/bestiary/<current_monster_id>')
 @login_required
@@ -657,7 +671,7 @@ def barracks():
         page_image = "dead"
         page_links = ["","","",""]
     else:
-        page_heading = "Welcome to the arena " + myHero.character_name +"!"
+        page_heading = "Welcome to the arena " + myHero.name+"!"
         page_image = "arena"
         page_links = [("Compete in the ", "/arena","arena", ".(temporary)"), ("Pay to ", "/spar", "spar", " against the trainer."), ("Battle another ", "/under_construction", "player",".")]
     return render_template('home.html', page_title="Barracks", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links)  # return a string
@@ -689,7 +703,7 @@ def arena():
         if enemy.name == "Spider":
             enemy.items_rewarded.append((Quest_Item("Spider Leg", myHero, 50)))
         game.set_enemy(enemy)
-    page_heading = "Welcome to the arena " + myHero.character_name +"!"
+    page_heading = "Welcome to the arena " + myHero.name +"!"
     page_image = str(game.enemy.name)
     conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
                     ("Level: ", str(game.enemy.level), "Combat Details"),
@@ -710,7 +724,6 @@ def arena():
                     ("Sanctity: ", str(game.enemy.current_sanctity) + "/" + str(game.enemy.max_sanctity)),
                     ("Luck: ", str(game.enemy.luck)),
                     ("Health: ", str(game.enemy.current_health) + " / " + str(game.enemy.max_health))]
-    
     page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
     return render_template('home.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, status_display=conversation)  # return a string
 
@@ -718,6 +731,9 @@ def arena():
 @login_required
 def store(inventory):
     page_title = "Store"
+    for quest in myHero.current_quests:
+        if quest.name == "Get Acquainted with the Blacksmith" and quest.current_stage == 0:
+            quest.advance_quest()
     items_for_sale = []
     if inventory == "greeting":
         page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]
