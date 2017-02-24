@@ -159,3 +159,6 @@ all_abilities = [Ability("Determination", 5, "Increases Endurance by 3 for each 
     Religious_Ability("Wreath of Flames", 10, "Increases fire damage by 3 for each level.",
         religion="Forgoth"),
     Religious_Ability("Blessed", 10, "Increases devotion by 5 for each level.")]
+    
+all_store_items = []
+all_marketplace_items = []

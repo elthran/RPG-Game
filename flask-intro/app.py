@@ -123,6 +123,7 @@ def command(cmd=None):
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # UPGRADE ABILITIES
+    pdb.set_trace()
     learnable_known_abilities = [ability for ability in myHero.abilities if ability.level < ability.max_level]
     for ability in learnable_known_abilities:
         if cmd == ability.name and  myHero.ability_points > 0:
@@ -132,6 +133,7 @@ def command(cmd=None):
                     myHero.abilities[i].update_display()
                     myHero.ability_points -= 1
             myHero.update_secondary_attributes()
+            database.session.commit()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # LEARN NEW ABILITIES
@@ -141,21 +143,22 @@ def command(cmd=None):
             unknown_abilities.append(ability)
     for ability in unknown_abilities:
         if cmd == ability.name and myHero.ability_points > 0:
-            ability.update_owner(myHero)
             myHero.abilities.append(ability)
             myHero.update_secondary_attributes()
             myHero.ability_points -= 1
+            database.session.commit()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     #USE ABILITIES (ACTIVATED ONES)
     for ability in myHero.abilities:
         this_command = ability.name + "_use"
         if cmd == this_command:
-            ability.activate()
+            ability.cast(myHero)
+            database.session.commit()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # BUY FROM BLACKSMITH
-    for item in all_store_items:
+    for item in prebuilt_objects.all_store_items:
         if cmd == item.buy_name and myHero.gold >= item.buy_price:
             newItem = item
             newItem.update_owner(myHero)
@@ -164,7 +167,7 @@ def command(cmd=None):
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # BUY FROM MARKETPLACE
-    for item in all_marketplace_items:
+    for item in prebuilt_objects.all_marketplace_items:
         if cmd == item.buy_name and myHero.gold >= item.buy_price:
             for my_item in myHero.inventory:
                 if my_item.name == item.name:

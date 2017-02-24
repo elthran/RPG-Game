@@ -17,8 +17,6 @@ except ImportError as e:
 #Well ... ok, but for simplicity sake just pretend that that is true.
 from base_classes import Base
 import pdb
-    
-# exit('********Ability: inheritance not implemented********')
 
 class Ability(Base):
     """Ability object base class.
