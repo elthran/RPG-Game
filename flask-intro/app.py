@@ -13,7 +13,7 @@ from functools import wraps
 from combat_simulator import *
 from bestiary import *
 from database import EZDB
-from abilities import *
+# from abilities import *
 from items import Quest_Item
 import locations
 
@@ -136,7 +136,7 @@ def command(cmd=None):
 
     # LEARN NEW ABILITIES
     unknown_abilities = []
-    for ability in all_abilities:
+    for ability in prebuilt_objects.all_abilities:
         if not any(known_ability.name == ability.name for known_ability in myHero.abilities):
             unknown_abilities.append(ability)
     for ability in unknown_abilities:
@@ -486,7 +486,7 @@ def ability_tree(spec):
             else: # Add these to mastered abilities
                 mastered_abilities.append(ability)
     if myHero.ability_points > 0:
-        for ability in all_abilities:
+        for ability in prebuilt_objects.all_abilities:
             if not any(known_ability.name == ability.name for known_ability in myHero.abilities) and ability.ability_type == spec: # Create a list of unlearned abilities and it will only check abilities for the current page you are on (basic, archetype, specialization, religion)
                 if spec == "archetype": # If you are on the archetype page, we further narrow it down to your archetype and "all"
                     if ability.archetype == myHero.archetype or ability.archetype == "All":

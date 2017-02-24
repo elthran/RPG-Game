@@ -96,6 +96,9 @@ class PrimaryAttributesTestCase(unittest.TestCase):
         self.db.engine.dispose()
         if delete:
             self.db._delete_database()
+            
+    def test_assignment(self):
+        self.assertEqual("Not built", 'primary_attributes = 2')
 
     def test_increment(self):   
         self.hero.primary_attributes["Strength"] += 3

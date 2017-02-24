@@ -260,7 +260,7 @@ class Hero(Base):
         self.gold_gain_modifier = 1 # This is the percentage of gold you gain
 
         for ability in self.abilities:
-            ability.update_stats()
+            ability.update_stats(self)
         for item in self.equipped_items:
             item.update_stats()
 
