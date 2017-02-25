@@ -1,25 +1,76 @@
-class Item(object):
-    # name : Name of the Item, e.x. "power bracelet"
-    # hero : The Hero who owns the item
-	# buy_price : Price to buy the item
-	# level_req : level requirment
+try:
+    from sqlalchemy import Column, Integer, String, Boolean
+    from sqlalchemy import ForeignKey
+    from sqlalchemy.orm import relationship
+    from sqlalchemy import orm
+except ImportError:
+    exit("Open a command prompt and type: pip install sqlalchemy.")
+    
+#!Important!: Base can only be defined in ONE location and ONE location ONLY!
+#Well ... ok, but for simplicity sake just pretend that that is true.
+from base_classes import Base
+
+# exit('********Item: inheritance not implemented********')
+
+class Item(Base):
+    """Item object base class.
+    
+    A list of all items, the relationship to the Hero class is many to many.
+    Each hero can have many items and each item can be assigned multiple heroes.
+    I think this is a good idea?
+    
+    How to use:
+    name : Name of the Item, e.x. "power bracelet"
+    hero : The Hero who owns the item
+	buy_price : Price to buy the item
+	level_req : level requirment
+    """
+    __tablename__ = "items"
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True, nullable=False)
+    
+    #Marked for deletion as unnessary string manipulation.
+    buy_name = Column(String, default=name + "_buy")
+    
+    #Marked for restructuring as causes conflics with multiple heroes?
+    amount_owned = Column(Integer, default=1)
+    equiptable = Column(Boolean, default=False)
+    consumable = Column(Boolean, default=False)
+ 
+    
     def __init__(self, name, myHero, buy_price, amount_owned=1):
         self.name = name
         self.buy_name = self.name + "_buy"
         self.myHero = myHero
         self.buy_price = buy_price
         self.amount_owned = amount_owned
-        self.equippable = False
+        self.equiptable = False
         self.consumable = False
 
     def update_owner(self, myHero):
         self.myHero = myHero
+        
+    def __repr__(self): 
+        """Return string data about Item object.
+        """
+        atts = []
+        column_headers = self.__table__.columns.keys()
+        extra_attributes = [key for key in vars(self).keys() if key not in column_headers]
+        for key in column_headers:
+            atts.append('{}={}'.format(key, repr(getattr(self, key))))
+            
+        for key in sorted(extra_attributes):
+            atts.append('{}={}'.format(key, repr(getattr(self, key))))
+        
+        data = "<Item(" + ', '.join(atts) + ')>'
+        return data
 
 # Subclass of Item
-class Equippable(Item):
+class Equiptable(Item):
     def __init__(self, name, myHero, buy_price, max_durability=3, item_rating=10):
         super().__init__(name, myHero, buy_price)
-        self.equippable = True
+        self.equiptable = True
         self.broken = False
         self.max_durability = max_durability
         self.durability = self.max_durability
@@ -34,7 +85,7 @@ class Equippable(Item):
                 break
 
 # Subclass of Item
-class Weapon(Equippable):
+class Weapon(Equiptable):
     def __init__(self, name, myHero, buy_price, min_damage=0, max_damage=0, attack_speed=0):
         super().__init__(name, myHero, buy_price)
         self.min_damage = min_damage
@@ -69,7 +120,7 @@ class Two_Handed_Weapon(Weapon):
         self.two_handed_weapon = True
 
 # New Class		
-class Garment(Equippable):
+class Garment(Equiptable):
     def __init__(self, name, myHero, buy_price, health_modifier):
         super().__init__(name, myHero, buy_price)
         self.health_modifier = health_modifier
@@ -110,7 +161,7 @@ class Hand_Armour(Garment):
             self.hand_armour = True
 
 # New Class
-class Jewelry(Equippable):
+class Jewelry(Equiptable):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -140,22 +191,22 @@ class Quest_Item(Item):
     def __init__(self, name, myHero, buy_price):
         super().__init__(name, myHero, buy_price)
 
-all_store_items = [One_Handed_Weapon("Small Dagger", "Temporary", buy_price=5, min_damage=30, max_damage=60, attack_speed=1),
-                   One_Handed_Weapon("Big Dagger", "Temporary", buy_price=10, min_damage=300, max_damage=600, attack_speed=2),
-                   Shield("Small Shield", "Temporary", buy_price=10),
-                   Two_Handed_Weapon("Small Polearm", "Temporary", buy_price=5, min_damage=30, max_damage=60, attack_speed=1),
-                   Two_Handed_Weapon("Medium Polearm", "Temporary", buy_price=5, min_damage=30, max_damage=60, attack_speed=1),
-                   Leg_Armour("Medium Pants", "Temporary", 7, 25),
-                   Chest_Armour("Medium Tunic", "Temporary", 2, 25),
-                   Chest_Armour("Strong Tunic", "Temporary", 5, 250),
-                   Head_Armour("Weak Helmet", "Temporary", 2, 1),
-                   Head_Armour("Medium Helmet", "Temporary", 4, 3),
-                   Feet_Armour("Test Boots", "Temporary", 3, 3),
-                   Arm_Armour("Test Sleeves", "Temporary", 4, 5),
-                   Hand_Armour("Test Gloves", "Temporary", 5, 7),
-                   Ring("Test Ring", "Temporary", 8)]
+# all_store_items = [One_Handed_Weapon("Small Dagger", "Temporary", buy_price=5, min_damage=30, max_damage=60, attack_speed=1),
+                   # One_Handed_Weapon("Big Dagger", "Temporary", buy_price=10, min_damage=300, max_damage=600, attack_speed=2),
+                   # Shield("Small Shield", "Temporary", buy_price=10),
+                   # Two_Handed_Weapon("Small Polearm", "Temporary", buy_price=5, min_damage=30, max_damage=60, attack_speed=1),
+                   # Two_Handed_Weapon("Medium Polearm", "Temporary", buy_price=5, min_damage=30, max_damage=60, attack_speed=1),
+                   # Leg_Armour("Medium Pants", "Temporary", 7, 25),
+                   # Chest_Armour("Medium Tunic", "Temporary", 2, 25),
+                   # Chest_Armour("Strong Tunic", "Temporary", 5, 250),
+                   # Head_Armour("Weak Helmet", "Temporary", 2, 1),
+                   # Head_Armour("Medium Helmet", "Temporary", 4, 3),
+                   # Feet_Armour("Test Boots", "Temporary", 3, 3),
+                   # Arm_Armour("Test Sleeves", "Temporary", 4, 5),
+                   # Hand_Armour("Test Gloves", "Temporary", 5, 7),
+                   # Ring("Test Ring", "Temporary", 8)]
 
-all_marketplace_items = [Consumable("Minor Health Potion", "Temporary", 3, healing_amount=10),
-                         Consumable("Major Health Potion", "Temporary", 6, healing_amount=50),
-                         Consumable("Major Faith Potion", "Temporary", 6, sanctity_amount=50),
-                         Consumable("Major Awesome Max Potion", "Temporary", 6000, sanctity_amount=50)]
+# all_marketplace_items = [Consumable("Minor Health Potion", "Temporary", 3, healing_amount=10),
+                         # Consumable("Major Health Potion", "Temporary", 6, healing_amount=50),
+                         # Consumable("Major Faith Potion", "Temporary", 6, sanctity_amount=50),
+                         # Consumable("Major Awesome Max Potion", "Temporary", 6000, sanctity_amount=50)]

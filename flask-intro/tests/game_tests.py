@@ -1,47 +1,178 @@
 '''
-This program runs as a test suite for the EasyDatabase class when it is imported.
+This program runs as a test suite for the game.py module when it is imported.
 This modules is run using  :>python game_tests.py
 
 These tests should run when the module is imported.
 NOTE: every time I define a test I add it to the run_all function.
 
-I am using this tutorial https://docs.python.org/2/library/unittest.html
+I am using this tutorial https://docs.python.org/3.6/library/unittest.html
 '''
+from base_classes import Base, BaseDict
+from database import EZDB
+from game import Hero
+import complex_relationships
+import prebuilt_objects
 
-import os,sys,inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir) 
+import pdb
 
-import game
 import unittest
 
-class TestStringMethods(unittest.TestCase):
+class HeroTestCase(unittest.TestCase):
+    def setUp(self):
+        self.hero = Hero(name="Haldon")
+        self.db = EZDB('sqlite:///tests/test.db', debug=False)
 
-    def test_convert_input(self):
-        self.assertEqual(game.convert_input(2), 2)
-        self.assertEqual(game.convert_input("2"), 2)
-        self.assertEqual(game.convert_input("string"), 0)
+    def tearDown(self, delete=True):
+        self.db.session.close()
+        self.db.engine.dispose()
+        if delete:
+            self.db._delete_database()
+    
+    def rebuild_instance(self):
+        """Tidy up and rebuild database instance.
 
-    # Code given by the tutorial
-    def test_isupper(self):
-        self.assertTrue('FOO'.isupper())
-        self.assertFalse('Foo'.isupper())
+        ... otherwise you may not be retrieving the actual data
+        from the database only from memory.
+        """
+        
+        self.db.session.commit()
+        self.tearDown(delete=False)
+        self.setUp()
+            
+    def test_hero(self):
+        """Prove that hero object builds and loads properly.
+        
+        NOTE: Max_health set by Primary Attributes values.
+        NOTE2: Relationships (Abilities, inventory and primary_attributes, etc.) are accessed by the
+        self.__mapper__.relationships.keys
+        
+        I will need to update all of the other database objects to account for relationships.
+        """
+        self.db.session.add(self.hero)
+        self.db.session.commit()
+        
+        str_hero = str(self.hero)        
+        
+        self.rebuild_instance()
+        
+        hero2 = self.db.session.query(Hero).filter_by(name="Haldon").first()
+        self.assertEqual(str_hero, str(hero2))  
 
-    # Code given by the tutorial	
-    def test_split(self):
-        s = 'hello world'
-        self.assertEqual(s.split(), ['hello', 'world'])
-        # check that s.split fails when the separator is not a string
-        with self.assertRaises(TypeError):
-            s.split(2)
+    def test_current_city(self):
+        self.hero.current_world = prebuilt_objects.world
+        self.hero.current_location = prebuilt_objects.current_location
+        self.hero.current_city = prebuilt_objects.current_location
+        self.db.session.add(self.hero)
+        self.db.session.commit()
+        str_hero = str(self.hero)        
+        str_city = str(self.hero.current_city)
+        
+        self.rebuild_instance()
+        hero2 = self.db.session.query(Hero).filter_by(name="Haldon").first()
+        self.assertEqual(str_hero, str(hero2))
+        self.assertEqual(str_city, str(hero2.current_city))
+        
+    #This belongs in hero test case.
+    def testKillQuests(self):
+        
+        self.hero.kill_quests['Kill a wolf'] = "Find and kill a wolf!"
+        
+        #Convert this to a string before closing the session or it will not
+        #load the data contain in itself.
+        old_quests = str(self.hero.kill_quests)
+        
+        self.db.session.add(self.hero)
+        self.db.session.commit()
+        
+        self.tearDown(delete=False)
+        self.setUp()
+        self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
+        self.assertEqual(old_quests, str(self.hero.kill_quests))
+        
 
-def set_up():
-    test_hero = Hero()
-    test_hero.name = "Unknown"
-    test_hero.gold = 5000
-    test_hero.update_secondary_attributes()
-    test_hero.refresh_character()
-			
+class PrimaryAttributesTestCase(unittest.TestCase):
+    """Test hero primary_attributes
+
+    Tests increment
+    Tests that two heroes primary_attributes are not the same object (that one was anoying).
+    Tests that list iteration works.
+    Tests that data is retrieved as an ordered list when printing.
+    Tests this from a saving/loading perspective as well.
+    
+    NOTE: actual data order is dictionary random.
+    NOTE: query should occur using a new database object or it will simply return the old object
+    without actually pulling it from the database. I need to fix this in my other test suites.
+    """
+        
+    def setUp(self):
+        self.hero = Hero(name="Haldon")
+        self.db = EZDB('sqlite:///tests/test.db', debug=False)
+
+    def tearDown(self, delete=True):
+        self.db.session.close()
+        self.db.engine.dispose()
+        if delete:
+            self.db._delete_database()
+            
+    def rebuild_instance(self):
+        """Tidy up and rebuild database instance.
+
+        ... otherwise you may not be retrieving the actual data
+        from the database only from memory.
+        """
+        
+        self.db.session.commit()
+        self.tearDown(delete=False)
+        self.setUp()
+            
+    def test_assignment(self):
+        self.db.session.add(self.hero)
+        self.db.session.commit()
+        strength = self.hero.primary_attributes["Strength"]
+        print(self.hero.primary_attributes)
+        
+        self.rebuild_instance()
+        self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
+        self.hero.primary_attributes['Strength'] = 2
+        self.db.session.commit()
+        strength2 = self.hero.primary_attributes["Strength"]
+        print(self.hero.primary_attributes)
+        
+        self.rebuild_instance()
+        self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
+        strength3 = self.hero.primary_attributes["Strength"]
+        print(self.hero.primary_attributes)
+        
+        self.assertEqual(strength, 1)
+        self.assertEqual(strength2, 2)
+        self.assertEqual(strength3, 2)
+
+    def test_increment(self):   
+        self.hero.primary_attributes["Strength"] += 3
+        self.assertEqual(self.hero.primary_attributes["Strength"], 4)
+
+    def test_is_new_object(self):
+        hero = Hero()
+        self.assertNotEqual(id(self.hero.primary_attributes), id(hero.primary_attributes))  
+        
+    def test_increment_all(self):
+        for attribute in self.hero.primary_attributes:
+            self.hero.primary_attributes[attribute] += 1
+        self.assertEqual(str(self.hero.primary_attributes), "{'Agility': 2, 'Charisma': 2, 'Divinity': 2, 'Fortitude': 2, 'Fortuity': 2, 'Perception': 2, 'Reflexes': 2, 'Resilience': 2, 'Strength': 2, 'Survivalism': 2, 'Vitality': 2, 'Wisdom': 2}")
+    
+    def test_save_load(self):
+        #Test save/load
+        self.hero.primary_attributes["Strength"] += 3
+        self.db.session.add(self.hero)
+        self.db.session.commit()
+        
+        self.tearDown(delete=False)
+        self.setUp()
+        self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
+        self.assertEqual(self.hero.primary_attributes["Strength"], 4)
+
+    
+    
 if __name__ == '__main__':
     unittest.main()
+    

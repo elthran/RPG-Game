@@ -5,23 +5,32 @@
 #                                                                              #
 #//////////////////////////////////////////////////////////////////////////////#
 
-from game import * #Must go befor login method???
+# from game import * #Must go before login method???
+from game import Hero, Game
 # import the Flask class from the flask module
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from functools import wraps
 from combat_simulator import *
 from bestiary import *
-# from game import *
-# from database import * # Phase this out as EasyDatabase class grows.
-# Currently stilll uses update_time, add_new_user, add_new_character, update_character, fetch_character_data, get_user_id
-from database import EasyDatabase #Phase this in ...
-import database #On the way out ...
-from abilities import *
-from locations import *
-from secondary_attributes import *
-from quests import *
+from database import EZDB
+# from abilities import *
+from items import Quest_Item
+import locations
+
+#MUST be imported after all other game objects but before any of them are used.
+import complex_relationships 
+
+#Last module to be imported (of our custom ones)
+import prebuilt_objects
+
+#Marked for restructure: probably should only be used in Hero object (in game.py) directly.
+#If it is needed elsewhere the method should be moved to the Hero object.
+from secondary_attributes import * 
 import sqlite3
 import hashlib
+
+#For testing!
+import pdb
 
 
 # create the application object
@@ -45,16 +54,18 @@ def login_required(f):
 # This gets called anytime html uses <button class="command>
 @app.route('/<cmd>') # need to make sure this doesn't conflict with other routes
 def command(cmd=None):
+    print('cmd is:', repr(cmd))
     # cmd (string type)is an item name, sent from the javascript code in html
 
+    #Now handled by JavaScript code?
     #Level Up Commands
-    for attribute in myHero.primary_attributes:
-        if cmd == attribute:
-            myHero.primary_attributes[attribute] += 1
-            myHero.attribute_points -= 1
-            myHero.update_secondary_attributes()
-            myHero.refresh_character()
-            return "success", 200, {'Content-Type': 'text/plain'} #//
+    # for attribute in myHero.primary_attributes:
+        # if cmd == attribute:
+            # myHero.primary_attributes[attribute] += 1
+            # myHero.attribute_points -= 1
+            # myHero.update_secondary_attributes()
+            # myHero.refresh_character()
+            # return "success", 200, {'Content-Type': 'text/plain'} #//
     #End of Level Up Commands
     
     # TEST CODE DELETE SOON
@@ -80,7 +91,7 @@ def command(cmd=None):
     
     for item in myHero.inventory:
         if cmd == item.name:
-            if item.equippable == True:            # EQUIP ITEMS
+            if item.equiptable:            # EQUIP ITEMS
                 equipped_items_to_remove = []
                 for equipped_item in myHero.equipped_items:
                     if type(item) is Weapon:
@@ -129,30 +140,32 @@ def command(cmd=None):
                     myHero.abilities[i].update_display()
                     myHero.ability_points -= 1
             myHero.update_secondary_attributes()
+            database.update()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # LEARN NEW ABILITIES
     unknown_abilities = []
-    for ability in all_abilities:
-        if not any(known_ability.name == ability.name for known_ability in myHero.abilities):
+    for ability in prebuilt_objects.all_abilities:
+        if ability not in myHero.abilities:
             unknown_abilities.append(ability)
     for ability in unknown_abilities:
         if cmd == ability.name and myHero.ability_points > 0:
-            ability.update_owner(myHero)
             myHero.abilities.append(ability)
             myHero.update_secondary_attributes()
             myHero.ability_points -= 1
+            database.update()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     #USE ABILITIES (ACTIVATED ONES)
     for ability in myHero.abilities:
         this_command = ability.name + "_use"
         if cmd == this_command:
-            ability.activate()
+            ability.cast(myHero)
+            database.update()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # BUY FROM BLACKSMITH
-    for item in all_store_items:
+    for item in prebuilt_objects.all_store_items:
         if cmd == item.buy_name and myHero.gold >= item.buy_price:
             newItem = item
             newItem.update_owner(myHero)
@@ -164,7 +177,7 @@ def command(cmd=None):
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # BUY FROM MARKETPLACE
-    for item in all_marketplace_items:
+    for item in prebuilt_objects.all_marketplace_items:
         if cmd == item.buy_name and myHero.gold >= item.buy_price:
             for my_item in myHero.inventory:
                 if my_item.name == item.name:
@@ -204,6 +217,9 @@ def level_up():
         points_being_spent = convert_input(request.form["Strength"]) + convert_input(request.form["Agility"]) + convert_input(request.form["Resilience"]) + convert_input(request.form["Vitality"])
         #+ convert_input(request.form["Fortitude"] + convert_input(request.form["Reflexes"]) + convert_input(request.form["Perception"]) + convert_input(request.form["Wisdom"]) + convert_input(request.form["Divinity"]) +  convert_input(request.form["Charisma"]) + convert_input(request.form["Survivalism"]) + convert_input(request.form["Fortuity"]) 
         myHero.attribute_points -= points_being_spent
+        myHero.update_secondary_attributes()
+        myHero.refresh_character()
+        database.update()
         return redirect(url_for('home'))
     return render_template('home.html', level_up=True, page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
 
@@ -219,15 +235,17 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if UserDatabase.validate(username, password):
+        if database.validate(username, password):
             session['logged_in'] = True
             flash("LOG IN SUCCESSFUL")
             session['id'] = database.get_user_id(username)
-            ### I would like to find a way to get rid of this use of global variables.
-            global myHero
-            myHero = database.fetch_character_data(myHero, session)
-            ###
+            
+            #I recommend a dialogue here to select the specific hero that the user wants to play with.
+            #Or a page redirect whatever ...
+            session['hero_id'] = database.fetch_hero(username).id #Gets the hero's id.
+            
             return redirect(url_for('home'))
+        #Marked for upgrade, consider checking if user exists and redirect to account creation page.
         else:
             error = 'Invalid Credentials. Please try again.'
 
@@ -259,22 +277,23 @@ def create_account():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        temp_id = database.get_user_id(username)
-        if temp_id == -1:
-            database.add_new_user(username, password)
-            database.add_new_character("Unknown","None")
-            user_id = database.get_user_id(username)
-            database.update_character(user_id, myHero) # slightly redundant, fix laterrr
-            return redirect(url_for('login'))
-        else:
+        if database.get_user_id(username):
             error = "Username already exists!"
+        else:
+            database.add_new_user(username, password)
+            database.add_new_character(username_or_id=username)
+            # database.add_world_map_to_hero() maybe?
+            return redirect(url_for('login'))
+    database.update()
     return render_template('login.html', error=error, create_account=True)
 
 # this gets called if you press "logout"
 @app.route('/logout')
 @login_required
 def logout():
-    database.update_character(session['id'],myHero) ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
+    # pdb.set_trace()
+    myHero.refresh_character()
+    database.update() ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
     session.pop('logged_in', None)
     flash("Thank you for playing! Your have successfully logged out.")
     return redirect(url_for('login'))
@@ -291,9 +310,9 @@ def create_character():
     paragraph = "You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. A firm and inquisitive voice pierces the air."
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
     if len(myHero.current_quests) == 0:
-        for quest in testing_quests:
+        for quest in prebuilt_objects.testing_quests:
             myHero.current_quests.append(quest)
-    if request.method == 'POST' and myHero.name == "Unknown":
+    if request.method == 'POST' and myHero.name == None:
         myHero.name = request.form["name"]
         page_image = "old_man"
         paragraph = None
@@ -312,11 +331,12 @@ def create_character():
             myHero.gold += 50
         elif fathers_job == "Priest":
             myHero.primary_attributes["Divinity"] += 3
-    if myHero.name != "Unknown" and fathers_job != None:
+    if myHero.character_name != None and fathers_job != None:
         myHero.archetype = fathers_job
-        database.update_character(session['id'],myHero)
+        database.update()
         return redirect(url_for('home'))
     else:
+        database.update()
         return render_template('create_character.html', page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, conversation=conversation, display=display)  # render a template
 
 # this gets called if you fight in the arena
@@ -384,8 +404,8 @@ def battle():
             page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience. You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
 
-    database.update_character(session['id'],myHero)
-    return render_template('home.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log, battle_results=battle_results, myHero=myHero, enemy=enemy, page_links=page_links)  # return a string
+    database.update()
+    return render_template('home.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log, battle_results=battle_results, myHero=myHero, enemy=game.enemy, page_links=page_links)  # return a string
 
 # this is a temp button that can call this to erase your chracter information and redirect you to the create character page
 @app.route('/reset_character')
@@ -405,38 +425,38 @@ def admin():
     page_heading = "Use this page to set values"
     page_image = "town"
     if request.method == 'POST':
+        # pdb.set_trace()
         myHero.age = convert_input(request.form["Age"])
         myHero.current_exp = convert_input(request.form["Current_exp"])
         myHero.max_exp = convert_input(request.form["Max_exp"])
         myHero.renown = convert_input(request.form["Renown"])
         myHero.virtue = convert_input(request.form["Virtue"])
-        myHero.charisma = convert_input(request.form["Charisma"])
         myHero.devotion = convert_input(request.form["Devotion"])
         myHero.gold = convert_input(request.form["Gold"])
-        myHero.basic_ability_points = convert_input(request.form["Basic_ability_points"])
-        myHero.archetype_ability_points = convert_input(request.form["Archetype_ability_points"])
-        myHero.specialization_ability_points = convert_input(request.form["Specialization_ability_points"])
-        myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
+        myHero.ability_points = convert_input(request.form["Ability_points"])
+        # myHero.basic_ability_points = convert_input(request.form["Basic_ability_points"])
+        # myHero.archetype_ability_points = convert_input(request.form["Archetype_ability_points"])
+        # myHero.specialization_ability_points = convert_input(request.form["Specialization_ability_points"])
+        # myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
         myHero.attribute_points = convert_input(request.form["Attribute_points"])
-        myHero.current_endurance = convert_input(request.form["Endurance"])
+        myHero.primary_attributes["Divinity"] = convert_input(request.form["Divinity"])
+        myHero.primary_attributes["Fortitude"] = convert_input(request.form["Fortitude"])
         myHero.update_secondary_attributes()
-        database.update_character(session['id'],myHero)
+        myHero.refresh_character()
+        database.update()
         return redirect(url_for('home'))
 
     admin = [("Age", myHero.age),
-                          ("Current_exp", myHero.current_exp),
-                          ("Max_exp", myHero.max_exp),
-                          ("Renown", myHero.renown),
-                          ("Virtue", myHero.virtue),
-                          ("Charisma", myHero.primary_attributes["Charisma"]),
-                          ("Devotion", myHero.devotion),
-                          ("Gold", myHero.gold),
-                          ("Basic_ability_points", myHero.basic_ability_points),
-                          ("Archetype_ability_points", myHero.archetype_ability_points),
-                          ("Specialization_ability_points", myHero.specialization_ability_points),
-                          ("Pantheonic_ability_points", myHero.pantheonic_ability_points),
-                          ("Attribute_points", myHero.attribute_points),
-                          ("Endurance",myHero.current_endurance)]
+        ("Current_exp", myHero.current_exp),
+        ("Max_exp", myHero.max_exp),
+        ("Renown", myHero.renown),
+        ("Virtue", myHero.virtue),
+        ("Devotion", myHero.devotion),
+        ("Gold", myHero.gold),
+        ("Ability_points", myHero.ability_points),
+        ("Attribute_points", myHero.attribute_points),
+        ("Divinity", myHero.primary_attributes["Divinity"]),
+        ("Fortitude", myHero.primary_attributes["Fortitude"])]
 
     return render_template('home.html', page_title=page_title, page_heading=page_heading, page_image=page_image, myHero=myHero, admin=admin)  # return a string
 
@@ -446,15 +466,19 @@ def admin():
 @app.route('/home')
 @login_required
 def home():
-    #myHero = database.fetch_character_data(myHero, session)
-    myHero.update_secondary_attributes()
-    database.update_time(myHero, session)
- # initialize current_world
+    global myHero
+    myHero = database.fetch_hero(session['hero_id'])
+    database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
+    
+    # pdb.set_trace()
+    #Consider moving this to the login function? Or instantiate during "create_account?"
+    # initialize current_world
     if myHero.current_world == None:
-        game_world = game_worlds[0]
-        myHero.current_world = game_worlds[0]
+        myHero.current_world = prebuilt_objects.game_worlds[0]
+        myHero.current_location = prebuilt_objects.current_location
+        database.update()
     # If it's a new character, send them to cerate_character url
-    if myHero.name == "Unknown":
+    if myHero.character_name == None:
         return redirect(url_for('create_character'))
     # If they have leveled up, send them to level_up url
     elif myHero.attribute_points > 0:
@@ -467,49 +491,63 @@ def inventory_page():
     paragraph = ""
     page_title = "Inventory"
     for item in myHero.inventory:
-        if item.equippable:
+        if item.equiptable:
             item.check_if_improvement()
     return render_template('home.html', myHero=myHero, inventory_page=True, page_title=page_title)  # return a string
 
 @app.route('/ability_tree/<spec>')
 @login_required
 def ability_tree(spec):
+    print(spec)
     paragraph = ""
     page_title = "Abilities"
-    basic_ability_tree,archetype_ability_tree,class_ability_tree,religious_ability_tree = False, False, False, False
+    basic_ability_tree = False
+    archetype_ability_tree = False
+    class_ability_tree = False
+    religious_ability_tree = False
+    
     unknown_abilities = []
     learnable_abilities = []
     mastered_abilities = []
-    if spec == "basic":
+    
+    if spec == "Basic":
         basic_ability_tree = True
-    if spec == "archetype":
+    elif spec == "Archetype":
         archetype_ability_tree = True
-    if spec == "class":
+    elif spec == "Class":
         class_ability_tree = True
-    if spec == "religious":
+    elif spec == "Religious":
         religious_ability_tree = True
-    for ability in myHero.abilities: # Create a list of learned abilities
+        
+    # Create a list of learned abilities that match current spec.  
+    for ability in myHero.abilities: 
         if ability.ability_type == spec:
-            if ability.level < ability.max_level: # Add these to known, but non-mastered abilities
+            # Add abilities to learnable_abilities (known, but non-mastered)
+            # or mastered abilities
+            if ability.level < ability.max_level: 
                 learnable_abilities.append(ability)
-            else: # Add these to mastered abilities
+            else:
                 mastered_abilities.append(ability)
+                
     if myHero.ability_points > 0:
-        for ability in all_abilities:
-            if not any(known_ability.name == ability.name for known_ability in myHero.abilities) and ability.ability_type == spec: # Create a list of unlearned abilities and it will only check abilities for the current page you are on (basic, archetype, specialization, religion)
-                if spec == "archetype": # If you are on the archetype page, we further narrow it down to your archetype and "all"
+        for ability in prebuilt_objects.all_abilities:
+            # Create a list of unlearned abilities
+            # for the current page you are on (basic, archetype, specialization, religion)
+            if ability not in myHero.abilities and ability.type == spec: 
+                if spec == "Archetype": # If you are on the archetype page, we further narrow it down to your archetype and "all"
                     if ability.archetype == myHero.archetype or ability.archetype == "All":
                         unknown_abilities.append(ability)
-                elif spec == "class": # If you are on the specialization page, we further narrow it down to your specialization and "all"
+                elif spec == "Class": # If you are on the specialization page, we further narrow it down to your specialization and "all"
                     if ability.specialization == myHero.specialization or ability.specialization=="All":
                         unknown_abilities.append(ability)
-                elif spec == "religious": # If you are on the religion page, we further narrow it down to your religion and "all"
+                elif spec == "Religious": # If you are on the religion page, we further narrow it down to your religion and "all"
                     if ability.religion == myHero.religion or ability.religion == "All":
                         unknown_abilities.append(ability)
                 else:
-                    unknown_abilities.append(ability)
-        return render_template('home.html', myHero=myHero, ability_pages=True, ability_pages_learn=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)  # return a string
-    return render_template('home.html', myHero=myHero, ability_pages=True, ability_pages_use=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)  # return a string
+                    unknown_abilities.append(ability)            
+        return render_template('home.html', myHero=myHero, ability_pages=True, ability_pages_learn=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
+        
+    return render_template('home.html', myHero=myHero, ability_pages=True, ability_pages_use=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
 
 @app.route('/quest_log')
 @login_required
@@ -581,41 +619,69 @@ def town(town_name):
     for location in myHero.current_world.all_map_locations:
         if location.name == town_name:
             myHero.current_city = location
-    page_title = myHero.current_city.page_title
-    page_heading = myHero.current_city.page_heading
-    page_image = myHero.current_city.page_image
-    paragraph = myHero.current_city.paragraph
-    places_of_interest = myHero.current_city.places_of_interest
+            break
+
+    page_title = myHero.current_city.display.page_title
+    page_heading = myHero.current_city.display.page_heading
+    page_image = myHero.current_city.display.page_image
+    paragraph = myHero.current_city.display.paragraph
+    places_of_interest = myHero.current_city.display.places_of_interest
+    database.update()
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest )  # return a string
 
 @app.route('/Cave/<cave_name>') # Test function while experimenting with locations
 @login_required
 def cave(cave_name):
+    #Marked for refractor as ineficient if easy to understand.
+    #Maybe a search function?
+    #myHero.current_city = myHero.current_world.get_city(cave_name)?
     for location in myHero.current_world.all_map_locations:
         if location.name == cave_name:
             myHero.current_city = location
-    page_title = myHero.current_city.page_title
-    page_heading = myHero.current_city.page_heading
-    page_image = myHero.current_city.page_image
-    paragraph = myHero.current_city.paragraph
-    places_of_interest = myHero.current_city.places_of_interest
+            break
+    page_title = myHero.current_city.display.page_title
+    page_heading = myHero.current_city.display.page_heading
+    page_image = myHero.current_city.display.page_image
+    paragraph = myHero.current_city.display.paragraph
+    places_of_interest = myHero.current_city.display.places_of_interest
+    database.update()
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest)  # return a string
 
-@app.route('/World_Map/<current_world>/<location_id>') # Test function while experimenting with locations
+@app.route('/WorldMap/<current_world>/<location_id>') # Test function while experimenting with locations
 @login_required
 def world_map(current_world, location_id):
-    myHero.current_world = game_worlds[0]
-    myHero.known_locations.append(current_world)
-    print(myHero.known_locations)
-    myHero.current_world.current_location = myHero.current_world.find_location(location_id)
-    myHero.current_city = None
-    page_title = myHero.current_world.page_title
-    page_heading = myHero.current_world.page_heading
-    page_image = myHero.current_world.page_image
-    paragraph = myHero.current_world.paragraph
-    move_on_the_map = myHero.current_world.show_directions()
-    places_of_interest = myHero.current_world.places_of_interest
-    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest, move_on_the_map=move_on_the_map)  # return a string
+    """Set up World Map web page. Return html string/web page.
+    
+    I don't know where the arguments come from? Or why they are passed.
+    I will try and figure it out.
+    """
+    # pdb.set_trace()
+    
+    #Very important as current_world is a string variable and should be the object itself.
+    current_world = myHero.current_world
+    
+    #Updates current id. May be redundant. Or it may allow page to be dynamic.
+    #May have originally compensated for the lack of a database.
+    current_location = current_world.find_location(location_id)
+    
+    #Needs to be reimplemented
+    # myHero.known_locations.append(current_world)
+    myHero.current_city = None #?
+    
+    move_on_the_map = current_world.show_directions(current_location)
+    myHero.current_location = current_location
+    database.update()
+    
+    
+    #Debug Me! Use current_world.display?
+    # Check render of places_of_interest
+    page_title = current_world.display.page_title
+    page_heading = current_world.display.page_heading
+    page_image = current_world.display.page_image
+    paragraph = current_world.display.paragraph
+    places_of_interest = current_world.display.places_of_interest
+    
+    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest, move_on_the_map=move_on_the_map)  
 
 @app.route('/barracks')
 @login_required
@@ -697,13 +763,13 @@ def store(inventory):
     elif inventory == "armoury":
         page_heading = "Check out our new armour!"
         page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
-        for item in all_store_items:
+        for item in prebuilt_objects.all_store_items:
             if isinstance(item, Garment) or isinstance(item, Jewelry):
                 items_for_sale.append(item)
     elif inventory == "weaponry":
         page_heading = "Careful! Our weapons are sharp."
         page_links = [("I think I'd rather look at your ", "/store/armoury", "armour", " selection.")]
-        for item in all_store_items:
+        for item in prebuilt_objects.all_store_items:
             if isinstance(item, Weapon):
                 items_for_sale.append(item)
     page_image = "store"
@@ -791,7 +857,7 @@ def marketplace(inventory):
     elif inventory == "general":
         page_heading = "Check out our new potion!"
         page_links = [("Let me go back to the ", "/marketplace/greeting", "marketplace", " instead.")]
-        for item in all_marketplace_items:
+        for item in prebuilt_objects.all_marketplace_items:
             if isinstance(item, Consumable):
                 items_for_sale.append(item)
     return render_template('home.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
@@ -817,7 +883,11 @@ def leave_town():
 ###testing by Marlen ####
 @app.route('/')
 def main():
-    return render_template('main.html')
+    """Redirects user to a default first page
+    
+    Currently the login page.
+    """
+    return redirect(url_for('login'))
 
 
 
@@ -831,7 +901,29 @@ if __name__ == '__main__':
 
     # os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    UserDatabase = EasyDatabase('static/User.db')
+    #Marked for rename
+    #I need a better name that "database.db"
+    database = EZDB('sqlite:///static/database.db', debug=False)
+    
+    #I know there is a better way ... primary_attributes should be defined on initialization.
+    #This allows myHero to be global variable in this module/file without magic. I think.
+    myHero = Hero(gold=5000, age=7)
+    #Because hero is easier for me to type.
+    #Note: they are the same object!
+    hero = myHero
+    
+    # initialization
+    game = Game(hero)
+    game.set_enemy(monster_generator(hero.age))
+
+    # Super temporary while testing quests
+    myHero.inventory.append(Quest_Item("Wolf Pelt", myHero, 50))
+    myHero.inventory.append(Quest_Item("Spider Leg", myHero, 50))
+    myHero.inventory.append(Quest_Item("Copper Coin", myHero, 50))
+    for item in myHero.inventory:
+        item.amount_owned = 5
+    
+    
     app.run(debug=True)
 
 

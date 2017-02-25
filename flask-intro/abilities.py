@@ -5,80 +5,221 @@
 #                                                                              #
 #//////////////////////////////////////////////////////////////////////////////#
 
-class Ability(object):
-    # name : Name of the Item, e.x. "power bracelet"
-    # hero : The Hero who owns the item
-	# buy_price : Price to buy the item
-	# level_req : level requirment
-    def __init__(self, name, myHero, max_level, description, activated=False, cost=0):
+try:
+    from sqlalchemy import Column, Integer, String, Boolean
+    from sqlalchemy import ForeignKey
+    from sqlalchemy.orm import relationship
+    from sqlalchemy import orm
+except ImportError as e:
+    exit("Open a command prompt and type: pip install sqlalchemy."), e
+    
+#!Important!: Base can only be defined in ONE location and ONE location ONLY!
+#Well ... ok, but for simplicity sake just pretend that that is true.
+from base_classes import Base
+import pdb
+
+class Ability(Base):
+    """Ability object base class.
+    
+    A list of all abilities, the relationship to the Hero class is many to many.
+    Each hero can have many abilities and each abilities can be assigned multiple heros.
+    I think this is a good idea?
+    
+    How to use:
+    name : Name of the Item, e.x. "power bracelet"
+    hero : The Hero who owns the item
+	buy_price : Price to buy the item
+	level_req : level requirment
+    """
+    __tablename__ = "ability"
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True) #Maybe not neccessary?
+    level = Column(Integer)
+    max_level = Column(Integer)
+    description = Column(String) #Maybe description should be unique? use: unique=True as keyword.
+    
+    #Note: Original code used default of "Unknown"
+    #I chopped the BasicAbility class as redundant. Now I am going to have to add the fucker back in.
+    type = Column(String)
+    ability_type = orm.synonym('type')
+    
+    castable = Column(Boolean)
+    activated = orm.synonym('castable')
+    cost = Column(Integer)
+    
+    #Requirements is a One to Many relationship to self.
+    """
+    Use (pseudo-code):
+    hero.can_learn(ability)
+    if all hero.abilities are in ability.requirements.
+    """
+    ability_id = Column(Integer, ForeignKey('ability.id'))
+    requirements = relationship("Ability")
+    
+    __mapper_args__ = {
+        'polymorphic_identity':'Basic',
+        'polymorphic_on':type
+    }
+    
+    
+    def __init__(self, name, max_level, description, hero=None, castable=False, cost=0):
+        """Build a basic ability object.
+        
+        Castable=True/False denotes whether the Ability is a spell or not.
+        
+        Note: arguments (name, hero, max_level, etc.) that require input are the same as setting
+        nullable=False as a Column property.
+        Note2: can't currently set 'level' attribute.
+        Note3: Ability to Hero relationship is Many to Many. This will require
+        some major restructuring.
+        
+        Future:
+        add in 'toggleable'=True/False for abilities that can be turned on and off
+        add in active=True/False for wether the ability is turned on or off right now.
+        Or possibly extend the Ability class into a Spell Class and make a 
+        Toggleable Class that various Ablities could inherit from.
+        """
         self.name = name
-        self.myHero = myHero
         self.level = 1
         self.max_level = max_level
         self.description = description
+        self.type = "Basic"
+        self.castable = castable
+        self.cost = cost
+        
+        #Use internal method to properly add hero object to the
+        #self.heroes relationship.
+        self.add_hero(hero)
+        
+        self.init_on_load()
+        
+        # On load ... not implemented.
+    @orm.reconstructor
+    def init_on_load(self):
         self.adjective = ["I","II","III","IV", "V", "VI"]
         self.display_name = self.adjective[self.level - 1]
         self.learn_name = self.adjective[self.level]
-        self.requirements = []
-        self.ability_type = "Unknown"
-        self.activated = activated
-        self.cost = cost
 
-    def update_stats(self):
+    def update_stats(self, hero):
+        """Update a hero's stats to reflect them possessing this ability.
+        
+        Use: 
+        To update hero from inside hero class:
+        for ability in self.abilities:
+            ability.update_stats(self)
+        from outside hero class:
+        for ability in hero.abilities:
+            ability.update_stats(hero)
+        """
+        #Possibly use a dictionary + lambda function. Switch/Case
         if self.name == "Determination":
-            self.myHero.max_endurance += 3 * self.level
-        if self.name == "Salubrity":
-            self.myHero.max_health += 4 * self.level
+            hero.max_endurance += 3 * self.level
+        elif self.name == "Salubrity":
+            hero.max_health += 4 * self.level
 
-    def activate(self):
-        if self.myHero.current_sanctity < self.cost:
-            return
+    def activate(self, hero):
+        print('Moved to new function: use: ability.cast(hero)')
+        exit('Removed in favor of cast.')
+            
+    def cast(self, hero):
+        """Use the ability. Like casting a spell.
+        
+        use:
+        ability.activate(hero)
+        NOTE: returns False if spell is too expensive (cost > current_sanctity)
+        If cast is succesful then return value is True.
+        """
+        if hero.current_sanctity < self.cost:
+            return False
         else:
-            self.myHero.current_sanctity -= self.cost
-        if self.name == "Gain Gold to Test":
-            self.myHero.gold += 3 * self.level
+            hero.current_sanctity -= self.cost
+            if self.name == "Gain Gold to Test":
+                hero.gold += 3 * self.level
+            elif self.name == 'foo':
+                pass #Do some stuff.
+            return True
 
     def update_display(self):
         self.display_name = self.adjective[self.level - 1]
         if self.level < self.max_level:
             self.learn_name = self.adjective[self.level]
 
-    def update_owner(self, myHero):
-        self.myHero = myHero
-
-class Basic_Ability(Ability):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.ability_type = 'basic'
+    
+    def update_owner(self, hero):
+        print("Ability to Hero relationship is now Many to Many.")
+        print("Instead of One Hero to Many Ablities.")
+        exit("Removed in favor of add_hero and remove_hero")
+        # self.heroes = [hero]
+        
+    def add_hero(self, hero):
+        """Give a hero this ability.
+        """
+        if hero is None:
+            return
+        if hero not in self.heroes:
+            self.heroes.append(hero)
+        else:
+            raise Exception("ValueError: Hero already has this ability.")
+        
+    def remove_hero(self, hero):
+        """Remove this ability from a hero.
+        """
+        try:
+            self.heroes.remove(hero)
+        except ValueError:
+            raise Exception("ValueError: Hero doesn't have this ability")
+        
 
 class Archetype_Ability(Ability):
+    __tablename__ = "archetype_ability"
+    
+    id = Column(Integer, ForeignKey('ability.id'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity':'Archetype',
+    }
+    
     def __init__(self, *args, archetype="All", **kwargs):
+        """Build a new Archetype_Ability object.
+        
+        Note: self.type must be set in __init__ to polymorphic_identity.
+        If no __init__ method then type gets set automagically.
+        If type not set then call to 'super' overwrites type.
+        """
+        if len(args) > 3:
+            raise TypeError("__init__() takes 3 positional arguments but {} were given.".format(len(args)))
         super().__init__(*args, **kwargs)
-        self.ability_type = "archetype"
+        self.type = 'Archetype'
         self.archetype = archetype
 
 class Class_Ability(Ability):
+    __tablename__ = "class_ability"
+    
+    id = Column(Integer, ForeignKey('ability.id'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity':'Class',
+    }
     def __init__(self, *args, specialization="All", **kwargs):
+        if len(args) > 3:
+            raise TypeError("__init__() takes 3 positional arguments but {} were given.".format(len(args)))
         super().__init__(*args, **kwargs)
-        self.ability_type = "class"
+        self.type = 'Class'
         self.specialization = specialization
 
 class Religious_Ability(Ability):
+    __tablename__ = "religious_ability"
+    
+    id = Column(Integer, ForeignKey('ability.id'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity':'Religious',
+    }
     def __init__(self, *args, religion="All", **kwargs):
+        if len(args) > 3:
+            raise TypeError("__init__() takes 3 positional arguments but {} were given.".format(len(args)))
         super().__init__(*args, **kwargs)
-        self.ability_type = "religious"
+        self.type = 'Religious'
         self.religion = religion
 
-
-all_abilities = [Basic_Ability("Determination", "Null", 5, "Increases Endurance by 3 for each level."),
-                 Basic_Ability("Salubrity", "Null", 5, "Increases Health by 4 for each level."),
-                 Basic_Ability("Gain Gold to Test", "Null", 5, "Gain 3 gold for each level, every time you actvate this ability.", activated=True, cost=2),
-                 Archetype_Ability("Survivalism", "Null", 10, "Increases survivalism by 1 for each level.", "Woodsman"),
-                 Archetype_Ability("Piety", "Null", 10, "Increases divinity by 1 for each level.", "Priest"),
-                 Archetype_Ability("Sagacious", "Null", 10, "Increases experience gained by 5% for each level."),
-                 Class_Ability("Panther Aspect", "Null", 10, "Increases evade chance by 1% for each level.", "Hunter"),
-                 Class_Ability("Camouflage", "Null", 10, "Increases stealth by 1% for each level.", "Trapper"),
-                 Class_Ability("Luck", "Null", 10, "Increases luck by 2 for each level."),
-                 Religious_Ability("Iron Bark", "Null", 10, "Increases defence by 2% for each level.", "Dryarch"),
-                 Religious_Ability("Wreath of Flames", "Null", 10, "Increases fire damage by 3 for each level.", "Forgoth"),
-                 Religious_Ability("Blessed", "Null", 10, "Increases devotion by 5 for each level.")]

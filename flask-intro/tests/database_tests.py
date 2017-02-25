@@ -1,6 +1,8 @@
-from database import EasyDatabase
-from game import Hero
-import time
+from database import EZDB
+from game import Hero, User
+import locations
+import complex_relationships
+import datetime
 
 
 """
@@ -12,131 +14,162 @@ NOTE: every time I define a test I add it to the run_all function.
 
 I am using this tutorial http://docs.python-guide.org/en/latest/writing/tests/
 """
+import unittest
 
-def set_up():
-    return EasyDatabase('static/test_database.db')
-
-def tear_down(database):
-    database._delete_database()
-
-def test_EasyDatabase_init():
-    """Note yet implemented: Check if database is actually created.
-    """
-    db = set_up()
-    # print(db)
-    assert db #looks like it is supposed to ... that will be hard ... :P
-    tear_down(db)
-
-def test_add_new_user():
-    """Note yet implemented: Check if new user is added at to database.
-    """
-    db = set_up()
-    db.add_new_user('Marlen', 'Brunner') #I should be able to add a bunch of users from a text file.
-    assert 1 #Check if database has a user called Marlen with a password of Brunner in it.
-    tear_down(db)
-
-
-def test_get_user_id():
-    """Test if user is stored correctly.
-    """
-    db = set_up()
-    db.add_new_user('Marlen', 'Brunner')
-    user_id = db.get_user_id("Marlen")
-    assert user_id == 1
-    tear_down(db)
-
-def test_add_new_character():
-    """Check if character that is created has a user_id of 1.
-    """
-    db = set_up()
-    user_id = 1
-    character_name = "Haldon"
-    db.add_new_character(user_id, "Haldon", "Wizard")
-    assert db._read(user_id, character_name, read_characters_rowid=True) == 1 
-    tear_down(db)
-
-def test_validate():
-    """Test if the validate function in the Database class works.
+class DatabaseTestCase(unittest.TestCase):
+    def setUp(self):
+        self.db = EZDB('sqlite:///tests/test.db', debug=False)
     
-    NOTE: my first real unit test!
-    """
-    db = set_up()
-    username = 'Marlen'
-    password = "Brunner"
-    db.add_new_user(username, password)
-    assert db.validate(username, password) == True
-    tear_down(db)
+    def tearDown(self, delete=True):
+        self.db.session.close()
+        self.db.engine.dispose()
+        if delete:
+            self.db._delete_database()
+            
+    def rebuild_instance(self):
+        """Tidy up and rebuild database instance.
 
-def test_update_character():
-    db = set_up()
-    db.add_new_user('Marlen', 'Brunner')
-    db.add_new_character(1, "Haldon", "Wizard")
-    hero = Hero()
-    hero.user_id = 1
-    hero.character_name = "Haldon"
-    hero.archetype = "Wizard"
-    hero.age = 25
-    hero.vitality = 56
-    db.update_character(1, hero)
-    assert hero == db.fetch_character_data(hero.user_id, hero.character_name)
-    tear_down(db)
+        ... otherwise you may not be retrieving the actual data
+        from the database only from memory.
+        """
+        
+        self.db.session.commit()
+        self.tearDown(delete=False)
+        self.setUp()
 
-def test_fetch_character_data():
-    db = set_up()
-    db.add_new_user('Marlen', 'Brunner')
-    db.add_new_character(1, "Haldon", "Wizard")
-    hero = Hero()
-    hero.user_id = 1
-    hero.character_name = "Haldon"
-    hero.archetype = "Wizard"
-    hero.age = 25
-    hero.vitality = 56
-    db.update_character(1, hero)
-    assert db.fetch_character_data(hero.user_id, hero.character_name) == hero
-    tear_down(db)
+    def test_initialize(self):
+        """Check if database is actually created.
+        
+        This checks if init method throws any errors. And if a database is actually created.
+        If it doesn't then the init is assumed to be valid.
+        
+        Consider adding a check to see if file of correct name is created?
+        """
+        self.assertIsNotNone(self.db)
+
+    def test_add_new_user(self):
+        """Check if new user is added to database.
+        
+        Check if database has a user called Marlen with a password of Brunner in it.
+        
+        Considering using:
+        str_user = str(user)
+        self.assertEqual(str(user2), str_user)
+        
+        This would allow for changes in the implementation. My current way is more 
+        explicit though ...
+        """
+        self.db.add_new_user('Marlen', 'Brunner') #I should be able to add a bunch of users from a text file.
+        user = self.db.session.query(User).filter_by(id=1).first()
+        
+        self.rebuild_instance()
+        
+        user2 = self.db.session.query(User).filter_by(id=1).first()
+        self.assertEqual(str(user2), "<User(email='', heroes=[], id=1, password='8ced689733d29d5fd000c97bacd9b9d1', username='Marlen')>")
+
+
+    def test_get_user_id(self):
+        """Test if user is stored correctly.
+        
+        And can be retrieved by the databases own methods.
+        """
+        self.db.add_new_user('Marlen', 'Brunner')
+        
+        self.rebuild_instance()
+        
+        user_id = self.db.get_user_id("Marlen")
+        self.assertEqual(user_id, 1)
+        
+
+    def test_add_new_character(self):
+        """Check if characters can be created, saved and retrieved.
+
+        
+        Hero max_health is set by primary attributes.
+        Hero current health is auto set to max_health?
+        This goes for all? max/current hero attributes.
+        """
+        self.db.add_new_user('Marlen', 'Brunner')
+        self.rebuild_instance()
+        
+        user_id = 1
+        character_name = "Haldon"
+        self.db.add_new_character(user_id, "Haldon", "Wizard")
+        self.rebuild_instance()
+        self.db.add_new_character(user_id, "Haldon", "Welder")
+        
+        self.rebuild_instance()
+        welder = self.db.session.query(User).filter_by(id=1).first().heroes[1]
+        str_welder = str(welder)
+        
+        self.rebuild_instance()
+        
+        user2 = self.db.session.query(User).filter_by(id=1).first()
+        welder2 = user2.heroes[1]
+        self.assertEqual(str(welder2), str_welder)
+
+
+    def test_validate(self):
+        """Test if the validate function in the Database class works.
+        
+        NOTE: my first real unit test!
+        """
+        
+        username = 'Marlen'
+        password = "Brunner"
+        self.db.add_new_user(username, password)
+        
+        self.rebuild_instance()
+        self.assertTrue(self.db.validate(username, password))
+        
     
-def dict_diff(left, right):
-    """Tell if two dicts are the same, return differences.
+    def test_fetch_hero(self):
+        self.db.add_new_user('Marlen', 'Brunner')
+        self.db.add_new_character(1, "Haldon", "Wizard")
+        self.db.add_new_character(1, "Haldon", "Welder")
+        
+        self.rebuild_instance()
+        hero1 = self.db.fetch_hero("Marlen") #Username only
+        hero2 = self.db.fetch_hero(1) #User id only
+        hero3 = self.db.fetch_hero(character_name_or_id=1) #character id only, note providing username is redundant.
+        hero4 = self.db.fetch_hero("Marlen", "Haldon") #Username and character name
+        hero5 = self.db.fetch_hero(1, "Haldon") #User id and character name
+        
+        self.assertEqual(hero1.character_name, "Haldon")
+        self.assertEqual(hero1, hero2)
+        self.assertEqual(hero1, hero3)
+        self.assertEqual(hero1, hero4)
+        self.assertEqual(hero1, hero5)
+
+    def test_update(self):
+        """Test update function.
+        
+        NOTE: update function is now mostly redundant! Only use on program exit. 
+        The fetch_hero line actually updates the hero in the database.
+        Consider running commit on program update as well. 
+        """
+        self.db.add_new_user('Marlen', 'Brunner')
+        self.db.add_new_character(1, "Haldon", "Wizard")
+        hero = self.db.fetch_hero("Marlen", "Haldon")
+        hero.archetype = "Welder"
+        self.db.update() 
+        
+        self.rebuild_instance()
+        hero2 = self.db.fetch_hero(character_name_or_id=1)
+        self.assertEqual(hero2.archetype, "Welder")
+
+
+    def test_update_time(self):
+        """May fail on very slow machines do too slow code execution.
+        """
+        self.db.add_new_user('Marlen', 'Brunner')
+        self.db.add_new_character(1, "Haldon", "Wizard")
+        hero = self.db.fetch_hero(character_name_or_id=1)
+        hero.timestamp -= datetime.timedelta(seconds=11)
+        oldtime = hero.timestamp 
+        self.db.update_time(hero)
+        self.assertEqual(hero.current_endurance, 1)
     
-    Use: print(dict_diff(hero.__dict__, hero2.__dict__))
-    NOTE: not a test ... just used for testing.
-    """
-    diff = dict()
-    diff['left_only'] = set(left) - set(right)
-    diff['right_only'] = set(right) - set(left)
-    diff['different'] = {k for k in set(left) & set(right) if left[k]!=right[k]}
-    return diff
 
-def test_update_time():
-    db = set_up()
-    db.add_new_user('Marlen', 'Brunner')
-    db.add_new_character(1, "Haldon", "Wizard")
-    hero = Hero()
-    hero.user_id = 1
-    hero.character_name = "Haldon"
-    hero.archetype = "Wizard"
-    hero.age = 25
-    hero.vitality = 56
-    db.update_character(1, hero)
-    db.update_time(hero, 1)
-    
-    assert 1 #not implemented
-    # tear_down(db)
-
-def run_all():
-    """Run all tests in the module.
-
-    The test currently only fail if the code is broken ... not if the info is invalid.
-    I hope to use an assert statement at some point in each test to make sure the output is correct as well.
-    """
-    test_EasyDatabase_init()
-    test_add_new_user()
-    test_get_user_id()
-    test_add_new_character()
-    test_validate()
-    test_update_character()
-    test_fetch_character_data()
-    test_update_time()
-    print("No Errors, yay!")
-
-run_all()
+if __name__ == '__main__':
+    unittest.main()

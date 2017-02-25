@@ -91,10 +91,10 @@ function sumerror()
         {% if myHero.current_city %}
            <li><a href=/{{ myHero.current_city.location_type }}/{{ myHero.current_city.name }}>{{ myHero.current_city.name }}</a></li>
         {% else %}
-          <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_world.id }}>{{ myHero.current_world.location_type }}</a></li>
+          <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_location.id }}>{{ myHero.current_world.location_type }}</a></li>
         {% endif %}
         <li><a href=/quest_log>Journal</a></li>
-        <li><a href=/ability_tree/basic>Abilities</a></li>
+        <li><a href=/ability_tree/Basic>Abilities</a></li>
         <li><a href=/admin>Admin</a></li>
         <li><a href=/under_construction>Users</a></li>
         <li><a href=/logout>Logout</a></li>
@@ -120,10 +120,10 @@ function sumerror()
   <div id="content">
      <div class="nav">
      <ul>
-       <li><a href=/ability_tree/basic>Basic Skills</a></li>
-       <li><a href=/ability_tree/archetype>Archetype Advancements</a></li>
-       <li><a href=/ability_tree/class>Class Abilities</a></li>
-       <li><a href=/ability_tree/religious>Religious Blessings</a></li>
+       <li><a href=/ability_tree/Basic>Basic Skills</a></li>
+       <li><a href=/ability_tree/Archetype>Archetype Advancements</a></li>
+       <li><a href=/ability_tree/Class>Class Abilities</a></li>
+       <li><a href=/ability_tree/Religious>Religious Blessings</a></li>
      </ul>
     </div>
   </div>
@@ -153,7 +153,7 @@ function sumerror()
 
     {% if move_on_the_map %}
       *Cave at 2 and City at 5*
-      <h1>I am at {{ myHero.current_world.current_location.name }}</h1>
+      <h1>I am at {{ myHero.current_location.name }}</h1>
       {% for move in move_on_the_map %}
         <br><h1>MOVE TO <a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ move }}>{{ move }}</a></h1>
       {% endfor %}
@@ -176,7 +176,7 @@ function sumerror()
     {% endfor %}
 
     {% for town_link in places_of_interest %}
-      <h1>{{ town_link[2] }}</h1><h2><a href="{{ town_link[0] }}">{{ town_link[1] }}</a></h2>
+      <h1>{{ town_link.places[0].name }}</h1><h2><a href="{{ town_link.url }}">{{ town_link.places[0].name }}</a></h2>
     {% endfor %}
 
     {% if battle_log %}
@@ -235,8 +235,8 @@ function sumerror()
       {% endfor %}
       <h1>Inventory:</h1>
       {% for item in myHero.inventory %}  
-        <br>{% if not item.equippable %}{{ item.amount_owned }}{% endif %} {{ item.name }} {% if item.equippable %} -- Durability: {{ item.durability }}/{{ item.max_durability }}{% endif %}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp; 
-        {% if item.equippable %} 
+        <br>{% if not item.equiptable %}{{ item.amount_owned }}{% endif %} {{ item.name }} {% if item.equiptable %} -- Durability: {{ item.durability }}/{{ item.max_durability }}{% endif %}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp; 
+        {% if item.equiptable %} 
           <button class="command command-{{ item.name }}" value="{{ item.name }}">Equip</button>
         {% endif %}
         {% if item.consumable %}
@@ -376,7 +376,7 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
       <form method="post" action="" autocomplete="off">
       {% for attribute in admin %}
         <label for="name">{{ attribute[0] }}: {{ attribute[1] }}</label>
-        <input type="number" name="{{ attribute[0] }}" min="0" title="Numbers only" value=5><br>
+        <input type="number" name="{{ attribute[0] }}" min="0" title="Numbers only" value={{ attribute[1] }}><br>
       {% endfor %}
     <input class="btn btn-default" type="submit" value="Save">
       </form>
@@ -452,7 +452,7 @@ Name: {{ myHero.character_name}}
 </table>
 
 <h1>Attributes</h1><h2>
-{% for attribute,value in myHero.primary_attributes.items() %}
+{% for attribute,value in myHero.get_primary_attributes() %}
 {{ attribute }}: {{ value }}<br>
 {% endfor %}</h2>
 </h2>
@@ -483,6 +483,43 @@ Name: {{ myHero.character_name}}
     </div>
   </body>
 </html>
+<script>
+// Only run what comes next *after* the page has loaded
+addEventListener("DOMContentLoaded", function() {
+  // Grab all of the elements with a class of command
+  // (which all of the buttons we just created have)
+  var commandButtons = document.querySelectorAll(".command");
+  for (var i=0, l=commandButtons.length; i<l; i++) {
+    var button = commandButtons[i];
+    // For each button, listen for the "click" event
+    button.addEventListener("click", function(e) {
+      // When a click happens, stop the button
+      // from submitting our form (if we have one)
+      e.preventDefault();
+
+      var clickedButton = e.target;
+      var command = clickedButton.value;
+
+      // Now we need to send the data to our server
+      // without reloading the page - this is the domain of
+      // AJAX (Asynchronous JavaScript And XML)
+      // We will create a new request object
+      // and set up a handler for the response
+      var request = new XMLHttpRequest();
+      request.onload = function() {
+          // We could do more interesting things with the response
+          // or, we could ignore it entirely
+          request.responseText;
+          location.reload();
+      };
+      // We point the request at the appropriate command
+      request.open("GET", "/" + command, true);
+      // and then we send it off
+      request.send();
+    });
+  }
+}, true);
+</script>
 
 
 

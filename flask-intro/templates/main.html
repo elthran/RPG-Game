@@ -44,14 +44,16 @@ addEventListener("DOMContentLoaded", function() {
       // We will create a new request object
       // and set up a handler for the response
       var request = new XMLHttpRequest();
+      request.onload = function() {
+          // We could do more interesting things with the response
+          // or, we could ignore it entirely
+          alert(request.responseText);
+      };
       // We point the request at the appropriate command
       request.open("GET", "/" + command, true);
       // and then we send it off
       request.send();
-	  location.reload();
-	  
     });
   }
-  
 }, true);
 </script>
