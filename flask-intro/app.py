@@ -292,7 +292,7 @@ def create_account():
 @login_required
 def logout():
     # pdb.set_trace()
-    hero.refresh_character()
+    myHero.refresh_character()
     database.update() ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
     session.pop('logged_in', None)
     flash("Thank you for playing! Your have successfully logged out.")
@@ -405,7 +405,7 @@ def battle():
             page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
 
     database.update()
-    return render_template('home.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log, battle_results=battle_results, myHero=myHero, enemy=enemy, page_links=page_links)  # return a string
+    return render_template('home.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log, battle_results=battle_results, myHero=myHero, enemy=game.enemy, page_links=page_links)  # return a string
 
 # this is a temp button that can call this to erase your chracter information and redirect you to the create character page
 @app.route('/reset_character')
@@ -914,7 +914,7 @@ if __name__ == '__main__':
     
     # initialization
     game = Game(hero)
-    enemy = monster_generator(hero.age)
+    game.set_enemy(monster_generator(hero.age))
 
     # Super temporary while testing quests
     myHero.inventory.append(Quest_Item("Wolf Pelt", myHero, 50))
