@@ -1,5 +1,21 @@
+##testing##        
+from sqlalchemy import Table, MetaData, Column, Integer, String, Float, Boolean
+
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_property
+
+from sqlalchemy.exc import ArgumentError
+
+from sqlalchemy import inspect
+from sqlalchemy.orm import mapper
+
+from sqlalchemy import create_engine
+
 from base_classes import Base, BaseDict
 from secondary_attributes import *
+
+import pdb
 
 class Hero(object):
     class_attribute = 0
@@ -141,33 +157,16 @@ class Hero(object):
         
     def get_primary_attributes(self):
         return sorted(self.primary_attributes.items())
-
-
-##testing##        
-from sqlalchemy import Table, MetaData, Column, Integer, String, Float, Boolean
-
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.hybrid import hybrid_property
-
-from sqlalchemy import inspect
-from sqlalchemy.orm import mapper
-
-from sqlalchemy import create_engine
-
-
-
-
-
-metadata = MetaData()       
-
-hero = Hero()
             
             
 class BuildTable:
-    def __init__(self, obj):
+    def __init__(self, obj, metadata, tablename=''):
         self.obj = obj
-        self.tablename = BuildTable.get_table_name(obj)
+        self.metadata = metadata
+        if tablename:
+            self.tablename = tablename
+        else:
+            self.tablename = BuildTable.get_table_name(obj)
         self.column_names = BuildTable.get_column_names(obj)
         #Attributes that require extra work.
         #They might be relationships, foreign keys or children or parents or something.
@@ -179,18 +178,27 @@ class BuildTable:
         """Return a Table object.
         
         Doesn't yet accomodate relationships.
+        metadata is a bad global ...
         """
-        return Table(self.tablename, metadata,
+        return Table(self.tablename, self.metadata,
             Column('id', Integer, primary_key=True),
             *self.build_columns()
         )
+
         
     def build_columns(self):
         """Generate columns for table.
         
-        Also updates relationship attribute whichi will be implemented using recursion.
+        Also updates relationship attribute which I will be implemented using recursion.
         """
-        data = vars(self.obj)
+        data = {}
+        try:
+            data = vars(self.obj)
+        except TypeError as ex:
+            if type(self.obj) == type(dict()):
+                data = self.obj
+            else:
+                raise ex
         for name in sorted(data.keys()):
             column_type = type(data[name])
             if type(list()) == column_type:
@@ -223,17 +231,31 @@ class BuildTable:
             raise ex
             
     def get_table_name(obj):
-        return obj.__class__.__name__
+        # pdb.set_trace()
+        tablename = obj.__class__.__name__
+        if type(str()) == type(tablename):
+            return tablename
+        else:
+            raise "Your object is a base class. Pass in a tablename in __init__"
+        
+ 
+metadata = MetaData()       
+
+hero = Hero()                
                 
-meta_hero = BuildTable(hero)
+primary_attributes = {"Strength": 1, "Resilience": 1, "Vitality": 1, "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1, "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1}                
+meta_hero = BuildTable(hero, metadata=metadata)
 hero_table = meta_hero.table
 
 mapper(Hero, hero_table)
-# print(meta_hero.relationships)
+print(meta_hero.relationships)
 
-# meta_dict = BuildTable(primary_attributes)
-# dict_table = meta_dict.table
-# mapper(primary_attributes, dict_table)
+meta_dict = BuildTable(primary_attributes, metadata=metadata)
+dict_table = meta_dict.table
+pdb.set_trace()
+mapper(primary_attributes, dict_table)
+
+print(meta_dict.relationships)
 
 # address = Table('address', metadata,
             # Column('id', Integer, primary_key=True),
@@ -249,31 +271,32 @@ mapper(Hero, hero_table)
 
 
 
-# for t in metadata.sorted_tables:
-    # print("Table name: ", t.name)
-    # print("t is page_table: ", t is hero_table)
+for t in metadata.sorted_tables:
+    print("Table name: ", t.name)
+    print("t is page_table: ", t is dict_table)
 
-# for column in hero_table.columns:
-    # print("Column Table name: ", column.type)
+for column in dict_table.columns:
+    print("Column Table name: ", column.type)
 
 engine = create_engine('sqlite:///:memory:', echo=False)
-# metadata.bind = engine
-# metadata.create_all(checkfirst=True)
-Base.metadata.create_all(engine)
+metadata.bind = engine
+metadata.create_all(checkfirst=True)
+
+# Base.metadata.create_all(engine)
 
 
-primary_attributes = BaseDict({"Strength": 1, "Resilience": 1, "Vitality": 1, "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1, "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1})
+# primary_attributes = BaseDict({"Strength": 1, "Resilience": 1, "Vitality": 1, "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1, "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1})
 
 #is a one to one list the same as just having a variable equal to a Base object?
 # is primary_attributes = relationship(BaseDict, one to one) 
 # equal to
 # primary_attributes = BaseDict()?
 
-print(primary_attributes)
+# print(primary_attributes)
 
 # import pdb; pdb.set_trace()
-primary_attributes['Badassery'] = 5
-print(primary_attributes)
+# primary_attributes['Badassery'] = 5
+# print(primary_attributes)
 # print(primary_attributes.keys())
 
 

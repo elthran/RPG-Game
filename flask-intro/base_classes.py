@@ -239,6 +239,10 @@ class BaseListElement(Base):
             
 
 class BaseDict(Base):
+    """Mimic a dictionary but be storable in a database.
+    
+    
+    """
     __tablename__ = "base_dict"
     id = Column(Integer, primary_key=True)
     keys = relationship("BaseListElement", foreign_keys="[BaseListElement.dict_id_keys]")
@@ -256,7 +260,7 @@ class BaseDict(Base):
             
     @orm.reconstructor
     def rebuild_d_items(self):
-        # import pdb; pdb.set_trace()
+        # pdb.set_trace()
         self.d_items = {}
         for index in range(len(self.keys)):
             key = self.keys[index].value

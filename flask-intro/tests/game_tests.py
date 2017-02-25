@@ -72,6 +72,23 @@ class HeroTestCase(unittest.TestCase):
         self.assertEqual(str_hero, str(hero2))
         self.assertEqual(str_city, str(hero2.current_city))
         
+    #This belongs in hero test case.
+    def testKillQuests(self):
+        
+        self.hero.kill_quests['Kill a wolf'] = "Find and kill a wolf!"
+        
+        #Convert this to a string before closing the session or it will not
+        #load the data contain in itself.
+        old_quests = str(self.hero.kill_quests)
+        
+        self.db.session.add(self.hero)
+        self.db.session.commit()
+        
+        self.tearDown(delete=False)
+        self.setUp()
+        self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
+        self.assertEqual(old_quests, str(self.hero.kill_quests))
+        
 
 class PrimaryAttributesTestCase(unittest.TestCase):
     """Test hero primary_attributes
@@ -97,8 +114,38 @@ class PrimaryAttributesTestCase(unittest.TestCase):
         if delete:
             self.db._delete_database()
             
+    def rebuild_instance(self):
+        """Tidy up and rebuild database instance.
+
+        ... otherwise you may not be retrieving the actual data
+        from the database only from memory.
+        """
+        
+        self.db.session.commit()
+        self.tearDown(delete=False)
+        self.setUp()
+            
     def test_assignment(self):
-        self.assertEqual("Not built", 'primary_attributes = 2')
+        self.db.session.add(self.hero)
+        self.db.session.commit()
+        strength = self.hero.primary_attributes["Strength"]
+        print(self.hero.primary_attributes)
+        
+        self.rebuild_instance()
+        self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
+        self.hero.primary_attributes['Strength'] = 2
+        self.db.session.commit()
+        strength2 = self.hero.primary_attributes["Strength"]
+        print(self.hero.primary_attributes)
+        
+        self.rebuild_instance()
+        self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
+        strength3 = self.hero.primary_attributes["Strength"]
+        print(self.hero.primary_attributes)
+        
+        self.assertEqual(strength, 1)
+        self.assertEqual(strength2, 2)
+        self.assertEqual(strength3, 2)
 
     def test_increment(self):   
         self.hero.primary_attributes["Strength"] += 3
@@ -124,22 +171,6 @@ class PrimaryAttributesTestCase(unittest.TestCase):
         self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
         self.assertEqual(self.hero.primary_attributes["Strength"], 4)
 
-    #This belongs in hero test case.
-    def testKillQuests(self):
-        
-        self.hero.kill_quests['Kill a wolf'] = "Find and kill a wolf!"
-        
-        #Convert this to a string before closing the session or it will not
-        #load the data contain in itself.
-        old_quests = str(self.hero.kill_quests)
-        
-        self.db.session.add(self.hero)
-        self.db.session.commit()
-        
-        self.tearDown(delete=False)
-        self.setUp()
-        self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
-        self.assertEqual(old_quests, str(self.hero.kill_quests))
     
     
 if __name__ == '__main__':

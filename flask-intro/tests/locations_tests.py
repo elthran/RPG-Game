@@ -65,22 +65,24 @@ class LocationTestCase(unittest.TestCase):
         town = Town(name="Thornwall")
         self.db.session.add(town)
         self.db.session.commit()
+        str_town = str(town)
         
         self.tearDown(delete=False)
         self.setUp()
         town2 = self.db.session.query(Town).filter_by(name="Thornwall").first()
-        self.assertEqual(str(town2), "<Town(adjacent_locations=[], display=None, hero_id_current_location=None, heroes=[], id=1, map=None, map_id=None, name='Thornwall', type='Town')>")
+        self.assertEqual(str_town, str(town2))
         
     
     def test_cave(self):
         cave = Cave(name="Creepy Cave")
         self.db.session.add(cave)
         self.db.session.commit()
+        str_cave = str(cave)
         
         self.tearDown(delete=False)
         self.setUp()
         cave2 = self.db.session.query(Cave).filter_by(name="Creepy Cave").first()
-        self.assertEqual(str(cave2), "<Cave(adjacent_locations=[], display=None, hero_id_current_location=None, heroes=[], id=1, map=None, map_id=None, name='Creepy Cave', type='Cave')>")
+        self.assertEqual(str_cave, str(cave2))
     
     def test_world_map(self):
         map = WorldMap(name="Picatanin")

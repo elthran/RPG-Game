@@ -138,7 +138,6 @@ class Hero(Base):
         Possible bug ... assignment of BaseDict in __init__
         may destroy relationship?
         """
-
         self.primary_attributes = BaseDict({"Strength": 1, "Resilience": 1, "Vitality": 1,
             "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1,
             "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1})
