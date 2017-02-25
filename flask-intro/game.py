@@ -203,10 +203,8 @@ class Hero(Base):
         self.current_quests = []
         self.completed_quests = []
         self.completed_achievements = []
-        self.kill_quests = {}
         self.bestiary = []
 
-        self.known_locations = []
         self.wolf_kills = 0
     
 
@@ -217,6 +215,17 @@ class Hero(Base):
         
         See: init_on_load() in SQLAlchemy
         """
+        
+        ######Not implemented
+        self.chest_equipped = []
+        self.errands = []
+        self.current_quests = []
+        self.completed_quests = []
+        self.completed_achievements = []
+        self.bestiary = []
+
+        self.wolf_kills = 0
+        #######
 
         #Make a list of the equipped items or if none are equipt return empty list.
         self.equipped_items = [item for item in self.inventory if item.equiptable] or []
@@ -265,7 +274,7 @@ class Hero(Base):
             item.update_stats()
 
         #Marked for restructure:
-        #Move to refress character?
+        #Move to refresh_character?
         # When you update max_health, current health will also change by the same amount
         max_health_change = self.max_health - previous_max_health
         if max_health_change: 
@@ -310,6 +319,7 @@ class Hero(Base):
         # return self.__dict__ == other.__dict__
         
     def get_primary_attributes(self):
+        # pdb.set_trace()
         return sorted(self.primary_attributes.items())
 
 

@@ -54,16 +54,18 @@ def login_required(f):
 # This gets called anytime html uses <button class="command>
 @app.route('/<cmd>') # need to make sure this doesn't conflict with other routes
 def command(cmd=None):
+    print('cmd is:', repr(cmd))
     # cmd (string type)is an item name, sent from the javascript code in html
 
+    #Now handled by JavaScript code?
     #Level Up Commands
-    for attribute in myHero.primary_attributes:
-        if cmd == attribute:
-            myHero.primary_attributes[attribute] += 1
-            myHero.attribute_points -= 1
-            myHero.update_secondary_attributes()
-            myHero.refresh_character()
-            return "success", 200, {'Content-Type': 'text/plain'} #//
+    # for attribute in myHero.primary_attributes:
+        # if cmd == attribute:
+            # myHero.primary_attributes[attribute] += 1
+            # myHero.attribute_points -= 1
+            # myHero.update_secondary_attributes()
+            # myHero.refresh_character()
+            # return "success", 200, {'Content-Type': 'text/plain'} #//
     #End of Level Up Commands
     
     # TEST CODE DELETE SOON
@@ -138,20 +140,20 @@ def command(cmd=None):
                     myHero.abilities[i].update_display()
                     myHero.ability_points -= 1
             myHero.update_secondary_attributes()
-            database.session.commit()
+            database.update()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # LEARN NEW ABILITIES
     unknown_abilities = []
     for ability in prebuilt_objects.all_abilities:
-        if not any(known_ability.name == ability.name for known_ability in myHero.abilities):
+        if ability not in myHero.abilities:
             unknown_abilities.append(ability)
     for ability in unknown_abilities:
         if cmd == ability.name and myHero.ability_points > 0:
             myHero.abilities.append(ability)
             myHero.update_secondary_attributes()
             myHero.ability_points -= 1
-            database.session.commit()
+            database.update()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     #USE ABILITIES (ACTIVATED ONES)
@@ -159,7 +161,7 @@ def command(cmd=None):
         this_command = ability.name + "_use"
         if cmd == this_command:
             ability.cast(myHero)
-            database.session.commit()
+            database.update()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # BUY FROM BLACKSMITH
@@ -215,6 +217,9 @@ def level_up():
         points_being_spent = convert_input(request.form["Strength"]) + convert_input(request.form["Agility"]) + convert_input(request.form["Resilience"]) + convert_input(request.form["Vitality"])
         #+ convert_input(request.form["Fortitude"] + convert_input(request.form["Reflexes"]) + convert_input(request.form["Perception"]) + convert_input(request.form["Wisdom"]) + convert_input(request.form["Divinity"]) +  convert_input(request.form["Charisma"]) + convert_input(request.form["Survivalism"]) + convert_input(request.form["Fortuity"]) 
         myHero.attribute_points -= points_being_spent
+        myHero.update_secondary_attributes()
+        myHero.refresh_character()
+        database.update()
         return redirect(url_for('home'))
     return render_template('home.html', level_up=True, page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
 
@@ -286,7 +291,7 @@ def create_account():
 @app.route('/logout')
 @login_required
 def logout():
-    pdb.set_trace()
+    # pdb.set_trace()
     hero.refresh_character()
     database.update() ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
     session.pop('logged_in', None)
@@ -305,9 +310,9 @@ def create_character():
     paragraph = "You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. A firm and inquisitive voice pierces the air."
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
     if len(myHero.current_quests) == 0:
-        for quest in testing_quests:
+        for quest in prebuilt_objects.testing_quests:
             myHero.current_quests.append(quest)
-    if request.method == 'POST' and myHero.name == "Unknown":
+    if request.method == 'POST' and myHero.name == None:
         myHero.name = request.form["name"]
         page_image = "old_man"
         paragraph = None
@@ -331,6 +336,7 @@ def create_character():
         database.update()
         return redirect(url_for('home'))
     else:
+        database.update()
         return render_template('create_character.html', page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, conversation=conversation, display=display)  # render a template
 
 # this gets called if you fight in the arena
@@ -419,38 +425,38 @@ def admin():
     page_heading = "Use this page to set values"
     page_image = "town"
     if request.method == 'POST':
+        # pdb.set_trace()
         myHero.age = convert_input(request.form["Age"])
         myHero.current_exp = convert_input(request.form["Current_exp"])
         myHero.max_exp = convert_input(request.form["Max_exp"])
         myHero.renown = convert_input(request.form["Renown"])
         myHero.virtue = convert_input(request.form["Virtue"])
-        myHero.charisma = convert_input(request.form["Charisma"])
         myHero.devotion = convert_input(request.form["Devotion"])
         myHero.gold = convert_input(request.form["Gold"])
-        myHero.basic_ability_points = convert_input(request.form["Basic_ability_points"])
-        myHero.archetype_ability_points = convert_input(request.form["Archetype_ability_points"])
-        myHero.specialization_ability_points = convert_input(request.form["Specialization_ability_points"])
-        myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
+        myHero.ability_points = convert_input(request.form["Ability_points"])
+        # myHero.basic_ability_points = convert_input(request.form["Basic_ability_points"])
+        # myHero.archetype_ability_points = convert_input(request.form["Archetype_ability_points"])
+        # myHero.specialization_ability_points = convert_input(request.form["Specialization_ability_points"])
+        # myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
         myHero.attribute_points = convert_input(request.form["Attribute_points"])
-        myHero.current_endurance = convert_input(request.form["Endurance"])
+        myHero.primary_attributes["Divinity"] = convert_input(request.form["Divinity"])
+        myHero.primary_attributes["Fortitude"] = convert_input(request.form["Fortitude"])
         myHero.update_secondary_attributes()
+        myHero.refresh_character()
         database.update()
         return redirect(url_for('home'))
 
     admin = [("Age", myHero.age),
-                          ("Current_exp", myHero.current_exp),
-                          ("Max_exp", myHero.max_exp),
-                          ("Renown", myHero.renown),
-                          ("Virtue", myHero.virtue),
-                          ("Charisma", myHero.primary_attributes["Charisma"]),
-                          ("Devotion", myHero.devotion),
-                          ("Gold", myHero.gold),
-                          ("Basic_ability_points", myHero.basic_ability_points),
-                          ("Archetype_ability_points", myHero.archetype_ability_points),
-                          ("Specialization_ability_points", myHero.specialization_ability_points),
-                          ("Pantheonic_ability_points", myHero.pantheonic_ability_points),
-                          ("Attribute_points", myHero.attribute_points),
-                          ("Endurance",myHero.current_endurance)]
+        ("Current_exp", myHero.current_exp),
+        ("Max_exp", myHero.max_exp),
+        ("Renown", myHero.renown),
+        ("Virtue", myHero.virtue),
+        ("Devotion", myHero.devotion),
+        ("Gold", myHero.gold),
+        ("Ability_points", myHero.ability_points),
+        ("Attribute_points", myHero.attribute_points),
+        ("Divinity", myHero.primary_attributes["Divinity"]),
+        ("Fortitude", myHero.primary_attributes["Fortitude"])]
 
     return render_template('home.html', page_title=page_title, page_heading=page_heading, page_image=page_image, myHero=myHero, admin=admin)  # return a string
 
@@ -492,42 +498,56 @@ def inventory_page():
 @app.route('/ability_tree/<spec>')
 @login_required
 def ability_tree(spec):
+    print(spec)
     paragraph = ""
     page_title = "Abilities"
-    basic_ability_tree,archetype_ability_tree,class_ability_tree,religious_ability_tree = False, False, False, False
+    basic_ability_tree = False
+    archetype_ability_tree = False
+    class_ability_tree = False
+    religious_ability_tree = False
+    
     unknown_abilities = []
     learnable_abilities = []
     mastered_abilities = []
-    if spec == "basic":
+    
+    if spec == "Basic":
         basic_ability_tree = True
-    if spec == "archetype":
+    elif spec == "Archetype":
         archetype_ability_tree = True
-    if spec == "class":
+    elif spec == "Class":
         class_ability_tree = True
-    if spec == "religious":
+    elif spec == "Religious":
         religious_ability_tree = True
-    for ability in myHero.abilities: # Create a list of learned abilities
+        
+    # Create a list of learned abilities that match current spec.  
+    for ability in myHero.abilities: 
         if ability.ability_type == spec:
-            if ability.level < ability.max_level: # Add these to known, but non-mastered abilities
+            # Add abilities to learnable_abilities (known, but non-mastered)
+            # or mastered abilities
+            if ability.level < ability.max_level: 
                 learnable_abilities.append(ability)
-            else: # Add these to mastered abilities
+            else:
                 mastered_abilities.append(ability)
+                
     if myHero.ability_points > 0:
         for ability in prebuilt_objects.all_abilities:
-            if not any(known_ability.name == ability.name for known_ability in myHero.abilities) and ability.ability_type == spec: # Create a list of unlearned abilities and it will only check abilities for the current page you are on (basic, archetype, specialization, religion)
-                if spec == "archetype": # If you are on the archetype page, we further narrow it down to your archetype and "all"
+            # Create a list of unlearned abilities
+            # for the current page you are on (basic, archetype, specialization, religion)
+            if ability not in myHero.abilities and ability.type == spec: 
+                if spec == "Archetype": # If you are on the archetype page, we further narrow it down to your archetype and "all"
                     if ability.archetype == myHero.archetype or ability.archetype == "All":
                         unknown_abilities.append(ability)
-                elif spec == "class": # If you are on the specialization page, we further narrow it down to your specialization and "all"
+                elif spec == "Class": # If you are on the specialization page, we further narrow it down to your specialization and "all"
                     if ability.specialization == myHero.specialization or ability.specialization=="All":
                         unknown_abilities.append(ability)
-                elif spec == "religious": # If you are on the religion page, we further narrow it down to your religion and "all"
+                elif spec == "Religious": # If you are on the religion page, we further narrow it down to your religion and "all"
                     if ability.religion == myHero.religion or ability.religion == "All":
                         unknown_abilities.append(ability)
                 else:
-                    unknown_abilities.append(ability)
-        return render_template('home.html', myHero=myHero, ability_pages=True, ability_pages_learn=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)  # return a string
-    return render_template('home.html', myHero=myHero, ability_pages=True, ability_pages_use=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)  # return a string
+                    unknown_abilities.append(ability)            
+        return render_template('home.html', myHero=myHero, ability_pages=True, ability_pages_learn=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
+        
+    return render_template('home.html', myHero=myHero, ability_pages=True, ability_pages_use=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
 
 @app.route('/quest_log')
 @login_required
@@ -743,13 +763,13 @@ def store(inventory):
     elif inventory == "armoury":
         page_heading = "Check out our new armour!"
         page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
-        for item in all_store_items:
+        for item in prebuilt_objects.all_store_items:
             if isinstance(item, Garment) or isinstance(item, Jewelry):
                 items_for_sale.append(item)
     elif inventory == "weaponry":
         page_heading = "Careful! Our weapons are sharp."
         page_links = [("I think I'd rather look at your ", "/store/armoury", "armour", " selection.")]
-        for item in all_store_items:
+        for item in prebuilt_objects.all_store_items:
             if isinstance(item, Weapon):
                 items_for_sale.append(item)
     page_image = "store"
@@ -837,7 +857,7 @@ def marketplace(inventory):
     elif inventory == "general":
         page_heading = "Check out our new potion!"
         page_links = [("Let me go back to the ", "/marketplace/greeting", "marketplace", " instead.")]
-        for item in all_marketplace_items:
+        for item in prebuilt_objects.all_marketplace_items:
             if isinstance(item, Consumable):
                 items_for_sale.append(item)
     return render_template('home.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string

@@ -162,3 +162,4 @@ all_abilities = [Ability("Determination", 5, "Increases Endurance by 3 for each 
     
 all_store_items = []
 all_marketplace_items = []
+testing_quests = []
