@@ -96,12 +96,15 @@ function sumerror()
         <li><a href=/quest_log>Journal</a></li>
         <li><a href=/ability_tree/Basic>Abilities</a></li>
         <li><a href=/admin>Admin</a></li>
-        <li><a href=/under_construction>Users</a></li>
+        <li><a href=/display_users>Users</a></li>
         <li><a href=/logout>Logout</a></li>
         </ul>
       </div>
     </div>
 
+<!-- This is where you want to add HTML that will not be contained within the main body of the page -->
+
+<!-- This creates a list of tabs at the top of the main page -->
 {% if journal %}
   <div id="content">
      <div class="nav">
@@ -116,6 +119,7 @@ function sumerror()
   </div>
 {% endif %}
 
+<!-- This creates a list of tabs at the top of the main page -->
 {% if ability_pages_learn %}
   <div id="content">
      <div class="nav">
@@ -129,28 +133,59 @@ function sumerror()
   </div>
 {% endif %}
 
+
+<!-- This is for content that is displayed on the main page -->
  <div id="content">
 
+<!-- This calls a notification script to run if the Hero has any new quests completed -->
     {% if myHero.quest_notification %}
       <div class="popup" onclick="quest_popup()" style="color:red">You have complete a quest! (+{{ myHero.quest_notification[1] }}xp)<span class="popupachievement" id="js_popupachievement">{{ myHero.quest_notification[0] }}</span></div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
     {% endif %}
 
+<!-- You can pass page headings through with this variable-->
     {% if page_heading %}
     <h1>{{ page_heading }}</h1>
     {% endif %}
 
+<!-- You can pass a page image through with this variable -->
     {% if page_image %}
     <img src="/static/images/{{ page_image }}.jpg" alt="{{ page_image }}" style="width:304px;height:228px;">
     {% endif %}
 
+<!-- You can pass through walls of text with this variable -->
     {% if paragraph %}
     <p>{{ paragraph }}</p>
     {% endif %}
 
+<!-- You can pass through a conversation which displays character names with this variable-->
     {% for text in conversation %}
     <br><b>{{ text[0] }}</b> {{ text[1] }}<br>
     {% endfor %}
 
+<!-- This is called on the "Users" page and displays all accounts in the database -->
+    {% if display_users %}
+      <h1>Here is a list of all current users:</h1>
+      <table style="width:75%" border="1">
+        <tr>
+          <th>Account ID:</th>
+          <th>Username:</th>
+          <th>Character Name:</th>
+          <th>Age:</th>
+          <th>Timestamp:</th>
+        </tr>
+        {% for user in user_list %}
+          <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.character_name }}</td>
+            <td>{{ user.age }}</td>
+            <td>{{ user.timestamp }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% endif %}
+
+<!-- This is the world map page. It let's you move around the map -->
     {% if move_on_the_map %}
       *Cave at 2 and City at 5*
       <h1>I am at {{ myHero.current_location.name }}</h1>
@@ -159,10 +194,12 @@ function sumerror()
       {% endfor %}
     {% endif %}
 
+<!-- I forget what this does :'( -->
     {% for status in status_display %}
       <h2>{{ status[2] }}</h2><b>{{ status[0] }}</b> {{ status[1] }}
     {% endfor %}
 
+<!-- You can let a player buy things at a shop by passing the inventory through this variable -->
     {% if items_for_sale %}
       <h2>Here is our list of items:</h2>
       {% for item in items_for_sale %}
@@ -171,14 +208,17 @@ function sumerror()
       {% endfor %}        
     {% endif %}
 
+<!-- This let's you pass through HTML links with descriptions. Currently used in places such as the Town Square to navigate -->
     {% for link in page_links %}
     <h2>{{ link[0] }}<a href="{{ link[1] }}">{{ link[2] }}</a>{{ link[3] }}</h2>
     {% endfor %}
 
+<!-- I forget :'( -->
     {% for town_link in places_of_interest %}
       <h1>{{ town_link.places[0].name }}</h1><h2><a href="{{ town_link.url }}">{{ town_link.places[0].name }}</a></h2>
     {% endfor %}
 
+<!-- This displays the results of a battle and contains a script to toggle the display -->
     {% if battle_log %}
       <button onclick="battle_popup()">Toggle Battle Log</button>
       <div id="battle_log_div_id">
@@ -189,6 +229,7 @@ function sumerror()
       <br>{{ battle_results }}
     {% endif %}
 
+<!-- This is the inventory page and displays everything your character wears/owns and gives you CMD buttons to equip/unequip -->
     {% if inventory_page %}
       <h1>Equipped:</h1>
       {% for item in myHero.equipped_items %} 
@@ -245,6 +286,7 @@ function sumerror()
       {% endfor %}
     {% endif %}
 
+<!-- This is the ability page IF YOU HAVE UNSPENT points. It let's you learn/upgrade abilities -->
     {% if ability_pages_learn %}
       <br>Ability Points: {{ myHero.ability_points }}
       <h1 style="text-align:center;">Abilities</h1>
@@ -266,6 +308,7 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
         {% endfor %}
     {% endif %}
 
+<!-- This is the abilities page IF YOU DONT HAVE ability points. It lets you cast spells and see what you have learned -->
     {% if ability_pages_use %}
       <h1 style="text-align:center;">All Known Abilities</h1>
       {% for ability in learnable_abilities %}
@@ -273,15 +316,7 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
       {% endfor %}
     {% endif %}
 
-<!-- 
-    {% if level_up %}
-      You have {{ myHero.attribute_points }} points remaing to spend.<br><br>
-      {% for attribute,value in myHero.get_primary_attributes() %}
-        {{ attribute }}: {{ value }}    <button class="command command-{{ attribute }}" value="{{ attribute }}" title="{{ attribute }}">+1</button><br>
-      {% endfor %}
-    {% endif %}
--->
-
+<!-- This is the tavern and let's you choose dialogue options -->
     {% if tavern %}
       <form action="" method="post">
 	I would like to
@@ -294,6 +329,7 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
       </form>
     {% endif %}
 
+<!-- This shows the quest log within the journal -->
     {% if quest_log %}
       <h1>Current Quests</h1>
       {% for quest in myHero.current_quests %}{% if not quest.completed %}
@@ -307,6 +343,7 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
         {% endif %}{% endfor %}
      {% endif %}
 
+<!-- This shows the bestiary within the journal -->
     {% if bestiary %}
       <div class="rightside">
         {% for monster in myHero.bestiary %}
@@ -327,6 +364,7 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
         {% endif %}
     {% endif %}
 
+<!-- This shows the People Log within the journal-->
     {% if people_log %}
       <div class="rightside">
         {% for npc in npc_data %}
@@ -346,6 +384,7 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
         {% endif %}
     {% endif %}
 
+<!-- This shows the achievement log within the journal -->
     {% if achievement_log %}
       <h1>Achievements</h1>
       {% if completed_achievements %}
@@ -365,6 +404,7 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
          {% endfor %}
     {% endif %}
 
+<!-- This shows the map log within the journal -->
     {% if map_log %}
       <h1>Maps</h1>
       {% for map in myHero.known_locations %}
@@ -372,93 +412,90 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
       {% endfor %}
     {% endif %}
 
-	{% if admin %}
+<!-- This shows the admin page -->
+    {% if admin %}
       <form method="post" action="" autocomplete="off">
-      {% for attribute in admin %}
-        <label for="name">{{ attribute[0] }}: {{ attribute[1] }}</label>
-        <input type="number" name="{{ attribute[0] }}" min="0" title="Numbers only" value={{ attribute[1] }}><br>
-      {% endfor %}
-    <input class="btn btn-default" type="submit" value="Save">
+        {% for attribute in admin %}
+          <label for="name">{{ attribute[0] }}: {{ attribute[1] }}</label>
+          <input type="number" name="{{ attribute[0] }}" min="0" title="Numbers only" value={{ attribute[1] }}><br>
+        {% endfor %}
+        <input class="btn btn-default" type="submit" value="Save">
       </form>
-<h1 style="text-align:center;">Hidden Attributes</h1>
-Experience Modifier: {{ myHero.experience_gain_modifier }}<br>
-Gold Modifier: {{ myHero.gold_gain_modifier }}<br>
+      <h1 style="text-align:center;">Hidden Attributes</h1>
+      Experience Modifier: {{ myHero.experience_gain_modifier }}<br>
+      Gold Modifier: {{ myHero.gold_gain_modifier }}<br>
     {% endif %}
 
+<!-- This variable can be passed the add links to the bottom of any page -->
     {% for link in bottom_page_links %}
-    <h2>{{ link[0] }}<a href="{{ link[1] }}">{{ link[2] }}</a>{{ link[3] }}</h2>
+      <h2>{{ link[0] }}<a href="{{ link[1] }}">{{ link[2] }}</a>{{ link[3] }}</h2>
     {% endfor %}
 
-	
-	
-{% if home %}
-<p align="right"><a href="/reset_character">Reset Character</a></p>
-<h1>General Statistics</h1>
-<h2> 
-Name: {{ myHero.character_name}}
-<br>Age: {{ myHero.age }}
-<br>Archetype: {{ myHero.archetype }}
-<br>Specialization: {{ myHero.specialization }}
-<br>Religion: {{ myHero.religion }}
-<br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
-<br>Carrying Capacity: {{ myHero.current_carrying_capacity }} / {{ myHero.max_carrying_capacity }}
-<br>Gold: {{ myHero.gold }}
-<br>Endurance: {{ myHero.current_endurance }} / {{ myHero.max_endurance }}
-</h2>
+<!-- This is the Home page -->	
+  {% if home %}
+    <p align="right"><a href="/reset_character">Reset Character</a></p>
+    <h1>General Statistics</h1>
+    <h2> 
+      Name: {{ myHero.character_name}}
+      <br>Age: {{ myHero.age }}
+      <br>Archetype: {{ myHero.archetype }}
+      <br>Specialization: {{ myHero.specialization }}
+      <br>Religion: {{ myHero.religion }}
+      <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
+      <br>Carrying Capacity: {{ myHero.current_carrying_capacity }} / {{ myHero.max_carrying_capacity }}
+      <br>Gold: {{ myHero.gold }}
+      <br>Endurance: {{ myHero.current_endurance }} / {{ myHero.max_endurance }}
+    </h2>
+    <h1>Battle Statistics</h1>
+    <table style="width:50%">
+      <tr>
+        <td><h2>Damage: {{ myHero.min_damage }} - {{ myHero.max_damage }}</td>
+        <td><h2>Health: {{ myHero.current_health }} / {{ myHero.max_health }}</h2></td>
+      </tr>
+      <tr>
+        <td><h2>Attack Speed: {{myHero.attack_speed }}</h2></td>
+        <td><h2>Accuracy: {{myHero.attack_accuracy }}%</h2></td>
+      </tr>
+      <tr>
+        <td><h2>Defence: {{ myHero.defence_modifier }}%</h2></td>
+        <td><h2>Evade Chance: {{ myHero.evade_chance }}%</h2></td>
+      </tr>
+      <tr>
+        <td><h2>Critical Hit Chance: {{ myHero.critical_hit_chance }}%</h2></td>
+        <td><h2>Critical Hit Modifier: {{ myHero.critical_hit_modifier }}</h2></td>
+      </tr>
+      <tr>
+        <td><h2>First Strike: {{ myHero.first_strike }}%</h2></td>
+        <td><h2>Stealth: {{ myHero.stealth_skill }}%</h2></td>
+      </tr>
+      <tr>
+        <td><h2>Parry Chance: {{ myHero.parry_chance }}%</h2></td>
+        <td><h2>Riposte Chance: {{ myHero.riposte_chance }}%</h2></td>
+      </tr>
+      <tr>
+        <td><h2>Block Chance: {{ myHero.block_chance }}%</h2></td>
+        <td><h2>Block Reduction: {{ myHero.block_reduction }}%</h2></td>
+      </tr>
+      <tr>
+        <td><h2>Bartering Skill: {{ myHero.barter }}%</h2></td>
+        <td><h2>Oration Skills: {{ myHero.oration }}%</h2></td>
+      </tr>
+      <tr>
+        <td><h2>Sanctity: {{ myHero.current_sanctity }} / {{ myHero.max_sanctity }}</h2></td>
+        <td><h2>Faith: {{ myHero.faith }}</h2></td>
+      </tr>
+      <tr>
+        <td><h2>Knowledge: {{ myHero.knowledge }}</h2></td>
+        <td><h2>Luck: {{ myHero.luck }}%</h2></td>
+      </tr>
+    </table>
+    <h1>Attributes</h1><h2>
+    {% for attribute,value in myHero.get_primary_attributes() %}
+      {{ attribute }}: {{ value }}<br>
+    {% endfor %}</h2>
+   {% endif %}
 
-
-<h1>Battle Statistics</h1>
-<table style="width:50%">
-<tr>
-<td><h2>Damage: {{ myHero.min_damage }} - {{ myHero.max_damage }}</td>
-<td><h2>Health: {{ myHero.current_health }} / {{ myHero.max_health }}</h2></td>
-</tr>
-<tr>
-<td><h2>Attack Speed: {{myHero.attack_speed }}</h2></td>
-<td><h2>Accuracy: {{myHero.attack_accuracy }}%</h2></td>
-</tr>
-<tr>
-<td><h2>Defence: {{ myHero.defence_modifier }}%</h2></td>
-<td><h2>Evade Chance: {{ myHero.evade_chance }}%</h2></td>
-</tr>
-<tr>
-<td><h2>Critical Hit Chance: {{ myHero.critical_hit_chance }}%</h2></td>
-<td><h2>Critical Hit Modifier: {{ myHero.critical_hit_modifier }}</h2></td>
-</tr>
-<tr>
-<td><h2>First Strike: {{ myHero.first_strike }}%</h2></td>
-<td><h2>Stealth: {{ myHero.stealth_skill }}%</h2></td>
-</tr>
-<tr>
-<td><h2>Parry Chance: {{ myHero.parry_chance }}%</h2></td>
-<td><h2>Riposte Chance: {{ myHero.riposte_chance }}%</h2></td>
-</tr>
-<tr>
-<td><h2>Block Chance: {{ myHero.block_chance }}%</h2></td>
-<td><h2>Block Reduction: {{ myHero.block_reduction }}%</h2></td>
-</tr>
-<tr>
-<td><h2>Bartering Skill: {{ myHero.barter }}%</h2></td>
-<td><h2>Oration Skills: {{ myHero.oration }}%</h2></td>
-</tr>
-<tr>
-<td><h2>Sanctity: {{ myHero.current_sanctity }} / {{ myHero.max_sanctity }}</h2></td>
-<td><h2>Faith: {{ myHero.faith }}</h2></td>
-</tr>
-<tr>
-<td><h2>Knowledge: {{ myHero.knowledge }}</h2></td>
-<td><h2>Luck: {{ myHero.luck }}%</h2></td>
-</tr>
-</table>
-
-<h1>Attributes</h1><h2>
-{% for attribute,value in myHero.get_primary_attributes() %}
-{{ attribute }}: {{ value }}<br>
-{% endfor %}</h2>
-</h2>
-{% endif %}
-
-
+<!-- If you levelu p, you are redirected to this page -->
     {% if level_up %}
       You have {{ myHero.attribute_points }} points remaing to spend.<br><br><br><br>
       <form method="post" class="level_up_form">
@@ -477,12 +514,18 @@ Name: {{ myHero.character_name}}
         <output type="text" name="sumerror" id="sumerror" value="" style="color:red;" /></output>
     {% endif %}
 
+<!-- You can pass Red Error messages through this variable -->
       {% for message in get_flashed_messages() %}
         {{ message }}
       {% endfor %}
+
+<!-- This ends the main body container of the page -->
     </div>
   </body>
 </html>
+
+
+
 <script>
 // Only run what comes next *after* the page has loaded
 addEventListener("DOMContentLoaded", function() {

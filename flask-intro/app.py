@@ -460,6 +460,10 @@ def admin():
 
     return render_template('home.html', page_title=page_title, page_heading=page_heading, page_image=page_image, myHero=myHero, admin=admin)  # return a string
 
+@app.route('/display_users')	
+def display_user_page():
+	user_list = [myHero]
+	return render_template('home.html', myHero=myHero, user_list=user_list, display_users=True)
 
 ### PROFILE/DISPLAY FUNCTIONS
 
