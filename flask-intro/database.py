@@ -10,6 +10,7 @@ Mainly using the tutorial at: http://docs.sqlalchemy.org/en/latest/orm/tutorial.
 try:
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker
+    import sqlalchemy
 except ImportError as e:
     exit("Open a command prompt and type: pip install sqlalchemy."), e
 
@@ -29,6 +30,9 @@ from abilities import Ability
 from locations import Location, WorldMap, Town, Cave
 from items import Item
 import complex_relationships
+import prebuilt_objects
+
+import pdb
 
 
 #Constants#
@@ -56,6 +60,53 @@ class EZDB:
         
         self.engine = engine
         self.session = Session()
+        self.add_prebuilt_objects()
+        
+    def add_prebuilt_objects(self):
+        """Add all the predefined object into the database.
+        
+        If one is already there then igore and continue.
+        Note: each prebuilt_object must be a list.
+        NOTE2: users must come first as it somehow gets built before it gets built if it doesn't?
+        Maybe becuase .. it has a hero which has a current_world? So when current_world gets
+        built then the user gets built too? Which may mean most of my code here is redundant
+        and I only really need to build the users list?
+        """
+        for obj_list in [prebuilt_objects.users,
+                prebuilt_objects.game_worlds,
+                prebuilt_objects.all_abilities,
+                prebuilt_objects.all_store_items,
+                prebuilt_objects.all_marketplace_items,
+                prebuilt_objects.testing_quests]:
+            for obj in obj_list:
+                try:
+                    if type(User()) == type(obj):
+                        obj.password = hashlib.md5(obj.password.encode()).hexdigest()
+                    self.session.add(obj)
+                    self.session.commit()
+                except sqlalchemy.exc.IntegrityError:
+                    self.session.rollback()
+                    
+    def get_default_world(self):
+        """Get the default world for starting heroes.
+        """
+        return self.session.query(WorldMap).filter_by(name="Test_World2").first()
+    
+    
+    def get_default_location(self):
+        """Get the default location for starting heroes.
+        """
+        return self.session.query(Town).filter_by(name="Thornwall").first()
+        
+    def get_default_quests(self):
+        """Get the default quests for starting heroes.
+        
+        Quests not yet implemented.
+        NOTE: this query assumes that the test quests have 'test' in their name.
+        Some other query could of course be used.
+        """
+        return []
+        # return self.session.query(Quest).filter(Quest.name.like('%test'))
         
         
     def get_user_id(self, username):

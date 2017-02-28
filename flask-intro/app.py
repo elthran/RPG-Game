@@ -12,7 +12,7 @@ from flask import Flask, render_template, redirect, url_for, request, session, f
 from functools import wraps
 from combat_simulator import *
 from bestiary import *
-from database import EZDB
+import database
 # from abilities import *
 from items import Quest_Item
 import locations
@@ -310,7 +310,7 @@ def create_character():
     paragraph = "You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. A firm and inquisitive voice pierces the air."
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
     if len(myHero.current_quests) == 0:
-        for quest in prebuilt_objects.testing_quests:
+        for quest in database.get_default_quests():
             myHero.current_quests.append(quest)
     if request.method == 'POST' and myHero.name == None:
         myHero.name = request.form["name"]
@@ -478,8 +478,8 @@ def home():
     #Consider moving this to the login function? Or instantiate during "create_account?"
     # initialize current_world
     if myHero.current_world == None:
-        myHero.current_world = prebuilt_objects.game_worlds[0]
-        myHero.current_location = prebuilt_objects.current_location
+        myHero.current_world = database.get_default_world()
+        myHero.current_location = database.get_default_location()
         database.update()
     # If it's a new character, send them to cerate_character url
     if myHero.character_name == None:
@@ -907,7 +907,7 @@ if __name__ == '__main__':
 
     #Marked for rename
     #I need a better name that "database.db"
-    database = EZDB('sqlite:///static/database.db', debug=False)
+    database = database.EZDB('sqlite:///static/database.db', debug=False)
     
     #I know there is a better way ... primary_attributes should be defined on initialization.
     #This allows myHero to be global variable in this module/file without magic. I think.
@@ -920,13 +920,14 @@ if __name__ == '__main__':
     game = Game(hero)
     game.set_enemy(monster_generator(hero.age))
 
+    #Not implemented ... should be moved to prebuilt_objects and implemented in 
+    #database.py as get_default_quests()
     # Super temporary while testing quests
-    myHero.inventory.append(Quest_Item("Wolf Pelt", myHero, 50))
-    myHero.inventory.append(Quest_Item("Spider Leg", myHero, 50))
-    myHero.inventory.append(Quest_Item("Copper Coin", myHero, 50))
-    for item in myHero.inventory:
-        item.amount_owned = 5
-    
+    # myHero.inventory.append(Quest_Item("Wolf Pelt", myHero, 50))
+    # myHero.inventory.append(Quest_Item("Spider Leg", myHero, 50))
+    # myHero.inventory.append(Quest_Item("Copper Coin", myHero, 50))
+    # for item in myHero.inventory:
+        # item.amount_owned = 5
     
     app.run(debug=True)
 

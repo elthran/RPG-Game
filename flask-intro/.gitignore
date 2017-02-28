@@ -1,5 +1,3 @@
 __pycache__/
 *.pyc
 .editorconfig
-test_ability.py
-test_hero.py
