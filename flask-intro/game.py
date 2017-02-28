@@ -82,7 +82,7 @@ class User(Base):
 
     # def __repr__(self):
        # return "<User(username='{}', password='{}', email='{}')>" .format(
-                        # self.username, self.password, self.email)
+                        # self.username, self.password, self.email) #creation_time?
                         
                         
 class Hero(Base):
