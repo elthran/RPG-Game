@@ -175,6 +175,7 @@ class Archetype_Ability(Ability):
     __tablename__ = "archetype_ability"
     
     id = Column(Integer, ForeignKey('ability.id'), primary_key=True)
+    archetype = Column(String)
 
     __mapper_args__ = {
         'polymorphic_identity':'Archetype',
@@ -197,6 +198,7 @@ class Class_Ability(Ability):
     __tablename__ = "class_ability"
     
     id = Column(Integer, ForeignKey('ability.id'), primary_key=True)
+    specialization = Column(String)
 
     __mapper_args__ = {
         'polymorphic_identity':'Class',
@@ -212,6 +214,7 @@ class Religious_Ability(Ability):
     __tablename__ = "religious_ability"
     
     id = Column(Integer, ForeignKey('ability.id'), primary_key=True)
+    religion = Column(String)
 
     __mapper_args__ = {
         'polymorphic_identity':'Religious',

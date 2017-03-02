@@ -9,7 +9,7 @@ import pdb
 
 class AbilitiesTestCase(unittest.TestCase):
     def setUp(self):
-        self.db = EZDB('sqlite:///tests/test.db', debug=False)
+        self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
     
     def tearDown(self, delete=True):
         self.db.session.close()

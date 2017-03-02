@@ -27,7 +27,7 @@ class LocationTestCase(unittest.TestCase):
         NOTE: Bizar bug that is related to the fact that prebuilt_objects
         can only be used once. Once used in one test function it no longer exists. And so I reimport it.
         """
-        self.db = EZDB('sqlite:///tests/test.db', debug=False)
+        self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
         
         global prebuilt_objects
         imp.reload(prebuilt_objects)

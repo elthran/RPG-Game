@@ -21,7 +21,6 @@ import locations
 import complex_relationships 
 
 #Last module to be imported (of our custom ones)
-import prebuilt_objects
 
 #Marked for restructure: probably should only be used in Hero object (in game.py) directly.
 #If it is needed elsewhere the method should be moved to the Hero object.
@@ -145,7 +144,7 @@ def command(cmd=None):
 
     # LEARN NEW ABILITIES
     unknown_abilities = []
-    for ability in prebuilt_objects.all_abilities:
+    for ability in database.get_all_abilities():
         if ability not in myHero.abilities:
             unknown_abilities.append(ability)
     for ability in unknown_abilities:
@@ -165,7 +164,7 @@ def command(cmd=None):
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # BUY FROM BLACKSMITH
-    for item in prebuilt_objects.all_store_items:
+    for item in database.get_all_store_items():
         if cmd == item.buy_name and myHero.gold >= item.buy_price:
             newItem = item
             newItem.update_owner(myHero)
@@ -177,7 +176,7 @@ def command(cmd=None):
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # BUY FROM MARKETPLACE
-    for item in prebuilt_objects.all_marketplace_items:
+    for item in database.get_all_marketplace_items():
         if cmd == item.buy_name and myHero.gold >= item.buy_price:
             for my_item in myHero.inventory:
                 if my_item.name == item.name:
@@ -522,7 +521,7 @@ def ability_tree(spec):
         class_ability_tree = True
     elif spec == "Religious":
         religious_ability_tree = True
-        
+    
     # Create a list of learned abilities that match current spec.  
     for ability in myHero.abilities: 
         if ability.ability_type == spec:
@@ -534,7 +533,7 @@ def ability_tree(spec):
                 mastered_abilities.append(ability)
                 
     if myHero.ability_points > 0:
-        for ability in prebuilt_objects.all_abilities:
+        for ability in database.get_all_abilities():
             # Create a list of unlearned abilities
             # for the current page you are on (basic, archetype, specialization, religion)
             if ability not in myHero.abilities and ability.type == spec: 
@@ -767,13 +766,13 @@ def store(inventory):
     elif inventory == "armoury":
         page_heading = "Check out our new armour!"
         page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
-        for item in prebuilt_objects.all_store_items:
+        for item in database.get_all_store_items():
             if isinstance(item, Garment) or isinstance(item, Jewelry):
                 items_for_sale.append(item)
     elif inventory == "weaponry":
         page_heading = "Careful! Our weapons are sharp."
         page_links = [("I think I'd rather look at your ", "/store/armoury", "armour", " selection.")]
-        for item in prebuilt_objects.all_store_items:
+        for item in database.get_all_store_items():
             if isinstance(item, Weapon):
                 items_for_sale.append(item)
     page_image = "store"
@@ -861,7 +860,7 @@ def marketplace(inventory):
     elif inventory == "general":
         page_heading = "Check out our new potion!"
         page_links = [("Let me go back to the ", "/marketplace/greeting", "marketplace", " instead.")]
-        for item in prebuilt_objects.all_marketplace_items:
+        for item in database.get_all_marketplace_items():
             if isinstance(item, Consumable):
                 items_for_sale.append(item)
     return render_template('home.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
@@ -920,8 +919,9 @@ if __name__ == '__main__':
     game = Game(hero)
     game.set_enemy(monster_generator(hero.age))
 
-    #Not implemented ... should be moved to prebuilt_objects and implemented in 
+    #Not implemented ... should be moved to prebuilt_objects.py and implemented in 
     #database.py as get_default_quests()
+    #Quest aren't actually implement yet but they will be soon!
     # Super temporary while testing quests
     # myHero.inventory.append(Quest_Item("Wolf Pelt", myHero, 50))
     # myHero.inventory.append(Quest_Item("Spider Leg", myHero, 50))

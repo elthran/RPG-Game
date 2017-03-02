@@ -90,6 +90,25 @@ class EZDB:
                 except sqlalchemy.exc.IntegrityError:
                     self.session.rollback()
                     
+    def get_all_abilities(self):
+        """Return all abilities in the database ordered by name.
+        """
+
+        return self.session.query(Ability).order_by(Ability.name).all()
+        
+        
+    def get_all_store_items(self):
+        """Not Implemented!
+        """
+        return []
+        
+        
+    def get_all_marketplace_items(self):
+        """Not Implemented!
+        """
+        return []
+        
+                    
     def get_default_world(self):
         """Get the default world for starting heroes.
         """
