@@ -88,7 +88,6 @@ class User(Base):
 class Hero(Base):
     """Store data about the Hero/Character object.
     
-    TODO: Builds secondary_attributes on_load constructor.
     """
     __tablename__ = 'heroes'
     
@@ -138,9 +137,7 @@ class Hero(Base):
         Possible bug ... assignment of BaseDict in __init__
         may destroy relationship?
         """
-        self.primary_attributes = BaseDict({"Strength": 1, "Resilience": 1, "Vitality": 1,
-            "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1,
-            "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1})
+        self.primary_attributes = PrimaryAttribute()
 
         self.kill_quests = BaseDict()
         
@@ -320,8 +317,93 @@ class Hero(Base):
     def get_primary_attributes(self):
         # pdb.set_trace()
         return sorted(self.primary_attributes.items())
+               
+        
 
+class PrimaryAttribute(Base):
+    """Primary attribute class that stores data about a hero object.
+    
+    The primary attributes are a class attribute list.
+    Use:
+        prima = PrimaryAttribute()
+        prima.Strength = 2
+        or
+        prim["Strength"] = 2
+        print(prima.Strength)
+        print(prima["Strength")
+        
+    NOTE: This class modifies locals() which is apparently a sketchy thing to do.
+    To fix this I need to use metaclassing but I don't quite understand that yet.
+    
+    eg.
+    class MoreMeta(type):
+        def __init__(self, name, bases, attrs):
+            more = attrs.get('moreattrs')
+            if more:
+                for attr, val in more.iteritems():
+                    setattr(self, attr, val)
 
+    class MoreObject(object):
+        __metaclass__ = MoreMeta
+
+    class A(MoreObject):
+        moreattrs = {}
+        for i in '12':
+            moreattrs['title_' + i] = int(i) 
+    """
+    __tablename__ = "primary_attribute"
+    
+    id = Column(Integer, primary_key=True)
+    
+    ATTRIBUTES = ["Agility", "Charisma", "Divinity", "Fortitude", "Fortuity", "Perception", "Reflexes", 
+        "Resilience", "Strength", "Survivalism", "Vitality", "Wisdom"]
+
+    
+    for attrib in ATTRIBUTES:
+        locals()[attrib] = Column(Integer)
+    
+    def __init__(self, **kwargs):
+        """Build the initial PrimaryAttribute object.
+        
+        Set all values to 1. If key words are passed in then update the values
+        to the passed value.
+        """
+
+        for attrib in self.__class__.ATTRIBUTES:
+            setattr(self, attrib, 1)
+            
+        for key, value in kwargs:
+            setattr(self, key, value)
+            
+    def __getitem__(self, key):
+        """Allow data to be retrieve like a dictionary.
+        
+        print(self['somekey'])
+        """
+        
+        return getattr(self, key)
+            
+            
+    def __setitem__(self, key, item):
+        """Add support item assignment.
+        
+        self['somekey'] = 4
+        """
+        setattr(self, key, item)
+        
+    
+    def items(self):
+        """Returns a list of 2-tuples
+
+        Basically a dict.items() clone that looks like ([(key, value), (key, value), ...])
+        """
+        return ((key, self[key]) for key in self.__class__.ATTRIBUTES)
+        
+    def __iter__(self):
+        return (key for key in self.__class__.ATTRIBUTES)
+                  
+                  
+                  
 # Temporary Function to create a random hero
 def create_random_hero():
     myHero = Hero()

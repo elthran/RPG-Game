@@ -9,7 +9,7 @@ I am using this tutorial https://docs.python.org/3.6/library/unittest.html
 '''
 from base_classes import Base, BaseDict
 from database import EZDB
-from game import Hero
+from game import Hero, PrimaryAttribute
 import complex_relationships
 import prebuilt_objects
 
@@ -20,7 +20,7 @@ import unittest
 class HeroTestCase(unittest.TestCase):
     def setUp(self):
         self.hero = Hero(name="Haldon")
-        self.db = EZDB('sqlite:///tests/test.db', debug=False)
+        self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
 
     def tearDown(self, delete=True):
         self.db.session.close()
@@ -79,16 +79,23 @@ class HeroTestCase(unittest.TestCase):
         
         #Convert this to a string before closing the session or it will not
         #load the data contain in itself.
-        old_quests = str(self.hero.kill_quests)
         
         self.db.session.add(self.hero)
         self.db.session.commit()
+        old_quests = str(self.hero.kill_quests)
         
-        self.tearDown(delete=False)
-        self.setUp()
+        self.rebuild_instance
         self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
         self.assertEqual(old_quests, str(self.hero.kill_quests))
         
+    def testPrimaryAttributes(self):
+        self.db.session.add(self.hero)
+        self.db.session.commit()
+        str_primary_attributes = str(self.hero.primary_attributes)
+        
+        self.rebuild_instance()
+        self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
+        self.assertEqual(str_primary_attributes, str(self.hero.primary_attributes))
 
 class PrimaryAttributesTestCase(unittest.TestCase):
     """Test hero primary_attributes
@@ -105,8 +112,8 @@ class PrimaryAttributesTestCase(unittest.TestCase):
     """
         
     def setUp(self):
-        self.hero = Hero(name="Haldon")
-        self.db = EZDB('sqlite:///tests/test.db', debug=False)
+        self.primary_attributes = PrimaryAttribute()
+        self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
 
     def tearDown(self, delete=True):
         self.db.session.close()
@@ -126,51 +133,49 @@ class PrimaryAttributesTestCase(unittest.TestCase):
         self.setUp()
             
     def test_assignment(self):
-        self.db.session.add(self.hero)
+        self.db.session.add(self.primary_attributes)
         self.db.session.commit()
-        strength = self.hero.primary_attributes["Strength"]
-        print(self.hero.primary_attributes)
+        strength = self.primary_attributes.Strength
         
         self.rebuild_instance()
-        self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
-        self.hero.primary_attributes['Strength'] = 2
+        self.primary_attributes = self.db.session.query(PrimaryAttribute).filter_by(id=1).first()
+        self.primary_attributes.Strength = 2
         self.db.session.commit()
-        strength2 = self.hero.primary_attributes["Strength"]
-        print(self.hero.primary_attributes)
+        strength2 = self.primary_attributes.Strength
         
         self.rebuild_instance()
-        self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
-        strength3 = self.hero.primary_attributes["Strength"]
-        print(self.hero.primary_attributes)
+        self.primary_attributes = self.db.session.query(PrimaryAttribute).filter_by(id=1).first()
+        strength3 = self.primary_attributes.Strength
         
         self.assertEqual(strength, 1)
         self.assertEqual(strength2, 2)
         self.assertEqual(strength3, 2)
 
-    def test_increment(self):   
-        self.hero.primary_attributes["Strength"] += 3
-        self.assertEqual(self.hero.primary_attributes["Strength"], 4)
-
-    def test_is_new_object(self):
-        hero = Hero()
-        self.assertNotEqual(id(self.hero.primary_attributes), id(hero.primary_attributes))  
-        
-    def test_increment_all(self):
-        for attribute in self.hero.primary_attributes:
-            self.hero.primary_attributes[attribute] += 1
-        self.assertEqual(str(self.hero.primary_attributes), "{'Agility': 2, 'Charisma': 2, 'Divinity': 2, 'Fortitude': 2, 'Fortuity': 2, 'Perception': 2, 'Reflexes': 2, 'Resilience': 2, 'Strength': 2, 'Survivalism': 2, 'Vitality': 2, 'Wisdom': 2}")
-    
-    def test_save_load(self):
-        #Test save/load
-        self.hero.primary_attributes["Strength"] += 3
-        self.db.session.add(self.hero)
+    def test_increment(self):
+        self.db.session.add(self.primary_attributes)
+        strength = self.primary_attributes.Strength
+        self.primary_attributes["Strength"] += 3
         self.db.session.commit()
         
-        self.tearDown(delete=False)
-        self.setUp()
-        self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
-        self.assertEqual(self.hero.primary_attributes["Strength"], 4)
+        self.rebuild_instance()
+        self.primary_attributes = self.db.session.query(PrimaryAttribute).filter_by(id=1).first()
+        
+        self.assertEqual(self.primary_attributes["Strength"], 4)
 
+    def test_is_new_object(self):
+        primary_attributes = PrimaryAttribute()
+        self.assertNotEqual(id(self.primary_attributes), id(primary_attributes))  
+        
+    def test_increment_all(self):
+        self.db.session.add(self.primary_attributes)
+        for attribute in self.primary_attributes:
+            self.primary_attributes[attribute] += 1
+        self.db.session.commit()
+        str_primary_attributes = str(self.primary_attributes)
+        
+        self.rebuild_instance()
+        self.primary_attributes = self.db.session.query(PrimaryAttribute).filter_by(id=1).first()    
+        self.assertEqual(str_primary_attributes, str(self.primary_attributes))
     
     
 if __name__ == '__main__':

@@ -160,8 +160,20 @@ class Hero(object):
             
             
 class BuildTable:
+    # def __new__(cls):
+        # return self.obj, cls
+
     def __init__(self, obj, metadata, tablename=''):
         self.obj = obj
+        try:
+            obj.__dict__
+        except AttributeError:
+            print()
+            print("Some kind of base case.")
+            print("Your object is a base class. Pass in a tablename in __init__")
+            print("build a new class that uses this class as a dict of itself?")
+            print()
+        
         self.metadata = metadata
         if tablename:
             self.tablename = tablename
@@ -173,6 +185,7 @@ class BuildTable:
         #Or just basic lists, or dicts or booleans
         self.relationships = {'lists': [], 'dicts': [], 'nones': []}
         self.table = self.build_table()
+        
         
     def build_table(self):
         """Return a Table object.
@@ -217,7 +230,8 @@ class BuildTable:
                 yield Column(name, Boolean, default=data[name])
             else:
                 raise TypeError("Can't yet handle type {}".format(type(data[name])))
-        
+
+
     def get_column_names(obj):
         """Get column names for a given object.
         
@@ -231,19 +245,16 @@ class BuildTable:
             raise ex
             
     def get_table_name(obj):
-        # pdb.set_trace()
-        tablename = obj.__class__.__name__
-        if type(str()) == type(tablename):
-            return tablename
-        else:
-            raise "Your object is a base class. Pass in a tablename in __init__"
+        return obj.__class__.__name__
+        
         
  
 metadata = MetaData()       
 
 hero = Hero()                
                 
-primary_attributes = {"Strength": 1, "Resilience": 1, "Vitality": 1, "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1, "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1}                
+primary_attributes = {"Strength": 1, "Resilience": 1, "Vitality": 1, "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1, "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1}
+                
 meta_hero = BuildTable(hero, metadata=metadata)
 hero_table = meta_hero.table
 
@@ -252,7 +263,7 @@ print(meta_hero.relationships)
 
 meta_dict = BuildTable(primary_attributes, metadata=metadata)
 dict_table = meta_dict.table
-pdb.set_trace()
+# pdb.set_trace()
 mapper(primary_attributes, dict_table)
 
 print(meta_dict.relationships)
@@ -276,7 +287,7 @@ for t in metadata.sorted_tables:
     print("t is page_table: ", t is dict_table)
 
 for column in dict_table.columns:
-    print("Column Table name: ", column.type)
+    print("Column Table name: {}, type: {}".format(column.name, column.type))
 
 engine = create_engine('sqlite:///:memory:', echo=False)
 metadata.bind = engine

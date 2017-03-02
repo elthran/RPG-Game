@@ -47,7 +47,7 @@ class EZDB:
     This class allows you to use the old game methods with modern SQLAlchemy.
     At some point it may be worth using SQLAlchemy directly.
     """
-    def __init__(self, database='sqlite:///:memory:', debug=True):
+    def __init__(self, database='sqlite:///:memory:', debug=True, testing=False):
         """Create a basic sqlalchemy engine and session.
         
         Attribute "file_name" is used to find location of database for python.
@@ -62,7 +62,8 @@ class EZDB:
         
         self.engine = engine
         self.session = Session()
-        self.add_prebuilt_objects()
+        if not testing:
+            self.add_prebuilt_objects()
         
     def add_prebuilt_objects(self):
         """Add all the predefined object into the database.

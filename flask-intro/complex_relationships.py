@@ -65,11 +65,9 @@ items.Item.hero_id = Column(Integer, ForeignKey("heroes.id"))
 game.Hero.inventory = relationship("Item", order_by="Item.name", backref="myHero")
 
 #One Hero -> one primary_attribute dict
-base_classes.BaseDict.hero_id_primary_attr = Column(Integer, ForeignKey('heroes.id'))
-base_classes.BaseDict.primary_attr_hero = relationship("Hero",
-    backref=backref("primary_attributes", uselist=False), foreign_keys="[BaseDict.hero_id_primary_attr]")
-# game.Hero.primary_attributes = relationship("BaseDict", uselist=False, 
-    # foreign_keys="[BaseDict.hero_id_primary_attr]")
+game.PrimaryAttribute.hero_id = Column(Integer, ForeignKey('heroes.id'))
+game.Hero.primary_attributes = relationship("PrimaryAttribute", uselist=False)
+
 
 #One Hero -> one quest list?
 #Quest list is not quests? So like it should really be Many to Many? Each Hero can have Many Quests
