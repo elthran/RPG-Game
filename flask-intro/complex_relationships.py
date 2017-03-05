@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, Table
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import backref
+from sqlalchemy import orm
 
 import game
 import locations
@@ -89,6 +90,7 @@ heroes_to_quests = Table('heroes_to_quests', Base.metadata,
 )
 
 game.Hero.active_quests = relationship("Quest", secondary=heroes_to_quests, backref='active_heroes')
+game.Hero.current_quests = orm.synonym('active_quests')
 game.Hero.completed_quests = relationship("Quest", secondary=heroes_to_quests, backref='completed_heroes')
 
 

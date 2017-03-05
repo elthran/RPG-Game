@@ -212,7 +212,6 @@ class Hero(Base):
         ######Not implemented
         self.chest_equipped = []
         self.errands = []
-        self.current_quests = []
         self.completed_quests = []
         self.completed_achievements = []
         self.bestiary = []

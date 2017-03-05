@@ -1,6 +1,7 @@
 from locations import Location, Cave, Town, WorldMap, Display
 from abilities import Ability, Archetype_Ability, Class_Ability, Religious_Ability
 from game import User, Hero
+from quests import Quest
 import complex_relationships #MUST be imported last.
 
 """
@@ -163,7 +164,16 @@ all_abilities = [Ability("Determination", 5, "Increases Endurance by 3 for each 
     
 all_store_items = []
 all_marketplace_items = []
-testing_quests = []
+
+###########
+#Quests
+##########
+quest1 = Quest("Get Acquainted with the Blacksmith", "Go talk to the blacksmith.")
+quest1.next_quests.append(Quest("Get Acquainted with the Blacksmith", "Buy your first item.", reward_xp=7))
+quest2 = Quest("Equipping/Unequipping", "Equip any item.")
+quest2.next_quests.append(Quest("Equipping/Unequipping", "Unequip any item."))
+        
+testing_quests = [quest1, quest2] #Which is really 4 quests.
 
 ##########
 #Users (and heroes)
@@ -174,6 +184,6 @@ when prebuilt_objects are preloaded into the database.
 ##########
 marlen = User(username="marlen", password="brunner")
 haldon = Hero(name="Haldon", fathers_job="Priest", current_world=world, current_location=town, gold = 5000)
-haldon.current_quests = testing_quests
+haldon.active_quests = testing_quests
 marlen.heroes = [haldon]
 users = [marlen]
