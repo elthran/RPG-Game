@@ -61,11 +61,11 @@ class DatabaseTestCase(unittest.TestCase):
         """
         self.db.add_new_user('Marlen', 'Brunner') #I should be able to add a bunch of users from a text file.
         user = self.db.session.query(User).filter_by(id=1).first()
-        
+        str_user = str(user)
         self.rebuild_instance()
         
         user2 = self.db.session.query(User).filter_by(id=1).first()
-        self.assertEqual(str(user2), "<User(email='', heroes=[], id=1, password='8ced689733d29d5fd000c97bacd9b9d1', username='Marlen')>")
+        self.assertEqual(str(user2), str_user)
 
 
     def test_get_user_id(self):

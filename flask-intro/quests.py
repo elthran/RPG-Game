@@ -12,6 +12,8 @@ Considerations:
         calculate the bonus from.) The multiplier should increase for each stage completed.
     A quest must have a description.
     A quest must have a name (which should be unique?).
+    A quest must be able to have multiple start points.
+    A quest must be able to have multiple exit points.
 
 Methods:
     A quest must be able to advance to the next _relavant_ stage.
@@ -42,32 +44,41 @@ Promblems:
     And completed quests can keep track of how many times a quest can be completed?
 """
 
+from sqlalchemy import Table, Column, Integer, String, Boolean
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+from sqlalchemy import orm
+
+from base_classes import Base
+import pdb
+
 quest_to_quest = Table("quest_to_quest", Base.metadata,
     Column("past_quest_id", Integer, ForeignKey("quest.id"), primary_key=True),
     Column("next_quest_id", Integer, ForeignKey("quest.id"), primary_key=True)
 )
 
-class Quest(object):
+class Quest(Base):
     """A class to describe quest objects that can be stored in a database.
     
     'multiplier' is an internal variable as is 'completed'.
     'multiplier' is a saved and calculated variable, each time a quest is completed
     the next quest in the quest path has this multiplier + 1.
     
-    Considering removing final_stage attribute in favor of calculating final_stage
-    as when next_quests == []
+    Final stage is when next_quests == [].
+    Initial stage is when past_quests == [].
+    If quest is added to hero.active quests ... it default finds the initial stage?
+    Or should the coder _have_ to add the initial stage?
     
-    Hero object relates to quest via 'quests' list.
-    in that list there are:
-        'active=True, completed=False' quests (quests the hero can complete)
-        'completed=True, activate=False' quests (quests the hero has complete) and
-        'active=False, completed=False' quests (quests the hero will be able to do
-            when they complete some of their active quests)
+    
+    Hero object relates to quests via active_quests and completed_quests.
+    Hero quests can be either active or completed?
+    
+    Are relationships sets?
     """
     __tablename__ = "quest"
     
     id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True)
+    name = Column(String)
     
     description = Column(String)
     current_description = orm.synonym('description')
@@ -77,9 +88,6 @@ class Quest(object):
     multiplier = Column(Integer)
     stage_count = orm.synonym('multiplier')
     display_stage = orm.synonym('multiplier')
-
-    active = Column(Boolean) 
-    completed = Column(Boolean)
     
     next_quests = relationship("Quest",
         secondary=quest_to_quest,
@@ -87,25 +95,23 @@ class Quest(object):
         secondaryjoin=id==quest_to_quest.c.next_quest_id,
         backref="past_quests")
     
-    def __init__(self, name, description, heroes=[], reward_xp=3, active=False):
+    def __init__(self, name, description, active_heroes=[], reward_xp=3, active=False):
         """Build a new Quest object.
         
         Heroes is must be a list. 
         To add a single hero at initialization use:
-            Quest('Kill a wolf', 'Find and slay a wolf!', heroes=[hero])
+            Quest('Kill a wolf', 'Find and slay a wolf!', active_heroes=[hero])
         """
         
         self.name = name
         self.description = description
         
-        self.heroes = heroes
+        self.active_heroes = active_heroes
         self.reward_xp = reward_xp
         self.multiplier = 1 # Rebuild as multiplier? Counts up from the start?
-        self.active = active
-        
-        self.completed = False
 
-            
+    #Considering:
+    #Split this and connected methods between hero object and quest object.
     def advance_quest(self, hero, next_quest=None):
         """Move to the next quest in the quest path.
         
@@ -123,31 +129,22 @@ class Quest(object):
             else:
                 error quest named 'next_quest_name' not in this quest path
                 
-        Hero object relates to quest via 'quests' list.
-        in that list there are:
-            'active=True, completed=False' quests (quests the hero can complete)
-            'completed=True, activate=False' quests (quests the hero has complete) and
-            'active=False, completed=False' quests (quests the hero will be able to do
-                when they complete some of their active quests)
+        
         """
-        if hero not in self.heroes:
-            exit("This hero doesn't have this quest.")
         
         self.reward_hero(hero)
-        self.mark_completed()
-        self.activate_next_quest(next_quest)
+        self.mark_completed(hero)
+        self.activate_next_quest(next_quest, hero)
                 
-    def activate_next_quest(self, quest):
+    def activate_next_quest(self, next_quest, hero):
         """Activate the next quest in the series if possible.
         
         If not hard fail ...? I sugguest improving this to a custom exception at some point.
         """
-        if quest:
+        if next_quest:
             quest += self.multiplier
-            quest.activate()
-        elif next_quest not in self.next_quests:
-            print("The valid next quests are: {}".format(self.next_quests))
-            exit("This is not a valid next quest.")
+            quest.activate(hero)
+            
     
     def reward_hero(self, hero):
         """Pay out xp to hero on stage completion.
@@ -159,58 +156,31 @@ class Quest(object):
         hero.quest_notification = (self.name, self.reward_xp)
         
                 
-    def mark_completed(self):
+    def mark_completed(self, hero):
         """Set completed flag and deactivate quest.
         
         Deactivate this quest. Quest is assumed to be active before.
         """
-        self.active = False
-        self.compteted = True
-    
-            
-    def update_owner(self, hero):
-        print("Quest to Hero relationship is now Many to Many.")
-        print("Instead of One Hero to Many Quests.")
-        exit("Removed in favor of add_hero and remove_hero")
-        # self.heroes = [hero]
-        
-        
-    def add_hero(self, hero):
-        """Give a hero this quest.
-        """
-        if hero is None:
-            return
-        if hero not in self.heroes:
-            self.heroes.append(hero)
-        else:
-            raise Exception("ValueError: Hero already has this ability.")
-        
-        
-    def remove_hero(self, hero):
-        """Remove this quest from a hero.
-        """
-        try:
-            self.heroes.remove(hero)
-        except ValueError:
-            raise Exception("ValueError: Hero doesn't have this ability")
+        self.active_heroes.remove(hero)
+        self.completed_heroes.append(hero)
             
             
-    def activate(self):
+    def activate(self, hero):
         """Use to activate the first quest in a series.
         
-        hero.quests[4].activate()
-        Considering:
-            maybe should activate_series_by_name
-        and quest object should have a series_name attribute
-        that is the same for all elements in a series?
         """
-        self.active = True    
+        self.active_heroes.append(hero)   
+        
 
 # class Primary_Quest(Quest):
     # def __init__(self, *args, **kwargs):
         # super().__init__(*args, **kwargs)
 
-
-quest1 = Quest("Get Acquainted with the Blacksmith", myHero, stages=2, stage_descriptions=["Go talk to the blacksmith.", "Buy your first item."], reward_xp=7)
-        
-testing_quests = [Quest("Get Acquainted with the Blacksmith", myHero, stages=2, stage_descriptions=["Go talk to the blacksmith.", "Buy your first item."], reward_xp=7), Quest("Equipping/Unequipping", myHero, stages=2, stage_descriptions=["Equip any item.", "Unequip any item."])]
+if __name__ == "__main__":        
+    quest1 = Quest("Get Acquainted with the Blacksmith", "Go talk to the blacksmith.")
+    quest1.next_quests.append(Quest("Get Acquainted with the Blacksmith", "Buy your first item.", reward_xp=7))
+    quest2 = Quest("Equipping/Unequipping", "Equip any item.")
+    quest2.next_quests.append(Quest("Equipping/Unequipping", "Unequip any item."))
+            
+    testing_quests = [quest1, quest2] #Which is really 4 quests.
+    # pdb.set_trace()

@@ -3,12 +3,15 @@ from base_classes import Base
 from sqlalchemy import Column, Integer, Table
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref
+
 import game
 import locations
 import abilities
 import items
+import quests
 
-from sqlalchemy.orm import backref
+import pdb
 
 ###########
 #Hero relationships
@@ -68,13 +71,26 @@ game.Hero.inventory = relationship("Item", order_by="Item.name", backref="myHero
 game.PrimaryAttribute.hero_id = Column(Integer, ForeignKey('heroes.id'))
 game.Hero.primary_attributes = relationship("PrimaryAttribute", uselist=False)
 
-
 #One Hero -> one quest list?
 #Quest list is not quests? So like it should really be Many to Many? Each Hero can have Many Quests
 #and each Quest can be held by Many Heroes.
 base_classes.BaseDict.hero_id_kill_quests = Column(Integer, ForeignKey('heroes.id'))
 base_classes.BaseDict.kill_quests_hero = relationship("Hero", 
     backref=backref("kill_quests", uselist=False), foreign_keys="[BaseDict.hero_id_kill_quests]")
+    
+    
+#Heroes to Quests.
+#Hero object relates to quests via active_quests and completed_quests.
+#Hero quests can be either active or completed?
+#quest.heroes is a set! Now how do I do that? Or is it implicit in relationships?
+heroes_to_quests = Table('heroes_to_quests', Base.metadata,
+    Column('heroes_id', Integer, ForeignKey('heroes.id')),
+    Column('quests_id', Integer, ForeignKey('quest.id'))
+)
+
+game.Hero.active_quests = relationship("Quest", secondary=heroes_to_quests, backref='active_heroes')
+game.Hero.completed_quests = relationship("Quest", secondary=heroes_to_quests, backref='completed_heroes')
+
 
 #############
 #Location relationships

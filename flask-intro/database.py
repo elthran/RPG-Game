@@ -29,6 +29,7 @@ from game import User, Hero
 from abilities import Ability
 from locations import Location, WorldMap, Town, Cave
 from items import Item
+from quests import Quest
 import complex_relationships
 import prebuilt_objects
 

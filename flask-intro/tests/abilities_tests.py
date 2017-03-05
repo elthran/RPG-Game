@@ -1,5 +1,4 @@
 from database import EZDB
-import abilities
 from game import Hero
 from abilities import Ability, Archetype_Ability, Class_Ability, Religious_Ability
 import complex_relationships
