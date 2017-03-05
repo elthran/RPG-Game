@@ -461,8 +461,8 @@ def admin():
 
 @app.route('/display_users')	
 def display_user_page():
-	user_list = database.session.query(User).order_by(User.id).all()
-	return render_template('home.html', myHero=myHero, user_list=user_list)
+	users = database.session.query(User).order_by(User.id).all()
+	return render_template('home.html', myHero=myHero, users=users)
 
 ### PROFILE/DISPLAY FUNCTIONS
 

@@ -79,11 +79,8 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
     email = Column(String)
-
-    # def __repr__(self):
-       # return "<User(username='{}', password='{}', email='{}')>" .format(
-                        # self.username, self.password, self.email) #creation_time?
-                        
+    timestamp = Column(DateTime)
+                    
                         
 class Hero(Base):
     """Store data about the Hero/Character object.

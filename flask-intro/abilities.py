@@ -119,8 +119,7 @@ class Ability(Base):
             hero.max_health += 4 * self.level
 
     def activate(self, hero):
-        print('Moved to new function: use: ability.cast(hero)')
-        exit('Removed in favor of cast.')
+        return self.cast(hero)
             
     def cast(self, hero):
         """Use the ability. Like casting a spell.

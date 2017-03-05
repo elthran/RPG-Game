@@ -163,7 +163,7 @@ function sumerror()
     {% endfor %}
 
 <!-- This is called on the "Users" page and displays all accounts in the database -->
-    {% if user_list %}
+    {% if users %}
       <h1>Here is a list of all current users:</h1>
       <table style="width:75%" border="1">
         <tr>
@@ -173,13 +173,13 @@ function sumerror()
           <th>Age:</th>
           <th>Timestamp:</th>
         </tr>
-        {% for this_user in user_list %}
+        {% for user in users %}
           <tr>
-            <td>{{ this_user.id }}</td>
-            <td>{{ this_user.username }}</td>
-            <td>{{ this_user.heroes[0].character_name }}</td>
-            <td>{{ this_user.heroes[0].age }}</td>
-            <td>{{ this_user.heroes[0].timestamp }}</td>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.heroes[0].character_name }}</td>
+            <td>{{ user.heroes[0].age }}</td>
+            <td>{{ user.timestamp }}</td>
           </tr>
         {% endfor %}
       </table>

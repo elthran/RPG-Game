@@ -85,6 +85,7 @@ class EZDB:
                 try:
                     if type(User()) == type(obj):
                         obj.password = hashlib.md5(obj.password.encode()).hexdigest()
+                        obj.timestamp = EZDB.now()
                     self.session.add(obj)
                     self.session.commit()
                 except sqlalchemy.exc.IntegrityError:
@@ -151,7 +152,8 @@ class EZDB:
         """
         
         hashed_password = hashlib.md5(password.encode()).hexdigest()
-        self.session.add(User(username=username, password=hashed_password, email=email))
+        self.session.add(User(username=username, password=hashed_password, email=email,
+            timestamp=EZDB.now()))
         self.session.commit()
         
     def add_new_character(self, username_or_id, character_name=None, archetype=None):
