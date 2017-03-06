@@ -47,6 +47,7 @@ Promblems:
 from sqlalchemy import Table, Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm import validates
 from sqlalchemy import orm
 
 from base_classes import Base
@@ -72,8 +73,10 @@ class Quest(Base):
     
     Hero object relates to quests via active_quests and completed_quests.
     Hero quests can be either active or completed?
+    @validates functions:
+        Prevent quest being both active and completed at the same time.
     
-    Are relationships sets?
+    Relationships are set ... but a commit must occur between adding in each new element.
     """
     __tablename__ = "quest"
     
@@ -109,7 +112,23 @@ class Quest(Base):
         self.active_heroes = active_heroes
         self.reward_xp = reward_xp
         self.multiplier = 1 # Rebuild as multiplier? Counts up from the start?
+        
+        
+    @validates('active_heroes')
+    def validate_active_heroes(self, key, hero):
+        """Prevent quest being both active and completed at the same time.
+        """
+        assert hero not in self.completed_heroes
+        return hero 
 
+    @validates('completed_heroes')
+    def validate_completed_heroes(self, key, hero):
+        """Prevent quest being both active and completed at the same time.
+        """
+        assert hero not in self.active_heroes
+        return hero 
+        
+        
     #Considering:
     #Split this and connected methods between hero object and quest object.
     def advance_quest(self, hero, next_quest=None):

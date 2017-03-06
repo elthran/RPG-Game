@@ -125,12 +125,11 @@ class EZDB:
     def get_default_quests(self):
         """Get the default quests for starting heroes.
         
-        Quests not yet implemented.
-        NOTE: this query assumes that the test quests have 'test' in their name.
-        Some other query could of course be used.
+        Currently gets quests id's 1 and 3, these are start of two testing quests
+        located prebuilt_object.py
         """
-        return []
-        # return self.session.query(Quest).filter(Quest.name.like('%test'))
+
+        return self.session.query(Quest).filter(Quest.id.in_((1,3))).all()
         
         
     def get_user_id(self, username):

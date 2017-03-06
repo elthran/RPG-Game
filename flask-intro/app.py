@@ -13,9 +13,7 @@ from functools import wraps
 from combat_simulator import *
 from bestiary import *
 import database
-# from abilities import *
 from items import Quest_Item
-import locations
 
 #MUST be imported after all other game objects but before any of them are used.
 import complex_relationships 
@@ -309,6 +307,7 @@ def create_character():
     paragraph = "You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. A firm and inquisitive voice pierces the air."
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
     if len(myHero.current_quests) == 0:
+        pdb.set_trace()
         for quest in database.get_default_quests():
             myHero.current_quests.append(quest)
     if request.method == 'POST' and myHero.name == None:

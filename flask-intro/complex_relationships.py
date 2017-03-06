@@ -84,14 +84,20 @@ base_classes.BaseDict.kill_quests_hero = relationship("Hero",
 #Hero object relates to quests via active_quests and completed_quests.
 #Hero quests can be either active or completed?
 #quest.heroes is a set! Now how do I do that? Or is it implicit in relationships?
-heroes_to_quests = Table('heroes_to_quests', Base.metadata,
+active_heroes_to_quests = Table('active_heroes_to_quests', Base.metadata,
     Column('heroes_id', Integer, ForeignKey('heroes.id')),
     Column('quests_id', Integer, ForeignKey('quest.id'))
 )
 
-game.Hero.active_quests = relationship("Quest", secondary=heroes_to_quests, backref='active_heroes')
+game.Hero.active_quests = relationship("Quest", secondary=active_heroes_to_quests, backref='active_heroes')
 game.Hero.current_quests = orm.synonym('active_quests')
-game.Hero.completed_quests = relationship("Quest", secondary=heroes_to_quests, backref='completed_heroes')
+
+#Possible bug? Maybe I need a separate table for this relationship?
+completed_heroes_to_quests = Table('completed_heroes_to_quests', Base.metadata,
+    Column('heroes_id', Integer, ForeignKey('heroes.id')),
+    Column('quests_id', Integer, ForeignKey('quest.id'))
+)
+game.Hero.completed_quests = relationship("Quest", secondary=completed_heroes_to_quests, backref='completed_heroes')
 
 
 #############

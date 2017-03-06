@@ -193,7 +193,6 @@ class Hero(Base):
         
         self.chest_equipped = []
         self.errands = []
-        self.current_quests = []
         self.completed_quests = []
         self.completed_achievements = []
         self.bestiary = []
