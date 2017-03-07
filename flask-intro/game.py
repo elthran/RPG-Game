@@ -111,9 +111,12 @@ class Hero(Base):
     pantheonic_ability_points = Column(Integer)
     
     attribute_points = Column(Integer)
+    secondary_attribute_points = Column(Integer)
         
     current_sanctity = Column(Integer)
     current_health = Column(Integer)
+
+    attack_speed_skill = Column(Integer)
     
     #Marked for rename
     #Consider "endurance" instead.
@@ -152,12 +155,13 @@ class Hero(Base):
         self.gold = 50
     
         self.ability_points = 3 #TEMP. Soon will use the 4 values below
-        self.basic_ability_points = 0
-        self.archetype_ability_points = 0
-        self.specialization_ability_points = 0
-        self.pantheonic_ability_points = 0
+        self.basic_ability_points = 5
+        self.archetype_ability_points = 5
+        self.specialization_ability_points = 5
+        self.pantheonic_ability_points = 5
     
         self.attribute_points = 0
+        self.secondary_attribute_points = 10
         
         #Marked for rename
         #Consider "endurance" or "health" instead.
@@ -166,6 +170,7 @@ class Hero(Base):
         self.current_health = 0
         self.current_endurance = 0
         self.current_carrying_capacity = 0
+        self.attack_speed_skill = 0
         
         #Time code
         self.timestamp = datetime.datetime.utcnow()

@@ -171,7 +171,7 @@ function sumerror()
           <th>Username:</th>
           <th>Character Name:</th>
           <th>Age:</th>
-          <th>Timestamp:</th>
+          <th>Account Creation Date:</th>
         </tr>
         {% for user in users %}
           <tr>
@@ -179,7 +179,7 @@ function sumerror()
             <td>{{ user.username }}</td>
             <td>{{ user.heroes[0].character_name }}</td>
             <td>{{ user.heroes[0].age }}</td>
-            <td>{{ user.timestamp }}</td>
+            <td>{{ user.timestamp.year }}/{{ user.timestamp.month }}/{{ user.timestamp.day }} {{ user.timestamp.hour }}:{{ user.timestamp.minute }}:{{ user.timestamp.second }}</td>
           </tr>
         {% endfor %}
       </table>
@@ -289,6 +289,9 @@ function sumerror()
 <!-- This is the ability page IF YOU HAVE UNSPENT points. It let's you learn/upgrade abilities -->
     {% if ability_pages_learn %}
       <br>Ability Points: {{ myHero.ability_points }}
+      <br>Arch Points: {{ myHero.archetype_ability_points }}
+      <br>Spec Points: {{ myHero.specialization_ability_points }}
+      <br>Relig Points: {{ myHero.pantheonic_ability_points }}
       <h1 style="text-align:center;">Abilities</h1>
       {% if archetype_ability_tree %}Choose Archetype (Currently {{ myHero.archetype }}): <button class="command command-woodsman" value="woodsman">Woodsman</button><button class="command command-priest" value="priest">Priest</button><br> You are a <b>{{ myHero.archetype }}</b>{% endif %}
       {% if class_ability_tree %}
@@ -493,9 +496,10 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
     {% for attribute,value in myHero.get_primary_attributes() %}
       {{ attribute }}: {{ value }}<br>
     {% endfor %}</h2>
+    <a href=/learn_basic_skills>Learn Basic Skills</a>
    {% endif %}
 
-<!-- If you levelu p, you are redirected to this page -->
+<!-- If you level up, you are redirected to this page -->
     {% if level_up %}
       You have {{ myHero.attribute_points }} points remaing to spend.<br><br><br><br>
       <form method="post" class="level_up_form">
@@ -512,6 +516,15 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
       <br>Points remaining:
         <output type="text" name="total" id="total_points_spent" value="{{ myHero.attribute_points }}"/>{{ myHero.attribute_points }}</output>
         <output type="text" name="sumerror" id="sumerror" value="" style="color:red;" /></output>
+    {% endif %}
+
+<!-- Basic Skill Page -->
+    {% if basic_skill_page %}
+      You have {{ myHero.secondary_attribute_points }} points remaing to spend.<br><br><br><br>
+      <form method="post" class="basic_skill_form">
+        Attack Speed: <input type="range" min="0" max="{{ myHero.secondary_attribute_points }}" value="0" name="attack_speed" step="1">(Current: {{ myHero.attack_speed_skill }})</br>
+	<input class="btn btn-default" type="submit" value="Save">
+      </form>
     {% endif %}
 
 <!-- You can pass Red Error messages through this variable -->
