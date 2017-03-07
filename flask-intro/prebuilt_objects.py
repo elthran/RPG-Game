@@ -1,7 +1,7 @@
 from locations import Location, Cave, Town, WorldMap, Display
 from abilities import Ability, Archetype_Ability, Class_Ability, Religious_Ability
 from game import User, Hero
-from quests import Quest
+from quests import Quest, QuestPath
 import complex_relationships #MUST be imported last.
 
 """
@@ -184,6 +184,7 @@ when prebuilt_objects are preloaded into the database.
 ##########
 marlen = User(username="marlen", password="brunner")
 haldon = Hero(name="Haldon", fathers_job="Priest", current_world=world, current_location=town, gold = 5000)
-haldon.active_quests = testing_quests
+QuestPath(quest1, haldon)
+QuestPath(quest2, haldon)
 marlen.heroes = [haldon]
 users = [marlen]

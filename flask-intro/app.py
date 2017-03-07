@@ -108,9 +108,9 @@ def command(cmd=None):
                 myHero.equipped_items.append(item)
                 myHero.inventory.remove(item)
                 myHero.update_secondary_attributes()
-                for quest in myHero.current_quests:
-                    if quest.name == "Equipping/Unequipping" and quest.current_stage == 0:
-                        quest.advance_quest()
+                for path in myHero.quest_paths:
+                    if path.quest.name == "Equipping/Unequipping" and path.stage == 1:
+                        path.quest.advance_quest()
                 return "success", 200, {'Content-Type': 'text/plain'} #//
             if item.consumable == True:                # CONSUME ITEMS
                 myHero.consume_item(item.name)
@@ -122,9 +122,9 @@ def command(cmd=None):
             myHero.inventory.append(item)
             myHero.equipped_items.remove(item)
             myHero.update_secondary_attributes()
-            for quest in myHero.current_quests:
-                    if quest.name == "Equipping/Unequipping" and quest.current_stage == 1:
-                        quest.advance_quest()
+            for path in myHero.quest_paths:
+                    if path.quest.name == "Equipping/Unequipping" and path.stage == 2:
+                        path.quest.advance_quest()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # UPGRADE ABILITIES
@@ -168,9 +168,9 @@ def command(cmd=None):
             newItem.update_owner(myHero)
             myHero.inventory.append(newItem)
             myHero.gold -= item.buy_price
-            for quest in myHero.current_quests:
-                if quest.name == "Get Acquainted with the Blacksmith" and quest.current_stage == 1:
-                    quest.advance_quest()
+            for path in myHero.quest_paths:
+                if path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 2:
+                    path.quest.advance_quest()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # BUY FROM MARKETPLACE
@@ -306,10 +306,10 @@ def create_character():
     page_image = "beached"
     paragraph = "You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. A firm and inquisitive voice pierces the air."
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
-    if len(myHero.current_quests) == 0:
+    if len(myHero.quest_paths) == 0:
         pdb.set_trace()
         for quest in database.get_default_quests():
-            myHero.current_quests.append(quest)
+            quest.add_hero(myHero)
     if request.method == 'POST' and myHero.name == None:
         myHero.name = request.form["name"]
         page_image = "old_man"
@@ -753,9 +753,9 @@ def arena():
 @login_required
 def store(inventory):
     page_title = "Store"
-    for quest in myHero.current_quests:
-        if quest.name == "Get Acquainted with the Blacksmith" and quest.current_stage == 0:
-            quest.advance_quest()
+    for path in myHero.quest_paths:
+        if path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 1:
+            path.quest.advance_quest(myHero)
     items_for_sale = []
     if inventory == "greeting":
         page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]

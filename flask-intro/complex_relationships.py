@@ -82,22 +82,16 @@ base_classes.BaseDict.kill_quests_hero = relationship("Hero",
     
 #Heroes to Quests.
 #Hero object relates to quests via active_quests and completed_quests.
-#Hero quests can be either active or completed?
-#quest.heroes is a set! Now how do I do that? Or is it implicit in relationships?
-active_heroes_to_quests = Table('active_heroes_to_quests', Base.metadata,
-    Column('heroes_id', Integer, ForeignKey('heroes.id')),
-    Column('quests_id', Integer, ForeignKey('quest.id'))
-)
+#Hero quests can be either active or completed, but not both.
+#
+#This relationship forms through the QuestPath object.
+#Which establishes a manay to many relationship between quests and heroes.
+#QuestPath provides many special methods.
+quests.QuestPath.hero_id = Column(Integer, ForeignKey('heroes.id'))
+quests.QuestPath.quest_id = Column(Integer, ForeignKey('quest.id'))
 
-game.Hero.active_quests = relationship("Quest", secondary=active_heroes_to_quests, backref='active_heroes')
-game.Hero.current_quests = orm.synonym('active_quests')
-
-#Possible bug? Maybe I need a separate table for this relationship?
-completed_heroes_to_quests = Table('completed_heroes_to_quests', Base.metadata,
-    Column('heroes_id', Integer, ForeignKey('heroes.id')),
-    Column('quests_id', Integer, ForeignKey('quest.id'))
-)
-game.Hero.completed_quests = relationship("Quest", secondary=completed_heroes_to_quests, backref='completed_heroes')
+game.Hero.quest_paths = relationship("QuestPath", backref='hero')
+quests.Quest.quest_paths = relationship("QuestPath", backref='quest')
 
 
 #############

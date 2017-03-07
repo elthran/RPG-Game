@@ -332,15 +332,15 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
 <!-- This shows the quest log within the journal -->
     {% if quest_log %}
       <h1>Current Quests</h1>
-      {% for quest in myHero.current_quests %}{% if not quest.completed %}
-          <h2><br><b>{{ quest.name }}</b></h2>
-          {{ quest.current_description }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;(Stage: {{ quest.display_stage }}/{{ quest.stages }})
-        {% endif %}{% endfor %}
+      {% for path in myHero.quest_paths if path.active %}
+          <h2><br><b>{{ path.quest.name }}</b></h2>
+          {{ path.quest.current_description }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;(Stage: {{ path.stage }}/{{ path.stages }})
+        {% endfor %}
       <h1>Completed Quests</h1>
-      {% for quest in myHero.current_quests %}{% if quest.completed %}
-          <h2><br><b>{{ quest.name }}</b></h2>
-          (Reward: {{ quest.reward_xp }} xp)
-        {% endif %}{% endfor %}
+      {% for path in myHero.quest_paths if path.completed %}
+          <h2><br><b>{{ path.quest.name }}</b></h2>
+          (Reward: {{ path.quest.reward_xp }} xp)
+        {% endfor %}
      {% endif %}
 
 <!-- This shows the bestiary within the journal -->

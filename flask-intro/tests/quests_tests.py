@@ -1,6 +1,6 @@
 from database import EZDB
 from game import Hero
-from quests import Quest
+from quests import Quest, QuestPath
 import complex_relationships
 
 import unittest
@@ -39,6 +39,7 @@ class QuestsTestCase(unittest.TestCase):
         self.rebuild_instance()
         quest2 = self.db.session.query(Quest).filter_by(id=1).first()
         self.assertEqual(str_quest, str(quest2))
+
         
     def test_if_relationship_is_a_set(self):
         """Proves that even if you add an item to a relationship twice only one copy will exist.
@@ -67,81 +68,113 @@ class QuestsTestCase(unittest.TestCase):
         
         self.assertEqual(str_quest, str2_quest)
         self.assertEqual(str_quest, str(quest3))
-        
-        
-    def test_active_heroes(self):
+     
+    def test_quest_path_adding(self):
         hero = Hero(name="Haldon")
-        self.quest.activate(hero)
-        self.db.session.add(self.quest)
+        quest = self.quest
+        
+        # self.quest.quest_paths.append(QuestPath(self.quest, hero))
+        #same as:
+        # QuestPath(quest, hero)
+        quest.add_hero(hero)
+        
+        self.db.session.add(quest)
         self.db.session.commit()
-        str_quest = str(self.quest)
+        str_quest = str(quest)
         
         self.rebuild_instance()
         quest2 = self.db.session.query(Quest).filter_by(id=1).first()
         
         self.assertEqual(str_quest, str(quest2))
         
+        
+    def test_active_heroes(self):
+        hero = Hero(name="Haldon")
+        hero2 = Hero(name="Elthran")
+        hero3 = Hero(name="Not_Active")
+        quest = self.quest
+        QuestPath(quest, hero)
+        QuestPath(quest, hero2)
+        QuestPath(quest, hero3, active=False)
+        
+        self.db.session.add(quest)
+        self.db.session.commit()
+        str_active_heroes = str(['hero.name={}'.format(hero.name)
+            for hero in QuestPath.active_heroes(quest)])
+         
+        self.rebuild_instance()
+        quest2 = self.db.session.query(Quest).filter_by(id=1).first()
+        
+        str_active_heroes2 = str(['hero.name={}'.format(hero.name)
+            for hero in QuestPath.active_heroes(quest2)])
+        
+        self.assertEqual(str_active_heroes, str_active_heroes2)
+        self.assertEqual(str_active_heroes, "['hero.name=Haldon', 'hero.name=Elthran']")
+        
     def test_completed_heroes(self):
         hero = Hero(name="Haldon")
-        self.quest.activate(hero)
-        self.db.session.add(self.quest)
+        hero2 = Hero(name="Elthran")
+        hero3 = Hero(name="Not_Active")
+        quest = self.quest
+        QuestPath(quest, hero)
+        QuestPath(quest, hero2)
+        QuestPath(quest, hero3, active=False)
+        
+        self.db.session.add(quest)
         self.db.session.commit()
-        len_active = len(self.quest.active_heroes)
+        len_active = len(QuestPath.active_heroes(quest))
+        len_completed = len(QuestPath.completed_heroes(quest))    
         
         self.rebuild_instance()
         quest2 = self.db.session.query(Quest).filter_by(id=1).first()
-        len_active2 = len(quest2.active_heroes)
+        active_heroes = QuestPath.active_heroes(quest2)
         
-        hero = quest2.active_heroes[0]
-        quest2.mark_completed(hero)
+        quest2.mark_completed(active_heroes[0])
+        quest2.mark_completed(active_heroes[1])
         self.db.session.commit()
-        len_active3 = len(quest2.active_heroes)
-        len_completed = len(quest2.completed_heroes)
+        len_active2 = len(QuestPath.active_heroes(quest2))
+        len_completed2 = len(QuestPath.completed_heroes(quest2))
         
-        self.rebuild_instance()
-        quest3 = self.db.session.query(Quest).filter_by(id=1).first()
-        len_active4 = len(quest3.active_heroes)
-        len_completed2 = len(quest3.completed_heroes)
-       
-        self.assertEqual(len_active, 1)
-        self.assertEqual(len_active2, 1)
-        self.assertEqual(len_active3, 0)
-        self.assertEqual(len_active4, 0)
-        self.assertEqual(len_completed, 1)
-        self.assertEqual(len_completed2, 1)
+        self.assertEqual(len_completed, 0)
+        self.assertEqual(len_active, 2)
+        self.assertEqual(len_completed2, 2)
+        self.assertEqual(len_active2, 0)
         
     def test_hero_cannot_be_active_and_completed_at_the_same_time(self):
+        quest = self.quest
         hero = Hero(name="Haldon")
-        self.quest.activate(hero)
+        quest.add_hero(hero)
         self.db.session.add(self.quest)
         self.db.session.commit()
         
         self.rebuild_instance()
         quest2 = self.db.session.query(Quest).filter_by(id=1).first()
         
-        with self.assertRaises(AssertionError):
-            quest2.completed_heroes.append(quest2.active_heroes[0])
+        active_state = quest2.quest_paths[0].active
+        completed_state = quest2.quest_paths[0].completed
+        quest2.mark_completed(QuestPath.active_heroes(quest2)[0])   
+        active_state2 = quest2.quest_paths[0].active
+        completed_state2 = quest2.quest_paths[0].completed
         
-        quest2.mark_completed(quest2.active_heroes[0])   
-        self.db.session.commit()
-            
-        with self.assertRaises(AssertionError):
-            quest2.active_heroes.append(quest2.completed_heroes[0])    
+        self.assertTrue(active_state)
+        self.assertTrue(completed_state2)
+        self.assertFalse(active_state2)
+        self.assertFalse(completed_state)
                 
         
-    def test_heroes_relationship(self):
-        """Test if hero/quest backref is set up properly.
-        """
-        self.assertEqual('Not built', '')
+    # def test_heroes_relationship(self):
+        # """Test if hero/quest backref is set up properly.
+        # """
+        # self.assertEqual('Not built', '')
         
-    def test_past_quests(self):
-        self.assertEqual('Not built', '')
+    # def test_past_quests(self):
+        # self.assertEqual('Not built', '')
         
-    def test_next_quests(self):
-        self.assertEqual('Not built', '')
+    # def test_next_quests(self):
+        # self.assertEqual('Not built', '')
         
-    def test_relationship_with_self(self):
-        self.assertEqual('Not built', '')
+    # def test_relationship_with_self(self):
+        # self.assertEqual('Not built', '')
         
-    def test_advance_quest(self):
-        self.assertEqual('Not built', '')
+    # def test_advance_quest(self):
+        # self.assertEqual('Not built', '')
