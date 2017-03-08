@@ -51,6 +51,8 @@ def login_required(f):
 # This gets called anytime html uses <button class="command>
 @app.route('/<cmd>') # need to make sure this doesn't conflict with other routes
 def command(cmd=None):
+    print('request is:', repr(request))
+    print('request args:', repr(request.args))
     print('cmd is:', repr(cmd))
     # cmd (string type)is an item name, sent from the javascript code in html
 
@@ -67,11 +69,28 @@ def command(cmd=None):
     
     # TEST CODE DELETE SOON
     if cmd == "forgoth":
+        #current value of area that is going to be replace.
+        old_religion = myHero.religion 
+        
+        #Update value in database.
         myHero.religion = "Forgoth"
-        return "success", 200, {'Content-Type': 'text/plain'} #//
+        database.update()
+        
+        #Return a string to be parsed by the xhttp code.
+        #Replace all occurrences of html with id equal to old value with new value.
+        #This updates the value and the id!
+        """
+        <span id="{{ myHero.religion }}">{{ myHero.religion }}</span>
+        This will change the value of this code back and forth between
+        values of myHero.religion
+        """
+        return "{id}={value}".format(id=old_religion, value=myHero.religion)
+
     if cmd == "dryarch":
+        old_religion = myHero.religion
         myHero.religion = "Dryarch"
-        return "success", 200, {'Content-Type': 'text/plain'} #//
+        database.update()
+        return "{id}={value}".format(id=old_religion, value=myHero.religion)
     if cmd == "woodsman":
         myHero.archetype = "Woodsman"
         return "success", 200, {'Content-Type': 'text/plain'} #//
