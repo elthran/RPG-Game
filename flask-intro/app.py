@@ -14,6 +14,7 @@ from combat_simulator import *
 from bestiary import *
 import database
 from items import Quest_Item
+from commands import Command
 
 #MUST be imported after all other game objects but before any of them are used.
 import complex_relationships 
@@ -48,49 +49,43 @@ def login_required(f):
             return redirect(url_for('login'))
     return wrap
 
-# This gets called anytime html uses <button class="command>
+# This gets called anytime a button gets clicked in html using
+# <button class="command", value="foo">. "foo" is what gets sent to this
+# Python code.
 @app.route('/<cmd>') # need to make sure this doesn't conflict with other routes
 def command(cmd=None):
-    print('request is:', repr(request))
-    print('request args:', repr(request.args))
-    print('cmd is:', repr(cmd))
-    # cmd (string type)is an item name, sent from the javascript code in html
-
-    #Now handled by JavaScript code?
-    #Level Up Commands
-    # for attribute in myHero.primary_attributes:
-        # if cmd == attribute:
-            # myHero.primary_attributes[attribute] += 1
-            # myHero.attribute_points -= 1
-            # myHero.update_secondary_attributes()
-            # myHero.refresh_character()
-            # return "success", 200, {'Content-Type': 'text/plain'} #//
-    #End of Level Up Commands
+    """Accept a string from HTML button code -> send back a response.
     
-    # TEST CODE DELETE SOON
-    if cmd == "forgoth":
-        #current value of area that is going to be replace.
-        old_religion = myHero.religion 
-        
-        #Update value in database.
-        myHero.religion = "Forgoth"
+    The respose must be in the form: "key=value" (at this time.)
+    See the Command class in the commands.py module.
+    cmd is equal to the value of the value field in the html code
+    i.e. <button value='foo'> -> cmd == 'foo'
+    
+    Extra data can be sent in request.args (which is accessible from within this namespace).
+    
+    args are sent in the form "/" + command + "?key=value&&key2=value2".
+    Where the value of command == cmd and
+    args == {key: value, key2: value2} (well it isn't a real dict but it mostly acts like one).
+    
+    Or you could sent the data as a file ... or raw or some XML or something
+    and then parse it on this end based on the headers. But that is more complicated
+    than I need right now.
+    """
+    testing = True
+    if testing:
+        print('request is:', repr(request))
+        print('request args:', repr(request.args))
+        print('cmd is:', repr(cmd))
+    
+    try:
+        response = Command.cmd_functions[cmd](myHero)
         database.update()
+        return response
+    except KeyError as ex:
+        print("Warning: invalid key {}".format(ex))
+        print("Valid keys are: {}".format(list(Command.cmd_functions.keys())))
+        # Look in the not yet refractored list of if statemens ...
         
-        #Return a string to be parsed by the xhttp code.
-        #Replace all occurrences of html with id equal to old value with new value.
-        #This updates the value and the id!
-        """
-        <span id="{{ myHero.religion }}">{{ myHero.religion }}</span>
-        This will change the value of this code back and forth between
-        values of myHero.religion
-        """
-        return "{id}={value}".format(id=old_religion, value=myHero.religion)
-
-    if cmd == "dryarch":
-        old_religion = myHero.religion
-        myHero.religion = "Dryarch"
-        database.update()
-        return "{id}={value}".format(id=old_religion, value=myHero.religion)
     if cmd == "woodsman":
         myHero.archetype = "Woodsman"
         return "success", 200, {'Content-Type': 'text/plain'} #//
