@@ -234,6 +234,22 @@ def level_up():
         return redirect(url_for('home'))
     return render_template('home.html', level_up=True, page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
 
+# This gets called anytime you have secondary attribute points to spend
+@app.route('/learn_basic_skills', methods=['GET', 'POST'])
+@login_required
+def basic_skills():
+    page_heading = "Here are your basic skills"
+    paragraph = "Choose how you would like to distribute your attribute points."
+    if request.method == 'POST':
+        myHero.attack_speed_skill += convert_input(request.form["attack_speed"])
+        points_being_spent = convert_input(request.form["attack_speed"])
+        myHero.secondary_attribute_points -= points_being_spent
+        myHero.update_secondary_attributes()
+        myHero.refresh_character()
+        database.update()
+        return render_template('home.html', basic_skill_page=True, page_title="Basic", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
+    return render_template('home.html', basic_skill_page=True, page_title="Basic", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
+
 # use decorators to link the function to a url
 # route for handling the login page logic
 @app.route('/login', methods=['GET', 'POST'])
