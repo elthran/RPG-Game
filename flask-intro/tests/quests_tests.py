@@ -160,6 +160,9 @@ class QuestsTestCase(unittest.TestCase):
         self.assertTrue(completed_state2)
         self.assertFalse(active_state2)
         self.assertFalse(completed_state)
+        
+    def test_path_quest_advance_quest_hero():
+        self.assertEqual('Not built', '')
                 
         
     # def test_heroes_relationship(self):

@@ -244,12 +244,16 @@ class Quest(Base):
             else:
                 error quest named 'next_quest_name' not in this quest path
                 
-        Note fully implemented ....
+        Not fully implemented ....
         I need to make it actually use the self.next_quests attribute.
         """
         
-        self.reward_hero(hero)
-        self.mark_completed(hero)
+        #pdb.set_trace()
+        quest_path = QuestPath.find(self, hero)
+        if len(self.next_quests) == 0:
+            self.reward_hero(quest_path, hero, final=True)
+            self.mark_completed(hero)
+        elif len(self.next_quest) == 1:
         self.activate_next_quest(next_quest, hero)
                 
     def activate_next_quest(self, next_quest, hero):
@@ -267,11 +271,10 @@ class Quest(Base):
             quest_path.quest = next_quest
             
     
-    def reward_hero(self, hero):
+    def reward_hero(self, quest_path, hero, final=False):
         """Pay out xp to hero on stage completion.
         """
-        quest_path = QuestPath.find(self, hero)
-        if not self.next_quests:
+        if final:
             hero.current_exp += int(self.reward_xp * quest_path.stage * 0.3)
         else:
             hero.current_exp += self.reward_xp
