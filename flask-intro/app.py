@@ -71,6 +71,9 @@ def command(cmd=None):
     and then parse it on this end based on the headers. But that is more complicated
     than I need right now.
     """
+    if cmd == 'favicon.ico':
+        return
+    
     testing = True
     if testing:
         print('request is:', repr(request))
@@ -337,7 +340,7 @@ def create_character():
     paragraph = "You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. A firm and inquisitive voice pierces the air."
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
     if len(myHero.quest_paths) == 0:
-        pdb.set_trace()
+        #pdb.set_trace()
         for quest in database.get_default_quests():
             quest.add_hero(myHero)
     if request.method == 'POST' and myHero.name == None:
