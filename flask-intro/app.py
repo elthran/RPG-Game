@@ -72,7 +72,7 @@ def command(cmd=None):
     than I need right now.
     """
     if cmd == 'favicon.ico':
-        return
+        return "success", 200, {'Content-Type': 'text/plain'}
     
     testing = True
     if testing:
