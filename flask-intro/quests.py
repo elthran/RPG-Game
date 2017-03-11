@@ -254,7 +254,7 @@ class Quest(Base):
             self.reward_hero(quest_path, hero, final=True)
             self.mark_completed(hero)
         elif len(self.next_quest) == 1:
-        self.activate_next_quest(next_quest, hero)
+            self.activate_next_quest(next_quest, hero)
                 
     def activate_next_quest(self, next_quest, hero):
         """Activate the next quest in the series if possible.

@@ -207,6 +207,7 @@ def command(cmd=None):
 
     return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
 
+""" Unneeded while I test combining this form with the learn_basic_skill form
 # This gets called anytime you have attribute points to spend
 @app.route('/level_up', methods=['GET', 'POST'])
 @login_required
@@ -236,6 +237,7 @@ def level_up():
         database.update()
         return redirect(url_for('home'))
     return render_template('home.html', level_up=True, page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
+"""
 
 # This gets called anytime you have secondary attribute points to spend
 @app.route('/learn_basic_skills', methods=['GET', 'POST'])
@@ -244,9 +246,16 @@ def basic_skills():
     page_heading = "Here are your basic skills"
     paragraph = "Choose how you would like to distribute your attribute points."
     if request.method == 'POST':
+        myHero.primary_attributes["Strength"] += convert_input(request.form["Strength"])
+        myHero.primary_attributes["Agility"] += convert_input(request.form["Agility"])
+        myHero.primary_attributes["Resilience"] += convert_input(request.form["Resilience"])
+        myHero.primary_attributes["Vitality"] += convert_input(request.form["Vitality"])
+        primary_points_being_spent = convert_input(request.form["Strength"]) + convert_input(request.form["Agility"]) + convert_input(request.form["Resilience"]) + convert_input(request.form["Vitality"])
+        myHero.attribute_points -= primary_points_being_spent
+
         myHero.attack_speed_skill += convert_input(request.form["attack_speed"])
-        points_being_spent = convert_input(request.form["attack_speed"])
-        myHero.secondary_attribute_points -= points_being_spent
+        secondary_points_being_spent = convert_input(request.form["attack_speed"])
+        myHero.secondary_attribute_points -= secondary_points_being_spent
         myHero.update_secondary_attributes()
         myHero.refresh_character()
         database.update()
@@ -470,6 +479,7 @@ def admin():
         # myHero.specialization_ability_points = convert_input(request.form["Specialization_ability_points"])
         # myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
         myHero.attribute_points = convert_input(request.form["Attribute_points"])
+        myHero.secondary_attribute_points = convert_input(request.form['Secondary_Attribute_Points'])
         myHero.primary_attributes["Divinity"] = convert_input(request.form["Divinity"])
         myHero.primary_attributes["Fortitude"] = convert_input(request.form["Fortitude"])
         myHero.update_secondary_attributes()
@@ -486,6 +496,7 @@ def admin():
         ("Gold", myHero.gold),
         ("Ability_points", myHero.ability_points),
         ("Attribute_points", myHero.attribute_points),
+        ("Secondary_Attribute_Points", myHero.secondary_attribute_points),
         ("Divinity", myHero.primary_attributes["Divinity"]),
         ("Fortitude", myHero.primary_attributes["Fortitude"])]
 
@@ -516,8 +527,8 @@ def home():
     if myHero.character_name == None:
         return redirect(url_for('create_character'))
     # If they have leveled up, send them to level_up url
-    elif myHero.attribute_points > 0:
-        return redirect(url_for('level_up'))
+    #elif myHero.attribute_points > 0:
+    #    return redirect(url_for('level_up'))
     return render_template('home.html', page_title="Profile", myHero=myHero, home=True)  # return a string'
 
 @app.route('/inventory_page')
