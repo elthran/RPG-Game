@@ -528,29 +528,34 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
 
 <!-- Basic Skill Page -->
     {% if basic_skill_page %}
-<section class="attribute_container">
-  <div class="left-half"><article>
-      You have {{ myHero.secondary_attribute_points }} secondary points to spend.<br><br>
       <form method="post" class="level_up_form">
-        Attack Speed: <input type="range" min="0" max="{{ myHero.secondary_attribute_points }}" value="0" name="attack_speed" step="1">(Current: {{ myHero.attack_speed_skill }})<br><br><br><br>
-</article></div>
-<div class="right-half"><article>
-        You have {{ myHero.attribute_points }} primary points to spend.<br><br>
-        Strength: {{ myHero.primary_attributes["Strength"] }}<input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="strength_attribute" name="Strength" step="1" oninput="strength_updater(value)" onchange="findTotal()">
-                  <font color="red"><output for="Strength" id="strength_output"><font color="black">0</font></output></font></br>
-	Agility: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="agility_attribute" name="Agility" step="1" oninput="agility_updater(value)" onchange="findTotal()">
-                 <output for="Agility" id="agility_output">0</output> (Current: {{ myHero.primary_attributes["Agility"] }})</br>
-	Resilience: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="resilience_attribute" name="Resilience" step="1" oninput="resilience_updater(value)" onchange="findTotal()">
-                 <output for="Resilience" id="resilience_output">0</output> (Current: {{ myHero.primary_attributes["Resilience"] }})</br>
-	Vitality: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="vitality_attribute" name="Vitality" step="1" oninput="vitality_updater(value)" onchange="findTotal()">
-                 <output for="Vitality" id="vitality_output">0</output> (Current: {{ myHero.primary_attributes["Vitality"] }})</br>
-	<input class="btn btn-default" type="submit" value="Save" id="level_button">
-</article></div>
-</section>
+        <section class="attribute_container">
+          <div class="left-half">
+            You have {{ myHero.attribute_points }} primary points to spend.<br><br>
+            Strength: {{ myHero.primary_attributes["Strength"] }}<input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="strength_attribute" name="Strength" step="1" oninput="strength_updater(value)" onchange="findTotal()">
+            <font color="red"><output for="Strength" id="strength_output"><font color="black">0</font></output></font></br>
+	    Agility: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="agility_attribute" name="Agility" step="1" oninput="agility_updater(value)" onchange="findTotal()">
+            <output for="Agility" id="agility_output">0</output> (Current: {{ myHero.primary_attributes["Agility"] }})</br>
+	    Resilience: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="resilience_attribute" name="Resilience" step="1" oninput="resilience_updater(value)" onchange="findTotal()">
+            <output for="Resilience" id="resilience_output">0</output> (Current: {{ myHero.primary_attributes["Resilience"] }})</br>
+	    Vitality: <input type="range" min="0" max="{{ myHero.attribute_points }}" value="0" id="vitality_attribute" name="Vitality" step="1" oninput="vitality_updater(value)" onchange="findTotal()">
+            <output for="Vitality" id="vitality_output">0</output> (Current: {{ myHero.primary_attributes["Vitality"] }})</br>
+            <br>Points remaining:
+            <output type="text" name="total" id="total_points_spent" value="{{ myHero.attribute_points }}"/>{{ myHero.attribute_points }}</output>
+            <output type="text" name="sumerror" id="sumerror" value="" style="color:red;" /></output>
+          </div>
+          <div class="right-half">
+            You have {{ myHero.secondary_attribute_points }} secondary points to spend.<br><br>
+            Attack Speed: <input type="range" min="0" max="{{ myHero.secondary_attribute_points }}" value="0" name="attack_speed" step="1">(Current: {{ myHero.attack_speed_skill }})<br><br><br><br>
+            <br>Points remaining:
+            <output type="text" name="total" id="total_points_spent" value="{{ myHero.attribute_points }}"/>{{ myHero.secondary_attribute_points }}</output>
+            <output type="text" name="sumerror" id="sumerror" value="" style="color:red;" /></output>
+
+            <br><br><br><br><input class="btn btn-default" type="submit" value="Save" id="level_button">
+          </div>
+        </section>
+        Why can't I see this text....?
       </form>
-      <br>Points remaining:
-        <output type="text" name="total" id="total_points_spent" value="{{ myHero.attribute_points }}"/>{{ myHero.attribute_points }}</output>
-        <output type="text" name="sumerror" id="sumerror" value="" style="color:red;" /></output>
     {% endif %}
 
 <!-- You can pass Red Error messages through this variable -->
