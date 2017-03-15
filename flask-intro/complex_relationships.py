@@ -72,6 +72,8 @@ game.Hero.inventory = relationship("Item", order_by="Item.name", backref="myHero
 game.PrimaryAttribute.hero_id = Column(Integer, ForeignKey('heroes.id'))
 game.Hero.primary_attributes = relationship("PrimaryAttribute", uselist=False)
 
+#Marked for restructure. Remove in favor of quest object.
+#Maybe make a special "KillQuest" quest type?
 #One Hero -> one quest list?
 #Quest list is not quests? So like it should really be Many to Many? Each Hero can have Many Quests
 #and each Quest can be held by Many Heroes.
@@ -81,10 +83,8 @@ base_classes.BaseDict.kill_quests_hero = relationship("Hero",
     
     
 #Heroes to Quests.
-#Hero object relates to quests via active_quests and completed_quests.
-#Hero quests can be either active or completed, but not both.
-#
-#This relationship forms through the QuestPath object.
+#Hero object relates to quests via the QuestPath object.
+#This path may be either active or completed, but not both. 
 #Which establishes a manay to many relationship between quests and heroes.
 #QuestPath provides many special methods.
 quests.QuestPath.hero_id = Column(Integer, ForeignKey('heroes.id'))

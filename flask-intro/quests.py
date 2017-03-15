@@ -1,5 +1,44 @@
 """
-Quest object
+How to use:
+Quests must be created separately in the prebuilt_objects.py module.
+We will really need a quest editor. Some kind of 3D mind node thing :P
+
+#Currently:
+To connect a hero to a given quest (only connect to the first quest in the quest path).
+for quest in database.get_default_quests():
+    quest.add_hero(myHero)
+
+To trigger a quest to advance to the next stage or complete.
+for path in myHero.quest_paths:
+    if path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 1:
+        path.advance()
+        
+
+#Future:
+database.connect_quest(quest_name, hero) #Not implemented.
+database.disconnect_quest(quest_name, hero) #Not implemented.
+database.advance_quest(quest_name, hero, stage?) #Not implemented.
+
+#Far Future:
+use triggers .... build a game engine :P
+Thus to advance a quest you would spawn an event any time the hero did anything
+and the engine would check the events data against each quest. Any quest that 
+met the requirements of this trigger would advance.
+eg. Trigger for "Talk to the Blacksmith" quest would be:
+    t1 = Trigger(Location=Blacksmith, action=talk)
+    t2 = Trigger(Location=Blacksmith, action=buy)
+    t3 = Trigger((Location=Blacksmith, action=sell)
+While the Quest object would look like
+    q1 = Quest(name="Get aquainted with Blacksmith", descript="Talk to blacksmith",
+        triggers=[t1], stage=1, next_quests=[q2], past_quests=[])
+    q2 = Quest(name="Get aquainted with Blacksmith", descript="Buy or sell an item.",
+        triggers=[t2, t3], stage=2, next_quests=[], past_quests=[q1])
+
+A Trigger can have multiple actions. A Quest can have multiple Triggers. Only one needs to be met
+to cause the Quest to advance? 
+
+##############
+Quest object/QuestPath object
 Specification: 
     An object that allows interesting and complex path completion.
 Considerations:
@@ -31,11 +70,7 @@ Potentials:
 Considering:
     A quest should have a list of triggers? The hero could send in a trigger
         instead of a quest object ... and the trigger would cause a specific
-        quest path to be chosen?
-    I am considering allowing:
-        quest.quest_paths.append(quest, hero) 
-    and having it auto-gen a QuestPath object with these vars.
-    or like hero.add_quest(quest)       
+        quest path to be chosen?       
 """
 
 from sqlalchemy import Table, Column, Integer, String, Boolean
@@ -51,23 +86,20 @@ class QuestPath(Base):
     """Allow storage of quest stage for a given hero and a given quest.
     
     This means that each hero can be in a different stage of the same quest.
-    Each QuestPath can have Many heroes and Many quests ...
-    but each path must have one hero and one quest?
+    Each Hero can have many QuestPaths and many Quests
+    Each QuestPath must have only one Hero and one Quest per path.
+    Each Quest can be in many QuestPaths and held by many Heroes.
+    Or something ... it makes sense if I draw a picture :P
     
-    Heroes to Quests Explained:
-        Hero object relates to quests via active_quests and completed_quests.
-        Hero quests can be either active or completed or neither, but not both.
-        
-    
-        This relationship forms through the QuestPath object.
-        Which establishes a manay to many relationship between quests and heroes.
-        
-    QuestPath provides many special methods such as:
-        quest_path.active_heroes(quest, hero) and returns all of the heroes that have this quest
-            active.
-        active_quests ... does the same for quests.
-        
-        all_quests and all_heroes do what they sound like. See code :P
+    To check what quests a hero has active use:
+    for path in hero.quest_paths:
+        if path.acitve:
+            return path.quest.name
+    To check what quests a hero has completed use:
+    for path in hero.quest_paths:
+        if path.completed:
+            return path.quest.name
+
         
     Use:
         quest.add_hero(hero) or,
@@ -79,6 +111,9 @@ class QuestPath(Base):
     classes (well 3 but the third is hidden).
     
     Considering: Add name to QuestPath object ... remove it from Quest object.
+    
+    Future: add and remove quest_paths using database. Database is sort of becomming the
+    game engine ...
     """
     __tablename__ = 'quest_path'
     
@@ -108,7 +143,7 @@ class QuestPath(Base):
         Also spawn any new paths and update hero and quest objects as neccessary
         to account for path ending. Update hero xp and such.
         
-        NOTE: I am using the metafor of each path being a glaxay with a decaying orbit.
+        NOTE: I am using the metaphor of each path being a glaxay with a decaying orbit.
         Sometimes this galaxy will break apart and spawn new galaxies.
         """
         FINAL_STAGE = 0
@@ -127,11 +162,12 @@ class QuestPath(Base):
             self.reward_hero()
             self.stage += 1
             for quest in self.quest.next_quests:
-                #Needs to build a stages properly ...
                 QuestPath(quest, self.hero, stage=self.stage)
+                #Needs further testing.
                 self.remove()
         return True
-        
+    
+    #Needs further testing.
     def remove(self):
         """Break/erase current path.
         
@@ -216,7 +252,7 @@ class QuestPath(Base):
     def find(quest, hero):
         """Return the path connecting quest to hero -> if it exists.
         
-        This should maybe be a query?
+        This should maybe be a query? Because it is _slow_ right now.
         """
         for path in quest.quest_paths:
             if path.hero.id == hero.id:
@@ -231,22 +267,12 @@ quest_to_quest = Table("quest_to_quest", Base.metadata,
 class Quest(Base):
     """A class to describe quest objects that can be stored in a database.
     
-    'multiplier' is an internal variable as is 'completed'.
-    'multiplier' is a saved and calculated variable, each time a quest is completed
-    the next quest in the quest path has this multiplier + 1.
     
     Final stage is when next_quests == [].
     Initial stage is when past_quests == [].
-    If quest is added to hero.active quests ... it default finds the initial stage?
-    Or should the coder _have_ to add the initial stage?
     
-    
-    Hero object relates to quests via active_quests and completed_quests.
-    Hero quests can be either active or completed?
-    @validates functions:
-        Prevent quest being both active and completed at the same time.
-    
-    Relationships are set ... but a commit must occur between adding in each new element.
+    Useful note: Relationships are set ... but a commit must occur
+    between adding in each new element.
     """
     __tablename__ = "quest"
     
@@ -265,17 +291,18 @@ class Quest(Base):
         secondaryjoin=id==quest_to_quest.c.next_quest_id,
         backref="past_quests")
     
-    def __init__(self, path_name, description, reward_xp=3):
+    def __init__(self, path_name, description, reward_xp=3, next_quests=[], past_quests=[]):
         """Build a new Quest object.
         
-        Heroes is must be a list. 
-        To add a single hero at initialization use:
-            Quest('Kill a wolf', 'Find and slay a wolf!', active_heroes=[hero])
+        You can link this quest to other quests at initialization or afterwards.
+        quest.next_quests.append(quest2) does the same thing.
         """
         
         self.path_name = path_name
         self.description = description
         self.reward_xp = reward_xp
+        self.next_quests = next_quests
+        self.past_quests = past_quests
         
     def get_stage_count(self):
         """Return a guestimate of how many stages are in this quest.
@@ -283,6 +310,7 @@ class Quest(Base):
         Or well I guess it is the total number of possible paths that are available.
         Though really you can't take all of them because most are mutually
         exclusive.
+        NOTE: only works when ran from stage 1.
         """
 
         if self.next_quests == []:
@@ -304,6 +332,7 @@ class Quest(Base):
     def activate(self, hero):
         """Use to activate the first quest in a series.
         
+        I don't even know if this gets used ... though it might be in the future.
         """
         quest_path = QuestPath.find(self, hero)
         assert quest_path != None
@@ -317,6 +346,8 @@ class Quest(Base):
         
         NOTE: session.commit() required! Error could be thrown during commit!
         NOTE2: Checks if path already exists.
+        
+        Will be replaced by database method connect_quest(quest_name, hero)
         """
         quest_path = QuestPath.find(self, hero)
         if quest_path:
