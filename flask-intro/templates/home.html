@@ -139,7 +139,7 @@ function sumerror()
 
 <!-- This calls a notification script to run if the Hero has any new quests completed -->
     {% if myHero.quest_notification %}
-      <div class="popup" onclick="quest_popup()" style="color:red">You have complete a quest! (+{{ myHero.quest_notification[1] }}xp)<span class="popupachievement" id="js_popupachievement">{{ myHero.quest_notification[0] }}</span></div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
+      <div class="popup" onclick="quest_popup()" style="color:red">You have completed a quest stage! (+{{ myHero.quest_notification[1] }}xp)<span class="popupachievement" id="js_popupachievement">{{ myHero.quest_notification[0] }}</span></div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
     {% endif %}
 
 <!-- You can pass page headings through with this variable-->

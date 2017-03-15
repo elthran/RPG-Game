@@ -77,6 +77,8 @@ class QuestPath(Base):
     
     But obviously the first one is fastest to type and use. And the first one uses only TWO
     classes (well 3 but the third is hidden).
+    
+    Considering: Add name to QuestPath object ... remove it from Quest object.
     """
     __tablename__ = 'quest_path'
     
@@ -91,14 +93,73 @@ class QuestPath(Base):
     active = Column(Boolean)
     completed = Column(Boolean)
     
-    def __init__(self, quest, hero, active=True):
+    def __init__(self, quest, hero, active=True, stage=1):
         self.quest = quest
         self.hero = hero
         
-        self.stage = 1
+        self.stage = stage
         self.stages = quest.get_stage_count()
         self.active = active
         self.completed = False
+        
+    def advance(self):
+        """Advance this path to the next stage.
+        
+        Also spawn any new paths and update hero and quest objects as neccessary
+        to account for path ending. Update hero xp and such.
+        
+        NOTE: I am using the metafor of each path being a glaxay with a decaying orbit.
+        Sometimes this galaxy will break apart and spawn new galaxies.
+        """
+        FINAL_STAGE = 0
+        SIMPLE_ADVANCE = 1
+        COMPLEX_ADVANCE = 2
+        orbit = len(self.quest.next_quests)
+        
+        if orbit == FINAL_STAGE:
+            self.completed = True
+            self.reward_hero(final=True)
+        elif orbit == SIMPLE_ADVANCE:
+            self.reward_hero()
+            self.stage += 1
+            self.quest = self.quest.next_quests[0]
+        elif orbit >= COMPLEX_ADVANCE:
+            self.reward_hero()
+            self.stage += 1
+            for quest in self.quest.next_quests:
+                #Needs to build a stages properly ...
+                QuestPath(quest, self.hero, stage=self.stage)
+                self.remove()
+        return True
+        
+    def remove(self):
+        """Break/erase current path.
+        
+        Used when spawning multiple new paths from this one.
+        This method will need to be in the database.py module ... *sigh*
+        I need to delete the record of this path after I have spawned a bunch
+        of clones starting from the same point.
+        """
+        self.hero = None
+        self.quest = None
+        
+    def reward_hero(self, final=False):
+        """Reward the hero on stage completion.
+        
+        The hero gains a bonus when the final quest stage is completed.
+        NOTE: the hero gets a different notification when completing vs.
+        advancing for a quest. (quest.path_name vs quest.description)
+        """
+        
+        hero = self.hero
+        quest = self.quest
+        if final:
+            hero.current_exp += int(quest.reward_xp * self.stage * 0.3)
+            hero.quest_notification = (quest.path_name, quest.reward_xp)
+        else:
+            hero.current_exp += quest.reward_xp
+            hero.quest_notification = (quest.description, quest.reward_xp)
+        
         
         
     @validates('active')
@@ -191,6 +252,7 @@ class Quest(Base):
     
     id = Column(Integer, primary_key=True)
     name = Column(String)
+    path_name = orm.synonym('name')
     
     description = Column(String)
     current_description = orm.synonym('description')
@@ -203,7 +265,7 @@ class Quest(Base):
         secondaryjoin=id==quest_to_quest.c.next_quest_id,
         backref="past_quests")
     
-    def __init__(self, name, description, reward_xp=3):
+    def __init__(self, path_name, description, reward_xp=3):
         """Build a new Quest object.
         
         Heroes is must be a list. 
@@ -211,12 +273,16 @@ class Quest(Base):
             Quest('Kill a wolf', 'Find and slay a wolf!', active_heroes=[hero])
         """
         
-        self.name = name
+        self.path_name = path_name
         self.description = description
         self.reward_xp = reward_xp
         
     def get_stage_count(self):
         """Return a guestimate of how many stages are in this quest.
+        
+        Or well I guess it is the total number of possible paths that are available.
+        Though really you can't take all of them because most are mutually
+        exclusive.
         """
 
         if self.next_quests == []:
@@ -224,63 +290,8 @@ class Quest(Base):
             
         for next_quest in self.next_quests:
             return 1 + next_quest.get_stage_count()
-        
-    #Considering:
-    #Split this and connected methods between hero object and quest object.
-    def advance_quest(self, hero, next_quest=None):
-        """Move to the next quest in the quest path.
-        
-        If there is only one quest in the next_quests attribute
-        then 
-            and pay out this one
-            deactivate this one
-            activate that one 
-        else you must send in the name of the next quest to be activated.
-            search for quest in next_quests
-            if there then 
-                pay out
-                deactivate this one
-                activate next one
-            else:
-                error quest named 'next_quest_name' not in this quest path
-                
-        Not fully implemented ....
-        I need to make it actually use the self.next_quests attribute.
-        """
-        
-        #pdb.set_trace()
-        quest_path = QuestPath.find(self, hero)
-        if len(self.next_quests) == 0:
-            self.reward_hero(quest_path, hero, final=True)
-            self.mark_completed(hero)
-        elif len(self.next_quest) == 1:
-            self.activate_next_quest(next_quest, hero)
-                
-    def activate_next_quest(self, next_quest, hero):
-        """Activate the next quest in the series if possible.
-        
-        If not hard fail ...? I sugguest improving this to a custom exception at some point.
-        I have not idea how to to quest_path.stage and stages ...
-        """
-        
-        quest_path = QuestPath.find(self, hero)
-        if next_quest:
-            quest_path.stage += 1
-            if quest_path.stage > quest_path.stages:
-                quest_path.stages = quest_path.stage
-            quest_path.quest = next_quest
-            
     
-    def reward_hero(self, quest_path, hero, final=False):
-        """Pay out xp to hero on stage completion.
-        """
-        if final:
-            hero.current_exp += int(self.reward_xp * quest_path.stage * 0.3)
-        else:
-            hero.current_exp += self.reward_xp
-        hero.quest_notification = (self.name, self.reward_xp)
-        
-                
+    
     def mark_completed(self, hero):
         """Set completed flag and deactivate quest.
         

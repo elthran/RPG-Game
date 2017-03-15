@@ -662,9 +662,12 @@ def under_construction():
 @app.route('/Town/<town_name>')
 @login_required
 def town(town_name):
+    #Marked for refractor as ineficient if easy to understand.
+    #These should just be part of the basic world_map function as they don't actually
+    #add anything yet.
     for location in myHero.current_world.all_map_locations:
         if location.name == town_name:
-            myHero.current_city = location
+            myHero.current_location = location
             break
 
     page_title = myHero.current_city.display.page_title
@@ -678,12 +681,9 @@ def town(town_name):
 @app.route('/Cave/<cave_name>') # Test function while experimenting with locations
 @login_required
 def cave(cave_name):
-    #Marked for refractor as ineficient if easy to understand.
-    #Maybe a search function?
-    #myHero.current_city = myHero.current_world.get_city(cave_name)?
     for location in myHero.current_world.all_map_locations:
         if location.name == cave_name:
-            myHero.current_city = location
+            myHero.current_location = location
             break
     page_title = myHero.current_city.display.page_title
     page_heading = myHero.current_city.display.page_heading
@@ -710,9 +710,9 @@ def world_map(current_world, location_id):
     #May have originally compensated for the lack of a database.
     current_location = current_world.find_location(location_id)
     
-    #Needs to be reimplemented
+    #Needs to be reimplemented/or removed
     # myHero.known_locations.append(current_world)
-    myHero.current_city = None #?
+    # myHero.current_city = None #?
     
     move_on_the_map = current_world.show_directions(current_location)
     myHero.current_location = current_location
@@ -793,13 +793,14 @@ def arena():
     page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
     return render_template('home.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, status_display=conversation)  # return a string
 
+#A.k.a "Blacksmith"
 @app.route('/store/<inventory>')
 @login_required
 def store(inventory):
     page_title = "Store"
     for path in myHero.quest_paths:
         if path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 1:
-            path.quest.advance_quest(myHero)
+            path.advance()
     items_for_sale = []
     if inventory == "greeting":
         page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]
