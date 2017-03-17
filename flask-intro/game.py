@@ -74,7 +74,7 @@ class User(Base):
     
     This is database ready and connects to the Hero class.
     """
-    __tablename__ = 'users'
+    __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, nullable=False)
@@ -87,7 +87,7 @@ class Hero(Base):
     """Store data about the Hero/Character object.
     
     """
-    __tablename__ = 'heroes'
+    __tablename__ = 'hero'
     
     id = Column(Integer, primary_key=True)
     name = Column(String) #Was nullable=False now it isn't. I hope that is a good idea.

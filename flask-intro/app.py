@@ -49,6 +49,35 @@ def login_required(f):
             return redirect(url_for('login'))
     return wrap
 
+#Not implement. Control user moves on map.    
+def prevent_url_typing(f):
+    """Set certain pages as requiring a login to visit.
+
+    This should redirect you to the login page.
+    This needs a lot more work. It should be dealing with actual URLs ...
+    """
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        try:
+            requested_move = set([kwargs['location_id']])
+        except KeyError:
+            pass
+        try: 
+            requested_move = set([kwargs['cave_name']])
+        except KeyError:
+            pass
+        try:
+            requested_move = set([kwargs['town_name']])
+        except KeyError:
+            pass
+        pdb.set_trace()    
+        if 'valid_moves' in session and any(move in session['valid_moves'] for move in requested_move):
+            return f(*args, **kwargs)
+        else:
+            flash("You can't access that location from here.")
+            return redirect(url_for(f))
+    return wrap
+
 # This gets called anytime a button gets clicked in html using
 # <button class="command", value="foo">. "foo" is what gets sent to this
 # Python code.
@@ -523,6 +552,13 @@ def home():
         myHero.current_world = database.get_default_world()
         myHero.current_location = database.get_default_location()
         database.update()
+    
+    #Not implement. Control user moves on map.
+    #Sets up initial valid moves on the map.
+    # Should be a list of urls ...
+    # session['valid_moves'] = myHero.current_world.show_directions(myHero.current_location)
+    # session['valid_moves'].append(myHero.current_location.id)
+        
     # If it's a new character, send them to cerate_character url
     if myHero.character_name == None:
         return redirect(url_for('create_character'))
@@ -661,6 +697,8 @@ def under_construction():
 
 @app.route('/Town/<town_name>')
 @login_required
+#Not implement. Control user moves on map.
+# @prevent_url_typing
 def town(town_name):
     #Marked for refractor as ineficient if easy to understand.
     #These should just be part of the basic world_map function as they don't actually
@@ -680,6 +718,8 @@ def town(town_name):
 
 @app.route('/Cave/<cave_name>') # Test function while experimenting with locations
 @login_required
+#Not implement. Control user moves on map.
+# @prevent_url_typing
 def cave(cave_name):
     for location in myHero.current_world.all_map_locations:
         if location.name == cave_name:
@@ -693,8 +733,10 @@ def cave(cave_name):
     database.update()
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest)  # return a string
 
-@app.route('/WorldMap/<current_world>/<location_id>') # Test function while experimenting with locations
+@app.route('/WorldMap/<current_world>/<int:location_id>') # Test function while experimenting with locations
 @login_required
+#Not implement. Control user moves on map.
+# @prevent_url_typing
 def world_map(current_world, location_id):
     """Set up World Map web page. Return html string/web page.
     
@@ -726,6 +768,10 @@ def world_map(current_world, location_id):
     page_image = current_world.display.page_image
     paragraph = current_world.display.paragraph
     places_of_interest = current_world.display.places_of_interest
+    
+    #Not implement. Control user moves on map.
+    #Should be a list of urls ...
+    # session['valid_moves'] = move_on_the_map
     
     return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest, move_on_the_map=move_on_the_map)  
 
@@ -972,7 +1018,8 @@ if __name__ == '__main__':
     # myHero.inventory.append(Quest_Item("Copper Coin", myHero, 50))
     # for item in myHero.inventory:
         # item.amount_owned = 5
-    
+
     app.run(debug=True)
+    
 
 

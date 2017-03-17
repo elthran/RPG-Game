@@ -25,7 +25,7 @@ class Item(Base):
 	buy_price : Price to buy the item
 	level_req : level requirment
     """
-    __tablename__ = "items"
+    __tablename__ = "item"
     
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
@@ -38,6 +38,11 @@ class Item(Base):
     equiptable = Column(Boolean, default=False)
     consumable = Column(Boolean, default=False)
  
+    type = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Item",
+        'polymorphic_on':type
+    }
     
     def __init__(self, name, myHero, buy_price, amount_owned=1):
         self.name = name
@@ -68,6 +73,14 @@ class Item(Base):
 
 # Subclass of Item
 class Equiptable(Item):
+    __tablename__ = 'equiptable'
+    
+    id = Column(Integer, ForeignKey("item.id"), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity':"Equiptable",
+    }
+    
     def __init__(self, name, myHero, buy_price, max_durability=3, item_rating=10):
         super().__init__(name, myHero, buy_price)
         self.equiptable = True
@@ -86,6 +99,13 @@ class Equiptable(Item):
 
 # Subclass of Item
 class Weapon(Equiptable):
+    __tablename__ = 'weapon'
+    
+    id = Column(Integer, ForeignKey("equiptable.id"), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity':"Weapon",
+    }
     def __init__(self, name, myHero, buy_price, min_damage=0, max_damage=0, attack_speed=0):
         super().__init__(name, myHero, buy_price)
         self.min_damage = min_damage
