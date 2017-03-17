@@ -246,13 +246,20 @@ def basic_skills():
     page_heading = "Here are your basic skills"
     paragraph = "Choose how you would like to distribute your attribute points."
     if request.method == 'POST':
-        myHero.primary_attributes["Strength"] += convert_input(request.form["Strength"])
         myHero.primary_attributes["Agility"] += convert_input(request.form["Agility"])
+        myHero.primary_attributes["Charisma"] += convert_input(request.form["Charisma"])
+        myHero.primary_attributes["Divinity"] += convert_input(request.form["Divinity"])
+        myHero.primary_attributes["Fortitude"] += convert_input(request.form["Fortitude"])
+        myHero.primary_attributes["Fortuity"] += convert_input(request.form["Fortuity"])
+        myHero.primary_attributes["Perception"] += convert_input(request.form["Perception"])
+        myHero.primary_attributes["Reflexes"] += convert_input(request.form["Reflexes"])
         myHero.primary_attributes["Resilience"] += convert_input(request.form["Resilience"])
+        myHero.primary_attributes["Strength"] += convert_input(request.form["Strength"])
+        myHero.primary_attributes["Survivalism"] += convert_input(request.form["Survivalism"])
         myHero.primary_attributes["Vitality"] += convert_input(request.form["Vitality"])
-        primary_points_being_spent = convert_input(request.form["Strength"]) + convert_input(request.form["Agility"]) + convert_input(request.form["Resilience"]) + convert_input(request.form["Vitality"])
+        myHero.primary_attributes["Wisdom"] += convert_input(request.form["Wisdom"])
+        primary_points_being_spent = convert_input(request.form["Agility"]) + convert_input(request.form["Charisma"]) + convert_input(request.form["Divinity"]) + convert_input(request.form["Fortitude"]) + convert_input(request.form["Fortuity"]) + convert_input(request.form["Perception"]) + convert_input(request.form["Reflexes"]) + convert_input(request.form["Resilience"]) + convert_input(request.form["Strength"]) + convert_input(request.form["Survivalism"]) + convert_input(request.form["Vitality"]) + convert_input(request.form["Wisdom"])
         myHero.attribute_points -= primary_points_being_spent
-
         myHero.attack_speed_skill += convert_input(request.form["attack_speed"])
         secondary_points_being_spent = convert_input(request.form["attack_speed"])
         myHero.secondary_attribute_points -= secondary_points_being_spent
