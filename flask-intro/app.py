@@ -49,7 +49,7 @@ def login_required(f):
             return redirect(url_for('login'))
     return wrap
 
-#Not implement. Control user moves on map.    
+#Not implemented. Control user moves on map.    
 def prevent_url_typing(f):
     """Set certain pages as requiring a login to visit.
 
@@ -106,11 +106,13 @@ def command(cmd=None):
     testing = True
     if testing:
         print('request is:', repr(request))
+        print('request data:', repr(request.data))
+        print('request view_args:', repr(request.view_args))
         print('request args:', repr(request.args))
         print('cmd is:', repr(cmd))
-    
+
     try:
-        response = Command.cmd_functions[cmd](myHero)
+        response = Command.cmd_functions[cmd](myHero, database=database, arg_dict=request.args)
         database.update()
         return response
     except KeyError as ex:
@@ -134,7 +136,7 @@ def command(cmd=None):
     
     for item in myHero.inventory:
         if cmd == item.name:
-            if item.equiptable:            # EQUIP ITEMS
+            if item.wearable:            # EQUIP ITEMS
                 equipped_items_to_remove = []
                 for equipped_item in myHero.equipped_items:
                     if type(item) is Weapon:
@@ -207,17 +209,6 @@ def command(cmd=None):
             database.update()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
-    # BUY FROM BLACKSMITH
-    for item in database.get_all_store_items():
-        if cmd == item.buy_name and myHero.gold >= item.buy_price:
-            newItem = item
-            newItem.update_owner(myHero)
-            myHero.inventory.append(newItem)
-            myHero.gold -= item.buy_price
-            for path in myHero.quest_paths:
-                if path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 2:
-                    path.quest.advance_quest()
-            return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # BUY FROM MARKETPLACE
     for item in database.get_all_marketplace_items():
@@ -553,7 +544,7 @@ def home():
         myHero.current_location = database.get_default_location()
         database.update()
     
-    #Not implement. Control user moves on map.
+    #Not implemented. Control user moves on map.
     #Sets up initial valid moves on the map.
     # Should be a list of urls ...
     # session['valid_moves'] = myHero.current_world.show_directions(myHero.current_location)
@@ -573,7 +564,7 @@ def inventory_page():
     paragraph = ""
     page_title = "Inventory"
     for item in myHero.inventory:
-        if item.equiptable:
+        if item.wearable:
             item.check_if_improvement()
     return render_template('home.html', myHero=myHero, inventory_page=True, page_title=page_title)  # return a string
 
@@ -697,7 +688,7 @@ def under_construction():
 
 @app.route('/Town/<town_name>')
 @login_required
-#Not implement. Control user moves on map.
+#Not implemented. Control user moves on map.
 # @prevent_url_typing
 def town(town_name):
     #Marked for refractor as ineficient if easy to understand.
@@ -718,7 +709,7 @@ def town(town_name):
 
 @app.route('/Cave/<cave_name>') # Test function while experimenting with locations
 @login_required
-#Not implement. Control user moves on map.
+#Not implemented. Control user moves on map.
 # @prevent_url_typing
 def cave(cave_name):
     for location in myHero.current_world.all_map_locations:
@@ -735,7 +726,7 @@ def cave(cave_name):
 
 @app.route('/WorldMap/<current_world>/<int:location_id>') # Test function while experimenting with locations
 @login_required
-#Not implement. Control user moves on map.
+#Not implemented. Control user moves on map.
 # @prevent_url_typing
 def world_map(current_world, location_id):
     """Set up World Map web page. Return html string/web page.
@@ -769,7 +760,7 @@ def world_map(current_world, location_id):
     paragraph = current_world.display.paragraph
     places_of_interest = current_world.display.places_of_interest
     
-    #Not implement. Control user moves on map.
+    #Not implemented. Control user moves on map.
     #Should be a list of urls ...
     # session['valid_moves'] = move_on_the_map
     
@@ -857,13 +848,13 @@ def store(inventory):
         page_heading = "Check out our new armour!"
         page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
         for item in database.get_all_store_items():
-            if isinstance(item, Garment) or isinstance(item, Jewelry):
+            if item.garment or item.jewelry:
                 items_for_sale.append(item)
     elif inventory == "weaponry":
         page_heading = "Careful! Our weapons are sharp."
         page_links = [("I think I'd rather look at your ", "/store/armoury", "armour", " selection.")]
         for item in database.get_all_store_items():
-            if isinstance(item, Weapon):
+            if item.weapon:
                 items_for_sale.append(item)
     page_image = "store"
     return render_template('home.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string

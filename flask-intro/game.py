@@ -81,8 +81,22 @@ class User(Base):
     password = Column(String, nullable=False)
     email = Column(String)
     timestamp = Column(DateTime)
-                    
-                        
+
+
+class Inventory(Base):
+    """Store a list of items for the hero.
+    
+    This is a special class that will allow me to do more natural pythonic operations
+    on a list of items. In theory. Sort of a 'wrapper' I guess?
+    """
+    __tablename__ = 'inventory'
+ 
+    id = Column(Integer, primary_key=True)
+    
+    def __iter__(self):
+        return (item for item in self.items)
+        
+  
 class Hero(Base):
     """Store data about the Hero/Character object.
     
@@ -139,8 +153,7 @@ class Hero(Base):
         may destroy relationship?
         """
         self.primary_attributes = PrimaryAttribute()
-
-        self.kill_quests = BaseDict()
+        self.inventory = Inventory()
         
         #Defaults will remain unchanged if no arguments are passed.
         self.age = 7
@@ -184,6 +197,8 @@ class Hero(Base):
 
     
     def not_yet_implemented():
+        self.kill_quests = BaseDict()
+        
         self.strength = 1
         self.resilience = 1
         self.vitality = 1
@@ -225,7 +240,7 @@ class Hero(Base):
         #######
 
         #Make a list of the equipped items or if none are equipt return empty list.
-        self.equipped_items = [item for item in self.inventory if item.equiptable] or []
+        self.equipped_items = [item for item in self.inventory if item.wearable] or []
 
         self.max_damage = update_maximum_damage(self)
         self.maximum_damage = self.max_damage #Synonym for max_damage

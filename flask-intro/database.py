@@ -100,9 +100,9 @@ class EZDB:
         
         
     def get_all_store_items(self):
-        """Not Implemented!
+        """Return all items in the database ordered by name.
         """
-        return []
+        return self.session.query(Item).order_by(Item.name).all()
         
         
     def get_all_marketplace_items(self):
@@ -139,7 +139,7 @@ class EZDB:
         try:
             return self.session.query(User).filter_by(username=username).first().id
         except AttributeError as e:
-            print(e)
+            #If no user of that username exists return None/False.
             if str(e) == "'NoneType' object has no attribute 'id'":
                 return
             else:

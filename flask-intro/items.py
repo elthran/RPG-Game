@@ -10,9 +10,25 @@ except ImportError:
 #Well ... ok, but for simplicity sake just pretend that that is true.
 from base_classes import Base
 
-# exit('********Item: inheritance not implemented********')
+"""
+Item Specification:
+    All hero specific attributes must be moved from the Template classes.
+    Or maybe InventoryItem which relates to Hero by inventory.
+    Hero.inventory = relations 1 to many with InventoryItem.
+    Item.inventory = relation many to many with inventoryItem.
+    Things like:
+        -durability
+        -amount_owned
+        -broken
+        -consumed (unless consumable just removes the item)
+"""
 
 class Item(Base):
+    __tablename__ = "item"
+    id = Column(Integer, primary_key=True)
+
+
+class TemplateItem(Base):
     """Item object base class.
     
     A list of all items, the relationship to the Hero class is many to many.
@@ -25,22 +41,28 @@ class Item(Base):
 	buy_price : Price to buy the item
 	level_req : level requirment
     """
-    __tablename__ = "item"
+    __tablename__ = "template_item"
     
     id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True, nullable=False)
+    name = Column(String, unique=True)
     
-    #Marked for deletion as unnessary string manipulation.
-    buy_name = Column(String, default=name + "_buy")
+    #Marked for restructure/removal.
+    #I believe that this should be part of a Display class or be built into the HTML code.
+    buy_name = Column(String)
+    
+    buy_price = Column(Integer)
     
     #Marked for restructuring as causes conflics with multiple heroes?
-    amount_owned = Column(Integer, default=1)
-    equiptable = Column(Boolean, default=False)
-    consumable = Column(Boolean, default=False)
+    #As in if hero1 has 4 of an item then hero2 will as well?
+    #Move to Inventory?
+    amount_owned = Column(Integer)
+    
+    wearable = Column(Boolean)
+    consumable = Column(Boolean)
  
     type = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Item",
+        'polymorphic_identity':"TemplateItem",
         'polymorphic_on':type
     }
     
@@ -50,44 +72,41 @@ class Item(Base):
         self.myHero = myHero
         self.buy_price = buy_price
         self.amount_owned = amount_owned
-        self.equiptable = False
+        self.wearable = False
         self.consumable = False
 
     def update_owner(self, myHero):
         self.myHero = myHero
         
-    def __repr__(self): 
-        """Return string data about Item object.
-        """
-        atts = []
-        column_headers = self.__table__.columns.keys()
-        extra_attributes = [key for key in vars(self).keys() if key not in column_headers]
-        for key in column_headers:
-            atts.append('{}={}'.format(key, repr(getattr(self, key))))
-            
-        for key in sorted(extra_attributes):
-            atts.append('{}={}'.format(key, repr(getattr(self, key))))
-        
-        data = "<Item(" + ', '.join(atts) + ')>'
-        return data
 
-# Subclass of Item
-class Equiptable(Item):
-    __tablename__ = 'equiptable'
+# Subclass of TemplateItem
+class Wearable(TemplateItem):
+    __tablename__ = 'wearable'
     
-    id = Column(Integer, ForeignKey("item.id"), primary_key=True)
+    id = Column(Integer, ForeignKey("template_item.id"), primary_key=True)
+    
+    broken = Column(Boolean)
+    durability = Column(Integer)
+    max_durability = Column(Integer)
+    item_rating = Column(Integer)
+    garment = Column(Boolean)
+    weapon = Column(Boolean)
+    jewelry = Column(Boolean)
 
     __mapper_args__ = {
-        'polymorphic_identity':"Equiptable",
+        'polymorphic_identity':"Wearable",
     }
     
     def __init__(self, name, myHero, buy_price, max_durability=3, item_rating=10):
         super().__init__(name, myHero, buy_price)
-        self.equiptable = True
+        self.wearable = True
         self.broken = False
         self.max_durability = max_durability
         self.durability = self.max_durability
         self.item_rating = item_rating
+        garment = False
+        weapon = False
+        jewelry = False
 
     def check_if_improvement(self):
         self.improvement = True
@@ -97,12 +116,19 @@ class Equiptable(Item):
                     self.improvement = False
                 break
 
-# Subclass of Item
-class Weapon(Equiptable):
+# Subclass of TemplateItem
+class Weapon(Wearable):
     __tablename__ = 'weapon'
     
-    id = Column(Integer, ForeignKey("equiptable.id"), primary_key=True)
-
+    id = Column(Integer, ForeignKey("wearable.id"), primary_key=True)
+    
+    min_damage = Column(Integer)
+    max_damage = Column(Integer)
+    
+    one_handed_weapon = Column(Boolean)
+    shield = Column(Boolean)
+    two_handed_weapon = Column(Boolean)
+    
     __mapper_args__ = {
         'polymorphic_identity':"Weapon",
     }
@@ -111,6 +137,11 @@ class Weapon(Equiptable):
         self.min_damage = min_damage
         self.max_damage = max_damage
         self.attack_speed = attack_speed
+        
+        #Marked for restructure
+        #If self.type == "Weapon" should do the same thing.
+        #In fact all of these should be taken care of inside of the relavant
+        #subclass. i.e. if self.type == one_handed_weapon etc.
         self.weapon = True
         self.one_handed_weapon = False
         self.shield = False
@@ -124,26 +155,61 @@ class Weapon(Equiptable):
         self.myHero.attack_speed += self.attack_speed
 		
 class One_Handed_Weapon(Weapon):
+    __tablename__ = 'one_handed_weapon'
+    
+    id = Column(Integer, ForeignKey("weapon.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"One_Handed_Weapon",
+    }
+    
     def __init__(self, name, myHero, buy_price, min_damage, max_damage, attack_speed):
         super().__init__(name, myHero, buy_price, min_damage, max_damage, attack_speed)
         self.one_handed_weapon = True
 
 class Shield(Weapon):
+    __tablename__ = 'shield'
+    
+    id = Column(Integer, ForeignKey("weapon.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Shield",
+    }
+    
     def __init__(self, name, myHero, buy_price):
         super().__init__(name, myHero, buy_price)
         self.shield = True
         self.weapon = False
 
 class Two_Handed_Weapon(Weapon):
+    __tablename__ = 'two_handed_weapon'
+    
+    id = Column(Integer, ForeignKey("weapon.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Two_Handed_Weapon",
+    }
+    
     def __init__(self, name, myHero, buy_price, min_damage, max_damage, attack_speed):
         super().__init__(name, myHero, buy_price, min_damage, max_damage, attack_speed)
         self.two_handed_weapon = True
 
 # New Class		
-class Garment(Equiptable):
+class Garment(Wearable):
+    __tablename__ = 'garment'
+    
+    id = Column(Integer, ForeignKey("wearable.id"), primary_key=True)
+    
+    health_modifier = Column(Integer)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Garment",
+    }
+    
     def __init__(self, name, myHero, buy_price, health_modifier):
         super().__init__(name, myHero, buy_price)
         self.health_modifier = health_modifier
+        self.garment = True
 
     def update_stats(self):
         if self.broken:
@@ -151,47 +217,131 @@ class Garment(Equiptable):
         self.myHero.max_health += self.health_modifier
 
 class Chest_Armour(Garment):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self.chest_armour = True
-
-class Head_Armour(Garment):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self.head_armour = True
-
-class Leg_Armour(Garment):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self.leg_armour = True
-
-class Feet_Armour(Garment):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self.feet_armour = True
-
-class Arm_Armour(Garment):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self.arm_armour = True
-
-class Hand_Armour(Garment):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self.hand_armour = True
-
-# New Class
-class Jewelry(Equiptable):
+    __tablename__ = 'chest_armour'
+    
+    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
+    
+    chest_armour = Column(Boolean)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Chest_Armour",
+    }
+        
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.chest_armour = True
+
+class Head_Armour(Garment):
+    __tablename__ = 'head_armour'
+    
+    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
+    
+    head_armour = Column(Boolean)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Head_Armour",
+    }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.head_armour = True
+
+class Leg_Armour(Garment):
+    __tablename__ = 'leg_armour'
+    
+    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
+    
+    leg_armour = Column(Boolean)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Leg_Armour",
+    }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.leg_armour = True
+
+class Feet_Armour(Garment):
+    __tablename__ = 'feet_armour'
+    
+    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
+    
+    feet_armour = Column(Boolean)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Feet_Armour",
+    }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.feet_armour = True
+
+class Arm_Armour(Garment):
+    __tablename__ = 'Arm_Armour'
+    
+    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
+    
+    arm_armour = Column(Boolean)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Arm_Armour",
+    }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.arm_armour = True
+
+class Hand_Armour(Garment):
+    __tablename__ = 'hand_armour'
+    
+    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
+    
+    hand_armour = Column(Boolean)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Hand_Armour",
+    }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.hand_armour = True
+
+# New Class
+class Jewelry(Wearable):
+    __tablename__ = 'jewelry'
+    
+    id = Column(Integer, ForeignKey("wearable.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Jewelry",
+    }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.jewelry = True
 
 class Ring(Jewelry):
+    __tablename__ = 'ring'
+    
+    id = Column(Integer, ForeignKey("jewelry.id"), primary_key=True)
+    
+    ring = Column(Boolean)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Ring",
+    }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.ring = True
 
-# Subclass of Item
-class Consumable(Item):
+# Subclass of TemplateItem
+class Consumable(TemplateItem):
+    __tablename__ = 'consumable'
+    
+    id = Column(Integer, ForeignKey("template_item.id"), primary_key=True)
+    
+    healing_amount = Column(Integer)
+    sanctity_amount = Column(Integer)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Consumable",
+    }
     def __init__(self, *args, healing_amount=0, sanctity_amount=0, **kwargs):
         super().__init__(*args, **kwargs)
         self.healing_amount = healing_amount
@@ -207,26 +357,13 @@ class Consumable(Item):
             self.myHero.current_sanctity = self.myHero.max_sanctity
 
 # New Class
-class Quest_Item(Item):
+class Quest_Item(TemplateItem):
+    __tablename__ = 'quest_item'
+    
+    id = Column(Integer, ForeignKey("template_item.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Quest_Item",
+    }
     def __init__(self, name, myHero, buy_price):
         super().__init__(name, myHero, buy_price)
-
-# all_store_items = [One_Handed_Weapon("Small Dagger", "Temporary", buy_price=5, min_damage=30, max_damage=60, attack_speed=1),
-                   # One_Handed_Weapon("Big Dagger", "Temporary", buy_price=10, min_damage=300, max_damage=600, attack_speed=2),
-                   # Shield("Small Shield", "Temporary", buy_price=10),
-                   # Two_Handed_Weapon("Small Polearm", "Temporary", buy_price=5, min_damage=30, max_damage=60, attack_speed=1),
-                   # Two_Handed_Weapon("Medium Polearm", "Temporary", buy_price=5, min_damage=30, max_damage=60, attack_speed=1),
-                   # Leg_Armour("Medium Pants", "Temporary", 7, 25),
-                   # Chest_Armour("Medium Tunic", "Temporary", 2, 25),
-                   # Chest_Armour("Strong Tunic", "Temporary", 5, 250),
-                   # Head_Armour("Weak Helmet", "Temporary", 2, 1),
-                   # Head_Armour("Medium Helmet", "Temporary", 4, 3),
-                   # Feet_Armour("Test Boots", "Temporary", 3, 3),
-                   # Arm_Armour("Test Sleeves", "Temporary", 4, 5),
-                   # Hand_Armour("Test Gloves", "Temporary", 5, 7),
-                   # Ring("Test Ring", "Temporary", 8)]
-
-# all_marketplace_items = [Consumable("Minor Health Potion", "Temporary", 3, healing_amount=10),
-                         # Consumable("Major Health Potion", "Temporary", 6, healing_amount=50),
-                         # Consumable("Major Faith Potion", "Temporary", 6, sanctity_amount=50),
-                         # Consumable("Major Awesome Max Potion", "Temporary", 6000, sanctity_amount=50)]

@@ -204,7 +204,7 @@ function sumerror()
       <h2>Here is our list of items:</h2>
       {% for item in items_for_sale %}
         {{ item.name }} ({{ item.buy_price }})
-        <button class="command command-{{ item.buy_name }}" value="{{ item.buy_name }}">Buy</button><br>
+        <button class="command  command-{{ item.buy_name }}" value="buy?item_name={{ item.name }}">Buy</button><br>
       {% endfor %}        
     {% endif %}
 
@@ -636,7 +636,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             };
             // We point the request at the appropriate command
-            // Send data to python. To send no string args you must not use the "+" operator.
+            // Send data to python. To send non string args you must not use the "+" operator.
             // Then you can send the data raw or in lots of other formats.
             // See https://www.w3schools.com/xml/ajax_xmlhttprequest_send.asp
             //
@@ -649,7 +649,9 @@ document.addEventListener("DOMContentLoaded", function () {
             // e.g. <button class="foo otherFoo">
             //
             // "&&" acts like the "," in pythonic {key:value, key2:value2}
-            xhttp.open("GET", "/" + command + "?class=" + buttonClass + "&&key2=value2", true);
+            // xhttp.open("GET", "/" + command + "?class=" + buttonClass + "&&key2=value2", true);
+            var pathname = window.location.pathname;
+            xhttp.open("GET", "/" + command + "&&location=" + window.location.pathname, true);
             // and then we send it off
             xhttp.send();
         });

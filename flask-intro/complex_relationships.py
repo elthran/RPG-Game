@@ -63,10 +63,23 @@ abilities_association_table = Table('abilities_association', Base.metadata,
 game.Hero.abilities = relationship("Ability", secondary=abilities_association_table, back_populates="heroes")
 abilities.Ability.heroes = relationship("Hero", secondary=abilities_association_table, back_populates="abilities")
 
-#One Hero -> many inventory items (bidirectional) Note: (inventory == items)    
-#inventory is list of character's items.
-items.Item.hero_id = Column(Integer, ForeignKey("hero.id"))
-game.Hero.inventory = relationship("Item", order_by="Item.name", backref="myHero")
+##########
+#Heroes and Items (and inventory).
+##########
+#Each Hero has One inventory. (One to One -> bidirectional)
+#inventory is list of character's items. 
+game.Inventory.hero_id = Column(Integer, ForeignKey('hero.id'))
+game.Inventory.hero = relationship("Hero", backref=backref("inventory", uselist=False))
+
+#Each inventory has many items. (One to Many -> bidirectional)
+#Each item can be in one inventory.
+game.Inventory.items = relationship("Item", backref="inventory")
+items.Item.inventory_id = Column(Integer, ForeignKey('inventory.id'))
+
+#Each TemplateItem can have many regular Items.
+items.TemplateItem.items = relationship("Item", backref='template_item')
+items.Item.template_item_id = Column(Integer, ForeignKey('template_item.id'))
+
 
 #One Hero -> one primary_attribute dict
 game.PrimaryAttribute.hero_id = Column(Integer, ForeignKey('hero.id'))
@@ -77,9 +90,9 @@ game.Hero.primary_attributes = relationship("PrimaryAttribute", uselist=False)
 #One Hero -> one quest list?
 #Quest list is not quests? So like it should really be Many to Many? Each Hero can have Many Quests
 #and each Quest can be held by Many Heroes.
-base_classes.BaseDict.hero_id_kill_quests = Column(Integer, ForeignKey('hero.id'))
-base_classes.BaseDict.kill_quests_hero = relationship("Hero", 
-    backref=backref("kill_quests", uselist=False), foreign_keys="[BaseDict.hero_id_kill_quests]")
+# base_classes.BaseDict.hero_id_kill_quests = Column(Integer, ForeignKey('hero.id'))
+# base_classes.BaseDict.kill_quests_hero = relationship("Hero", 
+    # backref=backref("kill_quests", uselist=False), foreign_keys="[BaseDict.hero_id_kill_quests]")
     
     
 #Heroes to Quests.
