@@ -236,7 +236,7 @@ def level_up():
         myHero.refresh_character()
         database.update()
         return redirect(url_for('home'))
-    return render_template('home.html', level_up=True, page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
+    return render_template('layout.html', level_up=True, page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
 """
 
 # This gets called anytime you have secondary attribute points to spend
@@ -266,8 +266,8 @@ def basic_skills():
         myHero.update_secondary_attributes()
         myHero.refresh_character()
         database.update()
-        return render_template('home.html', basic_skill_page=True, page_title="Basic", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
-    return render_template('home.html', basic_skill_page=True, page_title="Basic", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
+        return render_template('layout.html', basic_skill_page=True, page_title="Basic", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
+    return render_template('layout.html', basic_skill_page=True, page_title="Basic", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
 
 # use decorators to link the function to a url
 # route for handling the login page logic
@@ -295,7 +295,7 @@ def login():
         else:
             error = 'Invalid Credentials. Please try again.'
 
-    return render_template('login.html', error=error, login=True)
+    return render_template('index.html', error=error, login=True)
 
 # route for handling the account creation page logic
 @app.route('/password_recovery', methods=['GET', 'POST'])
@@ -314,7 +314,7 @@ def password_recovery():
                 if row[0] == username:
                     error = "We found your password, but it was hashed into this: " + row[1] + ". We are unable to decode the jargon. Sorry, please restart the game!"
         con.close()
-    return render_template('login.html', error=error, password_recovery=True)
+    return render_template('index.html', error=error, password_recovery=True)
 
 # route for handling the account creation page logic
 @app.route('/create_account', methods=['GET', 'POST'])
@@ -331,7 +331,7 @@ def create_account():
             # database.add_world_map_to_hero() maybe?
             return redirect(url_for('login'))
     database.update()
-    return render_template('login.html', error=error, create_account=True)
+    return render_template('index.html', error=error, create_account=True)
 
 # this gets called if you press "logout"
 @app.route('/logout')
@@ -400,7 +400,7 @@ def battle():
     if myHero.current_endurance < required_endurance:
         page_title = "Battle"
         page_heading = "Not enough endurance, wait a bit!"
-        return render_template('home.html', page_title=page_title, myHero=myHero, page_heading=page_heading, page_links=page_links)
+        return render_template('layout.html', page_title=page_title, myHero=myHero, page_heading=page_heading, page_links=page_links)
 
     myHero.current_health,game.enemy.current_health,battle_log,battle_results = battle_logic(myHero,game.enemy)
     if myHero.current_health == 0:
@@ -452,7 +452,7 @@ def battle():
             page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
 
     database.update()
-    return render_template('home.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log, battle_results=battle_results, myHero=myHero, enemy=game.enemy, page_links=page_links)  # return a string
+    return render_template('battle.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log, battle_results=battle_results, myHero=myHero, enemy=game.enemy, page_links=page_links)  # return a string
 
 # this is a temp button that can call this to erase your chracter information and redirect you to the create character page
 @app.route('/reset_character')
@@ -507,12 +507,12 @@ def admin():
         ("Divinity", myHero.primary_attributes["Divinity"]),
         ("Fortitude", myHero.primary_attributes["Fortitude"])]
 
-    return render_template('home.html', page_title=page_title, page_heading=page_heading, page_image=page_image, myHero=myHero, admin=admin)  # return a string
+    return render_template('admin.html', page_title=page_title, page_heading=page_heading, page_image=page_image, myHero=myHero, admin=admin)  # return a string
 
 @app.route('/display_users')	
 def display_user_page():
 	users = database.session.query(User).order_by(User.id).all()
-	return render_template('home.html', myHero=myHero, users=users)
+	return render_template('users.html', myHero=myHero, users=users)
 
 ### PROFILE/DISPLAY FUNCTIONS
 
@@ -536,7 +536,7 @@ def home():
     # If they have leveled up, send them to level_up url
     #elif myHero.attribute_points > 0:
     #    return redirect(url_for('level_up'))
-    return render_template('home.html', page_title="Profile", myHero=myHero, home=True)  # return a string'
+    return render_template('layout.html', page_title="Profile", myHero=myHero, home=True)  # return a string'
 
 @app.route('/inventory_page')
 @login_required
@@ -546,7 +546,7 @@ def inventory_page():
     for item in myHero.inventory:
         if item.equiptable:
             item.check_if_improvement()
-    return render_template('home.html', myHero=myHero, inventory_page=True, page_title=page_title)  # return a string
+    return render_template('layout.html', myHero=myHero, inventory_page=True, page_title=page_title)  # return a string
 
 @app.route('/ability_tree/<spec>')
 @login_required
@@ -598,9 +598,9 @@ def ability_tree(spec):
                         unknown_abilities.append(ability)
                 else:
                     unknown_abilities.append(ability)            
-        return render_template('home.html', myHero=myHero, ability_pages=True, ability_pages_learn=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
+        return render_template('layout.html', myHero=myHero, ability_pages=True, ability_pages_learn=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
         
-    return render_template('home.html', myHero=myHero, ability_pages=True, ability_pages_use=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
+    return render_template('layout.html', myHero=myHero, ability_pages=True, ability_pages_use=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
 
 @app.route('/quest_log')
 @login_required
@@ -608,7 +608,7 @@ def quest_log():
     myHero.page_refresh_character()
     paragraph = ""
     page_title = "Quest Log"
-    return render_template('home.html', myHero=myHero, journal=True, quest_log=True, page_title=page_title)  # return a string
+    return render_template('journal.html', myHero=myHero, journal=True, quest_log=True, page_title=page_title)  # return a string
 
 @app.route('/bestiary/<current_monster_id>')
 @login_required
@@ -622,7 +622,7 @@ def bestiary(current_monster_id):
                 break
     paragraph = ""
     page_title = "Bestiary"
-    return render_template('home.html', myHero=myHero, journal=True, bestiary=True, page_title=page_title, bestiary_data=bestiary_data, current_monster=current_monster)  # return a string
+    return render_template('journal.html', myHero=myHero, journal=True, bestiary=True, page_title=page_title, bestiary_data=bestiary_data, current_monster=current_monster)  # return a string
 
 @app.route('/people_log/<current_npc>')
 @login_required
@@ -636,21 +636,21 @@ def people_log(current_npc):
                 break
     paragraph = ""
     page_title = "People"
-    return render_template('home.html', myHero=myHero, journal=True, people_log=True, page_title=page_title, npc_data=npc_data, current_npc=current_npc)  # return a string
+    return render_template('journal.html', myHero=myHero, journal=True, people_log=True, page_title=page_title, npc_data=npc_data, current_npc=current_npc)  # return a string
 
 @app.route('/map_log')
 @login_required
 def map_log():
     paragraph = ""
     page_title = "Map"
-    return render_template('home.html', myHero=myHero, journal=True, map_log=True, page_title=page_title)  # return a string
+    return render_template('journal.html', myHero=myHero, journal=True, map_log=True, page_title=page_title)  # return a string
 
 @app.route('/achievement_log')
 @login_required
 def achievement_log():
     paragraph = ""
     page_title = "Achievements"
-    return render_template('home.html', myHero=myHero, journal=True, achievement_log=True, completed_achievements=myHero.completed_achievements, page_title=page_title)  # return a string
+    return render_template('journal.html', myHero=myHero, journal=True, achievement_log=True, completed_achievements=myHero.completed_achievements, page_title=page_title)  # return a string
 
 @app.route('/under_construction')
 @login_required
@@ -658,7 +658,7 @@ def under_construction():
     page_title = "Under Construction"
     page_heading = "This page is not complete yet."
     page_image = "under_construction"
-    return render_template('home.html', page_title=page_title, page_heading=page_heading, page_image=page_image, myHero=myHero)  # return a string
+    return render_template('layout.html', page_title=page_title, page_heading=page_heading, page_image=page_image, myHero=myHero)  # return a string
 
 ### END OF PROFILE/DISPLAY FUNCTIONS
 
@@ -680,7 +680,7 @@ def town(town_name):
     paragraph = myHero.current_city.display.paragraph
     places_of_interest = myHero.current_city.display.places_of_interest
     database.update()
-    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest )  # return a string
+    return render_template('town.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest )  # return a string
 
 @app.route('/Cave/<cave_name>') # Test function while experimenting with locations
 @login_required
@@ -698,7 +698,7 @@ def cave(cave_name):
     paragraph = myHero.current_city.display.paragraph
     places_of_interest = myHero.current_city.display.places_of_interest
     database.update()
-    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest)  # return a string
+    return render_template('layout.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest)  # return a string
 
 @app.route('/WorldMap/<current_world>/<location_id>') # Test function while experimenting with locations
 @login_required
@@ -734,7 +734,7 @@ def world_map(current_world, location_id):
     paragraph = current_world.display.paragraph
     places_of_interest = current_world.display.places_of_interest
     
-    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest, move_on_the_map=move_on_the_map)  
+    return render_template('world_map.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest, move_on_the_map=move_on_the_map)  
 
 @app.route('/barracks')
 @login_required
@@ -747,7 +747,7 @@ def barracks():
         page_heading = "Welcome to the arena " + myHero.name+"!"
         page_image = "arena"
         page_links = [("Compete in the ", "/arena","arena", ".(temporary)"), ("Pay to ", "/spar", "spar", " against the trainer."), ("Battle another ", "/under_construction", "player",".")]
-    return render_template('home.html', page_title="Barracks", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links)  # return a string
+    return render_template('layout.html', page_title="Barracks", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links)  # return a string
 
 #From /barracks
 @app.route('/spar')
@@ -761,7 +761,7 @@ def spar():
         myHero.gold -= spar_cost
         myHero.current_exp += spar_benefit * myHero.experience_gain_modifier
         page_heading = str("You spend some time sparring with the trainer at the barracks. You spend " + str(spar_cost) + " gold and gain " + str(spar_benefit) + " experience.")
-    return render_template('home.html', page_title="Sparring Room", page_heading=page_heading, myHero=myHero, game=game)  # return a string
+    return render_template('layout.html', page_title="Sparring Room", page_heading=page_heading, myHero=myHero, game=game)  # return a string
 
 #From /barracks
 @app.route('/arena')
@@ -798,7 +798,7 @@ def arena():
                     ("Luck: ", str(game.enemy.luck)),
                     ("Health: ", str(game.enemy.current_health) + " / " + str(game.enemy.max_health))]
     page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
-    return render_template('home.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, status_display=conversation)  # return a string
+    return render_template('layout.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, status_display=conversation)  # return a string
 
 @app.route('/store/<inventory>')
 @login_required
@@ -812,7 +812,7 @@ def store(inventory):
         page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]
         page_heading = "Good day sir! What can I get for you?"
         page_image = "store"
-        return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
+        return render_template('layout.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
     elif inventory == "armoury":
         page_heading = "Check out our new armour!"
         page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
@@ -826,7 +826,7 @@ def store(inventory):
             if isinstance(item, Weapon):
                 items_for_sale.append(item)
     page_image = "store"
-    return render_template('home.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
+    return render_template('store.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
 
 @app.route('/tavern', methods=['GET', 'POST'])
 @login_required
@@ -895,7 +895,7 @@ def tavern():
             myHero.current_quests = [quest for quest in myHero.current_quests if quest[0] != "Become an apprentice at the tavern."]
             myHero.completed_quests.append("Become an apprentice at the tavern.")
             page_heading = "You are now my apprentice!"
-    return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, tavern=tavern, bottom_page_links=page_links, dialogue_options=dialogue_options)  # return a string
+    return render_template('layout.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, tavern=tavern, bottom_page_links=page_links, dialogue_options=dialogue_options)  # return a string
 
 @app.route('/marketplace/<inventory>')
 @login_required
@@ -906,14 +906,14 @@ def marketplace(inventory):
     if inventory == "greeting":
         page_links = [("Take a look at our ", "/marketplace/general", "selection", "."), ("Return to ", "/Town/" + myHero.current_city.name, "town", ".")]
         page_heading = "Good day sir! What can I get for you?"
-        return render_template('home.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
+        return render_template('layout.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
     elif inventory == "general":
         page_heading = "Check out our new potion!"
         page_links = [("Let me go back to the ", "/marketplace/greeting", "marketplace", " instead.")]
         for item in database.get_all_marketplace_items():
             if isinstance(item, Consumable):
                 items_for_sale.append(item)
-    return render_template('home.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
+    return render_template('layout.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_heading=page_heading, page_image=page_image, page_links=page_links)  # return a string
 
 @app.route('/old_mans_hut')
 @login_required
@@ -921,7 +921,7 @@ def old_mans_hut():
     page_heading = "Old Man's Hut"
     page_image = "hut"
     paragraph = "Nice to see you again kid. What do you need?"
-    return render_template('home.html', myHero=myHero, page_title="Old Man's Hut", page_heading=page_heading, page_image=page_image, paragraph=paragraph)  # return a string
+    return render_template('layout.html', myHero=myHero, page_title="Old Man's Hut", page_heading=page_heading, page_image=page_image, paragraph=paragraph)  # return a string
 
 @app.route('/leave_town')
 @login_required
@@ -929,7 +929,7 @@ def leave_town():
     page_heading = "Village Gate"
     conversation = [("City Guard: ", "You are too young to be out on your own.")]
     page_links = [("Return to the ", "/Town/" + myHero.current_city.name, "city", ".")]
-    return render_template('home.html', myHero=myHero, page_heading=page_heading, conversation=conversation, page_links=page_links)  # return a string
+    return render_template('layout.html', myHero=myHero, page_heading=page_heading, conversation=conversation, page_links=page_links)  # return a string
 
 ### END OF STARTING TOWN FUNCTIONS
 
