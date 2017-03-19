@@ -1,0 +1,25 @@
+<!-- This shows the admin page -->
+
+{% extends "layout.html" %}
+{% block generic_content %}
+<!-- This is called on the "Users" page and displays all accounts in the database -->
+      <h1>Here is a list of all current users:</h1>
+      <table style="width:75%" border="1">
+        <tr>
+          <th>Account ID:</th>
+          <th>Username:</th>
+          <th>Character Name:</th>
+          <th>Age:</th>
+          <th>Account Creation Date:</th>
+        </tr>
+        {% for user in users %}
+          <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.heroes[0].character_name }}</td>
+            <td>{{ user.heroes[0].age }}</td>
+            <td>{{ user.timestamp.year }}/{{ user.timestamp.month }}/{{ user.timestamp.day }} {{ user.timestamp.hour }}:{{ user.timestamp.minute }}:{{ user.timestamp.second }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+{% endblock %}

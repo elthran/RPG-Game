@@ -1,0 +1,11 @@
+<!-- This shows the admin page -->
+
+{% extends "layout.html" %}
+{% block generic_content %}
+      *Cave at 2 and City at 5*
+      <h1>I am at {{ myHero.current_location.name }}</h1>
+      {% for move in move_on_the_map %}
+        <br><h1>MOVE TO <a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ move }}>{{ move }}</a></h1>
+      {% endfor %}
+{% endblock %}
+

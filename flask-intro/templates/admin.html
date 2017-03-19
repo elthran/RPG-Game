@@ -1,0 +1,19 @@
+<!-- This shows the admin page -->
+
+{% extends "layout.html" %}
+{% block generic_content %}
+
+      <form method="post" action="" autocomplete="off">
+        {% for attribute in admin %}
+          <label for="name">{{ attribute[0] }}: {{ attribute[1] }}</label>
+          <input type="number" name="{{ attribute[0] }}" min="0" title="Numbers only" value={{ attribute[1] }}><br>
+        {% endfor %}
+        <input class="btn btn-default" type="submit" value="Save">
+      </form>
+      <h1 style="text-align:center;">Hidden Attributes</h1>
+      Experience Modifier: {{ myHero.experience_gain_modifier }}<br>
+      Gold Modifier: {{ myHero.gold_gain_modifier }}<br>
+
+{% endblock %}
+
+

@@ -1,0 +1,11 @@
+<!-- This shows the admin page -->
+
+{% extends "layout.html" %}
+{% block generic_content %}
+      <h2>Here is our list of items:</h2>
+      {% for item in items_for_sale %}
+        {{ item.name }} ({{ item.buy_price }})
+        <button class="command command-{{ item.buy_name }}" value="{{ item.buy_name }}">Buy</button><br>
+      {% endfor %}        
+{% endblock %}
+
