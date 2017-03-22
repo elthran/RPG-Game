@@ -266,8 +266,8 @@ def basic_skills():
         myHero.update_secondary_attributes()
         myHero.refresh_character()
         database.update()
-        return render_template('layout.html', basic_skill_page=True, page_title="Basic", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
-    return render_template('layout.html', basic_skill_page=True, page_title="Basic", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
+        return render_template('profile_advanced.html', basic_skill_page=True, page_title="Basic", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
+    return render_template('profile_advanced.html', basic_skill_page=True, page_title="Basic", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
 
 # use decorators to link the function to a url
 # route for handling the login page logic
@@ -536,7 +536,7 @@ def home():
     # If they have leveled up, send them to level_up url
     #elif myHero.attribute_points > 0:
     #    return redirect(url_for('level_up'))
-    return render_template('layout.html', page_title="Profile", myHero=myHero, home=True)  # return a string'
+    return render_template('profile_basic.html', page_title="Profile", myHero=myHero, home=True)  # return a string'
 
 @app.route('/inventory_page')
 @login_required
