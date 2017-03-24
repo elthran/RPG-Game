@@ -64,8 +64,6 @@
 <!-- This is for content that is displayed on the main page -->
  <div id="content">
 
-{% block generic_content %}{% endblock %}
-
 <!-- This calls a notification script to run if the Hero has any new quests completed -->
     {% if myHero.quest_notification %}
       <div class="popup" onclick="quest_popup()" style="color:red">You have complete a quest! (+{{ myHero.quest_notification[1] }}xp)<span class="popupachievement" id="js_popupachievement">{{ myHero.quest_notification[0] }}</span></div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
@@ -91,11 +89,6 @@
       <br><b>{{ text[0] }}</b> {{ text[1] }}<br>
     {% endfor %}
 
-<!-- I forget what this does :'( -->
-    {% for status in status_display %}
-      <h2>{{ status[2] }}</h2><b>{{ status[0] }}</b> {{ status[1] }}
-    {% endfor %}
-
 <!-- This let's you pass through HTML links with descriptions. Currently used in places such as the Town Square to navigate -->
     {% for link in page_links %}
       <h2>{{ link[0] }}<a href="{{ link[1] }}">{{ link[2] }}</a>{{ link[3] }}</h2>
@@ -105,6 +98,9 @@
     {% for link in bottom_page_links %}
       <h2>{{ link[0] }}<a href="{{ link[1] }}">{{ link[2] }}</a>{{ link[3] }}</h2>
     {% endfor %}
+
+<!-- This is info pulled from other html files -->
+{% block generic_content %}{% endblock %}
 
 <!-- You can pass Red Error messages through this variable -->
       {% for message in get_flashed_messages() %}

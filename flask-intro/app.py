@@ -798,7 +798,7 @@ def arena():
                     ("Luck: ", str(game.enemy.luck)),
                     ("Health: ", str(game.enemy.current_health) + " / " + str(game.enemy.max_health))]
     page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
-    return render_template('layout.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, status_display=conversation)  # return a string
+    return render_template('arena.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, enemy_info=conversation)  # return a string
 
 @app.route('/store/<inventory>')
 @login_required
