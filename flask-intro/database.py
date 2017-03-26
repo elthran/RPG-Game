@@ -28,7 +28,7 @@ import os #Testing only
 from game import User, Hero
 from abilities import Ability
 from locations import Location, WorldMap, Town, Cave
-from items import Item
+from items import TemplateItem
 from quests import Quest
 import complex_relationships
 import prebuilt_objects
@@ -102,7 +102,7 @@ class EZDB:
     def get_all_store_items(self):
         """Return all items in the database ordered by name.
         """
-        return self.session.query(Item).order_by(Item.name).all()
+        return self.session.query(TemplateItem).order_by(TemplateItem.name).all()
         
         
     def get_all_marketplace_items(self):

@@ -60,6 +60,14 @@ A Trigger can have multiple actions. A Quest can have multiple Triggers. Only on
 to cause the Quest to advance? 
 """
 
+#Response spec
+"""
+A response object could be:
+respose type: do nothing
+respose type: update, plus a list of id tags to update and their new values.
+This might need to be written in JS.
+"""
+
 class Event:
     def __init__(self, arg_dict):
         self.action = arg_dict['action']

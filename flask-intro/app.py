@@ -106,14 +106,19 @@ def command(cmd=None):
     testing = True
     if testing:
         print('request is:', repr(request))
-        print('request data:', repr(request.data))
+        # print('request data:', repr(request.data))
         print('request view_args:', repr(request.view_args))
         print('request args:', repr(request.args))
         print('cmd is:', repr(cmd))
+        
+    # event = dict(request.args)
+    # event.add["hero"] = myHero
+    # event.add["database"] = database
 
     try:
         response = Command.cmd_functions[cmd](myHero, database=database, arg_dict=request.args)
         database.update()
+        # pdb.set_trace()
         return response
     except KeyError as ex:
         print("Warning: invalid key {}".format(ex))
@@ -835,6 +840,10 @@ def arena():
 @login_required
 def store(inventory):
     page_title = "Store"
+    
+    # path = database.get_path_if_exists(quest_name, myHero)
+    # if path in myHero.quest_paths:
+        # path.advance()
     for path in myHero.quest_paths:
         if path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 1:
             path.advance()

@@ -202,10 +202,15 @@ function sumerror()
 <!-- You can let a player buy things at a shop by passing the inventory through this variable -->
     {% if items_for_sale %}
       <h2>Here is our list of items:</h2>
+      <table>
       {% for item in items_for_sale %}
-        {{ item.name }} ({{ item.buy_price }})
-        <button class="command  command-{{ item.buy_name }}" value="buy?item_name={{ item.name }}">Buy</button><br>
-      {% endfor %}        
+        <tr>
+            <td>{{ item.name }}</td>
+            <td><button class="command  command-{{ item.buy_name }}" value="buy?item_name={{ item.name }}">Buy</button></td>
+            <td><b>{{ item.buy_price }}</b> gold</td>
+        </tr>
+      {% endfor %}  
+      </table>
     {% endif %}
 
 <!-- This let's you pass through HTML links with descriptions. Currently used in places such as the Town Square to navigate -->
@@ -298,8 +303,8 @@ function sumerror()
 Choose Specialization (Currently {{ myHero.specialization }}): <button class="command command-hunter" value="hunter">Hunter</button><button class="command command-trapper" value="trapper">Trapper</button><br> Your class is <b>{{ myHero.specialization }}</b>{% endif %}
 
       {% if religious_ability_tree %}
-      Choose Religion (Currently <span id="{{ myHero.religion }}">{{ myHero.religion }}</span>): <button class="command command-forgoth" value="forgoth">Forgoth</button><button class="command command-dryarch" value="dryarch">Dryarch</button>
-      <br> You are a follower of <b><span id="{{ myHero.religion }}">{{ myHero.religion }}</span></b>
+      Choose Religion (Currently <span id="hero_religion">{{ myHero.religion }}</span>): <button class="command command-forgoth" value="choose_religion?">Forgoth</button><button class="command command-dryarch" value="choose_religion?">Dryarch</button>
+      <br> You are a follower of <b><span id="hero_religion">{{ myHero.religion }}</span></b>
       
       {% endif %}
       <h2 style="text-align:left;">Unknown</h2>
@@ -609,28 +614,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     // Get all locations/objects that are going to be updated by this response.
                     // currently all info to be updated must be of the form
-                    // <span id="{{ myHero.religion }}">{{ myHero.religion }}</span>
-                    // which might really looks like <span id="Forgoth">Forgoth</span>
-                    // when the folling loop executes both the id and value between
-                    // the span tags gets updated.
+                    // <span id="hero_religion">{{ myHero.religion }}</span>
+                    // which might really looks like <span id="hero_religion">Forgoth</span>
+                    // when the folling loop executes the value between
+                    // the span tags gets updated. The id tells the code what Jinja2 variable
+                    // is going to be updated. There must be a better way.
+                    // Like reinterpret the template? But only this one variable?
 
-                    // There is probably a faster way cleaner way. Maybe having a default
-                    // <span id="update_me">html to be updated</span> would be better?
-                    // And leaving the id the same? Instead of dynamically updating it?
                     // Perhaps I could build all Jinja2 variables inside an update_me span tag?
                     // That way all of the dynamic content would get updated?
+                    // Note ids must not have dots in them. Or spaces. Only underscores.
                     var idElements = document.querySelectorAll("#" + key);
                     // For backwards compatability until I update all of the old code.
                     // Runs if no objectIDs are found.
                     if (!idElements.length) {
                         location.reload();
+                        console.log("Location reloaded!");
+                        console.log("Response: key=" + key + ", value=" + value);
                     } else {
                         console.log("Elements to be updated:", idElements);
                         // Iterate through the NodeList created by "querySelectorAll"
                         idElements.forEach(function (item, index) {
                             console.log("object " + index + ": " + item);
                             item.innerHTML = value;
-                            item.id = value;
                         });
                     }
                 }
@@ -651,7 +657,11 @@ document.addEventListener("DOMContentLoaded", function () {
             // "&&" acts like the "," in pythonic {key:value, key2:value2}
             // xhttp.open("GET", "/" + command + "?class=" + buttonClass + "&&key2=value2", true);
             var pathname = window.location.pathname;
-            xhttp.open("GET", "/" + command + "&&location=" + window.location.pathname, true);
+            
+            // innerHTML for a button is the button's "label" (the part you see).
+            xhttp.open("GET", "/" + command +
+                "&&location=" + window.location.pathname +
+                "&&innerHTML=" +  clickedButton.innerHTML, true);
             // and then we send it off
             xhttp.send();
         });
