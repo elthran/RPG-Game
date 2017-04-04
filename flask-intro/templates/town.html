@@ -4,7 +4,7 @@
 {% block generic_content %}
 <!-- I forget :'( -->
     {% for town_link in places_of_interest %}
-      <h1>{{ town_link.places[0].name }}</h1><h2><a href="{{ town_link.url }}">{{ town_link.places[0].name }}</a></h2>
+      <a href="{{ town_link.url }}"><h2>{{ town_link.places[0].name }}</h2></a>
     {% endfor %}     
 {% endblock %}
 

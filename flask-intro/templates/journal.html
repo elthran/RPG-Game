@@ -1,20 +1,35 @@
 <!-- This shows the admin page -->
 
 {% extends "layout.html" %}
+
+{% block nav_bar %}
+  <div id="content">
+     <div class="nav">
+     <ul>
+       <li><a href=/quest_log>Quests</a></li>
+       <li><a href=/bestiary/default>Bestiary</a></li>
+       <li><a href=/people_log/default>People</a></li>
+       <li><a href=/map_log>Map</a></li>
+       <li><a href=/achievement_log>Achievements</a></li>
+     </ul>
+    </div>
+  </div>
+{% endblock %}
+
 {% block generic_content %}
 <!-- This shows the quest log within the journal -->
     {% if quest_log %}
-      <h1>Current Quests</h1>
+      <h1 class="indented">Current Quests</h1>
       {% for path in myHero.quest_paths if path.active %}
-          <h2><br><b>{{ path.quest.name }}</b></h2>
-          {{ path.quest.current_description }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;(Stage: {{ path.stage }}/{{ path.stages }})
+          <h2>{{ path.quest.name }}</h2>
+          <p>{{ path.quest.current_description }} (Stage: {{ path.stage }}/{{ path.stages }})</p>
         {% endfor %}
-      <h1>Completed Quests</h1>
+      <h1 class="indented">Completed Quests</h1>
       {% for path in myHero.quest_paths if path.completed %}
-          <h2><br><b>{{ path.quest.name }}</b></h2>
+          <h2>{{ path.quest.name }}</h2>
           (Reward: {{ path.quest.reward_xp }} xp)
-        {% endfor %}
-     {% endif %}
+      {% endfor %}
+    {% endif %}
 
 <!-- This shows the bestiary within the journal -->
     {% if bestiary %}
@@ -25,12 +40,12 @@
           </ul>
         {% endfor %}
     </div>
-      <h1 style="text-align:center;">Bestiary</h1>
+      <h1>Bestiary</h1>
         {% if current_monster %}
-          <h2>Entry:</h2><br>
-          Name: {{ current_monster.name }}<br><br>
-          Age: {{ current_monster.level }}<br><br>
-          Type: {{ current_monster.species }} <br><br>
+          <h2>Entry:</h2>
+          Name: {{ current_monster.name }}<br>
+          Age: {{ current_monster.level }}<br>
+          Type: {{ current_monster.species }}<br>
           <img src="/static/images/{{ current_monster.monster_id }}_display_picture.jpg" alt="{{ current_monster.name }} Picture" style="width:125px;height:125px;">
         {% else %}
           Here is a list of all of the beasts you have encountered!

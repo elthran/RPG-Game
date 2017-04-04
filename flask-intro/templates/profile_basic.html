@@ -1,28 +1,19 @@
 {% extends "layout.html" %}
 {% block generic_content %}
 <!-- This is the Home page -->	
-  {% if home %}
-    <center>
-      <img src="/static/images/character.jpg" alt="Sample" style="width:100px;height:100px;"><br>
-      {{ myHero.name }}
-    </center>
+    <img src="/static/images/character.jpg" alt="Sample" style="width:100px;height:100px;">
     <h1>General Statistics</h1>
-    <h2> 
-      Name: {{ myHero.character_name}}
-      <br>Age: {{ myHero.age }}
-      <br>Archetype: {{ myHero.archetype }}
-      <br>Specialization: {{ myHero.specialization }}
-      <br>Religion: {{ myHero.religion }}
-      <br>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}
-      <br>Carrying Capacity: {{ myHero.current_carrying_capacity }} / {{ myHero.max_carrying_capacity }}
-      <br>Gold: {{ myHero.gold }}
-      <br>Endurance: {{ myHero.current_endurance }} / {{ myHero.max_endurance }}
-    </h2>
-    <h1>Attributes</h1><h2>
-    {% for attribute,value in myHero.get_primary_attributes() %}
-      {{ attribute }}: {{ value }}<br>
-    {% endfor %}</h2>
-    <a href=/learn_basic_skills><h1>View Details</h1></a>
-   {% endif %} 
+    <ul> 
+      <li>Name: {{ myHero.character_name}}</li>
+      <li>Age: {{ myHero.age }}</li>
+      <li>Archetype: {{ myHero.archetype }}</li>
+      <li>Specialization: {{ myHero.specialization }}</li>
+      <li>Religion: {{ myHero.religion }}</li>
+      <li>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}</li>
+      <li>Carrying Capacity: {{ myHero.current_carrying_capacity }} / {{ myHero.max_carrying_capacity }}</li>
+      <li>Gold: {{ myHero.gold }}</li>
+      <li>Endurance: {{ myHero.current_endurance }} / {{ myHero.max_endurance }}</li>
+    </ul>
+    <a href=/learn_basic_skills>View Details</a>
 {% endblock %}
 

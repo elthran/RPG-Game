@@ -116,7 +116,6 @@ function sumerror()
 {% extends "layout.html" %}
 {% block generic_content %}
 <!-- Basic Skill Page -->
-    {% if basic_skill_page %}
       <form method="post" class="level_up_form">
         <section class="attribute_container">
           <div class="left-half">
@@ -159,8 +158,6 @@ function sumerror()
             <br><br><br><br><input class="btn btn-default" type="submit" value="Save" id="level_button">
           </div>
         </section>
-        Why can't I see this text....?
-      </form>
-    {% endif %}   
-{% endblock %}
+      </form>  
 
+{% endblock %}

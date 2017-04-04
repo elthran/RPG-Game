@@ -207,38 +207,6 @@ def command(cmd=None):
 
     return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
 
-""" Unneeded while I test combining this form with the learn_basic_skill form
-# This gets called anytime you have attribute points to spend
-@app.route('/level_up', methods=['GET', 'POST'])
-@login_required
-def level_up():
-    if myHero.attribute_points == 0:   # This needs to be here or it will stay on this page when you spend your last point.
-        return redirect(url_for('home'))
-    page_heading = "You have leveled up!"
-    paragraph = "Choose how you would like to distribute your attribute points."
-    if request.method == 'POST':
-        myHero.primary_attributes["Strength"] += convert_input(request.form["Strength"])
-        myHero.primary_attributes["Agility"] += convert_input(request.form["Agility"])
-        myHero.primary_attributes["Resilience"] += convert_input(request.form["Resilience"])
-        myHero.primary_attributes["Vitality"] += convert_input(request.form["Vitality"])
-        #myHero.primary_attributes["Fortitude"] += convert_input(request.form["Fortitude"])
-        #myHero.primary_attributes["Reflexes"] += convert_input(request.form["Reflexes"])
-        #myHero.primary_attributes["Perception"] += convert_input(request.form["Perception"])
-        #myHero.primary_attributes["Wisdom"] += convert_input(request.form["Wisdom"])
-        #myHero.primary_attributes["Divinity"] += convert_input(request.form["Divinity"])
-        #myHero.primary_attributes["Charisma"] += convert_input(request.form["Charisma"])
-        #myHero.primary_attributes["Survivalism"] += convert_input(request.form["Survivalism"])
-        #myHero.primary_attributes["Fortuity"] += convert_input(request.form["Fortuity"])
-        points_being_spent = convert_input(request.form["Strength"]) + convert_input(request.form["Agility"]) + convert_input(request.form["Resilience"]) + convert_input(request.form["Vitality"])
-        #+ convert_input(request.form["Fortitude"] + convert_input(request.form["Reflexes"]) + convert_input(request.form["Perception"]) + convert_input(request.form["Wisdom"]) + convert_input(request.form["Divinity"]) +  convert_input(request.form["Charisma"]) + convert_input(request.form["Survivalism"]) + convert_input(request.form["Fortuity"]) 
-        myHero.attribute_points -= points_being_spent
-        myHero.update_secondary_attributes()
-        myHero.refresh_character()
-        database.update()
-        return redirect(url_for('home'))
-    return render_template('layout.html', level_up=True, page_title="Profile", page_heading=page_heading, paragraph=paragraph, myHero=myHero)
-"""
-
 # This gets called anytime you have secondary attribute points to spend
 @app.route('/learn_basic_skills', methods=['GET', 'POST'])
 @login_required
@@ -895,7 +863,7 @@ def tavern():
             myHero.current_quests = [quest for quest in myHero.current_quests if quest[0] != "Become an apprentice at the tavern."]
             myHero.completed_quests.append("Become an apprentice at the tavern.")
             page_heading = "You are now my apprentice!"
-    return render_template('tavern.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, tavern=tavern, bottom_page_links=page_links, dialogue_options=dialogue_options)  # return a string
+    return render_template('tavern.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, tavern=tavern, dialogue_options=dialogue_options)  # return a string
 
 @app.route('/marketplace/<inventory>')
 @login_required

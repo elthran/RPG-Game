@@ -7,7 +7,7 @@
     {% endif %}
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" media="screen">
+    <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='style.css') }}">
     <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
   </head>
 
@@ -15,11 +15,11 @@
   <div id="page">
     <div id="sidebar">
       <div class="sidebarinfo">
-        <img src="/static/images/character.jpg" alt="Sample" style="width:100px;height:100px;">
+        <img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px" align="middle">
         <ul>
         <li>Name: {{ myHero.name}} </li>
         <li>Age: {{ myHero.age }}</li>
-        <li>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}</li>
+        <li>Progress: <div id="progressBar"><div id="myBar" style="width:{{ myHero.exp_percent }}%">{{ myHero.exp_percent }}%</div></div></li>
         <li>Health: {{ myHero.current_health }} / {{ myHero.max_health }}</li></li>
         <li>Sanctity: {{ myHero.current_sanctity }} / {{ myHero.max_sanctity }}
         <li>Endurance: {{ myHero.current_endurance }} / {{ myHero.max_endurance }}</li>
@@ -46,23 +46,11 @@
 
 <!-- This is where you want to add HTML that will not be contained within the main body of the page -->
 
-<!-- This creates a list of tabs at the top of the main page -->
-{% if journal %}
-  <div id="content">
-     <div class="nav">
-     <ul>
-       <li><a href=/quest_log>Quests</a></li>
-       <li><a href=/bestiary/default>Bestiary</a></li>
-       <li><a href=/people_log/default>People</a></li>
-       <li><a href=/map_log>Map</a></li>
-       <li><a href=/achievement_log>Achievements</a></li>
-     </ul>
-    </div>
-  </div>
-{% endif %}
+<!-- Here you can add a navigation bar at the top of the page -->
+{% block nav_bar %}{% endblock %}
 
 <!-- This is for content that is displayed on the main page -->
- <div id="content">
+<div id="content">
 
 <!-- This calls a notification script to run if the Hero has any new quests completed -->
     {% if myHero.quest_notification %}
@@ -91,11 +79,6 @@
 
 <!-- This let's you pass through HTML links with descriptions. Currently used in places such as the Town Square to navigate -->
     {% for link in page_links %}
-      <h2>{{ link[0] }}<a href="{{ link[1] }}">{{ link[2] }}</a>{{ link[3] }}</h2>
-    {% endfor %}
-
-<!-- This variable can be passed the add links to the bottom of any page -->
-    {% for link in bottom_page_links %}
       <h2>{{ link[0] }}<a href="{{ link[1] }}">{{ link[2] }}</a>{{ link[3] }}</h2>
     {% endfor %}
 
