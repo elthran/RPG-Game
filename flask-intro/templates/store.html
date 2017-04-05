@@ -6,6 +6,9 @@
       {% for item in items_for_sale %}
         {{ item.name }} ({{ item.buy_price }})
         <button class="command command-{{ item.buy_name }}" value="{{ item.buy_name }}">Buy</button><br>
-      {% endfor %}        
+      {% endfor %}      
+{% for link in page_links %}
+      {{ link[0] }} <a href="{{ link[1] }}"> {{ link[2] }} </a><br>
+    {% endfor %}    
 {% endblock %}
 

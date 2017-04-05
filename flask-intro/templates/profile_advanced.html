@@ -1,68 +1,66 @@
-
-    <script>
-      function agility_updater(AR) {
+<script>
+  function agility_updater(AR) {
     document.querySelector('#agility_output').value = AR;
     var select_agility = document.querySelector('#agility_output').value
     console.log(select_agility);
-    }
-      function charisma_updater(AR) {
+}
+  function charisma_updater(AR) {
     document.querySelector('#charisma_output').value = AR;
     var select_charisma = document.querySelector('#charisma_output').value
     console.log(select_charisma); 
 }
-      function divinity_updater(AR) {
+  function divinity_updater(AR) {
     document.querySelector('#divinity_output').value = AR;
     var select_divinity = document.querySelector('#divinity_output').value
     console.log(select_divinity);
-    }
-      function fortitude_updater(AR) {
+}
+  function fortitude_updater(AR) {
     document.querySelector('#fortitude_output').value = AR;
     var select_fortitude = document.querySelector('#fortitude_output').value
     console.log(select_fortitude);
-    }
-      function fortuity_updater(AR) {
+}
+  function fortuity_updater(AR) {
     document.querySelector('#fortuity_output').value = AR;
     var select_fortuity = document.querySelector('#fortuity_output').value
     console.log(select_fortuity);
-    }
-      function perception_updater(AR) {
+}
+  function perception_updater(AR) {
     document.querySelector('#perception_output').value = AR;
     var select_perception = document.querySelector('#perception_output').value
     console.log(select_perception);
-    }
-      function reflexes_updater(AR) {
+}
+  function reflexes_updater(AR) {
     document.querySelector('#reflexes_output').value = AR;
     var select_reflexes = document.querySelector('#reflexes_output').value
     console.log(select_reflexes);
-    }
-      function resilience_updater(AR) {
+}
+  function resilience_updater(AR) {
     document.querySelector('#resilience_output').value = AR;
     var select_resilience = document.querySelector('#resilience_output').value
     console.log(select_resilience);
-    }
-      function strength_updater(AR) {
+}
+  function strength_updater(AR) {
     document.querySelector('#strength_output').value = AR;
     var select_strength = document.querySelector('#strength_output').value
     console.log(select_strength); 
 }
-      function survivalism_updater(AR) {
+  function survivalism_updater(AR) {
     document.querySelector('#survivalism_output').value = AR;
     var select_survivalism = document.querySelector('#survivalism_output').value
     console.log(select_survivalism);
-    }
-      function vitality_updater(AR) {
+}
+  function vitality_updater(AR) {
     document.querySelector('#vitality_output').value = AR;
     var select_vitality = document.querySelector('#vitality_output').value
     console.log(select_vitality);
-    }
-      function wisdom_updater(AR) {
+}
+  function wisdom_updater(AR) {
     document.querySelector('#wisdom_output').value = AR;
     var select_wisdom = document.querySelector('#wisdom_output').value
     console.log(select_wisdom);
-    }
+}
 
-  function findTotal()
-  {
+  function findTotal() {
     var agility = document.getElementsByName('agility_attribute');
     var charisma = document.getElementById('charisma_attribute');
     var divinity = document.getElementById('divinity_attribute');
@@ -76,17 +74,16 @@
     var vitality = document.getElementsByName('vitality_attribute');
     var wisdom = document.getElementById('wisdom_attribute');
     var selected_points = parseInt(agility_attribute.value) + parseInt(charisma_attribute.value) + parseInt(divinity_attribute.value) 
-+ parseInt(fortitude_attribute.value) + parseInt(fortuity_attribute.value) + parseInt(perception_attribute.value) 
-+ parseInt(reflexes_attribute.value) + parseInt(resilience_attribute.value) + parseInt(strength_attribute.value) 
-+ parseInt(survivalism_attribute.value) + parseInt(vitality_attribute.value) + parseInt(wisdom_attribute.value);
+    + parseInt(fortitude_attribute.value) + parseInt(fortuity_attribute.value) + parseInt(perception_attribute.value) 
+    + parseInt(reflexes_attribute.value) + parseInt(resilience_attribute.value) + parseInt(strength_attribute.value) 
+    + parseInt(survivalism_attribute.value) + parseInt(vitality_attribute.value) + parseInt(wisdom_attribute.value);
     var tot= {{ myHero.attribute_points }};
     tot -= selected_points;
     document.getElementById('total_points_spent').value = tot;
     sumerror()
 }
 
-  function findTotal2()
-  {
+  function findTotal2() {
     var attack_speed = document.getElementById('attack_speed_variable');
     var selected_points = parseInt(attack_speed_variable.value);
     var tot= {{ myHero.secondary_attribute_points }};
@@ -95,18 +92,14 @@
     sumerror()
 }
 
-function sumerror()
-  {
-    var sum = document.getElementById('total_points_spent').value;
+function sumerror() {
+  var sum = document.getElementById('total_points_spent').value;
 	
-	if (sum < 0) 
-  {
+	if (sum < 0) {
     document.getElementById('sumerror').value = '          You do not have enough points';
     document.getElementById("level_button").disabled = true;
-
-	}
+  }
   else {
-
     document.getElementById('sumerror').value = '';
     document.getElementById("level_button").disabled = false;
 	}

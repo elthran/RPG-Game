@@ -12,87 +12,60 @@
   </head>
 
   <body>
-  <div id="page">
-    <div id="sidebar">
-      <div class="sidebarinfo">
-        <img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px" align="middle">
-        <ul>
-        <li>Name: {{ myHero.name}} </li>
-        <li>Age: {{ myHero.age }}</li>
-        <li>Progress: <div id="progressBar"><div id="myBar" style="width:{{ myHero.exp_percent }}%">{{ myHero.exp_percent }}%</div></div></li>
-        <li>Health: {{ myHero.current_health }} / {{ myHero.max_health }}</li></li>
-        <li>Sanctity: {{ myHero.current_sanctity }} / {{ myHero.max_sanctity }}
-        <li>Endurance: {{ myHero.current_endurance }} / {{ myHero.max_endurance }}</li>
-        <li>Gold: {{ myHero.gold }}</li>
-        </ul>
-      </div>
-      <div class="sidebarmenu">
-        <ul>
-        <li><a href=/home>Profile</a></li>
-        <li><a href=/inventory_page>Inventory</a></li>
-        {% if myHero.current_city %}
-           <li><a href=/{{ myHero.current_city.location_type }}/{{ myHero.current_city.name }}>{{ myHero.current_city.name }}</a></li>
-        {% else %}
-          <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_location.id }}>{{ myHero.current_world.location_type }}</a></li>
-        {% endif %}
-        <li><a href=/quest_log>Journal</a></li>
-        <li><a href=/ability_tree/Basic>Abilities</a></li>
-        <li><a href=/admin>Admin</a></li>
-        <li><a href=/display_users>Users</a></li>
-        <li><a href=/logout>Logout</a></li>
-        </ul>
-      </div>
-    </div>
+      <div id="page">
+        <div id="sidebar">
+          <div class="sidebarinfo">
+            <img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px" align="middle">
+            <ul>
+                <li>Name: {{ myHero.name}} </li>
+                <li>Age: {{ myHero.age }}</li>
+                <li>Progress: <div id="progressBar"><div id="myBar" style="width:{{ myHero.exp_percent }}%">{{ myHero.exp_percent }}%</div></div></li>
+                <li>Health: {{ myHero.current_health }} / {{ myHero.max_health }}</li></li>
+                <li>Sanctity: {{ myHero.current_sanctity }} / {{ myHero.max_sanctity }}
+                <li>Endurance: {{ myHero.current_endurance }} / {{ myHero.max_endurance }}</li>
+                <li>Gold: {{ myHero.gold }}</li>
+            </ul>
+          </div>
+          <div class="sidebarmenu">
+            <ul>
+                <li><a href=/home>Profile</a></li>
+                <li><a href=/inventory_page>Inventory</a></li>
+                {% if myHero.current_city %}
+                   <li><a href=/{{ myHero.current_city.location_type }}/{{ myHero.current_city.name }}>{{ myHero.current_city.name }}</a></li>
+                {% else %}
+                  <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_location.id }}>{{ myHero.current_world.location_type }}</a></li>
+                {% endif %}
+                <li><a href=/quest_log>Journal</a></li>
+                <li><a href=/ability_tree/Basic>Abilities</a></li>
+                <li><a href=/admin>Admin</a></li>
+                <li><a href=/display_users>Users</a></li>
+                <li><a href=/logout>Logout</a></li>
+            </ul>
+          </div>
+        </div>
 
 <!-- This is where you want to add HTML that will not be contained within the main body of the page -->
-
 <!-- Here you can add a navigation bar at the top of the page -->
-{% block nav_bar %}{% endblock %}
+        {% block nav_bar %}{% endblock %}
 
 <!-- This is for content that is displayed on the main page -->
-<div id="content">
-
+        <div id="content">
 <!-- This calls a notification script to run if the Hero has any new quests completed -->
-    {% if myHero.quest_notification %}
-      <div class="popup" onclick="quest_popup()" style="color:red">You have complete a quest! (+{{ myHero.quest_notification[1] }}xp)<span class="popupachievement" id="js_popupachievement">{{ myHero.quest_notification[0] }}</span></div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
-    {% endif %}
-
-<!-- You can pass page headings through with this variable-->
-    {% if page_heading %}
-      <h1>{{ page_heading }}</h1>
-    {% endif %}
-
-<!-- You can pass a page image through with this variable -->
-    {% if page_image %}
-      <img src="/static/images/{{ page_image }}.jpg" alt="{{ page_image }}" style="width:304px;height:228px;">
-    {% endif %}
-
-<!-- You can pass through walls of text with this variable -->
-    {% if paragraph %}
-      <p>{{ paragraph }}</p>
-    {% endif %}
-
-<!-- You can pass through a conversation which displays character names with this variable-->
-    {% for text in conversation %}
-      <br><b>{{ text[0] }}</b> {{ text[1] }}<br>
-    {% endfor %}
-
-<!-- This let's you pass through HTML links with descriptions. Currently used in places such as the Town Square to navigate -->
-    {% for link in page_links %}
-      <h2>{{ link[0] }}<a href="{{ link[1] }}">{{ link[2] }}</a>{{ link[3] }}</h2>
-    {% endfor %}
+            {% if myHero.quest_notification %}
+                <div class="popup" onclick="quest_popup()" style="color:red">You have complete a quest! (+{{ myHero.quest_notification[1] }}xp)<span class="popupachievement" id="js_popupachievement">{{ myHero.quest_notification[0] }}</span></div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
+            {% endif %}
 
 <!-- This is info pulled from other html files -->
-{% block generic_content %}{% endblock %}
+            {% block generic_content %}{% endblock %}
 
 <!-- You can pass Red Error messages through this variable -->
-      {% for message in get_flashed_messages() %}
-        {{ message }}
-      {% endfor %}
+            {% for message in get_flashed_messages() %}
+                {{ message }}
+            {% endfor %}
 
 <!-- This ends the main body container of the page -->
-    </div>
-  </body>
+        </div>
+    </body>
 </html>
 
 <script>
