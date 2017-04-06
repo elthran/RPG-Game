@@ -28,7 +28,7 @@ import os #Testing only
 from game import User, Hero
 from abilities import Ability
 from locations import Location, WorldMap, Town, Cave
-from items import TemplateItem
+from items import ItemTemplate, Item
 from quests import Quest
 import complex_relationships
 import prebuilt_objects
@@ -92,6 +92,15 @@ class EZDB:
                 except sqlalchemy.exc.IntegrityError:
                     self.session.rollback()
                     
+                
+    def create_item(self, name):
+        """Create a new item from a given template name.
+        """
+        template = self.session.query(ItemTemplate).filter_by(name=name).first()
+        item = Item(template)
+        return item
+        
+                    
     def get_all_abilities(self):
         """Return all abilities in the database ordered by name.
         """
@@ -102,7 +111,7 @@ class EZDB:
     def get_all_store_items(self):
         """Return all items in the database ordered by name.
         """
-        return self.session.query(TemplateItem).order_by(TemplateItem.name).all()
+        return self.session.query(ItemTemplate).order_by(ItemTemplate.name).all()
         
         
     def get_all_marketplace_items(self):

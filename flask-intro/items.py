@@ -10,6 +10,9 @@ except ImportError:
 #Well ... ok, but for simplicity sake just pretend that that is true.
 from base_classes import Base
 
+import warnings
+import pdb
+
 """
 Item Specification:
     All hero specific attributes must be moved from the Template classes.
@@ -17,18 +20,87 @@ Item Specification:
     Hero.inventory = relations 1 to many with InventoryItem.
     Item.inventory = relation many to many with inventoryItem.
     Things like:
-        -durability
-        -amount_owned
-        -broken
-        -consumed (unless consumable just removes the item)
+        -durability (item)
+        -amount_owned (inventory)
+        -broken (item)
+        -consumed (unless consumable just removes the item) (item, may cause two columns in inventory)
 """
 
+
 class Item(Base):
+    """Represent an unique version of an item.
+    
+    Each item exists in only one place. Each item can be place in an inventory to belong
+    to a hero.
+    
+    Each item has a template that it links to. Templates are not modifiable.
+    
+    All attributes of a item should be item specific. Such as durability
+    or whether the item is broken. All generic attributes will mearly link to the
+    items template.
+    """
     __tablename__ = "item"
     id = Column(Integer, primary_key=True)
+    
+    #template = relationship(ItemTemplate) -> One to Many
+    durability = Column(Integer)
+    broken = Column(Boolean)
+    consumed = Column(Boolean)
+    
+    def __init__(self, template):
+        """Build a new item from a given template.
+        
+        Set initial values for item attributes. of  
+        """
+        self.template = template
+        self.durability = template.max_durability
+        self.broken = False
+        self.consumed = False
 
+        self.load_template()
+        
+    
+    @orm.reconstructor
+    def load_template(self):
+        """Load all the attributes of a given template into this item.
+        
+        !Important! Must not overwrite any of the attributes in this class! 
+        
+        Should do the whole inheritance thing ...
+        I don't quite know if it does.
+        Ig
+        """
+        item_keys = vars(self).keys()
+        for key in vars(self.template).keys():
+            if key not in item_keys and key != 'id':
+                setattr(self, key, getattr(self.template, key))
+    
+    def update_stats(self):
+        """Update hero to reflect stat values with item equiped.
+        
+        Will fail and will need to be in Inventory?
+        """
+        if self.broken:
+            return None
+        self.template.update_stats(self.inventory.hero)
+        
+    
+    def check_if_improvement(self):
+        # warnings.warn("Not implemented yet!", RuntimeWarning)
+        # return # Do nothing
+        self.improvement = True
+        for equipped_item in self.inventory.hero.equipped_items:
+            if equipped_item.type is self.type:
+                if equipped_item.item_rating > self.item_rating:
+                    self.improvement = False
+                break
+                
+                
+    def update_owner(self, hero):
+        self.inventory.hero = hero
+        
 
-class TemplateItem(Base):
+class ItemTemplate(Base):
     """Item object base class.
     
     A list of all items, the relationship to the Hero class is many to many.
@@ -41,7 +113,7 @@ class TemplateItem(Base):
 	buy_price : Price to buy the item
 	level_req : level requirment
     """
-    __tablename__ = "template_item"
+    __tablename__ = "item_template"
     
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
@@ -52,41 +124,29 @@ class TemplateItem(Base):
     
     buy_price = Column(Integer)
     
-    #Marked for restructuring as causes conflics with multiple heroes?
-    #As in if hero1 has 4 of an item then hero2 will as well?
-    #Move to Inventory?
-    amount_owned = Column(Integer)
-    
     wearable = Column(Boolean)
     consumable = Column(Boolean)
  
     type = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"TemplateItem",
+        'polymorphic_identity':"ItemTemplate",
         'polymorphic_on':type
     }
     
-    def __init__(self, name, myHero, buy_price, amount_owned=1):
+    def __init__(self, name, buy_price):
         self.name = name
         self.buy_name = self.name + "_buy"
-        self.myHero = myHero
         self.buy_price = buy_price
-        self.amount_owned = amount_owned
         self.wearable = False
         self.consumable = False
-
-    def update_owner(self, myHero):
-        self.myHero = myHero
         
 
-# Subclass of TemplateItem
-class Wearable(TemplateItem):
+# Subclass of ItemTemplate
+class Wearable(ItemTemplate):
     __tablename__ = 'wearable'
     
-    id = Column(Integer, ForeignKey("template_item.id"), primary_key=True)
+    id = Column(Integer, ForeignKey("item_template.id"), primary_key=True)
     
-    broken = Column(Boolean)
-    durability = Column(Integer)
     max_durability = Column(Integer)
     item_rating = Column(Integer)
     garment = Column(Boolean)
@@ -97,26 +157,18 @@ class Wearable(TemplateItem):
         'polymorphic_identity':"Wearable",
     }
     
-    def __init__(self, name, myHero, buy_price, max_durability=3, item_rating=10):
-        super().__init__(name, myHero, buy_price)
+    def __init__(self, name, buy_price, max_durability=3, item_rating=10):
+        super().__init__(name, buy_price)
         self.wearable = True
         self.broken = False
         self.max_durability = max_durability
-        self.durability = self.max_durability
         self.item_rating = item_rating
         garment = False
         weapon = False
         jewelry = False
 
-    def check_if_improvement(self):
-        self.improvement = True
-        for equipped_item in self.myHero.equipped_items:
-            if type(equipped_item) is type(self):
-                if equipped_item.item_rating > self.item_rating:
-                    self.improvement = False
-                break
 
-# Subclass of TemplateItem
+# Subclass of ItemTemplate
 class Weapon(Wearable):
     __tablename__ = 'weapon'
     
@@ -132,8 +184,8 @@ class Weapon(Wearable):
     __mapper_args__ = {
         'polymorphic_identity':"Weapon",
     }
-    def __init__(self, name, myHero, buy_price, min_damage=0, max_damage=0, attack_speed=0):
-        super().__init__(name, myHero, buy_price)
+    def __init__(self, name, buy_price, min_damage=0, max_damage=0, attack_speed=0):
+        super().__init__(name, buy_price)
         self.min_damage = min_damage
         self.max_damage = max_damage
         self.attack_speed = attack_speed
@@ -146,13 +198,11 @@ class Weapon(Wearable):
         self.one_handed_weapon = False
         self.shield = False
         self.two_handed_weapon = False
-        
-    def update_stats(self):
-        if self.broken:
-            return None
-        self.myHero.minimum_damage += self.min_damage
-        self.myHero.maximum_damage += self.max_damage
-        self.myHero.attack_speed += self.attack_speed
+    
+    def update_stats(self, hero):
+        hero.minimum_damage += self.min_damage
+        hero.maximum_damage += self.max_damage
+        hero.attack_speed += self.attack_speed
 		
 class One_Handed_Weapon(Weapon):
     __tablename__ = 'one_handed_weapon'
@@ -163,8 +213,8 @@ class One_Handed_Weapon(Weapon):
         'polymorphic_identity':"One_Handed_Weapon",
     }
     
-    def __init__(self, name, myHero, buy_price, min_damage, max_damage, attack_speed):
-        super().__init__(name, myHero, buy_price, min_damage, max_damage, attack_speed)
+    def __init__(self, name, buy_price, min_damage, max_damage, attack_speed):
+        super().__init__(name, buy_price, min_damage, max_damage, attack_speed)
         self.one_handed_weapon = True
 
 class Shield(Weapon):
@@ -176,8 +226,8 @@ class Shield(Weapon):
         'polymorphic_identity':"Shield",
     }
     
-    def __init__(self, name, myHero, buy_price):
-        super().__init__(name, myHero, buy_price)
+    def __init__(self, name, buy_price):
+        super().__init__(name, buy_price)
         self.shield = True
         self.weapon = False
 
@@ -190,8 +240,8 @@ class Two_Handed_Weapon(Weapon):
         'polymorphic_identity':"Two_Handed_Weapon",
     }
     
-    def __init__(self, name, myHero, buy_price, min_damage, max_damage, attack_speed):
-        super().__init__(name, myHero, buy_price, min_damage, max_damage, attack_speed)
+    def __init__(self, name, buy_price, min_damage, max_damage, attack_speed):
+        super().__init__(name, buy_price, min_damage, max_damage, attack_speed)
         self.two_handed_weapon = True
 
 # New Class		
@@ -206,15 +256,13 @@ class Garment(Wearable):
         'polymorphic_identity':"Garment",
     }
     
-    def __init__(self, name, myHero, buy_price, health_modifier):
-        super().__init__(name, myHero, buy_price)
+    def __init__(self, name, buy_price, health_modifier):
+        super().__init__(name, buy_price)
         self.health_modifier = health_modifier
         self.garment = True
 
-    def update_stats(self):
-        if self.broken:
-            return None
-        self.myHero.max_health += self.health_modifier
+    def update_stats(self, hero):
+        hero.max_health += self.health_modifier
 
 class Chest_Armour(Garment):
     __tablename__ = 'chest_armour'
@@ -330,11 +378,11 @@ class Ring(Jewelry):
         super().__init__(*args, **kwargs)
         self.ring = True
 
-# Subclass of TemplateItem
-class Consumable(TemplateItem):
+# Subclass of ItemTemplate
+class Consumable(ItemTemplate):
     __tablename__ = 'consumable'
     
-    id = Column(Integer, ForeignKey("template_item.id"), primary_key=True)
+    id = Column(Integer, ForeignKey("item_template.id"), primary_key=True)
     
     healing_amount = Column(Integer)
     sanctity_amount = Column(Integer)
@@ -348,22 +396,22 @@ class Consumable(TemplateItem):
         self.sanctity_amount = sanctity_amount
         self.consumable = True
 		
-    def apply_effect(self):
-        self.myHero.current_health += self.healing_amount
-        self.myHero.current_sanctity += self.sanctity_amount
-        if self.myHero.current_health > self.myHero.max_health:
-            self.myHero.current_health = self.myHero.max_health
-        if self.myHero.current_sanctity > self.myHero.max_sanctity:
-            self.myHero.current_sanctity = self.myHero.max_sanctity
+    def apply_effect(self, hero):
+        hero.current_health += self.healing_amount
+        hero.current_sanctity += self.sanctity_amount
+        if hero.current_health > hero.max_health:
+            hero.current_health = hero.max_health
+        if hero.current_sanctity > hero.max_sanctity:
+            hero.current_sanctity = hero.max_sanctity
 
 # New Class
-class Quest_Item(TemplateItem):
+class Quest_Item(ItemTemplate):
     __tablename__ = 'quest_item'
     
-    id = Column(Integer, ForeignKey("template_item.id"), primary_key=True)
+    id = Column(Integer, ForeignKey("item_template.id"), primary_key=True)
     
     __mapper_args__ = {
         'polymorphic_identity':"Quest_Item",
     }
-    def __init__(self, name, myHero, buy_price):
-        super().__init__(name, myHero, buy_price)
+    def __init__(self, name, buy_price):
+        super().__init__(name, buy_price)

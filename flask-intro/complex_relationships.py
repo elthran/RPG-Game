@@ -76,9 +76,9 @@ game.Inventory.hero = relationship("Hero", backref=backref("inventory", uselist=
 game.Inventory.items = relationship("Item", backref="inventory")
 items.Item.inventory_id = Column(Integer, ForeignKey('inventory.id'))
 
-#Each TemplateItem can have many regular Items.
-items.TemplateItem.items = relationship("Item", backref='template_item')
-items.Item.template_item_id = Column(Integer, ForeignKey('template_item.id'))
+#Each ItemTemplate can have many regular Items.
+items.ItemTemplate.items = relationship("Item", backref='template')
+items.Item.item_template_id = Column(Integer, ForeignKey('item_template.id'))
 
 
 #One Hero -> one primary_attribute dict

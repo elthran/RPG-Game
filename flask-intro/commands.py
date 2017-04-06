@@ -48,22 +48,16 @@ class Command:
         # BUY FROM BLACKSMITH
         
         item_name = arg_dict.get('item_name', None, type=str)
-        pdb.set_trace()
+        # pdb.set_trace()
         
-        item = database.get_item(item_name)
+        item = database.create_item(item_name)
         if hero.gold >= item.buy_price:
-            hero.inventory.append(newItem)
-            
-        for item in database.get_all_store_items():
-            if item_name == item.name and hero.gold >= item.buy_price:
-                newItem = item
-                newItem.update_owner(hero)
-                hero.inventory.append(newItem)
-                hero.gold -= item.buy_price
-                for path in hero.quest_paths:
-                    if path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 2:
-                        path.quest.advance_quest()
-                return "success", 200, {'Content-Type': 'text/plain'} #//
+            hero.inventory.add_item(item)
+            hero.gold -= item.buy_price
+            for path in hero.quest_paths:
+                if path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 2:
+                    path.quest.advance_quest()
+            return "success", 200, {'Content-Type': 'text/plain'}                
 
         
     cmd_functions = {

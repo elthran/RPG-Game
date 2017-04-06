@@ -93,6 +93,15 @@ class Inventory(Base):
  
     id = Column(Integer, primary_key=True)
     
+    #Marked for restructuring as causes conflics with multiple heroes?
+    #As in if hero1 has 4 of an item then hero2 will as well?
+    #Move to Inventory?
+    #amount_owned = Column(Integer)
+    # Maybe I don't even need this at all?
+    
+    def add_item(self, item):
+        self.items.append(item)
+    
     def __iter__(self):
         return (item for item in self.items)
         
