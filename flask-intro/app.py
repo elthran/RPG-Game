@@ -509,6 +509,8 @@ def home():
     global myHero
     myHero = database.fetch_hero(session['hero_id'])
     database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
+    
+    #This should be uneccessary -> but isn't?
     myHero.update_secondary_attributes()
     
     # pdb.set_trace()

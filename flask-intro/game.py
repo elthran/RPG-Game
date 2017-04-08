@@ -162,8 +162,13 @@ class Hero(Base):
         
         Currently only accepts keywords. Consider changing this.
         Consider having some Non-null values?
-        Possible bug ... assignment of BaseDict in __init__
-        may destroy relationship?
+        
+        NOTE: relationships must be assignment in complex_relationships.py
+        and then imported after game.py. But before an object is created.
+        Otherwise the relationships will be overwritten.
+        
+        exp_percent is now updated by current_exp using a validator.
+        max_exp should be assigned a value before current_exp.
         """
         self.primary_attributes = PrimaryAttribute()
         self.inventory = Inventory()
@@ -174,13 +179,15 @@ class Hero(Base):
         self.specialization = "Hunter"
         self.religion = "Dryarch"
         self.house = "Unknown"
-        self.current_exp = 0
+        
         self.max_exp = 10
+        self.current_exp = 0
+        
         self.renown = 0
         self.virtue = 0
         self.devotion = 0
         self.gold = 50
-        self.exp_percent = 0
+                
         self.health_percent = 0
         self.sanctity_percent = 0
         self.endurance_percent = 0
@@ -315,7 +322,21 @@ class Hero(Base):
         self.health_percent = round(self.current_health / self.max_health, 2) * 100
         self.sanctity_percent = round(self.current_sanctity / self.max_sanctity, 2) * 100
         self.endurance_percent = round(self.current_endurance / self.max_endurance, 2) * 100
-        self.exp_percent = round(self.current_exp / self.max_exp, 2) * 100
+    
+    @validates('current_exp')
+    def sync_exp_percent(self, key_name, xp_value):
+        """Update exp_percent on current_exp change.
+        
+        String conversion occurs in HTML and add the percent sign is added there to.
+        key_name is "current_exp" .. not actually used here at this time but it is sent to
+        this function so it must be accepted.
+        """
+        
+        try:
+            self.exp_percent = round(xp_value / self.max_exp, 2) * 100
+        except TypeError:
+            self.exp_percent = 0
+        return xp_value
         
     def refresh_character(self):
         self.current_sanctity = self.max_sanctity
