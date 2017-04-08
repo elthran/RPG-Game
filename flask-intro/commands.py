@@ -53,10 +53,10 @@ class Command:
         item = database.create_item(item_name)
         if hero.gold >= item.buy_price:
             hero.inventory.add_item(item)
-            hero.gold -= item.buy_price
+            hero.gold -= item.buy_price 
             for path in hero.quest_paths:
                 if path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 2:
-                    path.quest.advance_quest()
+                    path.advance()
             return "success", 200, {'Content-Type': 'text/plain'}                
 
         
