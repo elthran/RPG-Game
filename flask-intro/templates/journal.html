@@ -1,0 +1,103 @@
+<!-- This shows the admin page -->
+
+{% extends "layout.html" %}
+
+{% block nav_bar %}
+  <div id="content">
+     <div class="nav">
+     <ul>
+       <li><a href=/quest_log>Quests</a></li>
+       <li><a href=/bestiary/default>Bestiary</a></li>
+       <li><a href=/people_log/default>People</a></li>
+       <li><a href=/map_log>Map</a></li>
+       <li><a href=/achievement_log>Achievements</a></li>
+     </ul>
+    </div>
+  </div>
+{% endblock %}
+
+{% block generic_content %}
+<!-- This shows the quest log within the journal -->
+    {% if quest_log %}
+      <h1 class="indented">Current Quests</h1>
+      {% for path in myHero.quest_paths if path.active %}
+          <h2>{{ path.quest.name }}</h2>
+          <p>{{ path.quest.current_description }} (Stage: {{ path.stage }}/{{ path.stages }})</p>
+        {% endfor %}
+      <h1 class="indented">Completed Quests</h1>
+      {% for path in myHero.quest_paths if path.completed %}
+          <h2>{{ path.quest.name }}</h2>
+          (Reward: {{ path.quest.reward_xp }} xp)
+      {% endfor %}
+    {% endif %}
+
+<!-- This shows the bestiary within the journal -->
+    {% if bestiary %}
+      <div class="rightside">
+        {% for monster in myHero.bestiary %}
+          <ul>
+            <li><a href=/bestiary/{{ monster.monster_id }}>{{ monster.name }}</a></li>
+          </ul>
+        {% endfor %}
+    </div>
+      <h1>Bestiary</h1>
+        {% if current_monster %}
+          <h2>Entry:</h2>
+          Name: {{ current_monster.name }}<br>
+          Age: {{ current_monster.level }}<br>
+          Type: {{ current_monster.species }}<br>
+          <img src="/static/images/{{ current_monster.monster_id }}_display_picture.jpg" alt="{{ current_monster.name }} Picture" style="width:125px;height:125px;">
+        {% else %}
+          Here is a list of all of the beasts you have encountered!
+        {% endif %}
+    {% endif %}
+
+<!-- This shows the People Log within the journal-->
+    {% if people_log %}
+      <div class="rightside">
+        {% for npc in npc_data %}
+          <ul>
+            <li><a href=/people_log/{{ npc.npc_id }}>{{ npc.name }}</a></li>
+          </ul>
+        {% endfor %}
+    </div>
+      <h1 style="text-align:center;">People Log</h1>
+        {% if current_npc %}
+          <h2>Entry:</h2><br>
+          Name: {{ current_npc.name }}<br><br>
+          Age: {{ current_npc.age }}<br><br>
+          Race: {{ current_npc.race }}
+        {% else %}
+          Here is a list of all of the notable people you have encountered!
+        {% endif %}
+    {% endif %}
+
+<!-- This shows the achievement log within the journal -->
+    {% if achievement_log %}
+      <h1>Achievements</h1>
+      {% if completed_achievements %}
+        {% for achievement in completed_achievements %}
+          <h2><br><b>{{ achievement[0] }}  &nbsp; &nbsp; &nbsp; (+{{ achievement[1] }} experience)</b></h2>
+        {% endfor %}
+      {% else %}
+        No completed achievements.
+      {% endif %}
+      <h1>All Achievements</h1>
+      {% for achievement in kill_achievements %}
+          <h2><br><b>{{ achievement[0] }}</b></h2>
+      {% endfor %}
+      <h1> Current Kill Statistics </h1> 
+         {% for key, value in myHero.kill_quests.items() %}
+              {{ key }}: {{ value }}<br>
+         {% endfor %}
+    {% endif %}
+
+<!-- This shows the map log within the journal -->
+    {% if map_log %}
+      <h1>Maps</h1>
+      {% for map in myHero.known_locations %}
+        {{ map }}
+      {% endfor %}
+    {% endif %}
+{% endblock %}
+

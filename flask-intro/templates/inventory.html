@@ -1,0 +1,61 @@
+<!-- This shows the admin page -->
+
+{% extends "layout.html" %}
+{% block generic_content %}
+   
+
+<!-- This is the inventory page and displays everything your character wears/owns and gives you CMD buttons to equip/unequip -->
+      <h1>Equipped:</h1>
+      {% for item in myHero.equipped_items %} 
+        {% if item.one_handed_weapon %}
+          <h2>Right Hand:</h2>
+          {{ item.name }} -- Durability: {{ item.durability }}/{{ item.durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>   
+        {% endif %}
+        {% if item.shield %}
+          <h2>Left Hand:</h2>
+          {{ item.name }}-- Durability: {{ item.durability }}/{{ item.durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>   
+        {% endif %}
+        {% if item.two_handed_weapon %}
+          <h2>Both Hands:</h2>
+          {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>   
+        {% endif %}
+        {% if item.chest_armour %}
+          <h2>Shirt:</h2>
+         {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>   
+        {% endif %}
+        {% if item.head_armour %}
+          <h2>Helmet:</h2>
+          {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
+        {% endif %}
+        {% if item.leg_armour %}-          <h2>Pants:</h2>
+          {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
+        {% endif %}
+        {% if item.feet_armour %}
+          <h2>Shoes:</h2>
+          {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
+        {% endif %}
+       {% if item.arm_armour %}
+          <h2>Sleeves:</h2>
+          {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
+        {% endif %}
+       {% if item.hand_armour %}
+         <h2>Gloves:</h2>
+         {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
+       {% endif %}
+        {% if item.ring %}
+          <h2>Rings:</h2>
+          {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
+        {% endif %}
+      {% endfor %}
+     <h1>Inventory:</h1>
+      {% for item in myHero.inventory %}  
+        <br>{% if not item.equiptable %}{{ item.amount_owned }}{% endif %} {{ item.name }} {% if item.equiptable %} -- Durability: {{ item.durability }}/{{ item.max_durability }}{% endif %}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp; 
+        {% if item.equiptable %} 
+          <button class="command command-{{ item.name }}" value="{{ item.name }}">Equip</button>
+        {% endif %}
+        {% if item.consumable %}
+          <button class="command command-{{ item.name }}" value="{{ item.name }}">Consume</button>
+        {% endif %}
+      {% endfor %}
+{% endblock %}
+

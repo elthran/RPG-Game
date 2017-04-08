@@ -1,0 +1,13 @@
+<!-- This shows the admin page -->
+
+{% extends "layout.html" %}
+{% block generic_content %}
+<!-- I forget :'( -->
+{% for line in enemy_info %}
+      <h2>{{ line[2] }}</h2><b>{{ line[0] }}</b> {{ line[1] }}
+    {% endfor %}
+    {% for link in page_links %}
+      {{ link[0] }} <a href="{{ link[1] }}"> {{ link[2] }} </a><br>
+    {% endfor %}     
+{% endblock %}
+

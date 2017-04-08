@@ -127,6 +127,10 @@ class Hero(Base):
     virtue = Column(Integer)
     devotion = Column(Integer)
     gold = Column(Integer)
+    exp_percent = Column(Integer)
+    health_percent = Column(Integer)
+    sanctity_percent = Column(Integer)
+    endurance_percent = Column(Integer)
     
     ability_points= Column(Integer)
     basic_ability_points = Column(Integer)
@@ -176,6 +180,10 @@ class Hero(Base):
         self.virtue = 0
         self.devotion = 0
         self.gold = 50
+        self.exp_percent = 0
+        self.health_percent = 0
+        self.sanctity_percent = 0
+        self.endurance_percent = 0
     
         self.ability_points = 3 #TEMP. Soon will use the 4 values below
         self.basic_ability_points = 5
@@ -301,7 +309,13 @@ class Hero(Base):
         if max_health_change: 
             self.current_health += max_health_change	
         if self.current_health < 0:
-            self.current_health = 0	        
+            self.current_health = 0
+
+        # Need these for the profile page but they need to be incorporated better
+        self.health_percent = round(self.current_health / self.max_health, 2) * 100
+        self.sanctity_percent = round(self.current_sanctity / self.max_sanctity, 2) * 100
+        self.endurance_percent = round(self.current_endurance / self.max_endurance, 2) * 100
+        self.exp_percent = round(self.current_exp / self.max_exp, 2) * 100
         
     def refresh_character(self):
         self.current_sanctity = self.max_sanctity

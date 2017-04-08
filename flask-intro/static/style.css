@@ -1,31 +1,54 @@
 body {
   font-family: "Source Sans Pro", Helvetica, sans-serif;
-  
+  background-color: LightGray;
 }
 
 #page {
-margin:0 auto;
-overflow:hidden;
+  margin:0 auto;
+  overflow:hidden;
 }
 
 #page:after {
   clear:both;
 }
 
-
-h1 {
-    font-size: 40px;
-    color: #08edb2;
+h1 { 
+  color: Black; 
+  font-family: 'Helvetica Neue', sans-serif; 
+  font-size: 35px; 
+  font-weight: 900; 
+  letter-spacing: -1px; 
+  line-height: 100%; 
 }
 
-h3 {
-    font-size: 32px;
-    color: #08edb2;
+h1.indented {
+  margin-left: 5%;
 }
 
-p{
-  font-size:14px;
-  line-height:25px;
+h2 { 
+  color: Black; 
+  font-family: 'Open Sans', sans-serif; 
+  font-size: 25px; 
+  font-weight: 600;
+  line-height: 100%;  
+}
+
+
+p { 
+  color: Black; 
+  font-family: 'Helvetica Neue', sans-serif; 
+  font-size: 14px; 
+  font-weight: 300;
+  line-height: 100%;   
+}
+
+ul {
+  list-style-type: none;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 5px;
 }
 
 
@@ -56,8 +79,8 @@ p{
 
  .nav li a {
   display:block;
-   text-decoration: none;
-   padding:14px 16px;
+  text-decoration: none;
+  padding:14px 16px;
   color: #fff;
   transition: .3s background-color;
 }
@@ -86,83 +109,60 @@ p{
   position:fixed;
   overflow-y: scroll;
   height:100%;
-  background-image: url(images/back.jpg);
+  background-color: Gray;
 }
 
-.sidebarinfo {
- color:white;
+#sidebartop {
+  overflow: hidden;
 }
- 
+
+#sidebartop img {
+  margin-right: 15px;
+  float: left;
+}
+
+#sidebarmiddle li {
+  line-height: 30px;
+}
 
 #sidebar ul{
-   overflow: hidden; 
-    list-style: none;
-     line-height: 20px;
-        color: :white;
+  overflow: hidden; 
+  list-style: none;
+  line-height: 15px;
+  color: :white;
 }
 
 #sidebar li{
-    list-style-type: none;
-    padding-bottom: 14px;
-
+  list-style-type: none;
+  padding-bottom: 10px;
 }
 
-.sidebarmenu li {
-   line-height: 30px;
+#sidebarbottom ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  background-color: Gray;
 }
 
-.sidebarmenu a{
- font-size: 20px;
- color:#e5c100;
+#sidebarbottom li a {
+  display: block;
+  color: Black;
+  padding: 8px 16px;
+  text-decoration: none;
 }
 
-
-a:hover {
-    color: #339966;
-    text-decoration: none;
-    position: relative;
-    z-index: 2;
+/* Change the link color on hover */
+#sidebarbottom li a:hover {
+  background-color: Brown;
+  color: white;
 }
-
 
 /***** Jacob's messing around *******/
 
 /* Attribute Page Container to split page into 2 vertical halves using absolute positioning technique
     temporary because absolute positioning requires set height and will mess up display below it */
-.attribute_container {
-  display: table;
-  width: 100%;
-  height: 500;
-}
 
-.left-half {
-  background-color: #ff9e2c;
-  position: absolute;
-  left: 0px;
-  width: 50%;
-}
-
-.right-half {
-  background-color: #b6701e;
-  position: absolute;
-  right: 0px;
-  width: 50%;
-}
-
-article {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  padding: 20px;
-}
-
-/* needed? */
-section {
-  color: #fff;
-  text-align: center;
-}
 
 /* Ability button design */
 
@@ -174,62 +174,98 @@ section {
 	box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 }
 
-
-
 /* Popup container for achievement pop up - can be anything you want */
-
 .popup {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 /* The actual popup */
 .popup .popupachievement {
-    visibility: hidden;
-    width: 160px;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 8px 0;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -80px;
+  visibility: hidden;
+  width: 160px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -80px;
 }
 
 /* Popup arrow */
 .popup .popupachievement::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: #555 transparent transparent transparent;
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
 }
 
 /* Toggle this class - hide and show the popup */
 .popup .show {
-    visibility: visible;
-    -webkit-animation: fadeIn 1s;
-    animation: fadeIn 1s;
+  visibility: visible;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s;
 }
 
 /* Add animation (fade in the popup) */
 @-webkit-keyframes fadeIn {
-    from {opacity: 0;} 
-    to {opacity: 1;}
+  from {opacity: 0;} 
+  to {opacity: 1;}
 }
 
 @keyframes fadeIn {
-    from {opacity: 0;}
-    to {opacity:1 ;}
+  from {opacity: 0;}
+  to {opacity:1 ;}
+}
+
+.progressBar { 
+  height: 10px;  /* Can be anything */
+  width: 100px;
+  position: relative;
+  background: #555;
+  -moz-border-radius: 25px;
+  -webkit-border-radius: 25px;
+  border-radius: 25px;
+  padding: 10px;
+  box-shadow: inset 0 -1px 1px rgba(255,255,255,0.3);
+  float: right;
+}
+
+.progressBar > span {
+  display: block;
+  height: 100%;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  background-color: rgb(43,194,83);
+  background-image: linear-gradient(to bottom, Green, Lime);
+  box-shadow: inset 0 2px 9px  rgba(255,255,255,0.3), inset 0 -2px 6px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.progressBar.sanctity > span {
+  background-image: linear-gradient(to bottom, Blue, Pink);
+}
+
+.progressBar.endurance > span {
+  background-image: linear-gradient(to bottom, Red, Yellow);
+}
+
+.progressBar.progress > span {
+  background-image: linear-gradient(to bottom, Orange, Yellow);
 }

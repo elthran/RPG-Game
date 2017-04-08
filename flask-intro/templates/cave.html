@@ -1,0 +1,10 @@
+<!-- This shows the admin page -->
+
+{% extends "layout.html" %}
+{% block generic_content %}
+<!-- I forget :'( -->
+    {% for town_link in places_of_interest %}
+      <a href="{{ town_link.url }}"><h2>{{ town_link.places[0].name }}</h2></a>
+    {% endfor %}     
+{% endblock %}
+

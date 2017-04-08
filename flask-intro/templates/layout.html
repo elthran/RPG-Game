@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    {% if page_title %}
+      <title>{{ page_title }}</title>
+    {% endif %}
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='style.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
+  </head>
+
+  <body>
+      <div id="page">
+        <div id="sidebar">
+            <div id="sidebartop">
+              <h1>{{ myHero.name }}</h1>
+              <h3><img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px">
+              Age: {{ myHero.age }}<br>
+              Gold: {{ myHero.gold }}</h3>
+            </div>
+            <div id="sidebarmiddle">
+              <ul>
+                <li>Health: <div class="progressBar"><span style="width:{{ myHero.health_percent }}%"></span></div></li>
+                <li>Sanctity: <div class="progressBar sanctity"><span style="width:{{ myHero.sanctity_percent }}%"></span></div></li>
+                <li>Endurance: <div class="progressBar endurance"><span style="width:{{ myHero.endurance_percent }}%"></span></div></li>
+                <li>Progress: <div class="progressBar progress"><span style="width:{{ myHero.exp_percent }}%"></span></div></li>
+              </ul>
+            </div>
+            <div id="sidebarbottom">
+              <ul>
+                <li><a href=/home>Profile</a></li>
+                <li><a href=/inventory_page>Inventory</a></li>
+                {% if myHero.current_city %}
+                   <li><a href=/{{ myHero.current_city.location_type }}/{{ myHero.current_city.name }}>{{ myHero.current_city.name }}</a></li>
+                {% else %}
+                  <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_location.id }}>{{ myHero.current_world.location_type }}</a></li>
+                {% endif %}
+                <li><a href=/quest_log>Journal</a></li>
+                <li><a href=/ability_tree/Basic>Abilities</a></li>
+                <li><a href=/admin>Admin</a></li>
+                <li><a href=/display_users>Users</a></li>
+                <li><a href=/logout>Logout</a></li>
+              </ul>
+            </div>
+        </div>
+      </div>
+
+<!-- This is where you want to add HTML that will not be contained within the main body of the page -->
+<!-- Here you can add a navigation bar at the top of the page -->
+        {% block nav_bar %}{% endblock %}
+
+<!-- This is for content that is displayed on the main page -->
+        <div id="content">
+<!-- This calls a notification script to run if the Hero has any new quests completed -->
+            {% if myHero.quest_notification %}
+                <div class="popup" onclick="quest_popup()" style="color:red">You have completed a quest stage! (+{{ myHero.quest_notification[1] }}xp)<span class="popupachievement" id="js_popupachievement">{{ myHero.quest_notification[0] }}</span></div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
+            {% endif %}
+
+<!-- This is info pulled from other html files -->
+            {% block generic_content %}{% endblock %}
+
+<!-- You can pass Red Error messages through this variable -->
+            {% for message in get_flashed_messages() %}
+                {{ message }}
+            {% endfor %}
+
+<!-- This ends the main body container of the page -->
+        </div>
+    </body>
+</html>
+
+<script>
+// Only run what comes next *after* the page has loaded
+document.addEventListener("DOMContentLoaded", function () {
+    "use strict";
+    // Grab all of the elements with a class of command
+    // (which all of the buttons we just created have)
+    var commandButtons = document.querySelectorAll(".command");
+    // Iterate through the NodeList created by "querySelectorAll"
+    commandButtons.forEach(function (button) {
+        // For each button, listen for the "click" event
+        button.addEventListener("click", function (e) {
+            // When a click happens, stop the button
+            // from submitting our form (if we have one)
+            e.preventDefault();
+            var clickedButton = e.target;
+            var command = clickedButton.value;
+            //get buttons class and save it as the .
+            console.log("Button clicked was:", clickedButton);
+            var buttonClass = clickedButton.class;
+            // Now we need to send the data to our server
+            // without reloading the page - this is the domain of
+            // AJAX (Asynchronous JavaScript And XML)
+            // We will create a new request object
+            // and set up a handler for the response
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                // Wait until response gets full formed .. and isn't an error.
+                if (xhttp.readyState === 4 && xhttp.status === 200) {
+                    // Current response format must be of the form key=value
+                    // I will put some error checking in to make sure that this happens at some point.
+                    //
+                    // If response can't be used to find content to update (old code)
+                    // Then the whole page is reloaded instead. See if (!objectIDs.length).
+                    var requestArray = xhttp.responseText.split("=");
+                    var key = requestArray[0];
+                    var value = requestArray[1];
+                    console.log("Response: key=" + key + ", value=" + value);
+                    // Get all locations/objects that are going to be updated by this response.
+                    // currently all info to be updated must be of the form
+                    // <span id="hero_religion">{{ myHero.religion }}</span>
+                    // which might really looks like <span id="hero_religion">Forgoth</span>
+                    // when the folling loop executes the value between
+                    // the span tags gets updated. The id tells the code what Jinja2 variable
+                    // is going to be updated. There must be a better way.
+                    // Like reinterpret the template? But only this one variable?
+                    // Perhaps I could build all Jinja2 variables inside an update_me span tag?
+                    // That way all of the dynamic content would get updated?
+                    // Note ids must not have dots in them. Or spaces. Only underscores.
+                    var idElements = document.querySelectorAll("#" + key);
+                    // For backwards compatability until I update all of the old code.
+                    // Runs if no objectIDs are found.
+                    if (!idElements.length) {
+                        location.reload();
+                        console.log("Location reloaded!");
+                        console.log("Response: key=" + key + ", value=" + value);
+                    } else {
+                        console.log("Elements to be updated:", idElements);
+                        // Iterate through the NodeList created by "querySelectorAll"
+                        idElements.forEach(function (item, index) {
+                            console.log("object " + index + ": " + item);
+                            item.innerHTML = value;
+                        });
+                    }
+                }
+            };
+            // We point the request at the appropriate command
+            // Send data to python. To send non string args you must not use the "+" operator.
+            // Then you can send the data raw or in lots of other formats.
+            // See https://www.w3schools.com/xml/ajax_xmlhttprequest_send.asp
+            //
+            // Note: command == button.value so <button value="foo"> command == "foo"
+            //
+            // While buttonClass == button.class (which might be able to be multiple values?)
+            // such that <button class="classFoo"> buttonClass = "classFoo"
+            //
+            // I don't know what would happen if a button has multiple classes
+            // e.g. <button class="foo otherFoo">
+            //
+            // "&&" acts like the "," in pythonic {key:value, key2:value2}
+            // xhttp.open("GET", "/" + command + "?class=" + buttonClass + "&&key2=value2", true);
+            var pathname = window.location.pathname;
+            
+            // innerHTML for a button is the button's "label" (the part you see).
+            xhttp.open("GET", "/" + command +
+                "&&location=" + window.location.pathname +
+                "&&innerHTML=" +  clickedButton.innerHTML, true);
+            // and then we send it off
+            xhttp.send();
+        });
+    });
+}, true);
+</script>
+
+
+
+
+
