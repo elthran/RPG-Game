@@ -14,9 +14,8 @@
 Choose Specialization (Currently {{ myHero.specialization }}): <button class="command command-hunter" value="hunter">Hunter</button><button class="command command-trapper" value="trapper">Trapper</button><br> Your class is <b>{{ myHero.specialization }}</b>{% endif %}
 
       {% if religious_ability_tree %}
-      Choose Religion (Currently <span id="{{ myHero.religion }}">{{ myHero.religion }}</span>): <button class="command command-forgoth" value="forgoth">Forgoth</button><button class="command command-dryarch" value="dryarch">Dryarch</button>
-      <br> You are a follower of <b><span id="{{ myHero.religion }}">{{ myHero.religion }}</span></b>
-      
+      Choose Religion (Currently <span id="hero_religion">{{ myHero.religion }}</span>): <button class="command command-forgoth" value="choose_religion?">Forgoth</button><button class="command command-dryarch" value="choose_religion?">Dryarch</button>
+      <br> You are a follower of <b><span id="hero_religion">{{ myHero.religion }}</span></b>
       {% endif %}
       <h2 style="text-align:left;">Unknown</h2>
         {% for ability in unknown_abilities %}

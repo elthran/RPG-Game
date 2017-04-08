@@ -2,6 +2,8 @@ from locations import Location, Cave, Town, WorldMap, Display
 from abilities import Ability, Archetype_Ability, Class_Ability, Religious_Ability
 from game import User, Hero
 from quests import Quest, QuestPath
+from items import (One_Handed_Weapon, Shield, Two_Handed_Weapon, Leg_Armour, Chest_Armour,
+    Head_Armour, Feet_Armour, Arm_Armour, Hand_Armour, Ring)
 import complex_relationships #MUST be imported last.
 
 """
@@ -188,3 +190,30 @@ QuestPath(quest1, haldon)
 QuestPath(quest2, haldon)
 marlen.heroes = [haldon]
 users = [marlen]
+
+##########
+#Items
+##########
+all_store_items = [One_Handed_Weapon("Small Dagger", buy_price=5, min_damage=30,
+        max_damage=60, attack_speed=1),
+    One_Handed_Weapon("Big Dagger", buy_price=10, min_damage=300, max_damage=600,
+        attack_speed=2),
+    Shield("Small Shield", buy_price=10),
+    Two_Handed_Weapon("Small Polearm", buy_price=5, min_damage=30, max_damage=60,
+        attack_speed=1),
+    Two_Handed_Weapon("Medium Polearm", buy_price=5, min_damage=30, max_damage=60,
+        attack_speed=1),
+    Leg_Armour("Medium Pants", 7, 25),
+    Chest_Armour("Medium Tunic", 2, 25),
+    Chest_Armour("Strong Tunic", 5, 250),
+    Head_Armour("Weak Helmet", 2, 1),
+    Head_Armour("Medium Helmet", 4, 3),
+    Feet_Armour("Test Boots", 3, 3),
+    Arm_Armour("Test Sleeves", 4, 5),
+    Hand_Armour("Test Gloves", 5, 7),
+    Ring("Test Ring", 8)]
+
+# all_marketplace_items = [Consumable("Minor Health Potion", 3, healing_amount=10),
+                         # Consumable("Major Health Potion", 6, healing_amount=50),
+                         # Consumable("Major Faith Potion", 6, sanctity_amount=50),
+                         # Consumable("Major Awesome Max Potion", 6000, sanctity_amount=50)]

@@ -21,7 +21,7 @@ import pdb
 #C:\Python35\lib\site-packages\sqlalchemy\orm\mapper.py:1654: SAWarning: 
 #Property Hero.inventory on Mapper|Hero|heroes being replaced with new property Hero.inventory;
 #the old property will be discarded
-game.Hero.user_id = Column(Integer, ForeignKey('users.id'))
+game.Hero.user_id = Column(Integer, ForeignKey('user.id'))
 game.User.heroes = relationship("Hero", order_by='Hero.character_name', backref='user')
 
 #Many Heroes -> one WorldMap (bidirectional)
@@ -49,45 +49,58 @@ locations.Location.heroes_by_current_location = relationship("Hero",
 #Many Heroes -> many known Maps? (unidirectional)?
 #Maybe this should be a One Hero -> Many Maps ...
 known_locations_association_table = Table('known_locations_association', Base.metadata,
-    Column('heroes_id', Integer, ForeignKey('heroes.id')),
+    Column('hero_id', Integer, ForeignKey('hero.id')),
     Column('map_id', Integer, ForeignKey('map.id'))
 )
 game.Hero.known_locations = relationship("Map", secondary=known_locations_association_table)
 ###########
 
 abilities_association_table = Table('abilities_association', Base.metadata,
-    Column('heroes_id', Integer, ForeignKey('heroes.id')),
+    Column('hero_id', Integer, ForeignKey('hero.id')),
     Column('ability_id', Integer, ForeignKey('ability.id'))
 )
 
 game.Hero.abilities = relationship("Ability", secondary=abilities_association_table, back_populates="heroes")
 abilities.Ability.heroes = relationship("Hero", secondary=abilities_association_table, back_populates="abilities")
 
-#One Hero -> many inventory items (bidirectional) Note: (inventory == items)    
-#inventory is list of character's items.
-items.Item.hero_id = Column(Integer, ForeignKey("heroes.id"))
-game.Hero.inventory = relationship("Item", order_by="Item.name", backref="myHero")
+##########
+#Heroes and Items (and inventory).
+##########
+#Each Hero has One inventory. (One to One -> bidirectional)
+#inventory is list of character's items. 
+game.Inventory.hero_id = Column(Integer, ForeignKey('hero.id'))
+game.Inventory.hero = relationship("Hero", backref=backref("inventory", uselist=False))
+
+#Each inventory has many items. (One to Many -> bidirectional)
+#Each item can be in one inventory.
+game.Inventory.items = relationship("Item", backref="inventory")
+items.Item.inventory_id = Column(Integer, ForeignKey('inventory.id'))
+
+#Each ItemTemplate can have many regular Items.
+items.ItemTemplate.items = relationship("Item", backref='template')
+items.Item.item_template_id = Column(Integer, ForeignKey('item_template.id'))
+
 
 #One Hero -> one primary_attribute dict
-game.PrimaryAttribute.hero_id = Column(Integer, ForeignKey('heroes.id'))
+game.PrimaryAttribute.hero_id = Column(Integer, ForeignKey('hero.id'))
 game.Hero.primary_attributes = relationship("PrimaryAttribute", uselist=False)
 
+#Marked for restructure. Remove in favor of quest object.
+#Maybe make a special "KillQuest" quest type?
 #One Hero -> one quest list?
 #Quest list is not quests? So like it should really be Many to Many? Each Hero can have Many Quests
 #and each Quest can be held by Many Heroes.
-base_classes.BaseDict.hero_id_kill_quests = Column(Integer, ForeignKey('heroes.id'))
-base_classes.BaseDict.kill_quests_hero = relationship("Hero", 
-    backref=backref("kill_quests", uselist=False), foreign_keys="[BaseDict.hero_id_kill_quests]")
+# base_classes.BaseDict.hero_id_kill_quests = Column(Integer, ForeignKey('hero.id'))
+# base_classes.BaseDict.kill_quests_hero = relationship("Hero", 
+    # backref=backref("kill_quests", uselist=False), foreign_keys="[BaseDict.hero_id_kill_quests]")
     
     
 #Heroes to Quests.
-#Hero object relates to quests via active_quests and completed_quests.
-#Hero quests can be either active or completed, but not both.
-#
-#This relationship forms through the QuestPath object.
+#Hero object relates to quests via the QuestPath object.
+#This path may be either active or completed, but not both. 
 #Which establishes a manay to many relationship between quests and heroes.
 #QuestPath provides many special methods.
-quests.QuestPath.hero_id = Column(Integer, ForeignKey('heroes.id'))
+quests.QuestPath.hero_id = Column(Integer, ForeignKey('hero.id'))
 quests.QuestPath.quest_id = Column(Integer, ForeignKey('quest.id'))
 
 game.Hero.quest_paths = relationship("QuestPath", backref='hero')

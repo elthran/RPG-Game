@@ -55,7 +55,7 @@
         <div id="content">
 <!-- This calls a notification script to run if the Hero has any new quests completed -->
             {% if myHero.quest_notification %}
-                <div class="popup" onclick="quest_popup()" style="color:red">You have complete a quest! (+{{ myHero.quest_notification[1] }}xp)<span class="popupachievement" id="js_popupachievement">{{ myHero.quest_notification[0] }}</span></div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
+                <div class="popup" onclick="quest_popup()" style="color:red">You have completed a quest stage! (+{{ myHero.quest_notification[1] }}xp)<span class="popupachievement" id="js_popupachievement">{{ myHero.quest_notification[0] }}</span></div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
             {% endif %}
 
 <!-- This is info pulled from other html files -->
@@ -78,7 +78,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Grab all of the elements with a class of command
     // (which all of the buttons we just created have)
     var commandButtons = document.querySelectorAll(".command");
-
     // Iterate through the NodeList created by "querySelectorAll"
     commandButtons.forEach(function (button) {
         // For each button, listen for the "click" event
@@ -86,14 +85,11 @@ document.addEventListener("DOMContentLoaded", function () {
             // When a click happens, stop the button
             // from submitting our form (if we have one)
             e.preventDefault();
-
             var clickedButton = e.target;
             var command = clickedButton.value;
-
             //get buttons class and save it as the .
             console.log("Button clicked was:", clickedButton);
             var buttonClass = clickedButton.class;
-
             // Now we need to send the data to our server
             // without reloading the page - this is the domain of
             // AJAX (Asynchronous JavaScript And XML)
@@ -112,37 +108,36 @@ document.addEventListener("DOMContentLoaded", function () {
                     var key = requestArray[0];
                     var value = requestArray[1];
                     console.log("Response: key=" + key + ", value=" + value);
-
                     // Get all locations/objects that are going to be updated by this response.
                     // currently all info to be updated must be of the form
-                    // <span id="{{ myHero.religion }}">{{ myHero.religion }}</span>
-                    // which might really looks like <span id="Forgoth">Forgoth</span>
-                    // when the folling loop executes both the id and value between
-                    // the span tags gets updated.
-
-                    // There is probably a faster way cleaner way. Maybe having a default
-                    // <span id="update_me">html to be updated</span> would be better?
-                    // And leaving the id the same? Instead of dynamically updating it?
+                    // <span id="hero_religion">{{ myHero.religion }}</span>
+                    // which might really looks like <span id="hero_religion">Forgoth</span>
+                    // when the folling loop executes the value between
+                    // the span tags gets updated. The id tells the code what Jinja2 variable
+                    // is going to be updated. There must be a better way.
+                    // Like reinterpret the template? But only this one variable?
                     // Perhaps I could build all Jinja2 variables inside an update_me span tag?
                     // That way all of the dynamic content would get updated?
+                    // Note ids must not have dots in them. Or spaces. Only underscores.
                     var idElements = document.querySelectorAll("#" + key);
                     // For backwards compatability until I update all of the old code.
                     // Runs if no objectIDs are found.
                     if (!idElements.length) {
                         location.reload();
+                        console.log("Location reloaded!");
+                        console.log("Response: key=" + key + ", value=" + value);
                     } else {
                         console.log("Elements to be updated:", idElements);
                         // Iterate through the NodeList created by "querySelectorAll"
                         idElements.forEach(function (item, index) {
                             console.log("object " + index + ": " + item);
                             item.innerHTML = value;
-                            item.id = value;
                         });
                     }
                 }
             };
             // We point the request at the appropriate command
-            // Send data to python. To send no string args you must not use the "+" operator.
+            // Send data to python. To send non string args you must not use the "+" operator.
             // Then you can send the data raw or in lots of other formats.
             // See https://www.w3schools.com/xml/ajax_xmlhttprequest_send.asp
             //
@@ -155,7 +150,13 @@ document.addEventListener("DOMContentLoaded", function () {
             // e.g. <button class="foo otherFoo">
             //
             // "&&" acts like the "," in pythonic {key:value, key2:value2}
-            xhttp.open("GET", "/" + command + "?class=" + buttonClass + "&&key2=value2", true);
+            // xhttp.open("GET", "/" + command + "?class=" + buttonClass + "&&key2=value2", true);
+            var pathname = window.location.pathname;
+            
+            // innerHTML for a button is the button's "label" (the part you see).
+            xhttp.open("GET", "/" + command +
+                "&&location=" + window.location.pathname +
+                "&&innerHTML=" +  clickedButton.innerHTML, true);
             // and then we send it off
             xhttp.send();
         });

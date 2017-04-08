@@ -49,6 +49,35 @@ def login_required(f):
             return redirect(url_for('login'))
     return wrap
 
+#Not implemented. Control user moves on map.    
+def prevent_url_typing(f):
+    """Set certain pages as requiring a login to visit.
+
+    This should redirect you to the login page.
+    This needs a lot more work. It should be dealing with actual URLs ...
+    """
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        try:
+            requested_move = set([kwargs['location_id']])
+        except KeyError:
+            pass
+        try: 
+            requested_move = set([kwargs['cave_name']])
+        except KeyError:
+            pass
+        try:
+            requested_move = set([kwargs['town_name']])
+        except KeyError:
+            pass
+        pdb.set_trace()    
+        if 'valid_moves' in session and any(move in session['valid_moves'] for move in requested_move):
+            return f(*args, **kwargs)
+        else:
+            flash("You can't access that location from here.")
+            return redirect(url_for(f))
+    return wrap
+
 # This gets called anytime a button gets clicked in html using
 # <button class="command", value="foo">. "foo" is what gets sent to this
 # Python code.
@@ -77,12 +106,19 @@ def command(cmd=None):
     testing = True
     if testing:
         print('request is:', repr(request))
+        # print('request data:', repr(request.data))
+        print('request view_args:', repr(request.view_args))
         print('request args:', repr(request.args))
         print('cmd is:', repr(cmd))
-    
+        
+    # event = dict(request.args)
+    # event.add["hero"] = myHero
+    # event.add["database"] = database
+
     try:
-        response = Command.cmd_functions[cmd](myHero)
+        response = Command.cmd_functions[cmd](myHero, database=database, arg_dict=request.args)
         database.update()
+        # pdb.set_trace()
         return response
     except KeyError as ex:
         print("Warning: invalid key {}".format(ex))
@@ -105,7 +141,7 @@ def command(cmd=None):
     
     for item in myHero.inventory:
         if cmd == item.name:
-            if item.equiptable:            # EQUIP ITEMS
+            if item.wearable:            # EQUIP ITEMS
                 equipped_items_to_remove = []
                 for equipped_item in myHero.equipped_items:
                     if type(item) is Weapon:
@@ -178,17 +214,6 @@ def command(cmd=None):
             database.update()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
-    # BUY FROM BLACKSMITH
-    for item in database.get_all_store_items():
-        if cmd == item.buy_name and myHero.gold >= item.buy_price:
-            newItem = item
-            newItem.update_owner(myHero)
-            myHero.inventory.append(newItem)
-            myHero.gold -= item.buy_price
-            for path in myHero.quest_paths:
-                if path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 2:
-                    path.quest.advance_quest()
-            return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # BUY FROM MARKETPLACE
     for item in database.get_all_marketplace_items():
@@ -493,6 +518,13 @@ def home():
         myHero.current_world = database.get_default_world()
         myHero.current_location = database.get_default_location()
         database.update()
+    
+    #Not implemented. Control user moves on map.
+    #Sets up initial valid moves on the map.
+    # Should be a list of urls ...
+    # session['valid_moves'] = myHero.current_world.show_directions(myHero.current_location)
+    # session['valid_moves'].append(myHero.current_location.id)
+        
     # If it's a new character, send them to cerate_character url
     if myHero.character_name == None:
         return redirect(url_for('create_character'))
@@ -503,7 +535,7 @@ def home():
 def inventory_page():
     page_title = "Inventory"
     for item in myHero.inventory:
-        if item.equiptable:
+        if item.wearable:
             item.check_if_improvement()
     return render_template('inventory.html', myHero=myHero, page_title=page_title)  # return a string
 
@@ -619,10 +651,15 @@ def under_construction():
 
 @app.route('/Town/<town_name>')
 @login_required
+#Not implemented. Control user moves on map.
+# @prevent_url_typing
 def town(town_name):
+    #Marked for refractor as ineficient if easy to understand.
+    #These should just be part of the basic world_map function as they don't actually
+    #add anything yet.
     for location in myHero.current_world.all_map_locations:
         if location.name == town_name:
-            myHero.current_city = location
+            myHero.current_location = location
             break
 
     page_title = myHero.current_city.display.page_title
@@ -632,13 +669,15 @@ def town(town_name):
 
 @app.route('/Cave/<cave_name>') # Test function while experimenting with locations
 @login_required
+#Not implemented. Control user moves on map.
+# @prevent_url_typing
 def cave(cave_name):
     #Marked for refractor as ineficient if easy to understand.
     #Maybe a search function?
     #myHero.current_city = myHero.current_world.get_city(cave_name)?
     for location in myHero.current_world.all_map_locations:
         if location.name == cave_name:
-            myHero.current_city = location
+            myHero.current_location = location
             break
     page_title = myHero.current_city.display.page_title
     page_heading = myHero.current_city.display.page_heading
@@ -648,8 +687,10 @@ def cave(cave_name):
     database.update()
     return render_template('cave.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest)  # return a string
 
-@app.route('/WorldMap/<current_world>/<location_id>') # Test function while experimenting with locations
+@app.route('/WorldMap/<current_world>/<int:location_id>') # Test function while experimenting with locations
 @login_required
+#Not implemented. Control user moves on map.
+# @prevent_url_typing
 def world_map(current_world, location_id):
     """Set up World Map web page. Return html string/web page.
     
@@ -665,9 +706,9 @@ def world_map(current_world, location_id):
     #May have originally compensated for the lack of a database.
     current_location = current_world.find_location(location_id)
     
-    #Needs to be reimplemented
+    #Needs to be reimplemented/or removed
     # myHero.known_locations.append(current_world)
-    myHero.current_city = None #?
+    # myHero.current_city = None #?
     
     move_on_the_map = current_world.show_directions(current_location)
     myHero.current_location = current_location
@@ -681,6 +722,10 @@ def world_map(current_world, location_id):
     page_image = current_world.display.page_image
     paragraph = current_world.display.paragraph
     places_of_interest = current_world.display.places_of_interest
+    
+    #Not implemented. Control user moves on map.
+    #Should be a list of urls ...
+    # session['valid_moves'] = move_on_the_map
     
     return render_template('world_map.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest, move_on_the_map=move_on_the_map)  
 
@@ -748,13 +793,18 @@ def arena():
     page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
     return render_template('building_default.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, enemy_info=conversation)  # return a string
 
+#A.k.a "Blacksmith"
 @app.route('/store/<inventory>')
 @login_required
 def store(inventory):
     page_title = "Store"
+    
+    # path = database.get_path_if_exists(quest_name, myHero)
+    # if path in myHero.quest_paths:
+        # path.advance()
     for path in myHero.quest_paths:
         if path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 1:
-            path.quest.advance_quest(myHero)
+            path.advance()
     items_for_sale = []
     if inventory == "greeting":
         page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]
@@ -762,12 +812,12 @@ def store(inventory):
     elif inventory == "armoury":
         page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
         for item in database.get_all_store_items():
-            if isinstance(item, Garment) or isinstance(item, Jewelry):
+            if item.garment or item.jewelry:
                 items_for_sale.append(item)
     elif inventory == "weaponry":
         page_links = [("I think I'd rather look at your ", "/store/armoury", "armour", " selection.")]
         for item in database.get_all_store_items():
-            if isinstance(item, Weapon):
+            if item.weapon:
                 items_for_sale.append(item)
     return render_template('store.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_links=page_links)  # return a string
 

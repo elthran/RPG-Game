@@ -238,6 +238,64 @@ class BaseListElement(Base):
         return repr(self.value)
             
 
+class BaseItem(Base):
+    __tablename__ = 'base_item'
+    id = Column(Integer, primary_key=True)
+    str_key = Column(String)
+    int_key = Column(Integer)
+    str_value = Column(String)
+    int_value = Column(Integer)
+    
+    base_dict_id = Column(Integer, ForeignKey('base_dict.id'))
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+    
+    @hybrid_property
+    def key(self):
+        """Return key of appropriate type.
+        
+        Can be string or integer.
+        """
+        return self.int_key or self.str_key
+
+
+    @key.setter
+    def key(self, key):
+        """Assign key to appropriate typed column.
+        
+        Currently implements strings and integers.
+        """
+        if type(key) is type(str()):
+            self.str_key = key
+        elif type(key) is type(int()):
+            self.int_key = key
+        else:
+            raise "TypeError: BaseItem does not accept type '{}':".format(type(key))
+
+    @hybrid_property
+    def value(self):
+        """Return value of appropriate type.
+        
+        Can be string or integer.
+        """
+        return self.int_value or self.str_value
+
+
+    @value.setter
+    def value(self, value):
+        """Assign value to appropriate typed column.
+        
+        Currently implements strings and integers.
+        """
+        if type(value) is type(str()):
+            self.str_value = value
+        elif type(value) is type(int()):
+            self.int_value = value
+        else:
+            raise "TypeError: BaseItem does not accept type '{}':".format(type(value))
+    
+
 class BaseDict(Base):
     """Mimic a dictionary but be storable in a database.
     
@@ -245,77 +303,78 @@ class BaseDict(Base):
     """
     __tablename__ = "base_dict"
     id = Column(Integer, primary_key=True)
-    keys = relationship("BaseListElement", foreign_keys="[BaseListElement.dict_id_keys]")
-    values = relationship("BaseListElement", foreign_keys="[BaseListElement.dict_id_values]")
     
+    base_items = relationship("BaseItem")
     
-    def __init__(self, dictionary={}):
+    def __init__(self, d={}):
+        """Build a list of items and a matching dictionary.
+        
+        The dictionary should act as a hash table/index for the list.
+        """
         self.d_items = {}
-        index = 0
-        for x in dictionary.keys():
-            self.keys.append(BaseListElement(x))
-            self.values.append(BaseListElement(dictionary[x]))
-            self.d_items[x] = index
-            index += 1
-            
+        for key in d:
+            self.d_items[key] = BaseItem(key, d[key])
+            self.base_items.append(self.d_items[key])
+            assert self.d_items[key] is self.base_items[-1]
+ 
+             
     @orm.reconstructor
     def rebuild_d_items(self):
-        # pdb.set_trace()
         self.d_items = {}
-        for index in range(len(self.keys)):
-            key = self.keys[index].value
-            self.d_items[key] = index
+        for item in self.base_items:
+            self.d_items[item.key] = item
         
+    
+    def remove(self, key):
+        base_item = self.d_items.pop(key, None)
+        if base_item:
+            self.base_items.remove(base_item)
+            
             
     def __getitem__(self, key):
         """Get value of key using a dict key name or list index.
         """
-        index = self.d_items[key]
-        return self.values[index].value
+
+        return self.d_items[key].value
             
             
-    def __setitem__(self, key, item):
+    def __setitem__(self, key, value):
         """Change value at key or create key with value.
         """
         try:
-            index = self.d_items[key]
-            self.values.pop(index)
-            self.values.insert(index, BaseListElement(item))
+            self.d_items[key].value = value
         except KeyError as ex:
-            self.add(key, item)
+            self.add(key, value)
             
-    def add(self, key, item):
+    def add(self, key, value):
         """Add an element to the end of the dictionary.
         
         """
-        index = len(self.keys)
-        self.keys.append(BaseListElement(key))
-        self.values.append(BaseListElement(item))
-        self.d_items[key] = index
-        
+        self.d_items[key] = BaseItem(key, value)
+        self.base_items.append(self.d_items[key])
+    
+    def keys(self):
+        return (item.key for item in self.base_items)
+    
+    def values(self):
+        return (item.value for item in self.base_items)
         
     def items(self):
-        return ((self.keys[index].value, self.values[index].value) for index in range(len(self.keys)))
+        return ((item.key, item.value) for item in self.base_items)
         
-    def __iter__(self):
-        return (key for key in self.d_items)
+    # def __iter__(self):
+        # return (key for key in self.d_items)
         
-    
-    # def __eq__(self, other): 
-        # return self.__dict__ == other.__dict__
-                    
-    
     def __str__(self):
         """Return pretty string version of data.
         
-        NOTE: due to sorting this is quite slow.
         """
         
-        return "{" + ', '.join(sorted(['{}: {}'.format(self.keys[x], self.values[x]) for x in range(len(self.keys))])) + "}"
-    
+        data = ', '.join(['{}: {}'.format(repr(item.key), repr(item.value))
+            for item in self.base_items])
+        return "BaseDict{" + data + "}"
+ 
 
-   
-    
-    
-    
-    
+
+
+

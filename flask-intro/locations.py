@@ -227,8 +227,7 @@ class Town(Location):
     __tablename__ = "town"
     
     id = Column(Integer, ForeignKey('location.id'), primary_key=True)
-
-    
+   
     __mapper_args__ = {
         'polymorphic_identity':'Town',
     }
@@ -331,8 +330,7 @@ class WorldMap(Map):
         
     # temporarily location_id is the same as the index in the list of all_map_locations
     def find_location(self, location_id):
-        id = int(location_id)
-        return self.all_map_locations[id]
+        return self.all_map_locations[location_id]
 
         
 #Just another synonym for backwards compatability (which id don't know if it even works?)       

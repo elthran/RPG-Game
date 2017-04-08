@@ -18,6 +18,7 @@ try:
     
     from sqlalchemy import orm
     from sqlalchemy.orm.collections import attribute_mapped_collection
+    from sqlalchemy.orm import validates
 except ImportError as e:
     exit("Open a command prompt and type: pip install sqlalchemy."), e
     
@@ -73,20 +74,43 @@ class User(Base):
     
     This is database ready and connects to the Hero class.
     """
-    __tablename__ = 'users'
+    __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
     email = Column(String)
     timestamp = Column(DateTime)
-                    
-                        
+
+
+class Inventory(Base):
+    """Store a list of items for the hero.
+    
+    This is a special class that will allow me to do more natural pythonic operations
+    on a list of items. In theory. Sort of a 'wrapper' I guess?
+    """
+    __tablename__ = 'inventory'
+ 
+    id = Column(Integer, primary_key=True)
+    
+    #Marked for restructuring as causes conflics with multiple heroes?
+    #As in if hero1 has 4 of an item then hero2 will as well?
+    #Move to Inventory?
+    #amount_owned = Column(Integer)
+    # Maybe I don't even need this at all?
+    
+    def add_item(self, item):
+        self.items.append(item)
+    
+    def __iter__(self):
+        return (item for item in self.items)
+        
+  
 class Hero(Base):
     """Store data about the Hero/Character object.
     
     """
-    __tablename__ = 'heroes'
+    __tablename__ = 'hero'
     
     id = Column(Integer, primary_key=True)
     name = Column(String) #Was nullable=False now it isn't. I hope that is a good idea.
@@ -142,8 +166,7 @@ class Hero(Base):
         may destroy relationship?
         """
         self.primary_attributes = PrimaryAttribute()
-
-        self.kill_quests = BaseDict()
+        self.inventory = Inventory()
         
         #Defaults will remain unchanged if no arguments are passed.
         self.age = 7
@@ -191,6 +214,8 @@ class Hero(Base):
 
     
     def not_yet_implemented():
+        self.kill_quests = BaseDict()
+        
         self.strength = 1
         self.resilience = 1
         self.vitality = 1
@@ -232,7 +257,7 @@ class Hero(Base):
         #######
 
         #Make a list of the equipped items or if none are equipt return empty list.
-        self.equipped_items = [item for item in self.inventory if item.equiptable] or []
+        self.equipped_items = [item for item in self.inventory if item.wearable] or []
 
         self.max_damage = update_maximum_damage(self)
         self.maximum_damage = self.max_damage #Synonym for max_damage
@@ -331,6 +356,33 @@ class Hero(Base):
     def get_primary_attributes(self):
         # pdb.set_trace()
         return sorted(self.primary_attributes.items())
+        
+    # @validates('current_city')
+    # def validate_current_city(self, key, location):
+        # """Assert that current_city is in fact a city.
+        
+        # Also allow current_city to be None.
+        # """
+        # try:
+            # assert location.type in ("Cave", "Town")
+            # return location
+        # except AttributeError:
+            # assert location is None
+            # return None
+        
+
+    @validates('current_location')
+    def validate_current_location(self, key, location):
+        """Updates value of current_city on assignment.
+        
+        If current_location is a city ... set value of current_city as well.
+        If not remove the value of current_city.
+        """
+        if location.type in ("Cave", "Town"):
+            self.current_city = location
+        else:
+            self.current_city = None
+        return location 
                
         
 

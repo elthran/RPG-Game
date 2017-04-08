@@ -2,11 +2,16 @@
 
 {% extends "layout.html" %}
 {% block generic_content %}
-      <h2>Here is our list of items:</h2>
-      {% for item in items_for_sale %}
-        {{ item.name }} ({{ item.buy_price }})
-        <button class="command command-{{ item.buy_name }}" value="{{ item.buy_name }}">Buy</button><br>
-      {% endfor %}      
+    <h2>Here is our list of items:</h2>
+    <table>
+    {% for item in items_for_sale %}
+        <tr>
+            <td>{{ item.name }}</td>
+            <td><button class="command  command-store-buy-blacksmith" value="buy?item_name={{ item.name }}">Buy</button></td>
+            <td><b>{{ item.buy_price }}</b> gold</td>
+        </tr>
+    {% endfor %}  
+    </table>      
 {% for link in page_links %}
       {{ link[0] }} <a href="{{ link[1] }}"> {{ link[2] }} </a><br>
     {% endfor %}    
