@@ -4,7 +4,18 @@
 {% block generic_content %}
 <!-- This is the ability page IF YOU HAVE UNSPENT points. It let's you learn/upgrade abilities -->
     {% if ability_pages_learn %}
-      <br>Ability Points: {{ myHero.ability_points }}
+       <div id="content">
+     <div class="nav">
+     <ul>
+       <li><a href=/ability_tree/Basic>Basic Skills</a></li>
+       <li><a href=/ability_tree/Archetype>Archetype Advancements</a></li>
+       <li><a href=/ability_tree/Class>Class Abilities</a></li>
+       <li><a href=/ability_tree/Religious>Religious Blessings</a></li>
+     </ul>
+    </div>
+    </div>
+    
+    <br>Ability Points: {{ myHero.ability_points }}
       <br>Arch Points: {{ myHero.archetype_ability_points }}
       <br>Spec Points: {{ myHero.specialization_ability_points }}
       <br>Relig Points: {{ myHero.pantheonic_ability_points }}
@@ -16,6 +27,7 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
       {% if religious_ability_tree %}
       Choose Religion (Currently <span id="hero_religion">{{ myHero.religion }}</span>): <button class="command command-forgoth" value="choose_religion?">Forgoth</button><button class="command command-dryarch" value="choose_religion?">Dryarch</button>
       <br> You are a follower of <b><span id="hero_religion">{{ myHero.religion }}</span></b>
+      
       {% endif %}
       <h2 style="text-align:left;">Unknown</h2>
         {% for ability in unknown_abilities %}
@@ -30,6 +42,7 @@ Choose Specialization (Currently {{ myHero.specialization }}): <button class="co
           <img src="/static/images/{{ ability.name }}.jpg"; height:70px; width:70px"><img src="/static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;"> {{ ability.description }}<br>
         {% endfor %}
     {% endif %}
+
 
 <!-- This is the abilities page IF YOU DONT HAVE ability points. It lets you cast spells and see what you have learned -->
     {% if ability_pages_use %}
