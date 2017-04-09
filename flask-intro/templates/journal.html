@@ -10,13 +10,13 @@
        <li><a href=/bestiary/default>Bestiary</a></li>
        <li><a href=/people_log/default>People</a></li>
        <li><a href=/map_log>Map</a></li>
-       <li><a href=/achievement_log>Achievements</a></li>
+       <li><a href=/quest_log>Achievements</a></li>
      </ul>
     </div>
   </div>
 {% endblock %}
 
-{% block generic_content %}
+{% block block1 %}
 <!-- This shows the quest log within the journal -->
     {% if quest_log %}
       <h1 class="indented">Current Quests</h1>
@@ -83,9 +83,9 @@
         No completed achievements.
       {% endif %}
       <h1>All Achievements</h1>
-      {% for achievement in kill_achievements %}
-          <h2><br><b>{{ achievement[0] }}</b></h2>
-      {% endfor %}
+      {% for achievement in kill_achievements %}    
+          <h2><br><b>{{ achievement[0] }}</b></h2>  
+      {% endfor %}                                  
       <h1> Current Kill Statistics </h1> 
          {% for key, value in myHero.kill_quests.items() %}
               {{ key }}: {{ value }}<br>

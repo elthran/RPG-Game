@@ -2,35 +2,31 @@
 <html lang="en">
 
   <head>
-    {% if page_title %}
-      <title>{{ page_title }}</title>
-    {% endif %}
-
+    <title>{{ page_title }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='style.css') }}">
     <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
   </head>
 
   <body>
-      <div id="page">
-        <div id="sidebar">
-            <div id="sidebartop">
-              <h1>{{ myHero.name }}</h1>
-              <h3><img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px">
-              Age: {{ myHero.age }}<br>
-              Gold: {{ myHero.gold }}</h3>
-            </div>
-            <div id="sidebarmiddle">
-              <ul>
+    <div id="sidebar">
+        <div id="sidebartop">
+            <h1>{{ myHero.name }}</h1>
+            <h3><img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px">
+            Age: {{ myHero.age }}<br>
+            Gold: {{ myHero.gold }}</h3>
+        </div>
+        <div id="sidebarmiddle">
+            <ul>
                 <li>Health: <div class="progressBar"><span style="width:{{ myHero.health_percent }}%"></span></div></li>
                 <li>Sanctity: <div class="progressBar sanctity"><span style="width:{{ myHero.sanctity_percent }}%"></span></div></li>
                 <li>Endurance: <div class="progressBar endurance"><span style="width:{{ myHero.endurance_percent }}%"></span></div></li>
                 <li>Progress: <div class="progressBar progress"><span style="width:{{ myHero.exp_percent }}%"></span></div></li>
-              </ul>
-            </div>
-            <div id="sidebarbottom">
-              <ul>
-                <li><a href=/home>Profile</a></li>
+            </ul>
+         </div>
+         <div id="sidebarbottom">
+            <ul>
+				<li><a href=/home>Profile</a></li>
                 <li><a href=/inventory_page>Inventory</a></li>
                 {% if myHero.current_city %}
                    <li><a href=/{{ myHero.current_city.location_type }}/{{ myHero.current_city.name }}>{{ myHero.current_city.name }}</a></li>
@@ -38,37 +34,36 @@
                   <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_location.id }}>{{ myHero.current_world.location_type }}</a></li>
                 {% endif %}
                 <li><a href=/quest_log>Journal</a></li>
-                <li><a href=/ability_tree/Basic>Abilities</a></li>
                 <li><a href=/admin>Admin</a></li>
                 <li><a href=/display_users>Users</a></li>
                 <li><a href=/logout>Logout</a></li>
-              </ul>
-            </div>
-        </div>
-      </div>
+            </ul>
+         </div>
+    </div>
 
 <!-- This is where you want to add HTML that will not be contained within the main body of the page -->
 <!-- Here you can add a navigation bar at the top of the page -->
-        {% block nav_bar %}{% endblock %}
+	{% block nav_bar %}{% endblock %}
 
 <!-- This is for content that is displayed on the main page -->
-        <div id="content">
+	<div id="content">
 <!-- This calls a notification script to run if the Hero has any new quests completed -->
-            {% if myHero.quest_notification %}
-                <div class="popup" onclick="quest_popup()" style="color:red">You have completed a quest stage! (+{{ myHero.quest_notification[1] }}xp)<span class="popupachievement" id="js_popupachievement">{{ myHero.quest_notification[0] }}</span></div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
-            {% endif %}
+	{% if myHero.quest_notification %}
+		<div class="popup" onclick="quest_popup()" style="color:red">You have completed a quest stage! (+{{ myHero.quest_notification[1] }}xp)<span class="popupachievement" id="js_popupachievement">{{ myHero.quest_notification[0] }}</span></div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
+              {% endif %}
 
 <!-- This is info pulled from other html files -->
-            {% block generic_content %}{% endblock %}
+	{% block block1 %}{% endblock %}
+        {% block block2 %}{% endblock %}
 
 <!-- You can pass Red Error messages through this variable -->
-            {% for message in get_flashed_messages() %}
-                {{ message }}
-            {% endfor %}
+	{% for message in get_flashed_messages() %}
+		{{ message }}
+	{% endfor %}
 
 <!-- This ends the main body container of the page -->
-        </div>
-    </body>
+	</div>
+  </body>
 </html>
 
 <script>
@@ -78,6 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Grab all of the elements with a class of command
     // (which all of the buttons we just created have)
     var commandButtons = document.querySelectorAll(".command");
+
     // Iterate through the NodeList created by "querySelectorAll"
     commandButtons.forEach(function (button) {
         // For each button, listen for the "click" event
@@ -85,11 +81,14 @@ document.addEventListener("DOMContentLoaded", function () {
             // When a click happens, stop the button
             // from submitting our form (if we have one)
             e.preventDefault();
+
             var clickedButton = e.target;
             var command = clickedButton.value;
+
             //get buttons class and save it as the .
             console.log("Button clicked was:", clickedButton);
             var buttonClass = clickedButton.class;
+
             // Now we need to send the data to our server
             // without reloading the page - this is the domain of
             // AJAX (Asynchronous JavaScript And XML)
@@ -108,6 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     var key = requestArray[0];
                     var value = requestArray[1];
                     console.log("Response: key=" + key + ", value=" + value);
+
                     // Get all locations/objects that are going to be updated by this response.
                     // currently all info to be updated must be of the form
                     // <span id="hero_religion">{{ myHero.religion }}</span>

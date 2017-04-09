@@ -233,9 +233,9 @@ def command(cmd=None):
     return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
 
 # This gets called anytime you have secondary attribute points to spend
-@app.route('/learn_basic_skills', methods=['GET', 'POST'])
+@app.route('/attributes', methods=['GET', 'POST'])
 @login_required
-def basic_skills():
+def attributes():
     if request.method == 'POST':
         myHero.primary_attributes["Agility"] += convert_input(request.form["Agility"])
         myHero.primary_attributes["Charisma"] += convert_input(request.form["Charisma"])
@@ -251,14 +251,25 @@ def basic_skills():
         myHero.primary_attributes["Wisdom"] += convert_input(request.form["Wisdom"])
         primary_points_being_spent = convert_input(request.form["Agility"]) + convert_input(request.form["Charisma"]) + convert_input(request.form["Divinity"]) + convert_input(request.form["Fortitude"]) + convert_input(request.form["Fortuity"]) + convert_input(request.form["Perception"]) + convert_input(request.form["Reflexes"]) + convert_input(request.form["Resilience"]) + convert_input(request.form["Strength"]) + convert_input(request.form["Survivalism"]) + convert_input(request.form["Vitality"]) + convert_input(request.form["Wisdom"])
         myHero.attribute_points -= primary_points_being_spent
+        myHero.update_secondary_attributes()
+        myHero.refresh_character()
+        database.update()
+        return render_template('attributes.html', page_title="Basic Skills", myHero=myHero)
+    return render_template('attributes.html', page_title="Basic Skills", myHero=myHero)
+
+# This gets called anytime you have secondary attribute points to spend
+@app.route('/proficiencies', methods=['GET', 'POST'])
+@login_required
+def proficiencies():
+    if request.method == 'POST':
         myHero.attack_speed_skill += convert_input(request.form["attack_speed"])
         secondary_points_being_spent = convert_input(request.form["attack_speed"])
         myHero.secondary_attribute_points -= secondary_points_being_spent
         myHero.update_secondary_attributes()
         myHero.refresh_character()
         database.update()
-        return render_template('profile_advanced.html', page_title="Basic Skills", myHero=myHero)
-    return render_template('profile_advanced.html', page_title="Basic Skills", myHero=myHero)
+        return render_template('proficiencies.html', page_title="Basic Skills", myHero=myHero)
+    return render_template('proficiencies.html', page_title="Basic Skills", myHero=myHero)
 
 # use decorators to link the function to a url
 # route for handling the login page logic
@@ -405,6 +416,7 @@ def battle():
             if item.durability <= 0:
                 item.broken = True
         newMonster = True
+        """
         for key, value in myHero.kill_quests.items():
             if key == game.enemy.species:
                 myHero.kill_quests[key] += 1
@@ -417,8 +429,9 @@ def battle():
                     myHero.current_exp += 10
                 newMonster = False
                 break
+        """
         if newMonster:
-            myHero.kill_quests[game.enemy.species] = 1
+            #myHero.kill_quests[game.enemy.species] = 1
             myHero.completed_achievements.append(("Kill a " + game.enemy.species, "5"))
             for monster in bestiary_data:
                 if monster.name == game.enemy.name:
@@ -529,7 +542,7 @@ def home():
     # If it's a new character, send them to cerate_character url
     if myHero.character_name == None:
         return redirect(url_for('create_character'))
-    return render_template('profile_basic.html', page_title="Profile", myHero=myHero)  # return a string'
+    return render_template('profile.html', page_title="Profile", myHero=myHero)  # return a string'
 
 @app.route('/inventory_page')
 @login_required

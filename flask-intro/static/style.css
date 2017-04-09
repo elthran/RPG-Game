@@ -1,15 +1,8 @@
+/* Body and Basics */
+
 body {
   font-family: "Source Sans Pro", Helvetica, sans-serif;
   background-color: LightGray;
-}
-
-#page {
-  margin:0 auto;
-  overflow:hidden;
-}
-
-#page:after {
-  clear:both;
 }
 
 h1 { 
@@ -33,7 +26,6 @@ h2 {
   line-height: 100%;  
 }
 
-
 p { 
   color: Black; 
   font-family: 'Helvetica Neue', sans-serif; 
@@ -52,7 +44,7 @@ ul {
 }
 
 
-/******* content ******/
+/* Content */
 
 #content {
   width: 80%;
@@ -65,8 +57,6 @@ ul {
   border-radius: 50%;
 
 }
-
-
 
 .nav ul {
   list-style: none;
@@ -95,19 +85,17 @@ ul {
   cursor: default;
 }
 
-
 .rightside {
   float:right;
   overflow-y: scroll;
 }
 
-
-/*****side bar *******/
+/* Sidebar */
 
 #sidebar {
-  width:15%;
-  position:fixed;
-  overflow-y: scroll;
+  width:14%;
+  position: fixed;
+  overflow: auto;
   height:100%;
   background-color: Gray;
 }
@@ -129,7 +117,7 @@ ul {
   overflow: hidden; 
   list-style: none;
   line-height: 15px;
-  color: :white;
+  color: Black;
 }
 
 #sidebar li{
@@ -141,21 +129,59 @@ ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
-  width: 100%;
   background-color: Gray;
+  text-align: center;
+  line-height: 20px;
+  padding-bottom: 0px;
 }
 
 #sidebarbottom li a {
   display: block;
+  border: 1px outset Black;
+  border-radius: 5px;
   color: Black;
-  padding: 8px 16px;
+  padding: 5px 16px;
   text-decoration: none;
 }
 
-/* Change the link color on hover */
 #sidebarbottom li a:hover {
   background-color: Brown;
   color: white;
+}
+
+/* Topbar */
+
+.topbar {
+  float: right;
+  width: 40%;
+}
+
+.topbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: Black;
+}
+
+.topbar li {
+  float: left;
+}
+
+.topbar li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.topbar li a:hover:not(.active) {
+    background-color: Green;
+}
+
+.topbarActive {
+    background-color: Red;
 }
 
 /***** Jacob's messing around *******/
@@ -231,8 +257,10 @@ ul {
   to {opacity:1 ;}
 }
 
+/* The % full bars used in the game */
+
 .progressBar { 
-  height: 10px;  /* Can be anything */
+  height: 10px; 
   width: 100px;
   position: relative;
   background: #555;
