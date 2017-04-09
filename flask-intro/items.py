@@ -70,6 +70,7 @@ class Item(Base):
         I don't quite know if it does.
         Ig
         """
+        # pdb.set_trace()
         item_keys = vars(self).keys()
         for key in vars(self.template).keys():
             if key not in item_keys and key != 'id':

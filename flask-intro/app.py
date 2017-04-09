@@ -502,7 +502,6 @@ def display_user_page():
 	return render_template('users.html', myHero=myHero, users=users)
 
 ### PROFILE/DISPLAY FUNCTIONS
-
 @app.route('/home')
 @login_required
 def home():
@@ -536,9 +535,9 @@ def home():
 @login_required
 def inventory_page():
     page_title = "Inventory"
-    for item in myHero.inventory:
-        if item.wearable:
-            item.check_if_improvement()
+    # for item in myHero.inventory:
+        # if item.wearable:
+            # item.check_if_improvement()
     return render_template('inventory.html', myHero=myHero, page_title=page_title)  # return a string
 
 @app.route('/ability_tree/<spec>')
