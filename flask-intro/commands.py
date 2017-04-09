@@ -54,8 +54,11 @@ class Command:
         if hero.gold >= item.buy_price:
             hero.inventory.add_item(item)
             hero.gold -= item.buy_price 
+            #return buy success event.
+            #Test event later against posible quest events conditions.
             for path in hero.quest_paths:
-                if path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 2:
+                if path.active and path.quest.name == "Get Acquainted with the Blacksmith" and \
+                    path.stage == 2:
                     path.advance()
             return "success", 200, {'Content-Type': 'text/plain'}                
 

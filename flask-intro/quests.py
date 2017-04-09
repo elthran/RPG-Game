@@ -146,6 +146,12 @@ class QuestPath(Base):
         NOTE: I am using the metaphor of each path being a glaxay with a decaying orbit.
         Sometimes this galaxy will break apart and spawn new galaxies.
         """
+        
+        #Sort of like a failsafe. Active paths should not be advanced.
+        #Maybe this should be an assert?
+        if self.completed:
+            return
+            
         FINAL_STAGE = 0
         SIMPLE_ADVANCE = 1
         COMPLEX_ADVANCE = 2
@@ -202,7 +208,9 @@ class QuestPath(Base):
     def validate_active(self, key, flag):
         """Prevent quest being both active and completed at the same time.
         """
-        assert self.completed != True
+
+        if self.completed:
+            return False
         return flag
         
 

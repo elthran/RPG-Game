@@ -162,7 +162,7 @@ def command(cmd=None):
                 myHero.inventory.remove(item)
                 myHero.update_secondary_attributes()
                 for path in myHero.quest_paths:
-                    if path.quest.name == "Equipping/Unequipping" and path.stage == 1:
+                    if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 1:
                         path.quest.advance_quest()
                 return "success", 200, {'Content-Type': 'text/plain'} #//
             if item.consumable == True:                # CONSUME ITEMS
@@ -176,7 +176,7 @@ def command(cmd=None):
             myHero.equipped_items.remove(item)
             myHero.update_secondary_attributes()
             for path in myHero.quest_paths:
-                    if path.quest.name == "Equipping/Unequipping" and path.stage == 2:
+                    if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 2:
                         path.quest.advance_quest()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
@@ -801,11 +801,11 @@ def arena():
 def store(inventory):
     page_title = "Store"
     
-    # path = database.get_path_if_exists(quest_name, myHero)
+    # path = database.get_path_if_exists_and_active(quest_name, myHero)
     # if path in myHero.quest_paths:
         # path.advance()
     for path in myHero.quest_paths:
-        if path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 1:
+        if path.active and path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 1:
             path.advance()
     items_for_sale = []
     if inventory == "greeting":
