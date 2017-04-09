@@ -237,25 +237,36 @@ def command(cmd=None):
 @login_required
 def attributes():
     if request.method == 'POST':
-        myHero.primary_attributes["Agility"] += convert_input(request.form["Agility"])
-        myHero.primary_attributes["Charisma"] += convert_input(request.form["Charisma"])
-        myHero.primary_attributes["Divinity"] += convert_input(request.form["Divinity"])
-        myHero.primary_attributes["Fortitude"] += convert_input(request.form["Fortitude"])
-        myHero.primary_attributes["Fortuity"] += convert_input(request.form["Fortuity"])
-        myHero.primary_attributes["Perception"] += convert_input(request.form["Perception"])
-        myHero.primary_attributes["Reflexes"] += convert_input(request.form["Reflexes"])
-        myHero.primary_attributes["Resilience"] += convert_input(request.form["Resilience"])
-        myHero.primary_attributes["Strength"] += convert_input(request.form["Strength"])
-        myHero.primary_attributes["Survivalism"] += convert_input(request.form["Survivalism"])
-        myHero.primary_attributes["Vitality"] += convert_input(request.form["Vitality"])
-        myHero.primary_attributes["Wisdom"] += convert_input(request.form["Wisdom"])
-        primary_points_being_spent = convert_input(request.form["Agility"]) + convert_input(request.form["Charisma"]) + convert_input(request.form["Divinity"]) + convert_input(request.form["Fortitude"]) + convert_input(request.form["Fortuity"]) + convert_input(request.form["Perception"]) + convert_input(request.form["Reflexes"]) + convert_input(request.form["Resilience"]) + convert_input(request.form["Strength"]) + convert_input(request.form["Survivalism"]) + convert_input(request.form["Vitality"]) + convert_input(request.form["Wisdom"])
-        myHero.attribute_points -= primary_points_being_spent
+        agility = convert_input(request.form["agilityInput"]) - myHero.primary_attributes["Agility"]
+        charisma = convert_input(request.form["charismaInput"]) - myHero.primary_attributes["Charisma"]
+        divinity = convert_input(request.form["divinityInput"]) - myHero.primary_attributes["Divinity"]
+        fortitude = convert_input(request.form["fortitudeInput"]) - myHero.primary_attributes["Fortitude"]
+        fortuity = convert_input(request.form["fortuityInput"]) - myHero.primary_attributes["Fortuity"]
+        perception = convert_input(request.form["perceptionInput"]) - myHero.primary_attributes["Perception"]
+        reflexes = convert_input(request.form["reflexesInput"]) - myHero.primary_attributes["Reflexes"]
+        resilience = convert_input(request.form["resilienceInput"]) - myHero.primary_attributes["Resilience"]
+        strength = convert_input(request.form["strengthInput"]) - myHero.primary_attributes["Strength"]
+        survivalism = convert_input(request.form["survivalismInput"]) - myHero.primary_attributes["Survivalism"]
+        vitality = convert_input(request.form["vitalityInput"]) - myHero.primary_attributes["Vitality"]
+        wisdom = convert_input(request.form["wisdomInput"]) - myHero.primary_attributes["Wisdom"]
+        myHero.attribute_points -= agility + charisma + divinity + fortitude + fortuity + perception + reflexes + resilience + strength + survivalism + vitality + wisdom
+        myHero.primary_attributes["Agility"] += agility
+        myHero.primary_attributes["Charisma"] += charisma
+        myHero.primary_attributes["Divinity"] += divinity
+        myHero.primary_attributes["Fortitude"] += fortitude
+        myHero.primary_attributes["Fortuity"] += fortuity
+        myHero.primary_attributes["Perception"] += perception
+        myHero.primary_attributes["Reflexes"] += reflexes
+        myHero.primary_attributes["Resilience"] += resilience
+        myHero.primary_attributes["Strength"] += strength
+        myHero.primary_attributes["Survivalism"] += survivalism
+        myHero.primary_attributes["Vitality"] += survivalism
+        myHero.primary_attributes["Wisdom"] += wisdom
         myHero.update_secondary_attributes()
         myHero.refresh_character()
         database.update()
-        return render_template('attributes.html', page_title="Basic Skills", myHero=myHero)
-    return render_template('attributes.html', page_title="Basic Skills", myHero=myHero)
+        return render_template('attributes.html', page_title="Attributes", myHero=myHero)
+    return render_template('attributes.html', page_title="Attributes", myHero=myHero, attributes=True)
 
 # This gets called anytime you have secondary attribute points to spend
 @app.route('/proficiencies', methods=['GET', 'POST'])
@@ -268,8 +279,8 @@ def proficiencies():
         myHero.update_secondary_attributes()
         myHero.refresh_character()
         database.update()
-        return render_template('proficiencies.html', page_title="Basic Skills", myHero=myHero)
-    return render_template('proficiencies.html', page_title="Basic Skills", myHero=myHero)
+        return render_template('proficiencies.html', page_title="Proficiencies", myHero=myHero, proficiencies=True)
+    return render_template('proficiencies.html', page_title="Proficiencies", myHero=myHero, proficiencies=True)
 
 # use decorators to link the function to a url
 # route for handling the login page logic
@@ -487,7 +498,7 @@ def admin():
         # myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
         myHero.attribute_points = convert_input(request.form["Attribute_points"])
         myHero.secondary_attribute_points = convert_input(request.form['Secondary_Attribute_Points'])
-        myHero.primary_attributes["Divinity"] = convert_input(request.form["Divinity"])
+        myHero.primary_attributes["Agility"] = convert_input(request.form["Agility"])
         myHero.primary_attributes["Fortitude"] = convert_input(request.form["Fortitude"])
         myHero.update_secondary_attributes()
         myHero.refresh_character()
@@ -504,7 +515,7 @@ def admin():
         ("Ability_points", myHero.ability_points),
         ("Attribute_points", myHero.attribute_points),
         ("Secondary_Attribute_Points", myHero.secondary_attribute_points),
-        ("Divinity", myHero.primary_attributes["Divinity"]),
+        ("Agility", myHero.primary_attributes["Agility"]),
         ("Fortitude", myHero.primary_attributes["Fortitude"])]
 
     return render_template('admin.html', page_title=page_title, myHero=myHero, admin=admin)  # return a string
@@ -521,7 +532,6 @@ def home():
     global myHero
     myHero = database.fetch_hero(session['hero_id'])
     database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
-    
     #This should be uneccessary -> but isn't?
     myHero.update_secondary_attributes()
     
@@ -542,7 +552,7 @@ def home():
     # If it's a new character, send them to cerate_character url
     if myHero.character_name == None:
         return redirect(url_for('create_character'))
-    return render_template('profile.html', page_title="Profile", myHero=myHero)  # return a string'
+    return render_template('profile.html', page_title="Profile", myHero=myHero, profile=True)  # return a string'
 
 @app.route('/inventory_page')
 @login_required
@@ -556,7 +566,6 @@ def inventory_page():
 @app.route('/ability_tree/<spec>')
 @login_required
 def ability_tree(spec):
-    print(spec)
     page_title = "Abilities"
     basic_ability_tree = False
     archetype_ability_tree = False
@@ -602,9 +611,9 @@ def ability_tree(spec):
                         unknown_abilities.append(ability)
                 else:
                     unknown_abilities.append(ability)            
-        return render_template('ability.html', myHero=myHero, ability_pages_learn=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
+        return render_template('ability.html', abilities=True, myHero=myHero, ability_pages_learn=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
         
-    return render_template('ability.html', myHero=myHero, ability_pages_use=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
+    return render_template('ability.html', abilities=True, myHero=myHero, ability_pages_use=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
 
 @app.route('/quest_log')
 @login_required

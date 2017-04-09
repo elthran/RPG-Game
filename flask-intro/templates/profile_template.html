@@ -2,10 +2,26 @@
 {% block block1 %}
   <div class="topbar">
     <ul>
-    <li><a class="" href="/home">Profile</a></li>
-    <li><a class="" href="/attributes">Attributes</a></li>
-    <li><a href="/proficiencies">Proficiencies</a></li>
-    <li><a href="/ability_tree/Basic">Abilities</a></li>
+    {% if profile %}
+      <li><a class="topbarActive" href="/home">Profile</a></li>
+    {% else %}
+      <li><a class="" href="/home">Profile</a></li>
+    {% endif %}
+    {% if attributes %}
+      <li><a class="topbarActive" href="/attributes">Attributes</a></li>
+    {% else %}
+      <li><a class="" href="/attributes">Attributes</a></li>
+    {% endif %}
+    {% if proficiencies %}
+      <li><a class="topbarActive" ref="/proficiencies">Proficiencies</a></li>
+    {% else %}
+      <li><a href="/proficiencies">Proficiencies</a></li>
+    {% endif %}
+    {% if abilities %}
+      <li><a class="topbarActive" ref="/ability_tree/Basic">Abilities</a></li>
+    {% else %}
+      <li><a href="/ability_tree/Basic">Abilities</a></li>
+    {% endif %}
     </ul>
   </div>
 {% endblock %}

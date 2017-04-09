@@ -184,6 +184,66 @@ ul {
     background-color: Red;
 }
 
+/* Attribute Page */
+
+.profilePage {
+    float: left;
+     text-align: left;
+     font-family: arial;
+     font-size: 30px;
+     padding: 5px;
+     margin: 30px;
+     border: 5px Double Black;  
+     width: 40%;
+     background-color: Gray;
+     color: white;
+     line-height: 35px;
+}
+
+.profilePageAttributes {
+  float: left;
+  padding-left: 10px;
+} 
+
+.profilePageValues {
+  float: right;
+  padding-right: 10px;
+} 
+
+.profilePageAttributes .profilePageValues ul {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.profilePageInfo {
+  float: right;
+}
+
+.profilePageInfo h1 {
+  text-align: center;
+}
+
+button.profileText {
+    background:none;
+    border:none;
+    margin:0;
+    padding:0;
+    width: 100%
+    text-align: left;
+    font-family: arial;
+     font-size: 30px;
+     text-transform: uppercase;
+}
+
+.profilePageAttributes li:hover {
+  background-color: lightGrey;
+}
+
+#profileSubmitButton {
+  float: right;
+}
+
+
 /***** Jacob's messing around *******/
 
 /* Attribute Page Container to split page into 2 vertical halves using absolute positioning technique
