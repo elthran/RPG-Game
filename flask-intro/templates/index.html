@@ -28,11 +28,11 @@
       <br>
       <form action="" method="post">
         <input type="text" placeholder="Username" name="username" value="{{
-          request.form.username }}">
+          request.form.username }}" autofocus tabindex=1 />
          <input type="password" placeholder="Password" name="password" value="{{
-          request.form.password }}">
-        <input class="btn btn-default" type="submit" value="Login">
-      </form>
+          request.form.password }}" tabindex=2 />
+        <input class="btn btn-default" type="submit" value="Login" tabindex=3 />
+</form>
 <br><br><br>
 <li><a href=/create_account>Create Account</a></li>
 <li><a href=/password_recovery>Forgot Your Password</a></li>

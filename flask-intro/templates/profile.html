@@ -1,0 +1,20 @@
+{% extends "profile_template.html" %}
+{% block block2 %}
+
+<!-- This is the Home page -->	
+    <img src="/static/images/character.jpg" alt="Sample" style="width:100px;height:100px;">
+    <h1>General Statistics</h1>
+    <ul> 
+      <li>Name: {{ myHero.character_name}}</li>
+      <li>Age: {{ myHero.age }}</li>
+      <li>Archetype: {{ myHero.archetype }}</li>
+      <li>Specialization: {{ myHero.specialization }}</li>
+      <li>Religion: {{ myHero.religion }}</li>
+      <li>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}</li>
+      <li>Carrying Capacity: {{ myHero.current_carrying_capacity }} / {{ myHero.max_carrying_capacity }}</li>
+      <li>Gold: {{ myHero.gold }}</li>
+      <li>Endurance: {{ myHero.current_endurance }} / {{ myHero.max_endurance }}</li>
+<li>health: {{ myHero.current_health }} max: {{ myHero.max_health }} percent:{{ myHero.health_percent }}</li>
+    </ul>
+{% endblock %}
+
