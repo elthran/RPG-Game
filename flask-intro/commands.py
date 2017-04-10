@@ -25,7 +25,7 @@ class Command:
         #Replace all occurrences of html with id equal to old value with new value.
         #This updates the value and the id!
         """
-        <span id="hero.religion">{{ myHero.religion }}</span>
+        <span id="hero_religion">{{ myHero.religion }}</span>
         This will update the value of myHero.religion if it is inside the above span tag.
         """
         return "{id}={value}".format(id='hero_religion', value=hero.religion)
