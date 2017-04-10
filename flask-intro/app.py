@@ -107,6 +107,7 @@ def command(cmd=None):
     if testing:
         print('request is:', repr(request))
         # print('request data:', repr(request.data))
+        # print("request form:", repr(request.form))
         print('request view_args:', repr(request.view_args))
         print('request args:', repr(request.args))
         print('cmd is:', repr(cmd))
@@ -232,36 +233,23 @@ def command(cmd=None):
 
     return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
 
+#Consider moving to command code ... 
+#I don't know how to access cmd POST method? To send the form data?
+
 # This gets called anytime you have secondary attribute points to spend
 @app.route('/attributes', methods=['GET', 'POST'])
 @login_required
 def attributes():
     if request.method == 'POST':
-        agility = convert_input(request.form["agilityInput"]) - myHero.primary_attributes["Agility"]
-        charisma = convert_input(request.form["charismaInput"]) - myHero.primary_attributes["Charisma"]
-        divinity = convert_input(request.form["divinityInput"]) - myHero.primary_attributes["Divinity"]
-        fortitude = convert_input(request.form["fortitudeInput"]) - myHero.primary_attributes["Fortitude"]
-        fortuity = convert_input(request.form["fortuityInput"]) - myHero.primary_attributes["Fortuity"]
-        perception = convert_input(request.form["perceptionInput"]) - myHero.primary_attributes["Perception"]
-        reflexes = convert_input(request.form["reflexesInput"]) - myHero.primary_attributes["Reflexes"]
-        resilience = convert_input(request.form["resilienceInput"]) - myHero.primary_attributes["Resilience"]
-        strength = convert_input(request.form["strengthInput"]) - myHero.primary_attributes["Strength"]
-        survivalism = convert_input(request.form["survivalismInput"]) - myHero.primary_attributes["Survivalism"]
-        vitality = convert_input(request.form["vitalityInput"]) - myHero.primary_attributes["Vitality"]
-        wisdom = convert_input(request.form["wisdomInput"]) - myHero.primary_attributes["Wisdom"]
-        myHero.attribute_points -= agility + charisma + divinity + fortitude + fortuity + perception + reflexes + resilience + strength + survivalism + vitality + wisdom
-        myHero.primary_attributes["Agility"] += agility
-        myHero.primary_attributes["Charisma"] += charisma
-        myHero.primary_attributes["Divinity"] += divinity
-        myHero.primary_attributes["Fortitude"] += fortitude
-        myHero.primary_attributes["Fortuity"] += fortuity
-        myHero.primary_attributes["Perception"] += perception
-        myHero.primary_attributes["Reflexes"] += reflexes
-        myHero.primary_attributes["Resilience"] += resilience
-        myHero.primary_attributes["Strength"] += strength
-        myHero.primary_attributes["Survivalism"] += survivalism
-        myHero.primary_attributes["Vitality"] += survivalism
-        myHero.primary_attributes["Wisdom"] += wisdom
+        points_spent = 0
+        for element in request.form:
+            form_value = int(request.form[element])
+            attribute = element[0:-5].title() #Convert name e.g. agilityInput becomes Agility.
+            points_spent += form_value - myHero.primary_attributes[attribute]
+            myHero.primary_attributes[attribute] = form_value
+        
+        myHero.attribute_points -= points_spent
+
         myHero.update_secondary_attributes()
         myHero.refresh_character()
         database.update()
