@@ -26,6 +26,7 @@ import complex_relationships
 from secondary_attributes import * 
 import sqlite3
 import hashlib
+import json
 
 #For testing!
 import pdb
@@ -254,6 +255,12 @@ def attributes():
                              ("Survivalism", "A measure of a character's openness to their surroundings. "),
                              ("Vitality", "A measure of how sturdy a character is."),
                              ("Wisdom", "A measure of a character's problem-solving ability.")]
+    
+    for index, data in enumerate(attribute_information):
+        attribute, description = data
+        attribute_information[index] = attribute, description.replace("'", "\\'")
+    
+    print(attribute_information)
 
     #This should be combined with the information above at some point
     attribute_form = [(myHero.primary_attributes["Agility"], "Agility", "agility"),
