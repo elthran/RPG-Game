@@ -241,7 +241,12 @@ def command(cmd=None):
 @app.route('/attributes', methods=['GET', 'POST'])
 @login_required
 def attributes():
-    #Obviously this is a shitty way to do this, but I'm not sure where else to store this information for now. Probably as part of the hero class so it's easily sent to each html file. Or some global table that we send to each html file with the hero.
+    #Obviously this is a shitty way to do this, but I'm not sure where else to store this
+    #information for now. Probably as part of the hero class so it's easily sent to each html file.
+    #Or some global table that we send to each html file with the hero.
+    
+    #Possibly update the PrimaryAttribute table and add in a "description"?
+    #Would require some restructuring.
     attribute_information = [("Agility", "A measure of how agile a character is. Dexterity controls attack and movement speed and accuracy, as well as evading an opponent's attack ."),
                              ("Charisma", "A measure of a character's social skills, and sometimes their physical appearance."),
                              ("Divinity", "A measure of a character's common sense and/or spirituality."),
@@ -261,19 +266,6 @@ def attributes():
         attribute, description = data
         attribute_information[index] = attribute, description.replace("'", "\\'")
 
-    #This should be combined with the information above at some point
-    attribute_form = [(myHero.primary_attributes["Agility"], "Agility", "agility"),
-                      (myHero.primary_attributes["Charisma"], "Charisma", "charisma"),
-                      (myHero.primary_attributes["Divinity"], "Divinity", "divinity"),
-                      (myHero.primary_attributes["Fortitude"], "Fortitude", "fortitude"),
-                      (myHero.primary_attributes["Fortuity"], "Fortuity", "fortuity"),
-                      (myHero.primary_attributes["Perception"], "Perception", "perception"),
-                      (myHero.primary_attributes["Reflexes"], "Reflexes", "reflexes"),
-                      (myHero.primary_attributes["Resilience"], "Resilience", "resilience"),
-                      (myHero.primary_attributes["Strength"], "Strength", "strength"),
-                      (myHero.primary_attributes["Survivalism"], "Survivalism", "survivalism"),
-                      (myHero.primary_attributes["Vitality"], "Vitality", "vitality"),
-                      (myHero.primary_attributes["Wisdom"], "Wisdom", "wisdom")]
     if request.method == 'POST':
         points_spent = 0
         for element in request.form:
@@ -287,8 +279,10 @@ def attributes():
         myHero.update_secondary_attributes()
         myHero.refresh_character()
         database.update()
-        return render_template('attributes.html', page_title="Attributes", myHero=myHero, attributes=True, attribute_information=attribute_information, attribute_form=attribute_form)
-    return render_template('attributes.html', page_title="Attributes", myHero=myHero, attributes=True, attribute_information=attribute_information, attribute_form=attribute_form)
+        return render_template('attributes.html', page_title="Attributes", myHero=myHero, attributes=True,
+            attribute_information=attribute_information)
+    return render_template('attributes.html', page_title="Attributes", myHero=myHero, attributes=True,
+        attribute_information=attribute_information)
 
 # This gets called anytime you have secondary attribute points to spend
 # Currently I send "proficiencies=True" so that the html knows to highlight the bar and show that you are on this page
