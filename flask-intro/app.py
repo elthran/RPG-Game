@@ -254,6 +254,12 @@ def attributes():
                              ("Survivalism", "A measure of a character's openness to their surroundings. "),
                              ("Vitality", "A measure of how sturdy a character is."),
                              ("Wisdom", "A measure of a character's problem-solving ability.")]
+    
+    #Fix single quotes in string bug when converting from JS to HTML
+    #Python to Jinja to HTML to JS needs separate fix.
+    for index, data in enumerate(attribute_information):
+        attribute, description = data
+        attribute_information[index] = attribute, description.replace("'", "\\'")
 
     #This should be combined with the information above at some point
     attribute_form = [(myHero.primary_attributes["Agility"], "Agility", "agility"),

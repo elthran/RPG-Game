@@ -252,7 +252,7 @@ function wisdomModifier(modifier) {
 		<div class="profilePageAttributes">
 			<ul>
 				{% for attribute in attribute_information %}
-					<li><button type="button" class="profileText" onclick="changeAttributeBox('{{ attribute[0] }}', '{{ attribute[1] }}')">{{ attribute[0] }}:</button></li>
+					<li><button type="button" class="profileText" onclick="changeAttributeBox('{{ attribute[0] }}', '{{ attribute[1] | safe }}')">{{ attribute[0] }}:</button></li>
 				{% endfor %}
 			</ul>
 		</div>
