@@ -237,6 +237,7 @@ def command(cmd=None):
 #I don't know how to access cmd POST method? To send the form data?
 
 # This gets called anytime you have secondary attribute points to spend
+# Currently I send "attributes=True" so that the html knows to highlight the bar and show that you are on this page
 @app.route('/attributes', methods=['GET', 'POST'])
 @login_required
 def attributes():
@@ -253,10 +254,11 @@ def attributes():
         myHero.update_secondary_attributes()
         myHero.refresh_character()
         database.update()
-        return render_template('attributes.html', page_title="Attributes", myHero=myHero)
+        return render_template('attributes.html', page_title="Attributes", myHero=myHero, attributes=True)
     return render_template('attributes.html', page_title="Attributes", myHero=myHero, attributes=True)
 
 # This gets called anytime you have secondary attribute points to spend
+# Currently I send "proficiencies=True" so that the html knows to highlight the bar and show that you are on this page
 @app.route('/proficiencies', methods=['GET', 'POST'])
 @login_required
 def proficiencies():

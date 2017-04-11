@@ -13,14 +13,17 @@ var agilityValue = {{ myHero.primary_attributes["Agility"] }};
 function agilityModifier(modifier) {
     agilityValue = isNaN(agilityValue) ? 0 : agilityValue;
 	if (modifier === 'increase' && remainingPoints > 0) {
-	agilityValue++;
-	remainingPoints--;
+		agilityValue++;
+        document.getElementById('newAgilityValue').style.color = "green"
+		remainingPoints--;
 	}
 	if (modifier === 'decrease' && agilityValue > {{ myHero.primary_attributes["Agility"] }}) {
-	agilityValue--;
-	remainingPoints++;
+		agilityValue--;
+		remainingPoints++;
+		if (agilityValue === {{ myHero.primary_attributes["Agility"] }}) {
+            document.getElementById('newAgilityValue').style.color = "white"
+		}
 	}
-    document.getElementById('agilityValue').value = agilityValue;
 	document.getElementById('newAgilityValue').value = agilityValue;
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
@@ -28,14 +31,17 @@ var charismaValue = {{ myHero.primary_attributes["Charisma"] }};
 function charismaModifier(modifier) {
     charismaValue = isNaN(charismaValue) ? 0 : charismaValue;
 	if (modifier === 'increase' && remainingPoints > 0) {
-	charismaValue++;
-	remainingPoints--;
+		charismaValue++;
+        document.getElementById('newCharismaValue').style.color = "green"
+		remainingPoints--;
 	}
 	if (modifier === 'decrease' && charismaValue > {{ myHero.primary_attributes["Charisma"] }}) {
-	charismaValue--;
-	remainingPoints++;
+		charismaValue--;
+		remainingPoints++;
+		if (charismaValue === {{ myHero.primary_attributes["Charisma"] }}) {
+            document.getElementById('newCharismaValue').style.color = "white"
+		}
 	}
-    document.getElementById('charismaValue').value = charismaValue;
 	document.getElementById('newCharismaValue').value = charismaValue;
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
@@ -43,14 +49,17 @@ var divinityValue = {{ myHero.primary_attributes["Divinity"] }};
 function divinityModifier(modifier) {
     divinityValue = isNaN(divinityValue) ? 0 : divinityValue;
 	if (modifier === 'increase' && remainingPoints > 0) {
-	divinityValue++;
-	remainingPoints--;
+		divinityValue++;
+        document.getElementById('newDivinityValue').style.color = "green"
+		remainingPoints--;
 	}
 	if (modifier === 'decrease' && divinityValue > {{ myHero.primary_attributes["Divinity"] }}) {
-	divinityValue--;
-	remainingPoints++;
+		divinityValue--;
+		remainingPoints++;
+		if (divinityValue === {{ myHero.primary_attributes["Divinity"] }}) {
+            document.getElementById('newDivinityValue').style.color = "white"
+		}
 	}
-    document.getElementById('divinityValue').value = divinityValue;
 	document.getElementById('newDivinityValue').value = divinityValue;
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
@@ -58,14 +67,17 @@ var fortitudeValue = {{ myHero.primary_attributes["Fortitude"] }};
 function fortitudeModifier(modifier) {
     fortitudeValue = isNaN(fortitudeValue) ? 0 : fortitudeValue;
 	if (modifier === 'increase' && remainingPoints > 0) {
-	fortitudeValue++;
-	remainingPoints--;
+		fortitudeValue++;
+        document.getElementById('newFortitudeValue').style.color = "green"
+		remainingPoints--;
 	}
 	if (modifier === 'decrease' && fortitudeValue > {{ myHero.primary_attributes["Fortitude"] }}) {
-	fortitudeValue--;
-	remainingPoints++;
+		fortitudeValue--;
+		remainingPoints++;
+		if (fortitudeValue === {{ myHero.primary_attributes["Fortitude"] }}) {
+            document.getElementById('newFortitudeValue').style.color = "white"
+		}
 	}
-    document.getElementById('fortitudeValue').value = fortitudeValue;
 	document.getElementById('newFortitudeValue').value = fortitudeValue;
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
@@ -73,14 +85,17 @@ var fortuityValue = {{ myHero.primary_attributes["Fortuity"] }};
 function fortuityModifier(modifier) {
     fortuityValue = isNaN(fortuityValue) ? 0 : fortuityValue;
 	if (modifier === 'increase' && remainingPoints > 0) {
-	fortuityValue++;
-	remainingPoints--;
+		fortuityValue++;
+        document.getElementById('newFortuityValue').style.color = "green"
+		remainingPoints--;
 	}
 	if (modifier === 'decrease' && fortuityValue > {{ myHero.primary_attributes["Fortuity"] }}) {
-	fortuityValue--;
-	remainingPoints++;
+		fortuityValue--;
+		remainingPoints++;
+		if (fortuityValue === {{ myHero.primary_attributes["Fortuity"] }}) {
+            document.getElementById('newFortuityValue').style.color = "white"
+		}
 	}
-    document.getElementById('fortuityValue').value = fortuityValue;
 	document.getElementById('newFortuityValue').value = fortuityValue;
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
@@ -88,14 +103,17 @@ var perceptionValue = {{ myHero.primary_attributes["Perception"] }};
 function perceptionModifier(modifier) {
     perceptionValue = isNaN(perceptionValue) ? 0 : perceptionValue;
 	if (modifier === 'increase' && remainingPoints > 0) {
-	perceptionValue++;
-	remainingPoints--;
+		perceptionValue++;
+        document.getElementById('newPerceptionValue').style.color = "green"
+		remainingPoints--;
 	}
 	if (modifier === 'decrease' && perceptionValue > {{ myHero.primary_attributes["Perception"] }}) {
-	perceptionValue--;
-	remainingPoints++;
+		perceptionValue--;
+		remainingPoints++;
+		if (perceptionValue === {{ myHero.primary_attributes["Perception"] }}) {
+            document.getElementById('newPerceptionValue').style.color = "white"
+		}
 	}
-    document.getElementById('perceptionValue').value = perceptionValue;
 	document.getElementById('newPerceptionValue').value = perceptionValue;
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
@@ -103,14 +121,17 @@ var reflexesValue = {{ myHero.primary_attributes["Reflexes"] }};
 function reflexesModifier(modifier) {
     reflexesValue = isNaN(reflexesValue) ? 0 : reflexesValue;
 	if (modifier === 'increase' && remainingPoints > 0) {
-	reflexesValue++;
-	remainingPoints--;
+		reflexesValue++;
+        document.getElementById('newReflexesValue').style.color = "green"
+		remainingPoints--;
 	}
 	if (modifier === 'decrease' && reflexesValue > {{ myHero.primary_attributes["Reflexes"] }}) {
-	reflexesValue--;
-	remainingPoints++;
+		reflexesValue--;
+		remainingPoints++;
+		if (reflexesValue === {{ myHero.primary_attributes["Reflexes"] }}) {
+            document.getElementById('newReflexesValue').style.color = "white"
+		}
 	}
-    document.getElementById('reflexesValue').value = reflexesValue;
 	document.getElementById('newReflexesValue').value = reflexesValue;
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
@@ -118,14 +139,17 @@ var resilienceValue = {{ myHero.primary_attributes["Resilience"] }};
 function resilienceModifier(modifier) {
     resilienceValue = isNaN(resilienceValue) ? 0 : resilienceValue;
 	if (modifier === 'increase' && remainingPoints > 0) {
-	resilienceValue++;
-	remainingPoints--;
+		resilienceValue++;
+        document.getElementById('newResilienceValue').style.color = "green"		
+		remainingPoints--;
 	}
 	if (modifier === 'decrease' && resilienceValue > {{ myHero.primary_attributes["Resilience"] }}) {
-	resilienceValue--;
-	remainingPoints++;
+		resilienceValue--;
+		remainingPoints++;
+		if (resilienceValue === {{ myHero.primary_attributes["Resilience"] }}) {
+            document.getElementById('newResilienceValue').style.color = "white"
+		}
 	}
-    document.getElementById('resilienceValue').value = resilienceValue;
 	document.getElementById('newResilienceValue').value = resilienceValue;
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
@@ -133,14 +157,17 @@ var strengthValue = {{ myHero.primary_attributes["Strength"] }};
 function strengthModifier(modifier) {
     strengthValue = isNaN(strengthValue) ? 0 : strengthValue;
 	if (modifier === 'increase' && remainingPoints > 0) {
-	strengthValue++;
-	remainingPoints--;
+		strengthValue++;
+        document.getElementById('newStrengthValue').style.color = "green"
+		remainingPoints--;
 	}
 	if (modifier === 'decrease' && strengthValue > {{ myHero.primary_attributes["Strength"] }}) {
-	strengthValue--;
-	remainingPoints++;
+		strengthValue--;
+		remainingPoints++;
+		if (strengthValue === {{ myHero.primary_attributes["Strength"] }}) {
+            document.getElementById('newStrengthValue').style.color = "white"
+		}
 	}
-    document.getElementById('strengthValue').value = strengthValue;
 	document.getElementById('newStrengthValue').value = strengthValue;
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
@@ -148,29 +175,35 @@ var survivalismValue = {{ myHero.primary_attributes["Survivalism"] }};
 function survivalismModifier(modifier) {
     survivalismValue = isNaN(survivalismValue) ? 0 : survivalismValue;
 	if (modifier === 'increase' && remainingPoints > 0) {
-	survivalismValue++;
-	remainingPoints--;
+		survivalismValue++;
+        document.getElementById('newSurvivalismValue').style.color = "green"
+		remainingPoints--;
 	}
 	if (modifier === 'decrease' && survivalismValue > {{ myHero.primary_attributes["Survivalism"] }}) {
-	survivalismValue--;
-	remainingPoints++;
+		survivalismValue--;
+		remainingPoints++;
+		if (survivalismValue === {{ myHero.primary_attributes["Survivalism"] }}) {
+            document.getElementById('newSurvivalismValue').style.color = "white"
+		}
 	}
-    document.getElementById('survivalismValue').value = survivalismValue;
-	document.getElementById('newSurvivalismValue').value = survivalismValue;
-	document.getElementById('pointsRemaining').value = remainingPoints;
+		document.getElementById('newSurvivalismValue').value = survivalismValue;
+		document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var vitalityValue = {{ myHero.primary_attributes["Vitality"] }};
 function vitalityModifier(modifier) {
     vitalityValue = isNaN(vitalityValue) ? 0 : vitalityValue;
 	if (modifier === 'increase' && remainingPoints > 0) {
-	vitalityValue++;
-	remainingPoints--;
+		vitalityValue++;
+        document.getElementById('newVitalityValue').style.color = "green"
+		remainingPoints--;
 	}
 	if (modifier === 'decrease' && vitalityValue > {{ myHero.primary_attributes["Vitality"] }}) {
-	vitalityValue--;
-	remainingPoints++;
+		vitalityValue--;
+		remainingPoints++;
+		if (vitalityValue === {{ myHero.primary_attributes["Vitality"] }}) {
+            document.getElementById('newVitalityValue').style.color = "white"
+		}
 	}
-    document.getElementById('vitalityValue').value = vitalityValue;
 	document.getElementById('newVitalityValue').value = vitalityValue;
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
@@ -178,14 +211,17 @@ var wisdomValue = {{ myHero.primary_attributes["Wisdom"] }};
 function wisdomModifier(modifier) {
     wisdomValue = isNaN(wisdomValue) ? 0 : wisdomValue;
 	if (modifier === 'increase' && remainingPoints > 0) {
-	wisdomValue++;
-	remainingPoints--;
+		wisdomValue++;
+        document.getElementById('newWisdomValue').style.color = "green"
+		remainingPoints--;
 	}
 	if (modifier === 'decrease' && wisdomValue > {{ myHero.primary_attributes["Wisdom"] }}) {
-	wisdomValue--;
-	remainingPoints++;
+		wisdomValue--;
+		remainingPoints++;
+		if (wisdomValue === {{ myHero.primary_attributes["Wisdom"] }}) {
+            document.getElementById('newWisdomValue').style.color = "white"
+		}
 	}
-    document.getElementById('wisdomValue').value = wisdomValue;
 	document.getElementById('newWisdomValue').value = wisdomValue;
 	document.getElementById('pointsRemaining').value = remainingPoints;
 } 
@@ -218,67 +254,77 @@ function wisdomModifier(modifier) {
 	<div class="profilePageValues">
 		<ul>
 			<li>
-				<input type="button" onclick="agilityModifier('decrease')" value="-">
+				<input type="button" onclick="agilityModifier('decrease')" class="abilityButton abilityButtonMinus">
 				<input id="agilityValue" type="hidden" name="agilityInput" value="{{ myHero.primary_attributes["Agility"] }}">
 				<output name="agilityOutput" id="newAgilityValue">{{ myHero.primary_attributes["Agility"] }}</output>
-				<input type="button" onclick="agilityModifier('increase')" value="+">
+				<input type="button" onclick="agilityModifier('increase')" class="abilityButton abilityButtonPlus">
 			</li>
 			<li>
-				<input type="button" onclick="charismaModifier('decrease')" value="-">
+				<input type="button" onclick="charismaModifier('decrease')" class="abilityButton abilityButtonMinus">
 				<input id="charismaValue" type="hidden" name="charismaInput" value="{{ myHero.primary_attributes["Charisma"] }}">
 				<output name="charismaOutput" id="newCharismaValue">{{ myHero.primary_attributes["Charisma"] }}</output>
-				<input type="button" onclick="charismaModifier('increase')" value="+">
+				<input type="button" onclick="charismaModifier('increase')" class="abilityButton abilityButtonPlus">
 			</li>
 			<li>
-				<input type="button" onclick="divinityModifier('decrease')" value="-">
+				<input type="button" onclick="divinityModifier('decrease')" class="abilityButton abilityButtonMinus">
 				<input id="divinityValue" type="hidden" name="divinityInput" value="{{ myHero.primary_attributes["Divinity"] }}">
 				<output name="divinityOutput" id="newDivinityValue">{{ myHero.primary_attributes["Divinity"] }}</output>
-				<input type="button" onclick="divinityModifier('increase')" value="+"></li>
+				<input type="button" onclick="divinityModifier('increase')" class="abilityButton abilityButtonPlus">
+            </li>
 			<li>
-				<input type="button" onclick="fortitudeModifier('decrease')" value="-">
+				<input type="button" onclick="fortitudeModifier('decrease')" class="abilityButton abilityButtonMinus">
 				<input id="fortitudeValue" type="hidden" name="fortitudeInput" value="{{ myHero.primary_attributes["Fortitude"] }}">
 				<output name="fortitudeOutput" id="newFortitudeValue">{{ myHero.primary_attributes["Fortitude"] }}</output>
-				<input type="button" onclick="fortitudeModifier('increase')" value="+"></li>
+				<input type="button" onclick="fortitudeModifier('increase')" class="abilityButton abilityButtonPlus">
+            </li>
 			<li>
-				<input type="button" onclick="fortuityModifier('decrease')" value="-">
+				<input type="button" onclick="fortuityModifier('decrease')" class="abilityButton abilityButtonMinus">
 				<input id="fortuityValue" type="hidden" name="fortuityInput" value="{{ myHero.primary_attributes["Fortuity"] }}">
 				<output name="fortuityOutput" id="newFortuityValue">{{ myHero.primary_attributes["Fortuity"] }}</output>
-				<input type="button" onclick="fortuityModifier('increase')" value="+"></li>
+				<input type="button" onclick="fortuityModifier('increase')" class="abilityButton abilityButtonPlus">
+            </li>
 			<li>
-				<input type="button" onclick="perceptionModifier('decrease')" value="-">
+				<input type="button" onclick="perceptionModifier('decrease')" class="abilityButton abilityButtonMinus">
 				<input id="perceptionValue" type="hidden" name="perceptionInput" value="{{ myHero.primary_attributes["Perception"] }}">
 				<output name="perceptionOutput" id="newPerceptionValue">{{ myHero.primary_attributes["Perception"] }}</output>
-				<input type="button" onclick="perceptionModifier('increase')" value="+"></li>
+				<input type="button" onclick="perceptionModifier('increase')" class="abilityButton abilityButtonPlus">
+            </li>
 			<li>
-				<input type="button" onclick="reflexesModifier('decrease')" value="-">
+				<input type="button" onclick="reflexesModifier('decrease')" class="abilityButton abilityButtonMinus">
 				<input id="reflexesValue" type="hidden" name="reflexesInput" value="{{ myHero.primary_attributes["Reflexes"] }}">
 				<output name="reflexesOutput" id="newReflexesValue">{{ myHero.primary_attributes["Reflexes"] }}</output>
-				<input type="button" onclick="reflexesModifier('increase')" value="+"></li>
+				<input type="button" onclick="reflexesModifier('increase')" class="abilityButton abilityButtonPlus">
+            </li>
 			<li>
-				<input type="button" onclick="resilienceModifier('decrease')" value="-">
+				<input type="button" onclick="resilienceModifier('decrease')" class="abilityButton abilityButtonMinus">
 				<input id="resilienceValue" type="hidden" name="resilienceInput" value="{{ myHero.primary_attributes["Resilience"] }}">
 				<output name="resilienceOutput" id="newResilienceValue">{{ myHero.primary_attributes["Resilience"] }}</output>
-				<input type="button" onclick="resilienceModifier('increase')" value="+"></li>
+				<input type="button" onclick="resilienceModifier('increase')" class="abilityButton abilityButtonPlus">
+            </li>
 			<li>
-				<input type="button" onclick="strengthModifier('decrease')" value="-">
+				<input type="button" onclick="strengthModifier('decrease')" class="abilityButton abilityButtonMinus">
 				<input id="strengthValue" type="hidden" name="strengthInput" value="{{ myHero.primary_attributes["Strength"] }}">
 				<output name="strengthOutput" id="newStrengthValue">{{ myHero.primary_attributes["Strength"] }}</output>
-				<input type="button" onclick="strengthModifier('increase')" value="+"></li>
+				<input type="button" onclick="strengthModifier('increase')" class="abilityButton abilityButtonPlus">
+            </li>
 			<li>
-				<input type="button" onclick="survivalismModifier('decrease')" value="-">
+				<input type="button" onclick="survivalismModifier('decrease')" class="abilityButton abilityButtonMinus">
 				<input id="survivalismValue" type="hidden" name="survivalismInput" value="{{ myHero.primary_attributes["Survivalism"] }}">
 				<output name="survivalismOutput" id="newSurvivalismValue">{{ myHero.primary_attributes["Survivalism"] }}</output>
-				<input type="button" onclick="survivalismModifier('increase')" value="+"></li>
+				<input type="button" onclick="survivalismModifier('increase')" class="abilityButton abilityButtonPlus">
+            </li>
 			<li>
-				<input type="button" onclick="vitalityModifier('decrease')" value="-">
+				<input type="button" onclick="vitalityModifier('decrease')" class="abilityButton abilityButtonMinus">
 				<input id="vitalityValue" type="hidden" name="vitalityInput" value="{{ myHero.primary_attributes["Vitality"] }}">
 				<output name="vitalityOutput" id="newVitalityValue">{{ myHero.primary_attributes["Vitality"] }}</output>
-				<input type="button" onclick="vitalityModifier('increase')" value="+"></li>
+				<input type="button" onclick="vitalityModifier('increase')" class="abilityButton abilityButtonPlus">
+            </li>
 			<li>
-				<input type="button" onclick="wisdomModifier('decrease')" value="-">
+				<input type="button" onclick="wisdomModifier('decrease')" class="abilityButton abilityButtonMinus">
 				<input id="wisdomValue" type="hidden" name="wisdomInput" value="{{ myHero.primary_attributes["Wisdom"] }}">
 				<output name="wisdomOutput" id="newWisdomValue">{{ myHero.primary_attributes["Wisdom"] }}</output>
-				<input type="button" onclick="wisdomModifier('increase')" value="+"></li>
+				<input type="button" onclick="wisdomModifier('increase')" class="abilityButton abilityButtonPlus">
+            </li>
 		</ul>
 	</div>
 </div>
