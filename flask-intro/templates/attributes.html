@@ -1,5 +1,6 @@
 {% extends "profile_template.html" %}
 {% block block2 %}
+
 <!-- Basic Skill Page -->
 
 <script type="text/javascript">
@@ -240,41 +241,38 @@ function wisdomModifier(modifier) {
 </script>
 
 <form method="post" class="level_up_form">
- <div class="profilePage">
- Points Remaining:<output type="text" name="total" id="pointsRemaining" value="{{ myHero.attribute_points }}"/>{{ myHero.attribute_points }}</output>
-</div>
-
-<div style="clear: both;"></div>
-
-<div class="profilePage">
-	<div class="profilePageAttributes">
-		<ul>
-			{% for attribute in attribute_information %}
-				<li><button type="button" class="profileText" onclick="changeAttributeBox('{{ attribute[0] }}', '{{ attribute[1] }}')">{{ attribute[0] }}:</button></li>
-			{% endfor %}
-		</ul>
+	<div class="profilePage">
+		Points Remaining:<output type="text" name="total" id="pointsRemaining" value="{{ myHero.attribute_points }}"/> {{ myHero.attribute_points }}</output>
 	</div>
-	<div class="profilePageValues">
-		<ul>
-			{% for attribute in attribute_form %}
-				<li>
-					<input type="button" onclick="{{ attribute[2] }}Modifier('decrease')" class="abilityButton abilityButtonMinus">
-					<input id="{{ attribute[2] }}Value" type="hidden" name="{{ attribute[2]}}Input" value="{{ attribute[0] }}">
-					<output name="{{ attribute[2] }}Output" id="new{{ attribute[1] }}Value">{{ attribute[0] }}</output>
-					<input type="button" onclick="{{ attribute[2] }}Modifier('increase')" class="abilityButton abilityButtonPlus">
-				</li>
-			{% endfor %}
-		</ul>
+	{% if myHero.attribute_points %}
+		<input class="btn btn-default submitButton" type="submit" value="Save" id="level_button">
+	{% endif %}
+	<div style="clear: both;"></div>
+	<div class="profilePage">
+		<div class="profilePageAttributes">
+			<ul>
+				{% for attribute in attribute_information %}
+					<li><button type="button" class="profileText" onclick="changeAttributeBox('{{ attribute[0] }}', '{{ attribute[1] }}')">{{ attribute[0] }}:</button></li>
+				{% endfor %}
+			</ul>
+		</div>
+		<div class="profilePageValues">
+			<ul>
+				{% for attribute in attribute_form %}
+					<li>
+						<input type="button" onclick="{{ attribute[2] }}Modifier('decrease')" class="abilityButton abilityButtonMinus">
+						<input id="{{ attribute[2] }}Value" type="hidden" name="{{ attribute[2]}}Input" value="{{ attribute[0] }}">
+						<output name="{{ attribute[2] }}Output" id="new{{ attribute[1] }}Value">{{ attribute[0] }}</output>
+						<input type="button" onclick="{{ attribute[2] }}Modifier('increase')" class="abilityButton abilityButtonPlus">
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
 	</div>
-</div>
-
-<div class="profilePage profilePageInfo">
-	<h1><div id="attributeName">Attribute</div></h1>
-	<p><div id="attributeText">Description.</div></p>
-</div>
-
-<input class="btn btn-default" type="submit" value="Save" id="level_button">
+	<div class="profilePage profilePageInfo">
+		<h1><div id="attributeName">Attribute</div></h1>
+		<p><div id="attributeText">Description.</div></p>
+	</div>
 </form>
-
 
 {% endblock %}

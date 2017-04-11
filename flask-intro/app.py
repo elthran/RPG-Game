@@ -241,6 +241,7 @@ def command(cmd=None):
 @app.route('/attributes', methods=['GET', 'POST'])
 @login_required
 def attributes():
+    #Obviously this is a shitty way to do this, but I'm not sure where else to store this information for now. Probably as part of the hero class so it's easily sent to each html file. Or some global table that we send to each html file with the hero.
     attribute_information = [("Agility", "A measure of how agile a character is. Dexterity controls attack and movement speed and accuracy, as well as evading an opponent's attack ."),
                              ("Charisma", "A measure of a character's social skills, and sometimes their physical appearance."),
                              ("Divinity", "A measure of a character's common sense and/or spirituality."),
@@ -253,6 +254,8 @@ def attributes():
                              ("Survivalism", "A measure of a character's openness to their surroundings. "),
                              ("Vitality", "A measure of how sturdy a character is."),
                              ("Wisdom", "A measure of a character's problem-solving ability.")]
+
+    #This should be combined with the information above at some point
     attribute_form = [(myHero.primary_attributes["Agility"], "Agility", "agility"),
                       (myHero.primary_attributes["Charisma"], "Charisma", "charisma"),
                       (myHero.primary_attributes["Divinity"], "Divinity", "divinity"),

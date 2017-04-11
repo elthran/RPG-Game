@@ -1,20 +1,73 @@
 {% extends "profile_template.html" %}
-{% block block2 %}
+{% block block1 %}
 
 <!-- This is the Home page -->	
-    <img src="/static/images/character.jpg" alt="Sample" style="width:100px;height:100px;">
-    <h1>General Statistics</h1>
-    <ul> 
-      <li>Name: {{ myHero.character_name}}</li>
-      <li>Age: {{ myHero.age }}</li>
-      <li>Archetype: {{ myHero.archetype }}</li>
-      <li>Specialization: {{ myHero.specialization }}</li>
-      <li>Religion: {{ myHero.religion }}</li>
-      <li>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}</li>
-      <li>Carrying Capacity: {{ myHero.current_carrying_capacity }} / {{ myHero.max_carrying_capacity }}</li>
-      <li>Gold: {{ myHero.gold }}</li>
-      <li>Endurance: {{ myHero.current_endurance }} / {{ myHero.max_endurance }}</li>
-<li>health: {{ myHero.current_health }} max: {{ myHero.max_health }} percent:{{ myHero.health_percent }}</li>
-    </ul>
+<img class="profileImage" src="/static/images/character_background.jpg" alt="Sample">
+<div style="clear: both;"></div>
+<div class="profileContainer">
+<h1>General Statistics</h1>
+	<div class="profileColumn">
+		<ul> 
+			<li>Name: {{ myHero.character_name}}</li>
+			<li>Age: {{ myHero.age }}</li>
+			<li>Archetype: {{ myHero.archetype }}</li>
+			<li>Specialization: {{ myHero.specialization }}</li>
+			<li>Religion: {{ myHero.religion }}</li>
+			<li>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}</li>
+			<li>Carrying Capacity: {{ myHero.current_carrying_capacity }} / {{ myHero.max_carrying_capacity }}</li>
+			<li>Gold: {{ myHero.gold }}</li>
+			<li>Endurance: {{ myHero.current_endurance }} / {{ myHero.max_endurance }}</li>
+			<li>Health: {{ myHero.current_health }} max: {{ myHero.max_health }} percent:{{ myHero.health_percent }}</li>
+		</ul>
+	</div>
+	<div class="profileColumn">
+		<ul> 
+			<li>Renown: {{ myHero.character_name}}</li>
+			<li>Devotion: {{ myHero.age }}</li>
+			<li>Attribute Points: {{ myHero.archetype }}</li>
+			<li>Specialization: {{ myHero.specialization }}</li>
+			<li>Religion: {{ myHero.religion }}</li>
+			<li>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}</li>
+			<li>Carrying Capacity: {{ myHero.current_carrying_capacity }} / {{ myHero.max_carrying_capacity }}</li>
+			<li>Gold: {{ myHero.gold }}</li>
+			<li>Endurance: {{ myHero.current_endurance }} / {{ myHero.max_endurance }}</li>
+			<li>health: {{ myHero.current_health }} max: {{ myHero.max_health }} percent:{{ myHero.health_percent }}</li>
+		</ul>
+	</div>
+</div>
+<div style="clear: both;"></div>
+<div class="profileContainer">
+<h1>Battle Statistics</h1>
+	<div class="profileColumn">
+		<ul> 
+			<li>Name: {{ myHero.character_name}}</li>
+			<li>Age: {{ myHero.age }}</li>
+			<li>Archetype: {{ myHero.archetype }}</li>
+			<li>Specialization: {{ myHero.specialization }}</li>
+			<li>Religion: {{ myHero.religion }}</li>
+			<li>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}</li>
+			<li>Carrying Capacity: {{ myHero.current_carrying_capacity }} / {{ myHero.max_carrying_capacity }}</li>
+			<li>Gold: {{ myHero.gold }}</li>
+			<li>Endurance: {{ myHero.current_endurance }} / {{ myHero.max_endurance }}</li>
+			<li>health: {{ myHero.current_health }} max: {{ myHero.max_health }} percent:{{ myHero.health_percent }}</li>
+		</ul>
+	</div>
+	<div class="profileColumn">
+		<ul> 
+			<li>Name: {{ myHero.character_name}}</li>
+			<li>Age: {{ myHero.age }}</li>
+			<li>Archetype: {{ myHero.archetype }}</li>
+			<li>Specialization: {{ myHero.specialization }}</li>
+			<li>Religion: {{ myHero.religion }}</li>
+			<li>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}</li>
+			<li>Carrying Capacity: {{ myHero.current_carrying_capacity }} / {{ myHero.max_carrying_capacity }}</li>
+			<li>Gold: {{ myHero.gold }}</li>
+			<li>Endurance: {{ myHero.current_endurance }} / {{ myHero.max_endurance }}</li>
+			<li>health: {{ myHero.current_health }} max: {{ myHero.max_health }} percent:{{ myHero.health_percent }}</li>
+		</ul>
+	</div>
+</div>
+<div style="clear: both;"></div>
+
 {% endblock %}
 
