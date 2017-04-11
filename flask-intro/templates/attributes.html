@@ -5,274 +5,274 @@
 
 <script type="text/javascript">
 function changeAttributeBox(new_name, new_content){
-	document.getElementById("attributeText").innerHTML=new_content;
-	document.getElementById("attributeName").innerHTML=new_name;
+    document.getElementById("attributeText").innerHTML=new_content;
+    document.getElementById("attributeName").innerHTML=new_name;
 }
 
 var remainingPoints = {{ myHero.attribute_points }}
 var agilityValue = {{ myHero.primary_attributes["Agility"] }};
 function agilityModifier(modifier) {
     agilityValue = isNaN(agilityValue) ? 0 : agilityValue;
-	if (modifier === 'increase' && remainingPoints > 0) {
-		agilityValue++;
+    if (modifier === 'increase' && remainingPoints > 0) {
+        agilityValue++;
         document.getElementById('newAgilityValue').style.color = "green"
-		remainingPoints--;
-	}
-	if (modifier === 'decrease' && agilityValue > {{ myHero.primary_attributes["Agility"] }}) {
-		agilityValue--;
-		remainingPoints++;
-		if (agilityValue === {{ myHero.primary_attributes["Agility"] }}) {
+        remainingPoints--;
+    }
+    if (modifier === 'decrease' && agilityValue > {{ myHero.primary_attributes["Agility"] }}) {
+        agilityValue--;
+        remainingPoints++;
+        if (agilityValue === {{ myHero.primary_attributes["Agility"] }}) {
             document.getElementById('newAgilityValue').style.color = "white"
-		}
-	}
-	document.getElementById('agilityValue').value = agilityValue;			<!-- This updates the value sent to python -->
-	document.getElementById('newAgilityValue').value = agilityValue;		<!-- This updates the value that the user sees in HTML -->
-	document.getElementById('pointsRemaining').value = remainingPoints;
+        }
+    }
+    document.getElementById('agilityValue').value = agilityValue;            <!-- This updates the value sent to python -->
+    document.getElementById('newAgilityValue').value = agilityValue;        <!-- This updates the value that the user sees in HTML -->
+    document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var charismaValue = {{ myHero.primary_attributes["Charisma"] }};
 function charismaModifier(modifier) {
     charismaValue = isNaN(charismaValue) ? 0 : charismaValue;
-	if (modifier === 'increase' && remainingPoints > 0) {
-		charismaValue++;
+    if (modifier === 'increase' && remainingPoints > 0) {
+        charismaValue++;
         document.getElementById('newCharismaValue').style.color = "green"
-		remainingPoints--;
-	}
-	if (modifier === 'decrease' && charismaValue > {{ myHero.primary_attributes["Charisma"] }}) {
-		charismaValue--;
-		remainingPoints++;
-		if (charismaValue === {{ myHero.primary_attributes["Charisma"] }}) {
+        remainingPoints--;
+    }
+    if (modifier === 'decrease' && charismaValue > {{ myHero.primary_attributes["Charisma"] }}) {
+        charismaValue--;
+        remainingPoints++;
+        if (charismaValue === {{ myHero.primary_attributes["Charisma"] }}) {
             document.getElementById('newCharismaValue').style.color = "white"
-		}
-	}
-	document.getElementById('charismaValue').value = charismaValue;			<!-- This updates the value sent to python -->
-	document.getElementById('newCharismaValue').value = charismaValue;		<!-- This updates the value that the user sees in HTML -->
-	document.getElementById('pointsRemaining').value = remainingPoints;
+        }
+    }
+    document.getElementById('charismaValue').value = charismaValue;            <!-- This updates the value sent to python -->
+    document.getElementById('newCharismaValue').value = charismaValue;        <!-- This updates the value that the user sees in HTML -->
+    document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var divinityValue = {{ myHero.primary_attributes["Divinity"] }};
 function divinityModifier(modifier) {
     divinityValue = isNaN(divinityValue) ? 0 : divinityValue;
-	if (modifier === 'increase' && remainingPoints > 0) {
-		divinityValue++;
+    if (modifier === 'increase' && remainingPoints > 0) {
+        divinityValue++;
         document.getElementById('newDivinityValue').style.color = "green"
-		remainingPoints--;
-	}
-	if (modifier === 'decrease' && divinityValue > {{ myHero.primary_attributes["Divinity"] }}) {
-		divinityValue--;
-		remainingPoints++;
-		if (divinityValue === {{ myHero.primary_attributes["Divinity"] }}) {
+        remainingPoints--;
+    }
+    if (modifier === 'decrease' && divinityValue > {{ myHero.primary_attributes["Divinity"] }}) {
+        divinityValue--;
+        remainingPoints++;
+        if (divinityValue === {{ myHero.primary_attributes["Divinity"] }}) {
             document.getElementById('newDivinityValue').style.color = "white"
-		}
-	}
-	document.getElementById('divinityValue').value = divinityValue;			<!-- This updates the value sent to python -->
-	document.getElementById('newDivinityValue').value = divinityValue;		<!-- This updates the value that the user sees in HTML -->
-	document.getElementById('pointsRemaining').value = remainingPoints;
+        }
+    }
+    document.getElementById('divinityValue').value = divinityValue;            <!-- This updates the value sent to python -->
+    document.getElementById('newDivinityValue').value = divinityValue;        <!-- This updates the value that the user sees in HTML -->
+    document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var fortitudeValue = {{ myHero.primary_attributes["Fortitude"] }};
 function fortitudeModifier(modifier) {
     fortitudeValue = isNaN(fortitudeValue) ? 0 : fortitudeValue;
-	if (modifier === 'increase' && remainingPoints > 0) {
-		fortitudeValue++;
+    if (modifier === 'increase' && remainingPoints > 0) {
+        fortitudeValue++;
         document.getElementById('newFortitudeValue').style.color = "green"
-		remainingPoints--;
-	}
-	if (modifier === 'decrease' && fortitudeValue > {{ myHero.primary_attributes["Fortitude"] }}) {
-		fortitudeValue--;
-		remainingPoints++;
-		if (fortitudeValue === {{ myHero.primary_attributes["Fortitude"] }}) {
+        remainingPoints--;
+    }
+    if (modifier === 'decrease' && fortitudeValue > {{ myHero.primary_attributes["Fortitude"] }}) {
+        fortitudeValue--;
+        remainingPoints++;
+        if (fortitudeValue === {{ myHero.primary_attributes["Fortitude"] }}) {
             document.getElementById('newFortitudeValue').style.color = "white"
-		}
-	}
-	document.getElementById('fortitudeValue').value = fortitudeValue;			<!-- This updates the value sent to python -->
-	document.getElementById('newFortitudeValue').value = fortitudeValue;		<!-- This updates the value that the user sees in HTML -->
-	document.getElementById('pointsRemaining').value = remainingPoints;
+        }
+    }
+    document.getElementById('fortitudeValue').value = fortitudeValue;            <!-- This updates the value sent to python -->
+    document.getElementById('newFortitudeValue').value = fortitudeValue;        <!-- This updates the value that the user sees in HTML -->
+    document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var fortuityValue = {{ myHero.primary_attributes["Fortuity"] }};
 function fortuityModifier(modifier) {
     fortuityValue = isNaN(fortuityValue) ? 0 : fortuityValue;
-	if (modifier === 'increase' && remainingPoints > 0) {
-		fortuityValue++;
+    if (modifier === 'increase' && remainingPoints > 0) {
+        fortuityValue++;
         document.getElementById('newFortuityValue').style.color = "green"
-		remainingPoints--;
-	}
-	if (modifier === 'decrease' && fortuityValue > {{ myHero.primary_attributes["Fortuity"] }}) {
-		fortuityValue--;
-		remainingPoints++;
-		if (fortuityValue === {{ myHero.primary_attributes["Fortuity"] }}) {
+        remainingPoints--;
+    }
+    if (modifier === 'decrease' && fortuityValue > {{ myHero.primary_attributes["Fortuity"] }}) {
+        fortuityValue--;
+        remainingPoints++;
+        if (fortuityValue === {{ myHero.primary_attributes["Fortuity"] }}) {
             document.getElementById('newFortuityValue').style.color = "white"
-		}
-	}
-	document.getElementById('fortuityValue').value = fortuityValue;			<!-- This updates the value sent to python -->
-	document.getElementById('newFortuityValue').value = fortuityValue;		<!-- This updates the value that the user sees in HTML -->
-	document.getElementById('pointsRemaining').value = remainingPoints;
+        }
+    }
+    document.getElementById('fortuityValue').value = fortuityValue;            <!-- This updates the value sent to python -->
+    document.getElementById('newFortuityValue').value = fortuityValue;        <!-- This updates the value that the user sees in HTML -->
+    document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var perceptionValue = {{ myHero.primary_attributes["Perception"] }};
 function perceptionModifier(modifier) {
     perceptionValue = isNaN(perceptionValue) ? 0 : perceptionValue;
-	if (modifier === 'increase' && remainingPoints > 0) {
-		perceptionValue++;
+    if (modifier === 'increase' && remainingPoints > 0) {
+        perceptionValue++;
         document.getElementById('newPerceptionValue').style.color = "green"
-		remainingPoints--;
-	}
-	if (modifier === 'decrease' && perceptionValue > {{ myHero.primary_attributes["Perception"] }}) {
-		perceptionValue--;
-		remainingPoints++;
-		if (perceptionValue === {{ myHero.primary_attributes["Perception"] }}) {
+        remainingPoints--;
+    }
+    if (modifier === 'decrease' && perceptionValue > {{ myHero.primary_attributes["Perception"] }}) {
+        perceptionValue--;
+        remainingPoints++;
+        if (perceptionValue === {{ myHero.primary_attributes["Perception"] }}) {
             document.getElementById('newPerceptionValue').style.color = "white"
-		}
-	}
-	document.getElementById('perceptionValue').value = perceptionValue;			<!-- This updates the value sent to python -->
-	document.getElementById('newPerceptionValue').value = perceptionValue;		<!-- This updates the value that the user sees in HTML -->
-	document.getElementById('pointsRemaining').value = remainingPoints;
+        }
+    }
+    document.getElementById('perceptionValue').value = perceptionValue;            <!-- This updates the value sent to python -->
+    document.getElementById('newPerceptionValue').value = perceptionValue;        <!-- This updates the value that the user sees in HTML -->
+    document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var reflexesValue = {{ myHero.primary_attributes["Reflexes"] }};
 function reflexesModifier(modifier) {
     reflexesValue = isNaN(reflexesValue) ? 0 : reflexesValue;
-	if (modifier === 'increase' && remainingPoints > 0) {
-		reflexesValue++;
+    if (modifier === 'increase' && remainingPoints > 0) {
+        reflexesValue++;
         document.getElementById('newReflexesValue').style.color = "green"
-		remainingPoints--;
-	}
-	if (modifier === 'decrease' && reflexesValue > {{ myHero.primary_attributes["Reflexes"] }}) {
-		reflexesValue--;
-		remainingPoints++;
-		if (reflexesValue === {{ myHero.primary_attributes["Reflexes"] }}) {
+        remainingPoints--;
+    }
+    if (modifier === 'decrease' && reflexesValue > {{ myHero.primary_attributes["Reflexes"] }}) {
+        reflexesValue--;
+        remainingPoints++;
+        if (reflexesValue === {{ myHero.primary_attributes["Reflexes"] }}) {
             document.getElementById('newReflexesValue').style.color = "white"
-		}
-	}
-	document.getElementById('reflexesValue').value = reflexesValue;			<!-- This updates the value sent to python -->
-	document.getElementById('newReflexesValue').value = reflexesValue;		<!-- This updates the value that the user sees in HTML -->
-	document.getElementById('pointsRemaining').value = remainingPoints;
+        }
+    }
+    document.getElementById('reflexesValue').value = reflexesValue;            <!-- This updates the value sent to python -->
+    document.getElementById('newReflexesValue').value = reflexesValue;        <!-- This updates the value that the user sees in HTML -->
+    document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var resilienceValue = {{ myHero.primary_attributes["Resilience"] }};
 function resilienceModifier(modifier) {
     resilienceValue = isNaN(resilienceValue) ? 0 : resilienceValue;
-	if (modifier === 'increase' && remainingPoints > 0) {
-		resilienceValue++;
-        document.getElementById('newResilienceValue').style.color = "green"		
-		remainingPoints--;
-	}
-	if (modifier === 'decrease' && resilienceValue > {{ myHero.primary_attributes["Resilience"] }}) {
-		resilienceValue--;
-		remainingPoints++;
-		if (resilienceValue === {{ myHero.primary_attributes["Resilience"] }}) {
+    if (modifier === 'increase' && remainingPoints > 0) {
+        resilienceValue++;
+        document.getElementById('newResilienceValue').style.color = "green"        
+        remainingPoints--;
+    }
+    if (modifier === 'decrease' && resilienceValue > {{ myHero.primary_attributes["Resilience"] }}) {
+        resilienceValue--;
+        remainingPoints++;
+        if (resilienceValue === {{ myHero.primary_attributes["Resilience"] }}) {
             document.getElementById('newResilienceValue').style.color = "white"
-		}
-	}
-	document.getElementById('resilienceValue').value = resilienceValue;			<!-- This updates the value sent to python -->
-	document.getElementById('newResilienceValue').value = resilienceValue;		<!-- This updates the value that the user sees in HTML -->
-	document.getElementById('pointsRemaining').value = remainingPoints;
+        }
+    }
+    document.getElementById('resilienceValue').value = resilienceValue;            <!-- This updates the value sent to python -->
+    document.getElementById('newResilienceValue').value = resilienceValue;        <!-- This updates the value that the user sees in HTML -->
+    document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var strengthValue = {{ myHero.primary_attributes["Strength"] }};
 function strengthModifier(modifier) {
     strengthValue = isNaN(strengthValue) ? 0 : strengthValue;
-	if (modifier === 'increase' && remainingPoints > 0) {
-		strengthValue++;
+    if (modifier === 'increase' && remainingPoints > 0) {
+        strengthValue++;
         document.getElementById('newStrengthValue').style.color = "green"
-		remainingPoints--;
-	}
-	if (modifier === 'decrease' && strengthValue > {{ myHero.primary_attributes["Strength"] }}) {
-		strengthValue--;
-		remainingPoints++;
-		if (strengthValue === {{ myHero.primary_attributes["Strength"] }}) {
+        remainingPoints--;
+    }
+    if (modifier === 'decrease' && strengthValue > {{ myHero.primary_attributes["Strength"] }}) {
+        strengthValue--;
+        remainingPoints++;
+        if (strengthValue === {{ myHero.primary_attributes["Strength"] }}) {
             document.getElementById('newStrengthValue').style.color = "white"
-		}
-	}
-	document.getElementById('strengthValue').value = strengthValue;			<!-- This updates the value sent to python -->
-	document.getElementById('newStrengthValue').value = strengthValue;		<!-- This updates the value that the user sees in HTML -->
-	document.getElementById('pointsRemaining').value = remainingPoints;
+        }
+    }
+    document.getElementById('strengthValue').value = strengthValue;            <!-- This updates the value sent to python -->
+    document.getElementById('newStrengthValue').value = strengthValue;        <!-- This updates the value that the user sees in HTML -->
+    document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var survivalismValue = {{ myHero.primary_attributes["Survivalism"] }};
 function survivalismModifier(modifier) {
     survivalismValue = isNaN(survivalismValue) ? 0 : survivalismValue;
-	if (modifier === 'increase' && remainingPoints > 0) {
-		survivalismValue++;
+    if (modifier === 'increase' && remainingPoints > 0) {
+        survivalismValue++;
         document.getElementById('newSurvivalismValue').style.color = "green"
-		remainingPoints--;
-	}
-	if (modifier === 'decrease' && survivalismValue > {{ myHero.primary_attributes["Survivalism"] }}) {
-		survivalismValue--;
-		remainingPoints++;
-		if (survivalismValue === {{ myHero.primary_attributes["Survivalism"] }}) {
+        remainingPoints--;
+    }
+    if (modifier === 'decrease' && survivalismValue > {{ myHero.primary_attributes["Survivalism"] }}) {
+        survivalismValue--;
+        remainingPoints++;
+        if (survivalismValue === {{ myHero.primary_attributes["Survivalism"] }}) {
             document.getElementById('newSurvivalismValue').style.color = "white"
-		}
-	}
-		document.getElementById('survivalismValue').value = survivalismValue;			<!-- This updates the value sent to python -->
-	document.getElementById('newSurvivalismValue').value = survivalismValue;			<!-- This updates the value that the user sees in HTML -->
-		document.getElementById('pointsRemaining').value = remainingPoints;
+        }
+    }
+        document.getElementById('survivalismValue').value = survivalismValue;            <!-- This updates the value sent to python -->
+    document.getElementById('newSurvivalismValue').value = survivalismValue;            <!-- This updates the value that the user sees in HTML -->
+        document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var vitalityValue = {{ myHero.primary_attributes["Vitality"] }};
 function vitalityModifier(modifier) {
     vitalityValue = isNaN(vitalityValue) ? 0 : vitalityValue;
-	if (modifier === 'increase' && remainingPoints > 0) {
-		vitalityValue++;
+    if (modifier === 'increase' && remainingPoints > 0) {
+        vitalityValue++;
         document.getElementById('newVitalityValue').style.color = "green"
-		remainingPoints--;
-	}
-	if (modifier === 'decrease' && vitalityValue > {{ myHero.primary_attributes["Vitality"] }}) {
-		vitalityValue--;
-		remainingPoints++;
-		if (vitalityValue === {{ myHero.primary_attributes["Vitality"] }}) {
+        remainingPoints--;
+    }
+    if (modifier === 'decrease' && vitalityValue > {{ myHero.primary_attributes["Vitality"] }}) {
+        vitalityValue--;
+        remainingPoints++;
+        if (vitalityValue === {{ myHero.primary_attributes["Vitality"] }}) {
             document.getElementById('newVitalityValue').style.color = "white"
-		}
-	}
-	document.getElementById('vitalityValue').value = vitalityValue;			<!-- This updates the value sent to python -->
-	document.getElementById('newVitalityValue').value = vitalityValue;		<!-- This updates the value that the user sees in HTML -->
-	document.getElementById('pointsRemaining').value = remainingPoints;
+        }
+    }
+    document.getElementById('vitalityValue').value = vitalityValue;            <!-- This updates the value sent to python -->
+    document.getElementById('newVitalityValue').value = vitalityValue;        <!-- This updates the value that the user sees in HTML -->
+    document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var wisdomValue = {{ myHero.primary_attributes["Wisdom"] }};
 function wisdomModifier(modifier) {
     wisdomValue = isNaN(wisdomValue) ? 0 : wisdomValue;
-	if (modifier === 'increase' && remainingPoints > 0) {
-		wisdomValue++;
+    if (modifier === 'increase' && remainingPoints > 0) {
+        wisdomValue++;
         document.getElementById('newWisdomValue').style.color = "green"
-		remainingPoints--;
-	}
-	if (modifier === 'decrease' && wisdomValue > {{ myHero.primary_attributes["Wisdom"] }}) {
-		wisdomValue--;
-		remainingPoints++;
-		if (wisdomValue === {{ myHero.primary_attributes["Wisdom"] }}) {
+        remainingPoints--;
+    }
+    if (modifier === 'decrease' && wisdomValue > {{ myHero.primary_attributes["Wisdom"] }}) {
+        wisdomValue--;
+        remainingPoints++;
+        if (wisdomValue === {{ myHero.primary_attributes["Wisdom"] }}) {
             document.getElementById('newWisdomValue').style.color = "white"
-		}
-	}
-	document.getElementById('wisdomValue').value = wisdomValue;			<!-- This updates the value sent to python -->
-	document.getElementById('newWisdomValue').value = wisdomValue;		<!-- This updates the value that the user sees in HTML -->
-	document.getElementById('pointsRemaining').value = remainingPoints;
+        }
+    }
+    document.getElementById('wisdomValue').value = wisdomValue;            <!-- This updates the value sent to python -->
+    document.getElementById('newWisdomValue').value = wisdomValue;        <!-- This updates the value that the user sees in HTML -->
+    document.getElementById('pointsRemaining').value = remainingPoints;
 } 
 </script>
 
 <form method="post" class="level_up_form">
-	<div class="profilePage">
-		Points Remaining:<output type="text" name="total" id="pointsRemaining" value="{{ myHero.attribute_points }}"/> {{ myHero.attribute_points }}</output>
-	</div>
-	{% if myHero.attribute_points %}
-		<input class="btn btn-default submitButton" type="submit" value="Save" id="level_button">
-	{% endif %}
-	<div style="clear: both;"></div>
-	<div class="profilePage">
-		<div class="profilePageAttributes">
-			<ul>
-				{% for attribute in attribute_information %}
-					<li><button type="button" class="profileText" onclick="changeAttributeBox('{{ attribute[0] }}', '{{ attribute[1] | safe }}')">{{ attribute[0] }}:</button></li>
-				{% endfor %}
-			</ul>
-		</div>
-		<div class="profilePageValues">
-			<ul>
-				{% for attribute in attribute_form %}
-					<li>
-						<input type="button" onclick="{{ attribute[2] }}Modifier('decrease')" class="abilityButton abilityButtonMinus">
-						<input id="{{ attribute[2] }}Value" type="hidden" name="{{ attribute[2]}}Input" value="{{ attribute[0] }}">
-						<output name="{{ attribute[2] }}Output" id="new{{ attribute[1] }}Value">{{ attribute[0] }}</output>
-						<input type="button" onclick="{{ attribute[2] }}Modifier('increase')" class="abilityButton abilityButtonPlus">
-					</li>
-				{% endfor %}
-			</ul>
-		</div>
-	</div>
-	<div class="profilePage profilePageInfo">
-		<h1><div id="attributeName">Attribute</div></h1>
-		<p><div id="attributeText">Description.</div></p>
-	</div>
+    <div class="profilePage">
+        Points Remaining:<output type="text" name="total" id="pointsRemaining" value="{{ myHero.attribute_points }}"/> {{ myHero.attribute_points }}</output>
+    </div>
+    {% if myHero.attribute_points %}
+        <input class="btn btn-default submitButton" type="submit" value="Save" id="level_button">
+    {% endif %}
+    <div style="clear: both;"></div>
+    <div class="profilePage">
+        <div class="profilePageAttributes">
+            <ul>
+                {% for attribute in attribute_information %}
+                    <li><button type="button" class="profileText" onclick="changeAttributeBox('{{ attribute[0] }}', '{{ attribute[1] | safe }}')">{{ attribute[0] }}:</button></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="profilePageValues">
+            <ul>
+                {% for attribute in attribute_form %}
+                    <li>
+                        <input type="button" onclick="{{ attribute[2] }}Modifier('decrease')" class="abilityButton abilityButtonMinus">
+                        <input id="{{ attribute[2] }}Value" type="hidden" name="{{ attribute[2]}}Input" value="{{ attribute[0] }}">
+                        <output name="{{ attribute[2] }}Output" id="new{{ attribute[1] }}Value">{{ attribute[0] }}</output>
+                        <input type="button" onclick="{{ attribute[2] }}Modifier('increase')" class="abilityButton abilityButtonPlus">
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="profilePage profilePageInfo">
+        <h1><div id="attributeName">Attribute</div></h1>
+        <p><div id="attributeText">Description.</div></p>
+    </div>
 </form>
 
 {% endblock %}
