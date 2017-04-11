@@ -241,6 +241,30 @@ def command(cmd=None):
 @app.route('/attributes', methods=['GET', 'POST'])
 @login_required
 def attributes():
+    attribute_information = [("Agility", "A measure of how agile a character is. Dexterity controls attack and movement speed and accuracy, as well as evading an opponent's attack ."),
+                             ("Charisma", "A measure of a character's social skills, and sometimes their physical appearance."),
+                             ("Divinity", "A measure of a character's common sense and/or spirituality."),
+                             ("Fortitude", "A measure of how resilient a character is."),
+                             ("Fortuity", "A measure of a character's luck. "),
+                             ("Perception", "A measure of a character's openness to their surroundings."),
+                             ("Reflexes", "A measure of how agile a character is. "),
+                             ("Resilience", "A measure of how resilient a character is. "),
+                             ("Strength", "A measure of how physically strong a character is. "),
+                             ("Survivalism", "A measure of a character's openness to their surroundings. "),
+                             ("Vitality", "A measure of how sturdy a character is."),
+                             ("Wisdom", "A measure of a character's problem-solving ability.")]
+    attribute_form = [(myHero.primary_attributes["Agility"], "Agility", "agility"),
+                      (myHero.primary_attributes["Charisma"], "Charisma", "charisma"),
+                      (myHero.primary_attributes["Divinity"], "Divinity", "divinity"),
+                      (myHero.primary_attributes["Fortitude"], "Fortitude", "fortitude"),
+                      (myHero.primary_attributes["Fortuity"], "Fortuity", "fortuity"),
+                      (myHero.primary_attributes["Perception"], "Perception", "perception"),
+                      (myHero.primary_attributes["Reflexes"], "Reflexes", "reflexes"),
+                      (myHero.primary_attributes["Resilience"], "Resilience", "resilience"),
+                      (myHero.primary_attributes["Strength"], "Strength", "strength"),
+                      (myHero.primary_attributes["Survivalism"], "Survivalism", "survivalism"),
+                      (myHero.primary_attributes["Vitality"], "Vitality", "vitality"),
+                      (myHero.primary_attributes["Wisdom"], "Wisdom", "wisdom")]
     if request.method == 'POST':
         points_spent = 0
         for element in request.form:
@@ -254,8 +278,8 @@ def attributes():
         myHero.update_secondary_attributes()
         myHero.refresh_character()
         database.update()
-        return render_template('attributes.html', page_title="Attributes", myHero=myHero, attributes=True)
-    return render_template('attributes.html', page_title="Attributes", myHero=myHero, attributes=True)
+        return render_template('attributes.html', page_title="Attributes", myHero=myHero, attributes=True, attribute_information=attribute_information, attribute_form=attribute_form)
+    return render_template('attributes.html', page_title="Attributes", myHero=myHero, attributes=True, attribute_information=attribute_information, attribute_form=attribute_form)
 
 # This gets called anytime you have secondary attribute points to spend
 # Currently I send "proficiencies=True" so that the html knows to highlight the bar and show that you are on this page

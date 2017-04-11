@@ -7,7 +7,9 @@
     {% else %}
       <li><a class="" href="/home">Profile</a></li>
     {% endif %}
-    {% if attributes %}
+{% if myHero.attribute_points %}
+<li><a class="topbarGlowing" href="/attributes">Attributes</a></li>
+    {% elif attributes %}
       <li><a class="topbarActive" href="/attributes">Attributes</a></li>
     {% else %}
       <li><a class="" href="/attributes">Attributes</a></li>

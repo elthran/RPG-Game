@@ -24,7 +24,8 @@ function agilityModifier(modifier) {
             document.getElementById('newAgilityValue').style.color = "white"
 		}
 	}
-	document.getElementById('newAgilityValue').value = agilityValue;
+	document.getElementById('agilityValue').value = agilityValue;			<!-- This updates the value sent to python -->
+	document.getElementById('newAgilityValue').value = agilityValue;		<!-- This updates the value that the user sees in HTML -->
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var charismaValue = {{ myHero.primary_attributes["Charisma"] }};
@@ -42,7 +43,8 @@ function charismaModifier(modifier) {
             document.getElementById('newCharismaValue').style.color = "white"
 		}
 	}
-	document.getElementById('newCharismaValue').value = charismaValue;
+	document.getElementById('charismaValue').value = charismaValue;			<!-- This updates the value sent to python -->
+	document.getElementById('newCharismaValue').value = charismaValue;		<!-- This updates the value that the user sees in HTML -->
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var divinityValue = {{ myHero.primary_attributes["Divinity"] }};
@@ -60,7 +62,8 @@ function divinityModifier(modifier) {
             document.getElementById('newDivinityValue').style.color = "white"
 		}
 	}
-	document.getElementById('newDivinityValue').value = divinityValue;
+	document.getElementById('divinityValue').value = divinityValue;			<!-- This updates the value sent to python -->
+	document.getElementById('newDivinityValue').value = divinityValue;		<!-- This updates the value that the user sees in HTML -->
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var fortitudeValue = {{ myHero.primary_attributes["Fortitude"] }};
@@ -78,7 +81,8 @@ function fortitudeModifier(modifier) {
             document.getElementById('newFortitudeValue').style.color = "white"
 		}
 	}
-	document.getElementById('newFortitudeValue').value = fortitudeValue;
+	document.getElementById('fortitudeValue').value = fortitudeValue;			<!-- This updates the value sent to python -->
+	document.getElementById('newFortitudeValue').value = fortitudeValue;		<!-- This updates the value that the user sees in HTML -->
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var fortuityValue = {{ myHero.primary_attributes["Fortuity"] }};
@@ -96,7 +100,8 @@ function fortuityModifier(modifier) {
             document.getElementById('newFortuityValue').style.color = "white"
 		}
 	}
-	document.getElementById('newFortuityValue').value = fortuityValue;
+	document.getElementById('fortuityValue').value = fortuityValue;			<!-- This updates the value sent to python -->
+	document.getElementById('newFortuityValue').value = fortuityValue;		<!-- This updates the value that the user sees in HTML -->
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var perceptionValue = {{ myHero.primary_attributes["Perception"] }};
@@ -114,7 +119,8 @@ function perceptionModifier(modifier) {
             document.getElementById('newPerceptionValue').style.color = "white"
 		}
 	}
-	document.getElementById('newPerceptionValue').value = perceptionValue;
+	document.getElementById('perceptionValue').value = perceptionValue;			<!-- This updates the value sent to python -->
+	document.getElementById('newPerceptionValue').value = perceptionValue;		<!-- This updates the value that the user sees in HTML -->
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var reflexesValue = {{ myHero.primary_attributes["Reflexes"] }};
@@ -132,7 +138,8 @@ function reflexesModifier(modifier) {
             document.getElementById('newReflexesValue').style.color = "white"
 		}
 	}
-	document.getElementById('newReflexesValue').value = reflexesValue;
+	document.getElementById('reflexesValue').value = reflexesValue;			<!-- This updates the value sent to python -->
+	document.getElementById('newReflexesValue').value = reflexesValue;		<!-- This updates the value that the user sees in HTML -->
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var resilienceValue = {{ myHero.primary_attributes["Resilience"] }};
@@ -150,7 +157,8 @@ function resilienceModifier(modifier) {
             document.getElementById('newResilienceValue').style.color = "white"
 		}
 	}
-	document.getElementById('newResilienceValue').value = resilienceValue;
+	document.getElementById('resilienceValue').value = resilienceValue;			<!-- This updates the value sent to python -->
+	document.getElementById('newResilienceValue').value = resilienceValue;		<!-- This updates the value that the user sees in HTML -->
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var strengthValue = {{ myHero.primary_attributes["Strength"] }};
@@ -168,7 +176,8 @@ function strengthModifier(modifier) {
             document.getElementById('newStrengthValue').style.color = "white"
 		}
 	}
-	document.getElementById('newStrengthValue').value = strengthValue;
+	document.getElementById('strengthValue').value = strengthValue;			<!-- This updates the value sent to python -->
+	document.getElementById('newStrengthValue').value = strengthValue;		<!-- This updates the value that the user sees in HTML -->
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var survivalismValue = {{ myHero.primary_attributes["Survivalism"] }};
@@ -186,7 +195,8 @@ function survivalismModifier(modifier) {
             document.getElementById('newSurvivalismValue').style.color = "white"
 		}
 	}
-		document.getElementById('newSurvivalismValue').value = survivalismValue;
+		document.getElementById('survivalismValue').value = survivalismValue;			<!-- This updates the value sent to python -->
+	document.getElementById('newSurvivalismValue').value = survivalismValue;			<!-- This updates the value that the user sees in HTML -->
 		document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var vitalityValue = {{ myHero.primary_attributes["Vitality"] }};
@@ -204,7 +214,8 @@ function vitalityModifier(modifier) {
             document.getElementById('newVitalityValue').style.color = "white"
 		}
 	}
-	document.getElementById('newVitalityValue').value = vitalityValue;
+	document.getElementById('vitalityValue').value = vitalityValue;			<!-- This updates the value sent to python -->
+	document.getElementById('newVitalityValue').value = vitalityValue;		<!-- This updates the value that the user sees in HTML -->
 	document.getElementById('pointsRemaining').value = remainingPoints;
 }
 var wisdomValue = {{ myHero.primary_attributes["Wisdom"] }};
@@ -222,7 +233,8 @@ function wisdomModifier(modifier) {
             document.getElementById('newWisdomValue').style.color = "white"
 		}
 	}
-	document.getElementById('newWisdomValue').value = wisdomValue;
+	document.getElementById('wisdomValue').value = wisdomValue;			<!-- This updates the value sent to python -->
+	document.getElementById('newWisdomValue').value = wisdomValue;		<!-- This updates the value that the user sees in HTML -->
 	document.getElementById('pointsRemaining').value = remainingPoints;
 } 
 </script>
@@ -237,101 +249,28 @@ function wisdomModifier(modifier) {
 <div class="profilePage">
 	<div class="profilePageAttributes">
 		<ul>
-			<li><button type="button" class="profileText" onclick="changeAttributeBox('Agility', 'How fast you are.')">Agility:</button></li>
-			<li><button type="button"  class="profileText" onclick="changeAttributeBox('Charisma', 'How much they love you.')">Charisma:</button></li>
-			<li><button type="button"  class="profileText" onclick="changeAttributeBox('Divinity', 'Your relationship with god.')">Divinity:</button></li>
-			<li><button type="button"  class="profileText" onclick="changeAttributeBox('Fortitude', 'forty')">Fortitude:</button></li>
-			<li><button type="button"  class="profileText" onclick="changeAttributeBox('Fortuity', 'fortytuity')">Fortuity:</button></li>
-			<li><button type="button"  class="profileText" onclick="changeAttributeBox('Perception', 'see it')">Perception:</button></li>
-			<li><button type="button"  class="profileText" onclick="changeAttributeBox('Reflexes', 'dodge it')">Reflexes:</button></li>
-			<li><button type="button"  class="profileText" onclick="changeAttributeBox('Resilience', 'resist it')">Resilience:</button></li>
-			<li><button type="button"  class="profileText" onclick="changeAttributeBox('Strength', 'beat it')">Strength:</button></li>
-			<li><button type="button"  class="profileText" onclick="changeAttributeBox('Survivalism', 'dont die')">Survivalism:</button></li>
-			<li><button type="button"  class="profileText" onclick="changeAttributeBox('Vitality', 'stay healthy')">Vitality:</button></li>
-			<li><button type="button"  class="profileText" onclick="changeAttributeBox('Wisdom', 'be wise')">Wisdom:</button></li>
+			{% for attribute in attribute_information %}
+				<li><button type="button" class="profileText" onclick="changeAttributeBox('{{ attribute[0] }}', '{{ attribute[1] }}')">{{ attribute[0] }}:</button></li>
+			{% endfor %}
 		</ul>
 	</div>
 	<div class="profilePageValues">
 		<ul>
-			<li>
-				<input type="button" onclick="agilityModifier('decrease')" class="abilityButton abilityButtonMinus">
-				<input id="agilityValue" type="hidden" name="agilityInput" value="{{ myHero.primary_attributes["Agility"] }}">
-				<output name="agilityOutput" id="newAgilityValue">{{ myHero.primary_attributes["Agility"] }}</output>
-				<input type="button" onclick="agilityModifier('increase')" class="abilityButton abilityButtonPlus">
-			</li>
-			<li>
-				<input type="button" onclick="charismaModifier('decrease')" class="abilityButton abilityButtonMinus">
-				<input id="charismaValue" type="hidden" name="charismaInput" value="{{ myHero.primary_attributes["Charisma"] }}">
-				<output name="charismaOutput" id="newCharismaValue">{{ myHero.primary_attributes["Charisma"] }}</output>
-				<input type="button" onclick="charismaModifier('increase')" class="abilityButton abilityButtonPlus">
-			</li>
-			<li>
-				<input type="button" onclick="divinityModifier('decrease')" class="abilityButton abilityButtonMinus">
-				<input id="divinityValue" type="hidden" name="divinityInput" value="{{ myHero.primary_attributes["Divinity"] }}">
-				<output name="divinityOutput" id="newDivinityValue">{{ myHero.primary_attributes["Divinity"] }}</output>
-				<input type="button" onclick="divinityModifier('increase')" class="abilityButton abilityButtonPlus">
-            </li>
-			<li>
-				<input type="button" onclick="fortitudeModifier('decrease')" class="abilityButton abilityButtonMinus">
-				<input id="fortitudeValue" type="hidden" name="fortitudeInput" value="{{ myHero.primary_attributes["Fortitude"] }}">
-				<output name="fortitudeOutput" id="newFortitudeValue">{{ myHero.primary_attributes["Fortitude"] }}</output>
-				<input type="button" onclick="fortitudeModifier('increase')" class="abilityButton abilityButtonPlus">
-            </li>
-			<li>
-				<input type="button" onclick="fortuityModifier('decrease')" class="abilityButton abilityButtonMinus">
-				<input id="fortuityValue" type="hidden" name="fortuityInput" value="{{ myHero.primary_attributes["Fortuity"] }}">
-				<output name="fortuityOutput" id="newFortuityValue">{{ myHero.primary_attributes["Fortuity"] }}</output>
-				<input type="button" onclick="fortuityModifier('increase')" class="abilityButton abilityButtonPlus">
-            </li>
-			<li>
-				<input type="button" onclick="perceptionModifier('decrease')" class="abilityButton abilityButtonMinus">
-				<input id="perceptionValue" type="hidden" name="perceptionInput" value="{{ myHero.primary_attributes["Perception"] }}">
-				<output name="perceptionOutput" id="newPerceptionValue">{{ myHero.primary_attributes["Perception"] }}</output>
-				<input type="button" onclick="perceptionModifier('increase')" class="abilityButton abilityButtonPlus">
-            </li>
-			<li>
-				<input type="button" onclick="reflexesModifier('decrease')" class="abilityButton abilityButtonMinus">
-				<input id="reflexesValue" type="hidden" name="reflexesInput" value="{{ myHero.primary_attributes["Reflexes"] }}">
-				<output name="reflexesOutput" id="newReflexesValue">{{ myHero.primary_attributes["Reflexes"] }}</output>
-				<input type="button" onclick="reflexesModifier('increase')" class="abilityButton abilityButtonPlus">
-            </li>
-			<li>
-				<input type="button" onclick="resilienceModifier('decrease')" class="abilityButton abilityButtonMinus">
-				<input id="resilienceValue" type="hidden" name="resilienceInput" value="{{ myHero.primary_attributes["Resilience"] }}">
-				<output name="resilienceOutput" id="newResilienceValue">{{ myHero.primary_attributes["Resilience"] }}</output>
-				<input type="button" onclick="resilienceModifier('increase')" class="abilityButton abilityButtonPlus">
-            </li>
-			<li>
-				<input type="button" onclick="strengthModifier('decrease')" class="abilityButton abilityButtonMinus">
-				<input id="strengthValue" type="hidden" name="strengthInput" value="{{ myHero.primary_attributes["Strength"] }}">
-				<output name="strengthOutput" id="newStrengthValue">{{ myHero.primary_attributes["Strength"] }}</output>
-				<input type="button" onclick="strengthModifier('increase')" class="abilityButton abilityButtonPlus">
-            </li>
-			<li>
-				<input type="button" onclick="survivalismModifier('decrease')" class="abilityButton abilityButtonMinus">
-				<input id="survivalismValue" type="hidden" name="survivalismInput" value="{{ myHero.primary_attributes["Survivalism"] }}">
-				<output name="survivalismOutput" id="newSurvivalismValue">{{ myHero.primary_attributes["Survivalism"] }}</output>
-				<input type="button" onclick="survivalismModifier('increase')" class="abilityButton abilityButtonPlus">
-            </li>
-			<li>
-				<input type="button" onclick="vitalityModifier('decrease')" class="abilityButton abilityButtonMinus">
-				<input id="vitalityValue" type="hidden" name="vitalityInput" value="{{ myHero.primary_attributes["Vitality"] }}">
-				<output name="vitalityOutput" id="newVitalityValue">{{ myHero.primary_attributes["Vitality"] }}</output>
-				<input type="button" onclick="vitalityModifier('increase')" class="abilityButton abilityButtonPlus">
-            </li>
-			<li>
-				<input type="button" onclick="wisdomModifier('decrease')" class="abilityButton abilityButtonMinus">
-				<input id="wisdomValue" type="hidden" name="wisdomInput" value="{{ myHero.primary_attributes["Wisdom"] }}">
-				<output name="wisdomOutput" id="newWisdomValue">{{ myHero.primary_attributes["Wisdom"] }}</output>
-				<input type="button" onclick="wisdomModifier('increase')" class="abilityButton abilityButtonPlus">
-            </li>
+			{% for attribute in attribute_form %}
+				<li>
+					<input type="button" onclick="{{ attribute[2] }}Modifier('decrease')" class="abilityButton abilityButtonMinus">
+					<input id="{{ attribute[2] }}Value" type="hidden" name="{{ attribute[2]}}Input" value="{{ attribute[0] }}">
+					<output name="{{ attribute[2] }}Output" id="new{{ attribute[1] }}Value">{{ attribute[0] }}</output>
+					<input type="button" onclick="{{ attribute[2] }}Modifier('increase')" class="abilityButton abilityButtonPlus">
+				</li>
+			{% endfor %}
 		</ul>
 	</div>
 </div>
 
 <div class="profilePage profilePageInfo">
-	<h1><div id="attributeName">Choose An Attribute</div></h1>
-	<p><div id="attributeText">See what it does.</div></p>
+	<h1><div id="attributeName">Attribute</div></h1>
+	<p><div id="attributeText">Description.</div></p>
 </div>
 
 <input class="btn btn-default" type="submit" value="Save" id="level_button">

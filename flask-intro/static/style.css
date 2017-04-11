@@ -184,6 +184,10 @@ ul {
     background-color: Red;
 }
 
+.topbarGlowing {
+  background-color: Blue;
+}
+
 /* Attribute Page */
 
 .profilePage {
@@ -217,6 +221,7 @@ ul {
 
 .profilePageInfo {
   float: right;
+  height: 50%;
 }
 
 .profilePageInfo h1 {
@@ -231,7 +236,7 @@ button.profileText {
     width: 100%
     text-align: left;
     font-family: arial;
-     font-size: 30px;
+    font-size: 30px;
      text-transform: uppercase;
 }
 
