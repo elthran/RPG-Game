@@ -188,46 +188,39 @@ ul {
   background-color: Blue;
 }
 
-/* Top bar added drop-down portion */
+/* Top bar added drop-down portion (used on Ability section) */
 
-.dropbtn {
-    background-color: #4CAF50;
-    color: white;
-    padding: 16px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
+.topbarDropLink li a {
+    display: inline-block;
+    color: Black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
 }
 
-.dropdown {
-    position: relative;
+.topbarDropdownOuter li {
     display: inline-block;
 }
 
-.dropdown-content {
+.topbarDropdownInner {
     display: none;
     position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
+    min-width: 160px;       /* Not Sure what it does */
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);   /* Not Sure what it does */
+    z-index: 1;   /* Not Sure what it does */
+    background-color: Black;
 }
 
-.dropdown-content a {
-    color: black;
+.topbarDropdownInner a {
+    color: Black;
     padding: 12px 16px;
     text-decoration: none;
     display: block;
+    text-align: left;
 }
 
-.dropdown-content a:hover {background-color: #f1f1f1}
-
-.dropdown:hover .dropdown-content {
+.topbarDropdownOuter:hover .topbarDropdownInner {
     display: block;
-}
-
-.dropdown:hover .dropbtn {
-    background-color: #3e8e41;
 }
 
 /* Attribute Page */
