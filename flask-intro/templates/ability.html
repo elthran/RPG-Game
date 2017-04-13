@@ -1,21 +1,9 @@
 <!-- This shows the admin page -->
 
 {% extends "profile_template.html" %}
-{% block block2 %}
+{% block block1 %}
 <!-- This is the ability page IF YOU HAVE UNSPENT points. It let's you learn/upgrade abilities -->
-    {% if ability_pages_learn %}
-      <br>Ability Points: {{ myHero.ability_points }}
-        <div id="content">
-     <div class="nav">
-     <ul>
-       <li><a href=/ability_tree/Basic>Basic Skills</a></li>
-       <li><a href=/ability_tree/Archetype>Archetype Advancements</a></li>
-       <li><a href=/ability_tree/Class>Class Abilities</a></li>
-       <li><a href=/ability_tree/Religious>Religious Blessings</a></li>
-     </ul>
-    </div>
-    </div>
-    
+{% if myHero %}
     <br>Ability Points: {{ myHero.ability_points }}
       <br>Arch Points: {{ myHero.archetype_ability_points }}
       <br>Spec Points: {{ myHero.specialization_ability_points }}

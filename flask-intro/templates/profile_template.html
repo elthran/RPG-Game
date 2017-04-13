@@ -20,12 +20,16 @@
 		{% else %}
 			<li><a href="/proficiencies">Proficiencies</a></li>
 		{% endif %}
-		{% if abilities %}
-			<li><a class="topbarActive" ref="/ability_tree/Basic">Abilities</a></li>
-		{% else %}
-			<li><a href="/ability_tree/Basic">Abilities</a></li>
-		{% endif %}
 	</ul>
+<div class="dropdown">
+<button class="dropbtn">Abilities</button>
+  <div class="dropdown-content">
+    <a href="/ability_tree/Basic">Basic</a>
+    <a href="/ability_tree/Archetype">Archetype</a>
+    <a href="/ability_tree/Class">Class</a>
+    <a href="/ability_tree/Religious">Religious</a>
+  </div>
+</div>
 </div>
 
 {% endblock %}
