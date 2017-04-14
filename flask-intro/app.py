@@ -279,10 +279,8 @@ def attributes():
         myHero.update_secondary_attributes()
         myHero.refresh_character()
         database.update()
-        return render_template('attributes.html', page_title="Attributes", myHero=myHero, attributes=True,
-            attribute_information=attribute_information)
-    return render_template('attributes.html', page_title="Attributes", myHero=myHero, attributes=True,
-        attribute_information=attribute_information)
+        return render_template('attributes.html', page_title="Attributes", myHero=myHero, attribute_information=attribute_information)
+    return render_template('attributes.html', page_title="Attributes", myHero=myHero, attribute_information=attribute_information)
 
 # This gets called anytime you have secondary attribute points to spend
 # Currently I send "proficiencies=True" so that the html knows to highlight the bar and show that you are on this page
@@ -584,23 +582,10 @@ def inventory_page():
 @login_required
 def ability_tree(spec):
     page_title = "Abilities"
-    basic_ability_tree = False
-    archetype_ability_tree = False
-    class_ability_tree = False
-    religious_ability_tree = False
     
     unknown_abilities = []
     learnable_abilities = []
     mastered_abilities = []
-    
-    if spec == "Basic":
-        basic_ability_tree = True
-    elif spec == "Archetype":
-        archetype_ability_tree = True
-    elif spec == "Class":
-        class_ability_tree = True
-    elif spec == "Religious":
-        religious_ability_tree = True
     
     # Create a list of learned abilities that match current spec.  
     for ability in myHero.abilities: 
@@ -628,9 +613,11 @@ def ability_tree(spec):
                         unknown_abilities.append(ability)
                 else:
                     unknown_abilities.append(ability)            
-        return render_template('ability.html', abilities=True, myHero=myHero, ability_pages_learn=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
+        return render_template('ability.html', myHero=myHero, ability_tree=spec, unknown_abilities=unknown_abilities,
+                               learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
         
-    return render_template('ability.html', abilities=True, myHero=myHero, ability_pages_use=True, basic_ability_tree=basic_ability_tree, archetype_ability_tree=archetype_ability_tree, class_ability_tree=class_ability_tree, religious_ability_tree=religious_ability_tree, unknown_abilities=unknown_abilities, learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
+    return render_template('ability.html', myHero=myHero, ability_tree=spec, unknown_abilities=unknown_abilities,
+                           learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
 
 @app.route('/quest_log')
 @login_required

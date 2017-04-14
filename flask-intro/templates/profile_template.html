@@ -8,7 +8,7 @@
 		{% else %}
 			<li><a href="/home">Profile</a></li>
 		{% endif %}
-		{% if attributes %}
+		{% if attribute_information %}
 			<li><a class="topbarActive" href="/attributes">Attributes</a></li>
 		{% elif myHero.attribute_points %}
 			<li><a class="topbarGlowing" href="/attributes">Level Up!</a></li>
@@ -20,14 +20,14 @@
 		{% else %}
 			<li><a href="/proficiencies">Proficiencies</a></li>
 		{% endif %}
-		{% if abilities %}
+		{% if basic_ability_tree %}
 			<li class="topbarDropdownOuter topbarActive">
 		{% else %}
 			<li class="topbarDropdownOuter">
 		{% endif %}
 				<a href="javascript:void(0)" class="topbarDropLink">Abilities</a>
 				<div class="topbarDropdownInner">
-				<a href="/ability_tree/Basic">Basic</a>
+					<a href="/ability_tree/Basic">Basic</a>
 					<a href="/ability_tree/Archetype">Archetype</a>
 					<a href="/ability_tree/Class">Class</a>
 					<a href="/ability_tree/Religious">Religious</a>
