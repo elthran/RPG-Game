@@ -30,10 +30,10 @@ import hashlib
 #For testing!
 import pdb
 
+# INIT AND LOGIN FUNCTIONS
 
 # create the application object
 app = Flask(__name__)
-
 app.secret_key = 'starcraft'
 
 def login_required(f):
@@ -77,225 +77,6 @@ def prevent_url_typing(f):
             flash("You can't access that location from here.")
             return redirect(url_for(f))
     return wrap
-
-# This gets called anytime a button gets clicked in html using
-# <button class="command", value="foo">. "foo" is what gets sent to this
-# Python code.
-@app.route('/<cmd>') # need to make sure this doesn't conflict with other routes
-def command(cmd=None):
-    """Accept a string from HTML button code -> send back a response.
-    
-    The respose must be in the form: "key=value" (at this time.)
-    See the Command class in the commands.py module.
-    cmd is equal to the value of the value field in the html code
-    i.e. <button value='foo'> -> cmd == 'foo'
-    
-    Extra data can be sent in request.args (which is accessible from within this namespace).
-    
-    args are sent in the form "/" + command + "?key=value&&key2=value2".
-    Where the value of command == cmd and
-    args == {key: value, key2: value2} (well it isn't a real dict but it mostly acts like one).
-    
-    Or you could sent the data as a file ... or raw or some XML or something
-    and then parse it on this end based on the headers. But that is more complicated
-    than I need right now.
-    """
-    if cmd == 'favicon.ico':
-        return "success", 200, {'Content-Type': 'text/plain'}
-    
-    testing = True
-    if testing:
-        print('request is:', repr(request))
-        # print('request data:', repr(request.data))
-        # print("request form:", repr(request.form))
-        print('request view_args:', repr(request.view_args))
-        print('request args:', repr(request.args))
-        print('cmd is:', repr(cmd))
-        
-    # event = dict(request.args)
-    # event.add["hero"] = myHero
-    # event.add["database"] = database
-
-    try:
-        response = Command.cmd_functions[cmd](myHero, database=database, arg_dict=request.args)
-        database.update()
-        # pdb.set_trace()
-        return response
-    except KeyError as ex:
-        print("Warning: invalid key {}".format(ex))
-        print("Valid keys are: {}".format(list(Command.cmd_functions.keys())))
-        # Look in the not yet refractored list of if statemens ...
-        
-    if cmd == "woodsman":
-        myHero.archetype = "Woodsman"
-        return "success", 200, {'Content-Type': 'text/plain'} #//
-    if cmd == "priest":
-        myHero.archetype = "Priest"
-        return "success", 200, {'Content-Type': 'text/plain'} #//
-    if cmd == "hunter":
-        myHero.specialization = "Hunter"
-        return "success", 200, {'Content-Type': 'text/plain'} #//
-    if cmd == "trapper":
-        myHero.specialization = "Trapper"
-        return "success", 200, {'Content-Type': 'text/plain'} #//
-    # END OF TEST CODE
-    
-    for item in myHero.inventory:
-        if cmd == item.name:
-            if item.wearable:            # EQUIP ITEMS
-                equipped_items_to_remove = []
-                for equipped_item in myHero.equipped_items:
-                    if type(item) is Weapon:
-                        if item.two_handed_weapon and (equipped_item.shield or equipped_item.one_handed_weapon):
-                            equipped_items_to_remove.append(equipped_item)
-                            myHero.inventory.append(equipped_item)
-                        if item.one_handed_weapon and equipped_item.two_handed_weapon:
-                            equipped_items_to_remove.append(equipped_item)
-                            myHero.inventory.append(equipped_item)
-                        if item.shield and equipped_item.two_handed_weapon:
-                            equipped_items_to_remove.append(equipped_item)
-                            myHero.inventory.append(equipped_item)
-                    if type(equipped_item) is type(item):
-                        equipped_items_to_remove.append(equipped_item)
-                        myHero.inventory.append(equipped_item)
-                myHero.equipped_items = [x for x in myHero.equipped_items if x not in equipped_items_to_remove] # deletes the items in equipped_items_to_remove from myHero.equipped_items
-                myHero.equipped_items.append(item)
-                myHero.inventory.remove(item)
-                myHero.update_secondary_attributes()
-                for path in myHero.quest_paths:
-                    if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 1:
-                        path.quest.advance_quest()
-                return "success", 200, {'Content-Type': 'text/plain'} #//
-            if item.consumable == True:                # CONSUME ITEMS
-                myHero.consume_item(item.name)
-                return "success", 200, {'Content-Type': 'text/plain'} #//
-
-    # UNEQUIP ITEMS
-    for item in myHero.equipped_items:
-        if cmd == item.name:
-            myHero.inventory.append(item)
-            myHero.equipped_items.remove(item)
-            myHero.update_secondary_attributes()
-            for path in myHero.quest_paths:
-                    if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 2:
-                        path.quest.advance_quest()
-            return "success", 200, {'Content-Type': 'text/plain'} #//
-
-    # UPGRADE ABILITIES
-    learnable_known_abilities = [ability for ability in myHero.abilities if ability.level < ability.max_level]
-    for ability in learnable_known_abilities:
-        if cmd == ability.name and  myHero.ability_points > 0:
-            for i in range(0,len(myHero.abilities)):
-                if myHero.abilities[i].name == ability.name:
-                    myHero.abilities[i].level += 1
-                    myHero.abilities[i].update_display()
-                    myHero.ability_points -= 1
-            myHero.update_secondary_attributes()
-            database.update()
-            return "success", 200, {'Content-Type': 'text/plain'} #//
-
-    # LEARN NEW ABILITIES
-    unknown_abilities = []
-    for ability in database.get_all_abilities():
-        if ability not in myHero.abilities:
-            unknown_abilities.append(ability)
-    for ability in unknown_abilities:
-        if cmd == ability.name and myHero.ability_points > 0:
-            myHero.abilities.append(ability)
-            myHero.update_secondary_attributes()
-            myHero.ability_points -= 1
-            database.update()
-            return "success", 200, {'Content-Type': 'text/plain'} #//
-
-    #USE ABILITIES (ACTIVATED ONES)
-    for ability in myHero.abilities:
-        this_command = ability.name + "_use"
-        if cmd == this_command:
-            ability.cast(myHero)
-            database.update()
-            return "success", 200, {'Content-Type': 'text/plain'} #//
-
-
-    # BUY FROM MARKETPLACE
-    for item in database.get_all_marketplace_items():
-        if cmd == item.buy_name and myHero.gold >= item.buy_price:
-            for my_item in myHero.inventory:
-                if my_item.name == item.name:
-                    my_item.amount_owned += 1
-                    break
-            else:
-                newItem = item
-                newItem.update_owner(myHero)
-                myHero.inventory.append(newItem)
-                newItem.amount_owned = 1
-            myHero.gold -= item.buy_price
-            return "success", 200, {'Content-Type': 'text/plain'} #//
-
-    return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
-
-#Consider moving to command code ... 
-#I don't know how to access cmd POST method? To send the form data?
-
-# This gets called anytime you have secondary attribute points to spend
-# Currently I send "attributes=True" so that the html knows to highlight the bar and show that you are on this page
-@app.route('/attributes', methods=['GET', 'POST'])
-@login_required
-def attributes():
-    #Obviously this is a shitty way to do this, but I'm not sure where else to store this
-    #information for now. Probably as part of the hero class so it's easily sent to each html file.
-    #Or some global table that we send to each html file with the hero.
-    
-    #Possibly update the PrimaryAttribute table and add in a "description"?
-    #Would require some restructuring.
-    attribute_information = [("Agility", "A measure of how agile a character is. Dexterity controls attack and movement speed and accuracy, as well as evading an opponent's attack ."),
-                             ("Charisma", "A measure of a character's social skills, and sometimes their physical appearance."),
-                             ("Divinity", "A measure of a character's common sense and/or spirituality."),
-                             ("Fortitude", "A measure of how resilient a character is."),
-                             ("Fortuity", "A measure of a character's luck. "),
-                             ("Perception", "A measure of a character's openness to their surroundings."),
-                             ("Reflexes", "A measure of how agile a character is. "),
-                             ("Resilience", "A measure of how resilient a character is. "),
-                             ("Strength", "A measure of how physically strong a character is. "),
-                             ("Survivalism", "A measure of a character's openness to their surroundings. "),
-                             ("Vitality", "A measure of how sturdy a character is."),
-                             ("Wisdom", "A measure of a character's problem-solving ability.")]
-    
-    #Fix single quotes in string bug when converting from JS to HTML
-    #Python to Jinja to HTML to JS needs separate fix.
-    for index, data in enumerate(attribute_information):
-        attribute, description = data
-        attribute_information[index] = attribute, description.replace("'", "\\'")
-
-    if request.method == 'POST':
-        points_spent = 0
-        for element in request.form:
-            form_value = int(request.form[element])
-            attribute = element[0:-5].title() #Convert name e.g. agilityInput becomes Agility.
-            points_spent += form_value - myHero.primary_attributes[attribute]
-            myHero.primary_attributes[attribute] = form_value
-        
-        myHero.attribute_points -= points_spent
-
-        myHero.update_secondary_attributes()
-        myHero.refresh_character()
-        database.update()
-        return render_template('attributes.html', page_title="Attributes", myHero=myHero, attribute_information=attribute_information)
-    return render_template('attributes.html', page_title="Attributes", myHero=myHero, attribute_information=attribute_information)
-
-# This gets called anytime you have secondary attribute points to spend
-# Currently I send "proficiencies=True" so that the html knows to highlight the bar and show that you are on this page
-@app.route('/proficiencies', methods=['GET', 'POST'])
-@login_required
-def proficiencies():
-    if request.method == 'POST':
-        myHero.attack_speed_skill += convert_input(request.form["attack_speed"])
-        secondary_points_being_spent = convert_input(request.form["attack_speed"])
-        myHero.secondary_attribute_points -= secondary_points_being_spent
-        myHero.update_secondary_attributes()
-        myHero.refresh_character()
-        database.update()
-        return render_template('proficiencies.html', page_title="Proficiencies", myHero=myHero, proficiencies=True)
-    return render_template('proficiencies.html', page_title="Proficiencies", myHero=myHero, proficiencies=True)
 
 # use decorators to link the function to a url
 # route for handling the login page logic
@@ -414,76 +195,6 @@ def create_character():
         database.update()
         return render_template('create_character.html', page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, conversation=conversation, display=display)  # render a template
 
-# this gets called if you fight in the arena
-@app.route('/battle')
-@login_required
-def battle():
-    required_endurance = 1 # T
-
-    page_title = "Battle"
-    page_heading = "Fighting"
-    print("running function: battle2")
-
-    page_links = [("Return to your ","home","profile"," page.")]
-    if myHero.current_endurance < required_endurance:
-        page_title = "Battle"
-        page_heading = "Not enough endurance, wait a bit!"
-        return render_template('layout.html', page_title=page_title, myHero=myHero, page_heading=page_heading, page_links=page_links)
-
-    myHero.current_health,game.enemy.current_health,battle_log,battle_results = battle_logic(myHero,game.enemy)
-    if myHero.current_health == 0:
-        myHero.current_endurance -= required_endurance
-        page_title = "Defeat!"
-        page_heading = "You have died."
-    else:
-        myHero.current_endurance -= required_endurance
-        for item in myHero.equipped_items:
-            item.durability -= 1
-            if item.durability <= 0:
-                item.broken = True
-        newMonster = True
-        """
-        for key, value in myHero.kill_quests.items():
-            if key == game.enemy.species:
-                myHero.kill_quests[key] += 1
-                if myHero.kill_quests[key] == 2:
-                    for achievement in myHero.completed_achievements:
-                        if achievement[0] == "Kill a " + game.enemy.species:
-                            myHero.completed_achievements.remove(achievement)
-                            break
-                    myHero.completed_achievements.append(("Kill two " + game.enemy.species_plural, "10"))
-                    myHero.current_exp += 10
-                newMonster = False
-                break
-        """
-        if newMonster:
-            #myHero.kill_quests[game.enemy.species] = 1
-            myHero.completed_achievements.append(("Kill a " + game.enemy.species, "5"))
-            for monster in bestiary_data:
-                if monster.name == game.enemy.name:
-                    myHero.bestiary.append(monster)
-            myHero.current_exp += 5
-        game.has_enemy = False
-        myHero.current_exp += game.enemy.experience_rewarded * myHero.experience_gain_modifier
-        if len(game.enemy.items_rewarded) > 0:
-            for item in game.enemy.items_rewarded:
-                if not any(items.name == item.name for items in myHero.inventory):
-                    myHero.inventory.append(item)
-                else:
-                    for items in myHero.inventory:
-                        if items.name == item.name:
-                            items.amount_owned += 1
-        level_up = myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
-        page_title = "Victory!"
-        page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience!"
-        page_links = [("Compete in the ","/arena","arena","."), ("Go back to the ","/barracks","barracks","."), ("Return to your ","/home","profile"," page.")]
-        if level_up:
-            page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience. You have leveled up! You should return to your profile page to advance in skill."
-            page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
-
-    database.update()
-    return render_template('battle.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log, battle_results=battle_results, myHero=myHero, enemy=game.enemy, page_links=page_links)  # return a string
-
 # this is a temp button that can call this to erase your chracter information and redirect you to the create character page
 @app.route('/reset_character')
 @login_required
@@ -540,7 +251,8 @@ def display_user_page():
 	users = database.session.query(User).order_by(User.id).all()
 	return render_template('users.html', myHero=myHero, users=users)
 
-### PROFILE/DISPLAY FUNCTIONS
+### PROFILE PAGES (Basically the home page of the game with your character display and stats)
+    
 @app.route('/home')
 @login_required
 def home():
@@ -567,16 +279,68 @@ def home():
     # If it's a new character, send them to cerate_character url
     if myHero.character_name == None:
         return redirect(url_for('create_character'))
-    return render_template('profile.html', page_title="Profile", myHero=myHero, profile=True)  # return a string'
+    return render_template('profile_home.html', page_title="Profile", myHero=myHero, profile=True)  # return a string'
 
-@app.route('/inventory_page')
+# This gets called anytime you have secondary attribute points to spend
+# Currently I send "attributes=True" so that the html knows to highlight the bar and show that you are on this page
+@app.route('/attributes', methods=['GET', 'POST'])
 @login_required
-def inventory_page():
-    page_title = "Inventory"
-    # for item in myHero.inventory:
-        # if item.wearable:
-            # item.check_if_improvement()
-    return render_template('inventory.html', myHero=myHero, page_title=page_title)  # return a string
+def attributes():
+    #Obviously this is a shitty way to do this, but I'm not sure where else to store this
+    #information for now. Probably as part of the hero class so it's easily sent to each html file.
+    #Or some global table that we send to each html file with the hero.
+    
+    #Possibly update the PrimaryAttribute table and add in a "description"?
+    #Would require some restructuring.
+    attribute_information = [("Agility", "A measure of how agile a character is. Dexterity controls attack and movement speed and accuracy, as well as evading an opponent's attack ."),
+                             ("Charisma", "A measure of a character's social skills, and sometimes their physical appearance."),
+                             ("Divinity", "A measure of a character's common sense and/or spirituality."),
+                             ("Fortitude", "A measure of how resilient a character is."),
+                             ("Fortuity", "A measure of a character's luck. "),
+                             ("Perception", "A measure of a character's openness to their surroundings."),
+                             ("Reflexes", "A measure of how agile a character is. "),
+                             ("Resilience", "A measure of how resilient a character is. "),
+                             ("Strength", "A measure of how physically strong a character is. "),
+                             ("Survivalism", "A measure of a character's openness to their surroundings. "),
+                             ("Vitality", "A measure of how sturdy a character is."),
+                             ("Wisdom", "A measure of a character's problem-solving ability.")]
+    
+    #Fix single quotes in string bug when converting from JS to HTML
+    #Python to Jinja to HTML to JS needs separate fix.
+    for index, data in enumerate(attribute_information):
+        attribute, description = data
+        attribute_information[index] = attribute, description.replace("'", "\\'")
+
+    if request.method == 'POST':
+        points_spent = 0
+        for element in request.form:
+            form_value = int(request.form[element])
+            attribute = element[0:-5].title() #Convert name e.g. agilityInput becomes Agility.
+            points_spent += form_value - myHero.primary_attributes[attribute]
+            myHero.primary_attributes[attribute] = form_value
+        
+        myHero.attribute_points -= points_spent
+
+        myHero.update_secondary_attributes()
+        myHero.refresh_character()
+        database.update()
+        return render_template('profile_attributes.html', page_title="Attributes", myHero=myHero, attribute_information=attribute_information)
+    return render_template('profile_attributes.html', page_title="Attributes", myHero=myHero, attribute_information=attribute_information)
+
+# This gets called anytime you have secondary attribute points to spend
+# Currently I send "proficiencies=True" so that the html knows to highlight the bar and show that you are on this page
+@app.route('/proficiencies', methods=['GET', 'POST'])
+@login_required
+def proficiencies():
+    if request.method == 'POST':
+        myHero.attack_speed_skill += convert_input(request.form["attack_speed"])
+        secondary_points_being_spent = convert_input(request.form["attack_speed"])
+        myHero.secondary_attribute_points -= secondary_points_being_spent
+        myHero.update_secondary_attributes()
+        myHero.refresh_character()
+        database.update()
+        return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero, proficiencies=True)
+    return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero, proficiencies=True)
 
 @app.route('/ability_tree/<spec>')
 @login_required
@@ -613,11 +377,20 @@ def ability_tree(spec):
                         unknown_abilities.append(ability)
                 else:
                     unknown_abilities.append(ability)            
-        return render_template('ability.html', myHero=myHero, ability_tree=spec, unknown_abilities=unknown_abilities,
+        return render_template('profile_ability.html', myHero=myHero, ability_tree=spec, unknown_abilities=unknown_abilities,
                                learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
         
-    return render_template('ability.html', myHero=myHero, ability_tree=spec, unknown_abilities=unknown_abilities,
+    return render_template('profile_ability.html', myHero=myHero, ability_tree=spec, unknown_abilities=unknown_abilities,
                            learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
+
+@app.route('/inventory_page')
+@login_required
+def inventory_page():
+    page_title = "Inventory"
+    # for item in myHero.inventory:
+        # if item.wearable:
+            # item.check_if_improvement()
+    return render_template('inventory.html', myHero=myHero, page_title=page_title)  # return a string
 
 @app.route('/quest_log')
 @login_required
@@ -820,6 +593,76 @@ def arena():
     page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
     return render_template('building_default.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, enemy_info=conversation)  # return a string
 
+# this gets called if you fight in the arena
+@app.route('/battle')
+@login_required
+def battle():
+    required_endurance = 1 # T
+
+    page_title = "Battle"
+    page_heading = "Fighting"
+    print("running function: battle2")
+
+    page_links = [("Return to your ","home","profile"," page.")]
+    if myHero.current_endurance < required_endurance:
+        page_title = "Battle"
+        page_heading = "Not enough endurance, wait a bit!"
+        return render_template('layout.html', page_title=page_title, myHero=myHero, page_heading=page_heading, page_links=page_links)
+
+    myHero.current_health,game.enemy.current_health,battle_log,battle_results = battle_logic(myHero,game.enemy)
+    if myHero.current_health == 0:
+        myHero.current_endurance -= required_endurance
+        page_title = "Defeat!"
+        page_heading = "You have died."
+    else:
+        myHero.current_endurance -= required_endurance
+        for item in myHero.equipped_items:
+            item.durability -= 1
+            if item.durability <= 0:
+                item.broken = True
+        newMonster = True
+        """
+        for key, value in myHero.kill_quests.items():
+            if key == game.enemy.species:
+                myHero.kill_quests[key] += 1
+                if myHero.kill_quests[key] == 2:
+                    for achievement in myHero.completed_achievements:
+                        if achievement[0] == "Kill a " + game.enemy.species:
+                            myHero.completed_achievements.remove(achievement)
+                            break
+                    myHero.completed_achievements.append(("Kill two " + game.enemy.species_plural, "10"))
+                    myHero.current_exp += 10
+                newMonster = False
+                break
+        """
+        if newMonster:
+            #myHero.kill_quests[game.enemy.species] = 1
+            myHero.completed_achievements.append(("Kill a " + game.enemy.species, "5"))
+            for monster in bestiary_data:
+                if monster.name == game.enemy.name:
+                    myHero.bestiary.append(monster)
+            myHero.current_exp += 5
+        game.has_enemy = False
+        myHero.current_exp += game.enemy.experience_rewarded * myHero.experience_gain_modifier
+        if len(game.enemy.items_rewarded) > 0:
+            for item in game.enemy.items_rewarded:
+                if not any(items.name == item.name for items in myHero.inventory):
+                    myHero.inventory.append(item)
+                else:
+                    for items in myHero.inventory:
+                        if items.name == item.name:
+                            items.amount_owned += 1
+        level_up = myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
+        page_title = "Victory!"
+        page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience!"
+        page_links = [("Compete in the ","/arena","arena","."), ("Go back to the ","/barracks","barracks","."), ("Return to your ","/home","profile"," page.")]
+        if level_up:
+            page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience. You have leveled up! You should return to your profile page to advance in skill."
+            page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
+
+    database.update()
+    return render_template('battle.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log, battle_results=battle_results, myHero=myHero, enemy=game.enemy, page_links=page_links)  # return a string
+
 #A.k.a "Blacksmith"
 @app.route('/store/<inventory>')
 @login_required
@@ -950,6 +793,161 @@ def leave_town():
 
 ### END OF STARTING TOWN FUNCTIONS
 
+# This gets called anytime a button gets clicked in html using
+# <button class="command", value="foo">. "foo" is what gets sent to this
+# Python code.
+@app.route('/<cmd>') # need to make sure this doesn't conflict with other routes
+def command(cmd=None):
+    """Accept a string from HTML button code -> send back a response.
+    
+    The respose must be in the form: "key=value" (at this time.)
+    See the Command class in the commands.py module.
+    cmd is equal to the value of the value field in the html code
+    i.e. <button value='foo'> -> cmd == 'foo'
+    
+    Extra data can be sent in request.args (which is accessible from within this namespace).
+    
+    args are sent in the form "/" + command + "?key=value&&key2=value2".
+    Where the value of command == cmd and
+    args == {key: value, key2: value2} (well it isn't a real dict but it mostly acts like one).
+    
+    Or you could sent the data as a file ... or raw or some XML or something
+    and then parse it on this end based on the headers. But that is more complicated
+    than I need right now.
+    """
+    if cmd == 'favicon.ico':
+        return "success", 200, {'Content-Type': 'text/plain'}
+    
+    testing = True
+    if testing:
+        print('request is:', repr(request))
+        # print('request data:', repr(request.data))
+        # print("request form:", repr(request.form))
+        print('request view_args:', repr(request.view_args))
+        print('request args:', repr(request.args))
+        print('cmd is:', repr(cmd))
+        
+    # event = dict(request.args)
+    # event.add["hero"] = myHero
+    # event.add["database"] = database
+
+    try:
+        response = Command.cmd_functions[cmd](myHero, database=database, arg_dict=request.args)
+        database.update()
+        # pdb.set_trace()
+        return response
+    except KeyError as ex:
+        print("Warning: invalid key {}".format(ex))
+        print("Valid keys are: {}".format(list(Command.cmd_functions.keys())))
+        # Look in the not yet refractored list of if statemens ...
+        
+    if cmd == "woodsman":
+        myHero.archetype = "Woodsman"
+        return "success", 200, {'Content-Type': 'text/plain'} #//
+    if cmd == "priest":
+        myHero.archetype = "Priest"
+        return "success", 200, {'Content-Type': 'text/plain'} #//
+    if cmd == "hunter":
+        myHero.specialization = "Hunter"
+        return "success", 200, {'Content-Type': 'text/plain'} #//
+    if cmd == "trapper":
+        myHero.specialization = "Trapper"
+        return "success", 200, {'Content-Type': 'text/plain'} #//
+    # END OF TEST CODE
+    
+    for item in myHero.inventory:
+        if cmd == item.name:
+            if item.wearable:            # EQUIP ITEMS
+                equipped_items_to_remove = []
+                for equipped_item in myHero.equipped_items:
+                    if type(item) is Weapon:
+                        if item.two_handed_weapon and (equipped_item.shield or equipped_item.one_handed_weapon):
+                            equipped_items_to_remove.append(equipped_item)
+                            myHero.inventory.append(equipped_item)
+                        if item.one_handed_weapon and equipped_item.two_handed_weapon:
+                            equipped_items_to_remove.append(equipped_item)
+                            myHero.inventory.append(equipped_item)
+                        if item.shield and equipped_item.two_handed_weapon:
+                            equipped_items_to_remove.append(equipped_item)
+                            myHero.inventory.append(equipped_item)
+                    if type(equipped_item) is type(item):
+                        equipped_items_to_remove.append(equipped_item)
+                        myHero.inventory.append(equipped_item)
+                myHero.equipped_items = [x for x in myHero.equipped_items if x not in equipped_items_to_remove] # deletes the items in equipped_items_to_remove from myHero.equipped_items
+                myHero.equipped_items.append(item)
+                myHero.inventory.remove(item)
+                myHero.update_secondary_attributes()
+                for path in myHero.quest_paths:
+                    if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 1:
+                        path.quest.advance_quest()
+                return "success", 200, {'Content-Type': 'text/plain'} #//
+            if item.consumable == True:                # CONSUME ITEMS
+                myHero.consume_item(item.name)
+                return "success", 200, {'Content-Type': 'text/plain'} #//
+
+    # UNEQUIP ITEMS
+    for item in myHero.equipped_items:
+        if cmd == item.name:
+            myHero.inventory.append(item)
+            myHero.equipped_items.remove(item)
+            myHero.update_secondary_attributes()
+            for path in myHero.quest_paths:
+                    if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 2:
+                        path.quest.advance_quest()
+            return "success", 200, {'Content-Type': 'text/plain'} #//
+
+    # UPGRADE ABILITIES
+    learnable_known_abilities = [ability for ability in myHero.abilities if ability.level < ability.max_level]
+    for ability in learnable_known_abilities:
+        if cmd == ability.name and  myHero.ability_points > 0:
+            for i in range(0,len(myHero.abilities)):
+                if myHero.abilities[i].name == ability.name:
+                    myHero.abilities[i].level += 1
+                    myHero.abilities[i].update_display()
+                    myHero.ability_points -= 1
+            myHero.update_secondary_attributes()
+            database.update()
+            return "success", 200, {'Content-Type': 'text/plain'} #//
+
+    # LEARN NEW ABILITIES
+    unknown_abilities = []
+    for ability in database.get_all_abilities():
+        if ability not in myHero.abilities:
+            unknown_abilities.append(ability)
+    for ability in unknown_abilities:
+        if cmd == ability.name and myHero.ability_points > 0:
+            myHero.abilities.append(ability)
+            myHero.update_secondary_attributes()
+            myHero.ability_points -= 1
+            database.update()
+            return "success", 200, {'Content-Type': 'text/plain'} #//
+
+    #USE ABILITIES (ACTIVATED ONES)
+    for ability in myHero.abilities:
+        this_command = ability.name + "_use"
+        if cmd == this_command:
+            ability.cast(myHero)
+            database.update()
+            return "success", 200, {'Content-Type': 'text/plain'} #//
+
+
+    # BUY FROM MARKETPLACE
+    for item in database.get_all_marketplace_items():
+        if cmd == item.buy_name and myHero.gold >= item.buy_price:
+            for my_item in myHero.inventory:
+                if my_item.name == item.name:
+                    my_item.amount_owned += 1
+                    break
+            else:
+                newItem = item
+                newItem.update_owner(myHero)
+                myHero.inventory.append(newItem)
+                newItem.amount_owned = 1
+            myHero.gold -= item.buy_price
+            return "success", 200, {'Content-Type': 'text/plain'} #//
+
+    return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
+
 ###testing by Marlen ####
 @app.route('/')
 def main():
@@ -958,9 +956,6 @@ def main():
     Currently the login page.
     """
     return redirect(url_for('login'))
-
-
-
 
 # start the server with the 'run()' method
 if __name__ == '__main__':
