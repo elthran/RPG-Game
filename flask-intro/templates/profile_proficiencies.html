@@ -1,0 +1,51 @@
+{% extends "profile_template.html" %}
+{% block block1 %}
+<!-- Basic Skill Page -->
+<form method="post" class="level_up_form">
+    <div class="profilePage">
+        Points Remaining:<output type="text" name="total" id="pointsRemaining" value="{{ myHero.secondary_attribute_points }}"/> {{ myHero.secondary_attribute_points }}</output>
+    </div>
+    <div style="clear: both;"></div>
+    <div class="proficiencyPage">
+		<div class="proficiencyPageInner">
+			<h1>Offense</h1>
+			<ul>
+				<li>Damage: {{ myHero.minimum_damage }}-{{ myHero.maximum_damage }}</li>
+				<li>Accuracy: {{ myHero.attack_accuracy }}%</li>
+				<li>Attack Speed: {{ myHero.attack_speed }}%</li>
+				<li>Critical Hit: {{ myHero.critical_hit_modifier }}%</li>
+			</ul>
+		</div>
+		<div class="proficiencyPageInner">
+			<h1>Defence</h1>
+			<ul>
+				<li>Damage Reduction: {{ myHero.defence_modifier }}%</li>
+				<li>Evasion: {{ myHero.evade_chance }}%</li>
+				<li>Parry: {{ myHero.parry_chance }}%</li>
+			</ul>
+			<h1>Stealth</h1>
+			<ul>
+				<li>Concealment: {{ myHero.stealth_skill }}%</li>
+				<li>Thievery: {{ myHero.stealth_skill }}%</li>
+			</ul>
+		</div>
+		<div class="proficiencyPageInner">
+			<h1>Diplomacy</h1>
+			<ul>
+				<li>Oration: {{ myHero.oration }}%</li>
+				<li>Bartering: {{ myHero.barter }}%</li>
+			</ul>
+			<h1>Divinity</h1>
+			<ul>
+				<li>Faith: {{ myHero.faith }}%</li>
+				<li>Sanctity: {{ myHero.max_sanctity }}%</li>
+			</ul>
+			{% if myHero.secondary_attribute_points %}
+				<input class="btn btn-default submitButton" type="submit" value="Save" id="level_button">
+			{% endif %}
+		</div>
+    </div>	
+	<div style="clear: both;"></div>
+</form>
+
+{% endblock %}

@@ -271,7 +271,7 @@ class Hero(Base):
         self.min_damage = update_minimum_damage(self)
         self.minimum_damage = self.min_damage #Synonym for min_damage
         self.attack_speed = update_attack_speed(self)
-        self.attack_accuracy = update_attack_accuracy(self)
+        self.attack_accuracy = update_attack_accuracy(self) # Should also have a related attribute of increasing critical hit %
         self.first_strike = update_first_strike_chance(self)
         self.critical_hit_chance = update_critical_hit_chance(self)
         self.critical_hit_modifier = update_critical_hit_modifier(self)

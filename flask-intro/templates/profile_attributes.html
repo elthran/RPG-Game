@@ -1,0 +1,80 @@
+{% extends "profile_template.html" %}
+{% block block2 %}
+
+<!-- Basic Skill Page -->
+
+<script type="text/javascript">
+function changeAttributeBox(new_name, new_content) {
+    "use strict";
+    document.getElementById("attributeText").innerHTML = new_content;
+    document.getElementById("attributeName").innerHTML = new_name;
+}
+
+var remainingPoints = {{ myHero.attribute_points }};
+
+// Mixed Jinja2 with JS ... kind of hard to read.
+// If you want the pure code go to the web page and view page source.
+// This is only possible because of the clean and symetric code written before.
+{% for attribute, attributeValue in myHero.primary_attributes.items() %}
+    var {{ attribute.lower() }}Value = {{ attributeValue }};
+    function {{ attribute.lower() }}Modifier(modifier) {
+        "use strict";
+        {{ attribute.lower() }}Value = isNaN({{ attribute.lower() }}Value)
+            ? 0
+            : {{ attribute.lower() }}Value;
+        if (modifier === "increase" && remainingPoints > 0) {
+            {{ attribute.lower() }}Value += 1;
+            document.getElementById("new{{ attribute }}Value").style.color = "green";
+            remainingPoints -= 1;
+        } else if (modifier === "decrease" && {{ attribute.lower() }}Value > {{ attributeValue }}) {
+            {{ attribute.lower() }}Value -= 1;
+            remainingPoints += 1;
+            if ({{ attribute.lower() }}Value === {{ attributeValue }}) {
+                document.getElementById("new{{ attribute }}Value").style.color = "white";
+            }
+        }
+        // This updates the value sent to python
+        document.getElementById("{{ attribute.lower() }}Value").value = {{ attribute.lower() }}Value;
+        // This updates the value that the user sees in HTML
+        document.getElementById("new{{ attribute }}Value").value = {{ attribute.lower() }}Value;
+        document.getElementById("pointsRemaining").value = remainingPoints;
+    }
+{% endfor %}
+</script>
+
+<form method="post" class="level_up_form">
+    <div class="profilePage">
+        Points Remaining:<output type="text" name="total" id="pointsRemaining" value="{{ myHero.attribute_points }}"/> {{ myHero.attribute_points }}</output>
+    </div>
+    {% if myHero.attribute_points %}
+        <input class="btn btn-default submitButton" type="submit" value="Save" id="level_button">
+    {% endif %}
+    <div style="clear: both;"></div>
+    <div class="profilePage">
+        <div class="profilePageAttributes">
+            <ul>
+                {% for attribute in attribute_information %}
+                    <li><button type="button" class="profileText" onclick="changeAttributeBox('{{ attribute[0] }}', '{{ attribute[1] | safe }}')">{{ attribute[0] }}:</button></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="profilePageValues">
+            <ul>
+                {% for attribute, value in myHero.primary_attributes.items() %}
+                    <li>
+                        <input type="button" onclick="{{ attribute.lower() }}Modifier('decrease')" class="abilityButton abilityButtonMinus">
+                        <input id="{{ attribute.lower() }}Value" type="hidden" name="{{ attribute.lower() }}Input" value="{{ value }}">
+                        <output name="{{ attribute.lower() }}Output" id="new{{ attribute }}Value">{{ value }}</output>
+                        <input type="button" onclick="{{ attribute.lower() }}Modifier('increase')" class="abilityButton abilityButtonPlus">
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="profilePage profilePageInfo">
+        <h1><div id="attributeName">Attribute</div></h1>
+        <p><div id="attributeText">Description.</div></p>
+    </div>
+</form>
+
+{% endblock %}

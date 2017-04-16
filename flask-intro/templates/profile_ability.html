@@ -1,0 +1,35 @@
+{% extends "profile_template.html" %}
+{% block block1 %}
+<!-- This is the ability page. It let's you learn/upgrade abilities -->
+     <h1 style="text-align:center;">Abilities</h1>
+    {% if ability_tree == "Archetype" %}
+		Archetype Points: {{ myHero.archetype_ability_points }}<br><br>
+		Choose Archetype (Currently {{ myHero.archetype }}): <button class="command command-woodsman" value="woodsman">Woodsman</button><button class="command command-priest" value="priest">Priest</button><br> You are a <b>{{ myHero.archetype }}</b>
+	{% elif ability_tree == "Class" %}
+		Class Points: {{ myHero.ability_points }}<br><br>
+		Choose Specialization (Currently {{ myHero.specialization }}): <button class="command command-hunter" value="hunter">Hunter</button><button class="command command-trapper" value="trapper">Trapper</button><br> Your class is <b>{{ myHero.specialization }}</b>
+	{% elif ability_tree == "Religion" %}
+		Religious Points: {{ myHero.pantheonic_ability_points }}<br><br>
+		Choose Religion (Currently <span id="hero_religion">{{ myHero.religion }}</span>): <button class="command command-forgoth" value="choose_religion?">Forgoth</button><button class="command command-dryarch" value="choose_religion?">Dryarch</button>
+		<br> You are a follower of <b><span id="hero_religion">{{ myHero.religion }}</span></b>
+	{% else %}
+		Ability Points: {{ myHero.basic_ability_points }}<br><br>
+	{% endif %}
+	
+	
+	
+      <h2 style="text-align:left;">Unknown</h2>
+        {% for ability in unknown_abilities %}
+          <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.display_name }}: {{ ability.description }}">{{ ability.name }}</button><img src="/static/images/0.jpg" alt="?" style="width:25px;height:25px;"> {{ ability.description }}<br>
+        {% endfor %}
+      <h2 style="text-align:left;">Known</h2>
+        {% for ability in learnable_abilities %}
+          <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.learn_name }}: {{ ability.description }}">{{ ability.name }}</button><img src="/static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;"> {{ ability.description }}<br>
+        {% endfor %}
+      <h2 style="text-align:left;">Mastered</h2>
+        {% for ability in mastered_abilities %}
+          <img src="/static/images/{{ ability.name }}.jpg"; height:70px; width:70px"><img src="/static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;"> {{ ability.description }}<br>
+        {% endfor %}
+
+{% endblock %}
+

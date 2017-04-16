@@ -306,6 +306,30 @@ input.abilityButtonMinus {
     float: left;
 }
 
+/* Proficiency Page */
+
+.proficiencyPage {
+     font-family: arial;
+     font-size: 30px;
+     margin: 5px;
+     border: 5px Double Black;  
+     width: 1400px;
+     height: 1000px;
+     background-color: Green;
+     color: white;
+     line-height: 35px;
+     overflow-x: scroll;  /* Makes sure that if the screen is too small, you can scroll to the right instead of chopping up the page */
+}
+
+.proficiencyPageInner {
+    margin: 1%;
+    width: 30%;
+    height: 90%;
+    border: 5px Double Black;
+    float: left;
+    background-color: Grey
+}
+
 /* The % full bars used in the game */
 
 .progressBar { 
