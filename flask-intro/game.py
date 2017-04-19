@@ -149,6 +149,14 @@ class Hero(Base):
     proficiency_bartering = Column(Integer)
     proficiency_oration = Column(Integer)
     proficiency_knowledge = Column(Integer)
+
+    proficiency_resist_frost = Column(Integer)
+    proficiency_resist_flame = Column(Integer)
+    proficiency_resist_shadow = Column(Integer)
+    proficiency_resist_holy = Column(Integer)
+    proficiency_resist_blunt = Column(Integer)
+    proficiency_resist_slashing = Column(Integer)
+    proficiency_resist_piercing = Column(Integer)
     
     
     ability_points= Column(Integer)
@@ -224,6 +232,14 @@ class Hero(Base):
         self.proficiency_bartering = 0
         self.proficiency_oration = 0
         self.proficiency_knowledge = 0
+
+        self.proficiency_resist_frost = 0
+        self.proficiency_resist_flame = 0
+        self.proficiency_resist_shadow = 0
+        self.proficiency_resist_holy = 0
+        self.proficiency_resist_blunt = 0
+        self.proficiency_resist_slashing = 0
+        self.proficiency_resist_piercing = 0
                 
         self.health_percent = 0
         self.sanctity_percent = 0
