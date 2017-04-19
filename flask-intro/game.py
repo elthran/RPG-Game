@@ -131,6 +131,25 @@ class Hero(Base):
     health_percent = Column(Integer)
     sanctity_percent = Column(Integer)
     endurance_percent = Column(Integer)
+
+    # Jacob added the new "secondary attributes"
+    proficiency_attack_damage = Column(Integer)
+    proficiency_attack_speed = Column(Integer)
+    proficiency_attack_accuracy = Column(Integer)
+    proficiency_first_strike = Column(Integer)
+    proficiency_critical_hit = Column(Integer)
+    proficiency_defence = Column(Integer)
+    proficiency_evade = Column(Integer)
+    proficiency_parry = Column(Integer)
+    proficiency_riposte = Column(Integer)
+    proficiency_block = Column(Integer)
+    proficiency_stealth = Column(Integer)
+    proficiency_pickpocketing = Column(Integer)
+    proficiency_faith = Column(Integer)
+    proficiency_bartering = Column(Integer)
+    proficiency_oration = Column(Integer)
+    proficiency_knowledge = Column(Integer)
+    
     
     ability_points= Column(Integer)
     basic_ability_points = Column(Integer)
@@ -187,6 +206,24 @@ class Hero(Base):
         self.virtue = 0
         self.devotion = 0
         self.gold = 50
+
+        #Jacob added new "secondary attributes"
+        self.proficiency_attack_damage = 0
+        self.proficiency_attack_speed = 0
+        self.proficiency_attack_accuracy = 0
+        self.proficiency_first_strike = 0
+        self.proficiency_critical_hit = 0
+        self.proficiency_defence = 0
+        self.proficiency_evade = 0
+        self.proficiency_parry = 0
+        self.proficiency_riposte = 0
+        self.proficiency_block = 0
+        self.proficiency_stealth = 0
+        self.proficiency_pickpocketing = 0
+        self.proficiency_faith = 0
+        self.proficiency_bartering = 0
+        self.proficiency_oration = 0
+        self.proficiency_knowledge = 0
                 
         self.health_percent = 0
         self.sanctity_percent = 0
