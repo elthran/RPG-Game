@@ -49,6 +49,7 @@
 			<ul>
 				<li>Faith: {{ myHero.proficiency_faith }}</li>
 				<li>Knowledge: {{ myHero.proficiency_knowledge }}</li>
+				<li>{{ myHero.proficiency_test.name }}: {{ myHero.proficiency_test.level }} (Current: {{ myHero.proficiency_test.value }}%)</li>
 			</ul>
 			{% if myHero.secondary_attribute_points %}
 				<input class="btn btn-default submitButton" type="submit" value="Save" id="level_button">

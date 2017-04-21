@@ -27,6 +27,7 @@ from base_classes import Base, BaseDict
 import math
 from flask import request
 from secondary_attributes import *
+from proficiencies import *
     
 import datetime
 import pdb
@@ -149,7 +150,6 @@ class Hero(Base):
     proficiency_bartering = Column(Integer)
     proficiency_oration = Column(Integer)
     proficiency_knowledge = Column(Integer)
-
     proficiency_resist_frost = Column(Integer)
     proficiency_resist_flame = Column(Integer)
     proficiency_resist_shadow = Column(Integer)
@@ -157,8 +157,10 @@ class Hero(Base):
     proficiency_resist_blunt = Column(Integer)
     proficiency_resist_slashing = Column(Integer)
     proficiency_resist_piercing = Column(Integer)
-    
-    
+
+    # Jacob's Test Value
+    proficiency_test = Proficiency("Jacob's test", "How much testing you do", 20)
+
     ability_points= Column(Integer)
     basic_ability_points = Column(Integer)
     archetype_ability_points = Column(Integer)
