@@ -223,7 +223,7 @@ def admin():
         # myHero.specialization_ability_points = convert_input(request.form["Specialization_ability_points"])
         # myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
         myHero.attribute_points = convert_input(request.form["Attribute_points"])
-        myHero.secondary_attribute_points = convert_input(request.form['Secondary_Attribute_Points'])
+        myHero.proficiency_points = convert_input(request.form['Proficiency_Points'])
         myHero.primary_attributes["Agility"] = convert_input(request.form["Agility"])
         myHero.primary_attributes["Fortitude"] = convert_input(request.form["Fortitude"])
         myHero.update_secondary_attributes()
@@ -240,7 +240,7 @@ def admin():
         ("Gold", myHero.gold),
         ("Ability_points", myHero.ability_points),
         ("Attribute_points", myHero.attribute_points),
-        ("Secondary_Attribute_Points", myHero.secondary_attribute_points),
+        ("Proficiency_Points", myHero.proficiency_points),
         ("Agility", myHero.primary_attributes["Agility"]),
         ("Fortitude", myHero.primary_attributes["Fortitude"])]
 
@@ -323,6 +323,7 @@ def attributes():
 
         myHero.update_secondary_attributes()
         myHero.refresh_character()
+        myHero.proficiency_test.update_testing(myHero) # TEMP. Testing. Will be a new function that updates all proficiencies soon
         database.update()
         return render_template('profile_attributes.html', page_title="Attributes", myHero=myHero, attribute_information=attribute_information)
     return render_template('profile_attributes.html', page_title="Attributes", myHero=myHero, attribute_information=attribute_information)
@@ -333,13 +334,13 @@ def attributes():
 @login_required
 def proficiencies():
     if request.method == 'POST':
-        myHero.attack_speed_skill += convert_input(request.form["attack_speed"])
-        secondary_points_being_spent = convert_input(request.form["attack_speed"])
-        myHero.secondary_attribute_points -= secondary_points_being_spent
-        myHero.update_secondary_attributes()
-        myHero.refresh_character()
-        database.update()
-        return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero, proficiencies=True)
+        if (myHero.proficiency_test.level + convert_input(request.form["testplz"])) <= myHero.proficiency_test.max_level:
+            myHero.proficiency_test.level += convert_input(request.form["testplz"])
+            myHero.proficiency_points -= convert_input(request.form["testplz"])
+            myHero.proficiency_test.update_testing(myHero)
+            myHero.refresh_character()
+            database.update()
+            return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero, proficiencies=True)
     return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero, proficiencies=True)
 
 @app.route('/ability_tree/<spec>')

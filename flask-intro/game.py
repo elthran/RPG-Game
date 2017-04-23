@@ -159,16 +159,16 @@ class Hero(Base):
     proficiency_resist_piercing = Column(Integer)
 
     # Jacob's Test Value
-    proficiency_test = Proficiency("Jacob's test", "How much testing you do", 20)
+    proficiency_test = Proficiency("Testing", "How much testing you do", "Vitality")
 
-    ability_points= Column(Integer)
+    ability_points = Column(Integer)
     basic_ability_points = Column(Integer)
     archetype_ability_points = Column(Integer)
     specialization_ability_points = Column(Integer)
     pantheonic_ability_points = Column(Integer)
     
     attribute_points = Column(Integer)
-    secondary_attribute_points = Column(Integer)
+    proficiency_points = Column(Integer)
         
     current_sanctity = Column(Integer)
     current_health = Column(Integer)
@@ -253,8 +253,8 @@ class Hero(Base):
         self.specialization_ability_points = 5
         self.pantheonic_ability_points = 5
     
-        self.attribute_points = 0
-        self.secondary_attribute_points = 10
+        self.attribute_points = 5
+        self.proficiency_points = 10
         
         #Marked for rename
         #Consider "endurance" or "health" instead.

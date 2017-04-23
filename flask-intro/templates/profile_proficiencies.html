@@ -1,7 +1,11 @@
 {% extends "profile_template.html" %}
 {% block block1 %}
+
 <!-- Basic Skill Page -->
-<form method="post" class="level_up_form">
+<div class="profilePage">
+        Points Remaining:<output type="text" name="testplz"> {{ myHero.proficiency_points }}</output>
+</div>
+<form method="post">
     <div style="clear: both;"></div>
     <div class="proficiencyPage">
 		<div class="proficiencyPageInner">
@@ -49,17 +53,21 @@
 			<ul>
 				<li>Faith: {{ myHero.proficiency_faith }}</li>
 				<li>Knowledge: {{ myHero.proficiency_knowledge }}</li>
-				<li>{{ myHero.proficiency_test.name }}: {{ myHero.proficiency_test.level }} (Current: {{ myHero.proficiency_test.value }}%)</li>
+				<li>
+					Test: {{ myHero.proficiency_test.level }} <input type="int" name="testplz" value="0">
+				</li>
+				<div style="float:right">
+				<li>Type: {{ myHero.proficiency_test.attribute_type }} </li>
+				<li>Current Level: {{ myHero.proficiency_test.level }} </li>
+				<li>Max Level: {{ myHero.proficiency_test.max_level }} </li>
+				<li>Value:{{ myHero.proficiency_test.value }}% <font color="green">({{ myHero.proficiency_test.next_value }}%)</font></li>
+				</div>
 			</ul>
-			{% if myHero.secondary_attribute_points %}
+			{% if myHero.proficiency_points %}
 				<input class="btn btn-default submitButton" type="submit" value="Save" id="level_button">
 			{% endif %}
 		</div>
     </div>	
 	<div style="clear: both;"></div>
 </form>
-<div class="profilePage">
-        Points Remaining:<output type="text" name="total" id="pointsRemaining" value="{{ myHero.secondary_attribute_points }}"/> {{ myHero.secondary_attribute_points }}</output>
-    </div>
-
 {% endblock %}
