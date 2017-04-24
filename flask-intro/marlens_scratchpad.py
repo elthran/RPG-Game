@@ -15,6 +15,8 @@ from sqlalchemy import create_engine
 from base_classes import Base, BaseDict
 from secondary_attributes import *
 
+from jinja2 import Template
+
 import pdb
 
 class Hero(object):
@@ -247,8 +249,19 @@ class BuildTable:
     def get_table_name(obj):
         return obj.__class__.__name__
         
+
+########## New Template concept.
+
+base_template = BuildTable.template()
+template = Template(base_template)
+template.render(cls=Hero)
+
+
+
+
+
         
- 
+##########Testing 
 metadata = MetaData()       
 
 hero = Hero()                

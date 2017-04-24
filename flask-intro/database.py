@@ -119,7 +119,7 @@ class EZDB:
         """
         return []
         
-                    
+
     def get_default_world(self):
         """Get the default world for starting heroes.
         """

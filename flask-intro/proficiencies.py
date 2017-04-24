@@ -1,3 +1,14 @@
+class Proficiencies(Base):
+    def __init__(self, hero):
+        self.hero = hero
+        
+        proficiencies = [
+            Proficiency("max_damage", "Max damage the hero can do"),
+            Proficiency("min_damage", "Min damage the hero can do")
+        ]
+        for proficiency in proficiencies:
+            setattr(self, proficiency.name, Proficiency(name))
+
 class Proficiency(object):
     def __init__(self, name, description, attribute_type):
         self.name = name
