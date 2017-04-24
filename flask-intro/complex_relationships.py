@@ -11,6 +11,7 @@ import locations
 import abilities
 import items
 import quests
+import attributes
 
 import pdb
 
@@ -81,9 +82,10 @@ items.ItemTemplate.items = relationship("Item", backref='template')
 items.Item.item_template_id = Column(Integer, ForeignKey('item_template.id'))
 
 
-#One Hero -> one primary_attribute dict
-game.PrimaryAttribute.hero_id = Column(Integer, ForeignKey('hero.id'))
-game.Hero.primary_attributes = relationship("PrimaryAttribute", uselist=False)
+#One Hero -> one attributes object
+attributes.Attributes.hero_id = Column(Integer, ForeignKey('hero.id'))
+attributes.Attributes.hero = relationship("Hero", back_populates="attributes")
+game.Hero.attributes = relationship("Attributes", uselist=False, back_populates="hero")
 
 #Marked for restructure. Remove in favor of quest object.
 #Maybe make a special "KillQuest" quest type?

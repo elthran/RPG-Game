@@ -1,6 +1,7 @@
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 import importlib
+import os, stat
 
 
 if __name__ == "__main__":
@@ -36,5 +37,15 @@ if __name__ == "__main__":
 
         data = {key: getattr(data_module, key) for key in dir(data_module) if key[:2] != '__'}
         
+        #Set file to writeable if it exists.
+        try:
+            os.chmod(filename, stat.S_IWRITE)
+        except FileNotFoundError:
+            pass
+
+        #Save the newly built code.
         with open(filename, 'w') as file:
             file.write(template.render(**data))
+        
+        #Set file to read only.
+        os.chmod(filename, stat.S_IREAD)

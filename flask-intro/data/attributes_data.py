@@ -12,3 +12,5 @@ ATTRIBUTE_INFORMATION = [
     ("Vitality", "A measure of how sturdy a character is."),
     ("Wisdom", "A measure of a character's problem-solving ability.")
 ]
+
+ALL_ATTRIBUTES = [attrib[0].lower() for attrib in ATTRIBUTE_INFORMATION]
