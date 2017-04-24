@@ -79,7 +79,7 @@ class Attribute(Base):
         
         self.name = name
         self.description = description
-        self.value = 1
+        self.level = 1
 
 
 #Relationships

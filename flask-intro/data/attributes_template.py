@@ -14,7 +14,7 @@ from base_classes import Base
 class Attributes(Base):
     __tablename__ = 'attributes'
     
-    id = Column(Integer, primary_key_key=True)
+    id = Column(Integer, primary_key=True)
 
     
     def __init__(self):
@@ -54,7 +54,7 @@ class Attribute(Base):
         
         self.name = name
         self.description = description
-        self.value = 1
+        self.level = 1
 
 
 #Relationships     

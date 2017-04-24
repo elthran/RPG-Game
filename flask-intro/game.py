@@ -27,7 +27,8 @@ from base_classes import Base, BaseDict
 import math
 from flask import request
 from secondary_attributes import *
-from proficiencies import *
+from proficiencies import Proficiency
+from attributes import Attributes
     
 import datetime
 import pdb
@@ -199,7 +200,7 @@ class Hero(Base):
         exp_percent is now updated by current_exp using a validator.
         max_exp should be assigned a value before current_exp.
         """
-        self.primary_attributes = PrimaryAttribute()
+        self.attributes = Attributes()
         self.inventory = Inventory()
         
         #Defaults will remain unchanged if no arguments are passed.
@@ -424,15 +425,7 @@ class Hero(Base):
                     self.inventory.remove(my_item)
                 break
                 
-    
-    #Enabling object equality had obscure problems that I couldn't fix.
-    # def __eq__(self, other): 
-        # return self.__dict__ == other.__dict__
-        
-    def get_primary_attributes(self):
-        # pdb.set_trace()
-        return sorted(self.primary_attributes.items())
-        
+     
     # @validates('current_city')
     # def validate_current_city(self, key, location):
         # """Assert that current_city is in fact a city.
