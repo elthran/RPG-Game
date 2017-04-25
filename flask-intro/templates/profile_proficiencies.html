@@ -11,9 +11,11 @@
 		<div class="proficiencyPageInner">
 			<h1>Offense</h1>
 			<ul>
-				{% for proficiency in proficiencies %}
-					<li>{{ proficiency.name}}: {{ proficiency.level }}</li> <!--<input type="int" name="testplz" value="0">-->
-				{% endfor %}
+                {%- for proficiency in myHero.proficiencies %}
+                {%- if proficiency.type == "Offense" %}
+                <li>{{ proficiency.name}}: {{ proficiency.level }}</li> <!--<input type="int" name="testplz" value="0">-->
+                {%- endif %}
+                {%- endfor %}
 			</ul>
 			<h1>Stealth</h1>
 			<ul>

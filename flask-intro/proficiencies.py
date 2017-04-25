@@ -10,29 +10,29 @@ from sqlalchemy.orm import relationship
 from base_classes import Base
 
 PROFICIENCY_INFORMATION = [
-    ("Attack damage", "", 'Unspecified'),
-    ("Attack speed", "", 'Unspecified'),
-    ("Attack accuracy", "", 'Unspecified'),
-    ("First strike", "", 'Unspecified'),
-    ("Critical hit", "", 'Unspecified'),
-    ("Defence", "", 'Unspecified'),
-    ("Evade", "", 'Unspecified'),
-    ("Parry", "", 'Unspecified'),
-    ("Riposte", "", 'Unspecified'),
-    ("Block", "", 'Unspecified'),
-    ("Stealth", "", 'Unspecified'),
-    ("Pickpocketing", "", 'Unspecified'),
-    ("Faith", "", 'Unspecified'),
-    ("Bartering", "", 'Unspecified'),
-    ("Oration", "", 'Unspecified'),
-    ("Knowledge", "", 'Unspecified'),
-    ("Resist frost", "", 'Unspecified'),
-    ("Resist flame", "", 'Unspecified'),
-    ("Resist shadow", "", 'Unspecified'),
-    ("Resist holy", "", 'Unspecified'),
-    ("Resist blunt", "", 'Unspecified'),
-    ("Resist slashing", "", 'Unspecified'),
-    ("Resist piercing", "", 'Unspecified')
+    ("Attack damage", "", 'Unspecified', "Offense"),
+    ("Attack speed", "", 'Unspecified', "Offense"),
+    ("Attack accuracy", "", 'Unspecified', "Offense"),
+    ("First strike", "", 'Unspecified', "Offense"),
+    ("Critical hit", "", 'Unspecified', "Offense"),
+    ("Defence", "", 'Unspecified', "Defence"),
+    ("Evade", "", 'Unspecified', "Defence"),
+    ("Parry", "", 'Unspecified', "Defence"),
+    ("Riposte", "", 'Unspecified', "Defence"),
+    ("Block", "", 'Unspecified', "Defence"),
+    ("Stealth", "", 'Unspecified', "Diplomacy"),
+    ("Pickpocketing", "", 'Unspecified', "Diplomacy"),
+    ("Faith", "", 'Unspecified', "Diplomacy"),
+    ("Bartering", "", 'Unspecified', "Diplomacy"),
+    ("Oration", "", 'Unspecified', "Diplomacy"),
+    ("Knowledge", "", 'Unspecified', "Diplomacy"),
+    ("Resist frost", "", 'Unspecified', "Resistance"),
+    ("Resist flame", "", 'Unspecified', "Resistance"),
+    ("Resist shadow", "", 'Unspecified', "Resistance"),
+    ("Resist holy", "", 'Unspecified', "Resistance"),
+    ("Resist blunt", "", 'Unspecified', "Resistance"),
+    ("Resist slashing", "", 'Unspecified', "Resistance"),
+    ("Resist piercing", "", 'Unspecified', "Resistance")
 ]
 
 ALL_PROFICIENCIES = [attrib[0].lower().replace(' ', '_') for attrib in PROFICIENCY_INFORMATION]
@@ -92,29 +92,29 @@ class Proficiencies(Base):
     
     def __init__(self):
         
-        self.attack_damage = Proficiency("Attack damage", "", "Unspecified")
-        self.attack_speed = Proficiency("Attack speed", "", "Unspecified")
-        self.attack_accuracy = Proficiency("Attack accuracy", "", "Unspecified")
-        self.first_strike = Proficiency("First strike", "", "Unspecified")
-        self.critical_hit = Proficiency("Critical hit", "", "Unspecified")
-        self.defence = Proficiency("Defence", "", "Unspecified")
-        self.evade = Proficiency("Evade", "", "Unspecified")
-        self.parry = Proficiency("Parry", "", "Unspecified")
-        self.riposte = Proficiency("Riposte", "", "Unspecified")
-        self.block = Proficiency("Block", "", "Unspecified")
-        self.stealth = Proficiency("Stealth", "", "Unspecified")
-        self.pickpocketing = Proficiency("Pickpocketing", "", "Unspecified")
-        self.faith = Proficiency("Faith", "", "Unspecified")
-        self.bartering = Proficiency("Bartering", "", "Unspecified")
-        self.oration = Proficiency("Oration", "", "Unspecified")
-        self.knowledge = Proficiency("Knowledge", "", "Unspecified")
-        self.resist_frost = Proficiency("Resist frost", "", "Unspecified")
-        self.resist_flame = Proficiency("Resist flame", "", "Unspecified")
-        self.resist_shadow = Proficiency("Resist shadow", "", "Unspecified")
-        self.resist_holy = Proficiency("Resist holy", "", "Unspecified")
-        self.resist_blunt = Proficiency("Resist blunt", "", "Unspecified")
-        self.resist_slashing = Proficiency("Resist slashing", "", "Unspecified")
-        self.resist_piercing = Proficiency("Resist piercing", "", "Unspecified")
+        self.attack_damage = Proficiency("Attack damage", "", "Unspecified", "Offense")
+        self.attack_speed = Proficiency("Attack speed", "", "Unspecified", "Offense")
+        self.attack_accuracy = Proficiency("Attack accuracy", "", "Unspecified", "Offense")
+        self.first_strike = Proficiency("First strike", "", "Unspecified", "Offense")
+        self.critical_hit = Proficiency("Critical hit", "", "Unspecified", "Offense")
+        self.defence = Proficiency("Defence", "", "Unspecified", "Defence")
+        self.evade = Proficiency("Evade", "", "Unspecified", "Defence")
+        self.parry = Proficiency("Parry", "", "Unspecified", "Defence")
+        self.riposte = Proficiency("Riposte", "", "Unspecified", "Defence")
+        self.block = Proficiency("Block", "", "Unspecified", "Defence")
+        self.stealth = Proficiency("Stealth", "", "Unspecified", "Diplomacy")
+        self.pickpocketing = Proficiency("Pickpocketing", "", "Unspecified", "Diplomacy")
+        self.faith = Proficiency("Faith", "", "Unspecified", "Diplomacy")
+        self.bartering = Proficiency("Bartering", "", "Unspecified", "Diplomacy")
+        self.oration = Proficiency("Oration", "", "Unspecified", "Diplomacy")
+        self.knowledge = Proficiency("Knowledge", "", "Unspecified", "Diplomacy")
+        self.resist_frost = Proficiency("Resist frost", "", "Unspecified", "Resistance")
+        self.resist_flame = Proficiency("Resist flame", "", "Unspecified", "Resistance")
+        self.resist_shadow = Proficiency("Resist shadow", "", "Unspecified", "Resistance")
+        self.resist_holy = Proficiency("Resist holy", "", "Unspecified", "Resistance")
+        self.resist_blunt = Proficiency("Resist blunt", "", "Unspecified", "Resistance")
+        self.resist_slashing = Proficiency("Resist slashing", "", "Unspecified", "Resistance")
+        self.resist_piercing = Proficiency("Resist piercing", "", "Unspecified", "Resistance")
         
 
     def items(self):
@@ -139,15 +139,17 @@ class Proficiency(Base):
     name = Column(String)
     description = Column(String)
     attribute_type = Column(String)
+    type = Column(String)
     level = Column(Integer)
     value = Column(Integer)
     next_value = Column(Integer)
     max_level = Column(Integer)
 
-    def __init__(self, name, description, attribute_type):
+    def __init__(self, name, description, attribute_type, type):
         self.name = name
         self.description = description
         self.attribute_type = attribute_type
+        self.type = type
         
         self.level = 1
         self.value = 10

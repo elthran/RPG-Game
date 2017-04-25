@@ -24,7 +24,7 @@ class Proficiencies(Base):
     
     def __init__(self):
         {% for prof in PROFICIENCY_INFORMATION %}
-        self.{{ prof[0].lower().replace(' ', '_') }} = Proficiency("{{ prof[0] }}", "{{ prof[1] }}", "{{ prof[2] }}")
+        self.{{ prof[0].lower().replace(' ', '_') }} = Proficiency("{{ prof[0] }}", "{{ prof[1] }}", "{{ prof[2] }}", "{{ prof[3] }}")
         {%- endfor %}
         
 
@@ -50,15 +50,17 @@ class Proficiency(Base):
     name = Column(String)
     description = Column(String)
     attribute_type = Column(String)
+    type = Column(String)
     level = Column(Integer)
     value = Column(Integer)
     next_value = Column(Integer)
     max_level = Column(Integer)
 
-    def __init__(self, name, description, attribute_type):
+    def __init__(self, name, description, attribute_type, type):
         self.name = name
         self.description = description
         self.attribute_type = attribute_type
+        self.type = type
         
         self.level = 1
         self.value = 10
