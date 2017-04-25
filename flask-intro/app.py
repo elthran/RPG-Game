@@ -336,6 +336,11 @@ def attributes():
 @app.route('/proficiencies', methods=['GET', 'POST'])
 @login_required
 def proficiencies():
+    """
+    Below is a mock-up list to test my HTML. I assume the hero will carry the true list. Each proficiency should probably have
+    a flag for Offense, Defence, etc. so HTML knows which category to display it under
+    """
+    ALL_PROFICIENCIES = [myHero.proficiencies.attack_damage, myHero.proficiencies.attack_speed] # This is temporary
     if request.method == 'POST':
         if (myHero.proficiency_test.level + convert_input(request.form["testplz"])) <= myHero.proficiency_test.max_level:
             myHero.proficiency_test.level += convert_input(request.form["testplz"])
@@ -343,8 +348,8 @@ def proficiencies():
             myHero.proficiency_test.update_testing(myHero)
             myHero.refresh_character()
             database.update()
-            return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero, proficiencies=True)
-    return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero, proficiencies=True)
+            return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero, proficiencies=ALL_PROFICIENCIES)
+    return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero, proficiencies=ALL_PROFICIENCIES)
 
 @app.route('/ability_tree/<spec>')
 @login_required

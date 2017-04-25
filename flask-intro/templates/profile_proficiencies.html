@@ -11,11 +11,9 @@
 		<div class="proficiencyPageInner">
 			<h1>Offense</h1>
 			<ul>
-				<li>Damage: {{ myHero.proficiencies.attack_damage.level }}</li>
-				<li>Attack Speed: {{ myHero.proficiencies.attack_speed.level }}</li>
-				<li>Accuracy: {{ myHero.proficiencies.attack_accuracy.level }}</li>
-				<li>First Strike: {{ myHero.proficiencies.first_strike.level }}</li>
-				<li>Critical Hit: {{ myHero.proficiencies.critical_hit.level }}</li>
+				{% for proficiency in proficiencies %}
+					<li>{{ proficiency.name}}: {{ proficiency.level }}</li> <!--<input type="int" name="testplz" value="0">-->
+				{% endfor %}
 			</ul>
 			<h1>Stealth</h1>
 			<ul>
@@ -53,15 +51,6 @@
 			<ul>
 				<li>Faith: {{ myHero.proficiencies.faith.level }}</li>
 				<li>Knowledge: {{ myHero.proficiencies.knowledge.level }}</li>
-				<li>
-					Test: {# myHero.proficiency_test.level #}TODO <input type="int" name="testplz" value="0">
-				</li>
-				<div style="float:right">
-				<li>Type: {# myHero.proficiency_test.attribute_type #} </li>
-				<li>Current Level: {# myHero.proficiency_test.level #} </li>
-				<li>Max Level: {# myHero.proficiency_test.max_level #} </li>
-				<li>Value:{# myHero.proficiency_test.value #}% <font color="green">({# myHero.proficiency_test.next_value #}%)</font></li>
-				</div>
 			</ul>
 			{% if myHero.proficiency_points %}
 				<input class="btn btn-default submitButton" type="submit" value="Save" id="level_button">
