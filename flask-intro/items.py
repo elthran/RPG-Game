@@ -46,6 +46,7 @@ class Item(Base):
     durability = Column(Integer)
     broken = Column(Boolean)
     consumed = Column(Boolean)
+    name = Column(String)
     
     def __init__(self, template):
         """Build a new item from a given template.
@@ -53,6 +54,9 @@ class Item(Base):
         Set initial values for item attributes. of  
         """
         self.template = template
+        self.name = template.name
+        
+        #Should be a current_durability value as well?
         self.durability = template.max_durability
         self.broken = False
         self.consumed = False
@@ -64,17 +68,30 @@ class Item(Base):
     def load_template(self):
         """Load all the attributes of a given template into this item.
         
-        !Important! Must not overwrite any of the attributes in this class! 
+        This loads all keys for each object in the method resolution order (MRO)
+        of the template and then removes things like relationships, ids and 
+        all keys already in this item. All private/internal variables are removed as well.
         
-        Should do the whole inheritance thing ...
-        I don't quite know if it does.
-        Ig
+        Perhaps this should only occur once? instead of during load?
         """
-        # pdb.set_trace()
-        item_keys = vars(self).keys()
-        for key in vars(self.template).keys():
-            if key not in item_keys and key != 'id':
-                setattr(self, key, getattr(self.template, key))
+        
+        template_keys = set()
+        
+        # All non-base objects in inheritance path.
+        # Remove <class 'sqlalchemy.ext.declarative.api.Base'>, <class 'object'> as these are
+        # the last two objects in the MRO
+        hierarchy = type(self.template).__mro__[:-2]
+        
+        for obj in hierarchy:
+            template_keys |= set(vars(obj).keys()) - set(obj.__mapper__.relationships.keys())
+            
+        template_keys -= set([key for key in template_keys if key.startswith('_')])
+        template_keys -= {'id'}
+        template_keys -= set(vars(self).keys())
+        
+        for key in template_keys:
+            setattr(self, key, getattr(self.template, key))
+
     
     def update_stats(self):
         """Update hero to reflect stat values with item equiped.
@@ -177,6 +194,7 @@ class Weapon(Wearable):
     
     min_damage = Column(Integer)
     max_damage = Column(Integer)
+    attack_speed = Column(Integer)
     
     one_handed_weapon = Column(Boolean)
     shield = Column(Boolean)

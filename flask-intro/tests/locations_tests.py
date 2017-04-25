@@ -90,12 +90,13 @@ class LocationTestCase(unittest.TestCase):
         map.locations.append(town)
         self.db.session.add(map)
         self.db.session.commit()
+        str_map = str(map)
         
         self.tearDown(delete=False)
         self.setUp()
         map2 = self.db.session.query(WorldMap).filter_by(name="Picatanin").first()
-        self.assertEqual(str(map2), "<WorldMap(adjacent_locations=[], display=None, heroes=[], id=1, locations='[Town.id=1]', name='Picatanin', type='WorldMap')>")
-    
+        self.assertEqual(str(map2), str_map)
+        
     def test_add_world_map(self):
         hero = Hero(name="Haldon")
         map = WorldMap(name="Picatanin")
@@ -103,11 +104,12 @@ class LocationTestCase(unittest.TestCase):
         hero.current_world = map
         self.db.session.add(hero)
         self.db.session.commit()
+        str_world = str(hero.current_world)
         
         self.tearDown(delete=False)
         self.setUp()
         hero2 = self.db.session.query(Hero).filter_by(name="Haldon").first()
-        self.assertEqual(str(hero2.current_world), "<WorldMap(adjacent_locations=[], display=None, heroes='[Hero.id=1]', id=1, locations=[], name='Picatanin', type='WorldMap')>")
+        self.assertEqual(str(hero2.current_world), str_world)
         
     def test_prebuilt_objects_game_worlds(self):
         """Test the creation of some prebuilt objects.

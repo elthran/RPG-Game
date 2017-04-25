@@ -46,30 +46,44 @@ def string_of(self):
     data = set(vars(self).keys()) | \
         set(self.__table__.columns.keys()) | \
         set(self.__mapper__.relationships.keys())
+    
+    data.discard('_sa_instance_state')    
         
+    hierarchy_keys = set()
+    # All non-base objects in inheritance path.
+    # Remove <class 'sqlalchemy.ext.declarative.api.Base'>, <class 'object'> as these are
+    # the last two objects in the MRO
     try:
-        data |= set(vars(super(type(self), self)).keys())
-        data |= set(super(type(self), self).__table__.columns.keys())
-        data |= set(super(type(self), self).__mapper__.relationships.keys())
-    except AttributeError:
-        #If super is Base.
-        pass
+        hierarchy = type(self).__mro__[1:-2]
         
-    data.discard('_sa_instance_state')
+        for obj in hierarchy:
+            hierarchy_keys |= set(vars(obj).keys()) - set(obj.__mapper__.relationships.keys())
         
+        #Remove private variables and id keys to prevent weird recursion and redundancy.
+        hierarchy_keys -= set([key for key in hierarchy_keys if key.startswith('_')]) #? or 'id' in key])
+    except IndexError:
+        pass #This is the Base class and has no useful MRO.
+        
+    data |= hierarchy_keys
+    
+    #Don't print the objects methods.
+    data -= set([e for e in data if "method" in repr(type(getattr(self, e)))])
+    
     atts = []
     for key in sorted(data):
-        key = key.lstrip('_')
         value = getattr(self, key)
         # pdb.set_trace()
         if value and type(value) == orm.collections.InstrumentedList:
             value = '[' + ', '.join(e.__class__.__name__ + '.id=' + str(e.id) for e in value) + ']'
+        
+        #This if/try is a way to print ONE to ONE relationship objects without infinite recursion.
         elif value:
             try:
                 value._sa_instance_state #Dummy call to test if value is a Database object.
-                value = str(value)
+                value = "<{}(id={})>".format(value.__class__.__name__, value.id)
             except AttributeError:
                 pass #The object is not a databse object.
+                
         atts.append('{}={}'.format(key, repr(value)))
 
     return "<{}({})>".format(self.__class__.__name__, ', '.join(atts))
@@ -85,28 +99,40 @@ def pprint(self):
     data = set(vars(self).keys()) | \
         set(self.__table__.columns.keys()) | \
         set(self.__mapper__.relationships.keys())
+    
+    data.discard('_sa_instance_state')    
         
+    hierarchy_keys = set()
+    # All non-base objects in inheritance path.
+    # Remove <class 'sqlalchemy.ext.declarative.api.Base'>, <class 'object'> as these are
+    # the last two objects in the MRO
     try:
-        data |= set(vars(super(type(self), self)).keys())
-        data |= set(super(type(self), self).__table__.columns.keys())
-        data |= set(super(type(self), self).__mapper__.relationships.keys())
-    except AttributeError:
-        #If super is Base.
-        pass
+        hierarchy = type(self).__mro__[1:-2]
         
-    data.discard('_sa_instance_state')
+        for obj in hierarchy:
+            hierarchy_keys |= set(vars(obj).keys()) - set(obj.__mapper__.relationships.keys())
+        
+        #Remove private variables and id keys to prevent weird recursion and redundancy.
+        hierarchy_keys -= set([key for key in hierarchy_keys if key.startswith('_')]) #? or 'id' in key])
+    except IndexError:
+        pass #This is the Base class and has no useful MRO.
+        
+    data |= hierarchy_keys
+    
+    #Don't print the objects methods.
+    data -= set([e for e in data if "method" in repr(type(getattr(self, e)))])
     
     print("\n\n<{}(".format(self.__class__.__name__))
     for key in sorted(data):
-        key = key.lstrip('_')
         value = getattr(self, key)
-        # pdb.set_trace()
         if value and type(value) == orm.collections.InstrumentedList:
             value = '[' + ', '.join(e.__class__.__name__ + '.id=' + str(e.id) for e in value) + ']'
+            
+        #This if/try is a way to print ONE to ONE relationship objects without infinite recursion.
         elif value:
             try:
                 value._sa_instance_state #Dummy call to test if value is a Database object.
-                value = str(value)
+                value = "<{}(id={})>".format(value.__class__.__name__, value.id)
             except AttributeError:
                 pass #The object is not a databse object.
             
@@ -121,16 +147,30 @@ def get_all_atts(self):
     data = set(vars(self).keys()) | \
         set(self.__table__.columns.keys()) | \
         set(self.__mapper__.relationships.keys())
+    
+    data.discard('_sa_instance_state')    
         
+    hierarchy_keys = set()
+    # All non-base objects in inheritance path.
+    # Remove <class 'sqlalchemy.ext.declarative.api.Base'>, <class 'object'> as these are
+    # the last two objects in the MRO
+    # Also remove the first object as it has already been added.
     try:
-        data |= set(vars(super(type(self), self)).keys())
-        data |= set(super(type(self), self).__table__.columns.keys())
-        data |= set(super(type(self), self).__mapper__.relationships.keys())
-    except AttributeError:
-        #If super is Base.
-        pass
+        hierarchy = type(self).__mro__[1:-2]
         
-    data.discard('_sa_instance_state')
+        for obj in hierarchy:
+            hierarchy_keys |= set(vars(obj).keys()) - set(obj.__mapper__.relationships.keys())
+        
+        #Remove private variables and id keys to prevent weird recursion and redundancy.
+        hierarchy_keys -= set([key for key in hierarchy_keys if key.startswith('_')]) #? or 'id' in key])
+    except IndexError:
+        pass #This is the Base class and has no useful MRO.
+        
+    data |= hierarchy_keys
+    
+    #Don't print the objects methods.
+    data -= set([e for e in data if "method" in repr(type(getattr(self, e)))])
+
     return data
 
 def is_equal(self, other):
