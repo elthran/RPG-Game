@@ -15,7 +15,12 @@ class Attributes(Base):
     __tablename__ = 'attributes'
     
     id = Column(Integer, primary_key=True)
-
+    
+    #Relationships     
+    {%- for name in ALL_ATTRIBUTES %}
+    {{ name }}_id = Column(Integer, ForeignKey('attribute.id'))
+    {{ name }} = relationship("Attribute", uselist=False, foreign_keys="[Attributes.{{ name }}_id]")
+    {%- endfor %}
     
     def __init__(self):
         {% for attrib in ATTRIBUTE_INFORMATION %}
@@ -55,11 +60,4 @@ class Attribute(Base):
         self.name = name
         self.description = description
         self.level = 1
-
-
-#Relationships     
-{%- for name in ALL_ATTRIBUTES %}
-Attributes.{{ name }}_id = Column(Integer, ForeignKey('attribute.id'))
-Attributes.{{ name }} = relationship("Attribute", uselist=False, foreign_keys="[Attributes.{{ name }}_id]")
-{%- endfor %}
 

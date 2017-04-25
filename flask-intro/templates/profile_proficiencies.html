@@ -11,48 +11,48 @@
 		<div class="proficiencyPageInner">
 			<h1>Offense</h1>
 			<ul>
-				<li>Damage: {{ myHero.proficiency_attack_damage }}</li>
-				<li>Attack Speed: {{ myHero.proficiency_attack_speed }}</li>
-				<li>Accuracy: {{ myHero.proficiency_attack_accuracy }}</li>
-				<li>First Strike: {{ myHero.proficiency_first_strike }}</li>
-				<li>Critical Hit: {{ myHero.proficiency_critical_hit }}</li>
+				<li>Damage: {{ myHero.proficiencies.attack_damage.level }}</li>
+				<li>Attack Speed: {{ myHero.proficiencies.attack_speed.level }}</li>
+				<li>Accuracy: {{ myHero.proficiencies.attack_accuracy.level }}</li>
+				<li>First Strike: {{ myHero.proficiencies.first_strike.level }}</li>
+				<li>Critical Hit: {{ myHero.proficiencies.critical_hit.level }}</li>
 			</ul>
 			<h1>Stealth</h1>
 			<ul>
-				<li>Concealment: {{ myHero.proficiency_stealth }}</li>
-				<li>Pickpocketing: {{ myHero.proficiency_pickpocketing }}</li>
+				<li>Concealment: {{ myHero.proficiencies.stealth.level }}</li>
+				<li>Pickpocketing: {{ myHero.proficiencies.pickpocketing.level }}</li>
 			</ul>
 		</div>
 		<div class="proficiencyPageInner">
 			<h1>Defence</h1>
 			<ul>
-				<li>Defence: {{ myHero.proficiency_defence }}</li>
-				<li>Evasion: {{ myHero.proficiency_evade }}</li>
-				<li>Parry: {{ myHero.proficiency_parry }}</li>
-				<li>Riposte: {{ myHero.proficiency_riposte }}</li>
-				<li>Block: {{ myHero.proficiency_block }}</li>
+				<li>Defence: {{ myHero.proficiencies.defence.level }}</li>
+				<li>Evasion: {{ myHero.proficiencies.evade.level }}</li>
+				<li>Parry: {{ myHero.proficiencies.parry.level }}</li>
+				<li>Riposte: {{ myHero.proficiencies.riposte.level }}</li>
+				<li>Block: {{ myHero.proficiencies.block.level }}</li>
 			</ul>
 			<h1>Resistances</h1>
 			<ul>
-				<li>Frost: {{ myHero.proficiency_resist_frost }}</li>
-				<li>Flame: {{ myHero.proficiency_resist_flame }}</li>
-				<li>Shadow: {{ myHero.proficiency_resist_shadow }}</li>
-				<li>Holy: {{ myHero.proficiency_resist_holy }}</li>
-				<li>Piercing: {{ myHero.proficiency_resist_piercing }}</li>
-				<li>Slashing: {{ myHero.proficiency_resist_slashing }}</li>
-				<li>Blunt: {{ myHero.proficiency_resist_blunt }}</li>
+				<li>Frost: {{ myHero.proficiencies.resist_frost.level }}</li>
+				<li>Flame: {{ myHero.proficiencies.resist_flame.level }}</li>
+				<li>Shadow: {{ myHero.proficiencies.resist_shadow.level }}</li>
+				<li>Holy: {{ myHero.proficiencies.resist_holy.level }}</li>
+				<li>Piercing: {{ myHero.proficiencies.resist_piercing.level }}</li>
+				<li>Slashing: {{ myHero.proficiencies.resist_slashing.level }}</li>
+				<li>Blunt: {{ myHero.proficiencies.resist_blunt.level }}</li>
 			</ul>
 		</div>
 		<div class="proficiencyPageInner">
 			<h1>Diplomacy</h1>
 			<ul>
-				<li>Oration: {{ myHero.proficiency_oration }}</li>
-				<li>Bartering: {{ myHero.proficiency_bartering }}</li>
+				<li>Oration: {{ myHero.proficiencies.oration.level }}</li>
+				<li>Bartering: {{ myHero.proficiencies.bartering.level }}</li>
 			</ul>
 			<h1>Divinity</h1>
 			<ul>
-				<li>Faith: {{ myHero.proficiency_faith }}</li>
-				<li>Knowledge: {{ myHero.proficiency_knowledge }}</li>
+				<li>Faith: {{ myHero.proficiencies.faith.level }}</li>
+				<li>Knowledge: {{ myHero.proficiencies.knowledge.level }}</li>
 				<li>
 					Test: {# myHero.proficiency_test.level #}TODO <input type="int" name="testplz" value="0">
 				</li>

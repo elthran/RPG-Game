@@ -30,7 +30,32 @@ class Attributes(Base):
     __tablename__ = 'attributes'
     
     id = Column(Integer, primary_key=True)
-
+    
+    #Relationships
+    agility_id = Column(Integer, ForeignKey('attribute.id'))
+    agility = relationship("Attribute", uselist=False, foreign_keys="[Attributes.agility_id]")
+    charisma_id = Column(Integer, ForeignKey('attribute.id'))
+    charisma = relationship("Attribute", uselist=False, foreign_keys="[Attributes.charisma_id]")
+    divinity_id = Column(Integer, ForeignKey('attribute.id'))
+    divinity = relationship("Attribute", uselist=False, foreign_keys="[Attributes.divinity_id]")
+    fortitude_id = Column(Integer, ForeignKey('attribute.id'))
+    fortitude = relationship("Attribute", uselist=False, foreign_keys="[Attributes.fortitude_id]")
+    fortuity_id = Column(Integer, ForeignKey('attribute.id'))
+    fortuity = relationship("Attribute", uselist=False, foreign_keys="[Attributes.fortuity_id]")
+    perception_id = Column(Integer, ForeignKey('attribute.id'))
+    perception = relationship("Attribute", uselist=False, foreign_keys="[Attributes.perception_id]")
+    reflexes_id = Column(Integer, ForeignKey('attribute.id'))
+    reflexes = relationship("Attribute", uselist=False, foreign_keys="[Attributes.reflexes_id]")
+    resilience_id = Column(Integer, ForeignKey('attribute.id'))
+    resilience = relationship("Attribute", uselist=False, foreign_keys="[Attributes.resilience_id]")
+    strength_id = Column(Integer, ForeignKey('attribute.id'))
+    strength = relationship("Attribute", uselist=False, foreign_keys="[Attributes.strength_id]")
+    survivalism_id = Column(Integer, ForeignKey('attribute.id'))
+    survivalism = relationship("Attribute", uselist=False, foreign_keys="[Attributes.survivalism_id]")
+    vitality_id = Column(Integer, ForeignKey('attribute.id'))
+    vitality = relationship("Attribute", uselist=False, foreign_keys="[Attributes.vitality_id]")
+    wisdom_id = Column(Integer, ForeignKey('attribute.id'))
+    wisdom = relationship("Attribute", uselist=False, foreign_keys="[Attributes.wisdom_id]")
     
     def __init__(self):
         
@@ -80,30 +105,3 @@ class Attribute(Base):
         self.name = name
         self.description = description
         self.level = 1
-
-
-#Relationships
-Attributes.agility_id = Column(Integer, ForeignKey('attribute.id'))
-Attributes.agility = relationship("Attribute", uselist=False, foreign_keys="[Attributes.agility_id]")
-Attributes.charisma_id = Column(Integer, ForeignKey('attribute.id'))
-Attributes.charisma = relationship("Attribute", uselist=False, foreign_keys="[Attributes.charisma_id]")
-Attributes.divinity_id = Column(Integer, ForeignKey('attribute.id'))
-Attributes.divinity = relationship("Attribute", uselist=False, foreign_keys="[Attributes.divinity_id]")
-Attributes.fortitude_id = Column(Integer, ForeignKey('attribute.id'))
-Attributes.fortitude = relationship("Attribute", uselist=False, foreign_keys="[Attributes.fortitude_id]")
-Attributes.fortuity_id = Column(Integer, ForeignKey('attribute.id'))
-Attributes.fortuity = relationship("Attribute", uselist=False, foreign_keys="[Attributes.fortuity_id]")
-Attributes.perception_id = Column(Integer, ForeignKey('attribute.id'))
-Attributes.perception = relationship("Attribute", uselist=False, foreign_keys="[Attributes.perception_id]")
-Attributes.reflexes_id = Column(Integer, ForeignKey('attribute.id'))
-Attributes.reflexes = relationship("Attribute", uselist=False, foreign_keys="[Attributes.reflexes_id]")
-Attributes.resilience_id = Column(Integer, ForeignKey('attribute.id'))
-Attributes.resilience = relationship("Attribute", uselist=False, foreign_keys="[Attributes.resilience_id]")
-Attributes.strength_id = Column(Integer, ForeignKey('attribute.id'))
-Attributes.strength = relationship("Attribute", uselist=False, foreign_keys="[Attributes.strength_id]")
-Attributes.survivalism_id = Column(Integer, ForeignKey('attribute.id'))
-Attributes.survivalism = relationship("Attribute", uselist=False, foreign_keys="[Attributes.survivalism_id]")
-Attributes.vitality_id = Column(Integer, ForeignKey('attribute.id'))
-Attributes.vitality = relationship("Attribute", uselist=False, foreign_keys="[Attributes.vitality_id]")
-Attributes.wisdom_id = Column(Integer, ForeignKey('attribute.id'))
-Attributes.wisdom = relationship("Attribute", uselist=False, foreign_keys="[Attributes.wisdom_id]")

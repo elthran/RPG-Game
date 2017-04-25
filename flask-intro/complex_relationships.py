@@ -84,9 +84,13 @@ items.ItemTemplate.items = relationship("Item", backref='template')
 items.Item.item_template_id = Column(Integer, ForeignKey('item_template.id'))
 
 
-#One Hero -> one attributes object
+#One Hero -> one Attributes object
 game.Hero.attributes_id = Column(Integer, ForeignKey('attributes.id'))
 game.Hero.attributes = relationship("Attributes", uselist=False)
+
+#One Hero -> one Proficiencies object
+game.Hero.proficiencies_id = Column(Integer, ForeignKey('proficiencies.id'))
+game.Hero.proficiencies = relationship("Proficiencies", uselist=False)
 
 #Marked for restructure. Remove in favor of quest object.
 #Maybe make a special "KillQuest" quest type?

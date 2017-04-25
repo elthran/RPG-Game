@@ -27,8 +27,8 @@ from base_classes import Base, BaseDict
 import math
 from flask import request
 from secondary_attributes import *
-from proficiencies import Proficiency
 from attributes import Attributes
+from proficiencies import Proficiencies
     
 import datetime
 import pdb
@@ -130,37 +130,6 @@ class Hero(Base):
     devotion = Column(Integer)
     gold = Column(Integer)
 
-    # Jacob added the new "secondary attributes"
-    proficiency_attack_damage = Column(Integer)
-    proficiency_attack_speed = Column(Integer)
-    proficiency_attack_accuracy = Column(Integer)
-    proficiency_first_strike = Column(Integer)
-    proficiency_critical_hit = Column(Integer)
-    proficiency_defence = Column(Integer)
-    proficiency_evade = Column(Integer)
-    proficiency_parry = Column(Integer)
-    proficiency_riposte = Column(Integer)
-    proficiency_block = Column(Integer)
-    proficiency_stealth = Column(Integer)
-    proficiency_pickpocketing = Column(Integer)
-    proficiency_faith = Column(Integer)
-    proficiency_bartering = Column(Integer)
-    proficiency_oration = Column(Integer)
-    proficiency_knowledge = Column(Integer)
-    proficiency_resist_frost = Column(Integer)
-    proficiency_resist_flame = Column(Integer)
-    proficiency_resist_shadow = Column(Integer)
-    proficiency_resist_holy = Column(Integer)
-    proficiency_resist_blunt = Column(Integer)
-    proficiency_resist_slashing = Column(Integer)
-    proficiency_resist_piercing = Column(Integer)
-
-    # Jacob's Test Value
-    #@Jacob by Marlen
-    #This value needs to be asigned as a relationship here.
-    #And then this statement would go in __init__.
-    # proficiency_test = Proficiency("Testing", "How much testing you do", "Vitality")
-
     ability_points = Column(Integer)
     basic_ability_points = Column(Integer)
     archetype_ability_points = Column(Integer)
@@ -200,6 +169,7 @@ class Hero(Base):
         max_exp should be assigned a value before current_exp.
         """
         self.attributes = Attributes()
+        self.proficiencies = Proficiencies()
         self.inventory = Inventory()
         
         #Defaults will remain unchanged if no arguments are passed.
@@ -216,32 +186,6 @@ class Hero(Base):
         self.virtue = 0
         self.devotion = 0
         self.gold = 50
-
-        #Jacob added new "secondary attributes"
-        self.proficiency_attack_damage = 0
-        self.proficiency_attack_speed = 0
-        self.proficiency_attack_accuracy = 0
-        self.proficiency_first_strike = 0
-        self.proficiency_critical_hit = 0
-        self.proficiency_defence = 0
-        self.proficiency_evade = 0
-        self.proficiency_parry = 0
-        self.proficiency_riposte = 0
-        self.proficiency_block = 0
-        self.proficiency_stealth = 0
-        self.proficiency_pickpocketing = 0
-        self.proficiency_faith = 0
-        self.proficiency_bartering = 0
-        self.proficiency_oration = 0
-        self.proficiency_knowledge = 0
-
-        self.proficiency_resist_frost = 0
-        self.proficiency_resist_flame = 0
-        self.proficiency_resist_shadow = 0
-        self.proficiency_resist_holy = 0
-        self.proficiency_resist_blunt = 0
-        self.proficiency_resist_slashing = 0
-        self.proficiency_resist_piercing = 0
     
         self.ability_points = 3 #TEMP. Soon will use the 4 values below
         self.basic_ability_points = 5
@@ -275,19 +219,6 @@ class Hero(Base):
     def not_yet_implemented():
         self.kill_quests = BaseDict()
         
-        self.strength = 1
-        self.resilience = 1
-        self.vitality = 1
-        self.fortitude = 1
-        self.reflexes = 1
-        self.agility = 1
-        self.perception = 1
-        self.wisdom = 1
-        self.divinity = 1
-        self.charisma = 1
-        self.survivalism = 1
-        self.fortuity = 1
-        
         self.chest_equipped = []
         self.errands = []
         self.completed_quests = []
@@ -318,6 +249,8 @@ class Hero(Base):
         #Make a list of the equipped items or if none are equipt return empty list.
         self.equipped_items = [item for item in self.inventory if item.wearable] or []
 
+        #Marked for review
+        #Make all of these Proficiencies?
         self.max_damage = update_maximum_damage(self)
         self.maximum_damage = self.max_damage #Synonym for max_damage
         self.min_damage = update_minimum_damage(self)
@@ -343,14 +276,7 @@ class Hero(Base):
         self.knowledge = update_knowledge(self)
         self.luck = update_luck_chance(self)
         
-        #Marked for restructure
-        # try:
-            # previous_max_health = self.max_health
-        # except KeyError:
-            # pass
         self.max_health = update_maximum_health(self)
-        # if not previous_max_health:
-                # previous_max_health = self.max_health
                 
         # Hidden attributes
         self.experience_gain_modifier = 1 # This is the percentage of exp you gain
@@ -361,7 +287,7 @@ class Hero(Base):
         for item in self.equipped_items:
             item.update_stats()
         
-        #Rebuild percent values.
+        #Rebuild percent values. Silly but effective.
         self.current_endurance = self.current_endurance
         self.current_exp = self.current_exp
         self.current_sanctity = self.current_sanctity

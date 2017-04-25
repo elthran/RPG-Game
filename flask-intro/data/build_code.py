@@ -25,7 +25,7 @@ if __name__ == "__main__":
     )
     
     
-    names = ["attributes"]
+    names = ["attributes", "proficiencies"]
     
     for name in names:
         filename = "../" + name + ".py"
