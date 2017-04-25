@@ -54,13 +54,13 @@
 				<li>Faith: {{ myHero.proficiency_faith }}</li>
 				<li>Knowledge: {{ myHero.proficiency_knowledge }}</li>
 				<li>
-					Test: {{ myHero.proficiency_test.level }} <input type="int" name="testplz" value="0">
+					Test: {# myHero.proficiency_test.level #}TODO <input type="int" name="testplz" value="0">
 				</li>
 				<div style="float:right">
-				<li>Type: {{ myHero.proficiency_test.attribute_type }} </li>
-				<li>Current Level: {{ myHero.proficiency_test.level }} </li>
-				<li>Max Level: {{ myHero.proficiency_test.max_level }} </li>
-				<li>Value:{{ myHero.proficiency_test.value }}% <font color="green">({{ myHero.proficiency_test.next_value }}%)</font></li>
+				<li>Type: {# myHero.proficiency_test.attribute_type #} </li>
+				<li>Current Level: {# myHero.proficiency_test.level #} </li>
+				<li>Max Level: {# myHero.proficiency_test.max_level #} </li>
+				<li>Value:{# myHero.proficiency_test.value #}% <font color="green">({# myHero.proficiency_test.next_value #}%)</font></li>
 				</div>
 			</ul>
 			{% if myHero.proficiency_points %}

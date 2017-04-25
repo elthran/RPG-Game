@@ -177,16 +177,16 @@ def create_character():
     elif request.method == 'POST' and fathers_job == None:
         fathers_job = request.form["archetype"]
         if fathers_job == "Brute":
-            myHero.primary_attributes["Strength"] += 3
+            myHero.attributes.strength.level += 3
         elif fathers_job == "Scholar":
-            myHero.primary_attributes["Wisdom"] += 3
+            myHero.attributes.wisdom.level += 3
         elif fathers_job == "Hunter":
-            myHero.primary_attributes["Survivalism"] += 3
+            myHero.attributes.survivalism.level += 3
         elif fathers_job == "Merchant":
-            myHero.primary_attributes["Charisma"] += 2
+            myHero.attributes.charisma.level += 2
             myHero.gold += 50
         elif fathers_job == "Priest":
-            myHero.primary_attributes["Divinity"] += 3
+            myHero.attributes.divinity.level += 3
     if myHero.character_name != None and fathers_job != None:
         myHero.archetype = fathers_job
         database.update()
@@ -224,8 +224,8 @@ def admin():
         # myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
         myHero.attribute_points = convert_input(request.form["Attribute_points"])
         myHero.proficiency_points = convert_input(request.form['Proficiency_Points'])
-        myHero.primary_attributes["Agility"] = convert_input(request.form["Agility"])
-        myHero.primary_attributes["Fortitude"] = convert_input(request.form["Fortitude"])
+        myHero.attributes.agility.level = convert_input(request.form["Agility"])
+        myHero.attributes.fortitude.level = convert_input(request.form["Fortitude"])
         myHero.update_secondary_attributes()
         myHero.refresh_character()
         database.update()
@@ -241,8 +241,8 @@ def admin():
         ("Ability_points", myHero.ability_points),
         ("Attribute_points", myHero.attribute_points),
         ("Proficiency_Points", myHero.proficiency_points),
-        ("Agility", myHero.primary_attributes["Agility"]),
-        ("Fortitude", myHero.primary_attributes["Fortitude"])]
+        ("Agility", myHero.attributes.agility.level),
+        ("Fortitude", myHero.attributes.fortitude.level)]
 
     return render_template('admin.html', page_title=page_title, myHero=myHero, admin=admin)  # return a string
 
@@ -315,15 +315,18 @@ def attributes():
         points_spent = 0
         for element in request.form:
             form_value = int(request.form[element])
-            attribute = element[0:-5].title() #Convert name e.g. agilityInput becomes Agility.
-            points_spent += form_value - myHero.primary_attributes[attribute]
-            myHero.primary_attributes[attribute] = form_value
+            attribute = getattr(myHero.attributes, element[0:-5]) #Convert name e.g. agilityInput becomes agility.
+            points_spent += form_value - attribute.level
+            attribute.level = form_value
         
         myHero.attribute_points -= points_spent
 
         myHero.update_secondary_attributes()
         myHero.refresh_character()
-        myHero.proficiency_test.update_testing(myHero) # TEMP. Testing. Will be a new function that updates all proficiencies soon
+        # myHero.proficiency_test.update_testing(myHero) # TEMP. Testing. Will be a new function that updates all proficiencies soon
+        #By Marlen
+        #This will be replaced with:
+        #hero.proficiencies.update_all(hero) or something.
         database.update()
         return render_template('profile_attributes.html', page_title="Attributes", myHero=myHero, attribute_information=attribute_information)
     return render_template('profile_attributes.html', page_title="Attributes", myHero=myHero, attribute_information=attribute_information)

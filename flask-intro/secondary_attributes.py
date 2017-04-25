@@ -187,129 +187,127 @@ def update_carrying_capacity(myHero):
 
 def update_monster_minimum_damage(monster):
     """ Minimum amount of damage you can do when hitting an opponent """
-    minimum_damage = (5 * monster.attributes.strength.level) + (1 * monster.attributes.agility.level)
+    minimum_damage = (5 * monster.primary_attributes["Strength"]) + (1 * monster.primary_attributes["Agility"])
     minimum_damage = 0.02 * math.sin(minimum_damage) + 0.1 * minimum_damage
     minimum_damage = math.floor(minimum_damage)
     return minimum_damage
 
 def update_monster_maximum_damage(monster):
     """ Maximum amount of damage you can do when hitting an opponent """
-    maximum_damage = (1 * monster.attributes.strength.level) + (4 * monster.attributes.agility.level)
-    maximum_damage = 0.05 * math.sin(maximum_damage) + 0.125 * maximum_damage + update_minimum_damage(monster)
+    maximum_damage = (1 * monster.primary_attributes["Strength"]) + (4 * monster.primary_attributes["Agility"])
+    maximum_damage = 0.05 * math.sin(maximum_damage) + 0.125 * maximum_damage + update_monster_minimum_damage(monster)
     maximum_damage = math.floor(maximum_damage)
     return maximum_damage
 
 def update_monster_attack_speed(monster):
     """ Not sure yet. """
-    attack_speed = (7 * monster.attributes.agility.level) + (2 * monster.attributes.reflexes.level)
+    attack_speed = (7 * monster.primary_attributes["Agility"]) + (2 * monster.primary_attributes["Reflexes"])
     attack_speed = - (10 / (attack_speed * 0.006 + 10)) + 1
     attack_speed = round(attack_speed, 2)
     return attack_speed
 
 def update_monster_attack_accuracy(monster):
     """ Chance of successfully hitting an enemy in combat """
-    attack_accuracy = (8 * monster.attributes.agility.level) + (3 * monster.attributes.reflexes.level) + (1 * monster.attributes.perception.level)
+    attack_accuracy = (8 * monster.primary_attributes["Agility"]) + (3 * monster.primary_attributes["Reflexes"]) + (1 * monster.primary_attributes["Perception"])
     attack_accuracy = - (500 / (attack_accuracy * 0.05 + 10)) + 50
     attack_accuracy = math.floor(attack_accuracy)
     return attack_accuracy
 
 def update_monster_first_strike_chance(monster):
     """ Not sure yet. """
-    first_strike_chance = (5 * monster.attributes.agility.level) + (2 * monster.attributes.reflexes.level)
+    first_strike_chance = (5 * monster.primary_attributes["Agility"]) + (2 * monster.primary_attributes["Reflexes"])
     first_strike_chance = - (300 / (first_strike_chance * 0.07 + 10)) + 30
     first_strike_chance = math.floor(first_strike_chance)
     return first_strike_chance
 
 def update_monster_critical_hit_chance(monster):
     """ Chance of hitting the enemy in a critical location, causing bonus damage """
-    critical_hit_chance = (7 * monster.attributes.agility.level) + (2 * monster.attributes.perception.level)
+    critical_hit_chance = (7 * monster.primary_attributes["Agility"]) + (2 * monster.primary_attributes["Perception"])
     critical_hit_chance = - (300 / (critical_hit_chance * 0.07 + 10)) + 30
     critical_hit_chance = math.floor(critical_hit_chance)
     return critical_hit_chance
 
 def update_monster_critical_hit_modifier(monster):
     """ How much extra damage you do when you critical hit """
-    critical_hit_modifier = (1 * update_maximum_damage(monster)) + (5 * monster.attributes.agility.level)
+    critical_hit_modifier = (1 * update_monster_maximum_damage(monster)) + (5 * monster.primary_attributes["Agility"])
     critical_hit_modifier = 0.05 * math.sin(critical_hit_modifier) + 0.007 * critical_hit_modifier + 1
     critical_hit_modifier = round(critical_hit_modifier, 1)
     return critical_hit_modifier
 
 def update_monster_defence_modifier(monster):
     """ The % of damage reduced when hit """
-    defence_modifier = (6 * monster.attributes.resilience.level)
+    defence_modifier = (6 * monster.primary_attributes["Resilience"])
     defence_modifier = - (350 / (defence_modifier * 0.09 + 10)) + 35
     defence_modifier = math.floor(defence_modifier)
     return defence_modifier
 
 def update_monster_evade_chance(monster):
     """ Chance to dodge an attack in combat """
-    evade_chance = (5 * monster.attributes.reflexes.level) + (2 * monster.attributes.perception.level)
+    evade_chance = (5 * monster.primary_attributes["Reflexes"]) + (2 * monster.primary_attributes["Perception"])
     evade_chance = - (250 / (evade_chance * 0.08 + 10)) + 25
     evade_chance = math.floor(evade_chance)
     return evade_chance
 
 def update_monster_parry_chance(monster):
     """ Chance to parry when fighting with a weapon """
-    parry_chance = (5 * monster.attributes.reflexes.level) + (1 * monster.attributes.agility.level) + (3 * monster.attributes.perception.level)
+    parry_chance = (5 * monster.primary_attributes["Reflexes"]) + (1 * monster.primary_attributes["Agility"]) + (3 * monster.primary_attributes["Perception"])
     parry_chance = - (400 / (parry_chance * 0.1 + 10)) + 40
     parry_chance = math.floor(parry_chance)
     return parry_chance
 
 def update_monster_riposte_chance(monster):
     """ Chance of counter attacking after a successful parry """
-    riposte_chance = (5 * monster.attributes.agility.level) + (3 * monster.attributes.perception.level) + (1 * monster.attributes.reflexes.level)
+    riposte_chance = (5 * monster.primary_attributes["Agility"]) + (3 * monster.primary_attributes["Perception"]) + (1 * monster.primary_attributes["Reflexes"])
     riposte_chance = - (400 / (riposte_chance * 0.1 + 10)) + 40
     riposte_chance = math.floor(riposte_chance)
     return riposte_chance
 
 def update_monster_block_chance(monster):
     """ Chance to blck when using a shield """
-    block_chance = (5 * monster.attributes.reflexes.level) + (3 * monster.attributes.agility.level) + (2 * monster.attributes.strength.level)
+    block_chance = (5 * monster.primary_attributes["Reflexes"]) + (3 * monster.primary_attributes["Agility"]) + (2 * monster.primary_attributes["Strength"])
     block_chance = - (400 / (block_chance * 0.08 + 10)) + 40
     block_chance = math.floor(block_chance)
     return block_chance
 
 def update_monster_block_reduction(monster):
     """ Percent of damage reduced when you successfully block """
-    block_reduction = (2 * monster.attributes.strength.level) + (2 * monster.attributes.resilience.level)
+    block_reduction = (2 * monster.primary_attributes["Strength"]) + (2 * monster.primary_attributes["Resilience"])
     block_reduction = block_reduction ** 0.75
     block_reduction = math.floor(block_reduction)
     return block_reduction
 
 def update_monster_stealth_skill(monster):
     """ Chance of being undetected """
-    stealth_skill = (5 * monster.attributes.reflexes.level) + (3 * monster.attributes.perception.level) + (2 * monster.attributes.agility.level)
+    stealth_skill = (5 * monster.primary_attributes["Reflexes"]) + (3 * monster.primary_attributes["Perception"]) + (2 * monster.primary_attributes["Agility"])
     stealth_skill = - (250 / (stealth_skill * 0.05 + 10)) + 25
     stealth_skill = math.floor(stealth_skill)
     return stealth_skill
 
 def update_monster_faith(monster):
     """ Spell Power/Damage """
-    faith = (5 * monster.attributes.divinity.level) + (1 * monster.attributes.wisdom.level)
+    faith = (5 * monster.primary_attributes["Divinity"]) + (1 * monster.primary_attributes["Wisdom"])
     faith = (0.2 * faith) ** 0.9
     faith = math.floor(faith)
     return faith
 
 def update_monster_luck_chance(monster):
     """ This can be applied to almost anything in the game. Chance for a really lucky outcome """
-    luck_chance = (5 * monster.attributes.fortuity.level)
+    luck_chance = (5 * monster.primary_attributes["Fortuity"])
     luck_chance = - (50 / (luck_chance * 0.01 + 10)) + 5
     luck_chance = math.floor(luck_chance)
     return luck_chance
 
 def update_monster_maximum_sanctity(monster):
     """ Basically your mana. Required to cast spells and use abilities. Should slowly recover over time. """
-    maximum_sanctity = (5 * monster.attributes.divinity.level) + (1 * monster.attributes.wisdom.level) + 3
+    maximum_sanctity = (5 * monster.primary_attributes["Divinity"]) + (1 * monster.primary_attributes["Wisdom"]) + 3
     maximum_sanctity = (0.8 * maximum_sanctity) ** 0.9
     maximum_sanctity = math.floor(maximum_sanctity)
     return maximum_sanctity
 
 def update_monster_maximum_health(monster):
     """ How much health your Hero has. At zero, you die. """
-    maximum_health = (10 * monster.attributes.vitality.level) + (2 * monster.attributes.resilience.level) + (1 * monster.attributes.strength.level) + 10
+    maximum_health = (10 * monster.primary_attributes["Vitality"]) + (2 * monster.primary_attributes["Resilience"]) + (1 * monster.primary_attributes["Strength"]) + 10
     maximum_health = 0.1 * math.sin(maximum_health) + 0.1 * maximum_health
     maximum_health = math.floor(maximum_health)
     return maximum_health
 
-
-    
