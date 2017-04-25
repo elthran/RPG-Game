@@ -7,6 +7,8 @@ NOTE: every time I define a test I add it to the run_all function.
 
 I am using this tutorial https://docs.python.org/3.6/library/unittest.html
 '''
+from game import Hero
+
 from base_classes import Base, BaseDict
 from database import EZDB
 from base_classes import BaseItem, BaseDict
@@ -121,3 +123,42 @@ class BaseDictTestCase(unittest.TestCase):
         d = self.db.session.query(BaseDict).filter_by(id=1).first()
         d2 = self.db.session.query(BaseDict).filter_by(id=2).first()
         self.assertNotEqual(d['c'], d2['c'])
+        
+
+class BaseStringOfTestCase(unittest.TestCase):
+    def setUp(self):
+        self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
+
+    def tearDown(self, delete=True):
+        self.db.session.close()
+        self.db.engine.dispose()
+        if delete:
+            self.db._delete_database()
+    
+    def rebuild_instance(self):
+        """Tidy up and rebuild database instance.
+
+        ... otherwise you may not be retrieving the actual data
+        from the database only from memory.
+        """
+        
+        self.db.session.commit()
+        self.tearDown(delete=False)
+        self.setUp()
+            
+    def test_max_recursion_str(self):
+        """Prove that the a hero object can be converted to a string without infinte recursion.
+        
+        As Hero decends from Base it loads the Base __str__ method.
+        This currently results in max recursion depth. Which is lame because it was so nice before.
+        """
+        hero = Hero(name="Haldon")
+        self.db.session.add(hero)
+        self.db.session.commit()
+
+        str_hero = str(hero)       
+        self.rebuild_instance()
+        
+        hero2 = self.db.session.query(Hero).filter_by(name="Haldon").first()
+        # self.maxDiff = None
+        self.assertEqual(str_hero, str(hero2))

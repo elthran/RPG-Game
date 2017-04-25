@@ -104,8 +104,8 @@ class AbilitiesTestCase(unittest.TestCase):
             "Gain 3 gold for each level, every time you actvate this ability.",
             castable=True, cost=2)
         hero = Hero(name="Haldon")
-        hero.primary_attributes['Divinity'] = 10
-        hero.primary_attributes['Wisdom'] = 10
+        hero.attributes.divinity.level = 10
+        hero.attributes.wisdom.level = 10
         hero.update_secondary_attributes()
         hero.refresh_character()
         self.db.session.add(spell)

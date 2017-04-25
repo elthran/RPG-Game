@@ -168,7 +168,7 @@ class DatabaseTestCase(unittest.TestCase):
         hero.timestamp -= datetime.timedelta(seconds=11)
         oldtime = hero.timestamp 
         self.db.update_time(hero)
-        self.assertEqual(hero.current_endurance, 1)
+        self.assertEqual(hero.current_endurance, 5)
     
 
 if __name__ == '__main__':

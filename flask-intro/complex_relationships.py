@@ -69,8 +69,10 @@ abilities.Ability.heroes = relationship("Hero", secondary=abilities_association_
 ##########
 #Each Hero has One inventory. (One to One -> bidirectional)
 #inventory is list of character's items. 
-game.Inventory.hero_id = Column(Integer, ForeignKey('hero.id'))
-game.Inventory.hero = relationship("Hero", backref=backref("inventory", uselist=False))
+# game.Inventory.hero_id = Column(Integer, ForeignKey('hero.id'))
+# game.Inventory.hero = relationship("Hero", backref=backref("inventory", uselist=False))
+game.Hero.inventory_id = Column(Integer, ForeignKey('inventory.id'))
+game.Hero.inventory = relationship("Inventory", uselist=False)
 
 #Each inventory has many items. (One to Many -> bidirectional)
 #Each item can be in one inventory.
@@ -83,9 +85,8 @@ items.Item.item_template_id = Column(Integer, ForeignKey('item_template.id'))
 
 
 #One Hero -> one attributes object
-attributes.Attributes.hero_id = Column(Integer, ForeignKey('hero.id'))
-attributes.Attributes.hero = relationship("Hero", back_populates="attributes")
-game.Hero.attributes = relationship("Attributes", uselist=False, back_populates="hero")
+game.Hero.attributes_id = Column(Integer, ForeignKey('attributes.id'))
+game.Hero.attributes = relationship("Attributes", uselist=False)
 
 #Marked for restructure. Remove in favor of quest object.
 #Maybe make a special "KillQuest" quest type?

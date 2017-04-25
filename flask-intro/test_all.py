@@ -67,14 +67,14 @@ if __name__ == "__main__":
     
     #Just test one suite for testing->testings :P
     # all_tests_suite = build_suite_of_all_tests(database_tests)
-    # all_tests_suite = build_suite_of_all_tests(game_tests)
+    all_tests_suite = build_suite_of_all_tests(game_tests)
     # all_tests_suite = build_suite_of_all_tests(locations_tests)
     # all_tests_suite = build_suite_of_all_tests(abilities_tests)
     # all_tests_suite = build_suite_of_all_tests(quests_tests)
     # all_tests_suite = build_suite_of_all_tests(base_tests)
     
-    all_tests_suite = build_suite_of_all_tests(game_tests, locations_tests, database_tests, abilities_tests,
-        quests_tests, base_tests)
+    # all_tests_suite = build_suite_of_all_tests(game_tests, locations_tests, database_tests, abilities_tests,
+        # quests_tests)
     
     all_tests_runner = unittest.TextTestRunner(verbosity=2)
     all_tests_runner.run(all_tests_suite)

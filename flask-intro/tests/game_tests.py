@@ -43,8 +43,8 @@ class HeroTestCase(unittest.TestCase):
     def test_hero(self):
         """Prove that hero object builds and loads properly.
         
-        NOTE: Max_health set by Primary Attributes values.
-        NOTE2: Relationships (Abilities, inventory and primary_attributes, etc.) are accessed by the
+        NOTE: Max_health set by Attributes levels.
+        NOTE2: Relationships (Abilities, inventory and attributes, etc.) are accessed by the
         self.__mapper__.relationships.keys
         
         I will need to update all of the other database objects to account for relationships.
@@ -52,8 +52,7 @@ class HeroTestCase(unittest.TestCase):
         self.db.session.add(self.hero)
         self.db.session.commit()
         
-        str_hero = str(self.hero)        
-        
+        str_hero = str(self.hero)       
         self.rebuild_instance()
         
         hero2 = self.db.session.query(Hero).filter_by(name="Haldon").first()
@@ -76,33 +75,34 @@ class HeroTestCase(unittest.TestCase):
     #This belongs in hero test case.
     def testKillQuests(self):
         
-        self.hero.kill_quests['Kill a wolf'] = "Find and kill a wolf!"
+        # self.hero.kill_quests['Kill a wolf'] = "Find and kill a wolf!"
         
         #Convert this to a string before closing the session or it will not
         #load the data contain in itself.
         
+        # self.db.session.add(self.hero)
+        # self.db.session.commit()
+        # old_quests = str(self.hero.kill_quests)
+        
+        # self.rebuild_instance
+        # self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
+        # self.assertEqual(old_quests, str(self.hero.kill_quests))
+        self.assertEqual("", "Not implemented.")
+        
+    def testAttributes(self):
         self.db.session.add(self.hero)
         self.db.session.commit()
-        old_quests = str(self.hero.kill_quests)
-        
-        self.rebuild_instance
-        self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
-        self.assertEqual(old_quests, str(self.hero.kill_quests))
-        
-    def testPrimaryAttributes(self):
-        self.db.session.add(self.hero)
-        self.db.session.commit()
-        str_primary_attributes = str(self.hero.primary_attributes)
+        str_attributes = str(self.hero.attributes)
         
         self.rebuild_instance()
         self.hero = self.db.session.query(Hero).filter_by(name='Haldon').first()
-        self.assertEqual(str_primary_attributes, str(self.hero.primary_attributes))
+        self.assertEqual(str_attributes, str(self.hero.attributes))
 
-class PrimaryAttributesTestCase(unittest.TestCase):
-    """Test hero primary_attributes
+class AttributesTestCase(unittest.TestCase):
+    """Test hero attributes
 
     Tests increment
-    Tests that two heroes primary_attributes are not the same object (that one was anoying).
+    Tests that two heroes attributes are not the same object (that one was anoying).
     Tests that list iteration works.
     Tests that data is retrieved as an ordered list when printing.
     Tests this from a saving/loading perspective as well.
@@ -113,7 +113,7 @@ class PrimaryAttributesTestCase(unittest.TestCase):
     """
         
     def setUp(self):
-        self.primary_attributes = PrimaryAttribute()
+        self.attributes = Attributes()
         self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
 
     def tearDown(self, delete=True):
@@ -134,49 +134,49 @@ class PrimaryAttributesTestCase(unittest.TestCase):
         self.setUp()
             
     def test_assignment(self):
-        self.db.session.add(self.primary_attributes)
+        self.db.session.add(self.attributes)
         self.db.session.commit()
-        strength = self.primary_attributes.Strength
+        strength = self.attributes.strength.level
         
         self.rebuild_instance()
-        self.primary_attributes = self.db.session.query(PrimaryAttribute).filter_by(id=1).first()
-        self.primary_attributes.Strength = 2
+        self.attributes = self.db.session.query(Attributes).filter_by(id=1).first()
+        self.attributes.strength.level = 2
         self.db.session.commit()
-        strength2 = self.primary_attributes.Strength
+        strength2 = self.attributes.strength.level
         
         self.rebuild_instance()
-        self.primary_attributes = self.db.session.query(PrimaryAttribute).filter_by(id=1).first()
-        strength3 = self.primary_attributes.Strength
+        self.attributes = self.db.session.query(Attributes).filter_by(id=1).first()
+        strength3 = self.attributes.strength.level
         
         self.assertEqual(strength, 1)
         self.assertEqual(strength2, 2)
         self.assertEqual(strength3, 2)
 
     def test_increment(self):
-        self.db.session.add(self.primary_attributes)
-        strength = self.primary_attributes.Strength
-        self.primary_attributes["Strength"] += 3
+        self.db.session.add(self.attributes)
+        strength = self.attributes.strength.level
+        self.attributes.strength.level += 3
         self.db.session.commit()
         
         self.rebuild_instance()
-        self.primary_attributes = self.db.session.query(PrimaryAttribute).filter_by(id=1).first()
+        self.attributes = self.db.session.query(Attributes).filter_by(id=1).first()
         
-        self.assertEqual(self.primary_attributes["Strength"], 4)
+        self.assertEqual(self.attributes.strength.level, 4)
 
     def test_is_new_object(self):
-        primary_attributes = PrimaryAttribute()
-        self.assertNotEqual(id(self.primary_attributes), id(primary_attributes))  
+        attributes = Attributes()
+        self.assertNotEqual(id(self.attributes), id(attributes))  
         
     def test_increment_all(self):
-        self.db.session.add(self.primary_attributes)
-        for attribute in self.primary_attributes:
-            self.primary_attributes[attribute] += 1
+        self.db.session.add(self.attributes)
+        for attribute in self.attributes:
+            attribute.level += 1
         self.db.session.commit()
-        str_primary_attributes = str(self.primary_attributes)
+        str_attributes = str(self.attributes)
         
         self.rebuild_instance()
-        self.primary_attributes = self.db.session.query(PrimaryAttribute).filter_by(id=1).first()    
-        self.assertEqual(str_primary_attributes, str(self.primary_attributes))
+        self.attributes = self.db.session.query(Attributes).filter_by(id=1).first()    
+        self.assertEqual(str_attributes, str(self.attributes))
     
     
 if __name__ == '__main__':

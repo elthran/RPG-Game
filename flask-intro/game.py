@@ -129,10 +129,6 @@ class Hero(Base):
     virtue = Column(Integer)
     devotion = Column(Integer)
     gold = Column(Integer)
-    exp_percent = Column(Integer)
-    health_percent = Column(Integer)
-    sanctity_percent = Column(Integer)
-    endurance_percent = Column(Integer)
 
     # Jacob added the new "secondary attributes"
     proficiency_attack_damage = Column(Integer)
@@ -160,7 +156,10 @@ class Hero(Base):
     proficiency_resist_piercing = Column(Integer)
 
     # Jacob's Test Value
-    proficiency_test = Proficiency("Testing", "How much testing you do", "Vitality")
+    #@Jacob by Marlen
+    #This value needs to be asigned as a relationship here.
+    #And then this statement would go in __init__.
+    # proficiency_test = Proficiency("Testing", "How much testing you do", "Vitality")
 
     ability_points = Column(Integer)
     basic_ability_points = Column(Integer)
@@ -243,10 +242,6 @@ class Hero(Base):
         self.proficiency_resist_blunt = 0
         self.proficiency_resist_slashing = 0
         self.proficiency_resist_piercing = 0
-                
-        self.health_percent = 0
-        self.sanctity_percent = 0
-        self.endurance_percent = 0
     
         self.ability_points = 3 #TEMP. Soon will use the 4 values below
         self.basic_ability_points = 5
@@ -257,9 +252,10 @@ class Hero(Base):
         self.attribute_points = 5
         self.proficiency_points = 10
         
-        #Marked for rename
-        #Consider "endurance" or "health" instead.
-        #and then max_health and max_endurance as derived values.
+        #Build before *_current so that *_percents and validators work.
+        self.max_sanctity = 0
+        self.max_endurance = 0
+        
         self.current_sanctity = 0
         self.current_health = 0
         self.current_endurance = 0
@@ -348,13 +344,13 @@ class Hero(Base):
         self.luck = update_luck_chance(self)
         
         #Marked for restructure
-        try:
-            previous_max_health = self.max_health
-        except KeyError:
-            pass
+        # try:
+            # previous_max_health = self.max_health
+        # except KeyError:
+            # pass
         self.max_health = update_maximum_health(self)
-        if not previous_max_health:
-                previous_max_health = self.max_health
+        # if not previous_max_health:
+                # previous_max_health = self.max_health
                 
         # Hidden attributes
         self.experience_gain_modifier = 1 # This is the percentage of exp you gain
@@ -364,20 +360,49 @@ class Hero(Base):
             ability.update_stats(self)
         for item in self.equipped_items:
             item.update_stats()
-
-        #Marked for restructure:
-        #Move to refresh_character?
-        # When you update max_health, current health will also change by the same amount
-        max_health_change = self.max_health - previous_max_health
-        if max_health_change: 
-            self.current_health += max_health_change	
-        if self.current_health < 0:
+        
+        #Rebuild percent values.
+        self.current_endurance = self.current_endurance
+        self.current_exp = self.current_exp
+        self.current_sanctity = self.current_sanctity
+        
+    
+    @validates('max_health')
+    def sync_current_health(self, key_name, health_value):
+        """Reduce current_health if current_health overflows max_health.
+        """
+        try:
+            self.current_health = min(self.current_health, health_value)
+        except TypeError:
             self.current_health = 0
+        return health_value
+        
+        
+    @validates('current_endurance')
+    def sync_endurance_percent(self, key_name, endurance_value):
+        """Update endurance_percent on current_endurance change.
+        
+        """
 
-        # Need these for the profile page but they need to be incorporated better
-        self.health_percent = round(self.current_health / self.max_health, 2) * 100
-        self.sanctity_percent = round(self.current_sanctity / self.max_sanctity, 2) * 100
-        self.endurance_percent = round(self.current_endurance / self.max_endurance, 2) * 100
+        try:
+            self.endurance_percent = round(endurance_value / self.max_endurance, 2) * 100
+        except (TypeError, ZeroDivisionError):
+            self.endurance_percent = 0
+        
+        return max(endurance_value, 0)
+        
+    @validates('current_sanctity')
+    def sync_sanctity_percent(self, key_name, sanctity_value):
+        """Update sanctity_percent on current_sanctity change.
+        
+        """
+
+        try:
+            self.sanctity_percent = round(sanctity_value / self.max_sanctity, 2) * 100
+        except (TypeError, ZeroDivisionError):
+            self.sanctity_percent = 0
+        
+        return max(sanctity_value, 0)
     
     @validates('current_exp')
     def sync_exp_percent(self, key_name, xp_value):
@@ -390,9 +415,22 @@ class Hero(Base):
         
         try:
             self.exp_percent = round(xp_value / self.max_exp, 2) * 100
-        except TypeError:
+        except (TypeError, ZeroDivisionError):
             self.exp_percent = 0
         return xp_value
+        
+    @validates('current_health')
+    def sync_health_percent(self, key_name, health_value):
+        """Update health_percent on current_health change.
+        
+        """
+
+        try:
+            self.health_percent = round(health_value / self.max_health, 2) * 100
+        except (TypeError, ZeroDivisionError):
+            self.health_percent = 0
+        
+        return max(health_value, 0)
         
     def refresh_character(self):
         self.current_sanctity = self.max_sanctity
