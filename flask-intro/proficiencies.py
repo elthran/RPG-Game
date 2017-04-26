@@ -3,7 +3,7 @@ It has been set to read only so that you don't edit it without using
 build_code.py.
 """
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
@@ -143,7 +143,7 @@ class Proficiency(Base):
     level = Column(Integer)
     value = Column(Integer)
     next_value = Column(Integer)
-    max_level = Column(Integer)
+    max_level = Column(Boolean)
 
     def __init__(self, name, description, attribute_type, type):
         self.name = name

@@ -3,7 +3,7 @@ It has been set to read only so that you don't edit it without using
 build_code.py.
 """
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
@@ -54,7 +54,7 @@ class Proficiency(Base):
     level = Column(Integer)
     value = Column(Integer)
     next_value = Column(Integer)
-    max_level = Column(Integer)
+    max_level = Column(Boolean)
 
     def __init__(self, name, description, attribute_type, type):
         self.name = name
@@ -65,12 +65,13 @@ class Proficiency(Base):
         self.level = 1
         self.value = 10
         self.next_value = 15
-        self.max_level = 1
+        self.max_level = True
 
-    def update_testing(self, myHero):
-        self.max_level = myHero.attributes.vitality // 2
-        if self.max_level < 1:
-            self.max_level = 1
+    def proficiency_updater(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.max_level = False
+        else:
+            self.max_level = True
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
 
