@@ -12,51 +12,58 @@
 			<h1>Offense</h1>
 			<ul>
                 {%- for proficiency in myHero.proficiencies %}
-                {%- if proficiency.type == "Offense" %}
-                <li>{{ proficiency.name}}: {{ proficiency.level }}</li> <!--<input type="int" name="testplz" value="0">-->
-                {%- endif %}
+					{%- if proficiency.type == "Offense" %}
+						<li>{{ proficiency.name}}: {{ proficiency.level }} [{{ proficiency.max_level }}]   ({{ proficiency.attribute_type }})</li> 
+						{% if not proficiency.max_level %}
+							<input type="int" name="testplz" value="0">
+						{% endif %}
+					{%- endif %}
                 {%- endfor %}
 			</ul>
 			<h1>Stealth</h1>
 			<ul>
-				<li>Concealment: {{ myHero.proficiencies.stealth.level }}</li>
-				<li>Pickpocketing: {{ myHero.proficiencies.pickpocketing.level }}</li>
+				{%- for proficiency in myHero.proficiencies %}
+					{%- if proficiency.type == "Stealth" %}
+						<li>{{ proficiency.name}}: {{ proficiency.level }}</li> <!--<input type="int" name="testplz" value="0">-->
+					{%- endif %}
+                {%- endfor %}
 			</ul>
 		</div>
 		<div class="proficiencyPageInner">
 			<h1>Defence</h1>
 			<ul>
-				<li>Defence: {{ myHero.proficiencies.defence.level }}</li>
-				<li>Evasion: {{ myHero.proficiencies.evade.level }}</li>
-				<li>Parry: {{ myHero.proficiencies.parry.level }}</li>
-				<li>Riposte: {{ myHero.proficiencies.riposte.level }}</li>
-				<li>Block: {{ myHero.proficiencies.block.level }}</li>
+				{%- for proficiency in myHero.proficiencies %}
+					{%- if proficiency.type == "Defence" %}
+						<li>{{ proficiency.name}}: {{ proficiency.level }}</li> <!--<input type="int" name="testplz" value="0">-->
+					{%- endif %}
+                {%- endfor %}
 			</ul>
 			<h1>Resistances</h1>
 			<ul>
-				<li>Frost: {{ myHero.proficiencies.resist_frost.level }}</li>
-				<li>Flame: {{ myHero.proficiencies.resist_flame.level }}</li>
-				<li>Shadow: {{ myHero.proficiencies.resist_shadow.level }}</li>
-				<li>Holy: {{ myHero.proficiencies.resist_holy.level }}</li>
-				<li>Piercing: {{ myHero.proficiencies.resist_piercing.level }}</li>
-				<li>Slashing: {{ myHero.proficiencies.resist_slashing.level }}</li>
-				<li>Blunt: {{ myHero.proficiencies.resist_blunt.level }}</li>
+				{%- for proficiency in myHero.proficiencies %}
+					{%- if proficiency.type == "Resistance" %}
+						<li>{{ proficiency.name}}: {{ proficiency.level }}</li> <!--<input type="int" name="testplz" value="0">-->
+					{%- endif %}
+                {%- endfor %}
 			</ul>
 		</div>
 		<div class="proficiencyPageInner">
 			<h1>Diplomacy</h1>
 			<ul>
-				<li>Oration: {{ myHero.proficiencies.oration.level }}</li>
-				<li>Bartering: {{ myHero.proficiencies.bartering.level }}</li>
+				{%- for proficiency in myHero.proficiencies %}
+					{%- if proficiency.type == "Diplomacy" %}
+						<li>{{ proficiency.name}}: {{ proficiency.level }}</li> <!--<input type="int" name="testplz" value="0">-->
+					{%- endif %}
+                {%- endfor %}
 			</ul>
-			<h1>Divinity</h1>
+			<h1>Holiness</h1>
 			<ul>
-				<li>Faith: {{ myHero.proficiencies.faith.level }}</li>
-				<li>Knowledge: {{ myHero.proficiencies.knowledge.level }}</li>
+				{%- for proficiency in myHero.proficiencies %}
+					{%- if proficiency.type == "Holiness" %}
+						<li>{{ proficiency.name}}: {{ proficiency.level }}</li> <!--<input type="int" name="testplz" value="0">-->
+					{%- endif %}
+                {%- endfor %}
 			</ul>
-			{% if myHero.proficiency_points %}
-				<input class="btn btn-default submitButton" type="submit" value="Save" id="level_button">
-			{% endif %}
 		</div>
     </div>	
 	<div style="clear: both;"></div>

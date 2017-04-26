@@ -10,7 +10,7 @@ from sqlalchemy.orm import relationship
 from base_classes import Base
 
 PROFICIENCY_INFORMATION = [
-    ("Attack damage", "", 'Unspecified', "Offense"),
+    ("Attack damage", "", 'Strength', "Offense"),
     ("Attack speed", "", 'Unspecified', "Offense"),
     ("Attack accuracy", "", 'Unspecified', "Offense"),
     ("First strike", "", 'Unspecified', "Offense"),
@@ -20,9 +20,9 @@ PROFICIENCY_INFORMATION = [
     ("Parry", "", 'Unspecified', "Defence"),
     ("Riposte", "", 'Unspecified', "Defence"),
     ("Block", "", 'Unspecified', "Defence"),
-    ("Stealth", "", 'Unspecified', "Diplomacy"),
-    ("Pickpocketing", "", 'Unspecified', "Diplomacy"),
-    ("Faith", "", 'Unspecified', "Diplomacy"),
+    ("Stealth", "", 'Unspecified', "Stealth"),
+    ("Pickpocketing", "", 'Unspecified', "Stealth"),
+    ("Faith", "", 'Unspecified', "Holiness"),
     ("Bartering", "", 'Unspecified', "Diplomacy"),
     ("Oration", "", 'Unspecified', "Diplomacy"),
     ("Knowledge", "", 'Unspecified', "Diplomacy"),
@@ -92,7 +92,7 @@ class Proficiencies(Base):
     
     def __init__(self):
         
-        self.attack_damage = Proficiency("Attack damage", "", "Unspecified", "Offense")
+        self.attack_damage = Proficiency("Attack damage", "", "Strength", "Offense")
         self.attack_speed = Proficiency("Attack speed", "", "Unspecified", "Offense")
         self.attack_accuracy = Proficiency("Attack accuracy", "", "Unspecified", "Offense")
         self.first_strike = Proficiency("First strike", "", "Unspecified", "Offense")
@@ -102,9 +102,9 @@ class Proficiencies(Base):
         self.parry = Proficiency("Parry", "", "Unspecified", "Defence")
         self.riposte = Proficiency("Riposte", "", "Unspecified", "Defence")
         self.block = Proficiency("Block", "", "Unspecified", "Defence")
-        self.stealth = Proficiency("Stealth", "", "Unspecified", "Diplomacy")
-        self.pickpocketing = Proficiency("Pickpocketing", "", "Unspecified", "Diplomacy")
-        self.faith = Proficiency("Faith", "", "Unspecified", "Diplomacy")
+        self.stealth = Proficiency("Stealth", "", "Unspecified", "Stealth")
+        self.pickpocketing = Proficiency("Pickpocketing", "", "Unspecified", "Stealth")
+        self.faith = Proficiency("Faith", "", "Unspecified", "Holiness")
         self.bartering = Proficiency("Bartering", "", "Unspecified", "Diplomacy")
         self.oration = Proficiency("Oration", "", "Unspecified", "Diplomacy")
         self.knowledge = Proficiency("Knowledge", "", "Unspecified", "Diplomacy")
@@ -154,11 +154,12 @@ class Proficiency(Base):
         self.level = 1
         self.value = 10
         self.next_value = 15
-        self.max_level = 1
+        self.max_level = True
 
-    def update_testing(self, myHero):
-        self.max_level = myHero.attributes.vitality // 2
-        if self.max_level < 1:
-            self.max_level = 1
+    def proficiency_updater(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.max_level = False
+        else:
+            self.max_level = True
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5

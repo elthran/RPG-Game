@@ -323,7 +323,7 @@ def attributes():
 
         myHero.update_secondary_attributes()
         myHero.refresh_character()
-        # myHero.proficiency_test.update_testing(myHero) # TEMP. Testing. Will be a new function that updates all proficiencies soon
+        myHero.proficiencies.attack_damage.proficiency_updater(myHero)
         #By Marlen
         #This will be replaced with:
         #hero.proficiencies.update_all(hero) or something.
