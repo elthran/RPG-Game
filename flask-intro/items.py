@@ -93,14 +93,14 @@ class Item(Base):
             setattr(self, key, getattr(self.template, key))
 
     
-    def update_stats(self):
+    def update_stats(self, hero):
         """Update hero to reflect stat values with item equiped.
         
         Will fail and will need to be in Inventory?
         """
         if self.broken:
             return None
-        self.template.update_stats(self.inventory.hero)
+        self.template.update_stats(hero)
         
     
     def check_if_improvement(self):

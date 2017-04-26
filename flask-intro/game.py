@@ -285,7 +285,7 @@ class Hero(Base):
         for ability in self.abilities:
             ability.update_stats(self)
         for item in self.equipped_items:
-            item.update_stats()
+            item.update_stats(self)
         
         #Rebuild percent values. Silly but effective.
         self.current_endurance = self.current_endurance
