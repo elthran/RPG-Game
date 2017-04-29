@@ -57,7 +57,10 @@ class Item(Base):
         self.name = template.name
         
         #Should be a current_durability value as well?
-        self.durability = template.max_durability
+        try:
+            self.durability = template.max_durability
+        except AttributeError:
+            pass
         self.broken = False
         self.consumed = False
 

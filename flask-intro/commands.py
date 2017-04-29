@@ -60,7 +60,8 @@ class Command:
                 if path.active and path.quest.name == "Get Acquainted with the Blacksmith" and \
                     path.stage == 2:
                     path.advance()
-            return "success", 200, {'Content-Type': 'text/plain'}                
+            return "success", 200, {'Content-Type': 'text/plain'}  
+        return "success", 200, {'Content-Type': 'text/plain'}
 
         
     cmd_functions = {

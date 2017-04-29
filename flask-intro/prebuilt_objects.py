@@ -3,7 +3,7 @@ from abilities import Ability, Archetype_Ability, Class_Ability, Religious_Abili
 from game import User, Hero
 from quests import Quest, QuestPath
 from items import (One_Handed_Weapon, Shield, Two_Handed_Weapon, Leg_Armour, Chest_Armour,
-    Head_Armour, Feet_Armour, Arm_Armour, Hand_Armour, Ring)
+    Head_Armour, Feet_Armour, Arm_Armour, Hand_Armour, Ring, Consumable)
 import complex_relationships #MUST be imported last.
 
 """
@@ -213,7 +213,9 @@ all_store_items = [One_Handed_Weapon("Small Dagger", buy_price=5, min_damage=30,
     Hand_Armour("Test Gloves", 5, 7),
     Ring("Test Ring", 8)]
 
-# all_marketplace_items = [Consumable("Minor Health Potion", 3, healing_amount=10),
-                         # Consumable("Major Health Potion", 6, healing_amount=50),
-                         # Consumable("Major Faith Potion", 6, sanctity_amount=50),
-                         # Consumable("Major Awesome Max Potion", 6000, sanctity_amount=50)]
+all_marketplace_items = [
+    Consumable("Minor Health Potion", 3, healing_amount=10),
+    Consumable("Major Health Potion", 6, healing_amount=50),
+    Consumable("Major Faith Potion", 6, sanctity_amount=50),
+    Consumable("Major Awesome Max Potion", 6000, sanctity_amount=50)
+    ]

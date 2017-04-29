@@ -111,13 +111,13 @@ class EZDB:
     def get_all_store_items(self):
         """Return all items in the database ordered by name.
         """
-        return self.session.query(ItemTemplate).order_by(ItemTemplate.name).all()
+        return self.session.query(ItemTemplate).filter(ItemTemplate.type != "Consumable").order_by(ItemTemplate.name).all()
         
         
     def get_all_marketplace_items(self):
         """Not Implemented!
         """
-        return []
+        return self.session.query(ItemTemplate).filter_by(type="Consumable").all()
         
 
     def get_default_world(self):

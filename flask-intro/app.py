@@ -780,9 +780,7 @@ def marketplace(inventory):
         return render_template('store.html', myHero=myHero, page_title=page_title, page_links=page_links)  # return a string
     elif inventory == "general":
         page_links = [("Let me go back to the ", "/marketplace/greeting", "marketplace", " instead.")]
-        for item in database.get_all_marketplace_items():
-            if isinstance(item, Consumable):
-                items_for_sale.append(item)
+        items_for_sale = database.get_all_marketplace_items()
     return render_template('store.html', myHero=myHero, items_for_sale=items_for_sale, page_title=page_title, page_links=page_links)  # return a string
 
 @app.route('/old_mans_hut')
