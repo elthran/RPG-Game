@@ -81,7 +81,7 @@ class EZDB:
                 prebuilt_objects.all_abilities,
                 prebuilt_objects.all_store_items,
                 prebuilt_objects.all_marketplace_items,
-                prebuilt_objects.testing_quests]:
+                prebuilt_objects.all_quests]:
             for obj in obj_list:
                 try:
                     if type(User()) == type(obj):

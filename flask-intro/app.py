@@ -12,18 +12,18 @@ from flask import Flask, render_template, redirect, url_for, request, session, f
 from functools import wraps
 from combat_simulator import *
 from bestiary import *
-import database
+#import database
 from items import Quest_Item
 from commands import Command
 
 #MUST be imported after all other game objects but before any of them are used.
-import complex_relationships 
+import complex_relationships
 
 #Last module to be imported (of our custom ones)
 
 #Marked for restructure: probably should only be used in Hero object (in game.py) directly.
 #If it is needed elsewhere the method should be moved to the Hero object.
-from secondary_attributes import * 
+from secondary_attributes import *
 import sqlite3
 import hashlib
 
@@ -31,6 +31,19 @@ import hashlib
 import pdb
 
 # INIT AND LOGIN FUNCTIONS
+from database import EZDB
+database = EZDB('sqlite:///static/database.db', debug=False)
+
+#I know there is a better way ... primary_attributes should be defined on initialization.
+#This allows myHero to be global variable in this module/file without magic. I think.
+myHero = Hero(gold=5000, age=7)
+#Because hero is easier for me to type.
+#Note: they are the same object!
+hero = myHero
+
+# initialization
+game = Game(hero)
+game.set_enemy(monster_generator(hero.age))
 
 # create the application object
 app = Flask(__name__)
@@ -49,7 +62,7 @@ def login_required(f):
             return redirect(url_for('login'))
     return wrap
 
-#Not implemented. Control user moves on map.    
+#Not implemented. Control user moves on map.
 def prevent_url_typing(f):
     """Set certain pages as requiring a login to visit.
 
@@ -62,7 +75,7 @@ def prevent_url_typing(f):
             requested_move = set([kwargs['location_id']])
         except KeyError:
             pass
-        try: 
+        try:
             requested_move = set([kwargs['cave_name']])
         except KeyError:
             pass
@@ -70,7 +83,7 @@ def prevent_url_typing(f):
             requested_move = set([kwargs['town_name']])
         except KeyError:
             pass
-        pdb.set_trace()    
+        pdb.set_trace()
         if 'valid_moves' in session and any(move in session['valid_moves'] for move in requested_move):
             return f(*args, **kwargs)
         else:
@@ -94,11 +107,11 @@ def login():
             session['logged_in'] = True
             flash("LOG IN SUCCESSFUL")
             session['id'] = database.get_user_id(username)
-            
+
             #I recommend a dialogue here to select the specific hero that the user wants to play with.
             #Or a page redirect whatever ...
             session['hero_id'] = database.fetch_hero(username).id #Gets the hero's id.
-            
+
             return redirect(url_for('home'))
         #Marked for upgrade, consider checking if user exists and redirect to account creation page.
         else:
@@ -246,13 +259,13 @@ def admin():
 
     return render_template('admin.html', page_title=page_title, myHero=myHero, admin=admin)  # return a string
 
-@app.route('/display_users')	
+@app.route('/display_users')
 def display_user_page():
 	users = database.session.query(User).order_by(User.id).all()
 	return render_template('users.html', myHero=myHero, users=users)
 
 ### PROFILE PAGES (Basically the home page of the game with your character display and stats)
-    
+
 @app.route('/home')
 @login_required
 def home():
@@ -261,7 +274,7 @@ def home():
     database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
     #This should be uneccessary -> but isn't?
     myHero.update_secondary_attributes()
-    
+
     # pdb.set_trace()
     #Consider moving this to the login function? Or instantiate during "create_account?"
     # initialize current_world
@@ -269,13 +282,13 @@ def home():
         myHero.current_world = database.get_default_world()
         myHero.current_location = database.get_default_location()
         database.update()
-    
+
     #Not implemented. Control user moves on map.
     #Sets up initial valid moves on the map.
     # Should be a list of urls ...
     # session['valid_moves'] = myHero.current_world.show_directions(myHero.current_location)
     # session['valid_moves'].append(myHero.current_location.id)
-        
+
     # If it's a new character, send them to cerate_character url
     if myHero.character_name == None:
         return redirect(url_for('create_character'))
@@ -289,7 +302,7 @@ def attributes():
     #Obviously this is a shitty way to do this, but I'm not sure where else to store this
     #information for now. Probably as part of the hero class so it's easily sent to each html file.
     #Or some global table that we send to each html file with the hero.
-    
+
     #Possibly update the PrimaryAttribute table and add in a "description"?
     #Would require some restructuring.
     attribute_information = [("Agility", "A measure of how agile a character is. Dexterity controls attack and movement speed and accuracy, as well as evading an opponent's attack ."),
@@ -304,7 +317,7 @@ def attributes():
                              ("Survivalism", "A measure of a character's openness to their surroundings. "),
                              ("Vitality", "A measure of how sturdy a character is."),
                              ("Wisdom", "A measure of a character's problem-solving ability.")]
-    
+
     #Fix single quotes in string bug when converting from JS to HTML
     #Python to Jinja to HTML to JS needs separate fix.
     for index, data in enumerate(attribute_information):
@@ -318,7 +331,7 @@ def attributes():
             attribute = getattr(myHero.attributes, element[0:-5]) #Convert name e.g. agilityInput becomes agility.
             points_spent += form_value - attribute.level
             attribute.level = form_value
-        
+
         myHero.attribute_points -= points_spent
 
         myHero.update_secondary_attributes()
@@ -356,26 +369,26 @@ def proficiencies():
 @login_required
 def ability_tree(spec):
     page_title = "Abilities"
-    
+
     unknown_abilities = []
     learnable_abilities = []
     mastered_abilities = []
-    
-    # Create a list of learned abilities that match current spec.  
-    for ability in myHero.abilities: 
+
+    # Create a list of learned abilities that match current spec.
+    for ability in myHero.abilities:
         if ability.ability_type == spec:
             # Add abilities to learnable_abilities (known, but non-mastered)
             # or mastered abilities
-            if ability.level < ability.max_level: 
+            if ability.level < ability.max_level:
                 learnable_abilities.append(ability)
             else:
                 mastered_abilities.append(ability)
-                
+
     if myHero.ability_points > 0:
         for ability in database.get_all_abilities():
             # Create a list of unlearned abilities
             # for the current page you are on (basic, archetype, specialization, religion)
-            if ability not in myHero.abilities and ability.type == spec: 
+            if ability not in myHero.abilities and ability.type == spec:
                 if spec == "Archetype": # If you are on the archetype page, we further narrow it down to your archetype and "all"
                     if ability.archetype == myHero.archetype or ability.archetype == "All":
                         unknown_abilities.append(ability)
@@ -386,10 +399,10 @@ def ability_tree(spec):
                     if ability.religion == myHero.religion or ability.religion == "All":
                         unknown_abilities.append(ability)
                 else:
-                    unknown_abilities.append(ability)            
+                    unknown_abilities.append(ability)
         return render_template('profile_ability.html', myHero=myHero, ability_tree=spec, unknown_abilities=unknown_abilities,
                                learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
-        
+
     return render_template('profile_ability.html', myHero=myHero, ability_tree=spec, unknown_abilities=unknown_abilities,
                            learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
 
@@ -503,28 +516,28 @@ def cave(cave_name):
 # @prevent_url_typing
 def world_map(current_world, location_id):
     """Set up World Map web page. Return html string/web page.
-    
+
     I don't know where the arguments come from? Or why they are passed.
     I will try and figure it out.
     """
     # pdb.set_trace()
-    
+
     #Very important as current_world is a string variable and should be the object itself.
     current_world = myHero.current_world
-    
+
     #Updates current id. May be redundant. Or it may allow page to be dynamic.
     #May have originally compensated for the lack of a database.
     current_location = current_world.find_location(location_id)
-    
+
     #Needs to be reimplemented/or removed
     # myHero.known_locations.append(current_world)
     # myHero.current_city = None #?
-    
+
     move_on_the_map = current_world.show_directions(current_location)
     myHero.current_location = current_location
     database.update()
-    
-    
+
+
     #Debug Me! Use current_world.display?
     # Check render of places_of_interest
     page_title = current_world.display.page_title
@@ -532,12 +545,12 @@ def world_map(current_world, location_id):
     page_image = current_world.display.page_image
     paragraph = current_world.display.paragraph
     places_of_interest = current_world.display.places_of_interest
-    
+
     #Not implemented. Control user moves on map.
     #Should be a list of urls ...
     # session['valid_moves'] = move_on_the_map
-    
-    return render_template('world_map.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest, move_on_the_map=move_on_the_map)  
+
+    return render_template('world_map.html', myHero=myHero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest, move_on_the_map=move_on_the_map)
 
 @app.route('/barracks')
 @login_required
@@ -678,7 +691,7 @@ def battle():
 @login_required
 def store(inventory):
     page_title = "Store"
-    
+
     # path = database.get_path_if_exists_and_active(quest_name, myHero)
     # if path in myHero.quest_paths:
         # path.advance()
@@ -807,25 +820,25 @@ def leave_town():
 @app.route('/<cmd>') # need to make sure this doesn't conflict with other routes
 def command(cmd=None):
     """Accept a string from HTML button code -> send back a response.
-    
+
     The respose must be in the form: "key=value" (at this time.)
     See the Command class in the commands.py module.
     cmd is equal to the value of the value field in the html code
     i.e. <button value='foo'> -> cmd == 'foo'
-    
+
     Extra data can be sent in request.args (which is accessible from within this namespace).
-    
+
     args are sent in the form "/" + command + "?key=value&&key2=value2".
     Where the value of command == cmd and
     args == {key: value, key2: value2} (well it isn't a real dict but it mostly acts like one).
-    
+
     Or you could sent the data as a file ... or raw or some XML or something
     and then parse it on this end based on the headers. But that is more complicated
     than I need right now.
     """
     if cmd == 'favicon.ico':
         return "success", 200, {'Content-Type': 'text/plain'}
-    
+
     testing = True
     if testing:
         print('request is:', repr(request))
@@ -834,7 +847,7 @@ def command(cmd=None):
         print('request view_args:', repr(request.view_args))
         print('request args:', repr(request.args))
         print('cmd is:', repr(cmd))
-        
+
     # event = dict(request.args)
     # event.add["hero"] = myHero
     # event.add["database"] = database
@@ -848,7 +861,7 @@ def command(cmd=None):
         print("Warning: invalid key {}".format(ex))
         print("Valid keys are: {}".format(list(Command.cmd_functions.keys())))
         # Look in the not yet refractored list of if statemens ...
-        
+
     if cmd == "woodsman":
         myHero.archetype = "Woodsman"
         return "success", 200, {'Content-Type': 'text/plain'} #//
@@ -862,7 +875,7 @@ def command(cmd=None):
         myHero.specialization = "Trapper"
         return "success", 200, {'Content-Type': 'text/plain'} #//
     # END OF TEST CODE
-    
+
     for item in myHero.inventory:
         if cmd == item.name:
             if item.wearable:            # EQUIP ITEMS
@@ -960,7 +973,7 @@ def command(cmd=None):
 @app.route('/')
 def main():
     """Redirects user to a default first page
-    
+
     Currently the login page.
     """
     return redirect(url_for('login'))
@@ -977,19 +990,19 @@ if __name__ == '__main__':
     #Marked for rename
     #I need a better name that "database.db"
     database = database.EZDB('sqlite:///static/database.db', debug=False)
-    
+
     #I know there is a better way ... primary_attributes should be defined on initialization.
     #This allows myHero to be global variable in this module/file without magic. I think.
     myHero = Hero(gold=5000, age=7)
     #Because hero is easier for me to type.
     #Note: they are the same object!
     hero = myHero
-    
+
     # initialization
     game = Game(hero)
     game.set_enemy(monster_generator(hero.age))
 
-    #Not implemented ... should be moved to prebuilt_objects.py and implemented in 
+    #Not implemented ... should be moved to prebuilt_objects.py and implemented in
     #database.py as get_default_quests()
     #Quest aren't actually implement yet but they will be soon!
     # Super temporary while testing quests
@@ -998,7 +1011,7 @@ if __name__ == '__main__':
     # myHero.inventory.append(Quest_Item("Copper Coin", myHero, 50))
     # for item in myHero.inventory:
         # item.amount_owned = 5
-    
+
     app.run(debug=True)
 
 

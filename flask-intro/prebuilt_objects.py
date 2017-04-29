@@ -163,19 +163,24 @@ all_abilities = [Ability("Determination", 5, "Increases Endurance by 3 for each 
     Religious_Ability("Wreath of Flames", 10, "Increases fire damage by 3 for each level.",
         religion="Forgoth"),
     Religious_Ability("Blessed", 10, "Increases devotion by 5 for each level.")]
-    
-all_store_items = []
-all_marketplace_items = []
 
 ###########
 #Quests
 ##########
-quest1 = Quest("Get Acquainted with the Blacksmith", "Go talk to the blacksmith.")
-quest1.next_quests.append(Quest("Get Acquainted with the Blacksmith", "Buy your first item.", reward_xp=7))
-quest2 = Quest("Equipping/Unequipping", "Equip any item.")
-quest2.next_quests.append(Quest("Equipping/Unequipping", "Unequip any item."))
+blacksmith = Quest("Get Acquainted with the Blacksmith", "Go talk to the blacksmith.")
+blacksmith.next_quests.append(Quest("Get Acquainted with the Blacksmith", "Buy your first item.", reward_xp=7))
+
+equipment = Quest("Equipping/Unequipping", "Equip any item.")
+equipment.next_quests.append(Quest("Equipping/Unequipping", "Unequip any item."))
+
+tavern = Quest("Become an apprentice at the tavern", "Ask if there are any jobs you can do.")
+tavern.next_quests.append("Become an apprentice at the tavern", "Collect 2 Wolf Pelts for the Bartender")
+
+tavern.next_quests.append("Become an apprentice at the tavern", "Find two copper coins and give them to the blacksmith")
+
+tavern.next_quests.append("Become an apprentice at the tavern", "Give the bartender 2 copper coins.")
         
-testing_quests = [quest1, quest2] #Which is really 4 quests.
+all_quests = [blacksmith, equipment] #Which is really 4 quests.
 
 ##########
 #Users (and heroes)
