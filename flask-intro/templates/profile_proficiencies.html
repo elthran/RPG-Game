@@ -13,7 +13,7 @@
 			<ul>
                 {%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Offense" %}
-						<li>{{ proficiency.name}}: {{ proficiency.level }} [{{ proficiency.max_level }}]   ({{ proficiency.attribute_type }})</li> 
+						<li>{{ proficiency.name}}: {{ proficiency.level }} [{{ proficiency.is_not_max_level }}]   ({{ proficiency.attribute_type }})</li> 
 						{% if not proficiency.max_level %}
 							<input type="int" name="testplz" value="0">
 						{% endif %}

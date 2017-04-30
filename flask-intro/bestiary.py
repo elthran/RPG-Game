@@ -71,9 +71,8 @@ def monster_generator(level):
     monster.update_monster_secondary_attributes()
     return monster
 
-bestiary_data = [Monster("001", "Alpha Wolf", "Wolf", "Wolves", level=1, archetype="basic"),
-                 Monster("002", "Goblin Scout", "Goblin", "Goblins", level=1, archetype="basic"),
-                 Monster("003", "Spiderling", "Spider", "Spiders", level=1, archetype="basic")]
+bestiary_data = [Monster("001", "Feral Dog", "Wolf", "Wolves", level=1, archetype="basic"),
+                 Monster("002", "Giant Rat", "Goblin", "Goblins", level=1, archetype="basic")]
 
 
 

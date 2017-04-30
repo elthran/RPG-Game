@@ -54,7 +54,7 @@ class Proficiency(Base):
     level = Column(Integer)
     value = Column(Integer)
     next_value = Column(Integer)
-    max_level = Column(Boolean)
+    is_not_max_level = Column(Boolean)
 
     def __init__(self, name, description, attribute_type, type):
         self.name = name
@@ -65,13 +65,22 @@ class Proficiency(Base):
         self.level = 1
         self.value = 10
         self.next_value = 15
-        self.max_level = True
+        self.is_not_max_level = False
 
-    def proficiency_updater(self, myHero):
+{% for name in ALL_PROFICIENCIES %}
+class {{ name.title().replace("_", '') }}(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"{{ name.title().replace("_", '') }}",
+    }
+    
+    def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
-            self.max_level = False
+            self.is_not_max_level = True
         else:
-            self.max_level = True
+            self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+{%- endfor %}    
 

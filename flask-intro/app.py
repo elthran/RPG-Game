@@ -44,6 +44,7 @@ hero = myHero
 # initialization
 game = Game(hero)
 game.set_enemy(monster_generator(hero.age))
+gameVersion = "0.00.01"
 
 # create the application object
 app = Flask(__name__)
@@ -336,7 +337,7 @@ def attributes():
 
         myHero.update_secondary_attributes()
         myHero.refresh_character()
-        myHero.proficiencies.attack_damage.proficiency_updater(myHero)
+        myHero.proficiencies.attack_damage.update(myHero)
         #By Marlen
         #This will be replaced with:
         #hero.proficiencies.update_all(hero) or something.

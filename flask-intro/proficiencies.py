@@ -143,7 +143,7 @@ class Proficiency(Base):
     level = Column(Integer)
     value = Column(Integer)
     next_value = Column(Integer)
-    max_level = Column(Boolean)
+    is_not_max_level = Column(Boolean)
 
     def __init__(self, name, description, attribute_type, type):
         self.name = name
@@ -154,12 +154,328 @@ class Proficiency(Base):
         self.level = 1
         self.value = 10
         self.next_value = 15
-        self.max_level = True
+        self.is_not_max_level = False
 
-    def proficiency_updater(self, myHero):
+
+class AttackDamage(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"AttackDamage",
+    }
+    
+    def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
-            self.max_level = False
+            self.is_not_max_level = True
         else:
-            self.max_level = True
+            self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+class AttackSpeed(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"AttackSpeed",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.agility.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class AttackAccuracy(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"AttackAccuracy",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.agility.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class FirstStrike(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"FirstStrike",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.agility.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class CriticalHit(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"CriticalHit",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.agility.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class Defence(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Defence",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.endurance.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class Evade(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Evade",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class Parry(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Parry",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class Riposte(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Riposte",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class Block(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Block",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class Stealth(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Stealth",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class Pickpocketing(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Pickpocketing",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class Faith(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Faith",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class Bartering(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Bartering",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class Oration(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Oration",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class Knowledge(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Knowledge",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class ResistFrost(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"ResistFrost",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class ResistFlame(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"ResistFlame",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class ResistShadow(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"ResistShadow",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class ResistHoly(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"ResistHoly",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class ResistBlunt(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"ResistBlunt",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class ResistSlashing(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"ResistSlashing",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+class ResistPiercing(Proficiency):
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"ResistPiercing",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5    
