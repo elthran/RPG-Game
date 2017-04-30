@@ -11,7 +11,7 @@ Suggestion: change name to game_objects.py
 """
 
 try:
-    from sqlalchemy import Table, Column, Integer, String, DateTime
+    from sqlalchemy import Table, Column, Integer, String, DateTime, Boolean
 
     from sqlalchemy import ForeignKey
     from sqlalchemy.orm import relationship

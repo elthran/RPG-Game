@@ -988,20 +988,6 @@ if __name__ == '__main__':
 
     # os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    #Marked for rename
-    #I need a better name that "database.db"
-    database = database.EZDB('sqlite:///static/database.db', debug=False)
-
-    #I know there is a better way ... primary_attributes should be defined on initialization.
-    #This allows myHero to be global variable in this module/file without magic. I think.
-    myHero = Hero(gold=5000, age=7)
-    #Because hero is easier for me to type.
-    #Note: they are the same object!
-    hero = myHero
-
-    # initialization
-    game = Game(hero)
-    game.set_enemy(monster_generator(hero.age))
 
     #Not implemented ... should be moved to prebuilt_objects.py and implemented in
     #database.py as get_default_quests()

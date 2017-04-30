@@ -43,6 +43,12 @@ if __name__ == "__main__":
         except FileNotFoundError:
             pass
 
+            
+        #Need to add a backup section.
+        #And save the old file as *.bak
+        #But don't overwrite old .bak files? Or just make *.bak2, *.bak3 etc.
+
+        
         #Save the newly built code.
         with open(filename, 'w') as file:
             file.write(template.render(**data))

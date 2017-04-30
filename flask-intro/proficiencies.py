@@ -10,32 +10,32 @@ from sqlalchemy.orm import relationship
 from base_classes import Base
 
 PROFICIENCY_INFORMATION = [
-    ("Attack damage", "", 'Strength', "Offense"),
-    ("Attack speed", "", 'Unspecified', "Offense"),
-    ("Attack accuracy", "", 'Unspecified', "Offense"),
-    ("First strike", "", 'Unspecified', "Offense"),
-    ("Critical hit", "", 'Unspecified', "Offense"),
-    ("Defence", "", 'Unspecified', "Defence"),
-    ("Evade", "", 'Unspecified', "Defence"),
-    ("Parry", "", 'Unspecified', "Defence"),
-    ("Riposte", "", 'Unspecified', "Defence"),
-    ("Block", "", 'Unspecified', "Defence"),
-    ("Stealth", "", 'Unspecified', "Stealth"),
-    ("Pickpocketing", "", 'Unspecified', "Stealth"),
-    ("Faith", "", 'Unspecified', "Holiness"),
-    ("Bartering", "", 'Unspecified', "Diplomacy"),
-    ("Oration", "", 'Unspecified', "Diplomacy"),
-    ("Knowledge", "", 'Unspecified', "Diplomacy"),
-    ("Resist frost", "", 'Unspecified', "Resistance"),
-    ("Resist flame", "", 'Unspecified', "Resistance"),
-    ("Resist shadow", "", 'Unspecified', "Resistance"),
-    ("Resist holy", "", 'Unspecified', "Resistance"),
-    ("Resist blunt", "", 'Unspecified', "Resistance"),
-    ("Resist slashing", "", 'Unspecified', "Resistance"),
-    ("Resist piercing", "", 'Unspecified', "Resistance")
+    ("Attack damage", "", "Strength", "Offense"),
+    ("Attack speed", "", "Agility", "Offense"),
+    ("Attack accuracy", "", "Agility", "Offense"),
+    ("First strike", "", "Agility", "Offense"),
+    ("Critical hit", "", "Agility", "Offense"),
+    ("Defence", "", "Endurance", "Defence"),
+    ("Evade", "", "Strength", "Defence"),
+    ("Parry", "", "Strength", "Defence"),
+    ("Riposte", "", "Strength", "Defence"),
+    ("Block", "", "Strength", "Defence"),
+    ("Stealth", "", "Strength", "Stealth"),
+    ("Pickpocketing", "", "Strength", "Stealth"),
+    ("Faith", "", "Strength", "Holiness"),
+    ("Bartering", "", "Strength", "Diplomacy"),
+    ("Oration", "", "Strength", "Diplomacy"),
+    ("Knowledge", "", "Strength", "Diplomacy"),
+    ("Resist frost", "", "Strength", "Resistance"),
+    ("Resist flame", "", "Strength", "Resistance"),
+    ("Resist shadow", "", "Strength", "Resistance"),
+    ("Resist holy", "", "Strength", "Resistance"),
+    ("Resist blunt", "", "Strength", "Resistance"),
+    ("Resist slashing", "", "Strength", "Resistance"),
+    ("Resist piercing", "", "Strength", "Resistance")
 ]
 
-ALL_PROFICIENCIES = [attrib[0].lower().replace(' ', '_') for attrib in PROFICIENCY_INFORMATION]
+ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_") for attrib in PROFICIENCY_INFORMATION]
 
 class Proficiencies(Base):
     __tablename__ = 'proficiencies'
@@ -93,28 +93,28 @@ class Proficiencies(Base):
     def __init__(self):
         
         self.attack_damage = Proficiency("Attack damage", "", "Strength", "Offense")
-        self.attack_speed = Proficiency("Attack speed", "", "Unspecified", "Offense")
-        self.attack_accuracy = Proficiency("Attack accuracy", "", "Unspecified", "Offense")
-        self.first_strike = Proficiency("First strike", "", "Unspecified", "Offense")
-        self.critical_hit = Proficiency("Critical hit", "", "Unspecified", "Offense")
-        self.defence = Proficiency("Defence", "", "Unspecified", "Defence")
-        self.evade = Proficiency("Evade", "", "Unspecified", "Defence")
-        self.parry = Proficiency("Parry", "", "Unspecified", "Defence")
-        self.riposte = Proficiency("Riposte", "", "Unspecified", "Defence")
-        self.block = Proficiency("Block", "", "Unspecified", "Defence")
-        self.stealth = Proficiency("Stealth", "", "Unspecified", "Stealth")
-        self.pickpocketing = Proficiency("Pickpocketing", "", "Unspecified", "Stealth")
-        self.faith = Proficiency("Faith", "", "Unspecified", "Holiness")
-        self.bartering = Proficiency("Bartering", "", "Unspecified", "Diplomacy")
-        self.oration = Proficiency("Oration", "", "Unspecified", "Diplomacy")
-        self.knowledge = Proficiency("Knowledge", "", "Unspecified", "Diplomacy")
-        self.resist_frost = Proficiency("Resist frost", "", "Unspecified", "Resistance")
-        self.resist_flame = Proficiency("Resist flame", "", "Unspecified", "Resistance")
-        self.resist_shadow = Proficiency("Resist shadow", "", "Unspecified", "Resistance")
-        self.resist_holy = Proficiency("Resist holy", "", "Unspecified", "Resistance")
-        self.resist_blunt = Proficiency("Resist blunt", "", "Unspecified", "Resistance")
-        self.resist_slashing = Proficiency("Resist slashing", "", "Unspecified", "Resistance")
-        self.resist_piercing = Proficiency("Resist piercing", "", "Unspecified", "Resistance")
+        self.attack_speed = Proficiency("Attack speed", "", "Agility", "Offense")
+        self.attack_accuracy = Proficiency("Attack accuracy", "", "Agility", "Offense")
+        self.first_strike = Proficiency("First strike", "", "Agility", "Offense")
+        self.critical_hit = Proficiency("Critical hit", "", "Agility", "Offense")
+        self.defence = Proficiency("Defence", "", "Endurance", "Defence")
+        self.evade = Proficiency("Evade", "", "Strength", "Defence")
+        self.parry = Proficiency("Parry", "", "Strength", "Defence")
+        self.riposte = Proficiency("Riposte", "", "Strength", "Defence")
+        self.block = Proficiency("Block", "", "Strength", "Defence")
+        self.stealth = Proficiency("Stealth", "", "Strength", "Stealth")
+        self.pickpocketing = Proficiency("Pickpocketing", "", "Strength", "Stealth")
+        self.faith = Proficiency("Faith", "", "Strength", "Holiness")
+        self.bartering = Proficiency("Bartering", "", "Strength", "Diplomacy")
+        self.oration = Proficiency("Oration", "", "Strength", "Diplomacy")
+        self.knowledge = Proficiency("Knowledge", "", "Strength", "Diplomacy")
+        self.resist_frost = Proficiency("Resist frost", "", "Strength", "Resistance")
+        self.resist_flame = Proficiency("Resist flame", "", "Strength", "Resistance")
+        self.resist_shadow = Proficiency("Resist shadow", "", "Strength", "Resistance")
+        self.resist_holy = Proficiency("Resist holy", "", "Strength", "Resistance")
+        self.resist_blunt = Proficiency("Resist blunt", "", "Strength", "Resistance")
+        self.resist_slashing = Proficiency("Resist slashing", "", "Strength", "Resistance")
+        self.resist_piercing = Proficiency("Resist piercing", "", "Strength", "Resistance")
         
 
     def items(self):
@@ -158,6 +158,7 @@ class Proficiency(Base):
 
 
 class AttackDamage(Proficiency):
+    __tablename__ = "attack_damage"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -171,7 +172,10 @@ class AttackDamage(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class AttackSpeed(Proficiency):
+    __tablename__ = "attack_speed"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -185,7 +189,10 @@ class AttackSpeed(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class AttackAccuracy(Proficiency):
+    __tablename__ = "attack_accuracy"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -199,7 +206,10 @@ class AttackAccuracy(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class FirstStrike(Proficiency):
+    __tablename__ = "first_strike"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -213,7 +223,10 @@ class FirstStrike(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class CriticalHit(Proficiency):
+    __tablename__ = "critical_hit"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -227,7 +240,10 @@ class CriticalHit(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class Defence(Proficiency):
+    __tablename__ = "defence"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -241,7 +257,10 @@ class Defence(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class Evade(Proficiency):
+    __tablename__ = "evade"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -255,7 +274,10 @@ class Evade(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class Parry(Proficiency):
+    __tablename__ = "parry"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -269,7 +291,10 @@ class Parry(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class Riposte(Proficiency):
+    __tablename__ = "riposte"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -283,7 +308,10 @@ class Riposte(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class Block(Proficiency):
+    __tablename__ = "block"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -297,7 +325,10 @@ class Block(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class Stealth(Proficiency):
+    __tablename__ = "stealth"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -311,7 +342,10 @@ class Stealth(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class Pickpocketing(Proficiency):
+    __tablename__ = "pickpocketing"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -325,7 +359,10 @@ class Pickpocketing(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class Faith(Proficiency):
+    __tablename__ = "faith"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -339,7 +376,10 @@ class Faith(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class Bartering(Proficiency):
+    __tablename__ = "bartering"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -353,7 +393,10 @@ class Bartering(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class Oration(Proficiency):
+    __tablename__ = "oration"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -367,7 +410,10 @@ class Oration(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class Knowledge(Proficiency):
+    __tablename__ = "knowledge"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -381,7 +427,10 @@ class Knowledge(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class ResistFrost(Proficiency):
+    __tablename__ = "resist_frost"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -395,7 +444,10 @@ class ResistFrost(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class ResistFlame(Proficiency):
+    __tablename__ = "resist_flame"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -409,7 +461,10 @@ class ResistFlame(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class ResistShadow(Proficiency):
+    __tablename__ = "resist_shadow"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -423,7 +478,10 @@ class ResistShadow(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class ResistHoly(Proficiency):
+    __tablename__ = "resist_holy"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -437,7 +495,10 @@ class ResistHoly(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class ResistBlunt(Proficiency):
+    __tablename__ = "resist_blunt"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -451,7 +512,10 @@ class ResistBlunt(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class ResistSlashing(Proficiency):
+    __tablename__ = "resist_slashing"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -465,7 +529,10 @@ class ResistSlashing(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+
+
 class ResistPiercing(Proficiency):
+    __tablename__ = "resist_piercing"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
@@ -478,4 +545,6 @@ class ResistPiercing(Proficiency):
         else:
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5    
+        self.next_value = ((self.level + 1) * 5) + 5
+
+    

@@ -67,20 +67,24 @@ class Proficiency(Base):
         self.next_value = 15
         self.is_not_max_level = False
 
-{% for name in ALL_PROFICIENCIES %}
-class {{ name.title().replace("_", '') }}(Proficiency):
+{% for prof in PROFICIENCY_INFORMATION %}
+{% set prof_class = prof[0].title().replace(" ", '') -%}
+{% set prof_tablename = prof[0].lower().replace(" ", '_') -%}
+class {{ prof_class }}(Proficiency):
+    __tablename__ = "{{ prof_tablename }}"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
-        'polymorphic_identity':"{{ name.title().replace("_", '') }}",
+        'polymorphic_identity':"{{ prof_class }}",
     }
     
     def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
+        if self.level < myHero.attributes.{{ prof[2].lower() }}.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
-{%- endfor %}    
+
+{% endfor %}    
 
