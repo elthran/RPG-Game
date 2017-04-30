@@ -130,6 +130,8 @@ class Hero(Base):
     devotion = Column(Integer)
     gold = Column(Integer)
 
+    is_admin = Column(Boolean)
+
     ability_points = Column(Integer)
     basic_ability_points = Column(Integer)
     archetype_ability_points = Column(Integer)
@@ -186,6 +188,8 @@ class Hero(Base):
         self.virtue = 0
         self.devotion = 0
         self.gold = 50
+
+        self.is_admin = False
     
         self.ability_points = 3 #TEMP. Soon will use the 4 values below
         self.basic_ability_points = 5
