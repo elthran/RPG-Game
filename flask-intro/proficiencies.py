@@ -156,6 +156,9 @@ class Proficiency(Base):
         self.next_value = 15
         self.is_not_max_level = False
 
+    # Needed because it's causing a bug
+    def update(*args):
+        pass
 
 class AttackDamage(Proficiency):
     __tablename__ = "attack_damage"
