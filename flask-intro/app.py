@@ -44,7 +44,6 @@ hero = myHero
 # initialization
 game = Game(hero)
 game.set_enemy(monster_generator(hero.age))
-gameVersion = "0.00.01"
 
 # create the application object
 app = Flask(__name__)
@@ -969,6 +968,10 @@ def command(cmd=None):
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
     return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
+
+@app.route('/about')
+def about_page():
+    return render_template('about.html', myHero=myHero, gameVersion = "0.00.01")
 
 ###testing by Marlen ####
 @app.route('/')
