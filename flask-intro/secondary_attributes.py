@@ -151,33 +151,33 @@ def update_luck_chance(myHero):
     luck_chance = math.floor(luck_chance)
     return luck_chance
 
-def update_maximum_sanctity(myHero):
+def update_sanctity_maximum(myHero):
     """ Basically your mana. Required to cast spells and use abilities. Should slowly recover over time. """
-    maximum_sanctity = (5 * myHero.attributes.divinity.level) + (1 * myHero.attributes.wisdom.level) + 3
-    maximum_sanctity = 0.1 * math.sin(maximum_sanctity) + 0.2 * maximum_sanctity
-    maximum_sanctity = math.floor(maximum_sanctity)
-    return maximum_sanctity
+    sanctity_maximum = (5 * myHero.attributes.divinity.level) + (1 * myHero.attributes.wisdom.level) + 3
+    sanctity_maximum = 0.1 * math.sin(sanctity_maximum) + 0.2 * sanctity_maximum
+    sanctity_maximum = math.floor(sanctity_maximum)
+    return sanctity_maximum
 
-def update_maximum_health(myHero):
+def update_health_maximum(myHero):
     """ How much health your Hero has. At zero, you die. """
     maximum_health = (10 * myHero.attributes.vitality.level) + (2 * myHero.attributes.resilience.level) + (1 * myHero.attributes.strength.level) + 10
     maximum_health = 0.1 * math.sin(maximum_health) + 0.25 * maximum_health
     maximum_health = math.floor(maximum_health)
     return maximum_health
 
-def update_maximum_endurance(myHero):
+def update_endurance_maximum(myHero):
     """ How many actions you can perform, such as moving on the map or fighting. It slowly recovers over time. """
-    maximum_endurance = (5 * myHero.attributes.fortitude.level) + (1 * myHero.attributes.resilience.level) + (1 * myHero.attributes.strength.level) + 25
-    maximum_endurance = 0.1 * math.sin(maximum_endurance) + 0.05 * maximum_endurance + 4
-    maximum_endurance = math.floor(maximum_endurance)
-    return maximum_endurance
+    endurance_maximum = (5 * myHero.attributes.fortitude.level) + (1 * myHero.attributes.resilience.level) + (1 * myHero.attributes.strength.level) + 25
+    endurance_maximum = 0.1 * math.sin(endurance_maximum) + 0.05 * endurance_maximum + 4
+    endurance_maximum = math.floor(endurance_maximum)
+    return endurance_maximum
 
-def update_carrying_capacity(myHero):
+def update_storage_maximum(myHero):
     """ How much you can carry in your inventory + items equipped. """
-    carrying_capacity = (5 * myHero.attributes.strength.level) + (4 * myHero.attributes.resilience.level)
-    carrying_capacity = 0.1 * math.sin(carrying_capacity) + 0.08 * carrying_capacity
-    carrying_capacity = math.floor(carrying_capacity)
-    return carrying_capacity
+    storage_maximum = (5 * myHero.attributes.strength.level) + (4 * myHero.attributes.resilience.level)
+    storage_maximum = 0.1 * math.sin(storage_maximum) + 0.08 * storage_maximum
+    storage_maximum = math.floor(storage_maximum)
+    return storage_maximum
 
 
 
@@ -297,17 +297,17 @@ def update_monster_luck_chance(monster):
     luck_chance = math.floor(luck_chance)
     return luck_chance
 
-def update_monster_maximum_sanctity(monster):
+def update_monster_sanctity_maximum(monster):
     """ Basically your mana. Required to cast spells and use abilities. Should slowly recover over time. """
-    maximum_sanctity = (5 * monster.primary_attributes["Divinity"]) + (1 * monster.primary_attributes["Wisdom"]) + 3
-    maximum_sanctity = (0.8 * maximum_sanctity) ** 0.9
-    maximum_sanctity = math.floor(maximum_sanctity)
-    return maximum_sanctity
+    sanctity_maximum = (5 * monster.primary_attributes["Divinity"]) + (1 * monster.primary_attributes["Wisdom"]) + 3
+    sanctity_maximum = (0.8 * sanctity_maximum) ** 0.9
+    sanctity_maximum = math.floor(sanctity_maximum)
+    return sanctity_maximum
 
-def update_monster_maximum_health(monster):
+def update_monster_health_maximum(monster):
     """ How much health your Hero has. At zero, you die. """
-    maximum_health = (10 * monster.primary_attributes["Vitality"]) + (2 * monster.primary_attributes["Resilience"]) + (1 * monster.primary_attributes["Strength"]) + 10
-    maximum_health = 0.1 * math.sin(maximum_health) + 0.1 * maximum_health
-    maximum_health = math.floor(maximum_health)
-    return maximum_health
+    health_maximum = (10 * monster.primary_attributes["Vitality"]) + (2 * monster.primary_attributes["Resilience"]) + (1 * monster.primary_attributes["Strength"]) + 10
+    health_maximum = 0.1 * math.sin(health_maximum) + 0.1 * health_maximum
+    health_maximum = math.floor(health_maximum)
+    return health_maximum
 

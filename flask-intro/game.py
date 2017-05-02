@@ -123,36 +123,31 @@ class Hero(Base):
     specialization = Column(String)
     religion = Column(String)
     house = Column(String)
-    current_exp = Column(Integer)
-    max_exp = Column(Integer)
-    renown = Column(Integer)
-    virtue = Column(Integer)
-    devotion = Column(Integer)
+    experience = Column(Integer)
+    experience_maximum = Column(Integer)
+    renown = Column(Integer)    # How famous you are
+    virtue = Column(Integer)    # How good/evil you are
+    devotion = Column(Integer)  # How religious you are
     gold = Column(Integer)
 
     is_admin = Column(Boolean)
 
-    ability_points = Column(Integer)
     basic_ability_points = Column(Integer)
-    archetype_ability_points = Column(Integer)
-    specialization_ability_points = Column(Integer)
+    archetypic_ability_points = Column(Integer)
+    specialized_ability_points = Column(Integer)
     pantheonic_ability_points = Column(Integer)
-    
     attribute_points = Column(Integer)
     proficiency_points = Column(Integer)
-        
-    current_sanctity = Column(Integer)
-    current_health = Column(Integer)
 
     attack_speed_skill = Column(Integer)
     
-    #Marked for rename
-    #Consider "endurance" instead.
-    current_endurance = Column(Integer)
-    current_carrying_capacity = Column(Integer)
-    max_health = Column(Integer)
+    sanctity = Column(Integer)
+    health = Column(Integer)
+    endurance = Column(Integer)
+    storage = Column(Integer)
+    health_maximum = Column(Integer)
     
-    #Time code
+    #Time code of when the (account?) was created
     timestamp = Column(DateTime)
     
     #Relationships: see complex_relationships.py
@@ -176,14 +171,14 @@ class Hero(Base):
         
         #Defaults will remain unchanged if no arguments are passed.
         self.age = 7
-        self.archetype = "Woodsman"
-        self.specialization = "Hunter"
-        self.religion = "Dryarch"
-        self.house = "Unknown"
+        self.archetype = None
+        self.specialization = None
+        self.religion = None
+        self.house = None
         
-        self.max_exp = 10
-        self.current_exp = 0
-        
+        self.experience = 0
+        self.experience_maximum = 10
+                
         self.renown = 0
         self.virtue = 0
         self.devotion = 0
@@ -191,23 +186,22 @@ class Hero(Base):
 
         self.is_admin = False
     
-        self.ability_points = 3 #TEMP. Soon will use the 4 values below
         self.basic_ability_points = 5
-        self.archetype_ability_points = 5
-        self.specialization_ability_points = 5
+        self.archetypic_ability_points = 5
+        self.specialized_ability_points = 5
         self.pantheonic_ability_points = 5
     
         self.attribute_points = 5
         self.proficiency_points = 10
         
         #Build before *_current so that *_percents and validators work.
-        self.max_sanctity = 0
-        self.max_endurance = 0
+        self.sanctity_maximum = 0
+        self.endurance_maximum = 0
         
-        self.current_sanctity = 0
-        self.current_health = 0
-        self.current_endurance = 0
-        self.current_carrying_capacity = 0
+        self.sanctity = 0
+        self.health = 0
+        self.endurance = 0
+        self.storage = 0
         self.attack_speed_skill = 0
         
         #Time code
@@ -272,15 +266,14 @@ class Hero(Base):
         self.block_reduction = update_block_reduction(self)
         self.stealth_skill = update_stealth_skill(self)
         self.faith = update_faith(self)
-        self.max_sanctity = update_maximum_sanctity(self)
-        self.max_endurance = update_maximum_endurance(self)
-        self.max_carrying_capacity = update_carrying_capacity(self)
+        self.health_maximum = update_health_maximum(self)
+        self.sanctity_maximum = update_sanctity_maximum(self)
+        self.endurance_maximum = update_endurance_maximum(self)
+        self.storage_maximum = update_storage_maximum(self)
         self.barter = update_bartering(self)
         self.oration = update_oration(self)
         self.knowledge = update_knowledge(self)
         self.luck = update_luck_chance(self)
-        
-        self.max_health = update_maximum_health(self)
                 
         # Hidden attributes
         self.experience_gain_modifier = 1 # This is the percentage of exp you gain
@@ -292,50 +285,50 @@ class Hero(Base):
             item.update_stats(self)
         
         #Rebuild percent values. Silly but effective.
-        self.current_endurance = self.current_endurance
-        self.current_exp = self.current_exp
-        self.current_sanctity = self.current_sanctity
+        self.endurance = self.endurance
+        self.experience = self.experience
+        self.sanctity = self.sanctity
         
     
-    @validates('max_health')
-    def sync_current_health(self, key_name, health_value):
-        """Reduce current_health if current_health overflows max_health.
+    @validates('health_maximum')
+    def sync_health(self, key_name, health_value):
+        """Reduce health if health overflows health_maximum.
         """
         try:
-            self.current_health = min(self.current_health, health_value)
+            self.health = min(self.health, health_value)
         except TypeError:
-            self.current_health = 0
+            self.health = 0
         return health_value
         
         
-    @validates('current_endurance')
+    @validates('endurance')
     def sync_endurance_percent(self, key_name, endurance_value):
-        """Update endurance_percent on current_endurance change.
+        """Update endurance_percent on endurance change.
         
         """
 
         try:
-            self.endurance_percent = round(endurance_value / self.max_endurance, 2) * 100
+            self.endurance_percent = round(endurance_value / self.endurance_maximum, 2) * 100
         except (TypeError, ZeroDivisionError):
             self.endurance_percent = 0
         
         return max(endurance_value, 0)
         
-    @validates('current_sanctity')
+    @validates('sanctity')
     def sync_sanctity_percent(self, key_name, sanctity_value):
-        """Update sanctity_percent on current_sanctity change.
+        """Update sanctity_percent on sanctity change.
         
         """
 
         try:
-            self.sanctity_percent = round(sanctity_value / self.max_sanctity, 2) * 100
+            self.sanctity_percent = round(sanctity_value / self.sanctity_maximum, 2) * 100
         except (TypeError, ZeroDivisionError):
             self.sanctity_percent = 0
         
         return max(sanctity_value, 0)
     
-    @validates('current_exp')
-    def sync_exp_percent(self, key_name, xp_value):
+    @validates('experience')
+    def sync_experience_percent(self, key_name, xp_value):
         """Update exp_percent on current_exp change.
         
         String conversion occurs in HTML and add the percent sign is added there to.
@@ -344,43 +337,43 @@ class Hero(Base):
         """
         
         try:
-            self.exp_percent = round(xp_value / self.max_exp, 2) * 100
+            self.experience_percent = round(xp_value / self.experience_maximum, 2) * 100
         except (TypeError, ZeroDivisionError):
-            self.exp_percent = 0
+            self.experience_percent = 0
         return xp_value
         
-    @validates('current_health')
+    @validates('health')
     def sync_health_percent(self, key_name, health_value):
-        """Update health_percent on current_health change.
+        """Update health_percent on health change.
         
         """
 
         try:
-            self.health_percent = round(health_value / self.max_health, 2) * 100
+            self.health_percent = round(health_value / self.health_maximum, 2) * 100
         except (TypeError, ZeroDivisionError):
             self.health_percent = 0
         
         return max(health_value, 0)
         
     def refresh_character(self):
-        self.current_sanctity = self.max_sanctity
-        self.current_health = self.max_health
-        self.current_endurance = self.max_endurance
-        self.current_carrying_capacity = self.max_carrying_capacity
+        self.sanctity = self.sanctity_maximum
+        self.health = self.health_maximum
+        self.endurance = self.endurance_maximum
+        self.storage = self.storage_maximum
 
     def page_refresh_character(self):
         self.quest_notification = None
 
     # updates field variables when hero levels up
-    def level_up(self, attribute_points, current_exp, max_exp):
-        if self.current_exp < self.max_exp:
+    def level_up(self, attribute_points, experience, experience_maximum):
+        if self.experience < self.experience_maximum:
             return False
-        self.current_exp -= self.max_exp
-        self.max_exp = math.floor(1.5 * self.max_exp)
-        self.attribute_points += 3
+        self.experience -= self.experience_maximum
+        self.experience_maximum = math.floor(1.5 * self.experience_maximum)
+        self.attribute_points += 1
+        self.proficiency_points += 1
         self.age += 1
-        self.ability_points += 2
-        self.current_health = self.max_health
+        self.health = self.health_maximum
         self.update_secondary_attributes()
         return True
 
@@ -419,20 +412,4 @@ class Hero(Base):
             self.current_city = location
         else:
             self.current_city = None
-        return location 
-                 
-                  
-                  
-# Temporary Function to create a random hero
-def create_random_hero():
-    myHero = Hero()
-    myHero.name = "Unknown"
-    myHero.gold = 5000
-    myHero.update_secondary_attributes()
-    myHero.refresh_character()
-    return myHero
-# End of temporary functions
-
-
-
-
+        return location

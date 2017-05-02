@@ -243,10 +243,10 @@ class EZDB:
         timestamp = hero.timestamp
         time_diff = (EZDB.now() - timestamp).total_seconds()
         endurance_increment = int(time_diff / SECOND_PER_ENDURANCE)
-        hero.current_endurance += endurance_increment
+        hero.endurance += endurance_increment
         
-        if hero.current_endurance > hero.max_endurance:
-            hero.current_endurance = hero.max_endurance
+        if hero.endurance > hero.endurance_maximum:
+            hero.endurance = hero.endurance_maximum
         
         if endurance_increment: #Only update if endurance has been incremented.
             hero.timestamp = EZDB.now()

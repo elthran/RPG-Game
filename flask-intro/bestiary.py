@@ -52,12 +52,12 @@ class Monster(object):
         self.block_reduction = update_monster_block_reduction(self)
         self.stealth_skill = update_monster_stealth_skill(self)
         self.faith = update_monster_faith(self)
-        self.max_sanctity = update_monster_maximum_sanctity(self)
+        self.sanctity_maximum = update_monster_sanctity_maximum(self)
         self.luck = update_monster_luck_chance(self)
-        self.max_health = update_monster_maximum_health(self)
+        self.health_maximum = update_monster_health_maximum(self)
 
-        self.current_health = self.max_health
-        self.current_sanctity = self.max_sanctity
+        self.health = self.health_maximum
+        self.sanctity = self.sanctity_maximum
 
     def __repr__(self):
         return "\nName: %s\nDamage: %s-%s\nHealth: %s/%s\nAttack Speed: %s\nAccuracy: %s" % (self.name, self.minimum_damage, self.maximum_damage, self.current_health, self.max_health, self.attack_speed, self.attack_accuracy)

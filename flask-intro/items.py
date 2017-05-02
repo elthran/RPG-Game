@@ -284,7 +284,7 @@ class Garment(Wearable):
         self.garment = True
 
     def update_stats(self, hero):
-        hero.max_health += self.health_modifier
+        hero.health_maximum += self.health_modifier
 
 class Chest_Armour(Garment):
     __tablename__ = 'chest_armour'
@@ -419,12 +419,12 @@ class Consumable(ItemTemplate):
         self.consumable = True
 		
     def apply_effect(self, hero):
-        hero.current_health += self.healing_amount
-        hero.current_sanctity += self.sanctity_amount
-        if hero.current_health > hero.max_health:
-            hero.current_health = hero.max_health
-        if hero.current_sanctity > hero.max_sanctity:
-            hero.current_sanctity = hero.max_sanctity
+        hero.health += self.healing_amount
+        hero.sanctity += self.sanctity_amount
+        if hero.health > hero.health_maximum:
+            hero.health = hero.health_maximum
+        if hero.sanctity > hero.max_sanctity:
+            hero.sanctity = hero.max_sanctity
 
 # New Class
 class Quest_Item(ItemTemplate):

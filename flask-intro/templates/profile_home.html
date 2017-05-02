@@ -10,28 +10,23 @@
 		<ul> 
 			<li>Name: {{ myHero.character_name}}</li>
 			<li>Age: {{ myHero.age }}</li>
-			<li>Archetype: {{ myHero.archetype }}</li>
-			<li>Specialization: {{ myHero.specialization }}</li>
-			<li>Religion: {{ myHero.religion }}</li>
-			<li>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}</li>
-			<li>Carrying Capacity: {{ myHero.current_carrying_capacity }} / {{ myHero.max_carrying_capacity }}</li>
-			<li>Gold: {{ myHero.gold }}</li>
-			<li>Endurance: {{ myHero.current_endurance }} / {{ myHero.max_endurance }}</li>
-			<li>Health: {{ myHero.current_health }} max: {{ myHero.max_health }} percent:{{ myHero.health_percent }}</li>
+			{% if myHero.renown %}}
+				<li>Renown: {{ myHero.character_name}}</li>
+			{% endif %}
+			{% if myHero.devotion %}}
+				<li>Devotion: {{ myHero.age }}</li>
+			{% endif %}
+			{% if myHero.specialization %}}
+				<li>Specialization: {{ myHero.specialization }}</li>
+			{% endif %}
+			{% if myHero.religion %}}
+				<li>Religion: {{ myHero.religion }}</li>
+			{% endif %}
 		</ul>
 	</div>
 	<div class="profileColumn">
 		<ul> 
-			<li>Renown: {{ myHero.character_name}}</li>
-			<li>Devotion: {{ myHero.age }}</li>
-			<li>Attribute Points: {{ myHero.archetype }}</li>
-			<li>Specialization: {{ myHero.specialization }}</li>
-			<li>Religion: {{ myHero.religion }}</li>
-			<li>Experience: {{ myHero.current_exp }} / {{ myHero.max_exp }}</li>
-			<li>Carrying Capacity: {{ myHero.current_carrying_capacity }} / {{ myHero.max_carrying_capacity }}</li>
-			<li>Gold: {{ myHero.gold }}</li>
-			<li>Endurance: {{ myHero.current_endurance }} / {{ myHero.max_endurance }}</li>
-			<li>health: {{ myHero.current_health }} max: {{ myHero.max_health }} percent:{{ myHero.health_percent }}</li>
+			<li>Carrying Capacity: {{ myHero.storage }} / {{ myHero.storage_maximum }}</li>
 		</ul>
 	</div>
 </div>

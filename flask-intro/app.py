@@ -224,38 +224,36 @@ def admin():
     if request.method == 'POST':
         # pdb.set_trace()
         myHero.age = convert_input(request.form["Age"])
-        myHero.current_exp = convert_input(request.form["Current_exp"])
-        myHero.max_exp = convert_input(request.form["Max_exp"])
+        myHero.experience = convert_input(request.form["Experience"])
+        myHero.experience_maximum = convert_input(request.form["Experience_maximum"])
         myHero.renown = convert_input(request.form["Renown"])
         myHero.virtue = convert_input(request.form["Virtue"])
         myHero.devotion = convert_input(request.form["Devotion"])
         myHero.gold = convert_input(request.form["Gold"])
-        myHero.ability_points = convert_input(request.form["Ability_points"])
-        # myHero.basic_ability_points = convert_input(request.form["Basic_ability_points"])
-        # myHero.archetype_ability_points = convert_input(request.form["Archetype_ability_points"])
-        # myHero.specialization_ability_points = convert_input(request.form["Specialization_ability_points"])
-        # myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
+        myHero.basic_ability_points = convert_input(request.form["Basic_ability_points"])
+        myHero.archetype_ability_points = convert_input(request.form["Archetypic_ability_points"])
+        myHero.specialization_ability_points = convert_input(request.form["Specialized_ability_points"])
+        myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
         myHero.attribute_points = convert_input(request.form["Attribute_points"])
         myHero.proficiency_points = convert_input(request.form['Proficiency_Points'])
-        myHero.attributes.agility.level = convert_input(request.form["Agility"])
-        myHero.attributes.fortitude.level = convert_input(request.form["Fortitude"])
         myHero.update_secondary_attributes()
         myHero.refresh_character()
         database.update()
         return redirect(url_for('home'))
 
     admin = [("Age", myHero.age),
-        ("Current_exp", myHero.current_exp),
-        ("Max_exp", myHero.max_exp),
+        ("Experience", myHero.experience),
+        ("experience_maximum", myHero.experience_maximum),
         ("Renown", myHero.renown),
         ("Virtue", myHero.virtue),
         ("Devotion", myHero.devotion),
         ("Gold", myHero.gold),
-        ("Ability_points", myHero.ability_points),
+        ("Basic_ability_points", myHero.basic_ability_points),
+        ("Archetypic_ability_points", myHero.archetypic_ability_points),
+        ("Specialized_ability_points", myHero.specialized_ability_points),
+        ("Pantheonic_ability_points", myHero.pantheonic_ability_points),
         ("Attribute_points", myHero.attribute_points),
-        ("Proficiency_Points", myHero.proficiency_points),
-        ("Agility", myHero.attributes.agility.level),
-        ("Fortitude", myHero.attributes.fortitude.level)]
+        ("Proficiency_Points", myHero.proficiency_points)]
 
     return render_template('admin.html', page_title=page_title, myHero=myHero, admin=admin)  # return a string
 
@@ -384,27 +382,23 @@ def ability_tree(spec):
             else:
                 mastered_abilities.append(ability)
 
-    if myHero.ability_points > 0:
-        for ability in database.get_all_abilities():
-            # Create a list of unlearned abilities
-            # for the current page you are on (basic, archetype, specialization, religion)
-            if ability not in myHero.abilities and ability.type == spec:
-                if spec == "Archetype": # If you are on the archetype page, we further narrow it down to your archetype and "all"
-                    if ability.archetype == myHero.archetype or ability.archetype == "All":
-                        unknown_abilities.append(ability)
-                elif spec == "Class": # If you are on the specialization page, we further narrow it down to your specialization and "all"
-                    if ability.specialization == myHero.specialization or ability.specialization=="All":
-                        unknown_abilities.append(ability)
-                elif spec == "Religious": # If you are on the religion page, we further narrow it down to your religion and "all"
-                    if ability.religion == myHero.religion or ability.religion == "All":
-                        unknown_abilities.append(ability)
-                else:
+    for ability in database.get_all_abilities():
+        # Create a list of unlearned abilities
+        # for the current page you are on (basic, archetype, specialization, religion)
+        if ability not in myHero.abilities and ability.type == spec:
+            if spec == "Archetype": # If you are on the archetype page, we further narrow it down to your archetype and "all"
+                if ability.archetype == myHero.archetype or ability.archetype == "All":
                     unknown_abilities.append(ability)
-        return render_template('profile_ability.html', myHero=myHero, ability_tree=spec, unknown_abilities=unknown_abilities,
-                               learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
-
+            elif spec == "Class": # If you are on the specialization page, we further narrow it down to your specialization and "all"
+                if ability.specialization == myHero.specialization or ability.specialization=="All":
+                    unknown_abilities.append(ability)
+            elif spec == "Religious": # If you are on the religion page, we further narrow it down to your religion and "all"
+                if ability.religion == myHero.religion or ability.religion == "All":
+                    unknown_abilities.append(ability)
+            else:
+                unknown_abilities.append(ability)
     return render_template('profile_ability.html', myHero=myHero, ability_tree=spec, unknown_abilities=unknown_abilities,
-                           learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
+                               learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
 
 @app.route('/inventory_page')
 @login_required
@@ -555,7 +549,7 @@ def world_map(current_world, location_id):
 @app.route('/barracks')
 @login_required
 def barracks():
-    if myHero.current_health <= 0:
+    if myHero.health <= 0:
         page_heading = "Your hero is currently dead."
         page_image = "dead"
         page_links = ["","","",""]
@@ -575,7 +569,7 @@ def spar():
         page_heading = "You do not have enough gold to spar."
     else:
         myHero.gold -= spar_cost
-        myHero.current_exp += spar_benefit * myHero.experience_gain_modifier
+        myHero.experience += spar_benefit * myHero.experience_gain_modifier
         page_heading = str("You spend some time sparring with the trainer at the barracks. You spend " + str(spar_cost) + " gold and gain " + str(spar_benefit) + " experience.")
     return render_template('building_default.html', page_title="Sparring Room", page_heading=page_heading, myHero=myHero, game=game)  # return a string
 
@@ -583,7 +577,7 @@ def spar():
 @app.route('/arena')
 @login_required
 def arena():
-    if not game.has_enemy or game.enemy.current_health <= 0:
+    if not game.has_enemy or game.enemy.health <= 0:
         enemy = monster_generator(myHero.age)
         if enemy.name == "Wolf":
             enemy.items_rewarded.append((Quest_Item("Wolf Pelt", myHero, 50)))
@@ -610,9 +604,9 @@ def arena():
                     ("Block Reduction: ", str(game.enemy.block_reduction) + "%"),
                     ("Stealth: ", str(game.enemy.stealth_skill) + "%"),
                     ("Faith: ", str(game.enemy.faith)),
-                    ("Sanctity: ", str(game.enemy.current_sanctity) + "/" + str(game.enemy.max_sanctity)),
+                    ("Sanctity: ", str(game.enemy.sanctity) + "/" + str(game.enemy.sanctity_maximum)),
                     ("Luck: ", str(game.enemy.luck)),
-                    ("Health: ", str(game.enemy.current_health) + " / " + str(game.enemy.max_health))]
+                    ("Health: ", str(game.enemy.health) + " / " + str(game.enemy.health_maximum))]
     page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
     return render_template('building_default.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, enemy_info=conversation)  # return a string
 
@@ -627,18 +621,18 @@ def battle():
     print("running function: battle2")
 
     page_links = [("Return to your ","home","profile"," page.")]
-    if myHero.current_endurance < required_endurance:
+    if myHero.endurance < required_endurance:
         page_title = "Battle"
         page_heading = "Not enough endurance, wait a bit!"
         return render_template('layout.html', page_title=page_title, myHero=myHero, page_heading=page_heading, page_links=page_links)
 
-    myHero.current_health,game.enemy.current_health,battle_log,battle_results = battle_logic(myHero,game.enemy)
-    if myHero.current_health == 0:
-        myHero.current_endurance -= required_endurance
+    myHero.health,game.enemy.health,battle_log,battle_results = battle_logic(myHero,game.enemy)
+    if myHero.health == 0:
+        myHero.endurance -= required_endurance
         page_title = "Defeat!"
         page_heading = "You have died."
     else:
-        myHero.current_endurance -= required_endurance
+        myHero.endurance -= required_endurance
         for item in myHero.equipped_items:
             item.durability -= 1
             if item.durability <= 0:
@@ -654,7 +648,7 @@ def battle():
                             myHero.completed_achievements.remove(achievement)
                             break
                     myHero.completed_achievements.append(("Kill two " + game.enemy.species_plural, "10"))
-                    myHero.current_exp += 10
+                    myHero.experience += 10
                 newMonster = False
                 break
         """
@@ -664,9 +658,9 @@ def battle():
             for monster in bestiary_data:
                 if monster.name == game.enemy.name:
                     myHero.bestiary.append(monster)
-            myHero.current_exp += 5
+            myHero.experience += 5
         game.has_enemy = False
-        myHero.current_exp += game.enemy.experience_rewarded * myHero.experience_gain_modifier
+        myHero.experience += game.enemy.experience_rewarded * myHero.experience_gain_modifier
         if len(game.enemy.items_rewarded) > 0:
             for item in game.enemy.items_rewarded:
                 if not any(items.name == item.name for items in myHero.inventory):
@@ -675,7 +669,7 @@ def battle():
                     for items in myHero.inventory:
                         if items.name == item.name:
                             items.amount_owned += 1
-        level_up = myHero.level_up(myHero.attribute_points, myHero.current_exp, myHero.max_exp)
+        level_up = myHero.level_up(myHero.attribute_points, myHero.experience, myHero.experience_maximum)
         page_title = "Victory!"
         page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience!"
         page_links = [("Compete in the ","/arena","arena","."), ("Go back to the ","/barracks","barracks","."), ("Return to your ","/home","profile"," page.")]
@@ -754,7 +748,7 @@ def tavern():
         tavern_choice = request.form["tavern_choice"]
         if tavern_choice == "Drink":
             if myHero.gold >= 25:
-                myHero.current_health = myHero.max_health
+                myHero.health = myHero.health_maximum
                 myHero.gold -= 25
                 page_heading = "You give the bartender 25 gold and he pours you a drink. You feel very refreshed!"
             else:

@@ -64,9 +64,9 @@ def determine_modified_damage(defender, raw_damage):
 
 def battle_logic(character1 ,character2):
     """ Runs the entire battle simulator """
-    combat_log = [(character1.name + " Health: " + str(character1.current_health)), (character2.name + " Health: " + str(character2.current_health))]
+    combat_log = [(character1.name + " Health: " + str(character1.health)), (character2.name + " Health: " + str(character2.health))]
     battle_results = ""
-    while character1.current_health > 0 and character2.current_health > 0:
+    while character1.health > 0 and character2.health > 0:
         attacker,defender = determine_attacker_defender(character1, character2)
         attack_success = determine_attack_success(attacker, defender)
         if attack_success == True:
@@ -80,15 +80,15 @@ def battle_logic(character1 ,character2):
                 combat_log.append(attacker.name + " has critically hit, getting a " + str(critical_hit_modifier) + " damage modifier!!")
             modified_attack_damage = determine_modified_damage(defender, raw_attack_damage)
             modified_attack_damage = int(round(modified_attack_damage))
-            defender.current_health -= modified_attack_damage
-            combat_log.append(attacker.name + " hits for " + str(modified_attack_damage) + " damage. " + defender.name + " now has " + str(defender.current_health) + " health.")   
+            defender.health -= modified_attack_damage
+            combat_log.append(attacker.name + " hits for " + str(modified_attack_damage) + " damage. " + defender.name + " now has " + str(defender.health) + " health.")   
         else:
             combat_log.append(attack_success)
-    if character1.current_health <= 0:
+    if character1.health <= 0:
         battle_results += (character1.name + " is dead")
     else:
         battle_results += (character2.name + " is dead")
-    return character1.current_health, character2.current_health, combat_log, battle_results
+    return character1.health, character2.health, combat_log, battle_results
 
 
 
@@ -98,6 +98,6 @@ battle_hero = Hero()
 battle_hero.update_secondary_attributes()
 battle_hero.refresh_character()
 print(monster)
-print("\nName: " + battle_hero.name,"\nDamage: " + str(battle_hero.minimum_damage) + "-" + str(battle_hero.maximum_damage), "\nHealth: " + str(battle_hero.current_health) + "/" + str(battle_hero.max_health), "\nAttack Speed: " + str(battle_hero.attack_speed), "\nAccuracy: " + str(battle_hero.attack_accuracy) + "\n")
+print("\nName: " + battle_hero.name,"\nDamage: " + str(battle_hero.minimum_damage) + "-" + str(battle_hero.maximum_damage), "\nHealth: " + str(battle_hero.health) + "/" + str(battle_hero.max_health), "\nAttack Speed: " + str(battle_hero.attack_speed), "\nAccuracy: " + str(battle_hero.attack_accuracy) + "\n")
 battle_logic(battle_hero, monster)
 """

@@ -196,11 +196,11 @@ class QuestPath(Base):
         hero = self.hero
         quest = self.quest
         if final:
-            hero.current_exp += int(quest.reward_xp * self.stage * 0.3)
-            hero.quest_notification = (quest.path_name, quest.reward_xp)
+            hero.experience += int(quest.reward_experience * self.stage * 0.3)
+            hero.quest_notification = (quest.path_name, quest.reward_experience)
         else:
-            hero.current_exp += quest.reward_xp
-            hero.quest_notification = (quest.description, quest.reward_xp)
+            hero.experience += quest.reward_experience
+            hero.quest_notification = (quest.description, quest.reward_experience)
         
         
         
@@ -291,7 +291,7 @@ class Quest(Base):
     description = Column(String)
     current_description = orm.synonym('description')
     
-    reward_xp = Column(Integer)
+    reward_experience = Column(Integer)
     
     next_quests = relationship("Quest",
         secondary=quest_to_quest,
@@ -299,7 +299,7 @@ class Quest(Base):
         secondaryjoin=id==quest_to_quest.c.next_quest_id,
         backref="past_quests")
     
-    def __init__(self, path_name, description, reward_xp=3, next_quests=[], past_quests=[]):
+    def __init__(self, path_name, description, reward_experience=3, next_quests=[], past_quests=[]):
         """Build a new Quest object.
         
         You can link this quest to other quests at initialization or afterwards.
@@ -308,7 +308,7 @@ class Quest(Base):
         
         self.path_name = path_name
         self.description = description
-        self.reward_xp = reward_xp
+        self.reward_experience = reward_experience
         self.next_quests = next_quests
         self.past_quests = past_quests
         
@@ -369,7 +369,7 @@ class Quest(Base):
 
 if __name__ == "__main__":        
     quest1 = Quest("Get Acquainted with the Blacksmith", "Go talk to the blacksmith.")
-    quest1.next_quests.append(Quest("Get Acquainted with the Blacksmith", "Buy your first item.", reward_xp=7))
+    quest1.next_quests.append(Quest("Get Acquainted with the Blacksmith", "Buy your first item.", reward_experience=7))
     quest2 = Quest("Equipping/Unequipping", "Equip any item.")
     quest2.next_quests.append(Quest("Equipping/Unequipping", "Unequip any item."))
             

@@ -168,7 +168,7 @@ all_abilities = [Ability("Determination", 5, "Increases Endurance by 3 for each 
 #Quests
 ##########
 blacksmith_quest = Quest("Get Acquainted with the Blacksmith", "Go talk to the blacksmith.")
-blacksmith_quest.next_quests.append(Quest("Get Acquainted with the Blacksmith", "Buy your first item.", reward_xp=7))
+blacksmith_quest.next_quests.append(Quest("Get Acquainted with the Blacksmith", "Buy your first item.", reward_experience=7))
 
 equipment_quest = Quest("Equipping/Unequipping", "Equip any item.")
 equipment_quest.next_quests.append(Quest("Equipping/Unequipping", "Unequip any item."))
