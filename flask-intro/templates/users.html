@@ -11,15 +11,40 @@
           <th>Character Name:</th>
           <th>Age:</th>
           <th>Account Creation Date:</th>
+		  <th>Admin:</th>
         </tr>
         {% for user in users %}
-          <tr>
-            <td>{{ user.id }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.heroes[0].character_name }}</td>
-            <td>{{ user.heroes[0].age }}</td>
-            <td>{{ user.timestamp.year }}/{{ user.timestamp.month }}/{{ user.timestamp.day }} {{ user.timestamp.hour }}:{{ user.timestamp.minute }}:{{ user.timestamp.second }}</td>
-          </tr>
+		{% if not user.is_admin %}
+			<tr>
+				<td>{{ user.id }}</td>
+				<td>{{ user.username }}</td>
+				<td>{{ user.heroes[0].character_name }}</td>
+				<td>{{ user.heroes[0].age }}</td>
+				<td>{{ user.timestamp.year }}/{{ user.timestamp.month }}/{{ user.timestamp.day }} {{ user.timestamp.hour }}:{{ user.timestamp.minute }}:{{ user.timestamp.second }}</td>
+				<td>{{ user.is_admin }}</td>
+			</tr>
+		 {% endif %}
         {% endfor %}
+      </table>
+	  <h2>Here is a list of all current admins:</h2>
+      <table style="width:75%" border="1">
+        <tr>
+          <th>Account ID:</th>
+          <th>Username:</th>
+          <th>Character Name:</th>
+          <th>Age:</th>
+          <th>Account Creation Date:</th>
+        </tr>
+        {% for user in users %}
+		{% if user.is_admin %}
+			<tr>
+				<td>{{ user.id }}</td>
+				<td>{{ user.username }}</td>
+				<td>{{ user.heroes[0].character_name }}</td>
+				<td>{{ user.heroes[0].age }}</td>
+				<td>{{ user.timestamp.year }}/{{ user.timestamp.month }}/{{ user.timestamp.day }} {{ user.timestamp.hour }}:{{ user.timestamp.minute }}:{{ user.timestamp.second }}</td>
+			</tr>
+		{% endif %}
+		{% endfor %}
       </table>
 {% endblock %}

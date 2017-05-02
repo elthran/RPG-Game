@@ -17,6 +17,8 @@
 		{% endif %}
 		{% if proficiencies %}
 			<li><a class="topbarActive" href="/proficiencies">Proficiencies</a></li>
+		{% elif myHero.proficiency_points %}
+			<li><a class="topbarGlowing" href="/proficiencies">Upgrade!</a></li>
 		{% else %}
 			<li><a href="/proficiencies">Proficiencies</a></li>
 		{% endif %}
