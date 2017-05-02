@@ -34,9 +34,11 @@
                   <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_location.id }}>{{ myHero.current_world.location_type }}</a></li>
                 {% endif %}
                 <li><a href=/quest_log>Journal</a></li>
-				{% if myHero.is_admin %}
-					<li><a href=/admin>Admin</a></li>
-				{% endif %}
+<!-- Not sure if there is a way to access the user from the hero data?
+if user.is_admin
+<li><a href=/admin>Admin</a></li>
+endif
+-->
                 <li><a href=/display_users>Users</a></li>
 				<li><a href=/about>About</a></li>
                 <li><a href=/logout>Logout</a></li>

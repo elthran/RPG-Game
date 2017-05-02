@@ -6,17 +6,21 @@
         Points Remaining:<output type="text" name="testplz"> {{ myHero.proficiency_points }}</output>
 </div>
 <form method="post">
+<input class="btn btn-default submitButton" type="submit" value="Save" id="level_button">
     <div style="clear: both;"></div>
     <div class="proficiencyPage">
 		<div class="proficiencyPageInner">
 			<h1>Offense</h1>
 			<ul>
-                {%- for proficiency in myHero.proficiencies %}
+				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Offense" %}
-						<li>{{ proficiency.name}}: {{ proficiency.level }} [{{ proficiency.is_not_max_level }}]   ({{ proficiency.attribute_type }})</li> 
-						{% if not proficiency.max_level %}
-							<input type="int" name="testplz" value="0">
-						{% endif %}
+						<li>
+							{{ proficiency.name}}: {{ proficiency.level }}  [Max: {{ not proficiency.is_not_max_level }}]
+							{% if proficiency.is_not_max_level %}
+								<input type="number" name="{{ proficiency.name }}" min="0" title="Numbers only" value=0>
+							{% endif %}
+						</li>
+						
 					{%- endif %}
                 {%- endfor %}
 			</ul>
@@ -24,7 +28,7 @@
 			<ul>
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Stealth" %}
-						<li>{{ proficiency.name}}: {{ proficiency.level }}</li> <!--<input type="int" name="testplz" value="0">-->
+						<li>{{ proficiency.name}}: {{ proficiency.level }}</li>
 					{%- endif %}
                 {%- endfor %}
 			</ul>

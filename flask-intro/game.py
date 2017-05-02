@@ -26,8 +26,8 @@ from base_classes import Base, BaseDict
 
 import math
 from flask import request
-from secondary_attributes import *
 from attributes import Attributes
+from proficiencies import * # TEmporary!
 from proficiencies import Proficiencies
     
 import datetime
@@ -83,6 +83,7 @@ class User(Base):
     password = Column(String, nullable=False)
     email = Column(String)
     timestamp = Column(DateTime)
+    is_admin = Column(Boolean)
 
 
 class Inventory(Base):
@@ -130,8 +131,6 @@ class Hero(Base):
     devotion = Column(Integer)  # How religious you are
     gold = Column(Integer)
 
-    is_admin = Column(Boolean)
-
     basic_ability_points = Column(Integer)
     archetypic_ability_points = Column(Integer)
     specialized_ability_points = Column(Integer)
@@ -146,6 +145,8 @@ class Hero(Base):
     endurance = Column(Integer)
     storage = Column(Integer)
     health_maximum = Column(Integer)
+    sanctity_maximum = Column(Integer)
+    endurance_maximum = Column(Integer)
     
     #Time code of when the (account?) was created
     timestamp = Column(DateTime)
@@ -183,8 +184,6 @@ class Hero(Base):
         self.virtue = 0
         self.devotion = 0
         self.gold = 50
-
-        self.is_admin = False
     
         self.basic_ability_points = 5
         self.archetypic_ability_points = 5
@@ -210,7 +209,7 @@ class Hero(Base):
         for key in kwargs:
             setattr(self, key, kwargs[key])
         
-        self.update_secondary_attributes()
+        self.update_proficiencies()
         self.refresh_character()
 
     
@@ -228,7 +227,12 @@ class Hero(Base):
 
     # Sets damage
     @orm.reconstructor
-    def update_secondary_attributes(self):
+
+    def refresh_proficiencies(self):
+        for proficiency in self.proficiencies:
+            proficiency.update(self)
+        
+    def update_proficiencies(self):
         """Update secondary attributes of Hero object on database load.
         
         See: init_on_load() in SQLAlchemy
@@ -374,7 +378,7 @@ class Hero(Base):
         self.proficiency_points += 1
         self.age += 1
         self.health = self.health_maximum
-        self.update_secondary_attributes()
+        self.update_proficiencies()
         return True
 
     def consume_item(self, item_name):

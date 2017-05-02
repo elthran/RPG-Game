@@ -23,7 +23,6 @@ import complex_relationships
 
 #Marked for restructure: probably should only be used in Hero object (in game.py) directly.
 #If it is needed elsewhere the method should be moved to the Hero object.
-from secondary_attributes import *
 import sqlite3
 import hashlib
 
@@ -236,7 +235,7 @@ def admin():
         myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
         myHero.attribute_points = convert_input(request.form["Attribute_points"])
         myHero.proficiency_points = convert_input(request.form['Proficiency_Points'])
-        myHero.update_secondary_attributes()
+        myHero.update_proficiencies()
         myHero.refresh_character()
         database.update()
         return redirect(url_for('home'))
@@ -271,7 +270,7 @@ def home():
     myHero = database.fetch_hero(session['hero_id'])
     database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
     #This should be uneccessary -> but isn't?
-    myHero.update_secondary_attributes()
+    myHero.update_proficiencies()
 
     # pdb.set_trace()
     #Consider moving this to the login function? Or instantiate during "create_account?"
@@ -292,7 +291,7 @@ def home():
         return redirect(url_for('create_character'))
     return render_template('profile_home.html', page_title="Profile", myHero=myHero, profile=True)  # return a string'
 
-# This gets called anytime you have secondary attribute points to spend
+# This gets called anytime you have  attribute points to spend
 # Currently I send "attributes=True" so that the html knows to highlight the bar and show that you are on this page
 @app.route('/attributes', methods=['GET', 'POST'])
 @login_required
@@ -332,7 +331,7 @@ def attributes():
 
         myHero.attribute_points -= points_spent
 
-        myHero.update_secondary_attributes()
+        myHero.update_proficiencies()
         myHero.refresh_character()
         myHero.proficiencies.attack_damage.update(myHero)
         #By Marlen
@@ -354,13 +353,22 @@ def proficiencies():
     #You shouldn't need this: see my comments on github and push.
     ALL_PROFICIENCIES = [myHero.proficiencies.attack_damage, myHero.proficiencies.attack_speed] # This is temporary
     if request.method == 'POST':
-        if (myHero.proficiency_test.level + convert_input(request.form["testplz"])) <= myHero.proficiency_test.max_level:
-            myHero.proficiency_test.level += convert_input(request.form["testplz"])
-            myHero.proficiency_points -= convert_input(request.form["testplz"])
-            myHero.proficiency_test.update_testing(myHero)
-            myHero.refresh_character()
-            database.update()
-            return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero)
+        points_spent = 0
+        for element in request.form:
+            form_value = int(request.form[element])
+            for proficiency in myHero.proficiencies:
+                if proficiency.name == element:
+                    this_proficiency = proficiency
+                    break
+            points_spent += form_value
+            this_proficiency.level += form_value
+            
+        myHero.proficiency_points -= points_spent
+        
+        myHero.proficiencies.attack_damage.update(myHero)
+        myHero.refresh_character()
+        database.update()
+        return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero)
     return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero)
 
 @app.route('/ability_tree/<spec>')
@@ -891,7 +899,7 @@ def command(cmd=None):
                 myHero.equipped_items = [x for x in myHero.equipped_items if x not in equipped_items_to_remove] # deletes the items in equipped_items_to_remove from myHero.equipped_items
                 myHero.equipped_items.append(item)
                 myHero.inventory.remove(item)
-                myHero.update_secondary_attributes()
+                myHero.update_proficiencies()
                 for path in myHero.quest_paths:
                     if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 1:
                         path.quest.advance_quest()
@@ -905,7 +913,7 @@ def command(cmd=None):
         if cmd == item.name:
             myHero.inventory.append(item)
             myHero.equipped_items.remove(item)
-            myHero.update_secondary_attributes()
+            myHero.update_proficiencies()
             for path in myHero.quest_paths:
                     if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 2:
                         path.quest.advance_quest()
@@ -920,7 +928,7 @@ def command(cmd=None):
                     myHero.abilities[i].level += 1
                     myHero.abilities[i].update_display()
                     myHero.ability_points -= 1
-            myHero.update_secondary_attributes()
+            myHero.update_proficiencies()
             database.update()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
@@ -932,7 +940,7 @@ def command(cmd=None):
     for ability in unknown_abilities:
         if cmd == ability.name and myHero.ability_points > 0:
             myHero.abilities.append(ability)
-            myHero.update_secondary_attributes()
+            myHero.update_proficiencies()
             myHero.ability_points -= 1
             database.update()
             return "success", 200, {'Content-Type': 'text/plain'} #//

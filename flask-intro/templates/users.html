@@ -11,7 +11,6 @@
           <th>Character Name:</th>
           <th>Age:</th>
           <th>Account Creation Date:</th>
-		  <th>Admin:</th>
         </tr>
         {% for user in users %}
 		{% if not user.is_admin %}
@@ -21,7 +20,6 @@
 				<td>{{ user.heroes[0].character_name }}</td>
 				<td>{{ user.heroes[0].age }}</td>
 				<td>{{ user.timestamp.year }}/{{ user.timestamp.month }}/{{ user.timestamp.day }} {{ user.timestamp.hour }}:{{ user.timestamp.minute }}:{{ user.timestamp.second }}</td>
-				<td>{{ user.is_admin }}</td>
 			</tr>
 		 {% endif %}
         {% endfor %}
