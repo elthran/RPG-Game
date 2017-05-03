@@ -251,31 +251,11 @@ class Hero(Base):
 
         #Marked for review
         #Make all of these Proficiencies?
-        self.max_damage = update_maximum_damage(self)
-        self.maximum_damage = self.max_damage #Synonym for max_damage
-        self.min_damage = update_minimum_damage(self)
-        self.minimum_damage = self.min_damage #Synonym for min_damage
-        self.attack_speed = update_attack_speed(self)
-        self.attack_accuracy = update_attack_accuracy(self) # Should also have a related attribute of increasing critical hit %
-        self.first_strike = update_first_strike_chance(self)
-        self.critical_hit_chance = update_critical_hit_chance(self)
-        self.critical_hit_modifier = update_critical_hit_modifier(self)
-        self.defence_modifier = update_defence_modifier(self)
-        self.evade_chance = update_evade_chance(self)
-        self.parry_chance = update_parry_chance(self)
-        self.riposte_chance = update_riposte_chance(self)
-        self.block_chance = update_block_chance(self)
-        self.block_reduction = update_block_reduction(self)
-        self.stealth_skill = update_stealth_skill(self)
-        self.faith = update_faith(self)
-        self.health_maximum = update_health_maximum(self)
-        self.sanctity_maximum = update_sanctity_maximum(self)
-        self.endurance_maximum = update_endurance_maximum(self)
-        self.storage_maximum = update_storage_maximum(self)
-        self.barter = update_bartering(self)
-        self.oration = update_oration(self)
-        self.knowledge = update_knowledge(self)
-        self.luck = update_luck_chance(self)
+        # Will delete all these but it breaks the current combat simulator
+        self.health_maximum = update_health_maximum(self) # Deleting this one breaks the "def sync_health"
+        self.sanctity_maximum = update_sanctity_maximum(self) # Deleting this one breaks the "def sync_sanct"
+        self.endurance_maximum = update_endurance_maximum(self) # Deleting this one breaks the "def sync_endr"
+        self.storage_maximum = update_storage_maximum(self) # Deleting this one breaks the "def sync_storage"
                 
         # Hidden attributes
         self.experience_gain_modifier = 1 # This is the percentage of exp you gain

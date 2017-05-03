@@ -6,6 +6,7 @@
 #//////////////////////////////////////////////////////////////////////////////#
 
 import random, math
+from proficiencies_monsters import MonsterProficiencies
 from proficiencies import * # Temporary!
 
 def monster_archetype_basic(monster):
@@ -35,6 +36,8 @@ class Monster(object):
         self.archetype = archetype
         self.experience_rewarded = level * 2
         self.items_rewarded = []
+
+        self.proficiencies = MonsterProficiencies()
 
     def update_monster_secondary_attributes(self):        
         self.maximum_damage = update_monster_maximum_damage(self)

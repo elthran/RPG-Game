@@ -1,6 +1,6 @@
 PROFICIENCY_INFORMATION = [
-    ("Attack damage", "", "Strength", "Offense"),
-    ("Attack speed", "", "Agility", "Offense"),
+    ("Attack damage", "How hard you hit", "Strength", "Offense"),
+    ("Attack speed", "How fast you attack", "Agility", "Offense"),
     ("Attack accuracy", "", "Agility", "Offense"),
     ("First strike", "", "Agility", "Offense"),
     ("Critical hit", "", "Agility", "Offense"),
@@ -15,6 +15,7 @@ PROFICIENCY_INFORMATION = [
     ("Bartering", "", "Strength", "Diplomacy"),
     ("Oration", "", "Strength", "Diplomacy"),
     ("Knowledge", "", "Strength", "Diplomacy"),
+    ("Luck", "", "Strength", "Diplomacy"),
     ("Resist frost", "", "Strength", "Resistance"),
     ("Resist flame", "", "Strength", "Resistance"),
     ("Resist shadow", "", "Strength", "Resistance"),

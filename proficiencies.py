@@ -10,8 +10,8 @@ from sqlalchemy.orm import relationship
 from base_classes import Base
 
 PROFICIENCY_INFORMATION = [
-    ("Attack damage", "", "Strength", "Offense"),
-    ("Attack speed", "", "Agility", "Offense"),
+    ("Attack damage", "How hard you hit", "Strength", "Offense"),
+    ("Attack speed", "How fast you attack", "Agility", "Offense"),
     ("Attack accuracy", "", "Agility", "Offense"),
     ("First strike", "", "Agility", "Offense"),
     ("Critical hit", "", "Agility", "Offense"),
@@ -26,6 +26,7 @@ PROFICIENCY_INFORMATION = [
     ("Bartering", "", "Strength", "Diplomacy"),
     ("Oration", "", "Strength", "Diplomacy"),
     ("Knowledge", "", "Strength", "Diplomacy"),
+    ("Luck", "", "Strength", "Diplomacy"),
     ("Resist frost", "", "Strength", "Resistance"),
     ("Resist flame", "", "Strength", "Resistance"),
     ("Resist shadow", "", "Strength", "Resistance"),
@@ -75,6 +76,8 @@ class Proficiencies(Base):
     oration = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.oration_id]")
     knowledge_id = Column(Integer, ForeignKey('proficiency.id'))
     knowledge = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.knowledge_id]")
+    luck_id = Column(Integer, ForeignKey('proficiency.id'))
+    luck = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.luck_id]")
     resist_frost_id = Column(Integer, ForeignKey('proficiency.id'))
     resist_frost = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_frost_id]")
     resist_flame_id = Column(Integer, ForeignKey('proficiency.id'))
@@ -92,8 +95,8 @@ class Proficiencies(Base):
     
     def __init__(self):
         
-        self.attack_damage = Proficiency("Attack damage", "", "Strength", "Offense")
-        self.attack_speed = Proficiency("Attack speed", "", "Agility", "Offense")
+        self.attack_damage = Proficiency("Attack damage", "How hard you hit", "Strength", "Offense")
+        self.attack_speed = Proficiency("Attack speed", "How fast you attack", "Agility", "Offense")
         self.attack_accuracy = Proficiency("Attack accuracy", "", "Agility", "Offense")
         self.first_strike = Proficiency("First strike", "", "Agility", "Offense")
         self.critical_hit = Proficiency("Critical hit", "", "Agility", "Offense")
@@ -108,6 +111,7 @@ class Proficiencies(Base):
         self.bartering = Proficiency("Bartering", "", "Strength", "Diplomacy")
         self.oration = Proficiency("Oration", "", "Strength", "Diplomacy")
         self.knowledge = Proficiency("Knowledge", "", "Strength", "Diplomacy")
+        self.luck = Proficiency("Luck", "", "Strength", "Diplomacy")
         self.resist_frost = Proficiency("Resist frost", "", "Strength", "Resistance")
         self.resist_flame = Proficiency("Resist flame", "", "Strength", "Resistance")
         self.resist_shadow = Proficiency("Resist shadow", "", "Strength", "Resistance")
@@ -156,16 +160,9 @@ class Proficiency(Base):
         self.next_value = 15
         self.is_not_max_level = False
 
-    # Needed because it's causing a bug
     def update(self, myHero):
-        if (self.attribute_type == "Strength") and (self.level < myHero.attributes.strength.level // 2):
-            self.is_not_max_level = True
-        elif self.attribute_type == "Agility" and self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        pass
+
 
 class AttackDamage(Proficiency):
     __tablename__ = "attack_damage"
@@ -428,6 +425,23 @@ class Knowledge(Proficiency):
     
     __mapper_args__ = {
         'polymorphic_identity':"Knowledge",
+    }
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+
+
+class Luck(Proficiency):
+    __tablename__ = "luck"
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"Luck",
     }
     
     def update(self, myHero):
@@ -871,5 +885,4 @@ def update_monster_health_maximum(monster):
     health_maximum = 0.1 * math.sin(health_maximum) + 0.1 * health_maximum
     health_maximum = math.floor(health_maximum)
     return health_maximum
-
 

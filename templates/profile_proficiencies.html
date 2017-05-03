@@ -15,7 +15,7 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Offense" %}
 						<li>
-							{{ proficiency.name}}: {{ proficiency.level }}  [Max: {{ not proficiency.is_not_max_level }}]
+							{{ proficiency.name}}: {{ proficiency.level }}  [{{ proficiency.attribute_type }}]
 							{% if proficiency.is_not_max_level %}
 								<input type="number" name="{{ proficiency.name }}" min="0" title="Numbers only" value=0>
 							{% endif %}

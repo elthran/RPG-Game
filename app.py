@@ -11,6 +11,7 @@ from game import Hero, Game
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from functools import wraps
 from combat_simulator import *
+import combat_simulator_AI
 from bestiary import *
 #import database
 from items import Quest_Item
@@ -634,7 +635,7 @@ def battle():
         page_heading = "Not enough endurance, wait a bit!"
         return render_template('layout.html', page_title=page_title, myHero=myHero, page_heading=page_heading, page_links=page_links)
 
-    myHero.health,game.enemy.health,battle_log,battle_results = battle_logic(myHero,game.enemy)
+    myHero.health,game.enemy.health,battle_log,battle_results = combat_simulator_AI.battle_logic(myHero,game.enemy)
     if myHero.health == 0:
         myHero.endurance -= required_endurance
         page_title = "Defeat!"
