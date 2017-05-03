@@ -137,8 +137,6 @@ class Hero(Base):
     pantheonic_ability_points = Column(Integer)
     attribute_points = Column(Integer)
     proficiency_points = Column(Integer)
-
-    attack_speed_skill = Column(Integer)
     
     sanctity = Column(Integer)
     health = Column(Integer)
@@ -185,13 +183,13 @@ class Hero(Base):
         self.devotion = 0
         self.gold = 50
     
-        self.basic_ability_points = 5
-        self.archetypic_ability_points = 5
-        self.specialized_ability_points = 5
-        self.pantheonic_ability_points = 5
+        self.basic_ability_points = 0
+        self.archetypic_ability_points = 0
+        self.specialized_ability_points = 0
+        self.pantheonic_ability_points = 0
     
-        self.attribute_points = 5
-        self.proficiency_points = 10
+        self.attribute_points = 0
+        self.proficiency_points = 0
         
         #Build before *_current so that *_percents and validators work.
         self.sanctity_maximum = 0
