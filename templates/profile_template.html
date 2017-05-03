@@ -15,7 +15,7 @@
 		{% else %}
 			<li><a href="/attributes">Attributes</a></li>
 		{% endif %}
-		{% if proficiencies %}
+		{% if page_title == "Proficiencies" %}
 			<li><a class="topbarActive" href="/proficiencies">Proficiencies</a></li>
 		{% elif myHero.proficiency_points %}
 			<li><a class="topbarGlowing" href="/proficiencies">Upgrade!</a></li>
