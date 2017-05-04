@@ -63,9 +63,14 @@ class Proficiency(Base):
         self.type = type
         
         self.level = 1
-        self.value = 10
+        self.value = 1
         self.next_value = 15
         self.is_not_max_level = False
+        {% for prof in PROFICIENCY_INFORMATION %}
+        if name == "{{ prof[0] }}":
+            {% set this_value = prof[0].title().replace(" ", '') -%}
+            self.values = {{ this_value }}()
+            {% endfor %}
 
     def update(self, myHero):
         pass
@@ -73,13 +78,18 @@ class Proficiency(Base):
 {% for prof in PROFICIENCY_INFORMATION %}
 {% set prof_class = prof[0].title().replace(" ", '') -%}
 {% set prof_tablename = prof[0].lower().replace(" ", '_') -%}
-class {{ prof_class }}(Proficiency):
+class {{ prof_class }}(object):
     __tablename__ = "{{ prof_tablename }}"
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
     
     __mapper_args__ = {
         'polymorphic_identity':"{{ prof_class }}",
     }
+
+    def __init__(self):
+        {% for value in prof[4] %}
+        self.{{ value.lower() }} = 0
+        {% endfor %}
     
     def update(self, myHero):
         if self.level < myHero.attributes.{{ prof[2].lower() }}.level // 2:
@@ -88,8 +98,8 @@ class {{ prof_class }}(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
-
 {% endfor %}
+
 
 #//////////////////////////////////////////////////////////////////////////////#
 #                                                                              #

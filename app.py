@@ -561,7 +561,7 @@ def barracks():
     if myHero.health <= 0:
         page_heading = "Your hero is currently dead."
         page_image = "dead"
-        page_links = ["","","",""]
+        page_links = [("You have no health."),"","",""]
     else:
         page_heading = "Welcome to the arena " + myHero.name+"!"
         page_image = "arena"
