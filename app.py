@@ -15,6 +15,7 @@ from bestiary import *
 #import database
 from items import Quest_Item
 from commands import Command
+from events import Event
 
 #MUST be imported after all other game objects but before any of them are used.
 import complex_relationships
@@ -850,7 +851,7 @@ def command(cmd=None):
         print('request args:', repr(request.args))
         print('cmd is:', repr(cmd))
 
-    # event = dict(request.args)
+    # event = Event(request.args)
     # event.add["hero"] = myHero
     # event.add["database"] = database
 

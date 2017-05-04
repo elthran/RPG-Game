@@ -399,6 +399,9 @@ class Ring(Jewelry):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.ring = True
+        
+    def update_stats(self, hero):
+        pass
 
 # Subclass of ItemTemplate
 class Consumable(ItemTemplate):
@@ -419,12 +422,13 @@ class Consumable(ItemTemplate):
         self.consumable = True
 		
     def apply_effect(self, hero):
-        hero.health += self.healing_amount
-        hero.sanctity += self.sanctity_amount
-        if hero.health > hero.health_maximum:
-            hero.health = hero.health_maximum
-        if hero.sanctity > hero.max_sanctity:
-            hero.sanctity = hero.max_sanctity
+        # hero.health += self.healing_amount
+        # hero.sanctity += self.sanctity_amount
+        # if hero.health > hero.health_maximum:
+            # hero.health = hero.health_maximum
+        # if hero.sanctity > hero.max_sanctity:
+            # hero.sanctity = hero.max_sanctity
+        print("Applied item effect. But not really.")
 
 # New Class
 class Quest_Item(ItemTemplate):

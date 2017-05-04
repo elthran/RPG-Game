@@ -102,6 +102,12 @@ class Inventory(Base):
     #amount_owned = Column(Integer)
     # Maybe I don't even need this at all?
     
+    def equip(self, item):
+        pass
+    
+    def unequip(self, item):
+        pass
+    
     def add_item(self, item):
         self.items.append(item)
     

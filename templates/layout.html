@@ -88,11 +88,6 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
 
             var clickedButton = e.target;
-            var command = clickedButton.value;
-
-            //get buttons class and save it as the .
-            console.log("Button clicked was:", clickedButton);
-            var buttonClass = clickedButton.class;
 
             // Now we need to send the data to our server
             // without reloading the page - this is the domain of
@@ -124,44 +119,39 @@ document.addEventListener("DOMContentLoaded", function () {
                     // Perhaps I could build all Jinja2 variables inside an update_me span tag?
                     // That way all of the dynamic content would get updated?
                     // Note ids must not have dots in them. Or spaces. Only underscores.
-                    var idElements = document.querySelectorAll("#" + key);
+                    //var idElements = document.querySelectorAll("#" + key);
                     // For backwards compatability until I update all of the old code.
                     // Runs if no objectIDs are found.
-                    if (!idElements.length) {
-                        location.reload();
-                        console.log("Location reloaded!");
-                        console.log("Response: key=" + key + ", value=" + value);
-                    } else {
-                        console.log("Elements to be updated:", idElements);
+                    //if (!idElements.length) {
+                        //location.reload();
+                        //console.log("Location reloaded!");
+                        //console.log("Response: key=" + key + ", value=" + value);
+                    //} else {
+                        //console.log("Elements to be updated:", idElements);
                         // Iterate through the NodeList created by "querySelectorAll"
-                        idElements.forEach(function (item, index) {
-                            console.log("object " + index + ": " + item);
-                            item.innerHTML = value;
-                        });
-                    }
+                        //idElements.forEach(function (item, index) {
+                            //console.log("object " + index + ": " + item);
+                            //item.innerHTML = value;
+                        //});
+                    //}
                 }
             };
             // We point the request at the appropriate command
             // Send data to python. To send non string args you must not use the "+" operator.
             // Then you can send the data raw or in lots of other formats.
             // See https://www.w3schools.com/xml/ajax_xmlhttprequest_send.asp
-            //
-            // Note: command == button.value so <button value="foo"> command == "foo"
-            //
-            // While buttonClass == button.class (which might be able to be multiple values?)
-            // such that <button class="classFoo"> buttonClass = "classFoo"
-            //
-            // I don't know what would happen if a button has multiple classes
-            // e.g. <button class="foo otherFoo">
-            //
             // "&&" acts like the "," in pythonic {key:value, key2:value2}
-            // xhttp.open("GET", "/" + command + "?class=" + buttonClass + "&&key2=value2", true);
+            // xhttp.open("GET", "/" + action + "?location=" + location + "&&key2=value2", true);
             var pathname = window.location.pathname;
+            var action = clickedButton.innerHTML.toLowerCase();
+            
+            //get buttons class and save it as the .
+            console.log("Button clicked was:", clickedButton);
             
             // innerHTML for a button is the button's "label" (the part you see).
-            xhttp.open("GET", "/" + command +
-                "&&location=" + window.location.pathname +
-                "&&innerHTML=" +  clickedButton.innerHTML, true);
+            xhttp.open("GET", "/" + action +
+                "?location=" + window.location.pathname +
+                "&&data=" +  clickedButton.getAttribute("data"), true);
             // and then we send it off
             xhttp.send();
         });

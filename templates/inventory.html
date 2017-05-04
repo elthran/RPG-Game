@@ -2,7 +2,28 @@
 
 {% extends "layout.html" %}
 {% block block1 %}
-   
+<script>
+/* A script to hide the row in a table.
+The element is hidden based on the button clicked having the same data value
+as the id value of the table row id. These should both be unique.
+*/
+function remove(button) {
+    "use strict";
+    var tr = document.getElementById(button.getAttribute("data"));
+    console.log(tr);
+    tr.style.display = "none";
+    // button.style.display = 'none';
+}
+
+function toggleEquip(button) {
+    "use strict";
+    if (button.innerHTML === "Equip") {
+        button.innerHTML = "Unequip";
+    } else {
+        button.innerHTML = "Equip";
+    }
+}
+</script>   
 
 <!-- This is the inventory page and displays everything your character wears/owns and gives you CMD buttons to equip/unequip -->
       <h1>Equipped:</h1>
@@ -48,14 +69,15 @@
         {% endif %}
       {% endfor %}
      <h1>Inventory:</h1>
-      {% for item in myHero.inventory %}  
-        <br>{% if not item.equiptable %}{{ item.amount_owned }}{% endif %} {{ item.name }} {% if item.equiptable %} -- Durability: {{ item.durability }}/{{ item.max_durability }}{% endif %}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp; 
-        {% if item.equiptable %} 
-          <button class="command command-{{ item.name }}" value="{{ item.name }}">Equip</button>
-        {% endif %}
-        {% if item.consumable %}
-          <button class="command command-{{ item.name }}" value="{{ item.name }}">Consume</button>
-        {% endif %}
-      {% endfor %}
+     <table>
+        {% for item in myHero.inventory %}
+        <tr id="{{ item.id }}">
+            <td>{% if not item.equiptable %}{{ item.amount_owned }}{% endif %} {{ item.name }} {% if item.equiptable %} -- Durability: {{ item.durability }}/{{ item.max_durability }}{% endif %}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp; </td>
+            <td>{% if item.equiptable %}<button class="command" data="{{ item.id }}" onClick="toggleEquip(this)">Equip</button>{% endif %}
+                {% if item.consumable %}<button class="command" data="{{ item.id }}" onClick="remove(this);">Consume</button>{% endif %}
+                </td>
+        </tr>
+        {% endfor %}
+      </table>
 {% endblock %}
 

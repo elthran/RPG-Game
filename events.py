@@ -10,15 +10,11 @@ Event specification:
         i.e. mainly <button> and <a> tags.
     
 Format
-    -use html "value" tag (<button class="command" value="buy?item_name={{ item.name }}">Buy</button>)
-    -format should be:
-        #generic
-        event_action?location=location, location2, {{ page_title }}&&person=person_name&&thing={{ variable }}
-        #specific
-        buy?location=World, Thornwall, Blacksmith&&person=Steve_The_Blacksmith&&thing="Medium Helmet"
-        Note: location=l1, l2 is the same as location=l1,l2
-    NOTE: location=url (pathname) of the current page. So you don't need to add that in as it is attached
-    automagically.
+    -<button class="command" data="{{ item.id }}" onClick="remove(this);">Consume</button>
+    -Where class="command" means this object runs command code.
+    -Where data is the items database id.
+    -Where Consume is the buttons command identifier (the command function to run).
+    -where onClick is a local function to run.
         
 This should be used to create and event object such that:
     >>> event = Event(request.args)
@@ -29,16 +25,6 @@ This should be used to create and event object such that:
     >>> event.action
     'buy'
 
-Considering:
-    Use the html 'data-*' tag instead of 'value' tag.
-    i.e. <a data-trigger="event_action?etc.></a> or <button data-trigger="event_action?etc.></button>
-    
-    Make location a URL? Sounds kind of awesome really. 
-
-Testing:
-    location url is auto-attached to command/event.
-    
-    
 Events should active triggers .. or maybe they are the same thing.
 
 #Usage of trigger/events with Quests

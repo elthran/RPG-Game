@@ -92,11 +92,24 @@ class EZDB:
                 except sqlalchemy.exc.IntegrityError:
                     self.session.rollback()
                     
+    
+    def delete_item(self, id):
+        """Delete a given object from the database.
+        """
+        self.session.query(Item).filter(Item.id == id).delete()
+        self.session.commit()
+                    
+    
+    def get_item_by_id(self, id):
+        """Return an item from its ID.
+        """
+        return self.session.query(Item).get(id)
+                    
                 
-    def create_item(self, name):
+    def create_item(self, id):
         """Create a new item from a given template name.
         """
-        template = self.session.query(ItemTemplate).filter_by(name=name).first()
+        template = self.session.query(ItemTemplate).get(id)
         item = Item(template)
         return item
         
