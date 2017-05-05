@@ -47,6 +47,7 @@ class Item(Base):
     broken = Column(Boolean)
     consumed = Column(Boolean)
     name = Column(String)
+    equip = Column(Boolean)
     
     def __init__(self, template):
         """Build a new item from a given template.

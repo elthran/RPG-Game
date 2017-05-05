@@ -68,7 +68,7 @@ def monster_generator(level):
     monster.attribute_points = 2 * monster.level
     if monster.archetype == "basic":
         monster = monster_archetype_basic(monster)
-    monster.update_monster_secondary_attributes()
+    #monster.update_monster_secondary_attributes()
     return monster
 
 bestiary_data = [Monster("001", "Feral Dog", "Wolf", "Wolves", level=1, archetype="basic"),

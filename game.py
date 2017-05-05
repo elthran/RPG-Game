@@ -99,15 +99,78 @@ class Inventory(Base):
     #Marked for restructuring as causes conflics with multiple heroes?
     #As in if hero1 has 4 of an item then hero2 will as well?
     #Move to Inventory?
-    #amount_owned = Column(Integer)
+    ##amount_owned = Column(Integer)
     # Maybe I don't even need this at all?
     
     def equip(self, item):
-        pass
-    
-    def unequip(self, item):
-        pass
-    
+        """Equip the passed item in the correct slot.
+
+        Unequip the item it the currently in the slot if one exists.
+        For rings ... unequip the first ring equiped once 10 rings are equipped.
+        """
+        item.equip = True
+        
+        if item.type == "Two_Handed_Weapon":
+            self.unequip(self.left_hand, self.right_hand, self.both_hands)
+            self.left_hand, self.right_hand = None, None
+            self.both_hands = item
+        elif item.type == "One_Handed_Weapon":
+            self.unequip(self.right_hand, self.both_hands)
+            self.both_hands = None
+            self.right_hand = item
+        elif item.type == "Shield":
+            self.unequip(self.left_hand, self.both_hands)
+            self.both_hands = None
+            self.left_hand = item
+        elif item.type == "Chest_Armour":
+            self.unequip(self.shirt)
+            self.shirt = item
+        elif item.type == "Head_Armour":
+            self.unequip(self.helmet)
+            self.helmet = item
+        elif item.type == "Leg_Armour":
+            self.unequip(self.legs)
+            self.legs = item
+        elif item.type == "Feet_Armour":
+            self.unequip(self.feet)
+            self.feet = item
+        elif item.type == "Arm_Armour":
+            self.unequip(self.sleeves)
+            self.sleeves = item
+        elif item.type == "Hand_Armour":
+            self.unequip(self.gloves)
+            self.gloves = item
+        elif item.type == "Ring":
+            if len(self.rings) <= 10:
+                self.rings.append(item)
+            else:
+                self.unequip(self.rings.pop(0))
+                self.rings.append(item)  
+        
+        
+    def unequip(self, items):
+        """Set the equip value of all passed items to false.
+        
+        TODO: needs to update the equipable location eg. left_hand etc.
+        """
+        if type(items) != type([]):
+            items = [items]
+            
+        for item in items:
+            try:
+                item.equip = False
+                if item.type == "Ring":
+                    self.rings.remove(item)
+                else:
+                    for slot in [self.left_hand, self.right_hand, self.both_hands, self.shirt, self.helmet,
+                            self.legs, self.feet, self.sleeves, self.gloves]:
+                        if item.id == slot.id:
+                            slot = None
+            except AttributeError:
+                pass
+        
+        
+            
     def add_item(self, item):
         self.items.append(item)
     
@@ -215,7 +278,7 @@ class Hero(Base):
         for key in kwargs:
             setattr(self, key, kwargs[key])
         
-        self.update_proficiencies()
+        #self.refresh_proficiencies()
         self.refresh_character()
 
     
@@ -230,10 +293,10 @@ class Hero(Base):
 
         self.wolf_kills = 0
     
-
+    
+    #May no longer be neccessary? As Proficiencies are dynamic objects.
     # Sets damage
     @orm.reconstructor
-
     def refresh_proficiencies(self):
         for proficiency in self.proficiencies:
             proficiency.update(self)
@@ -255,7 +318,8 @@ class Hero(Base):
         #######
 
         #Make a list of the equipped items or if none are equipt return empty list.
-        self.equipped_items = [item for item in self.inventory if item.wearable] or []
+        #This list is not dynamic ... it should be a database list?
+        self.equipped_items = [item for item in self.inventory if item.equip] or []
 
         #Marked for review
         #Make all of these Proficiencies?
@@ -363,13 +427,13 @@ class Hero(Base):
         except (TypeError, ZeroDivisionError):
             self.health_percent = 0
         
-        return max(health_value, 0)
+        return max(health_value or 0, 0)
         
     def refresh_character(self):
         self.sanctity = self.sanctity_maximum
         self.health = self.health_maximum
         self.endurance = self.endurance_maximum
-        self.storage = self.storage_maximum
+        #self.storage = self.storage_maximum
 
     def page_refresh_character(self):
         self.quest_notification = None

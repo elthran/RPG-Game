@@ -10,7 +10,7 @@ as the id value of the table row id. These should both be unique.
 function remove(button) {
     "use strict";
     var tr = document.getElementById(button.getAttribute("data"));
-    console.log(tr);
+    // console.log(tr);
     tr.style.display = "none";
     // button.style.display = 'none';
 }
@@ -72,8 +72,8 @@ function toggleEquip(button) {
      <table>
         {% for item in myHero.inventory %}
         <tr id="{{ item.id }}">
-            <td>{% if not item.equiptable %}{{ item.amount_owned }}{% endif %} {{ item.name }} {% if item.equiptable %} -- Durability: {{ item.durability }}/{{ item.max_durability }}{% endif %}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp; </td>
-            <td>{% if item.equiptable %}<button class="command" data="{{ item.id }}" onClick="toggleEquip(this)">Equip</button>{% endif %}
+            <td>{% if not item.wearable %}{{ item.amount_owned }}{% endif %} {{ item.name }} {% if item.wearable %} -- Durability: {{ item.durability }}/{{ item.max_durability }}{% endif %}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp; </td>
+            <td>{% if item.wearable %}<button class="command" data="{{ item.id }}" data-function="toggleEquip()">Equip</button>{% endif %}
                 {% if item.consumable %}<button class="command" data="{{ item.id }}" onClick="remove(this);">Consume</button>{% endif %}
                 </td>
         </tr>

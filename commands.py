@@ -103,14 +103,15 @@ class Command:
     def equip(hero, database, arg_dict):
         item_id = arg_dict.get('data', None, type=int)
         item = database.get_item_by_id(item_id)
-        
         hero.inventory.equip(item)
+        return "success", 200, {'Content-Type': 'text/plain'}
         
     def unequip(hero, database, arg_dict):
         item_id = arg_dict.get('data', None, type=int)
         item = database.get_item_by_id(item_id)
         
         hero.inventory.unequip(item)
+        return "success", 200, {'Content-Type': 'text/plain'}
 
         
     cmd_functions = {

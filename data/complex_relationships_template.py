@@ -19,27 +19,15 @@ import pdb
 #Inventory relationships
 ###########
 #One to One
-game.Inventory.helmet_id = Column(Integer, ForeignKey('item.id'))
-game.Inventory.helmet = relationship("Item", uselist=False, foreign_keys="[Inventory.helmet_id]")
-game.Inventory.shirt_id = Column(Integer, ForeignKey('item.id'))
-game.Inventory.shirt = relationship("Item", uselist=False, foreign_keys="[Inventory.shirt_id]")
-game.Inventory.left_hand_id = Column(Integer, ForeignKey('item.id'))
-game.Inventory.left_hand = relationship("Item", uselist=False, foreign_keys="[Inventory.left_hand_id]")
-game.Inventory.right_hand_id = Column(Integer, ForeignKey('item.id'))
-game.Inventory.right_hand = relationship("Item", uselist=False, foreign_keys="[Inventory.right_hand_id]")
-game.Inventory.both_hands_id = Column(Integer, ForeignKey('item.id'))
-game.Inventory.both_hands = relationship("Item", uselist=False, foreign_keys="[Inventory.both_hands_id]")
-game.Inventory.sleeves_id = Column(Integer, ForeignKey('item.id'))
-game.Inventory.sleeves = relationship("Item", uselist=False, foreign_keys="[Inventory.sleeves_id]")
-game.Inventory.gloves_id = Column(Integer, ForeignKey('item.id'))
-game.Inventory.gloves = relationship("Item", uselist=False, foreign_keys="[Inventory.gloves_id]")
-game.Inventory.legs_id = Column(Integer, ForeignKey('item.id'))
-game.Inventory.legs = relationship("Item", uselist=False, foreign_keys="[Inventory.legs_id]")
-game.Inventory.feet_id = Column(Integer, ForeignKey('item.id'))
-game.Inventory.feet = relationship("Item", uselist=False, foreign_keys="[Inventory.feet_id]")
+{%- for name in ALL_INVENTORY_ONE_TO_ONE_CATEGORIES %}
+game.Inventory.{{ name }}_id = Column(Integer, ForeignKey('item.id'))
+game.Inventory.{{ name }} = relationship("Item", uselist=False, foreign_keys="[Inventory.{{ name }}_id]")
+{%- endfor %}
 #One to Many
-game.Inventory.rings_id = Column(Integer, ForeignKey('item.id'))
-game.Inventory.rings = relationship("Item", foreign_keys="[Inventory.rings_id]")
+{%- for name in ALL_INVENTORY_ONE_TO_MANY_CATEGORIES %}
+game.Inventory.{{ name }}_id = Column(Integer, ForeignKey('item.id'))
+game.Inventory.{{ name }} = relationship("Item", foreign_keys="[Inventory.{{ name }}_id]")
+{%- endfor %}
 
 ###########
 #Hero relationships

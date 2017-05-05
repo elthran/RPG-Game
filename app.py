@@ -236,7 +236,7 @@ def admin():
         myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
         myHero.attribute_points = convert_input(request.form["Attribute_points"])
         myHero.proficiency_points = convert_input(request.form['Proficiency_Points'])
-        myHero.update_proficiencies()
+        myHero.refresh_proficiencies()
         myHero.refresh_character()
         database.update()
         return redirect(url_for('home'))
@@ -271,7 +271,7 @@ def home():
     myHero = database.fetch_hero(session['hero_id'])
     database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
     #This should be uneccessary -> but isn't?
-    myHero.update_proficiencies()
+    myHero.refresh_proficiencies()
 
     # pdb.set_trace()
     #Consider moving this to the login function? Or instantiate during "create_account?"
@@ -332,7 +332,7 @@ def attributes():
 
         myHero.attribute_points -= points_spent
 
-        myHero.update_proficiencies()
+        myHero.refresh_proficiencies()
         myHero.refresh_character()
         myHero.proficiencies.attack_damage.update(myHero)
         #By Marlen
@@ -842,7 +842,7 @@ def command(cmd=None):
     if cmd == 'favicon.ico':
         return "success", 200, {'Content-Type': 'text/plain'}
 
-    testing = True
+    testing = False # True
     if testing:
         print('request is:', repr(request))
         # print('request data:', repr(request.data))
@@ -900,7 +900,7 @@ def command(cmd=None):
                 myHero.equipped_items = [x for x in myHero.equipped_items if x not in equipped_items_to_remove] # deletes the items in equipped_items_to_remove from myHero.equipped_items
                 myHero.equipped_items.append(item)
                 myHero.inventory.remove(item)
-                myHero.update_proficiencies()
+                myHero.refresh_proficiencies()
                 for path in myHero.quest_paths:
                     if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 1:
                         path.quest.advance_quest()
@@ -914,7 +914,7 @@ def command(cmd=None):
         if cmd == item.name:
             myHero.inventory.append(item)
             myHero.equipped_items.remove(item)
-            myHero.update_proficiencies()
+            myHero.refresh_proficiencies()
             for path in myHero.quest_paths:
                     if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 2:
                         path.quest.advance_quest()
@@ -929,7 +929,7 @@ def command(cmd=None):
                     myHero.abilities[i].level += 1
                     myHero.abilities[i].update_display()
                     myHero.ability_points -= 1
-            myHero.update_proficiencies()
+            myHero.refresh_proficiencies()
             database.update()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
@@ -941,7 +941,7 @@ def command(cmd=None):
     for ability in unknown_abilities:
         if cmd == ability.name and myHero.ability_points > 0:
             myHero.abilities.append(ability)
-            myHero.update_proficiencies()
+            myHero.refresh_proficiencies()
             myHero.ability_points -= 1
             database.update()
             return "success", 200, {'Content-Type': 'text/plain'} #//

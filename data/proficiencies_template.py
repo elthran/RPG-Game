@@ -66,6 +66,9 @@ class Proficiency(Base):
         self.value = 10
         self.next_value = 15
         self.is_not_max_level = False
+    
+    def update(self, hero):
+        pass
 
 {% for prof in PROFICIENCY_INFORMATION %}
 {% set prof_class = prof[0].title().replace(" ", '') -%}
