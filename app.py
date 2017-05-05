@@ -351,8 +351,6 @@ def proficiencies():
     Below is a mock-up list to test my HTML. I assume the hero will carry the true list. Each proficiency should probably have
     a flag for Offense, Defence, etc. so HTML knows which category to display it under
     """
-    #You shouldn't need this: see my comments on github and push.
-    ALL_PROFICIENCIES = [myHero.proficiencies.attack_damage, myHero.proficiencies.attack_speed] # This is temporary
     if request.method == 'POST':
         points_spent = 0
         for element in request.form:
@@ -974,7 +972,8 @@ def command(cmd=None):
 
 @app.route('/about')
 def about_page():
-    return render_template('about.html', myHero=myHero, gameVersion = "0.00.01")
+    info = "The game is being created by Elthran and Haldon, with some help from Gnahz. Any inquiries can be made to elthranRPG@gmail.com"
+    return render_template('about.html', myHero=myHero, gameVersion = "0.00.01", about_info=info)
 
 ###testing by Marlen ####
 @app.route('/')

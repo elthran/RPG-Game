@@ -11,7 +11,8 @@ from base_classes import Base
 
 # Name, Description, Attribute_Type, Type, [Values]
 PROFICIENCY_INFORMATION = [
-    ("Attack damage", "How hard you hit", "Strength", "Offense", ["Minimum_damage", "Maximum_damage"]),
+    ("Attack damage", "How hard you hit", "Strength", "Offense", ["Minimum_damage", "Maximum_damage"])]
+""",
     ("Attack speed", "How fast you attack", "Agility", "Offense", ["Speed"]),
     ("Attack accuracy", "", "Agility", "Offense", ["Accuracy"]),
     ("First strike", "", "Agility", "Offense", ["First_strike"]),
@@ -35,9 +36,38 @@ PROFICIENCY_INFORMATION = [
     ("Resist blunt", "", "Strength", "Resistance", ["test"]),
     ("Resist slashing", "", "Strength", "Resistance", ["test"]),
     ("Resist piercing", "", "Strength", "Resistance", ["test"])
-]
+    ]
+"""
+
 
 ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_") for attrib in PROFICIENCY_INFORMATION]
+
+
+class AttackDamage(object):
+
+    def __init__(self):
+        self.testing = 123
+        # Pull list of all associated values
+        
+        self.minimum_damage = 0
+        
+        self.maximum_damage = 0
+        
+    
+    def update(self, myHero):
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+
+
+    # Do I need this? Is this related to my bug? :'(
+    """
+    def __iter__(self):
+        pass
+    """
 
 class Proficiencies(Base):
     __tablename__ = 'proficiencies'
@@ -47,79 +77,10 @@ class Proficiencies(Base):
     #Relationships
     attack_damage_id = Column(Integer, ForeignKey('proficiency.id'))
     attack_damage = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.attack_damage_id]")
-    attack_speed_id = Column(Integer, ForeignKey('proficiency.id'))
-    attack_speed = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.attack_speed_id]")
-    attack_accuracy_id = Column(Integer, ForeignKey('proficiency.id'))
-    attack_accuracy = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.attack_accuracy_id]")
-    first_strike_id = Column(Integer, ForeignKey('proficiency.id'))
-    first_strike = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.first_strike_id]")
-    critical_hit_id = Column(Integer, ForeignKey('proficiency.id'))
-    critical_hit = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.critical_hit_id]")
-    defence_id = Column(Integer, ForeignKey('proficiency.id'))
-    defence = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.defence_id]")
-    evade_id = Column(Integer, ForeignKey('proficiency.id'))
-    evade = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.evade_id]")
-    parry_id = Column(Integer, ForeignKey('proficiency.id'))
-    parry = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.parry_id]")
-    riposte_id = Column(Integer, ForeignKey('proficiency.id'))
-    riposte = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.riposte_id]")
-    block_id = Column(Integer, ForeignKey('proficiency.id'))
-    block = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.block_id]")
-    stealth_id = Column(Integer, ForeignKey('proficiency.id'))
-    stealth = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.stealth_id]")
-    pickpocketing_id = Column(Integer, ForeignKey('proficiency.id'))
-    pickpocketing = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.pickpocketing_id]")
-    faith_id = Column(Integer, ForeignKey('proficiency.id'))
-    faith = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.faith_id]")
-    bartering_id = Column(Integer, ForeignKey('proficiency.id'))
-    bartering = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.bartering_id]")
-    oration_id = Column(Integer, ForeignKey('proficiency.id'))
-    oration = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.oration_id]")
-    knowledge_id = Column(Integer, ForeignKey('proficiency.id'))
-    knowledge = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.knowledge_id]")
-    luck_id = Column(Integer, ForeignKey('proficiency.id'))
-    luck = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.luck_id]")
-    resist_frost_id = Column(Integer, ForeignKey('proficiency.id'))
-    resist_frost = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_frost_id]")
-    resist_flame_id = Column(Integer, ForeignKey('proficiency.id'))
-    resist_flame = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_flame_id]")
-    resist_shadow_id = Column(Integer, ForeignKey('proficiency.id'))
-    resist_shadow = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_shadow_id]")
-    resist_holy_id = Column(Integer, ForeignKey('proficiency.id'))
-    resist_holy = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_holy_id]")
-    resist_blunt_id = Column(Integer, ForeignKey('proficiency.id'))
-    resist_blunt = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_blunt_id]")
-    resist_slashing_id = Column(Integer, ForeignKey('proficiency.id'))
-    resist_slashing = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_slashing_id]")
-    resist_piercing_id = Column(Integer, ForeignKey('proficiency.id'))
-    resist_piercing = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_piercing_id]")
     
     def __init__(self):
         
-        self.attack_damage = Proficiency("Attack damage", "How hard you hit", "Strength", "Offense")
-        self.attack_speed = Proficiency("Attack speed", "How fast you attack", "Agility", "Offense")
-        self.attack_accuracy = Proficiency("Attack accuracy", "", "Agility", "Offense")
-        self.first_strike = Proficiency("First strike", "", "Agility", "Offense")
-        self.critical_hit = Proficiency("Critical hit", "", "Agility", "Offense")
-        self.defence = Proficiency("Defence", "", "Endurance", "Defence")
-        self.evade = Proficiency("Evade", "", "Strength", "Defence")
-        self.parry = Proficiency("Parry", "", "Strength", "Defence")
-        self.riposte = Proficiency("Riposte", "", "Strength", "Defence")
-        self.block = Proficiency("Block", "", "Strength", "Defence")
-        self.stealth = Proficiency("Stealth", "", "Strength", "Stealth")
-        self.pickpocketing = Proficiency("Pickpocketing", "", "Strength", "Stealth")
-        self.faith = Proficiency("Faith", "", "Strength", "Holiness")
-        self.bartering = Proficiency("Bartering", "", "Strength", "Diplomacy")
-        self.oration = Proficiency("Oration", "", "Strength", "Diplomacy")
-        self.knowledge = Proficiency("Knowledge", "", "Strength", "Diplomacy")
-        self.luck = Proficiency("Luck", "", "Strength", "Diplomacy")
-        self.resist_frost = Proficiency("Resist frost", "", "Strength", "Resistance")
-        self.resist_flame = Proficiency("Resist flame", "", "Strength", "Resistance")
-        self.resist_shadow = Proficiency("Resist shadow", "", "Strength", "Resistance")
-        self.resist_holy = Proficiency("Resist holy", "", "Strength", "Resistance")
-        self.resist_blunt = Proficiency("Resist blunt", "", "Strength", "Resistance")
-        self.resist_slashing = Proficiency("Resist slashing", "", "Strength", "Resistance")
-        self.resist_piercing = Proficiency("Resist piercing", "", "Strength", "Resistance")
+        self.attack_damage = Proficiency("Attack damage", "How hard you hit", "Strength", "Offense", AttackDamage())
         
 
     def items(self):
@@ -150,7 +111,7 @@ class Proficiency(Base):
     next_value = Column(Integer)
     is_not_max_level = Column(Boolean)
 
-    def __init__(self, name, description, attribute_type, type):
+    def __init__(self, name, description, attribute_type, type, values):
         self.name = name
         self.description = description
         self.attribute_type = attribute_type
@@ -160,592 +121,10 @@ class Proficiency(Base):
         self.value = 1
         self.next_value = 15
         self.is_not_max_level = False
-        
-        if name == "Attack damage":
-            self.values = AttackDamage()
-            
-        if name == "Attack speed":
-            self.values = AttackSpeed()
-            
-        if name == "Attack accuracy":
-            self.values = AttackAccuracy()
-            
-        if name == "First strike":
-            self.values = FirstStrike()
-            
-        if name == "Critical hit":
-            self.values = CriticalHit()
-            
-        if name == "Defence":
-            self.values = Defence()
-            
-        if name == "Evade":
-            self.values = Evade()
-            
-        if name == "Parry":
-            self.values = Parry()
-            
-        if name == "Riposte":
-            self.values = Riposte()
-            
-        if name == "Block":
-            self.values = Block()
-            
-        if name == "Stealth":
-            self.values = Stealth()
-            
-        if name == "Pickpocketing":
-            self.values = Pickpocketing()
-            
-        if name == "Faith":
-            self.values = Faith()
-            
-        if name == "Bartering":
-            self.values = Bartering()
-            
-        if name == "Oration":
-            self.values = Oration()
-            
-        if name == "Knowledge":
-            self.values = Knowledge()
-            
-        if name == "Luck":
-            self.values = Luck()
-            
-        if name == "Resist frost":
-            self.values = ResistFrost()
-            
-        if name == "Resist flame":
-            self.values = ResistFlame()
-            
-        if name == "Resist shadow":
-            self.values = ResistShadow()
-            
-        if name == "Resist holy":
-            self.values = ResistHoly()
-            
-        if name == "Resist blunt":
-            self.values = ResistBlunt()
-            
-        if name == "Resist slashing":
-            self.values = ResistSlashing()
-            
-        if name == "Resist piercing":
-            self.values = ResistPiercing()
-            
+        self.values = values
 
     def update(self, myHero):
         pass
-
-
-class AttackDamage(object):
-    __tablename__ = "attack_damage"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"AttackDamage",
-    }
-
-    def __init__(self):
-        
-        self.minimum_damage = 0
-        
-        self.maximum_damage = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class AttackSpeed(object):
-    __tablename__ = "attack_speed"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"AttackSpeed",
-    }
-
-    def __init__(self):
-        
-        self.speed = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.agility.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class AttackAccuracy(object):
-    __tablename__ = "attack_accuracy"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"AttackAccuracy",
-    }
-
-    def __init__(self):
-        
-        self.accuracy = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.agility.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class FirstStrike(object):
-    __tablename__ = "first_strike"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"FirstStrike",
-    }
-
-    def __init__(self):
-        
-        self.first_strike = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.agility.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class CriticalHit(object):
-    __tablename__ = "critical_hit"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"CriticalHit",
-    }
-
-    def __init__(self):
-        
-        self.critical_chance = 0
-        
-        self.critical_modifier = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.agility.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class Defence(object):
-    __tablename__ = "defence"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"Defence",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.endurance.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class Evade(object):
-    __tablename__ = "evade"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"Evade",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class Parry(object):
-    __tablename__ = "parry"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"Parry",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class Riposte(object):
-    __tablename__ = "riposte"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"Riposte",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class Block(object):
-    __tablename__ = "block"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"Block",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class Stealth(object):
-    __tablename__ = "stealth"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"Stealth",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class Pickpocketing(object):
-    __tablename__ = "pickpocketing"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"Pickpocketing",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class Faith(object):
-    __tablename__ = "faith"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"Faith",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class Bartering(object):
-    __tablename__ = "bartering"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"Bartering",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class Oration(object):
-    __tablename__ = "oration"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"Oration",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class Knowledge(object):
-    __tablename__ = "knowledge"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"Knowledge",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class Luck(object):
-    __tablename__ = "luck"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"Luck",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class ResistFrost(object):
-    __tablename__ = "resist_frost"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"ResistFrost",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class ResistFlame(object):
-    __tablename__ = "resist_flame"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"ResistFlame",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class ResistShadow(object):
-    __tablename__ = "resist_shadow"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"ResistShadow",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class ResistHoly(object):
-    __tablename__ = "resist_holy"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"ResistHoly",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class ResistBlunt(object):
-    __tablename__ = "resist_blunt"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"ResistBlunt",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class ResistSlashing(object):
-    __tablename__ = "resist_slashing"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"ResistSlashing",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-class ResistPiercing(object):
-    __tablename__ = "resist_piercing"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"ResistPiercing",
-    }
-
-    def __init__(self):
-        
-        self.test = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
 
 
 #//////////////////////////////////////////////////////////////////////////////#
