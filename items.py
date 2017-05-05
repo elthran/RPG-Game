@@ -399,6 +399,9 @@ class Ring(Jewelry):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.ring = True
+        
+    def update_stats(self, hero):
+        pass
 
 # Subclass of ItemTemplate
 class Consumable(ItemTemplate):

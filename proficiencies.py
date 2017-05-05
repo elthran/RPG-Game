@@ -42,33 +42,6 @@ PROFICIENCY_INFORMATION = [
 
 ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_") for attrib in PROFICIENCY_INFORMATION]
 
-
-class AttackDamage(object):
-
-    def __init__(self):
-        self.testing = 123
-        # Pull list of all associated values
-        
-        self.minimum_damage = 0
-        
-        self.maximum_damage = 0
-        
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-
-    # Do I need this? Is this related to my bug? :'(
-    """
-    def __iter__(self):
-        pass
-    """
-
 class Proficiencies(Base):
     __tablename__ = 'proficiencies'
     
@@ -80,7 +53,7 @@ class Proficiencies(Base):
     
     def __init__(self):
         
-        self.attack_damage = Proficiency("Attack damage", "How hard you hit", "Strength", "Offense", AttackDamage())
+        self.attack_damage = AttackDamage("Attack damage", "How hard you hit", "Strength", "Offense")
         
 
     def items(self):
@@ -110,8 +83,14 @@ class Proficiency(Base):
     value = Column(Integer)
     next_value = Column(Integer)
     is_not_max_level = Column(Boolean)
+    
+    _class = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Proficiency",
+        'polymorphic_on':_class
+    }
 
-    def __init__(self, name, description, attribute_type, type, values):
+    def __init__(self, name, description, attribute_type, type):
         self.name = name
         self.description = description
         self.attribute_type = attribute_type
@@ -121,10 +100,40 @@ class Proficiency(Base):
         self.value = 1
         self.next_value = 15
         self.is_not_max_level = False
-        self.values = values
 
     def update(self, myHero):
         pass
+        
+
+class AttackDamage(Proficiency):
+    __tablename__ = "attack_damage"
+    
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+    
+    minimum_damage = Column(Integer)
+    maximum_damage = Column(Integer)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':"AttackDamage",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        self.minimum_damage = 0
+        self.maximum_damage = 0
+        
+    
+    # def update(self, myHero):
+        # if self.level < myHero.attributes.strength.level // 2:
+            # self.is_not_max_level = True
+        # else:
+            # self.is_not_max_level = False
+        # self.value = (self.level * 5) + 5
+        # self.next_value = ((self.level + 1) * 5) + 5
+
+
+
 
 
 #//////////////////////////////////////////////////////////////////////////////#
