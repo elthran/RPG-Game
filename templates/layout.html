@@ -101,11 +101,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 
                     // Execute a secondary function stored on the button.
                     // Replicates <button onClick=fn(this)> but where the secondary
-                    // function occurs after the response (and only on valid responses).
+                    // function occurs AFTER the response (and only on valid responses).
                     
-                    var fn = clickedButton.getAttribute("data-function");
-                    console.log(fn)
-                    fn(clickedButton);
+                    window[clickedButton.getAttribute("data-function")](clickedButton);
                     
                     // Current response format must be of the form key=value
                     // I will put some error checking in to make sure that this happens at some point.

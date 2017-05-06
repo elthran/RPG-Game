@@ -47,7 +47,7 @@ class Item(Base):
     broken = Column(Boolean)
     consumed = Column(Boolean)
     name = Column(String)
-    equip = Column(Boolean)
+    equipped = Column(Boolean)
     
     def __init__(self, template):
         """Build a new item from a given template.
@@ -64,7 +64,8 @@ class Item(Base):
             pass
         self.broken = False
         self.consumed = False
-
+        self.equipped = False
+        
         self.load_template()
         
     
@@ -161,6 +162,9 @@ class ItemTemplate(Base):
         self.buy_price = buy_price
         self.wearable = False
         self.consumable = False
+        
+    def update_stats(self, hero):
+        pass
         
 
 # Subclass of ItemTemplate
