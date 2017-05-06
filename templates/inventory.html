@@ -17,26 +17,29 @@ function removeRow(button) {
 
 function toggleEquip(button, itemType, slotText) {
     "use strict";
-    console.log(button);
-    console.log(itemType);
-    console.log(slotText);
+    //console.log(button);
+    //console.log(itemType);
+    //console.log(slotText);
     var slot = document.getElementById(itemType);
+    var tr = document.getElementById(button.getAttribute("data"));
     if (button.innerHTML === "Equip") {
-        slot.innerHTML = slotText;
-        removeRow(button);
-    } else {
-        slot.style.display = "none";
+        button.innerHTML = "Unequip";
+        slot.appendChild(tr);
+    } else if (button.innerHTML === "Unequip") {
         slot = document.getElementById("non_equipped_items");
-        slot.insertAdjacentHTML('beforeend', slotText);
+        button.innerHTML = "Equip";
+        slot.appendChild(tr);
     }
 }
 </script>   
 
 <!-- This is the inventory page and displays everything your character wears/owns and gives you CMD buttons to equip/unequip -->
       <h1>Equipped:</h1>
-      <h2>Helmet:</h2>
+      <table id="equipped_items">
        <div id="Head_Armour">
+        <h2>Helmet:</h2>
        </div>
+       </table>
       {% for item in myHero.equipped_items() %} 
         {% if item.one_handed_weapon %}
           <h2>Right Hand:</h2>
