@@ -7,7 +7,7 @@
 The element is hidden based on the button clicked having the same data value
 as the id value of the table row id. These should both be unique.
 */
-function remove(button) {
+function removeRow(button) {
     "use strict";
     var tr = document.getElementById(button.getAttribute("data"));
     // console.log(tr);
@@ -15,19 +15,28 @@ function remove(button) {
     // button.style.display = 'none';
 }
 
-function toggleEquip(button) {
+function toggleEquip(button, itemType, slotText) {
     "use strict";
     console.log(button);
+    console.log(itemType);
+    console.log(slotText);
+    var slot = document.getElementById(itemType);
     if (button.innerHTML === "Equip") {
-        button.innerHTML = "Unequip";
+        slot.innerHTML = slotText;
+        removeRow(button);
     } else {
-        button.innerHTML = "Equip";
+        slot.style.display = "none";
+        slot = document.getElementById("non_equipped_items");
+        slot.insertAdjacentHTML('beforeend', slotText);
     }
 }
 </script>   
 
 <!-- This is the inventory page and displays everything your character wears/owns and gives you CMD buttons to equip/unequip -->
       <h1>Equipped:</h1>
+      <h2>Helmet:</h2>
+       <div id="Head_Armour">
+       </div>
       {% for item in myHero.equipped_items() %} 
         {% if item.one_handed_weapon %}
           <h2>Right Hand:</h2>
@@ -44,10 +53,6 @@ function toggleEquip(button) {
         {% if item.chest_armour %}
           <h2>Shirt:</h2>
          {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>   
-        {% endif %}
-        {% if item.head_armour %}
-          <h2>Helmet:</h2>
-          {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command" data="{{ item.id }}" data-function="toggleEquip">Unequip</button>
         {% endif %}
         {% if item.leg_armour %}-          <h2>Pants:</h2>
           {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
@@ -70,7 +75,7 @@ function toggleEquip(button) {
         {% endif %}
       {% endfor %}
      <h1>Inventory:</h1>
-     <table>
+     <table id="non_equipped_items">
         {% for item in myHero.non_equipped_items() %}
         <tr id="{{ item.id }}">
             <td>{% if not item.wearable %}{{ item.amount_owned }}{% endif %} {{ item.name }} {% if item.wearable %} -- Durability: {{ item.durability }}/{{ item.max_durability }}{% endif %}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp; </td>

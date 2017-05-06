@@ -1,0 +1,6 @@
+        <tr id="{{ item.id }}">
+            <td>{% if not item.wearable %}{{ item.amount_owned }}{% endif %} {{ item.name }} {% if item.wearable %} -- Durability: {{ item.durability }}/{{ item.max_durability }}{% endif %}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp; </td>
+            <td>{% if item.wearable %}<button class="command" data="{{ item.id }}" data-function="toggleEquip">Equip</button>{% endif %}
+                {% if item.consumable %}<button class="command" data="{{ item.id }}" onClick="remove(this);">Consume</button>{% endif %}
+                </td>
+        </tr>

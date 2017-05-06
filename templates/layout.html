@@ -88,6 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
 
             var clickedButton = e.target;
+            var dataFunction = window[clickedButton.getAttribute("data-function")];
 
             // Now we need to send the data to our server
             // without reloading the page - this is the domain of
@@ -98,23 +99,24 @@ document.addEventListener("DOMContentLoaded", function () {
             xhttp.onreadystatechange = function () {
                 // Wait until response gets full formed .. and isn't an error.
                 if (xhttp.readyState === 4 && xhttp.status === 200) {
-                
+                    
                     // Execute a secondary function stored on the button.
                     // Replicates <button onClick=fn(this)> but where the secondary
                     // function occurs AFTER the response (and only on valid responses).
-                    
-                    window[clickedButton.getAttribute("data-function")](clickedButton);
-                    
-                    // Current response format must be of the form key=value
-                    // I will put some error checking in to make sure that this happens at some point.
-                    //
-                    // If response can't be used to find content to update (old code)
-                    // Then the whole page is reloaded instead. See if (!objectIDs.length).
-                    // var requestArray = xhttp.responseText.split("=");
-                    // var key = requestArray[0];
-                    // var value = requestArray[1];
-                    // console.log("Response: key=" + key + ", value=" + value);
-
+                    if (xhttp.responseText == "Success") {
+                        dataFunction(clickedButton);
+                    } else {
+                        // Current response format must be of the form key&&value
+                        // I will put some error checking in to make sure that this happens at some point.
+                        //
+                        // If response can't be used to find content to update (old code)
+                        // Then the whole page is reloaded instead. See if (!objectIDs.length).
+                        var requestArray = xhttp.responseText.split("&&");
+                        var key = requestArray[0];
+                        var value = requestArray[1];
+                        
+                        dataFunction(clickedButton, key, value);
+                    }
                     // Get all locations/objects that are going to be updated by this response.
                     // currently all info to be updated must be of the form
                     // <span id="hero_religion">{{ myHero.religion }}</span>
