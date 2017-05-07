@@ -24,6 +24,7 @@ Item Specification:
         -amount_owned (inventory)
         -broken (item)
         -consumed (unless consumable just removes the item) (item, may cause two columns in inventory)
+        -equipped true/false
 """
 
 

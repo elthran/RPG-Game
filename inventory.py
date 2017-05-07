@@ -106,7 +106,7 @@ class Inventory(Base):
         slots_names = self.item_type_to_slots[item.type]
         for name in slots_names:
             if name == "rings":
-                index = self.rings.index[item]
+                index = self.rings.index(item)
                 self.unequip_slot(name, index)
             else:
                 self.unequip_slot(name)

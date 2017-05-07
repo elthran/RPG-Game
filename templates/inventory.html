@@ -15,10 +15,10 @@ function removeRow(button) {
     // button.style.display = 'none';
 }
 
-function toggleEquip(button, itemType, slotText) {
+function toggleEquip(button, itemType) {
     "use strict";
-    //console.log(button);
-    //console.log(itemType);
+    console.log(button);
+    console.log(itemType);
     //console.log(slotText);
     var slot = document.getElementById(itemType);
     var tr = document.getElementById(button.getAttribute("data"));
@@ -32,61 +32,96 @@ function toggleEquip(button, itemType, slotText) {
     }
 }
 </script>   
-
 <!-- This is the inventory page and displays everything your character wears/owns and gives you CMD buttons to equip/unequip -->
       <h1>Equipped:</h1>
       <table id="equipped_items">
-       <div id="Head_Armour">
+      {%- for item in hero.equipped_items() %}
         <h2>Helmet:</h2>
-       </div>
-       </table>
-      {% for item in myHero.equipped_items() %} 
-        {% if item.one_handed_weapon %}
-          <h2>Right Hand:</h2>
-          {{ item.name }} -- Durability: {{ item.durability }}/{{ item.durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>   
-        {% endif %}
-        {% if item.shield %}
-          <h2>Left Hand:</h2>
-          {{ item.name }}-- Durability: {{ item.durability }}/{{ item.durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>   
-        {% endif %}
-        {% if item.two_handed_weapon %}
-          <h2>Both Hands:</h2>
-          {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>   
-        {% endif %}
-        {% if item.chest_armour %}
-          <h2>Shirt:</h2>
-         {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>   
-        {% endif %}
-        {% if item.leg_armour %}-          <h2>Pants:</h2>
-          {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
-        {% endif %}
-        {% if item.feet_armour %}
-          <h2>Shoes:</h2>
-          {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
-        {% endif %}
-       {% if item.arm_armour %}
-          <h2>Sleeves:</h2>
-          {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
-        {% endif %}
-       {% if item.hand_armour %}
-         <h2>Gloves:</h2>
-         {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
-       {% endif %}
-        {% if item.ring %}
-          <h2>Rings:</h2>
-          {{ item.name }}-- Durability: {{ item.durability }}/{{ item.max_durability }}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp;  <button class="command command-{{ item.name }}" value="{{ item.name }}">Unequip</button>
-        {% endif %}
-      {% endfor %}
+        <div id="Head_Armour">{% if item.head_armour %}
+            <tr id="{{ item.id }}">
+                <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font style="color:red">broken</font>{% endif %}</td>
+                <td><button class="command" data="{{ item.id }}" data-function="toggleEquip">Equip</button></td>
+            </tr>{% endif %}
+        </div>
+        <h2>Shirt:</h2>
+        <div id="Chest_Armour">{% if item.chest_armour %}
+            <tr id="{{ item.id }}">
+                <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font style="color:red">broken</font>{% endif %}</td>
+                <td><button class="command" data="{{ item.id }}" data-function="toggleEquip">Equip</button></td>
+            </tr>{% endif %}
+        </div>
+        <h2>Right Hand:</h2>
+        <div id="One_Handed_Weapon">{% if item.one_handed_weapon %}
+            <tr id="{{ item.id }}">
+                <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font style="color:red">broken</font>{% endif %}</td>
+                <td><button class="command" data="{{ item.id }}" data-function="toggleEquip">Equip</button></td>
+            </tr>{% endif %}
+        </div>
+        <h2>Left Hand:</h2>
+        <div id="Shield">{% if item.shield %}
+            <tr id="{{ item.id }}">
+                <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font style="color:red">broken</font>{% endif %}</td>
+                <td><button class="command" data="{{ item.id }}" data-function="toggleEquip">Equip</button></td>
+            </tr>{% endif %}
+        </div>
+        <h2>Both Hands:</h2>
+        <div id="Two_Handed_Weapon">{% if item.two_handed_weapon %}
+            <tr id="{{ item.id }}">
+                <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font style="color:red">broken</font>{% endif %}</td>
+                <td><button class="command" data="{{ item.id }}" data-function="toggleEquip">Equip</button></td>
+            </tr>{% endif %}
+        </div>
+        <h2>Sleeves:</h2>
+        <div id="Arm_Armour">{% if item.arm_armour %}
+            <tr id="{{ item.id }}">
+                <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font style="color:red">broken</font>{% endif %}</td>
+                <td><button class="command" data="{{ item.id }}" data-function="toggleEquip">Equip</button></td>
+            </tr>{% endif %}
+        </div>
+        <h2>Gloves:</h2>
+        <div id="Hand_Armour">{% if item.hand_armour %}
+            <tr id="{{ item.id }}">
+                <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font style="color:red">broken</font>{% endif %}</td>
+                <td><button class="command" data="{{ item.id }}" data-function="toggleEquip">Equip</button></td>
+            </tr>{% endif %}
+        </div>
+        <h2>Rings:</h2>
+        <div id="Ring">{% if item.ring %}
+            <tr id="{{ item.id }}">
+                <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font style="color:red">broken</font>{% endif %}</td>
+                <td><button class="command" data="{{ item.id }}" data-function="toggleEquip">Equip</button></td>
+            </tr>{% endif %}
+        </div>
+        <h2>Pants:</h2>
+        <div id="Leg_Armour">{% if item.leg_armour %}
+            <tr id="{{ item.id }}">
+                <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font style="color:red">broken</font>{% endif %}</td>
+                <td><button class="command" data="{{ item.id }}" data-function="toggleEquip">Equip</button></td>
+            </tr>{% endif %}
+        </div>
+        <h2>Shoes:</h2>
+        <div id="Feet_Armour">{% if item.feet_armour %}
+            <tr id="{{ item.id }}">
+                <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font style="color:red">broken</font>{% endif %}</td>
+                <td><button class="command" data="{{ item.id }}" data-function="toggleEquip">Equip</button></td>
+            </tr>{% endif %}
+        </div>
+      {%- endfor %}
+      </table>
      <h1>Inventory:</h1>
      <table id="non_equipped_items">
-        {% for item in myHero.non_equipped_items() %}
+        {%- for item in hero.non_equipped_items() %}
+        {%- if item.wearable %}
         <tr id="{{ item.id }}">
-            <td>{% if not item.wearable %}{{ item.amount_owned }}{% endif %} {{ item.name }} {% if item.wearable %} -- Durability: {{ item.durability }}/{{ item.max_durability }}{% endif %}{% if item.broken %}<font style="color:red">broken</font>{% endif %} &emsp; </td>
-            <td>{% if item.wearable %}<button class="command" data="{{ item.id }}" data-function="toggleEquip">Equip</button>{% endif %}
-                {% if item.consumable %}<button class="command" data="{{ item.id }}" onClick="remove(this);">Consume</button>{% endif %}
-                </td>
+            <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font style="color:red">broken</font>{% endif %}</td>
+            <td><button class="command" data="{{ item.id }}" data-function="toggleEquip">Equip</button></td>
         </tr>
-        {% endfor %}
+        {%- elif item.consumable %}
+        <tr id="{{ item.id }}">
+            <td>{{ item.amount_owned }} {{ item.name }} {% if item.broken %}<font style="color:red">broken</font>{% endif %}</td>
+            <td><button class="command" data="{{ item.id }}" onClick="removeRow(this)">Consume</button></td>
+        </tr>{% endif %}
+        {%- endfor %}
       </table>
-{% endblock %}
+{%- endblock -%}
 

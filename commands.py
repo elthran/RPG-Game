@@ -105,7 +105,8 @@ class Command:
         item_id = arg_dict.get('data', None, type=int)
         item = database.get_item_by_id(item_id)
         hero.inventory.equip(item)
-        return "{}&&{}".format(item.type, render_template("render_item_equipped.html", item=item))
+        return item.type + "&&"
+        # return "{}&&{}".format(item.type, render_template("render_item_equipped.html", item=item))
         # return "success", 200, {'Content-Type': 'text/plain'}
         
     def unequip(hero, database, arg_dict):
@@ -113,7 +114,8 @@ class Command:
         item = database.get_item_by_id(item_id)
         
         hero.inventory.unequip(item)
-        return "{}&&{}".format(item.type, render_template("render_item_not_equipped.html", item=item))
+        return item.type + "&&"
+        # return "{}&&{}".format(item.type, render_template("render_item_not_equipped.html", item=item))
         # return "success", 200, {'Content-Type': 'text/plain'}
 
         

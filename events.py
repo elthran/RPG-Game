@@ -10,11 +10,15 @@ Event specification:
         i.e. mainly <button> and <a> tags.
     
 Format
-    -<button class="command" data="{{ item.id }}" onClick="remove(this);">Consume</button>
+    -<button class="command" data="{{ item.id }}" data-function="functionName">Consume</button>
+    -<button class="command" data="{{ item.id }}" onClick="remove(this)">Consume</button>
     -Where class="command" means this object runs command code.
     -Where data is the items database id.
     -Where Consume is the buttons command identifier (the command function to run).
-    -where onClick is a local function to run.
+    -Where data-function is the name of a function that can be sent data from the python
+        code. This function runs after the python code returns a response. onClick
+        does not. It runs first/or independantly?
+    -Where onClick is a local function to run. "this" is the button object itself.
         
 This should be used to create and event object such that:
     >>> event = Event(request.args)

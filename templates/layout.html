@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+{%- if hero -%}
+    {% set myHero = hero %}
+{%- endif %}
 <html lang="en">
 
   <head>
@@ -72,6 +75,7 @@ endif
 </html>
 
 <script>
+/*global window, console*/
 // Only run what comes next *after* the page has loaded
 document.addEventListener("DOMContentLoaded", function () {
     "use strict";
@@ -90,6 +94,13 @@ document.addEventListener("DOMContentLoaded", function () {
             var clickedButton = e.target;
             var dataFunction = window[clickedButton.getAttribute("data-function")];
 
+            // If data-function is not set then make a null function to prevent errors.
+            if (dataFunction === undefined) {
+                dataFunction = function () {
+                    return;
+                };
+            }
+
             // Now we need to send the data to our server
             // without reloading the page - this is the domain of
             // AJAX (Asynchronous JavaScript And XML)
@@ -99,50 +110,20 @@ document.addEventListener("DOMContentLoaded", function () {
             xhttp.onreadystatechange = function () {
                 // Wait until response gets full formed .. and isn't an error.
                 if (xhttp.readyState === 4 && xhttp.status === 200) {
-                    
                     // Execute a secondary function stored on the button.
                     // Replicates <button onClick=fn(this)> but where the secondary
                     // function occurs AFTER the response (and only on valid responses).
-                    if (xhttp.responseText == "Success") {
+                    if (xhttp.responseText === "success") {
                         dataFunction(clickedButton);
                     } else {
                         // Current response format must be of the form key&&value
                         // I will put some error checking in to make sure that this happens at some point.
-                        //
-                        // If response can't be used to find content to update (old code)
-                        // Then the whole page is reloaded instead. See if (!objectIDs.length).
                         var requestArray = xhttp.responseText.split("&&");
                         var key = requestArray[0];
                         var value = requestArray[1];
-                        
+
                         dataFunction(clickedButton, key, value);
                     }
-                    // Get all locations/objects that are going to be updated by this response.
-                    // currently all info to be updated must be of the form
-                    // <span id="hero_religion">{{ myHero.religion }}</span>
-                    // which might really looks like <span id="hero_religion">Forgoth</span>
-                    // when the folling loop executes the value between
-                    // the span tags gets updated. The id tells the code what Jinja2 variable
-                    // is going to be updated. There must be a better way.
-                    // Like reinterpret the template? But only this one variable?
-                    // Perhaps I could build all Jinja2 variables inside an update_me span tag?
-                    // That way all of the dynamic content would get updated?
-                    // Note ids must not have dots in them. Or spaces. Only underscores.
-                    //var idElements = document.querySelectorAll("#" + key);
-                    // For backwards compatability until I update all of the old code.
-                    // Runs if no objectIDs are found.
-                    //if (!idElements.length) {
-                        //location.reload();
-                        //console.log("Location reloaded!");
-                        //console.log("Response: key=" + key + ", value=" + value);
-                    //} else {
-                        //console.log("Elements to be updated:", idElements);
-                        // Iterate through the NodeList created by "querySelectorAll"
-                        //idElements.forEach(function (item, index) {
-                            //console.log("object " + index + ": " + item);
-                            //item.innerHTML = value;
-                        //});
-                    //}
                 }
             };
             // We point the request at the appropriate command
@@ -150,17 +131,17 @@ document.addEventListener("DOMContentLoaded", function () {
             // Then you can send the data raw or in lots of other formats.
             // See https://www.w3schools.com/xml/ajax_xmlhttprequest_send.asp
             // "&&" acts like the "," in pythonic {key:value, key2:value2}
-            // xhttp.open("GET", "/" + action + "?location=" + location + "&&key2=value2", true);
-            var pathname = window.location.pathname;
             var action = clickedButton.innerHTML.toLowerCase();
-            
+
             //get buttons class and save it as the .
             console.log("Button clicked was:", clickedButton);
-            
+
             // innerHTML for a button is the button's "label" (the part you see).
-            xhttp.open("GET", "/" + action +
-                "?location=" + window.location.pathname +
-                "&&data=" +  clickedButton.getAttribute("data"), true);
+            xhttp.open(
+                "GET",
+                "/" + action + "?location=" + window.location.pathname + "&&data=" + clickedButton.getAttribute("data"),
+                true
+            );
             // and then we send it off
             xhttp.send();
         });
