@@ -5,7 +5,7 @@ PROFICIENCY_INFORMATION = [
     ("Attack accuracy", "Chance to hit", "Agility", "Offense", ["Accuracy"]),
     ("First strike", "Chance to strike first", "Agility", "Offense", ["Chance"]),
     ("Critical hit", "Ability to hit your enemy's weakspots", "Agility", "Offense", ["Chance", "Modifier"]),
-    ("Defence", "Damage reduction", "Endurance", "Defence", ["Modifier"]),
+    ("Defence", "Damage reduction", "Fortitude", "Defence", ["Modifier"]),
     ("Evade", "Chance to dodge", "Strength", "Defence", ["Chance"]),
     ("Parry", "Chance to parry", "Strength", "Defence", ["Chance"]),
     ("Riposte", "Chance to riposte", "Strength", "Defence", ["Chance"]),

@@ -16,7 +16,7 @@ PROFICIENCY_INFORMATION = [
     ("Attack accuracy", "Chance to hit", "Agility", "Offense", ["Accuracy"]),
     ("First strike", "Chance to strike first", "Agility", "Offense", ["Chance"]),
     ("Critical hit", "Ability to hit your enemy's weakspots", "Agility", "Offense", ["Chance", "Modifier"]),
-    ("Defence", "Damage reduction", "Endurance", "Defence", ["Modifier"]),
+    ("Defence", "Damage reduction", "Fortitude", "Defence", ["Modifier"]),
     ("Evade", "Chance to dodge", "Strength", "Defence", ["Chance"]),
     ("Parry", "Chance to parry", "Strength", "Defence", ["Chance"]),
     ("Riposte", "Chance to riposte", "Strength", "Defence", ["Chance"]),
@@ -103,32 +103,32 @@ class Proficiencies(Base):
     
     def __init__(self):
         
-        self.attack_damage = Proficiency("Attack damage", "How hard you hit", "Strength", "Offense", AttackDamage())
-        self.attack_speed = Proficiency("Attack speed", "How fast you attack", "Agility", "Offense", AttackSpeed())
-        self.attack_accuracy = Proficiency("Attack accuracy", "Chance to hit", "Agility", "Offense", AttackAccuracy())
-        self.first_strike = Proficiency("First strike", "Chance to strike first", "Agility", "Offense", FirstStrike())
-        self.critical_hit = Proficiency("Critical hit", "Ability to hit your enemy's weakspots", "Agility", "Offense", CriticalHit())
-        self.defence = Proficiency("Defence", "Damage reduction", "Endurance", "Defence", Defence())
-        self.evade = Proficiency("Evade", "Chance to dodge", "Strength", "Defence", Evade())
-        self.parry = Proficiency("Parry", "Chance to parry", "Strength", "Defence", Parry())
-        self.riposte = Proficiency("Riposte", "Chance to riposte", "Strength", "Defence", Riposte())
-        self.block = Proficiency("Block", "Ability to block if a shield is equipped", "Strength", "Defence", Block())
-        self.stealth = Proficiency("Stealth", "Chance to avoid detection", "Strength", "Stealth", Stealth())
-        self.pickpocketing = Proficiency("Pickpocketing", "Chance to steal", "Strength", "Stealth", Pickpocketing())
-        self.faith = Proficiency("Faith", "Ability to cast spells", "Strength", "Holiness", Faith())
-        self.bartering = Proficiency("Bartering", "Chance to negotiate prices", "Strength", "Diplomacy", Bartering())
-        self.oration = Proficiency("Oration", "Ability to speak", "Strength", "Diplomacy", Oration())
-        self.knowledge = Proficiency("Knowledge", "Ability to understand", "Strength", "Diplomacy", Knowledge())
-        self.literacy = Proficiency("Literacy", "Ability to read", "Strength", "Diplomacy", Literacy())
-        self.luck = Proficiency("Luck", "Chance to have things turn your way against all odds", "Strength", "Diplomacy", Luck())
-        self.resist_frost = Proficiency("Resist frost", "Ability to resist frost damage", "Strength", "Resistance", ResistFrost())
-        self.resist_flame = Proficiency("Resist flame", "Ability to resist flame damage", "Strength", "Resistance", ResistFlame())
-        self.resist_shadow = Proficiency("Resist shadow", "Ability to resist shadow damage", "Strength", "Resistance", ResistShadow())
-        self.resist_holy = Proficiency("Resist holy", "Ability to resist holy damage", "Strength", "Resistance", ResistHoly())
-        self.resist_poison = Proficiency("Resist poison", "Ability to resist poison damage", "Strength", "Resistance", ResistPoison())
-        self.resist_blunt = Proficiency("Resist blunt", "Ability to resist blunt damage", "Strength", "Resistance", ResistBlunt())
-        self.resist_slashing = Proficiency("Resist slashing", "Ability to resist slashing damage", "Strength", "Resistance", ResistSlashing())
-        self.resist_piercing = Proficiency("Resist piercing", "Ability to resist piercing damage", "Strength", "Resistance", ResistPiercing())
+        self.attack_damage = AttackDamage("Attack damage", "How hard you hit", "Strength", "Offense")
+        self.attack_speed = AttackSpeed("Attack speed", "How fast you attack", "Agility", "Offense")
+        self.attack_accuracy = AttackAccuracy("Attack accuracy", "Chance to hit", "Agility", "Offense")
+        self.first_strike = FirstStrike("First strike", "Chance to strike first", "Agility", "Offense")
+        self.critical_hit = CriticalHit("Critical hit", "Ability to hit your enemy's weakspots", "Agility", "Offense")
+        self.defence = Defence("Defence", "Damage reduction", "Fortitude", "Defence")
+        self.evade = Evade("Evade", "Chance to dodge", "Strength", "Defence")
+        self.parry = Parry("Parry", "Chance to parry", "Strength", "Defence")
+        self.riposte = Riposte("Riposte", "Chance to riposte", "Strength", "Defence")
+        self.block = Block("Block", "Ability to block if a shield is equipped", "Strength", "Defence")
+        self.stealth = Stealth("Stealth", "Chance to avoid detection", "Strength", "Stealth")
+        self.pickpocketing = Pickpocketing("Pickpocketing", "Chance to steal", "Strength", "Stealth")
+        self.faith = Faith("Faith", "Ability to cast spells", "Strength", "Holiness")
+        self.bartering = Bartering("Bartering", "Chance to negotiate prices", "Strength", "Diplomacy")
+        self.oration = Oration("Oration", "Ability to speak", "Strength", "Diplomacy")
+        self.knowledge = Knowledge("Knowledge", "Ability to understand", "Strength", "Diplomacy")
+        self.literacy = Literacy("Literacy", "Ability to read", "Strength", "Diplomacy")
+        self.luck = Luck("Luck", "Chance to have things turn your way against all odds", "Strength", "Diplomacy")
+        self.resist_frost = ResistFrost("Resist frost", "Ability to resist frost damage", "Strength", "Resistance")
+        self.resist_flame = ResistFlame("Resist flame", "Ability to resist flame damage", "Strength", "Resistance")
+        self.resist_shadow = ResistShadow("Resist shadow", "Ability to resist shadow damage", "Strength", "Resistance")
+        self.resist_holy = ResistHoly("Resist holy", "Ability to resist holy damage", "Strength", "Resistance")
+        self.resist_poison = ResistPoison("Resist poison", "Ability to resist poison damage", "Strength", "Resistance")
+        self.resist_blunt = ResistBlunt("Resist blunt", "Ability to resist blunt damage", "Strength", "Resistance")
+        self.resist_slashing = ResistSlashing("Resist slashing", "Ability to resist slashing damage", "Strength", "Resistance")
+        self.resist_piercing = ResistPiercing("Resist piercing", "Ability to resist piercing damage", "Strength", "Resistance")
         
 
     def items(self):
@@ -158,6 +158,12 @@ class Proficiency(Base):
     value = Column(Integer)
     next_value = Column(Integer)
     is_not_max_level = Column(Boolean)
+    
+    _class = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Proficiency",
+        'polymorphic_on':_class
+    }
 
     def __init__(self, name, description, attribute_type, type):
         self.name = name
@@ -317,7 +323,7 @@ class Defence(Proficiency):
         
         
     def update(self, myHero):
-        if self.level < myHero.attributes.endurance.level // 2:
+        if self.level < myHero.attributes.fortitude.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False

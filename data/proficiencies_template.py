@@ -25,7 +25,7 @@ class Proficiencies(Base):
     def __init__(self):
         {% for prof in PROFICIENCY_INFORMATION %}
         {% set objectValue = prof[0].title().replace(" ", '') -%}
-        self.{{ prof[0].lower().replace(' ', '_') }} = Proficiency("{{ prof[0] }}", "{{ prof[1] }}", "{{ prof[2] }}", "{{ prof[3] }}", {{ objectValue }}())
+        self.{{ prof[0].lower().replace(' ', '_') }} = {{ objectValue }}("{{ prof[0] }}", "{{ prof[1] }}", "{{ prof[2] }}", "{{ prof[3] }}")
         {%- endfor %}
         
 
@@ -56,6 +56,12 @@ class Proficiency(Base):
     value = Column(Integer)
     next_value = Column(Integer)
     is_not_max_level = Column(Boolean)
+    
+    _class = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Proficiency",
+        'polymorphic_on':_class
+    }
 
     def __init__(self, name, description, attribute_type, type):
         self.name = name
