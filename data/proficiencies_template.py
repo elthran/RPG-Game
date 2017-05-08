@@ -11,33 +11,6 @@ from base_classes import Base
 
 {% include "proficiencies_data.py" %}
 
-{% for prof in PROFICIENCY_INFORMATION %}
-{% set prof_class = prof[0].title().replace(" ", '') -%}
-{% set prof_tablename = prof[0].lower().replace(" ", '_') -%}
-class {{ prof_class }}(object):
-
-    def __init__(self):
-        self.testing = 123
-        # Pull list of all associated values
-        {% for value in prof[4] %}
-        self.{{ value.lower() }} = 0
-        {% endfor %}
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.{{ prof[2].lower() }}.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-{% endfor %}
-
-    # Do I need this? Is this related to my bug? :'(
-    """
-    def __iter__(self):
-        pass
-    """
-
 class Proficiencies(Base):
     __tablename__ = 'proficiencies'
     
@@ -84,7 +57,7 @@ class Proficiency(Base):
     next_value = Column(Integer)
     is_not_max_level = Column(Boolean)
 
-    def __init__(self, name, description, attribute_type, type, values):
+    def __init__(self, name, description, attribute_type, type):
         self.name = name
         self.description = description
         self.attribute_type = attribute_type
@@ -94,10 +67,45 @@ class Proficiency(Base):
         self.value = 1
         self.next_value = 15
         self.is_not_max_level = False
-        self.values = values
 
     def update(self, myHero):
         pass
+
+{% for prof in PROFICIENCY_INFORMATION %}
+{% set prof_class = prof[0].title().replace(" ", '') -%}
+{% set prof_tablename = prof[0].lower().replace(" ", '_') -%}
+class {{ prof_class }}(Proficiency):
+    __tablename__ = "{{ prof_tablename }}"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    {% for column in prof[4] -%}
+    {{ column.lower() }} = Column(Integer)
+    {% endfor %}
+    __mapper_args__ = {
+        'polymorphic_identity':"{{ prof_class }}",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        {% for value in prof[4] -%}
+        self.{{ value.lower() }} = 0
+        {% endfor %}
+        
+    def update(self, myHero):
+        if self.level < myHero.attributes.{{ prof[2].lower() }}.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.value = (self.level * 5) + 5
+        self.next_value = ((self.level + 1) * 5) + 5
+{% endfor %}
+
+    # Do I need this? Is this related to my bug? :'(
+    """
+    def __iter__(self):
+        pass
+    """
 
 
 #//////////////////////////////////////////////////////////////////////////////#

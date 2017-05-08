@@ -1,7 +1,6 @@
 # Name, Description, Attribute_Type, Type, [Values]
 PROFICIENCY_INFORMATION = [
-    ("Attack damage", "How hard you hit", "Strength", "Offense", ["Minimum", "Maximum", "Average"])]
-""",
+    ("Attack damage", "How hard you hit", "Strength", "Offense", ["Minimum", "Maximum", "Average"]),
     ("Attack speed", "How fast you attack", "Agility", "Offense", ["Speed"]),
     ("Attack accuracy", "Chance to hit", "Agility", "Offense", ["Accuracy"]),
     ("First strike", "Chance to strike first", "Agility", "Offense", ["Chance"]),
@@ -28,7 +27,6 @@ PROFICIENCY_INFORMATION = [
     ("Resist slashing", "Ability to resist slashing damage", "Strength", "Resistance", ["Modifier"]),
     ("Resist piercing", "Ability to resist piercing damage", "Strength", "Resistance", ["Modifier"])
     ]
-"""
 
 
 ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_") for attrib in PROFICIENCY_INFORMATION]
