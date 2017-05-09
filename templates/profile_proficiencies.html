@@ -15,12 +15,11 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Offense" %}
 						<li>
-							{% if proficiency.is_not_max_level %}
+							{% if proficiency.is_not_max_level and myHero.proficiency_points %}
 								{{ proficiency.name}}: {{ proficiency.level }}
-								<button class="command" data="{{ proficiency.id }}" data-function="levelUp" id="proficiencyButton"></button>
-								<!--<input type="number" name="{{ proficiency.name }}" min="0" title="Numbers only" value=0>-->
+								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
 							{% else %}
-								<span title="{{ proficiency.error }}" style="color:red">{{ proficiency.name}}: {{ proficiency.level }}</span>
+								<span title="{{ proficiency.error }}">{{ proficiency.name}}: {{ proficiency.level }}</span>
 							{% endif %}
 						</li>
 					{%- endif %}
@@ -31,10 +30,9 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Stealth" %}
 						<li>
-							{% if proficiency.is_not_max_level %}
+							{% if proficiency.is_not_max_level and myHero.proficiency_points %}
 								{{ proficiency.name}}: {{ proficiency.level }}
-								<button class="command" data="{{ proficiency.id }}" data-function="levelUp" id="proficiencyButton"></button>
-								<!--<input type="number" name="{{ proficiency.name }}" min="0" title="Numbers only" value=0>-->
+								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
 							{% else %}
 								<span title="{{ proficiency.error }}" style="color:red">{{ proficiency.name}}: {{ proficiency.level }}</span>
 							{% endif %}
@@ -49,10 +47,9 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Defence" %}
 						<li>
-							{% if proficiency.is_not_max_level %}
+							{% if proficiency.is_not_max_level and myHero.proficiency_points %}
 								{{ proficiency.name}}: {{ proficiency.level }}
-								<button class="command" data="{{ proficiency.id }}" data-function="levelUp" id="proficiencyButton"></button>
-								<!--<input type="number" name="{{ proficiency.name }}" min="0" title="Numbers only" value=0>-->
+								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
 							{% else %}
 								<span title="{{ proficiency.error }}" style="color:red">{{ proficiency.name}}: {{ proficiency.level }}</span>
 							{% endif %}
@@ -65,10 +62,9 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Resistance" %}
 						<li>
-							{% if proficiency.is_not_max_level %}
+							{% if proficiency.is_not_max_level and myHero.proficiency_points %}
 								{{ proficiency.name}}: {{ proficiency.level }}
-								<button class="command" data="{{ proficiency.id }}" data-function="levelUp" id="proficiencyButton"></button>
-								<!--<input type="number" name="{{ proficiency.name }}" min="0" title="Numbers only" value=0>-->
+								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
 							{% else %}
 								<span title="{{ proficiency.error }}" style="color:red">{{ proficiency.name}}: {{ proficiency.level }}</span>
 							{% endif %}
@@ -83,10 +79,9 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Diplomacy" %}
 						<li>
-							{% if proficiency.is_not_max_level %}
+							{% if proficiency.is_not_max_level and myHero.proficiency_points %}
 								{{ proficiency.name}}: {{ proficiency.level }}
-								<button class="command" data="{{ proficiency.id }}" data-function="levelUp" id="proficiencyButton"></button>
-								<!--<input type="number" name="{{ proficiency.name }}" min="0" title="Numbers only" value=0>-->
+								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
 							{% else %}
 								<span title="{{ proficiency.error }}" style="color:red">{{ proficiency.name}}: {{ proficiency.level }}</span>
 							{% endif %}
@@ -99,10 +94,9 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Holiness" %}
 						<li>
-							{% if proficiency.is_not_max_level %}
+							{% if proficiency.is_not_max_level and myHero.proficiency_points %}
 								{{ proficiency.name}}: {{ proficiency.level }}
-								<button class="command" data="{{ proficiency.id }}" data-function="levelUp" id="proficiencyButton"></button>
-								<!--<input type="number" name="{{ proficiency.name }}" min="0" title="Numbers only" value=0>-->
+								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
 							{% else %}
 								<span title="{{ proficiency.error }}" style="color:red">{{ proficiency.name}}: {{ proficiency.level }}</span>
 							{% endif %}

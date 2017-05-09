@@ -63,8 +63,19 @@ class Command:
             return "success", 200, {'Content-Type': 'text/plain'}  
         return "success", 200, {'Content-Type': 'text/plain'}
 
+    def level_proficiency(hero, database, arg_dict):
+        this_proficiency = arg_dict.get('proficiency', None, type=str)
+        for proficiency in hero.proficiencies:
+            if proficiency.formatted_name == this_proficiency:
+                proficiency.level_up()
+                hero.proficiency_points -= 1
+                proficiency.update(hero)
+                return "success", 200, {'Content-Type': 'text/plain'}
+        return "success", 200, {'Content-Type': 'text/plain'}
+
         
     cmd_functions = {
         'buy': buy_from_blacksmith,
         'choose_religion': choose_religion,
+        'level_proficiency': level_proficiency
     }

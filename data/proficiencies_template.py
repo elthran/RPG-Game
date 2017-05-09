@@ -74,8 +74,8 @@ class Proficiency(Base):
         self.next_value = 15
         self.is_not_max_level = False
 
-    def update(self, myHero):
-        pass
+    def level_up(self):
+        self.level += 1
 
 {% for prof in PROFICIENCY_INFORMATION %}
 {% set prof_class = prof[0].title().replace(" ", '') -%}
@@ -89,6 +89,7 @@ class {{ prof_class }}(Proficiency):
     {{ column.lower() }} = Column(Integer)
     {% endfor %}
     error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"{{ prof_class }}",
 }
@@ -99,6 +100,7 @@ class {{ prof_class }}(Proficiency):
         self.{{ value.lower() }} = 3
         {% endfor -%}
         self.error = "You do not have enough {{ prof[2].lower() }}"
+        self.formatted_name = "{{ prof_tablename }}"
         
     def update(self, myHero):
         if self.level < myHero.attributes.{{ prof[2].lower() }}.level // 2:
@@ -107,6 +109,7 @@ class {{ prof_class }}(Proficiency):
             self.is_not_max_level = False
         self.value = (self.level * 5) + 5
         self.next_value = ((self.level + 1) * 5) + 5
+        
 {% endfor %}
 
     # Do I need this? Is this related to my bug? :'(

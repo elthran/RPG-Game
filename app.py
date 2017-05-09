@@ -334,7 +334,8 @@ def attributes():
 
         myHero.update_proficiencies()
         myHero.refresh_character()
-        myHero.proficiencies.attack_damage.update(myHero)
+        for proficiency in myHero.proficiencies:
+            proficiency.update(myHero)
         #By Marlen
         #This will be replaced with:
         #hero.proficiencies.update_all(hero) or something.
