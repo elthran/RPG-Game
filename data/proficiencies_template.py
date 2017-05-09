@@ -88,6 +88,7 @@ class {{ prof_class }}(Proficiency):
     {% for column in prof[4] -%}
     {{ column.lower() }} = Column(Integer)
     {% endfor %}
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"{{ prof_class }}",
 }
@@ -95,8 +96,9 @@ class {{ prof_class }}(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         {% for value in prof[4] -%}
-        self.{{ value.lower() }} = 0
-        {% endfor %}
+        self.{{ value.lower() }} = 3
+        {% endfor -%}
+        self.error = "You do not have enough {{ prof[2].lower() }}"
         
     def update(self, myHero):
         if self.level < myHero.attributes.{{ prof[2].lower() }}.level // 2:

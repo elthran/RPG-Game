@@ -189,16 +189,17 @@ class AttackDamage(Proficiency):
     maximum = Column(Integer)
     average = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"AttackDamage",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.minimum = 0
-        self.maximum = 0
-        self.average = 0
-        
+        self.minimum = 3
+        self.maximum = 3
+        self.average = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -215,14 +216,15 @@ class AttackSpeed(Proficiency):
 
     speed = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"AttackSpeed",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.speed = 0
-        
+        self.speed = 3
+        self.error = "You do not have enough agility"
         
     def update(self, myHero):
         if self.level < myHero.attributes.agility.level // 2:
@@ -239,14 +241,15 @@ class AttackAccuracy(Proficiency):
 
     accuracy = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"AttackAccuracy",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.accuracy = 0
-        
+        self.accuracy = 3
+        self.error = "You do not have enough agility"
         
     def update(self, myHero):
         if self.level < myHero.attributes.agility.level // 2:
@@ -263,14 +266,15 @@ class FirstStrike(Proficiency):
 
     chance = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"FirstStrike",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
-        
+        self.chance = 3
+        self.error = "You do not have enough agility"
         
     def update(self, myHero):
         if self.level < myHero.attributes.agility.level // 2:
@@ -288,15 +292,16 @@ class CriticalHit(Proficiency):
     chance = Column(Integer)
     modifier = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"CriticalHit",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
-        self.modifier = 0
-        
+        self.chance = 3
+        self.modifier = 3
+        self.error = "You do not have enough agility"
         
     def update(self, myHero):
         if self.level < myHero.attributes.agility.level // 2:
@@ -313,14 +318,15 @@ class Defence(Proficiency):
 
     modifier = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Defence",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 0
-        
+        self.modifier = 3
+        self.error = "You do not have enough fortitude"
         
     def update(self, myHero):
         if self.level < myHero.attributes.fortitude.level // 2:
@@ -337,14 +343,15 @@ class Evade(Proficiency):
 
     chance = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Evade",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
-        
+        self.chance = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -361,14 +368,15 @@ class Parry(Proficiency):
 
     chance = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Parry",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
-        
+        self.chance = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -385,14 +393,15 @@ class Riposte(Proficiency):
 
     chance = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Riposte",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
-        
+        self.chance = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -410,15 +419,16 @@ class Block(Proficiency):
     chance = Column(Integer)
     modifier = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Block",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
-        self.modifier = 0
-        
+        self.chance = 3
+        self.modifier = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -435,14 +445,15 @@ class Stealth(Proficiency):
 
     chance = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Stealth",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
-        
+        self.chance = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -459,14 +470,15 @@ class Pickpocketing(Proficiency):
 
     chance = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Pickpocketing",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
-        
+        self.chance = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -483,14 +495,15 @@ class Faith(Proficiency):
 
     modifier = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Faith",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 0
-        
+        self.modifier = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -507,14 +520,15 @@ class Bartering(Proficiency):
 
     chance = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Bartering",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
-        
+        self.chance = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -531,14 +545,15 @@ class Oration(Proficiency):
 
     modifier = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Oration",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 0
-        
+        self.modifier = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -555,14 +570,15 @@ class Knowledge(Proficiency):
 
     modifier = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Knowledge",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 0
-        
+        self.modifier = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -579,14 +595,15 @@ class Literacy(Proficiency):
 
     modifier = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Literacy",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 0
-        
+        self.modifier = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -603,14 +620,15 @@ class Luck(Proficiency):
 
     chance = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Luck",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
-        
+        self.chance = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -627,14 +645,15 @@ class ResistFrost(Proficiency):
 
     modifier = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"ResistFrost",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 0
-        
+        self.modifier = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -651,14 +670,15 @@ class ResistFlame(Proficiency):
 
     modifier = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"ResistFlame",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 0
-        
+        self.modifier = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -675,14 +695,15 @@ class ResistShadow(Proficiency):
 
     modifier = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"ResistShadow",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 0
-        
+        self.modifier = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -699,14 +720,15 @@ class ResistHoly(Proficiency):
 
     modifier = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"ResistHoly",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 0
-        
+        self.modifier = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -723,14 +745,15 @@ class ResistPoison(Proficiency):
 
     modifier = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"ResistPoison",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 0
-        
+        self.modifier = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -747,14 +770,15 @@ class ResistBlunt(Proficiency):
 
     modifier = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"ResistBlunt",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 0
-        
+        self.modifier = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -771,14 +795,15 @@ class ResistSlashing(Proficiency):
 
     modifier = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"ResistSlashing",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 0
-        
+        self.modifier = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:
@@ -795,14 +820,15 @@ class ResistPiercing(Proficiency):
 
     modifier = Column(Integer)
     
+    error = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"ResistPiercing",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 0
-        
+        self.modifier = 3
+        self.error = "You do not have enough strength"
         
     def update(self, myHero):
         if self.level < myHero.attributes.strength.level // 2:

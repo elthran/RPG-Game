@@ -188,8 +188,8 @@ class Hero(Base):
         self.specialized_ability_points = 0
         self.pantheonic_ability_points = 0
     
-        self.attribute_points = 0
-        self.proficiency_points = 0
+        self.attribute_points = 10
+        self.proficiency_points = 10
         
         #Build before *_current so that *_percents and validators work.
         self.sanctity_maximum = 0
