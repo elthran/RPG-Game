@@ -9,34 +9,37 @@ from sqlalchemy.orm import relationship
 
 from base_classes import Base
 
-# Name, Description, Attribute_Type, Type, [Values]
+from math import sin
+from math import floor
+
+# Name, Description, Attribute_Type, Type, [(Values Name, Value type, (Modifiers of value))]
 PROFICIENCY_INFORMATION = [
-    ("Attack damage", "How hard you hit", "Strength", "Offense", [("Minimum", 1), ("Maximum", 2), ("Average", 1.5)]),
-    ("Attack speed", "How fast you attack", "Agility", "Offense", [("Speed", 1)]),
-    ("Attack accuracy", "Chance to hit", "Agility", "Offense", [("Accuracy", 1)]),
-    ("First strike", "Chance to strike first", "Agility", "Offense", [("Chance", 1)]),
-    ("Critical hit", "Ability to hit your enemy's weakspots", "Agility", "Offense", [("Chance", 1), ("Modifier", 1)]),
-    ("Defence", "Damage reduction", "Fortitude", "Defence", [("Modifier", 1)]),
-    ("Evade", "Chance to dodge", "Strength", "Defence", [("Chance", 1)]),
-    ("Parry", "Chance to parry", "Strength", "Defence", [("Chance", 1)]),
-    ("Riposte", "Chance to riposte", "Strength", "Defence", [("Chance", 1)]),
-    ("Block", "Ability to block if a shield is equipped", "Strength", "Defence", [("Chance", 1), ("Modifier", 1)]),
-    ("Stealth", "Chance to avoid detection", "Strength", "Stealth", [("Chance", 1)]),
-    ("Pickpocketing", "Chance to steal", "Strength", "Stealth", [("Chance", 1)]),
-    ("Faith", "Ability to cast spells", "Strength", "Holiness", [("Modifier", 1)]),
-    ("Bartering", "Chance to negotiate prices", "Strength", "Diplomacy", [("Chance", 1)]),
-    ("Oration", "Ability to speak", "Strength", "Diplomacy", [("Modifier", 1)]),
-    ("Knowledge", "Ability to understand", "Strength", "Diplomacy", [("Modifier", 1)]),
-    ("Literacy", "Ability to read", "Strength", "Diplomacy", [("Modifier", 1)]),
-    ("Luck", "Chance to have things turn your way against all odds", "Strength", "Diplomacy", [("Chance", 1)]),
-    ("Resist frost", "Ability to resist frost damage", "Strength", "Resistance", [("Modifier", 1)]),
-    ("Resist flame", "Ability to resist flame damage", "Strength", "Resistance", [("Modifier", 1)]),
-    ("Resist shadow", "Ability to resist shadow damage", "Strength", "Resistance", [("Modifier", 1)]),
-    ("Resist holy", "Ability to resist holy damage", "Strength", "Resistance", [("Modifier", 1)]),
-    ("Resist poison", "Ability to resist poison damage", "Strength", "Resistance", [("Modifier", 1)]),
-    ("Resist blunt", "Ability to resist blunt damage", "Strength", "Resistance", [("Modifier", 1)]),
-    ("Resist slashing", "Ability to resist slashing damage", "Strength", "Resistance", [("Modifier", 1)]),
-    ("Resist piercing", "Ability to resist piercing damage", "Strength", "Resistance", [("Modifier", 1)])
+    ("Attack damage", "How hard you hit", "Strength", "Offense", [("Minimum", "damage", (0.5, 0.3, 1.5)), ("Maximum",  "damage", (0.6, 0.3, 1.5)), ("Average",  "damage", (0.55, 0.3, 1.5))]),
+    ("Attack speed", "How fast you attack", "Agility", "Offense", [("Speed", "percent", (2, 10, 5))]),
+    ("Attack accuracy", "Chance to hit", "Agility", "Offense", [("Accuracy", "percent", (2, 10, 5))]),
+    ("First strike", "Chance to strike first", "Agility", "Offense", [("Chance", "percent", (2, 1, 5))]),
+    ("Critical hit", "Ability to hit your enemy's weakspots", "Agility", "Offense", [("Chance", "percent", (2, 10, 5)), ("Modifier", "percent", (2, 10, 5))]),
+    ("Defence", "Damage reduction", "Fortitude", "Defence", [("Modifier", "percent", (2, 10, 5))]),
+    ("Evade", "Chance to dodge", "Strength", "Defence", [("Chance", "percent", (2, 10, 5))]),
+    ("Parry", "Chance to parry", "Strength", "Defence", [("Chance", "percent", (2, 10, 5))]),
+    ("Riposte", "Chance to riposte", "Strength", "Defence", [("Chance", "percent", (2, 10, 5))]),
+    ("Block", "Ability to block if a shield is equipped", "Strength", "Defence", [("Chance", "percent", (2, 10, 5)), ("Modifier", "percent", (2, 10, 5))]),
+    ("Stealth", "Chance to avoid detection", "Strength", "Stealth", [("Chance", "percent", (2, 10, 5))]),
+    ("Pickpocketing", "Chance to steal", "Strength", "Stealth", [("Chance", "percent", (2, 10, 5))]),
+    ("Faith", "Ability to cast spells", "Strength", "Holiness", [("Modifier", "percent", (2, 10, 5))]),
+    ("Bartering", "Chance to negotiate prices", "Strength", "Diplomacy", [("Chance", "percent", (2, 10, 5))]),
+    ("Oration", "Ability to speak", "Strength", "Diplomacy", [("Modifier", "percent", (2, 10, 5))]),
+    ("Knowledge", "Ability to understand", "Strength", "Diplomacy", [("Modifier", "percent", (2, 10, 5))]),
+    ("Literacy", "Ability to read", "Strength", "Diplomacy", [("Modifier", "percent", (2, 10, 5))]),
+    ("Luck", "Chance to have things turn your way against all odds", "Strength", "Diplomacy", [("Chance", "percent", (2, 10, 5))]),
+    ("Resist frost", "Ability to resist frost damage", "Strength", "Resistance", [("Modifier", "percent", (2, 10, 5))]),
+    ("Resist flame", "Ability to resist flame damage", "Strength", "Resistance", [("Modifier", "percent", (2, 10, 5))]),
+    ("Resist shadow", "Ability to resist shadow damage", "Strength", "Resistance", [("Modifier", "percent", (2, 10, 5))]),
+    ("Resist holy", "Ability to resist holy damage", "Strength", "Resistance", [("Modifier", "percent", (2, 10, 5))]),
+    ("Resist poison", "Ability to resist poison damage", "Strength", "Resistance", [("Modifier", "percent", (2, 10, 5))]),
+    ("Resist blunt", "Ability to resist blunt damage", "Strength", "Resistance", [("Modifier", "percent", (2, 10, 5))]),
+    ("Resist slashing", "Ability to resist slashing damage", "Strength", "Resistance", [("Modifier", "percent", (2, 10, 5))]),
+    ("Resist piercing", "Ability to resist piercing damage", "Strength", "Resistance", [("Modifier", "percent", (2, 10, 5))])
     ]
 
 
@@ -205,9 +208,15 @@ class AttackDamage(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.minimum = self.level * 1
-        self.maximum = self.level * 2
-        self.average = self.level * 1.5
+        
+        self.minimum = math.floor(3 * (0.5*math.sin(1.5*self.level) + 0.3*self.level))
+        
+        
+        self.maximum = math.floor(3 * (0.6*math.sin(1.5*self.level) + 0.3*self.level))
+        
+        
+        self.average = math.floor(3 * (0.55*math.sin(1.5*self.level) + 0.3*self.level))
+        
         
 class AttackSpeed(Proficiency):
     __tablename__ = "attack_speed"
@@ -233,7 +242,9 @@ class AttackSpeed(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.speed = self.level * 1
+        
+        self.speed = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class AttackAccuracy(Proficiency):
     __tablename__ = "attack_accuracy"
@@ -259,7 +270,9 @@ class AttackAccuracy(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.accuracy = self.level * 1
+        
+        self.accuracy = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class FirstStrike(Proficiency):
     __tablename__ = "first_strike"
@@ -285,7 +298,9 @@ class FirstStrike(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = self.level * 1
+        
+        self.chance = (- (1*5)/((2 * self.level) + 1) + 5) * 8
+        
         
 class CriticalHit(Proficiency):
     __tablename__ = "critical_hit"
@@ -313,8 +328,12 @@ class CriticalHit(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = self.level * 1
-        self.modifier = self.level * 1
+        
+        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
+        
+        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class Defence(Proficiency):
     __tablename__ = "defence"
@@ -340,7 +359,9 @@ class Defence(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = self.level * 1
+        
+        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class Evade(Proficiency):
     __tablename__ = "evade"
@@ -366,7 +387,9 @@ class Evade(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = self.level * 1
+        
+        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class Parry(Proficiency):
     __tablename__ = "parry"
@@ -392,7 +415,9 @@ class Parry(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = self.level * 1
+        
+        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class Riposte(Proficiency):
     __tablename__ = "riposte"
@@ -418,7 +443,9 @@ class Riposte(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = self.level * 1
+        
+        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class Block(Proficiency):
     __tablename__ = "block"
@@ -446,8 +473,12 @@ class Block(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = self.level * 1
-        self.modifier = self.level * 1
+        
+        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
+        
+        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class Stealth(Proficiency):
     __tablename__ = "stealth"
@@ -473,7 +504,9 @@ class Stealth(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = self.level * 1
+        
+        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class Pickpocketing(Proficiency):
     __tablename__ = "pickpocketing"
@@ -499,7 +532,9 @@ class Pickpocketing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = self.level * 1
+        
+        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class Faith(Proficiency):
     __tablename__ = "faith"
@@ -525,7 +560,9 @@ class Faith(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = self.level * 1
+        
+        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class Bartering(Proficiency):
     __tablename__ = "bartering"
@@ -551,7 +588,9 @@ class Bartering(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = self.level * 1
+        
+        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class Oration(Proficiency):
     __tablename__ = "oration"
@@ -577,7 +616,9 @@ class Oration(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = self.level * 1
+        
+        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class Knowledge(Proficiency):
     __tablename__ = "knowledge"
@@ -603,7 +644,9 @@ class Knowledge(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = self.level * 1
+        
+        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class Literacy(Proficiency):
     __tablename__ = "literacy"
@@ -629,7 +672,9 @@ class Literacy(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = self.level * 1
+        
+        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class Luck(Proficiency):
     __tablename__ = "luck"
@@ -655,7 +700,9 @@ class Luck(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = self.level * 1
+        
+        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class ResistFrost(Proficiency):
     __tablename__ = "resist_frost"
@@ -681,7 +728,9 @@ class ResistFrost(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = self.level * 1
+        
+        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class ResistFlame(Proficiency):
     __tablename__ = "resist_flame"
@@ -707,7 +756,9 @@ class ResistFlame(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = self.level * 1
+        
+        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class ResistShadow(Proficiency):
     __tablename__ = "resist_shadow"
@@ -733,7 +784,9 @@ class ResistShadow(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = self.level * 1
+        
+        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class ResistHoly(Proficiency):
     __tablename__ = "resist_holy"
@@ -759,7 +812,9 @@ class ResistHoly(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = self.level * 1
+        
+        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class ResistPoison(Proficiency):
     __tablename__ = "resist_poison"
@@ -785,7 +840,9 @@ class ResistPoison(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = self.level * 1
+        
+        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class ResistBlunt(Proficiency):
     __tablename__ = "resist_blunt"
@@ -811,7 +868,9 @@ class ResistBlunt(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = self.level * 1
+        
+        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class ResistSlashing(Proficiency):
     __tablename__ = "resist_slashing"
@@ -837,7 +896,9 @@ class ResistSlashing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = self.level * 1
+        
+        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 class ResistPiercing(Proficiency):
     __tablename__ = "resist_piercing"
@@ -863,7 +924,9 @@ class ResistPiercing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = self.level * 1
+        
+        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        
         
 
     # Do I need this? Is this related to my bug? :'(

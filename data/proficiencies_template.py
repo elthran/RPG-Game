@@ -9,6 +9,9 @@ from sqlalchemy.orm import relationship
 
 from base_classes import Base
 
+from math import sin
+from math import floor
+
 {% include "proficiencies_data.py" %}
 
 class Proficiencies(Base):
@@ -105,7 +108,11 @@ class {{ prof_class }}(Proficiency):
         else:
             self.is_not_max_level = False
         {% for value in prof[4] -%}
-        self.{{ value[0].lower() }} = self.level * {{ value[1] }}
+        {% if value[1] == "percent" %}
+        self.{{ value[0].lower() }} = (- ({{ value[2][1] }}*{{ value[2][2] }})/(({{ value[2][0] }} * self.level) + {{ value[2][1] }}) + {{ value[2][2] }}) * 8
+        {% elif value[1] == "damage" %}
+        self.{{ value[0].lower() }} = math.floor(3 * ({{ value[2][0] }}*math.sin({{ value[2][2] }}*self.level) + {{ value[2][1] }}*self.level))
+        {% endif %}
         {% endfor -%}
         
 {% endfor %}
