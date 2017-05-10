@@ -29,6 +29,18 @@
 								&nbsp; &nbsp; Chance: {{ proficiency.chance }}%
 							{% elif proficiency.modifier %}
 								&nbsp; &nbsp; Modifier: {{ proficiency.modifier }}%
+							{% elif proficiency.speed %}
+								&nbsp; &nbsp; Speed: {{ proficiency.speed }}%
+							{% elif proficiency.accuracy %}
+								&nbsp; &nbsp; Accuracy: {{ proficiency.accuracy }}%
+							{% elif proficiency.health %}
+								&nbsp; &nbsp; Health: {{ proficiency.health }}
+							{% elif proficiency.sanctity %}
+								&nbsp; &nbsp; Sanctity: {{ proficiency.sanctity }}
+							{% elif proficiency.storage %}
+								&nbsp; &nbsp; Storage: {{ proficiency.storage }}
+							{% elif proficiency.endurance %}
+								&nbsp; &nbsp; Endurance: {{ proficiency.endurance }}
 							{% endif %}
 							</p>
 							<!-- END OF TEMPORARY CODE -->
