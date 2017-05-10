@@ -11,32 +11,32 @@ from base_classes import Base
 
 # Name, Description, Attribute_Type, Type, [Values]
 PROFICIENCY_INFORMATION = [
-    ("Attack damage", "How hard you hit", "Strength", "Offense", ["Minimum", "Maximum", "Average"]),
-    ("Attack speed", "How fast you attack", "Agility", "Offense", ["Speed"]),
-    ("Attack accuracy", "Chance to hit", "Agility", "Offense", ["Accuracy"]),
-    ("First strike", "Chance to strike first", "Agility", "Offense", ["Chance"]),
-    ("Critical hit", "Ability to hit your enemy's weakspots", "Agility", "Offense", ["Chance", "Modifier"]),
-    ("Defence", "Damage reduction", "Fortitude", "Defence", ["Modifier"]),
-    ("Evade", "Chance to dodge", "Strength", "Defence", ["Chance"]),
-    ("Parry", "Chance to parry", "Strength", "Defence", ["Chance"]),
-    ("Riposte", "Chance to riposte", "Strength", "Defence", ["Chance"]),
-    ("Block", "Ability to block if a shield is equipped", "Strength", "Defence", ["Chance", "Modifier"]),
-    ("Stealth", "Chance to avoid detection", "Strength", "Stealth", ["Chance"]),
-    ("Pickpocketing", "Chance to steal", "Strength", "Stealth", ["Chance"]),
-    ("Faith", "Ability to cast spells", "Strength", "Holiness", ["Modifier"]),
-    ("Bartering", "Chance to negotiate prices", "Strength", "Diplomacy", ["Chance"]),
-    ("Oration", "Ability to speak", "Strength", "Diplomacy", ["Modifier"]),
-    ("Knowledge", "Ability to understand", "Strength", "Diplomacy", ["Modifier"]),
-    ("Literacy", "Ability to read", "Strength", "Diplomacy", ["Modifier"]),
-    ("Luck", "Chance to have things turn your way against all odds", "Strength", "Diplomacy", ["Chance"]),
-    ("Resist frost", "Ability to resist frost damage", "Strength", "Resistance", ["Modifier"]),
-    ("Resist flame", "Ability to resist flame damage", "Strength", "Resistance", ["Modifier"]),
-    ("Resist shadow", "Ability to resist shadow damage", "Strength", "Resistance", ["Modifier"]),
-    ("Resist holy", "Ability to resist holy damage", "Strength", "Resistance", ["Modifier"]),
-    ("Resist poison", "Ability to resist poison damage", "Strength", "Resistance", ["Modifier"]),
-    ("Resist blunt", "Ability to resist blunt damage", "Strength", "Resistance", ["Modifier"]),
-    ("Resist slashing", "Ability to resist slashing damage", "Strength", "Resistance", ["Modifier"]),
-    ("Resist piercing", "Ability to resist piercing damage", "Strength", "Resistance", ["Modifier"])
+    ("Attack damage", "How hard you hit", "Strength", "Offense", [("Minimum", 1), ("Maximum", 2), ("Average", 1.5)]),
+    ("Attack speed", "How fast you attack", "Agility", "Offense", [("Speed", 1)]),
+    ("Attack accuracy", "Chance to hit", "Agility", "Offense", [("Accuracy", 1)]),
+    ("First strike", "Chance to strike first", "Agility", "Offense", [("Chance", 1)]),
+    ("Critical hit", "Ability to hit your enemy's weakspots", "Agility", "Offense", [("Chance", 1), ("Modifier", 1)]),
+    ("Defence", "Damage reduction", "Fortitude", "Defence", [("Modifier", 1)]),
+    ("Evade", "Chance to dodge", "Strength", "Defence", [("Chance", 1)]),
+    ("Parry", "Chance to parry", "Strength", "Defence", [("Chance", 1)]),
+    ("Riposte", "Chance to riposte", "Strength", "Defence", [("Chance", 1)]),
+    ("Block", "Ability to block if a shield is equipped", "Strength", "Defence", [("Chance", 1), ("Modifier", 1)]),
+    ("Stealth", "Chance to avoid detection", "Strength", "Stealth", [("Chance", 1)]),
+    ("Pickpocketing", "Chance to steal", "Strength", "Stealth", [("Chance", 1)]),
+    ("Faith", "Ability to cast spells", "Strength", "Holiness", [("Modifier", 1)]),
+    ("Bartering", "Chance to negotiate prices", "Strength", "Diplomacy", [("Chance", 1)]),
+    ("Oration", "Ability to speak", "Strength", "Diplomacy", [("Modifier", 1)]),
+    ("Knowledge", "Ability to understand", "Strength", "Diplomacy", [("Modifier", 1)]),
+    ("Literacy", "Ability to read", "Strength", "Diplomacy", [("Modifier", 1)]),
+    ("Luck", "Chance to have things turn your way against all odds", "Strength", "Diplomacy", [("Chance", 1)]),
+    ("Resist frost", "Ability to resist frost damage", "Strength", "Resistance", [("Modifier", 1)]),
+    ("Resist flame", "Ability to resist flame damage", "Strength", "Resistance", [("Modifier", 1)]),
+    ("Resist shadow", "Ability to resist shadow damage", "Strength", "Resistance", [("Modifier", 1)]),
+    ("Resist holy", "Ability to resist holy damage", "Strength", "Resistance", [("Modifier", 1)]),
+    ("Resist poison", "Ability to resist poison damage", "Strength", "Resistance", [("Modifier", 1)]),
+    ("Resist blunt", "Ability to resist blunt damage", "Strength", "Resistance", [("Modifier", 1)]),
+    ("Resist slashing", "Ability to resist slashing damage", "Strength", "Resistance", [("Modifier", 1)]),
+    ("Resist piercing", "Ability to resist piercing damage", "Strength", "Resistance", [("Modifier", 1)])
     ]
 
 
@@ -155,7 +155,6 @@ class Proficiency(Base):
     attribute_type = Column(String)
     type = Column(String)
     level = Column(Integer)
-    value = Column(Integer)
     next_value = Column(Integer)
     is_not_max_level = Column(Boolean)
     
@@ -172,8 +171,6 @@ class Proficiency(Base):
         self.type = type
         
         self.level = 1
-        self.value = 1
-        self.next_value = 15
         self.is_not_max_level = False
 
     def level_up(self):
@@ -197,9 +194,9 @@ class AttackDamage(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.minimum = 3
-        self.maximum = 3
-        self.average = 3
+        self.minimum = 0
+        self.maximum = 0
+        self.average = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "attack_damage"
         
@@ -208,10 +205,10 @@ class AttackDamage(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.minimum = self.level * 1
+        self.maximum = self.level * 2
+        self.average = self.level * 1.5
         
-
 class AttackSpeed(Proficiency):
     __tablename__ = "attack_speed"
 
@@ -227,7 +224,7 @@ class AttackSpeed(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.speed = 3
+        self.speed = 0
         self.error = "You do not have enough agility"
         self.formatted_name = "attack_speed"
         
@@ -236,10 +233,8 @@ class AttackSpeed(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.speed = self.level * 1
         
-
 class AttackAccuracy(Proficiency):
     __tablename__ = "attack_accuracy"
 
@@ -255,7 +250,7 @@ class AttackAccuracy(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.accuracy = 3
+        self.accuracy = 0
         self.error = "You do not have enough agility"
         self.formatted_name = "attack_accuracy"
         
@@ -264,10 +259,8 @@ class AttackAccuracy(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.accuracy = self.level * 1
         
-
 class FirstStrike(Proficiency):
     __tablename__ = "first_strike"
 
@@ -283,7 +276,7 @@ class FirstStrike(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 3
+        self.chance = 0
         self.error = "You do not have enough agility"
         self.formatted_name = "first_strike"
         
@@ -292,10 +285,8 @@ class FirstStrike(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.chance = self.level * 1
         
-
 class CriticalHit(Proficiency):
     __tablename__ = "critical_hit"
 
@@ -312,8 +303,8 @@ class CriticalHit(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 3
-        self.modifier = 3
+        self.chance = 0
+        self.modifier = 0
         self.error = "You do not have enough agility"
         self.formatted_name = "critical_hit"
         
@@ -322,10 +313,9 @@ class CriticalHit(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.chance = self.level * 1
+        self.modifier = self.level * 1
         
-
 class Defence(Proficiency):
     __tablename__ = "defence"
 
@@ -341,7 +331,7 @@ class Defence(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 3
+        self.modifier = 0
         self.error = "You do not have enough fortitude"
         self.formatted_name = "defence"
         
@@ -350,10 +340,8 @@ class Defence(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.modifier = self.level * 1
         
-
 class Evade(Proficiency):
     __tablename__ = "evade"
 
@@ -369,7 +357,7 @@ class Evade(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 3
+        self.chance = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "evade"
         
@@ -378,10 +366,8 @@ class Evade(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.chance = self.level * 1
         
-
 class Parry(Proficiency):
     __tablename__ = "parry"
 
@@ -397,7 +383,7 @@ class Parry(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 3
+        self.chance = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "parry"
         
@@ -406,10 +392,8 @@ class Parry(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.chance = self.level * 1
         
-
 class Riposte(Proficiency):
     __tablename__ = "riposte"
 
@@ -425,7 +409,7 @@ class Riposte(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 3
+        self.chance = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "riposte"
         
@@ -434,10 +418,8 @@ class Riposte(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.chance = self.level * 1
         
-
 class Block(Proficiency):
     __tablename__ = "block"
 
@@ -454,8 +436,8 @@ class Block(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 3
-        self.modifier = 3
+        self.chance = 0
+        self.modifier = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "block"
         
@@ -464,10 +446,9 @@ class Block(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.chance = self.level * 1
+        self.modifier = self.level * 1
         
-
 class Stealth(Proficiency):
     __tablename__ = "stealth"
 
@@ -483,7 +464,7 @@ class Stealth(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 3
+        self.chance = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "stealth"
         
@@ -492,10 +473,8 @@ class Stealth(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.chance = self.level * 1
         
-
 class Pickpocketing(Proficiency):
     __tablename__ = "pickpocketing"
 
@@ -511,7 +490,7 @@ class Pickpocketing(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 3
+        self.chance = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "pickpocketing"
         
@@ -520,10 +499,8 @@ class Pickpocketing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.chance = self.level * 1
         
-
 class Faith(Proficiency):
     __tablename__ = "faith"
 
@@ -539,7 +516,7 @@ class Faith(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 3
+        self.modifier = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "faith"
         
@@ -548,10 +525,8 @@ class Faith(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.modifier = self.level * 1
         
-
 class Bartering(Proficiency):
     __tablename__ = "bartering"
 
@@ -567,7 +542,7 @@ class Bartering(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 3
+        self.chance = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "bartering"
         
@@ -576,10 +551,8 @@ class Bartering(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.chance = self.level * 1
         
-
 class Oration(Proficiency):
     __tablename__ = "oration"
 
@@ -595,7 +568,7 @@ class Oration(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 3
+        self.modifier = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "oration"
         
@@ -604,10 +577,8 @@ class Oration(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.modifier = self.level * 1
         
-
 class Knowledge(Proficiency):
     __tablename__ = "knowledge"
 
@@ -623,7 +594,7 @@ class Knowledge(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 3
+        self.modifier = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "knowledge"
         
@@ -632,10 +603,8 @@ class Knowledge(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.modifier = self.level * 1
         
-
 class Literacy(Proficiency):
     __tablename__ = "literacy"
 
@@ -651,7 +620,7 @@ class Literacy(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 3
+        self.modifier = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "literacy"
         
@@ -660,10 +629,8 @@ class Literacy(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.modifier = self.level * 1
         
-
 class Luck(Proficiency):
     __tablename__ = "luck"
 
@@ -679,7 +646,7 @@ class Luck(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 3
+        self.chance = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "luck"
         
@@ -688,10 +655,8 @@ class Luck(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.chance = self.level * 1
         
-
 class ResistFrost(Proficiency):
     __tablename__ = "resist_frost"
 
@@ -707,7 +672,7 @@ class ResistFrost(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 3
+        self.modifier = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "resist_frost"
         
@@ -716,10 +681,8 @@ class ResistFrost(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.modifier = self.level * 1
         
-
 class ResistFlame(Proficiency):
     __tablename__ = "resist_flame"
 
@@ -735,7 +698,7 @@ class ResistFlame(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 3
+        self.modifier = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "resist_flame"
         
@@ -744,10 +707,8 @@ class ResistFlame(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.modifier = self.level * 1
         
-
 class ResistShadow(Proficiency):
     __tablename__ = "resist_shadow"
 
@@ -763,7 +724,7 @@ class ResistShadow(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 3
+        self.modifier = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "resist_shadow"
         
@@ -772,10 +733,8 @@ class ResistShadow(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.modifier = self.level * 1
         
-
 class ResistHoly(Proficiency):
     __tablename__ = "resist_holy"
 
@@ -791,7 +750,7 @@ class ResistHoly(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 3
+        self.modifier = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "resist_holy"
         
@@ -800,10 +759,8 @@ class ResistHoly(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.modifier = self.level * 1
         
-
 class ResistPoison(Proficiency):
     __tablename__ = "resist_poison"
 
@@ -819,7 +776,7 @@ class ResistPoison(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 3
+        self.modifier = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "resist_poison"
         
@@ -828,10 +785,8 @@ class ResistPoison(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.modifier = self.level * 1
         
-
 class ResistBlunt(Proficiency):
     __tablename__ = "resist_blunt"
 
@@ -847,7 +802,7 @@ class ResistBlunt(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 3
+        self.modifier = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "resist_blunt"
         
@@ -856,10 +811,8 @@ class ResistBlunt(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.modifier = self.level * 1
         
-
 class ResistSlashing(Proficiency):
     __tablename__ = "resist_slashing"
 
@@ -875,7 +828,7 @@ class ResistSlashing(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 3
+        self.modifier = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "resist_slashing"
         
@@ -884,10 +837,8 @@ class ResistSlashing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.modifier = self.level * 1
         
-
 class ResistPiercing(Proficiency):
     __tablename__ = "resist_piercing"
 
@@ -903,7 +854,7 @@ class ResistPiercing(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 3
+        self.modifier = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "resist_piercing"
         
@@ -912,10 +863,8 @@ class ResistPiercing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.modifier = self.level * 1
         
-
 
     # Do I need this? Is this related to my bug? :'(
     """

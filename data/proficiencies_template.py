@@ -53,7 +53,6 @@ class Proficiency(Base):
     attribute_type = Column(String)
     type = Column(String)
     level = Column(Integer)
-    value = Column(Integer)
     next_value = Column(Integer)
     is_not_max_level = Column(Boolean)
     
@@ -70,8 +69,6 @@ class Proficiency(Base):
         self.type = type
         
         self.level = 1
-        self.value = 1
-        self.next_value = 15
         self.is_not_max_level = False
 
     def level_up(self):
@@ -86,7 +83,7 @@ class {{ prof_class }}(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     {% for column in prof[4] -%}
-    {{ column.lower() }} = Column(Integer)
+    {{ column[0].lower() }} = Column(Integer)
     {% endfor %}
     error = Column(String)
     formatted_name = Column(String)
@@ -97,7 +94,7 @@ class {{ prof_class }}(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         {% for value in prof[4] -%}
-        self.{{ value.lower() }} = 3
+        self.{{ value[0].lower() }} = 0
         {% endfor -%}
         self.error = "You do not have enough {{ prof[2].lower() }}"
         self.formatted_name = "{{ prof_tablename }}"
@@ -107,8 +104,9 @@ class {{ prof_class }}(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        {% for value in prof[4] -%}
+        self.{{ value[0].lower() }} = self.level * {{ value[1] }}
+        {% endfor -%}
         
 {% endfor %}
 

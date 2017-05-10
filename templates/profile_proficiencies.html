@@ -21,6 +21,17 @@
 							{% else %}
 								<span title="{{ proficiency.error }}">{{ proficiency.name}}: {{ proficiency.level }}</span>
 							{% endif %}
+							<!-- TEMPORARY CODE BELOW -->
+							<p style="color:blue;">
+							{% if proficiency.minimum %}
+								&nbsp; &nbsp; Damage: {{ proficiency.minimum }}-{{ proficiency.maximum }}
+							{% elif proficiency.chance %}
+								&nbsp; &nbsp; Chance: {{ proficiency.chance }}%
+							{% elif proficiency.modifier %}
+								&nbsp; &nbsp; Modifier: {{ proficiency.modifier }}%
+							{% endif %}
+							</p>
+							<!-- END OF TEMPORARY CODE -->
 						</li>
 					{%- endif %}
                 {%- endfor %}
@@ -34,8 +45,19 @@
 								{{ proficiency.name}}: {{ proficiency.level }}
 								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
 							{% else %}
-								<span title="{{ proficiency.error }}" style="color:red">{{ proficiency.name}}: {{ proficiency.level }}</span>
+								<span title="{{ proficiency.error }}">{{ proficiency.name}}: {{ proficiency.level }}</span>
 							{% endif %}
+							<!-- TEMPORARY CODE BELOW -->
+							<p style="color:blue;">
+							{% if proficiency.minimum %}
+								&nbsp; &nbsp; Damage: {{ proficiency.minimum }}-{{ proficiency.maximum }}
+							{% elif proficiency.chance %}
+								&nbsp; &nbsp; Chance: {{ proficiency.chance }}%
+							{% elif proficiency.modifier %}
+								&nbsp; &nbsp; Modifier: {{ proficiency.modifier }}
+							{% endif %}
+							</p>
+							<!-- END OF TEMPORARY CODE -->
 						</li>
 					{%- endif %}
                 {%- endfor %}
@@ -51,8 +73,19 @@
 								{{ proficiency.name}}: {{ proficiency.level }}
 								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
 							{% else %}
-								<span title="{{ proficiency.error }}" style="color:red">{{ proficiency.name}}: {{ proficiency.level }}</span>
+								<span title="{{ proficiency.error }}">{{ proficiency.name}}: {{ proficiency.level }}</span>
 							{% endif %}
+							<!-- TEMPORARY CODE BELOW -->
+							<p style="color:blue;">
+							{% if proficiency.minimum %}
+								&nbsp; &nbsp; Damage: {{ proficiency.minimum }}-{{ proficiency.maximum }}
+							{% elif proficiency.chance %}
+								&nbsp; &nbsp; Chance: {{ proficiency.chance }}%
+							{% elif proficiency.modifier %}
+								&nbsp; &nbsp; Modifier: {{ proficiency.modifier }}
+							{% endif %}
+							</p>
+							<!-- END OF TEMPORARY CODE -->
 						</li>
 					{%- endif %}
                 {%- endfor %}
@@ -66,8 +99,19 @@
 								{{ proficiency.name}}: {{ proficiency.level }}
 								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
 							{% else %}
-								<span title="{{ proficiency.error }}" style="color:red">{{ proficiency.name}}: {{ proficiency.level }}</span>
+								<span title="{{ proficiency.error }}">{{ proficiency.name}}: {{ proficiency.level }}</span>
 							{% endif %}
+							<!-- TEMPORARY CODE BELOW -->
+							<p style="color:blue;">
+							{% if proficiency.minimum %}
+								&nbsp; &nbsp; Damage: {{ proficiency.minimum }}-{{ proficiency.maximum }}
+							{% elif proficiency.chance %}
+								&nbsp; &nbsp; Chance: {{ proficiency.chance }}%
+							{% elif proficiency.modifier %}
+								&nbsp; &nbsp; Modifier: {{ proficiency.modifier }}
+							{% endif %}
+							</p>
+							<!-- END OF TEMPORARY CODE -->
 						</li>
 					{%- endif %}
                 {%- endfor %}
@@ -83,8 +127,19 @@
 								{{ proficiency.name}}: {{ proficiency.level }}
 								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
 							{% else %}
-								<span title="{{ proficiency.error }}" style="color:red">{{ proficiency.name}}: {{ proficiency.level }}</span>
+								<span title="{{ proficiency.error }}">{{ proficiency.name}}: {{ proficiency.level }}</span>
 							{% endif %}
+							<!-- TEMPORARY CODE BELOW -->
+							<p style="color:blue;">
+							{% if proficiency.minimum %}
+								&nbsp; &nbsp; Damage: {{ proficiency.minimum }}-{{ proficiency.maximum }}
+							{% elif proficiency.chance %}
+								&nbsp; &nbsp; Chance: {{ proficiency.chance }}%
+							{% elif proficiency.modifier %}
+								&nbsp; &nbsp; Modifier: {{ proficiency.modifier }}
+							{% endif %}
+							</p>
+							<!-- END OF TEMPORARY CODE -->
 						</li>
 					{%- endif %}
                 {%- endfor %}
@@ -98,8 +153,19 @@
 								{{ proficiency.name}}: {{ proficiency.level }}
 								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
 							{% else %}
-								<span title="{{ proficiency.error }}" style="color:red">{{ proficiency.name}}: {{ proficiency.level }}</span>
+								<span title="{{ proficiency.error }}">{{ proficiency.name}}: {{ proficiency.level }}</span>
 							{% endif %}
+							<!-- TEMPORARY CODE BELOW -->
+							<p style="color:blue;">
+							{% if proficiency.minimum %}
+								&nbsp; &nbsp; Damage: {{ proficiency.minimum }}-{{ proficiency.maximum }}
+							{% elif proficiency.chance %}
+								&nbsp; &nbsp; Chance: {{ proficiency.chance }}%
+							{% elif proficiency.modifier %}
+								&nbsp; &nbsp; Modifier: {{ proficiency.modifier }}
+							{% endif %}
+							</p>
+							<!-- END OF TEMPORARY CODE -->
 						</li>
 					{%- endif %}
                 {%- endfor %}
