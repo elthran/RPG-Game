@@ -34,14 +34,31 @@
 <div class="profileContainer">
 <h1>Battle Statistics</h1>
 	<div class="profileColumn">
+		<h2>Offense</h2>
 		<ul> 
 			<li>Health: {{ myHero.health }} / {{ myHero.health_maximum }}</li>
 			<li>Damage: {{ myHero.proficiencies.attack_damage.minimum }}-{{ myHero.proficiencies.attack_damage.maximum }}
+			<li>Attack Speed: {{ myHero.proficiencies.attack_speed.speed }}
+			<li>Accuracy: {{ myHero.proficiencies.attack_accuracy.accuracy }}%
+			<li>Critical Hit: {{ myHero.proficiencies.critical_hit.chance }}% (Modifier: {{ myHero.proficiencies.critical_hit.modifier }}%)
+			<li>Defence: {{ myHero.proficiencies.defence.modifier }}%
+			<li>Evade: {{ myHero.proficiencies.evade.chance }}%
+			<li>Parry: {{ myHero.proficiencies.parry.chance }}%
+			<li>Riposte: {{ myHero.proficiencies.riposte.chance }}%
 		</ul>
 	</div>
 	<div class="profileColumn">
+		<h2>Defence</h2>
 		<ul> 
 			<li>Endurance: {{ myHero.endurance }} / {{ myHero.endurance_maximum }}</li>
+			<li>Resist Frost: {{ myHero.proficiencies.resist_frost.modifier }}%
+			<li>Resist Flame: {{ myHero.proficiencies.resist_flame.modifier }}%
+			<li>Resist Shadow: {{ myHero.proficiencies.resist_shadow.modifier }}%
+			<li>Resist Holy: {{ myHero.proficiencies.resist_holy.modifier }}%
+			<li>Resist Poison: {{ myHero.proficiencies.resist_poison.modifier }}%
+			<li>Resist Blunt: {{ myHero.proficiencies.resist_blunt.modifier }}%
+			<li>Resist Slashing: {{ myHero.proficiencies.resist_slashing.modifier }}%
+			<li>Resist Piercing: {{ myHero.proficiencies.resist_piercing.modifier }}%
 		</ul>
 	</div>
 </div>

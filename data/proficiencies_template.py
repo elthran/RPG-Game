@@ -109,9 +109,9 @@ class {{ prof_class }}(Proficiency):
             self.is_not_max_level = False
         {% for value in prof[4] -%}
         {% if value[1] == "percent" -%}
-        self.{{ value[0].lower() }} = (- ({{ value[2][1] }}*{{ value[2][2] }})/(({{ value[2][0] }} * self.level) + {{ value[2][1] }}) + {{ value[2][2] }}) * 8
+        self.{{ value[0].lower() }} = round((- ({{ value[2][1] }}*{{ value[2][2] }})/(({{ value[2][0] }} * self.level) + {{ value[2][1] }}) + {{ value[2][2] }}) * 8, 2)
         {% elif value[1] == "damage" -%}
-        self.{{ value[0].lower() }} = math.floor(3 * ({{ value[2][0] }}*math.sin({{ value[2][2] }}*self.level) + {{ value[2][1] }}*self.level))
+        self.{{ value[0].lower() }} = round(math.floor(3 * ({{ value[2][0] }}*math.sin({{ value[2][2] }}*self.level) + {{ value[2][1] }}*self.level)), 2)
         {% endif -%}
         {% endfor -%}
         

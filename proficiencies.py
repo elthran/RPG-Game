@@ -220,7 +220,7 @@ class Health(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.health = math.floor(3 * (2*math.sin(5*self.level) + 10*self.level))
+        self.health = round(math.floor(3 * (2*math.sin(5*self.level) + 10*self.level)), 2)
         
 class Sanctity(Proficiency):
     __tablename__ = "sanctity"
@@ -246,7 +246,7 @@ class Sanctity(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.sanctity = math.floor(3 * (2*math.sin(5*self.level) + 10*self.level))
+        self.sanctity = round(math.floor(3 * (2*math.sin(5*self.level) + 10*self.level)), 2)
         
 class Storage(Proficiency):
     __tablename__ = "storage"
@@ -272,7 +272,7 @@ class Storage(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.storage = math.floor(3 * (2*math.sin(5*self.level) + 10*self.level))
+        self.storage = round(math.floor(3 * (2*math.sin(5*self.level) + 10*self.level)), 2)
         
 class Endurance(Proficiency):
     __tablename__ = "endurance"
@@ -298,7 +298,7 @@ class Endurance(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.endurance = math.floor(3 * (2*math.sin(5*self.level) + 10*self.level))
+        self.endurance = round(math.floor(3 * (2*math.sin(5*self.level) + 10*self.level)), 2)
         
 class AttackDamage(Proficiency):
     __tablename__ = "attack_damage"
@@ -328,9 +328,9 @@ class AttackDamage(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.minimum = math.floor(3 * (0.5*math.sin(1.5*self.level) + 0.3*self.level))
-        self.maximum = math.floor(3 * (0.6*math.sin(1.5*self.level) + 0.3*self.level))
-        self.average = math.floor(3 * (0.55*math.sin(1.5*self.level) + 0.3*self.level))
+        self.minimum = round(math.floor(3 * (0.5*math.sin(1.5*self.level) + 0.3*self.level)), 2)
+        self.maximum = round(math.floor(3 * (0.6*math.sin(1.5*self.level) + 0.3*self.level)), 2)
+        self.average = round(math.floor(3 * (0.55*math.sin(1.5*self.level) + 0.3*self.level)), 2)
         
 class AttackSpeed(Proficiency):
     __tablename__ = "attack_speed"
@@ -356,7 +356,7 @@ class AttackSpeed(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.speed = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.speed = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class AttackAccuracy(Proficiency):
     __tablename__ = "attack_accuracy"
@@ -382,7 +382,7 @@ class AttackAccuracy(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.accuracy = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.accuracy = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class FirstStrike(Proficiency):
     __tablename__ = "first_strike"
@@ -408,7 +408,7 @@ class FirstStrike(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class CriticalHit(Proficiency):
     __tablename__ = "critical_hit"
@@ -436,8 +436,8 @@ class CriticalHit(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
-        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
+        self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class Defence(Proficiency):
     __tablename__ = "defence"
@@ -463,7 +463,7 @@ class Defence(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class Evade(Proficiency):
     __tablename__ = "evade"
@@ -489,7 +489,7 @@ class Evade(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class Parry(Proficiency):
     __tablename__ = "parry"
@@ -515,7 +515,7 @@ class Parry(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class Riposte(Proficiency):
     __tablename__ = "riposte"
@@ -541,7 +541,7 @@ class Riposte(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class Block(Proficiency):
     __tablename__ = "block"
@@ -569,8 +569,8 @@ class Block(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
-        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
+        self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class Stealth(Proficiency):
     __tablename__ = "stealth"
@@ -596,7 +596,7 @@ class Stealth(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class Pickpocketing(Proficiency):
     __tablename__ = "pickpocketing"
@@ -622,7 +622,7 @@ class Pickpocketing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class Faith(Proficiency):
     __tablename__ = "faith"
@@ -648,7 +648,7 @@ class Faith(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class Bartering(Proficiency):
     __tablename__ = "bartering"
@@ -674,7 +674,7 @@ class Bartering(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class Oration(Proficiency):
     __tablename__ = "oration"
@@ -700,7 +700,7 @@ class Oration(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class Knowledge(Proficiency):
     __tablename__ = "knowledge"
@@ -726,7 +726,7 @@ class Knowledge(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class Literacy(Proficiency):
     __tablename__ = "literacy"
@@ -752,7 +752,7 @@ class Literacy(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class Luck(Proficiency):
     __tablename__ = "luck"
@@ -778,7 +778,7 @@ class Luck(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class ResistFrost(Proficiency):
     __tablename__ = "resist_frost"
@@ -804,7 +804,7 @@ class ResistFrost(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class ResistFlame(Proficiency):
     __tablename__ = "resist_flame"
@@ -830,7 +830,7 @@ class ResistFlame(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class ResistShadow(Proficiency):
     __tablename__ = "resist_shadow"
@@ -856,7 +856,7 @@ class ResistShadow(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class ResistHoly(Proficiency):
     __tablename__ = "resist_holy"
@@ -882,7 +882,7 @@ class ResistHoly(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class ResistPoison(Proficiency):
     __tablename__ = "resist_poison"
@@ -908,7 +908,7 @@ class ResistPoison(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class ResistBlunt(Proficiency):
     __tablename__ = "resist_blunt"
@@ -934,7 +934,7 @@ class ResistBlunt(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class ResistSlashing(Proficiency):
     __tablename__ = "resist_slashing"
@@ -960,7 +960,7 @@ class ResistSlashing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 class ResistPiercing(Proficiency):
     __tablename__ = "resist_piercing"
@@ -986,7 +986,7 @@ class ResistPiercing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = (- (10*5)/((2 * self.level) + 10) + 5) * 8
+        self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
         
 
     # Do I need this? Is this related to my bug? :'(

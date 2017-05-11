@@ -369,7 +369,7 @@ def proficiencies():
         myHero.refresh_character()
         database.update()
         return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero)
-    return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero,)
+    return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero)
 
 @app.route('/ability_tree/<spec>')
 @login_required
