@@ -333,6 +333,52 @@ input.abilityButtonMinus {
 	background-color: Darkgray;
 }
 
+.proficiencyTooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.proficiencyTooltip .proficiencyTooltipText {
+    visibility: hidden;
+    width: 600px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 110%;
+}
+
+.proficiencyTooltip .proficiencyTooltipText::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent black transparent transparent;
+}
+.proficiencyTooltip:hover .proficiencyTooltipText {
+    visibility: visible;
+}
+
+#proficiencyButton {
+	background-color: transparent; /* make the button transparent */
+	background-repeat: no-repeat;  /* make the background image appear only once */
+	background-position: 0px 0px;  /* equivalent to 'top left' */
+	border: none;           /* assuming we don't want any borders */
+	cursor: pointer;        /* make the cursor like hovering over an <a> element */
+	height: 20px;           /* make this the size of your image */
+	padding-left: 15px;     /* make text start to the right of the image */
+	vertical-align: middle; /* align the text vertically centered */
+	background-image: url(/static/images/prof_button.jpg); /* Image size needs to match abilityButton (about 16px x 16px) */
+}
+
 /* The % full bars used in the game */
 
 .progressBar { 
@@ -472,18 +518,4 @@ img.profileImage {
 @keyframes fadeIn {
 	from {opacity: 0;}
 	to {opacity:1 ;}
-}
-
-/* MESS WITH BUTTONS */
-
-#proficiencyButton {
-	background-color: transparent; /* make the button transparent */
-	background-repeat: no-repeat;  /* make the background image appear only once */
-	background-position: 0px 0px;  /* equivalent to 'top left' */
-	border: none;           /* assuming we don't want any borders */
-	cursor: pointer;        /* make the cursor like hovering over an <a> element */
-	height: 20px;           /* make this the size of your image */
-	padding-left: 15px;     /* make text start to the right of the image */
-	vertical-align: middle; /* align the text vertically centered */
-	background-image: url(/static/images/prof_button.jpg); /* Image size needs to match abilityButton (about 16px x 16px) */
 }

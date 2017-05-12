@@ -15,35 +15,18 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Offense" %}
 						<li>
-							{% if proficiency.is_not_max_level and myHero.proficiency_points %}
+							<div class="proficiencyTooltip">
 								{{ proficiency.name}}: {{ proficiency.level }}
+								<span class="proficiencyTooltipText">
+									{{ proficiency.description }}
+									{% if not proficiency.is_not_max_level %}
+										<br><span style="color:red">{{ proficiency.error }}
+									{% endif %}
+								</span>
+							</div>
+							{% if myHero.proficiency_points and proficiency.is_not_max_level %}
 								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
-							{% else %}
-								<span title="{{ proficiency.error }}">{{ proficiency.name}}: {{ proficiency.level }}</span>
 							{% endif %}
-							<!-- TEMPORARY CODE BELOW -->
-							<p style="color:blue;">
-							{% if proficiency.minimum %}
-								&nbsp; &nbsp; Damage: {{ proficiency.minimum }}-{{ proficiency.maximum }}
-							{% elif proficiency.chance %}
-								&nbsp; &nbsp; Chance: {{ proficiency.chance }}%
-							{% elif proficiency.modifier %}
-								&nbsp; &nbsp; Modifier: {{ proficiency.modifier }}%
-							{% elif proficiency.speed %}
-								&nbsp; &nbsp; Speed: {{ proficiency.speed }}%
-							{% elif proficiency.accuracy %}
-								&nbsp; &nbsp; Accuracy: {{ proficiency.accuracy }}%
-							{% elif proficiency.health %}
-								&nbsp; &nbsp; Health: {{ proficiency.health }}
-							{% elif proficiency.sanctity %}
-								&nbsp; &nbsp; Sanctity: {{ proficiency.sanctity }}
-							{% elif proficiency.storage %}
-								&nbsp; &nbsp; Storage: {{ proficiency.storage }}
-							{% elif proficiency.endurance %}
-								&nbsp; &nbsp; Endurance: {{ proficiency.endurance }}
-							{% endif %}
-							</p>
-							<!-- END OF TEMPORARY CODE -->
 						</li>
 					{%- endif %}
                 {%- endfor %}
@@ -53,23 +36,18 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Stealth" %}
 						<li>
-							{% if proficiency.is_not_max_level and myHero.proficiency_points %}
+							<div class="proficiencyTooltip">
 								{{ proficiency.name}}: {{ proficiency.level }}
+								<span class="proficiencyTooltipText">
+									{{ proficiency.description }}
+									{% if not proficiency.is_not_max_level %}
+										<br><span style="color:red">{{ proficiency.error }}
+									{% endif %}
+								</span>
+							</div>
+							{% if myHero.proficiency_points and proficiency.is_not_max_level %}
 								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
-							{% else %}
-								<span title="{{ proficiency.error }}">{{ proficiency.name}}: {{ proficiency.level }}</span>
 							{% endif %}
-							<!-- TEMPORARY CODE BELOW -->
-							<p style="color:blue;">
-							{% if proficiency.minimum %}
-								&nbsp; &nbsp; Damage: {{ proficiency.minimum }}-{{ proficiency.maximum }}
-							{% elif proficiency.chance %}
-								&nbsp; &nbsp; Chance: {{ proficiency.chance }}%
-							{% elif proficiency.modifier %}
-								&nbsp; &nbsp; Modifier: {{ proficiency.modifier }}
-							{% endif %}
-							</p>
-							<!-- END OF TEMPORARY CODE -->
 						</li>
 					{%- endif %}
                 {%- endfor %}
@@ -81,23 +59,18 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Defence" %}
 						<li>
-							{% if proficiency.is_not_max_level and myHero.proficiency_points %}
+							<div class="proficiencyTooltip">
 								{{ proficiency.name}}: {{ proficiency.level }}
+								<span class="proficiencyTooltipText">
+									{{ proficiency.description }}
+									{% if not proficiency.is_not_max_level %}
+										<br><span style="color:red">{{ proficiency.error }}
+									{% endif %}
+								</span>
+							</div>
+							{% if myHero.proficiency_points and proficiency.is_not_max_level %}
 								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
-							{% else %}
-								<span title="{{ proficiency.error }}">{{ proficiency.name}}: {{ proficiency.level }}</span>
 							{% endif %}
-							<!-- TEMPORARY CODE BELOW -->
-							<p style="color:blue;">
-							{% if proficiency.minimum %}
-								&nbsp; &nbsp; Damage: {{ proficiency.minimum }}-{{ proficiency.maximum }}
-							{% elif proficiency.chance %}
-								&nbsp; &nbsp; Chance: {{ proficiency.chance }}%
-							{% elif proficiency.modifier %}
-								&nbsp; &nbsp; Modifier: {{ proficiency.modifier }}
-							{% endif %}
-							</p>
-							<!-- END OF TEMPORARY CODE -->
 						</li>
 					{%- endif %}
                 {%- endfor %}
@@ -107,23 +80,18 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Resistance" %}
 						<li>
-							{% if proficiency.is_not_max_level and myHero.proficiency_points %}
+							<div class="proficiencyTooltip">
 								{{ proficiency.name}}: {{ proficiency.level }}
+								<span class="proficiencyTooltipText">
+									{{ proficiency.description }}
+									{% if not proficiency.is_not_max_level %}
+										<br><span style="color:red">{{ proficiency.error }}
+									{% endif %}
+								</span>
+							</div>
+							{% if myHero.proficiency_points and proficiency.is_not_max_level %}
 								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
-							{% else %}
-								<span title="{{ proficiency.error }}">{{ proficiency.name}}: {{ proficiency.level }}</span>
 							{% endif %}
-							<!-- TEMPORARY CODE BELOW -->
-							<p style="color:blue;">
-							{% if proficiency.minimum %}
-								&nbsp; &nbsp; Damage: {{ proficiency.minimum }}-{{ proficiency.maximum }}
-							{% elif proficiency.chance %}
-								&nbsp; &nbsp; Chance: {{ proficiency.chance }}%
-							{% elif proficiency.modifier %}
-								&nbsp; &nbsp; Modifier: {{ proficiency.modifier }}
-							{% endif %}
-							</p>
-							<!-- END OF TEMPORARY CODE -->
 						</li>
 					{%- endif %}
                 {%- endfor %}
@@ -135,23 +103,15 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Diplomacy" %}
 						<li>
-							{% if proficiency.is_not_max_level and myHero.proficiency_points %}
-								{{ proficiency.name}}: {{ proficiency.level }}
-								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
+							{% if proficiency.is_not_max_level %}
+								<span title="{{ proficiency.description }}">
 							{% else %}
-								<span title="{{ proficiency.error }}">{{ proficiency.name}}: {{ proficiency.level }}</span>
+								<span title="{{ proficiency.description }}&#13;{{ proficiency.error }}">
 							{% endif %}
-							<!-- TEMPORARY CODE BELOW -->
-							<p style="color:blue;">
-							{% if proficiency.minimum %}
-								&nbsp; &nbsp; Damage: {{ proficiency.minimum }}-{{ proficiency.maximum }}
-							{% elif proficiency.chance %}
-								&nbsp; &nbsp; Chance: {{ proficiency.chance }}%
-							{% elif proficiency.modifier %}
-								&nbsp; &nbsp; Modifier: {{ proficiency.modifier }}
+							{{ proficiency.name}}: {{ proficiency.level }}</span>
+							{% if myHero.proficiency_points and proficiency.is_not_max_level %}
+								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
 							{% endif %}
-							</p>
-							<!-- END OF TEMPORARY CODE -->
 						</li>
 					{%- endif %}
                 {%- endfor %}
@@ -161,23 +121,18 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Holiness" %}
 						<li>
-							{% if proficiency.is_not_max_level and myHero.proficiency_points %}
+							<div class="proficiencyTooltip">
 								{{ proficiency.name}}: {{ proficiency.level }}
+								<span class="proficiencyTooltipText">
+									{{ proficiency.description }}
+									{% if not proficiency.is_not_max_level %}
+										<br><span style="color:red">{{ proficiency.error }}
+									{% endif %}
+								</span>
+							</div>
+							{% if myHero.proficiency_points and proficiency.is_not_max_level %}
 								<button class="command command-proficiency-{{ proficiency.formatted_name }}" value="level_proficiency?proficiency={{ proficiency.formatted_name }}" id="proficiencyButton"></button>
-							{% else %}
-								<span title="{{ proficiency.error }}">{{ proficiency.name}}: {{ proficiency.level }}</span>
 							{% endif %}
-							<!-- TEMPORARY CODE BELOW -->
-							<p style="color:blue;">
-							{% if proficiency.minimum %}
-								&nbsp; &nbsp; Damage: {{ proficiency.minimum }}-{{ proficiency.maximum }}
-							{% elif proficiency.chance %}
-								&nbsp; &nbsp; Chance: {{ proficiency.chance }}%
-							{% elif proficiency.modifier %}
-								&nbsp; &nbsp; Modifier: {{ proficiency.modifier }}
-							{% endif %}
-							</p>
-							<!-- END OF TEMPORARY CODE -->
 						</li>
 					{%- endif %}
                 {%- endfor %}
