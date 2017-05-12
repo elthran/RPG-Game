@@ -202,6 +202,7 @@ def create_character():
             myHero.attributes.divinity.level += 3
     if myHero.character_name != None and fathers_job != None:
         myHero.archetype = fathers_job
+        myHero.refresh_character()
         database.update()
         return redirect(url_for('home'))
     else:
@@ -272,6 +273,9 @@ def home():
     database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
     #This should be uneccessary -> but isn't?
     myHero.update_proficiencies()
+
+    if myHero.name == "Haldon" or myHero.name == "Admin":
+        myHero.refresh_character()
 
     # pdb.set_trace()
     #Consider moving this to the login function? Or instantiate during "create_account?"

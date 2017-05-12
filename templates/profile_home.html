@@ -22,6 +22,10 @@
 			{% if myHero.religion %}}
 				<li>Religion: {{ myHero.religion }}</li>
 			{% endif %}
+			<li>Health: {{ myHero.health }} / {{ myHero.health_maximum }}</li>
+			<li>Sanctity: {{ myHero.sanctity }} / {{ myHero.proficiencies.sanctity.maximum }}</li>
+			<li>Storage: {{ myHero.storage }} / {{ myHero.proficiencies.storage.maximum }}</li>
+			<li>Endurance: {{ myHero.endurance }} / {{ myHero.proficiencies.endurance.maximum }}</li>
 		</ul>
 	</div>
 	<div class="profileColumn">
@@ -36,7 +40,7 @@
 	<div class="profileColumn">
 		<h2>Offense</h2>
 		<ul> 
-			<li>Health: {{ myHero.health }} / {{ myHero.health_maximum }}</li>
+			<li></li>
 			<li>Damage: {{ myHero.proficiencies.attack_damage.minimum }}-{{ myHero.proficiencies.attack_damage.maximum }}
 			<li>Attack Speed: {{ myHero.proficiencies.attack_speed.speed }}
 			<li>Accuracy: {{ myHero.proficiencies.attack_accuracy.accuracy }}%
@@ -50,7 +54,7 @@
 	<div class="profileColumn">
 		<h2>Defence</h2>
 		<ul> 
-			<li>Endurance: {{ myHero.endurance }} / {{ myHero.endurance_maximum }}</li>
+			<li></li>
 			<li>Resist Frost: {{ myHero.proficiencies.resist_frost.modifier }}%
 			<li>Resist Flame: {{ myHero.proficiencies.resist_flame.modifier }}%
 			<li>Resist Shadow: {{ myHero.proficiencies.resist_shadow.modifier }}%

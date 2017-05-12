@@ -251,11 +251,11 @@ class Hero(Base):
 
         #Marked for review
         #Make all of these Proficiencies?
-        # Will delete all these but it breaks the current combat simulator
-        self.health_maximum = update_health_maximum(self) # Deleting this one breaks the "def sync_health"
-        self.sanctity_maximum = update_sanctity_maximum(self) # Deleting this one breaks the "def sync_sanct"
-        self.endurance_maximum = update_endurance_maximum(self) # Deleting this one breaks the "def sync_endr"
-        self.storage_maximum = update_storage_maximum(self) # Deleting this one breaks the "def sync_storage"
+        # Want to delete these since they are redundant. Instead of calling on them we should call on their value in proficiencies
+        self.health_maximum = self.proficiencies.health.maximum # Deleting this one breaks the "def sync_health"
+        self.sanctity_maximum = self.proficiencies.sanctity.maximum # Deleting this one breaks the "def sync_sanct"
+        self.endurance_maximum = self.proficiencies.endurance.maximum # Deleting this one breaks the "def sync_endr"
+        self.storage_maximum = self.proficiencies.storage.maximum # Deleting this one breaks the "def sync_storage"
                 
         # Hidden attributes
         self.experience_gain_modifier = 1 # This is the percentage of exp you gain

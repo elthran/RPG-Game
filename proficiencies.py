@@ -14,10 +14,10 @@ from math import floor
 
 # Name, Description, Attribute_Type, Type, [(Values Name, Value type, (Modifiers of value))]
 PROFICIENCY_INFORMATION = [
-    ("Health", "How fast you attack", "Vitality", "Offense", [("Health", "damage", (2, 10, 5))]),
-    ("Sanctity", "How fast you attack", "Divinity", "Offense", [("Sanctity", "damage", (2, 10, 5))]),
-    ("Storage", "How fast you attack", "Strength", "Offense", [("Storage", "damage", (2, 10, 5))]),
-    ("Endurance", "How fast you attack", "Fortitude", "Offense", [("Endurance", "damage", (2, 10, 5))]),
+    ("Health", "How fast you attack", "Vitality", "Offense", [("Maximum", "damage", (2, 10, 5))]),
+    ("Sanctity", "How fast you attack", "Divinity", "Offense", [("Maximum", "damage", (2, 10, 5))]),
+    ("Storage", "How fast you attack", "Strength", "Offense", [("Maximum", "damage", (2, 10, 5))]),
+    ("Endurance", "How fast you attack", "Fortitude", "Offense", [("Maximum", "damage", (2, 10, 5))]),
     ("Attack damage", "How hard you hit", "Strength", "Offense", [("Minimum", "damage", (0.5, 0.3, 1.5)), ("Maximum",  "damage", (0.6, 0.3, 1.5)), ("Average",  "damage", (0.55, 0.3, 1.5))]),
     ("Attack speed", "How fast you attack", "Agility", "Offense", [("Speed", "percent", (2, 10, 5))]),
     ("Attack accuracy", "Chance to hit", "Agility", "Offense", [("Accuracy", "percent", (2, 10, 5))]),
@@ -201,7 +201,7 @@ class Health(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    health = Column(Integer)
+    maximum = Column(Integer)
     
     error = Column(String)
     formatted_name = Column(String)
@@ -211,7 +211,7 @@ class Health(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.health = 0
+        self.maximum = 0
         self.error = "You do not have enough vitality"
         self.formatted_name = "health"
         
@@ -220,14 +220,14 @@ class Health(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.health = round(math.floor(3 * (2*math.sin(5*self.level) + 10*self.level)), 2)
+        self.maximum = round(math.floor(3 * (2*math.sin(5*self.level) + 10*self.level)), 2)
         
 class Sanctity(Proficiency):
     __tablename__ = "sanctity"
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    sanctity = Column(Integer)
+    maximum = Column(Integer)
     
     error = Column(String)
     formatted_name = Column(String)
@@ -237,7 +237,7 @@ class Sanctity(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.sanctity = 0
+        self.maximum = 0
         self.error = "You do not have enough divinity"
         self.formatted_name = "sanctity"
         
@@ -246,14 +246,14 @@ class Sanctity(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.sanctity = round(math.floor(3 * (2*math.sin(5*self.level) + 10*self.level)), 2)
+        self.maximum = round(math.floor(3 * (2*math.sin(5*self.level) + 10*self.level)), 2)
         
 class Storage(Proficiency):
     __tablename__ = "storage"
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    storage = Column(Integer)
+    maximum = Column(Integer)
     
     error = Column(String)
     formatted_name = Column(String)
@@ -263,7 +263,7 @@ class Storage(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.storage = 0
+        self.maximum = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "storage"
         
@@ -272,14 +272,14 @@ class Storage(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.storage = round(math.floor(3 * (2*math.sin(5*self.level) + 10*self.level)), 2)
+        self.maximum = round(math.floor(3 * (2*math.sin(5*self.level) + 10*self.level)), 2)
         
 class Endurance(Proficiency):
     __tablename__ = "endurance"
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    endurance = Column(Integer)
+    maximum = Column(Integer)
     
     error = Column(String)
     formatted_name = Column(String)
@@ -289,7 +289,7 @@ class Endurance(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.endurance = 0
+        self.maximum = 0
         self.error = "You do not have enough fortitude"
         self.formatted_name = "endurance"
         
@@ -298,7 +298,7 @@ class Endurance(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.endurance = round(math.floor(3 * (2*math.sin(5*self.level) + 10*self.level)), 2)
+        self.maximum = round(math.floor(3 * (2*math.sin(5*self.level) + 10*self.level)), 2)
         
 class AttackDamage(Proficiency):
     __tablename__ = "attack_damage"

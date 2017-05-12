@@ -1,9 +1,9 @@
 # Name, Description, Attribute_Type, Type, [(Values Name, Value type, (Modifiers of value))]
 PROFICIENCY_INFORMATION = [
-    ("Health", "How fast you attack", "Vitality", "Offense", [("Health", "damage", (2, 10, 5))]),
-    ("Sanctity", "How fast you attack", "Divinity", "Offense", [("Sanctity", "damage", (2, 10, 5))]),
-    ("Storage", "How fast you attack", "Strength", "Offense", [("Storage", "damage", (2, 10, 5))]),
-    ("Endurance", "How fast you attack", "Fortitude", "Offense", [("Endurance", "damage", (2, 10, 5))]),
+    ("Health", "How fast you attack", "Vitality", "Offense", [("Maximum", "damage", (2, 10, 5))]),
+    ("Sanctity", "How fast you attack", "Divinity", "Offense", [("Maximum", "damage", (2, 10, 5))]),
+    ("Storage", "How fast you attack", "Strength", "Offense", [("Maximum", "damage", (2, 10, 5))]),
+    ("Endurance", "How fast you attack", "Fortitude", "Offense", [("Maximum", "damage", (2, 10, 5))]),
     ("Attack damage", "How hard you hit", "Strength", "Offense", [("Minimum", "damage", (0.5, 0.3, 1.5)), ("Maximum",  "damage", (0.6, 0.3, 1.5)), ("Average",  "damage", (0.55, 0.3, 1.5))]),
     ("Attack speed", "How fast you attack", "Agility", "Offense", [("Speed", "percent", (2, 10, 5))]),
     ("Attack accuracy", "Chance to hit", "Agility", "Offense", [("Accuracy", "percent", (2, 10, 5))]),
