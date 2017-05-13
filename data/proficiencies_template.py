@@ -53,6 +53,7 @@ class Proficiency(Base):
 
     name = Column(String)
     description = Column(String)
+    tooltip = Column(String)
     attribute_type = Column(String)
     type = Column(String)
     level = Column(Integer)
@@ -70,6 +71,7 @@ class Proficiency(Base):
         self.description = description
         self.attribute_type = attribute_type
         self.type = type
+        self.tooltip = ""
         
         self.level = 1
         self.is_not_max_level = False
@@ -103,7 +105,7 @@ class {{ prof_class }}(Proficiency):
         self.formatted_name = "{{ prof_tablename }}"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.{{ prof[2].lower() }}.level // 2:
             self.is_not_max_level = True
         else:
@@ -114,8 +116,9 @@ class {{ prof_class }}(Proficiency):
         {% elif value[1] == "damage" -%}
         self.{{ value[0].lower() }} = round(math.floor(3 * ({{ value[2][0] }}*math.sin({{ value[2][2] }}*self.level) + {{ value[2][1] }}*self.level)), 2)
         {% endif -%}
-        self.description += "{{ value[0].title() }}: " + str(self.{{ value[0].lower() }})
+        self.tooltip += "{{ value[0].title() }}: " + str(self.{{ value[0].lower() }}) + ";"
         {% endfor -%}
+        self.tooltip = self.tooltip[:-1]
         
 {% endfor %}
 

@@ -171,6 +171,7 @@ class Proficiency(Base):
 
     name = Column(String)
     description = Column(String)
+    tooltip = Column(String)
     attribute_type = Column(String)
     type = Column(String)
     level = Column(Integer)
@@ -188,6 +189,7 @@ class Proficiency(Base):
         self.description = description
         self.attribute_type = attribute_type
         self.type = type
+        self.tooltip = ""
         
         self.level = 1
         self.is_not_max_level = False
@@ -216,14 +218,16 @@ class Health(Proficiency):
         self.formatted_name = "health"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.vitality.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.maximum = round(math.floor(3 * (2*math.sin(5*self.level) + 10*self.level)), 2)
-        self.description += "Maximum: " + str(self.maximum)
+        self.tooltip += "Maximum: " + str(self.maximum) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class Sanctity(Proficiency):
     __tablename__ = "sanctity"
 
@@ -244,14 +248,16 @@ class Sanctity(Proficiency):
         self.formatted_name = "sanctity"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.divinity.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.maximum = round(math.floor(3 * (2*math.sin(5*self.level) + 10*self.level)), 2)
-        self.description += "Maximum: " + str(self.maximum)
+        self.tooltip += "Maximum: " + str(self.maximum) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class Storage(Proficiency):
     __tablename__ = "storage"
 
@@ -272,14 +278,16 @@ class Storage(Proficiency):
         self.formatted_name = "storage"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.strength.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.maximum = round(math.floor(3 * (2*math.sin(5*self.level) + 10*self.level)), 2)
-        self.description += "Maximum: " + str(self.maximum)
+        self.tooltip += "Maximum: " + str(self.maximum) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class Endurance(Proficiency):
     __tablename__ = "endurance"
 
@@ -300,14 +308,16 @@ class Endurance(Proficiency):
         self.formatted_name = "endurance"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.fortitude.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.maximum = round(math.floor(3 * (2*math.sin(5*self.level) + 10*self.level)), 2)
-        self.description += "Maximum: " + str(self.maximum)
+        self.tooltip += "Maximum: " + str(self.maximum) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class AttackDamage(Proficiency):
     __tablename__ = "attack_damage"
 
@@ -332,18 +342,20 @@ class AttackDamage(Proficiency):
         self.formatted_name = "attack_damage"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.strength.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.minimum = round(math.floor(3 * (0.5*math.sin(1.5*self.level) + 0.3*self.level)), 2)
-        self.description += "Minimum: " + str(self.minimum)
+        self.tooltip += "Minimum: " + str(self.minimum) + ";"
         self.maximum = round(math.floor(3 * (0.6*math.sin(1.5*self.level) + 0.3*self.level)), 2)
-        self.description += "Maximum: " + str(self.maximum)
+        self.tooltip += "Maximum: " + str(self.maximum) + ";"
         self.average = round(math.floor(3 * (0.55*math.sin(1.5*self.level) + 0.3*self.level)), 2)
-        self.description += "Average: " + str(self.average)
+        self.tooltip += "Average: " + str(self.average) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class AttackSpeed(Proficiency):
     __tablename__ = "attack_speed"
 
@@ -364,14 +376,16 @@ class AttackSpeed(Proficiency):
         self.formatted_name = "attack_speed"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.speed = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Speed: " + str(self.speed)
+        self.tooltip += "Speed: " + str(self.speed) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class AttackAccuracy(Proficiency):
     __tablename__ = "attack_accuracy"
 
@@ -392,14 +406,16 @@ class AttackAccuracy(Proficiency):
         self.formatted_name = "attack_accuracy"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.accuracy = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Accuracy: " + str(self.accuracy)
+        self.tooltip += "Accuracy: " + str(self.accuracy) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class FirstStrike(Proficiency):
     __tablename__ = "first_strike"
 
@@ -420,14 +436,16 @@ class FirstStrike(Proficiency):
         self.formatted_name = "first_strike"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Chance: " + str(self.chance)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class CriticalHit(Proficiency):
     __tablename__ = "critical_hit"
 
@@ -450,16 +468,18 @@ class CriticalHit(Proficiency):
         self.formatted_name = "critical_hit"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.perception.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Chance: " + str(self.chance)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
         self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Modifier: " + str(self.modifier)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class Defence(Proficiency):
     __tablename__ = "defence"
 
@@ -480,14 +500,16 @@ class Defence(Proficiency):
         self.formatted_name = "defence"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.fortitude.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Modifier: " + str(self.modifier)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class Evade(Proficiency):
     __tablename__ = "evade"
 
@@ -508,14 +530,16 @@ class Evade(Proficiency):
         self.formatted_name = "evade"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.reflexes.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Chance: " + str(self.chance)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class Parry(Proficiency):
     __tablename__ = "parry"
 
@@ -536,14 +560,16 @@ class Parry(Proficiency):
         self.formatted_name = "parry"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.reflexes.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Chance: " + str(self.chance)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class Riposte(Proficiency):
     __tablename__ = "riposte"
 
@@ -564,14 +590,16 @@ class Riposte(Proficiency):
         self.formatted_name = "riposte"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Chance: " + str(self.chance)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class Block(Proficiency):
     __tablename__ = "block"
 
@@ -594,16 +622,18 @@ class Block(Proficiency):
         self.formatted_name = "block"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.strength.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Chance: " + str(self.chance)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
         self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Modifier: " + str(self.modifier)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class Stealth(Proficiency):
     __tablename__ = "stealth"
 
@@ -624,14 +654,16 @@ class Stealth(Proficiency):
         self.formatted_name = "stealth"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.perception.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Chance: " + str(self.chance)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class Pickpocketing(Proficiency):
     __tablename__ = "pickpocketing"
 
@@ -652,14 +684,16 @@ class Pickpocketing(Proficiency):
         self.formatted_name = "pickpocketing"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Chance: " + str(self.chance)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class Faith(Proficiency):
     __tablename__ = "faith"
 
@@ -680,14 +714,16 @@ class Faith(Proficiency):
         self.formatted_name = "faith"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.divinity.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Modifier: " + str(self.modifier)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class Bartering(Proficiency):
     __tablename__ = "bartering"
 
@@ -708,14 +744,16 @@ class Bartering(Proficiency):
         self.formatted_name = "bartering"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.charisma.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Chance: " + str(self.chance)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class Oration(Proficiency):
     __tablename__ = "oration"
 
@@ -736,14 +774,16 @@ class Oration(Proficiency):
         self.formatted_name = "oration"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.strength.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Modifier: " + str(self.modifier)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class Knowledge(Proficiency):
     __tablename__ = "knowledge"
 
@@ -764,14 +804,16 @@ class Knowledge(Proficiency):
         self.formatted_name = "knowledge"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.wisdom.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Modifier: " + str(self.modifier)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class Literacy(Proficiency):
     __tablename__ = "literacy"
 
@@ -792,14 +834,16 @@ class Literacy(Proficiency):
         self.formatted_name = "literacy"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.wisdom.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Modifier: " + str(self.modifier)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class Luck(Proficiency):
     __tablename__ = "luck"
 
@@ -820,14 +864,16 @@ class Luck(Proficiency):
         self.formatted_name = "luck"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.fortuity.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Chance: " + str(self.chance)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class ResistFrost(Proficiency):
     __tablename__ = "resist_frost"
 
@@ -848,14 +894,16 @@ class ResistFrost(Proficiency):
         self.formatted_name = "resist_frost"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Modifier: " + str(self.modifier)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class ResistFlame(Proficiency):
     __tablename__ = "resist_flame"
 
@@ -876,14 +924,16 @@ class ResistFlame(Proficiency):
         self.formatted_name = "resist_flame"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Modifier: " + str(self.modifier)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class ResistShadow(Proficiency):
     __tablename__ = "resist_shadow"
 
@@ -904,14 +954,16 @@ class ResistShadow(Proficiency):
         self.formatted_name = "resist_shadow"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Modifier: " + str(self.modifier)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class ResistHoly(Proficiency):
     __tablename__ = "resist_holy"
 
@@ -932,14 +984,16 @@ class ResistHoly(Proficiency):
         self.formatted_name = "resist_holy"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Modifier: " + str(self.modifier)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class ResistPoison(Proficiency):
     __tablename__ = "resist_poison"
 
@@ -960,14 +1014,16 @@ class ResistPoison(Proficiency):
         self.formatted_name = "resist_poison"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Modifier: " + str(self.modifier)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class ResistBlunt(Proficiency):
     __tablename__ = "resist_blunt"
 
@@ -988,14 +1044,16 @@ class ResistBlunt(Proficiency):
         self.formatted_name = "resist_blunt"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Modifier: " + str(self.modifier)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class ResistSlashing(Proficiency):
     __tablename__ = "resist_slashing"
 
@@ -1016,14 +1074,16 @@ class ResistSlashing(Proficiency):
         self.formatted_name = "resist_slashing"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Modifier: " + str(self.modifier)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 class ResistPiercing(Proficiency):
     __tablename__ = "resist_piercing"
 
@@ -1044,14 +1104,16 @@ class ResistPiercing(Proficiency):
         self.formatted_name = "resist_piercing"
         
     def update(self, myHero):
-        self.description = ""
+        self.tooltip = ""
         if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = round((- (10*5)/((2 * self.level) + 10) + 5) * 8, 2)
-        self.description += "Modifier: " + str(self.modifier)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
         
+
 
     # Do I need this? Is this related to my bug? :'(
     """
