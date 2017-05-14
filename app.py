@@ -285,6 +285,9 @@ def home():
         myHero.current_location = database.get_default_location()
         database.update()
 
+    for proficiency in myHero.proficiencies:
+        proficiency.update(myHero)
+
     #Not implemented. Control user moves on map.
     #Sets up initial valid moves on the map.
     # Should be a list of urls ...

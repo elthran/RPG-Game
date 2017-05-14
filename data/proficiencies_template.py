@@ -112,9 +112,13 @@ class {{ prof_class }}(Proficiency):
             self.is_not_max_level = False
         {% for value in prof[4] -%}
         {% if value[1] == "percent" -%}
-        self.{{ value[0].lower() }} = round((- ({{ value[2][1] }}*{{ value[2][2] }})/(({{ value[2][0] }} * self.level) + {{ value[2][1] }}) + {{ value[2][2] }}) * 8, 2)
-        {% elif value[1] == "damage" -%}
-        self.{{ value[0].lower() }} = round(math.floor(3 * ({{ value[2][0] }}*math.sin({{ value[2][2] }}*self.level) + {{ value[2][1] }}*self.level)), 2)
+        self.{{ value[0].lower() }} = math.floor((- ({{ value[2][1] }}*{{ value[2][2] }})/(({{ value[2][0] }} * self.level) + {{ value[2][1] }}) + {{ value[2][2] }}) * 7.9 + {{ value[2][3] }})
+        {% elif value[1] == "linear" -%}
+        self.{{ value[0].lower() }} = {{ value[2][0] }}*self.level + {{ value[2][1] }}
+        {% elif value[1] == "curvy" -%}
+        self.{{ value[0].lower() }} = math.floor(math.floor(3 * ({{ value[2][0] }}*math.sin({{ value[2][2] }}*self.level) + {{ value[2][1] }}*self.level)) + {{ value[2][3] }})
+        {% elif value[1] == "sensitive" -%}
+        self.{{ value[0].lower() }} = round((3 * ({{ value[2][0] }}*math.sin({{ value[2][2] }}*self.level) + {{ value[2][1] }}*self.level)) + {{ value[2][3] }}, 2)
         {% endif -%}
         self.tooltip += "{{ value[0].title() }}: " + str(self.{{ value[0].lower() }}) + ";"
         {% endfor -%}
