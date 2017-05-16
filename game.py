@@ -213,7 +213,7 @@ class Hero(Base):
         return [item for item in self.inventory if item.equipped] or [None]
         
     def non_equipped_items(self):
-        return [item for item in self.inventory if not item.equipped] or [None]
+        return self.inventory.unequipped or [None]
 
     def update_proficiencies(self):
         """Update secondary attributes of Hero object on database load.

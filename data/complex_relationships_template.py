@@ -12,6 +12,7 @@ import abilities
 import items
 import quests
 import attributes
+import inventory
 
 import pdb
 
@@ -20,13 +21,15 @@ import pdb
 ###########
 #One to One
 {%- for name in ALL_INVENTORY_ONE_TO_ONE_CATEGORIES %}
-game.Inventory.{{ name }}_id = Column(Integer, ForeignKey('item.id'))
-game.Inventory.{{ name }} = relationship("Item", uselist=False, foreign_keys="[Inventory.{{ name }}_id]")
+inventory.Inventory.{{ name }}_id = Column(Integer, ForeignKey('item.id'))
+inventory.Inventory.{{ name }} = relationship("Item", backref=backref("inventory_{{ name }}", uselist=False),
+    foreign_keys="[Inventory.{{ name }}_id]")
 {%- endfor %}
 #One to Many
 {%- for name in ALL_INVENTORY_ONE_TO_MANY_CATEGORIES %}
-game.Inventory.{{ name }}_id = Column(Integer, ForeignKey('item.id'))
-game.Inventory.{{ name }} = relationship("Item", foreign_keys="[Inventory.{{ name }}_id]")
+items.Item.{{ name }}_id = Column(Integer, ForeignKey('inventory.id'))
+inventory.Inventory.{{ name }} = relationship("Item", backref="inventory_{{ name }}",
+    foreign_keys="[Item.{{ name }}_id]")
 {%- endfor %}
 
 ###########
@@ -83,20 +86,12 @@ abilities.Ability.heroes = relationship("Hero", secondary=abilities_association_
 ##########
 #Each Hero has One inventory. (One to One -> bidirectional)
 #inventory is list of character's items. 
-# game.Inventory.hero_id = Column(Integer, ForeignKey('hero.id'))
-# game.Inventory.hero = relationship("Hero", backref=backref("inventory", uselist=False))
 game.Hero.inventory_id = Column(Integer, ForeignKey('inventory.id'))
-game.Hero.inventory = relationship("Inventory", uselist=False)
-
-#Each inventory has many items. (One to Many -> bidirectional)
-#Each item can be in one inventory.
-game.Inventory.items = relationship("Item", backref="inventory", foreign_keys="[Item.inventory_id]")
-items.Item.inventory_id = Column(Integer, ForeignKey('inventory.id'))
+game.Hero.inventory = relationship("Inventory", backref=backref("hero", uselist=False))
 
 #Each ItemTemplate can have many regular Items.
 items.ItemTemplate.items = relationship("Item", backref='template')
 items.Item.item_template_id = Column(Integer, ForeignKey('item_template.id'))
-
 
 #One Hero -> one Attributes object
 game.Hero.attributes_id = Column(Integer, ForeignKey('attributes.id'))

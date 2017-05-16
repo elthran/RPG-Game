@@ -351,7 +351,7 @@ class Feet_Armour(Garment):
         self.feet_armour = True
 
 class Arm_Armour(Garment):
-    __tablename__ = 'Arm_Armour'
+    __tablename__ = 'arm_armour'
     
     id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
     

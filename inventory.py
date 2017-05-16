@@ -20,7 +20,7 @@ class Inventory(Base):
     ##amount_owned = Column(Integer)
     # Maybe I don't even need this at all?
     
-    item_type_to_slots = {
+    slots_used_by_item_type = {
         "Two_Handed_Weapon": ["left_hand", "right_hand", "both_hands"],
         "One_Handed_Weapon": ["right_hand"],
         "Shield": ["left_hand"],
@@ -33,35 +33,47 @@ class Inventory(Base):
         "Ring": ["rings"],
     
     }
-
-
-    @orm.reconstructor
-    def init_on_load(self):
-        self.left_hand = []
-        self.right_hand = []
-        self.both_hands = []
-        self.shirt = []
-        self.helmet = []
-        self.legs = []
-        self.feet = []
-        self.sleeves = []
-        self.gloves = []
-        self.rings = []
+    
+    all_slot_names = [
+        "helmet",
+        "shirt",
+        "left_hand",
+        "right_hand",
+        "both_hands",
+        "sleeves",
+        "gloves",
+        "rings",
+        "legs",
+        "feet",
+        "unequipped",
+    ]
+    
+    single_slots = [
+        "helmet",
+        "shirt",
+        "left_hand",
+        "right_hand",
+        "both_hands",
+        "sleeves",
+        "gloves",
+        "legs",
+        "feet",
+    ]
+    
+    multiple_slots = [
+        "rings",
+        "unequipped",
+    ]
+    
+    def slots(self, name, value=0):
+        """Return the value of an attribute by its name.
         
-        self.slots = {
-            "left_hand": self.left_hand,
-            "right_hand": self.right_hand,
-            "both_hands": self.both_hands,
-            "shirt": self.shirt,
-            "helmet": self.helmet,
-            "legs": self.legs,
-            "feet": self.feet,
-            "sleeves": self.sleeves,
-            "gloves": self.gloves,
-            "rings": self.rings,
-        }
-        
-        self.equip_all((item for item in self.items if item.equipped))
+        eg. self.slots("legs") -> self.legs
+        """
+        if value != 0:
+            setattr(self, name, value)
+        return getattr(self, name)
+
 
     def equip_all(self, equipped_items):
         """Equip all passed items.
@@ -71,39 +83,72 @@ class Inventory(Base):
         """
         for item in equipped_items:
             self.equip(item)
+            
+    # @orm.validates(*single_slots)
+    # def equip_one_to_one(self, key, value):
+        # """When new helmet is added move old one to unequipped.
+
+        # """
+        # item = self.slots(key)
+        # if item:
+            # self.unequipped.append(item)
+        # self.slots(key, value)
+        # pdb.set_trace()
+        
+    # @orm.validates("rings")
+    # def equip_ring(self, key, value):
+        # if name == "rings" and len(self.rings) <= 10:
+                # self.rings.append(item)
 
     def equip(self, item):
         """Equip the passed item in the correct slot.
 
         Unequip the item it the currently in the slot if one exists.
         For rings ... unequip the first ring equiped once 10 rings are equipped.
+        
+        id -> the ids of the items that are going to be unequip when a new item is equip.
         """
+        slots_used = Inventory.slots_used_by_item_type[item.type]
+        
+        ids_of_items_unequip = self.unequip_slots(slots_used)
+        
         item.equipped = True
-        slot_names = self.item_type_to_slots[item.type]
-        for name in slot_names:
-            if name == "rings" and len(self.rings) <= 10:
-                self.rings.append(item)
-            else:
-                self.unequip_slot(name)
-                self.slots[name].append(item)
+        self.add_to_slots(slots_used, item)
+        # for name in slots_used:
+            # if name == "rings" and len(self.rings) >= 10:
+                # id = self.unequip_slot(name)
+            # elif name in Inventory.single_slots:
+                # id = self.unequip_slot(name)
+            # else:
+                # id = self.unequip_slot(name, is_list=True)
+                # self.slots(name).append(item)
+            # if id:
+                # yield id
+                
     
-    def unequip_slot(self, name, index=0):
+    def unequip_slots(self, name, index=0, is_list=True):
         """Unequip the item located in slot name.
         
         Optional index is for rings.
         """
         try:
-            item = self.slots[name].pop(index)
-            item.equipped = False
+            if is_list:
+                item = self.slots(name).pop(index)
+                item.equipped = False
+                return item.id
+            else:
+                item = self.slots(name)
+                self.slots(name, None)
+                item.equipped = False
         except (AttributeError, IndexError):
-            pass
-        
+                pass
+                
         
     def unequip(self, item):
         """Unequip the passed item and free up the slots it used.
         """
         
-        slots_names = self.item_type_to_slots[item.type]
+        slots_names = Inventory.slots_used_by_item_type[item.type]
         for name in slots_names:
             if name == "rings":
                 index = self.rings.index(item)
@@ -113,8 +158,14 @@ class Inventory(Base):
 
 
     def add_item(self, item):
-        self.items.append(item)
+        self.unequipped.append(item)
 
     def __iter__(self):
-        return (item for item in self.items)
+        items = []
+        for name in self.slot_names:
+            if name in Inventory.single_slots:
+                items.append(self.slots(name))
+            elif name in Inventory.multiple_slots:
+                items += self.slots(name)
+        return items
 

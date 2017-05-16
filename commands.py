@@ -24,7 +24,16 @@ class Command:
     This should call the function and execute it as defined in the cmd_functions dict.
     
     The format for a button is:
-    <button class="command" data="{{ item.id }}" onClick="toggleEquip(this)">Equip</button>
+    Format
+    -<button class="command" data="{{ item.id }}" data-function="functionName">Consume</button>
+    -<button class="command" data="{{ item.id }}" onClick="remove(this)">Consume</button>
+    -Where class="command" means this object runs command code.
+    -Where data is the items database id.
+    -Where Consume is the buttons command identifier (the command function to run).
+    -Where data-function is the name of a function that can be sent data from the python
+        code. This function runs after the python code returns a response. onClick
+        does not. It runs first/or independantly?
+    -Where onClick is a local function to run. "this" is the button object itself.
     
     Explained:
         class="command" -> causes this button to call the command code above.
@@ -104,8 +113,11 @@ class Command:
     def equip(hero, database, arg_dict):
         item_id = arg_dict.get('data', None, type=int)
         item = database.get_item_by_id(item_id)
-        hero.inventory.equip(item)
-        return item.type + "&&"
+        ids_to_unequip = hero.inventory.equip(item)
+        ids_to_unequip = list(ids_to_unequip)
+        ids = [id for id in ids_to_unequip]
+        print("When item.id={} equipped, these items {} are removed.".format(item.id, ids))
+        return item.type + "&&" + str(ids_to_unequip) #Maybe render_template from string {{ x | tojson }}?
         # return "{}&&{}".format(item.type, render_template("render_item_equipped.html", item=item))
         # return "success", 200, {'Content-Type': 'text/plain'}
         
@@ -119,10 +131,5 @@ class Command:
         # return "success", 200, {'Content-Type': 'text/plain'}
 
         
-    cmd_functions = {
-        'buy': buy,
-        'choose_religion': choose_religion,
-        "consume": consume,
-        "equip": equip,
-        "unequip": unequip,
-    }
+    def cmd_functions(name):
+        return getattr(Command, name)

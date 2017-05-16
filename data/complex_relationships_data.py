@@ -11,5 +11,6 @@ ALL_INVENTORY_ONE_TO_ONE_CATEGORIES = [
 ]
 
 ALL_INVENTORY_ONE_TO_MANY_CATEGORIES = [
-    "rings"
+    "rings",
+    "unequipped"
 ]

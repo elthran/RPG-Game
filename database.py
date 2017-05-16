@@ -23,6 +23,7 @@ import base_classes
 import hashlib
 import datetime
 import os #Testing only
+import imp
 
 #Internal game modules
 from game import User, Hero
@@ -76,6 +77,10 @@ class EZDB:
         built then the user gets built too? Which may mean most of my code here is redundant
         and I only really need to build the users list?
         """
+        
+        global prebuilt_objects
+        imp.reload(prebuilt_objects)
+        
         for obj_list in [prebuilt_objects.users,
                 prebuilt_objects.game_worlds,
                 prebuilt_objects.all_abilities,

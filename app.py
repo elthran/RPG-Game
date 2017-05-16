@@ -856,7 +856,7 @@ def command(cmd=None):
     # event.add["database"] = database
 
     try:
-        response = Command.cmd_functions[cmd](myHero, database=database, arg_dict=request.args)
+        response = Command.cmd_functions(cmd)(myHero, database=database, arg_dict=request.args)
         database.update()
         # pdb.set_trace()
         return response
