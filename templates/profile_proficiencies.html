@@ -15,16 +15,16 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Offense" %}
 						<li>
-							<div class="proficiencyTooltip">
+							<div class="tooltip">
 								{{ proficiency.name}}: {{ proficiency.level }}
-								<span class="proficiencyTooltipText">
+								<span>
 									{{ proficiency.description }}:
 									{% set proficiency_tooltip = proficiency.tooltip.split(';') %}
 									{% for tooltip in proficiency_tooltip %}
 										<br>• {{ tooltip }}
 									{% endfor -%}
 									{% if not proficiency.is_not_max_level %}
-										<br><span style="color:red">{{ proficiency.error }}
+										<br>{{ proficiency.error }}
 									{% endif %}
 								</span>
 							</div>
@@ -40,16 +40,16 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Stealth" %}
 						<li>
-							<div class="proficiencyTooltip">
+							<div class="tooltip">
 								{{ proficiency.name}}: {{ proficiency.level }}
-								<span class="proficiencyTooltipText">
+								<span>
 									{{ proficiency.description }}:
 									{% set proficiency_tooltip = proficiency.tooltip.split(';') %}
 									{% for tooltip in proficiency_tooltip %}
 										<br>• {{ tooltip }}
 									{% endfor -%}
 									{% if not proficiency.is_not_max_level %}
-										<br><span style="color:red">{{ proficiency.error }}
+										<br>{{ proficiency.error }}
 									{% endif %}
 								</span>
 							</div>
@@ -67,16 +67,16 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Defence" %}
 						<li>
-							<div class="proficiencyTooltip">
+							<div class="tooltip">
 								{{ proficiency.name}}: {{ proficiency.level }}
-								<span class="proficiencyTooltipText">
+								<span>
 									{{ proficiency.description }}:
 									{% set proficiency_tooltip = proficiency.tooltip.split(';') %}
 									{% for tooltip in proficiency_tooltip %}
 										<br>• {{ tooltip }}
 									{% endfor -%}
 									{% if not proficiency.is_not_max_level %}
-										<br><span style="color:red">{{ proficiency.error }}
+										<br>{{ proficiency.error }}
 									{% endif %}
 								</span>
 							</div>
@@ -92,18 +92,16 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Resistance" %}
 						<li>
-							<div class="proficiencyTooltip">
+							<div class="tooltip">
 								{{ proficiency.name}}: {{ proficiency.level }}
-								<span class="proficiencyTooltipText">
+								<span>
 									{{ proficiency.description }}:
-									<ul>
 									{% set proficiency_tooltip = proficiency.tooltip.split(';') %}
 									{% for tooltip in proficiency_tooltip %}
-										<li>{{ tooltip }}</li>
-									{% endfor %}
-									</ul>
+										<br>• {{ tooltip }}
+									{% endfor -%}
 									{% if not proficiency.is_not_max_level %}
-										<br><span style="color:red">{{ proficiency.error }}
+										<br>{{ proficiency.error }}
 									{% endif %}
 								</span>
 							</div>
@@ -121,16 +119,16 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Diplomacy" %}
 						<li>
-							<div class="proficiencyTooltip">
+							<div class="tooltip tooltipLeft">
 								{{ proficiency.name}}: {{ proficiency.level }}
-								<span class="proficiencyTooltipText">
+								<span>
 									{{ proficiency.description }}:
 									{% set proficiency_tooltip = proficiency.tooltip.split(';') %}
 									{% for tooltip in proficiency_tooltip %}
 										<br>• {{ tooltip }}
 									{% endfor -%}
 									{% if not proficiency.is_not_max_level %}
-										<br><span style="color:red">{{ proficiency.error }}
+										<br>{{ proficiency.error }}
 									{% endif %}
 								</span>
 							</div>
@@ -146,16 +144,16 @@
 				{%- for proficiency in myHero.proficiencies %}
 					{%- if proficiency.type == "Holiness" %}
 						<li>
-							<div class="proficiencyTooltip">
+							<div class="tooltip tooltipLeft">
 								{{ proficiency.name}}: {{ proficiency.level }}
-								<span class="proficiencyTooltipText">
+								<span>
 									{{ proficiency.description }}:
 									{% set proficiency_tooltip = proficiency.tooltip.split(';') %}
 									{% for tooltip in proficiency_tooltip %}
 										<br>• {{ tooltip }}
 									{% endfor -%}
 									{% if not proficiency.is_not_max_level %}
-										<br><span style="color:red">{{ proficiency.error }}
+										<br>{{ proficiency.error }}
 									{% endif %}
 								</span>
 							</div>

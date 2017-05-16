@@ -333,6 +333,8 @@ input.abilityButtonMinus {
 	background-color: Darkgray;
 }
 
+/*
+
 .proficiencyTooltip {
     position: relative;
     display: inline-block;
@@ -348,9 +350,14 @@ input.abilityButtonMinus {
     border-radius: 6px;
     padding: 5px 0;
     position: absolute;
-    z-index: 1;
-    top: -5px;
+    z-index: 1;	 #Makes sure it is in front of everything else 
+    top: -60px;
     left: 110%;
+}
+
+.profLeft {
+	left: 0%;
+	right: 110%;
 }
 
 .proficiencyTooltip .proficiencyTooltipText::after {
@@ -363,9 +370,18 @@ input.abilityButtonMinus {
     border-style: solid;
     border-color: transparent black transparent transparent;
 }
+
+.profLeft::after {
+	right: 0%;
+	left: 100%;
+	border-color: transparent transparent transparent black;
+}
+
 .proficiencyTooltip:hover .proficiencyTooltipText {
     visibility: visible;
 }
+
+*/
 
 #proficiencyButton {
 	background-color: transparent; /* make the button transparent */
@@ -377,6 +393,42 @@ input.abilityButtonMinus {
 	padding-left: 15px;     /* make text start to the right of the image */
 	vertical-align: middle; /* align the text vertically centered */
 	background-image: url(/static/images/prof_button.jpg); /* Image size needs to match abilityButton (about 16px x 16px) */
+}
+
+.tooltip {
+	outline:none; 
+}
+
+.tooltip:hover {
+	text-decoration:none;
+} 
+
+.tooltip span {
+    z-index: 1;
+    display: none; 
+    padding: 25px 25px; /* Padding inside the tooltip */
+    margin-top:-50px; /* Moves the tooltip relative to the text you are hovering over */
+    margin-left: 28px;    /* How far to the right of your text the display box will show */
+    width: auto; 
+    line-height: 35px;
+}
+
+.tooltipLeft span {   /* Add this if you want the tooltip to display to the left of what you are hovering over */
+	margin-left: -500px;
+}
+
+.tooltip:hover span {
+    display:inline; 
+    position:absolute; 
+    color:White;
+    border:1px 
+    solid #DCA;
+    background-color: Black;
+}
+
+.tooltip span {
+    border-radius:4px;
+    box-shadow: 5px 5px 8px #CCC;
 }
 
 /* The % full bars used in the game */
