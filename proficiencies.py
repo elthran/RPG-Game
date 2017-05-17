@@ -25,7 +25,7 @@ PROFICIENCY_INFORMATION = [
     ("Attack damage", "How hard you hit", "Strength", "Offense", [("Minimum", "curvy", (0.5, 0.1, 0.1, 0)), ("Maximum",  "curvy", (0.5, 0.2, 0.1, 1))]),
     ("Attack speed", "How fast you attack", "Agility", "Offense", [("Speed", "sensitive", (0.1, 0.1, 0.7, 1))]),
     ("Attack accuracy", "Chance to hit", "Agility", "Offense", [("Accuracy", "percent", (2, 10, 5, 5))]),
-    ("First strike", "Chance to strike first", "Agility", "Offense", [("Chance", "percent", (0.5, 5, 50, 0))]),
+    ("First strike", "Chance to strike first", "Agility", "Offense", [("Chance", "percent", (0.5, 5, 50, -30))]),
     ("Critical hit", "Ability to hit your enemy's weakspots", "Perception", "Offense", [("Chance", "percent", (0.3, 5, 50, -22)), ("Modifier", "percent", (0.5, 1, 0.5, 0))]),
     ("Defence", "Damage reduction", "Fortitude", "Defence", [("Modifier", "percent", (0.1, 7, 35, 0))]),
     ("Evade", "Chance to dodge", "Reflexes", "Defence", [("Chance", "percent", (0.1, 10, 15, 0))]),
@@ -39,7 +39,7 @@ PROFICIENCY_INFORMATION = [
     ("Oration", "Ability to speak", "Strength", "Wisdom", [("Modifier", "percent", (0.75, 15, 60, 0))]),
     ("Knowledge", "Ability to understand", "Wisdom", "Diplomacy", [("Modifier", "percent", (0.1, 5, 50, 0))]),
     ("Literacy", "Ability to read", "Wisdom", "Diplomacy", [("Modifier", "percent", (0.25, 10, 75, 0))]),
-    ("Luck", "Chance to have things turn your way against all odds", "Fortuity", "Diplomacy", [("Chance", "percent", (0.2, 5, 10, -15))]),
+    ("Luck", "Chance to have things turn your way against all odds", "Fortuity", "Diplomacy", [("Chance", "percent", (0.2, 5, 10, 0))]),
     ("Resist frost", "Ability to resist frost damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))]),
     ("Resist flame", "Ability to resist flame damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))]),
     ("Resist shadow", "Ability to resist shadow damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))]),
@@ -227,7 +227,7 @@ class Health(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = 5*self.level + 0
+        self.maximum = math.floor(5*self.level + 0)
         self.tooltip += "Maximum: " + str(self.maximum) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -257,7 +257,7 @@ class Sanctity(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = 1.5*self.level + -1
+        self.maximum = math.floor(1.5*self.level + -1)
         self.tooltip += "Maximum: " + str(self.maximum) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -287,7 +287,7 @@ class Storage(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = 2.5*self.level + 8
+        self.maximum = math.floor(2.5*self.level + 8)
         self.tooltip += "Maximum: " + str(self.maximum) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -317,7 +317,7 @@ class Endurance(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = 0.25*self.level + 5
+        self.maximum = math.floor(0.25*self.level + 5)
         self.tooltip += "Maximum: " + str(self.maximum) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -441,7 +441,7 @@ class FirstStrike(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = math.floor((- (5*50)/((0.5 * self.level) + 5) + 50) * 7.9 + 0)
+        self.chance = math.floor((- (5*50)/((0.5 * self.level) + 5) + 50) * 7.9 + -30)
         self.tooltip += "Chance: " + str(self.chance) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -869,7 +869,7 @@ class Luck(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = math.floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + -15)
+        self.chance = math.floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
         self.tooltip += "Chance: " + str(self.chance) + ";"
         self.tooltip = self.tooltip[:-1]
         

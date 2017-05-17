@@ -114,7 +114,7 @@ class {{ prof_class }}(Proficiency):
         {% if value[1] == "percent" -%}
         self.{{ value[0].lower() }} = math.floor((- ({{ value[2][1] }}*{{ value[2][2] }})/(({{ value[2][0] }} * self.level) + {{ value[2][1] }}) + {{ value[2][2] }}) * 7.9 + {{ value[2][3] }})
         {% elif value[1] == "linear" -%}
-        self.{{ value[0].lower() }} = {{ value[2][0] }}*self.level + {{ value[2][1] }}
+        self.{{ value[0].lower() }} = math.floor({{ value[2][0] }}*self.level + {{ value[2][1] }})
         {% elif value[1] == "curvy" -%}
         self.{{ value[0].lower() }} = math.floor(math.floor(3 * ({{ value[2][0] }}*math.sin({{ value[2][2] }}*self.level) + {{ value[2][1] }}*self.level)) + {{ value[2][3] }})
         {% elif value[1] == "sensitive" -%}
