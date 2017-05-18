@@ -981,7 +981,7 @@ def command(cmd=None):
 @app.route('/about')
 def about_page():
     info = "The game is being created by Elthran and Haldon, with some help from Gnahz. Any inquiries can be made to elthranRPG@gmail.com"
-    return render_template('about.html', myHero=myHero, gameVersion = "0.00.01", about_info=info)
+    return render_template('about.html', myHero=myHero, gameVersion = "0.00.02", about_info=info)
 
 ###testing by Marlen ####
 @app.route('/')

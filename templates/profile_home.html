@@ -26,11 +26,18 @@
 			<li>Sanctity: {{ myHero.sanctity }} / {{ myHero.proficiencies.sanctity.maximum }}</li>
 			<li>Storage: {{ myHero.storage }} / {{ myHero.proficiencies.storage.maximum }}</li>
 			<li>Endurance: {{ myHero.endurance }} / {{ myHero.proficiencies.endurance.maximum }}</li>
+			<li>Luck: {{ myHero.proficiencies.luck.chance }}%</li>
 		</ul>
 	</div>
 	<div class="profileColumn">
 		<ul> 
 			<li>Experience: {{ myHero.experience }} / {{ myHero.experience_maximum }}</li>
+			<li>Stealth: {{ myHero.proficiencies.stealth.chance }}%</li>
+			<li>Pickpocketing: {{ myHero.proficiencies.pickpocketing.chance }}%</li>
+			<li>Faith: {{ myHero.proficiencies.faith.modifier }}%</li>
+			<li>Bartering: {{ myHero.proficiencies.bartering.chance }}%</li>
+			<li>Oration: {{ myHero.proficiencies.oration.modifier }}%</li>
+			<li>Literacy: {{ myHero.proficiencies.literacy.modifier }}%</li>
 		</ul>
 	</div>
 </div>
@@ -40,29 +47,29 @@
 	<div class="profileColumn">
 		<h2>Offense</h2>
 		<ul> 
-			<li></li>
-			<li>Damage: {{ myHero.proficiencies.attack_damage.minimum }}-{{ myHero.proficiencies.attack_damage.maximum }}
-			<li>Attack Speed: {{ myHero.proficiencies.attack_speed.speed }}
-			<li>Accuracy: {{ myHero.proficiencies.attack_accuracy.accuracy }}%
-			<li>Critical Hit: {{ myHero.proficiencies.critical_hit.chance }}% (Modifier: {{ myHero.proficiencies.critical_hit.modifier }}%)
-			<li>Defence: {{ myHero.proficiencies.defence.modifier }}%
-			<li>Evade: {{ myHero.proficiencies.evade.chance }}%
-			<li>Parry: {{ myHero.proficiencies.parry.chance }}%
-			<li>Riposte: {{ myHero.proficiencies.riposte.chance }}%
+			<li>Damage: {{ myHero.proficiencies.attack_damage.minimum }}-{{ myHero.proficiencies.attack_damage.maximum }}</li>
+			<li>Attack Speed: {{ myHero.proficiencies.attack_speed.speed }}</li>
+			<li>Accuracy: {{ myHero.proficiencies.attack_accuracy.accuracy }}%</li>
+			<li>First Strike: {{ myHero.proficiencies.first_strike.chance }}%</li>
+			<li>Critical Hit Chance: {{ myHero.proficiencies.critical_hit.chance }}% (Modifier: {{ myHero.proficiencies.critical_hit.modifier }}%)</li>
+			<li>Defence: {{ myHero.proficiencies.defence.modifier }}%</li>
+			<li>Evade: {{ myHero.proficiencies.evade.chance }}%</li>
+			<li>Parry: {{ myHero.proficiencies.parry.chance }}%</li>
+			<li>Riposte: {{ myHero.proficiencies.riposte.chance }}%</li>
 		</ul>
 	</div>
 	<div class="profileColumn">
 		<h2>Defence</h2>
-		<ul> 
-			<li></li>
-			<li>Resist Frost: {{ myHero.proficiencies.resist_frost.modifier }}%
-			<li>Resist Flame: {{ myHero.proficiencies.resist_flame.modifier }}%
-			<li>Resist Shadow: {{ myHero.proficiencies.resist_shadow.modifier }}%
-			<li>Resist Holy: {{ myHero.proficiencies.resist_holy.modifier }}%
-			<li>Resist Poison: {{ myHero.proficiencies.resist_poison.modifier }}%
-			<li>Resist Blunt: {{ myHero.proficiencies.resist_blunt.modifier }}%
-			<li>Resist Slashing: {{ myHero.proficiencies.resist_slashing.modifier }}%
-			<li>Resist Piercing: {{ myHero.proficiencies.resist_piercing.modifier }}%
+		<ul>
+			<li>Block Chance: {{ myHero.proficiencies.block.chance }}% (Modifier: {{ myHero.proficiencies.block.modifier }}%)</li>
+			<li>Resist Frost: {{ myHero.proficiencies.resist_frost.modifier }}%</li>
+			<li>Resist Flame: {{ myHero.proficiencies.resist_flame.modifier }}%</li>
+			<li>Resist Shadow: {{ myHero.proficiencies.resist_shadow.modifier }}%</li>
+			<li>Resist Holy: {{ myHero.proficiencies.resist_holy.modifier }}%</li>
+			<li>Resist Poison: {{ myHero.proficiencies.resist_poison.modifier }}%</li>
+			<li>Resist Blunt: {{ myHero.proficiencies.resist_blunt.modifier }}%</li>
+			<li>Resist Slashing: {{ myHero.proficiencies.resist_slashing.modifier }}%</li>
+			<li>Resist Piercing: {{ myHero.proficiencies.resist_piercing.modifier }}%</li>
 		</ul>
 	</div>
 </div>
