@@ -63,8 +63,7 @@ class Monster(object):
         self.sanctity = self.sanctity_maximum
 
     def __repr__(self):
-        return "\nName: %s\nDamage: %s-%s\nHealth: %s/%s\nAttack Speed: %s\nAccuracy: %s" % (self.name, self.minimum_damage, self.maximum_damage, self.current_health, self.max_health, self.attack_speed, self.attack_accuracy)
-
+        return "Unfinished Monster build"
 def monster_generator(level):
     monster = random.choice(bestiary_data)
     monster.level = level
