@@ -5,23 +5,23 @@
 #                                                                              #
 #//////////////////////////////////////////////////////////////////////////////#
 
-import random, math
+from random import randint, choice
 from proficiencies_monsters import MonsterProficiencies
 from proficiencies import * # Temporary!
 
 def monster_archetype_basic(monster):
-    monster.primary_attributes["Vitality"] = random.randint(15,20) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Strength"] = random.randint(15,20) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Resilience"] = random.randint(10,15) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Fortitude"] = random.randint(10,15) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Reflexes"] = random.randint(10,15) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Agility"] = random.randint(10,15) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Perception"] = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Wisdom"] = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Divinity"] = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Charisma"] = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Survivalism"] = random.randint(5,10) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Fortuity"] = random.randint(5,10) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Vitality"] = randint(15,20) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Strength"] = randint(15,20) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Resilience"] = randint(10,15) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Fortitude"] = randint(10,15) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Reflexes"] = randint(10,15) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Agility"] = randint(10,15) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Perception"] = randint(5,10) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Wisdom"] = randint(5,10) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Divinity"] = randint(5,10) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Charisma"] = randint(5,10) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Survivalism"] = randint(5,10) * 0.01 * monster.attribute_points
+    monster.primary_attributes["Fortuity"] = randint(5,10) * 0.01 * monster.attribute_points
     return monster
 
 class Monster(object):
@@ -39,38 +39,22 @@ class Monster(object):
 
         self.proficiencies = MonsterProficiencies()
 
-    def update_monster_secondary_attributes(self):        
-        self.maximum_damage = update_monster_maximum_damage(self)
-        self.minimum_damage = update_monster_minimum_damage(self)
-        self.attack_speed = update_monster_attack_speed(self)
-        self.attack_accuracy = update_monster_attack_accuracy(self)
-        self.first_strike = update_monster_first_strike_chance(self)
-        self.critical_hit_chance = update_monster_critical_hit_chance(self)
-        self.critical_hit_modifier = update_monster_critical_hit_modifier(self)
-        self.defence_modifier = update_monster_defence_modifier(self)
-        self.evade_chance = update_monster_evade_chance(self)
-        self.parry_chance = update_monster_parry_chance(self)
-        self.riposte_chance = update_monster_riposte_chance(self)
-        self.block_chance = update_monster_block_chance(self)
-        self.block_reduction = update_monster_block_reduction(self)
-        self.stealth_skill = update_monster_stealth_skill(self)
-        self.faith = update_monster_faith(self)
-        self.sanctity_maximum = update_monster_sanctity_maximum(self)
-        self.luck = update_monster_luck_chance(self)
-        self.health_maximum = update_monster_health_maximum(self)
+        self.health = self.proficiencies.health.maximum
 
-        self.health = self.health_maximum
-        self.sanctity = self.sanctity_maximum
+    def update_monster(self):        
+        for proficiency in self.proficiencies:
+            proficiency.update(self)
 
     def __repr__(self):
         return "Unfinished Monster build"
+    
 def monster_generator(level):
-    monster = random.choice(bestiary_data)
+    monster = choice(bestiary_data)
     monster.level = level
     monster.attribute_points = 2 * monster.level
     if monster.archetype == "basic":
         monster = monster_archetype_basic(monster)
-    monster.update_monster_secondary_attributes()
+    monster.update_monster()
     return monster
 
 bestiary_data = [Monster("001", "Feral Dog", "Wolf", "Wolves", level=1, archetype="basic"),

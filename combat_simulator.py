@@ -13,91 +13,115 @@ from flask import Flask, render_template, redirect, url_for, request, session, f
 from functools import wraps
 from game import *
 from bestiary import *
-import math, random
+from random import randint
 
-def determine_attacker_defender(character1 ,character2):
-    """ The first character returned is the attacker. The second character returned is the defender. """ 
-    character1_chance = 50 + ((character1.attack_speed - character2.attack_speed) * 100)
-    if character1_chance >= random.randint(0, 100):
-        return character1, character2
-    return character2, character1
-
-def determine_attack_success(attacker, defender):
-    """ Determines if the hit is successful or not """
-    if attacker.attack_accuracy < random.randint(0,25):
-        return (attacker.name + " misses " + defender.name)
-    if defender.evade_chance >= random.randint(0,25):
-        return (defender.name + " has dodged an attack!")
-    if defender.parry_chance >= random.randint(0,25):
-        return (defender.name + " has parried an attack!")
-    return True
-
-def determine_block_success(defender):
-    """ Determines if the hit is blocked or not """
-    if defender.block_chance >= random.randint(0,50):
-        return True
-    return False
-
-def determine_critical_hit_success(attacker):
-    """ Determines if the hit is a critical hit or not. Can only happen if it's not blocked by the defender. """
-    if attacker.critical_hit_chance >= random.randint(0,10):
-        return True
-    return False
-
-def determine_raw_damage(attacker):
-    """ Determines how much damage the attacker will hit for """
-    raw_attack_damage = random.randint(attacker.minimum_damage, attacker.maximum_damage)
-    raw_attack_damage = round(raw_attack_damage, 3)
-    return raw_attack_damage
-
-def determine_raw_critical_hit_damage(attacker):
-    """ Determines the modifier for adjusting how much damage the attacker hits for """
-    critical_hit_modifier = attacker.critical_hit_modifier + (random.randint(0,10) / 20)
-    critical_hit_modifier = round(critical_hit_modifier, 2)
-    return critical_hit_modifier
-
-def determine_modified_damage(defender, raw_damage):
-    """ Determines how much damage the defender will actually take after defensive bonuses """
-    modified_attack_damage = raw_damage * (1 - defender.defence_modifier / 100)
-    modified_attack_damage = round(modified_attack_damage, 3)
-    return modified_attack_damage
-
-def battle_logic(character1 ,character2):
-    """ Runs the entire battle simulator """
-    combat_log = [(character1.name + " Health: " + str(character1.health)), (character2.name + " Health: " + str(character2.health))]
-    battle_results = ""
-    while character1.health > 0 and character2.health > 0:
-        attacker,defender = determine_attacker_defender(character1, character2)
-        attack_success = determine_attack_success(attacker, defender)
-        if attack_success == True:
-            raw_attack_damage = determine_raw_damage(attacker)
-            if determine_block_success(defender):
-                raw_attack_damage = raw_attack_damage * (100 - defender.block_reduction) / 100
-                combat_log.append(defender.name + " has blocked the attack!")
-            elif determine_critical_hit_success(attacker):
-                critical_hit_modifier = determine_raw_critical_hit_damage(attacker)
-                raw_attack_damage *= critical_hit_modifier
-                combat_log.append(attacker.name + " has critically hit, getting a " + str(critical_hit_modifier) + " damage modifier!!")
-            modified_attack_damage = determine_modified_damage(defender, raw_attack_damage)
-            modified_attack_damage = int(round(modified_attack_damage))
-            defender.health -= modified_attack_damage
-            combat_log.append(attacker.name + " hits for " + str(modified_attack_damage) + " damage. " + defender.name + " now has " + str(defender.health) + " health.")   
-        else:
-            combat_log.append(attack_success)
-    if character1.health <= 0:
-        battle_results += (character1.name + " is dead")
+def determine_attacker(hero, monster, hero_speed, monster_speed, hero_first_strike, monster_first_strike):
+    if randint(0,100) < hero_first_strike:
+        print ("Hero strikes first because of FIRST STRIKE!")
+        return hero, monster
+    elif randint(0,100) < monster_first_strike:
+        print ("Monster strikes first because of FIRST STRIKE!")
+        return monster, hero
+    difference = abs(hero_speed - monster_speed)
+    if hero_speed > monster_speed:
+        hero_chance = (difference / hero_speed)*100 + randint(-20,20)
     else:
-        battle_results += (character2.name + " is dead")
-    return character1.health, character2.health, combat_log, battle_results
+        hero_chance = (1-(difference / monster_speed))*100 + randint(-20,20)
+    print ("Chance for HERO to attack this round: " + str(hero_chance) + "%")
+    if randint(0,100) < hero_chance:
+        return hero, monster
+    return monster, hero
 
+def determine_if_hits(accuracy):
+    print ("Chance for attacker to hit their opponent is: " + str(accuracy) + "%")
+    if randint(0,100) <= accuracy:
+        return True
+    return False
 
+def determine_if_critical_hit(chance):
+    print ("Chance for critical hit is: " + str(chance) + "%")
+    if randint(0,100) < chance:
+        return True
+    return False
 
-""" Test functions below. Not needed for the final product
-monster = monster_generator(7)
-battle_hero = Hero()
-battle_hero.update_secondary_attributes()
-battle_hero.refresh_character()
-print(monster)
-print("\nName: " + battle_hero.name,"\nDamage: " + str(battle_hero.minimum_damage) + "-" + str(battle_hero.maximum_damage), "\nHealth: " + str(battle_hero.health) + "/" + str(battle_hero.max_health), "\nAttack Speed: " + str(battle_hero.attack_speed), "\nAccuracy: " + str(battle_hero.attack_accuracy) + "\n")
-battle_logic(battle_hero, monster)
-"""
+def calculate_damage(minimum, maximum):
+    if maximum < minimum:
+        maximum = minimum + 1 # This avoids a bug with randint looking at impossible ranges
+    damage = randint(minimum, maximum)
+    print ("Unmodified attack will hit for this much damage: " + str(damage))
+    return damage
+
+def critical_hit_modifier(original_damage, modifier):
+    print ("Critical hit! Damage multiplied by: " + str(modifier))
+    damage = original_damage * modifier
+    return damage
+
+def determine_evade(chance):
+    print ("Chance to evade is: " + str(chance) + "%")
+    if randint(0,100) < chance:
+        return True
+    return False
+
+def determine_block_chance(chance):
+    print ("Chance to block is: " + str(chance) + "%")
+    if randint(0,100) < chance:
+        return True
+    return False
+
+def determine_block_amount(original_damage, modifier):
+    print ("You will block this percent of damage: " + str(modifier) + "%")
+    damage = original_damage * (1 - modifier)
+    return damage
+
+def determine_parry_chance(chance):
+    print ("Chance to parry is: " + str(chance) + "%")
+    if randint(0,100) < chance:
+        return True
+    return False
+
+def determine_riposte_chance(chance):
+    print ("Chance to riposte is: " + str(chance) + "%")
+    if randint(0,100) < chance:
+        return True
+    return False
+
+def battle_logic(hero, monster):
+    """ Runs the entire battle simulator """
+    combat_log = [hero.name + " Health: " + str(hero.health) + "  " + monster.name + " Health: " + str(monster.health)]
+    battle_results = ""
+    print ("Hero health: " + str(hero.health) + "~~~~Monster health: " + str(monster.health))
+    while (hero.health > 0) and (monster.health > 0):
+        attacker, defender = determine_attacker(hero, monster, hero.proficiencies.attack_speed.speed, monster.proficiencies.attack_speed.speed, hero.proficiencies.first_strike.chance, monster.proficiencies.first_strike.chance)
+        print ("ATTACKER IS " + attacker.name)
+        if determine_if_hits(attacker.proficiencies.attack_accuracy.accuracy):
+            print ("HIT")
+            damage = calculate_damage(attacker.proficiencies.attack_damage.minimum, attacker.proficiencies.attack_damage.maximum)
+        else:
+            combat_log.append(attacker.name + " misses!")
+            print ("MISS")
+            continue
+        if determine_if_critical_hit(attacker.proficiencies.critical_hit.chance):
+            damage = critical_hit_modifier(damage, attacker.proficiencies.critical_hit.modifier)
+        if determine_evade(defender.proficiencies.evade.chance):
+            combat_log.append(str(defender.name) + " evaded!")
+            print ("EVADED")
+            continue
+        if determine_block_chance(defender.proficiencies.block.chance):
+            combat_log.append(str(defender.name) + " blocked some damage!")
+            print ("BLOCKED")
+            damage = determine_block_amount(damage, defender.proficiencies.block.modifier)
+        if determine_parry_chance(defender.proficiencies.parry.chance):
+            print ("PARRIED")
+            continue
+        if determine_riposte_chance(defender.proficiencies.riposte.chance):
+            print ("RIPOSTED")
+            continue
+        print ("Final damage is: " + str(damage))
+        defender.health -= damage
+        print (str(defender.name) + "'s new health is: " + str(defender.health))
+        combat_log.append("%s hits for %i. %s has %i health left.\n" % (attacker.name, damage, defender.name, defender.health))
+    if hero.health <= 0:
+        battle_results += (hero.name + " is dead")
+    else:
+        battle_results += (monster.name + " is dead")
+    return hero.health, monster.health, combat_log, battle_results

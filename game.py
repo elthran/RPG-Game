@@ -226,10 +226,6 @@ class Hero(Base):
     # Sets damage
     @orm.reconstructor
 
-    def refresh_proficiencies(self):
-        for proficiency in self.proficiencies:
-            proficiency.update(self)
-        
     def update_proficiencies(self):
         """Update secondary attributes of Hero object on database load.
         
