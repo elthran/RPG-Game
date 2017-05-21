@@ -227,7 +227,7 @@ class Health(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = math.floor(5*self.level + 0)
+        self.maximum = floor(5*self.level + 0)
         self.tooltip += "Maximum: " + str(self.maximum) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -257,7 +257,7 @@ class Sanctity(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = math.floor(1.5*self.level + -1)
+        self.maximum = floor(1.5*self.level + -1)
         self.tooltip += "Maximum: " + str(self.maximum) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -287,7 +287,7 @@ class Storage(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = math.floor(2.5*self.level + 8)
+        self.maximum = floor(2.5*self.level + 8)
         self.tooltip += "Maximum: " + str(self.maximum) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -317,7 +317,7 @@ class Endurance(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = math.floor(0.25*self.level + 5)
+        self.maximum = floor(0.25*self.level + 5)
         self.tooltip += "Maximum: " + str(self.maximum) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -349,9 +349,9 @@ class AttackDamage(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.minimum = math.floor(math.floor(3 * (0.5*math.sin(0.1*self.level) + 0.1*self.level)) + 0)
+        self.minimum = floor(floor(3 * (0.5*sin(0.1*self.level) + 0.1*self.level)) + 0)
         self.tooltip += "Minimum: " + str(self.minimum) + ";"
-        self.maximum = math.floor(math.floor(3 * (0.5*math.sin(0.1*self.level) + 0.2*self.level)) + 1)
+        self.maximum = floor(floor(3 * (0.5*sin(0.1*self.level) + 0.2*self.level)) + 1)
         self.tooltip += "Maximum: " + str(self.maximum) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -381,7 +381,7 @@ class AttackSpeed(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.speed = round((3 * (0.1*math.sin(0.7*self.level) + 0.1*self.level)) + 1, 2)
+        self.speed = round((3 * (0.1*sin(0.7*self.level) + 0.1*self.level)) + 1, 2)
         self.tooltip += "Speed: " + str(self.speed) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -411,7 +411,7 @@ class AttackAccuracy(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.accuracy = math.floor((- (10*5)/((2 * self.level) + 10) + 5) * 7.9 + 5)
+        self.accuracy = floor((- (10*5)/((2 * self.level) + 10) + 5) * 7.9 + 5)
         self.tooltip += "Accuracy: " + str(self.accuracy) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -441,7 +441,7 @@ class FirstStrike(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = math.floor((- (5*50)/((0.5 * self.level) + 5) + 50) * 7.9 + -30)
+        self.chance = floor((- (5*50)/((0.5 * self.level) + 5) + 50) * 7.9 + -30)
         self.tooltip += "Chance: " + str(self.chance) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -473,9 +473,9 @@ class CriticalHit(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = math.floor((- (5*50)/((0.3 * self.level) + 5) + 50) * 7.9 + -22)
+        self.chance = floor((- (5*50)/((0.3 * self.level) + 5) + 50) * 7.9 + -22)
         self.tooltip += "Chance: " + str(self.chance) + ";"
-        self.modifier = math.floor((- (1*0.5)/((0.5 * self.level) + 1) + 0.5) * 7.9 + 0)
+        self.modifier = floor((- (1*0.5)/((0.5 * self.level) + 1) + 0.5) * 7.9 + 0)
         self.tooltip += "Modifier: " + str(self.modifier) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -505,7 +505,7 @@ class Defence(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = math.floor((- (7*35)/((0.1 * self.level) + 7) + 35) * 7.9 + 0)
+        self.modifier = floor((- (7*35)/((0.1 * self.level) + 7) + 35) * 7.9 + 0)
         self.tooltip += "Modifier: " + str(self.modifier) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -535,7 +535,7 @@ class Evade(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = math.floor((- (10*15)/((0.1 * self.level) + 10) + 15) * 7.9 + 0)
+        self.chance = floor((- (10*15)/((0.1 * self.level) + 10) + 15) * 7.9 + 0)
         self.tooltip += "Chance: " + str(self.chance) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -565,7 +565,7 @@ class Parry(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = math.floor((- (15*15)/((0.2 * self.level) + 15) + 15) * 7.9 + 0)
+        self.chance = floor((- (15*15)/((0.2 * self.level) + 15) + 15) * 7.9 + 0)
         self.tooltip += "Chance: " + str(self.chance) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -595,7 +595,7 @@ class Riposte(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = math.floor((- (20*15)/((0.3 * self.level) + 20) + 15) * 7.9 + 0)
+        self.chance = floor((- (20*15)/((0.3 * self.level) + 20) + 15) * 7.9 + 0)
         self.tooltip += "Chance: " + str(self.chance) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -627,9 +627,9 @@ class Block(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = math.floor((- (25*60)/((0.25 * self.level) + 25) + 60) * 7.9 + 0)
+        self.chance = floor((- (25*60)/((0.25 * self.level) + 25) + 60) * 7.9 + 0)
         self.tooltip += "Chance: " + str(self.chance) + ";"
-        self.modifier = math.floor((- (80*100)/((2.5 * self.level) + 80) + 100) * 7.9 + 0)
+        self.modifier = floor((- (80*100)/((2.5 * self.level) + 80) + 100) * 7.9 + 0)
         self.tooltip += "Modifier: " + str(self.modifier) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -659,7 +659,7 @@ class Stealth(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = math.floor((- (20*65)/((0.5 * self.level) + 20) + 65) * 7.9 + 0)
+        self.chance = floor((- (20*65)/((0.5 * self.level) + 20) + 65) * 7.9 + 0)
         self.tooltip += "Chance: " + str(self.chance) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -689,7 +689,7 @@ class Pickpocketing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = math.floor((- (15*70)/((0.6 * self.level) + 15) + 70) * 7.9 + 0)
+        self.chance = floor((- (15*70)/((0.6 * self.level) + 15) + 70) * 7.9 + 0)
         self.tooltip += "Chance: " + str(self.chance) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -719,7 +719,7 @@ class Faith(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = math.floor((- (10*5)/((2 * self.level) + 10) + 5) * 7.9 + 0)
+        self.modifier = floor((- (10*5)/((2 * self.level) + 10) + 5) * 7.9 + 0)
         self.tooltip += "Modifier: " + str(self.modifier) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -749,7 +749,7 @@ class Bartering(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = math.floor((- (20*60)/((0.5 * self.level) + 20) + 60) * 7.9 + 0)
+        self.chance = floor((- (20*60)/((0.5 * self.level) + 20) + 60) * 7.9 + 0)
         self.tooltip += "Chance: " + str(self.chance) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -779,7 +779,7 @@ class Oration(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = math.floor((- (15*60)/((0.75 * self.level) + 15) + 60) * 7.9 + 0)
+        self.modifier = floor((- (15*60)/((0.75 * self.level) + 15) + 60) * 7.9 + 0)
         self.tooltip += "Modifier: " + str(self.modifier) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -809,7 +809,7 @@ class Knowledge(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = math.floor((- (5*50)/((0.1 * self.level) + 5) + 50) * 7.9 + 0)
+        self.modifier = floor((- (5*50)/((0.1 * self.level) + 5) + 50) * 7.9 + 0)
         self.tooltip += "Modifier: " + str(self.modifier) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -839,7 +839,7 @@ class Literacy(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = math.floor((- (10*75)/((0.25 * self.level) + 10) + 75) * 7.9 + 0)
+        self.modifier = floor((- (10*75)/((0.25 * self.level) + 10) + 75) * 7.9 + 0)
         self.tooltip += "Modifier: " + str(self.modifier) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -869,7 +869,7 @@ class Luck(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = math.floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
+        self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
         self.tooltip += "Chance: " + str(self.chance) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -899,7 +899,7 @@ class ResistFrost(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = math.floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
         self.tooltip += "Modifier: " + str(self.modifier) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -929,7 +929,7 @@ class ResistFlame(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = math.floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
         self.tooltip += "Modifier: " + str(self.modifier) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -959,7 +959,7 @@ class ResistShadow(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = math.floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
         self.tooltip += "Modifier: " + str(self.modifier) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -989,7 +989,7 @@ class ResistHoly(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = math.floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
         self.tooltip += "Modifier: " + str(self.modifier) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -1019,7 +1019,7 @@ class ResistPoison(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = math.floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
         self.tooltip += "Modifier: " + str(self.modifier) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -1049,7 +1049,7 @@ class ResistBlunt(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = math.floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
         self.tooltip += "Modifier: " + str(self.modifier) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -1079,7 +1079,7 @@ class ResistSlashing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = math.floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
         self.tooltip += "Modifier: " + str(self.modifier) + ";"
         self.tooltip = self.tooltip[:-1]
         
@@ -1109,7 +1109,7 @@ class ResistPiercing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = math.floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
         self.tooltip += "Modifier: " + str(self.modifier) + ";"
         self.tooltip = self.tooltip[:-1]
         

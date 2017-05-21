@@ -604,6 +604,7 @@ def arena():
     page_image = str(game.enemy.name)
     conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
                     ("Level: ", str(game.enemy.level), "Combat Details"),
+                    ("Health: ", str(game.enemy.health) + " / " + str(game.enemy.proficiencies.health.maximum)),
                     ("Damage: ", str(game.enemy.proficiencies.attack_damage.minimum) + " - " + str(game.enemy.proficiencies.attack_damage.maximum)),
                     ("Attack Speed: ", str(game.enemy.proficiencies.attack_speed.speed)),
                     ("Accuracy: ", str(game.enemy.proficiencies.attack_accuracy.accuracy) + "%"),
@@ -615,8 +616,7 @@ def arena():
                     ("Parry: ", str(game.enemy.proficiencies.parry.chance) + "%"),
                     ("Riposte: ", str(game.enemy.proficiencies.riposte.chance) + "%"),
                     ("Block Chance: ", str(game.enemy.proficiencies.block.chance) + "%"),
-                    ("Block Reduction: ", str(game.enemy.proficiencies.block.modifier) + "%"),
-                    ("Health: ", str(game.enemy.health) + " / " + str(game.enemy.proficiencies.health.maximum))]
+                    ("Block Reduction: ", str(game.enemy.proficiencies.block.modifier) + "%")]
     page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
     return render_template('building_default.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, enemy_info=conversation, enemy=game.enemy)  # return a string
 

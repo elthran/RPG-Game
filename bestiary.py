@@ -7,7 +7,6 @@
 
 from random import randint, choice
 from proficiencies_monsters import MonsterProficiencies
-from proficiencies import * # Temporary!
 
 def monster_archetype_basic(monster):
     monster.primary_attributes["Vitality"] = randint(15,20) * 0.01 * monster.attribute_points

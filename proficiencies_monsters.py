@@ -1,3 +1,5 @@
+from math import floor, sin
+
 MONSTER_PROFICIENCY_INFORMATION = [
     "Health",
     "Attack damage",
@@ -51,11 +53,18 @@ class MonsterHealth(MonsterProficiency):
         super().__init__(name)
         self.maximum = 10
 
+    def update(self, monster):
+        self.maximum = floor(4*monster.primary_attributes["Vitality"] + 0)
+        
 class MonsterAttackDamage(MonsterProficiency):
     def __init__(self, name):
         super().__init__(name)
         self.minimum = 1
         self.maximum = 2
+
+    def update(self, monster):
+        self.minimum = floor(floor(3 * (0.5*sin(0.1*monster.primary_attributes["Strength"]) + 0.1*monster.primary_attributes["Strength"])) + 0)
+        self.maximum = floor(floor(3 * (0.5*sin(0.1*monster.primary_attributes["Strength"]) + 0.2*monster.primary_attributes["Strength"])) + 1)
 
 class MonsterAttackSpeed(MonsterProficiency):
     def __init__(self, name):
