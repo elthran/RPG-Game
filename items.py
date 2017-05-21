@@ -48,7 +48,7 @@ class Item(Base):
     broken = Column(Boolean)
     consumed = Column(Boolean)
     name = Column(String)
-    equipped = Column(Boolean)
+    
     
     def __init__(self, template):
         """Build a new item from a given template.
@@ -65,10 +65,9 @@ class Item(Base):
             pass
         self.broken = False
         self.consumed = False
-        self.equipped = False
         
         self.load_template()
-        
+
     
     @orm.reconstructor
     def load_template(self):
@@ -97,6 +96,9 @@ class Item(Base):
         
         for key in template_keys:
             setattr(self, key, getattr(self.template, key))
+            
+    def is_equipped(self):
+        return self.inventory and self not in self.inventory.unequipped
 
     
     def update_stats(self, hero):

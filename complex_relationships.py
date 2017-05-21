@@ -19,41 +19,41 @@ import pdb
 ###########
 #Inventory relationships
 ###########
-#One to One
+#One to One #These don't seem to propagate properly ... ? 
 inventory.Inventory.helmet_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.helmet = relationship("Item", backref=backref("inventory_helmet", uselist=False),
-    foreign_keys="[Inventory.helmet_id]")
+inventory.Inventory.helmet = relationship("Item", backref=backref("inventory_helmet",
+    uselist=False), foreign_keys="[Inventory.helmet_id]")
 inventory.Inventory.shirt_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.shirt = relationship("Item", backref=backref("inventory_shirt", uselist=False),
-    foreign_keys="[Inventory.shirt_id]")
+inventory.Inventory.shirt = relationship("Item", backref=backref("inventory_shirt",
+    uselist=False), foreign_keys="[Inventory.shirt_id]")
 inventory.Inventory.left_hand_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.left_hand = relationship("Item", backref=backref("inventory_left_hand", uselist=False),
-    foreign_keys="[Inventory.left_hand_id]")
+inventory.Inventory.left_hand = relationship("Item", backref=backref("inventory_left_hand",
+    uselist=False), foreign_keys="[Inventory.left_hand_id]")
 inventory.Inventory.right_hand_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.right_hand = relationship("Item", backref=backref("inventory_right_hand", uselist=False),
-    foreign_keys="[Inventory.right_hand_id]")
+inventory.Inventory.right_hand = relationship("Item", backref=backref("inventory_right_hand",
+    uselist=False), foreign_keys="[Inventory.right_hand_id]")
 inventory.Inventory.both_hands_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.both_hands = relationship("Item", backref=backref("inventory_both_hands", uselist=False),
-    foreign_keys="[Inventory.both_hands_id]")
+inventory.Inventory.both_hands = relationship("Item", backref=backref("inventory_both_hands",
+    uselist=False), foreign_keys="[Inventory.both_hands_id]")
 inventory.Inventory.sleeves_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.sleeves = relationship("Item", backref=backref("inventory_sleeves", uselist=False),
-    foreign_keys="[Inventory.sleeves_id]")
+inventory.Inventory.sleeves = relationship("Item", backref=backref("inventory_sleeves",
+    uselist=False), foreign_keys="[Inventory.sleeves_id]")
 inventory.Inventory.gloves_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.gloves = relationship("Item", backref=backref("inventory_gloves", uselist=False),
-    foreign_keys="[Inventory.gloves_id]")
+inventory.Inventory.gloves = relationship("Item", backref=backref("inventory_gloves",
+    uselist=False), foreign_keys="[Inventory.gloves_id]")
 inventory.Inventory.legs_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.legs = relationship("Item", backref=backref("inventory_legs", uselist=False),
-    foreign_keys="[Inventory.legs_id]")
+inventory.Inventory.legs = relationship("Item", backref=backref("inventory_legs",
+    uselist=False), foreign_keys="[Inventory.legs_id]")
 inventory.Inventory.feet_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.feet = relationship("Item", backref=backref("inventory_feet", uselist=False),
-    foreign_keys="[Inventory.feet_id]")
+inventory.Inventory.feet = relationship("Item", backref=backref("inventory_feet",
+    uselist=False), foreign_keys="[Inventory.feet_id]")
 #One to Many
 items.Item.rings_id = Column(Integer, ForeignKey('inventory.id'))
-inventory.Inventory.rings = relationship("Item", backref="inventory_rings",
-    foreign_keys="[Item.rings_id]")
+inventory.Inventory.rings = relationship("Item",
+    backref=backref("inventory_rings"), foreign_keys="[Item.rings_id]")
 items.Item.unequipped_id = Column(Integer, ForeignKey('inventory.id'))
-inventory.Inventory.unequipped = relationship("Item", backref="inventory_unequipped",
-    foreign_keys="[Item.unequipped_id]")
+inventory.Inventory.unequipped = relationship("Item",
+    backref=backref("inventory_unequipped"), foreign_keys="[Item.unequipped_id]")
 
 ###########
 #Hero relationships
