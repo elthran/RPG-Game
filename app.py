@@ -6,7 +6,7 @@
 #//////////////////////////////////////////////////////////////////////////////#
 
 # from game import * #Must go before login method???
-from game import Hero, Game
+from game import Hero, Game, User
 # import the Flask class from the flask module
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from functools import wraps
