@@ -8,75 +8,62 @@
 from random import randint, choice
 from proficiencies_monsters import MonsterProficiencies
 
-def monster_archetype_basic(monster):
-    monster.primary_attributes["Vitality"] = randint(15,20) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Strength"] = randint(15,20) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Resilience"] = randint(10,15) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Fortitude"] = randint(10,15) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Reflexes"] = randint(10,15) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Agility"] = randint(10,15) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Perception"] = randint(5,10) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Wisdom"] = randint(5,10) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Divinity"] = randint(5,10) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Charisma"] = randint(5,10) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Survivalism"] = randint(5,10) * 0.01 * monster.attribute_points
-    monster.primary_attributes["Fortuity"] = randint(5,10) * 0.01 * monster.attribute_points
-    return monster
+monster_archetypes = {"wolf": [1.5, 0.1, 0.1, 0.2, 0.7, 0.5, 1, 1.5, 0.7, 0.8, 0.8, 0.1],
+                      "goblin": [0.7, 0.2, 0.1, 0.2, 0.7, 0.5, 1, 1.5, 0.7, 0.8, 0.9, 0.3]
+                      }
+
+class AttributesMonster(object):
+    def __init__(self, monster_level, monster_type):        
+        self.agility = AttributeMonster("Agility", monster_level, monster_type[0])
+        self.charisma = AttributeMonster("Charisma", monster_level, monster_type[1])
+        self.divinity = AttributeMonster("Divinity", monster_level, monster_type[2])
+        self.fortitude = AttributeMonster("Fortitude", monster_level, monster_type[3])
+        self.fortuity = AttributeMonster("Fortuity", monster_level, monster_type[4])
+        self.perception = AttributeMonster("Perception", monster_level, monster_type[5])
+        self.reflexes = AttributeMonster("Reflexes", monster_level, monster_type[6])
+        self.resilience = AttributeMonster("Resilience", monster_level, monster_type[7])
+        self.strength = AttributeMonster("Strength", monster_level, monster_type[8])
+        self.survivalism = AttributeMonster("Survivalism", monster_level, monster_type[9])
+        self.vitality = AttributeMonster("Vitality", monster_level, monster_type[10])
+        self.wisdom = AttributeMonster("Wisdom", monster_level, monster_type[11])
+
+class AttributeMonster(object):
+    def __init__(self, name, monster_level, modifier):
+        self.name = name
+        self.level = monster_level * modifier
 
 class Monster(object):
-    def __init__(self, monster_id, name, species, species_plural, level, archetype):
+    def __init__(self, monster_id, name, species, species_plural, level, monster_archetypes):
         self.monster_id = monster_id
         self.name = name
         self.species = species
         self.species_plural = species_plural
         self.level = level
-        self.attribute_points = level * 2
-        self.primary_attributes = {"Strength": 1, "Resilience": 1, "Vitality": 1, "Fortitude": 1, "Reflexes": 1, "Agility": 1, "Perception": 1, "Wisdom": 1, "Divinity": 1, "Charisma": 1, "Survivalism": 1, "Fortuity": 1}
-        self.archetype = archetype
         self.experience_rewarded = level * 2
         self.items_rewarded = []
+        self.monster_archetypes = monster_archetypes
 
-        self.proficiencies = MonsterProficiencies()
+        self.attributes = AttributesMonster(level, monster_archetypes)
+        self.proficiencies = MonsterProficiencies(self.attributes)
 
         self.health = self.proficiencies.health.maximum
-
-    def update_monster(self):        
-        for proficiency in self.proficiencies:
-            proficiency.update(self)
 
     def __repr__(self):
         return "Unfinished Monster build"
     
 def monster_generator(level):
-    monster = choice(bestiary_data)
-    monster.level = level
-    monster.attribute_points = 2 * monster.level
-    if monster.archetype == "basic":
-        monster = monster_archetype_basic(monster)
-    monster.update_monster()
+    temp_monster = choice(bestiary_data)
+    monster = Monster(temp_monster.monster_id, temp_monster.name, temp_monster.species, temp_monster.species_plural, level, temp_monster.monster_archetypes)
     return monster
 
-bestiary_data = [Monster("001", "Feral Dog", "Wolf", "Wolves", level=1, archetype="basic"),
-                 Monster("002", "Giant Rat", "Goblin", "Goblins", level=1, archetype="basic")]
-
-
-
-
-
+bestiary_data = [Monster("001", "Feral Dog", "Wolf", "Wolves", level=1, monster_archetypes=monster_archetypes["wolf"]),
+                 Monster("002", "Giant Rat", "Goblin", "Goblins", level=1, monster_archetypes=monster_archetypes["goblin"])]
 
 
 
 
 
 """ Don't bother looking below here"""
-
-
-
-
-
-
-
-
 
 class NPC(object):
     def __init__(self, npc_id, name, race, age):
