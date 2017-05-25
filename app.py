@@ -636,13 +636,12 @@ def battle():
         page_heading = "Not enough endurance, wait a bit!"
         return render_template('layout.html', page_title=page_title, myHero=myHero, page_heading=page_heading, page_links=page_links)
 
-    myHero.health,game.enemy.health,battle_log,battle_results = combat_simulator.battle_logic(myHero,game.enemy)
+    myHero.health,game.enemy.health,battle_log = combat_simulator.battle_logic(myHero,game.enemy)
+    myHero.endurance -= required_endurance
     if myHero.health == 0:
-        myHero.endurance -= required_endurance
         page_title = "Defeat!"
         page_heading = "You have died."
     else:
-        myHero.endurance -= required_endurance
         for item in myHero.equipped_items:
             item.durability -= 1
             if item.durability <= 0:
@@ -679,7 +678,7 @@ def battle():
                     for items in myHero.inventory:
                         if items.name == item.name:
                             items.amount_owned += 1
-        level_up = myHero.level_up(myHero.attribute_points, myHero.experience, myHero.experience_maximum)
+        level_up = myHero.level_up(myHero.attribute_points, myHero.experience, myHero.experience_maximum) # Whi is it creating a variable here?
         page_title = "Victory!"
         page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience!"
         page_links = [("Compete in the ","/arena","arena","."), ("Go back to the ","/barracks","barracks","."), ("Return to your ","/home","profile"," page.")]
@@ -688,7 +687,7 @@ def battle():
             page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
 
     database.update()
-    return render_template('battle.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log, battle_results=battle_results, myHero=myHero, enemy=game.enemy, page_links=page_links)  # return a string
+    return render_template('battle.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log, myHero=myHero, enemy=game.enemy, page_links=page_links)  # return a string
 
 #A.k.a "Blacksmith"
 @app.route('/store/<inventory>')

@@ -85,43 +85,37 @@ def determine_riposte_chance(chance):
         return True
     return False
 
-def battle_logic(hero, monster):
+def battle_logic(active_player, inactive_player):
     """ Runs the entire battle simulator """
-    combat_log = [hero.name + " Health: " + str(hero.health) + "  " + monster.name + " Health: " + str(monster.health)]
-    battle_results = ""
-    print ("Hero health: " + str(hero.health) + "~~~~Monster health: " + str(monster.health))
-    while (hero.health > 0) and (monster.health > 0):
-        attacker, defender = determine_attacker(hero, monster, hero.proficiencies.attack_speed.speed, monster.proficiencies.attack_speed.speed, hero.proficiencies.first_strike.chance, monster.proficiencies.first_strike.chance)
-        print ("ATTACKER IS " + attacker.name)
+    combat_log = [active_player.name + " Health: " + str(active_player.health) + "  " + inactive_player.name + " Health: " + str(inactive_player.health)]
+    while (active_player.health > 0) and (inactive_player.health > 0):
+        attacker, defender = determine_attacker(active_player, inactive_player,
+                                                active_player.proficiencies.attack_speed.speed,inactive_player.proficiencies.attack_speed.speed,
+                                                active_player.proficiencies.first_strike.chance, inactive_player.proficiencies.first_strike.chance
+                                                )
         if determine_if_hits(attacker.proficiencies.attack_accuracy.accuracy):
-            print ("HIT")
             damage = calculate_damage(attacker.proficiencies.attack_damage.minimum, attacker.proficiencies.attack_damage.maximum)
         else:
             combat_log.append(attacker.name + " misses!")
-            print ("MISS")
             continue
         if determine_if_critical_hit(attacker.proficiencies.critical_hit.chance):
             damage = critical_hit_modifier(damage, attacker.proficiencies.critical_hit.modifier)
         if determine_evade(defender.proficiencies.evade.chance):
             combat_log.append(str(defender.name) + " evaded!")
-            print ("EVADED")
             continue
         if determine_block_chance(defender.proficiencies.block.chance):
             combat_log.append(str(defender.name) + " blocked some damage!")
-            print ("BLOCKED")
             damage = determine_block_amount(damage, defender.proficiencies.block.modifier)
         if determine_parry_chance(defender.proficiencies.parry.chance):
-            print ("PARRIED")
             continue
         if determine_riposte_chance(defender.proficiencies.riposte.chance):
-            print ("RIPOSTED")
             continue
-        print ("Final damage is: " + str(damage))
         defender.health -= damage
-        print (str(defender.name) + "'s new health is: " + str(defender.health))
         combat_log.append("%s hits for %i. %s has %i health left.\n" % (attacker.name, damage, defender.name, defender.health))
-    if hero.health <= 0:
-        battle_results += (hero.name + " is dead")
+    if active_player.health <= 0:
+        active_player.health = 0
+        combat_log.append(active_player.name + " is dead")
     else:
-        battle_results += (monster.name + " is dead")
-    return hero.health, monster.health, combat_log, battle_results
+        inactive_player.health = 0
+        combat_log.append(inactive_player.name + " is dead.\nYou gain " + str(inactive_player.experience_rewarded) + " experience.")
+    return active_player.health, inactive_player.health, combat_log
