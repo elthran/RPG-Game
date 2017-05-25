@@ -5,6 +5,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import backref
 from sqlalchemy import orm
+from sqlalchemy.ext.orderinglist import ordering_list
 
 import game
 import locations
@@ -28,7 +29,9 @@ inventory.Inventory.{{ name }} = relationship("Item", backref=backref("inventory
 #One to Many
 {%- for name in ALL_INVENTORY_ONE_TO_MANY_CATEGORIES %}
 items.Item.{{ name }}_id = Column(Integer, ForeignKey('inventory.id'))
-inventory.Inventory.{{ name }} = relationship("Item",
+items.Item.{{ name }}_position = Column(Integer)
+inventory.Inventory.{{ name }} = relationship("Item", order_by="Item.{{ name }}_position",
+    collection_class=ordering_list("{{ name }}_position"),
     backref=backref("inventory_{{ name }}"), foreign_keys="[Item.{{ name }}_id]")
 {%- endfor %}
 

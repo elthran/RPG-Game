@@ -5,6 +5,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import backref
 from sqlalchemy import orm
+from sqlalchemy.ext.orderinglist import ordering_list
 
 import game
 import locations
@@ -19,7 +20,7 @@ import pdb
 ###########
 #Inventory relationships
 ###########
-#One to One #These don't seem to propagate properly ... ? 
+#One to One
 inventory.Inventory.helmet_id = Column(Integer, ForeignKey('item.id'))
 inventory.Inventory.helmet = relationship("Item", backref=backref("inventory_helmet",
     uselist=False), foreign_keys="[Inventory.helmet_id]")
@@ -49,10 +50,14 @@ inventory.Inventory.feet = relationship("Item", backref=backref("inventory_feet"
     uselist=False), foreign_keys="[Inventory.feet_id]")
 #One to Many
 items.Item.rings_id = Column(Integer, ForeignKey('inventory.id'))
-inventory.Inventory.rings = relationship("Item",
+items.Item.rings_position = Column(Integer)
+inventory.Inventory.rings = relationship("Item", order_by="Item.rings_position",
+    collection_class=ordering_list("rings_position"),
     backref=backref("inventory_rings"), foreign_keys="[Item.rings_id]")
 items.Item.unequipped_id = Column(Integer, ForeignKey('inventory.id'))
-inventory.Inventory.unequipped = relationship("Item",
+items.Item.unequipped_position = Column(Integer)
+inventory.Inventory.unequipped = relationship("Item", order_by="Item.unequipped_position",
+    collection_class=ordering_list("unequipped_position"),
     backref=backref("inventory_unequipped"), foreign_keys="[Item.unequipped_id]")
 
 ###########

@@ -165,9 +165,6 @@ class Inventory(Base):
                 self.rings[index] = item
             except IndexError:
                 self.rings.append(item)
-                warnings.warn("No ring on that finger to replace yet " + \
-                    "and you can't equip rings on specific fingers yet, " + \
-                    "so ring just added to list instead.")
         else:
             old_item = getattr(self, slots_used["primary"])
             
@@ -183,6 +180,8 @@ class Inventory(Base):
         #This action should commit naturally.
         ids_of_items_to_be_moved = []
         if old_item:
+            if self.unequipped:
+                old_item.unequipped_position = self.unequipped[-1].unequipped_position + 1
             self.unequipped.append(old_item)
             
             ids_of_items_to_be_moved = [old_item.id]

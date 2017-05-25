@@ -23,9 +23,62 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import orm
+import sqlalchemy
 
 import inspect
 import pdb
+
+def get_all_atts(self):
+    data = set(vars(self).keys()) | \
+        set(self.__table__.columns.keys()) | \
+        set(self.__mapper__.relationships.keys())
+    
+    data.discard('_sa_instance_state')    
+        
+    hierarchy_keys = set()
+    # All non-base objects in inheritance path.
+    # Remove <class 'sqlalchemy.ext.declarative.api.Base'>, <class 'object'> as these are
+    # the last two objects in the MRO
+    try:
+        hierarchy = type(self).__mro__[1:-2]
+        
+        for obj in hierarchy:
+            hierarchy_keys |= set(vars(obj).keys()) - set(obj.__mapper__.relationships.keys())
+        
+        #Remove private variables and id keys to prevent weird recursion and redundancy.
+        hierarchy_keys -= set([key for key in hierarchy_keys if key.startswith('_')]) #? or 'id' in key])
+    except IndexError:
+        pass #This is the Base class and has no useful MRO.
+        
+    data |= hierarchy_keys
+    
+    #Don't print the objects methods.
+    data -= set([e for e in data if "method" in repr(type(getattr(self, e)))])
+    
+    return data
+    
+Base.get_all_atts = get_all_atts
+
+def data_to_string(self, data):
+    for key in sorted(data):
+        value = getattr(self, key)
+        # pdb.set_trace()
+        if value and (type(value) == orm.collections.InstrumentedList or \
+            type(value) == sqlalchemy.ext.orderinglist.OrderingList):
+            value = '[' + ', '.join(e.__class__.__name__ + '.id=' + str(e.id) for e in value) + ']'
+        
+        #This if/try is a way to print ONE to ONE relationship objects without infinite recursion.
+        elif value:
+            try:
+                value._sa_instance_state #Dummy call to test if value is a Database object.
+                value = "<{}(id={})>".format(value.__class__.__name__, value.id)
+            except AttributeError:
+                pass #The object is not a databse object.
+                
+        yield '{}={}'.format(key, repr(value))
+        
+Base.data_to_string = data_to_string
+    
 
 #I didn't call this method __str__ as it would then overide the module string function.
 def string_of(self): 
@@ -43,50 +96,9 @@ def string_of(self):
     only allow ONE level of superclassing. Multi-level superclasses will probably fail.
     """
 
-    data = set(vars(self).keys()) | \
-        set(self.__table__.columns.keys()) | \
-        set(self.__mapper__.relationships.keys())
-    
-    data.discard('_sa_instance_state')    
-        
-    hierarchy_keys = set()
-    # All non-base objects in inheritance path.
-    # Remove <class 'sqlalchemy.ext.declarative.api.Base'>, <class 'object'> as these are
-    # the last two objects in the MRO
-    try:
-        hierarchy = type(self).__mro__[1:-2]
-        
-        for obj in hierarchy:
-            hierarchy_keys |= set(vars(obj).keys()) - set(obj.__mapper__.relationships.keys())
-        
-        #Remove private variables and id keys to prevent weird recursion and redundancy.
-        hierarchy_keys -= set([key for key in hierarchy_keys if key.startswith('_')]) #? or 'id' in key])
-    except IndexError:
-        pass #This is the Base class and has no useful MRO.
-        
-    data |= hierarchy_keys
-    
-    #Don't print the objects methods.
-    data -= set([e for e in data if "method" in repr(type(getattr(self, e)))])
-    
-    atts = []
-    for key in sorted(data):
-        value = getattr(self, key)
-        # pdb.set_trace()
-        if value and type(value) == orm.collections.InstrumentedList:
-            value = '[' + ', '.join(e.__class__.__name__ + '.id=' + str(e.id) for e in value) + ']'
-        
-        #This if/try is a way to print ONE to ONE relationship objects without infinite recursion.
-        elif value:
-            try:
-                value._sa_instance_state #Dummy call to test if value is a Database object.
-                value = "<{}(id={})>".format(value.__class__.__name__, value.id)
-            except AttributeError:
-                pass #The object is not a databse object.
-                
-        atts.append('{}={}'.format(key, repr(value)))
-
-    return "<{}({})>".format(self.__class__.__name__, ', '.join(atts))
+    data = self.get_all_atts()
+    data_str_gen = self.data_to_string(data)
+    return "<{}({})>".format(self.__class__.__name__, ', '.join(data_str_gen))
         
 Base.__str__ = string_of
 
@@ -96,82 +108,23 @@ def pprint(self):
     
     Basically a string_of clone but one variable per line.
     """
-    data = set(vars(self).keys()) | \
-        set(self.__table__.columns.keys()) | \
-        set(self.__mapper__.relationships.keys())
     
-    data.discard('_sa_instance_state')    
-        
-    hierarchy_keys = set()
-    # All non-base objects in inheritance path.
-    # Remove <class 'sqlalchemy.ext.declarative.api.Base'>, <class 'object'> as these are
-    # the last two objects in the MRO
-    try:
-        hierarchy = type(self).__mro__[1:-2]
-        
-        for obj in hierarchy:
-            hierarchy_keys |= set(vars(obj).keys()) - set(obj.__mapper__.relationships.keys())
-        
-        #Remove private variables and id keys to prevent weird recursion and redundancy.
-        hierarchy_keys -= set([key for key in hierarchy_keys if key.startswith('_')]) #? or 'id' in key])
-    except IndexError:
-        pass #This is the Base class and has no useful MRO.
-        
-    data |= hierarchy_keys
-    
-    #Don't print the objects methods.
-    data -= set([e for e in data if "method" in repr(type(getattr(self, e)))])
+    data = self.get_all_atts()
     
     print("\n\n<{}(".format(self.__class__.__name__))
-    for key in sorted(data):
-        value = getattr(self, key)
-        if value and type(value) == orm.collections.InstrumentedList:
-            value = '[' + ', '.join(e.__class__.__name__ + '.id=' + str(e.id) for e in value) + ']'
-            
-        #This if/try is a way to print ONE to ONE relationship objects without infinite recursion.
-        elif value:
-            try:
-                value._sa_instance_state #Dummy call to test if value is a Database object.
-                value = "<{}(id={})>".format(value.__class__.__name__, value.id)
-            except AttributeError:
-                pass #The object is not a databse object.
-            
-        print('{}={}'.format(key, repr(value)))
+    for line in self.data_to_string(data):
+            print(line)
     print(")>\n")
         
 Base.pprint = pprint
 
-def get_all_atts(self):
-    # inspect.getmro(self) #get all supers ... get all vars from this list?
-    # print(inspect.getmro(self))
-    data = set(vars(self).keys()) | \
-        set(self.__table__.columns.keys()) | \
-        set(self.__mapper__.relationships.keys())
+def pretty_str(self):
+    data = self.get_all_atts()
     
-    data.discard('_sa_instance_state')    
-        
-    hierarchy_keys = set()
-    # All non-base objects in inheritance path.
-    # Remove <class 'sqlalchemy.ext.declarative.api.Base'>, <class 'object'> as these are
-    # the last two objects in the MRO
-    # Also remove the first object as it has already been added.
-    try:
-        hierarchy = type(self).__mro__[1:-2]
-        
-        for obj in hierarchy:
-            hierarchy_keys |= set(vars(obj).keys()) - set(obj.__mapper__.relationships.keys())
-        
-        #Remove private variables and id keys to prevent weird recursion and redundancy.
-        hierarchy_keys -= set([key for key in hierarchy_keys if key.startswith('_')]) #? or 'id' in key])
-    except IndexError:
-        pass #This is the Base class and has no useful MRO.
-        
-    data |= hierarchy_keys
-    
-    #Don't print the objects methods.
-    data -= set([e for e in data if "method" in repr(type(getattr(self, e)))])
+    lines = (line for line in self.data_to_string(data))
+    return "\n<{}(\n{}\n)>\n".format(self.__class__.__name__, '\n'.join(lines))
 
-    return data
+Base.pretty_str = pretty_str
 
 def is_equal(self, other):
     """Test if two database objects are equal.
@@ -180,34 +133,19 @@ def is_equal(self, other):
     is_equal is 0.3 seconds faster over 1000 iterations than str == str.
     So is_equal is not that useful. I would like it if it was 5-10 times faster.
     """
-    data = get_all_atts(self)
-    other_data = get_all_atts(other)
+    data = self.get_all_atts()
+    other_data = other.get_all_atts()
     
-    if not data == other_data:
+    if data != other_data:
         return False   
     
-    if not self.__class__.__name__ == other.__class__.__name__:
+    if self.__class__.__name__ != other.__class__.__name__:
         return False
         
-    for key in sorted(data):
-        key = key.lstrip('_')
+    for key in data:
         value = getattr(self, key)
         other_value = getattr(other, key)
-                
-        #Add recursion in here :P        
-        # pdb.set_trace()
-        if value and type(value) == orm.collections.InstrumentedList:
-            value = '[' + ', '.join(e.__class__.__name__ + '.id=' + str(e.id) for e in value) + ']'
-            other_value = '[' + ', '.join(e.__class__.__name__ + '.id=' + str(e.id) for e in value) + ']'
-        elif value:
-            try:
-                value._sa_instance_state #Dummy call to test if value is a Database object.
-                value = str(value)
-                other_value = str(other_value)
-            except AttributeError:
-                pass #The object is not a databse object.
-            
-        if not value == other_value:
+        if value != other_value:
             return False
     return True
     
