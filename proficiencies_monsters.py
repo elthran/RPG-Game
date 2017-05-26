@@ -54,12 +54,8 @@ class MonsterHealth(MonsterProficiency):
 class MonsterAttackDamage(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
-        self.minimum = floor(floor(3 * (0.5*sin(0.1*modifier) + 0.1*modifier)))
-        if self.minimum < 0:
-            self.minimum = 0
-        self.maximum = floor(floor(3 * (0.5*sin(0.1*modifier) + 0.2*modifier))) + 1
-        if self.maximum < 1:
-            self.maximum = 1
+        self.minimum = floor(3 * (0.5*sin(0.1*modifier) + 0.1*modifier))
+        self.maximum = floor(3 * (0.5*sin(0.1*modifier) + 0.2*modifier)) + 1
 
 class MonsterAttackSpeed(MonsterProficiency):
     def __init__(self, name, modifier):
@@ -69,7 +65,7 @@ class MonsterAttackSpeed(MonsterProficiency):
 class MonsterAttackAccuracy(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
-        self.accuracy = floor((- (10*5)/((2 * modifier) + 10) + 5)) + 5
+        self.accuracy = floor((- (50*5)/((2 * modifier) + 50) + 5))
 
 class MonsterFirstStrike(MonsterProficiency):
     def __init__(self, name, modifier):
