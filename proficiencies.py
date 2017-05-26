@@ -30,7 +30,7 @@ PROFICIENCY_INFORMATION = [
     ("Evade", "Chance to dodge", "Reflexes", "Defence", [("Chance", "percent", (0.1, 10, 15, 0))]),
     ("Parry", "Chance to parry", "Reflexes", "Defence", [("Chance", "percent", (0.2, 15, 15, 0))]),
     ("Riposte", "Chance to riposte", "Agility", "Defence", [("Chance", "percent", (0.3, 20, 15, 0))]),
-    ("Block", "Ability to block if a shield is equipped", "Strength", "Defence", [("Chance", "percent", (0.25, 25, 60, 0)), ("Modifier", "percent", (2.5, 80, 100, 0))]),
+    ("Block", "Ability to block if a shield is equipped", "Strength", "Defence", [("Chance", "percent", (0.25, 25, 60, 0)), ("Modifier", "percent", (1.5, 20, 100, 0))]),
     ("Stealth", "Chance to avoid detection", "Perception", "Stealth", [("Chance", "percent", (0.5, 20, 65, 0))]),
     ("Pickpocketing", "Chance to steal", "Agility", "Stealth", [("Chance", "percent", (0.6, 15, 70, 0))]),
     ("Faith", "Ability to cast spells", "Divinity", "Holiness", [("Modifier", "percent", (2, 10, 5, 0))]),
@@ -628,7 +628,7 @@ class Block(Proficiency):
             self.is_not_max_level = False
         self.chance = floor((- (25*60)/((0.25 * self.level) + 25) + 60) * 7.9 + 0)
         self.tooltip += "Chance: " + str(self.chance) + ";"
-        self.modifier = floor((- (80*100)/((2.5 * self.level) + 80) + 100) * 7.9 + 0)
+        self.modifier = floor((- (20*100)/((1.5 * self.level) + 20) + 100) * 7.9 + 0)
         self.tooltip += "Modifier: " + str(self.modifier) + ";"
         self.tooltip = self.tooltip[:-1]
         

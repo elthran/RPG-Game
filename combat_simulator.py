@@ -45,7 +45,7 @@ def determine_if_critical_hit(chance):
     return False
 
 def calculate_damage(minimum, maximum):
-    if maximum < minimum:
+    if maximum <= minimum:
         maximum = minimum + 1 # This avoids a bug with randint looking at impossible ranges
     damage = randint(minimum, maximum)
     print ("Unmodified attack will hit for this much damage: " + str(damage))

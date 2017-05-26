@@ -646,8 +646,8 @@ def battle():
             item.durability -= 1
             if item.durability <= 0:
                 item.broken = True
+        """  This code is for the bestiary and should add one to your kill count for that species of monster. If it's a new species it shouls add it to your book.
         newMonster = True
-        """
         for key, value in myHero.kill_quests.items():
             if key == game.enemy.species:
                 myHero.kill_quests[key] += 1
@@ -660,7 +660,6 @@ def battle():
                     myHero.experience += 10
                 newMonster = False
                 break
-        """
         if newMonster:
             #myHero.kill_quests[game.enemy.species] = 1
             myHero.completed_achievements.append(("Kill a " + game.enemy.species, "5"))
@@ -668,6 +667,7 @@ def battle():
                 if monster.name == game.enemy.name:
                     myHero.bestiary.append(monster)
             myHero.experience += 5
+        """
         game.has_enemy = False
         myHero.experience += game.enemy.experience_rewarded * myHero.experience_gain_modifier
         if len(game.enemy.items_rewarded) > 0:

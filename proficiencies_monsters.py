@@ -54,52 +54,56 @@ class MonsterHealth(MonsterProficiency):
 class MonsterAttackDamage(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
-        self.minimum = floor(floor(3 * (0.5*sin(0.1*modifier) + 0.1*modifier)) + 0)
-        self.maximum = floor(floor(3 * (0.5*sin(0.1*modifier) + 0.2*modifier)) + 1)
+        self.minimum = floor(floor(3 * (0.5*sin(0.1*modifier) + 0.1*modifier)))
+        if self.minimum < 0:
+            self.minimum = 0
+        self.maximum = floor(floor(3 * (0.5*sin(0.1*modifier) + 0.2*modifier))) + 1
+        if self.maximum < 1:
+            self.maximum = 1
 
 class MonsterAttackSpeed(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
-        self.speed = round((3 * (0.1*sin(0.7*modifier) + 0.1*modifier)) + 1, 2)
+        self.speed = round((2.5 * (0.05*sin(0.3*modifier) + 0.08*modifier)) + 1, 2)
 
 class MonsterAttackAccuracy(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
-        self.accuracy = floor((- (10*5)/((2 * modifier) + 10) + 5) * 7.9 + 5)
+        self.accuracy = floor((- (10*5)/((2 * modifier) + 10) + 5)) + 5
 
 class MonsterFirstStrike(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
-        self.chance = floor((- (5*50)/((0.5 * modifier) + 5) + 50) * 7.9 + -30)
+        self.chance = floor((- (5*50)/((0.5 * modifier) + 5) + 50))
 
 class MonsterCriticalHit(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
-        self.chance = floor((- (5*50)/((0.3 * modifier) + 5) + 50) * 7.9 + -22)
-        self.modifier = floor((- (1*0.5)/((0.5 * modifier) + 1) + 0.5) * 7.9 + 0)
+        self.chance = floor((- (5*50)/((0.3 * modifier) + 5) + 50))
+        self.modifier = floor((- (1*0.5)/((0.5 * modifier) + 1) + 0.5))
 
 class MonsterDefence(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
-        self.modifier = floor((- (7*35)/((0.1 * modifier) + 7) + 35) * 7.9 + 0)
+        self.modifier = floor((- (7*35)/((0.1 * modifier) + 7) + 35) * 5)
 
 class MonsterEvade(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
-        self.chance = floor((- (10*15)/((0.1 * modifier) + 10) + 15) * 7.9 + 0)
+        self.chance = floor((- (10*15)/((0.1 * modifier) + 10) + 15) * 5)
 
 class MonsterParry(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
-        self.chance = floor((- (15*15)/((0.2 * modifier) + 15) + 15) * 7.9 + 0)
+        self.chance = floor((- (15*15)/((0.2 * modifier) + 15) + 15) * 5)
 
 class MonsterRiposte(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
-        self.chance = floor((- (20*15)/((0.3 * modifier) + 20) + 15) * 7.9 + 0)
+        self.chance = floor((- (20*15)/((0.3 * modifier) + 20) + 15) * 5)
 
 class MonsterBlock(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
-        self.chance = floor((- (25*60)/((0.25 * modifier) + 25) + 60) * 7.9 + 0)
-        self.modifier = floor((- (80*100)/((2.5 * modifier) + 80) + 100) * 7.9 + 0)
+        self.chance = floor((- (25*60)/((0.25 * modifier) + 25) + 60) * 5)
+        self.modifier = floor((- (80*100)/((2.5 * modifier) + 80) + 100) * 5)
