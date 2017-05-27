@@ -7,6 +7,7 @@
 <div class="profileContainer">
 <h1>General Statistics</h1>
 	<div class="profileColumn">
+		<h2>Basic</h2>
 		<ul> 
 			<li>Name: {{ myHero.character_name}}</li>
 			<li>Age: {{ myHero.age }}</li>
@@ -16,28 +17,38 @@
 			{% if myHero.devotion %}}
 				<li>Devotion: {{ myHero.age }}</li>
 			{% endif %}
+			{% if myHero.virtue %}}
+				<li>Virtue: {{ myHero.virtue }}</li>
+			{% endif %}			
+			<li>Experience: {{ myHero.experience }} / {{ myHero.experience_maximum }}</li>
+			<li>Health: {{ myHero.health }} / {{ myHero.health_maximum }}</li>
+			<li>Sanctity: {{ myHero.sanctity }} / {{ myHero.proficiencies.sanctity.maximum }}</li>
+			<li>Storage: {{ myHero.storage }} / {{ myHero.proficiencies.storage.maximum }}</li>
+			<li>Endurance: {{ myHero.endurance }} / {{ myHero.proficiencies.endurance.maximum }}</li>
+		</ul>
+	</div>
+	<div class="profileColumn">
+	<h2>Skills</h2>	
+		<ul> 
+			{% if myHero.archetype %}}
+				<li>Archetype: {{ myHero.archetype }}</li>
+			{% endif %}
 			{% if myHero.specialization %}}
 				<li>Specialization: {{ myHero.specialization }}</li>
 			{% endif %}
 			{% if myHero.religion %}}
 				<li>Religion: {{ myHero.religion }}</li>
 			{% endif %}
-			<li>Health: {{ myHero.health }} / {{ myHero.health_maximum }}</li>
-			<li>Sanctity: {{ myHero.sanctity }} / {{ myHero.proficiencies.sanctity.maximum }}</li>
-			<li>Storage: {{ myHero.storage }} / {{ myHero.proficiencies.storage.maximum }}</li>
-			<li>Endurance: {{ myHero.endurance }} / {{ myHero.proficiencies.endurance.maximum }}</li>
-			<li>Luck: {{ myHero.proficiencies.luck.chance }}%</li>
-		</ul>
-	</div>
-	<div class="profileColumn">
-		<ul> 
-			<li>Experience: {{ myHero.experience }} / {{ myHero.experience_maximum }}</li>
+			{% if myHero.house %}}
+				<li>House: {{ myHero.house }}</li>
+			{% endif %}
 			<li>Stealth: {{ myHero.proficiencies.stealth.chance }}%</li>
 			<li>Pickpocketing: {{ myHero.proficiencies.pickpocketing.chance }}%</li>
 			<li>Faith: {{ myHero.proficiencies.faith.modifier }}%</li>
 			<li>Bartering: {{ myHero.proficiencies.bartering.chance }}%</li>
 			<li>Oration: {{ myHero.proficiencies.oration.modifier }}%</li>
 			<li>Literacy: {{ myHero.proficiencies.literacy.modifier }}%</li>
+			<li>Luck: {{ myHero.proficiencies.luck.chance }}%</li>
 		</ul>
 	</div>
 </div>

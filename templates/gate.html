@@ -1,0 +1,9 @@
+<!-- This shows the admin page -->
+
+{% extends "layout.html" %}
+{% block block1 %}
+	<img src="/static/images/gate.jpg" alt="Sample">
+      Here is where the connection for the world map will be, but you will need to ask the guard and meet the requirements to leave.
+	  <h1><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_location.id }}>{{ myHero.current_world.location_type }}</a></h1>
+{% endblock %}
+

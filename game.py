@@ -199,7 +199,6 @@ class Hero(Base):
         self.health = 0
         self.endurance = 0
         self.storage = 0
-        self.attack_speed_skill = 0
         
         #Time code
         self.timestamp = datetime.datetime.utcnow()

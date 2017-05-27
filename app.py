@@ -813,7 +813,7 @@ def leave_town():
     page_heading = "Village Gate"
     conversation = [("City Guard: ", "You are too young to be out on your own.")]
     page_links = [("Return to the ", "/Town/" + myHero.current_city.name, "city", ".")]
-    return render_template('layout.html', myHero=myHero, page_heading=page_heading, conversation=conversation, page_links=page_links)  # return a string
+    return render_template('gate.html', myHero=myHero, page_heading=page_heading, conversation=conversation, page_links=page_links)  # return a string
 
 ### END OF STARTING TOWN FUNCTIONS
 

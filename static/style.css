@@ -260,9 +260,9 @@ ul {
 	margin-bottom: 0px;
 }
 
-.profilePageInfo {
+.profilePageInfo { /* This page shows the description for each attribute */
 	float: right;
-	height: 50%;
+	height: 350px;
 }
 
 .profilePageInfo h1 {
@@ -332,56 +332,6 @@ input.abilityButtonMinus {
 	float: left;
 	background-color: Darkgray;
 }
-
-/*
-
-.proficiencyTooltip {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-}
-
-.proficiencyTooltip .proficiencyTooltipText {
-    visibility: hidden;
-    width: 600px;
-    background-color: black;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
-    position: absolute;
-    z-index: 1;	 #Makes sure it is in front of everything else 
-    top: -60px;
-    left: 110%;
-}
-
-.profLeft {
-	left: 0%;
-	right: 110%;
-}
-
-.proficiencyTooltip .proficiencyTooltipText::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    right: 100%;
-    margin-top: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: transparent black transparent transparent;
-}
-
-.profLeft::after {
-	right: 0%;
-	left: 100%;
-	border-color: transparent transparent transparent black;
-}
-
-.proficiencyTooltip:hover .proficiencyTooltipText {
-    visibility: visible;
-}
-
-*/
 
 #proficiencyButton {
 	background-color: transparent; /* make the button transparent */
