@@ -145,6 +145,7 @@ class Inventory(Base):
             2. commit the change (Black magic method that I shouldn't be using)
             3. add to a new slot.
         I should be able to do a "move" command instead but can't.
+        NOTE: Id of the passed item is not returned ... maybe it should be?
         """       
         # pdb.set_trace()
         
@@ -219,10 +220,13 @@ class Inventory(Base):
             self.rings.remove(item)
         else:
             setattr(self, slot, None)
-            
+        
+        if self.unequipped:
+            item.unequipped_position = self.unequipped[-1].unequipped_position + 1
         self._sa_instance_state.session.commit()
         
         self.unequipped.append(item)
+        # pdb.set_trace()
         
 
     def add_item(self, item):

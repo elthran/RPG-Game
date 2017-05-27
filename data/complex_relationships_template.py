@@ -22,17 +22,17 @@ import pdb
 ###########
 #One to One
 {%- for name in ALL_INVENTORY_ONE_TO_ONE_CATEGORIES %}
-inventory.Inventory.{{ name }}_id = Column(Integer, ForeignKey('item.id'))
+inventory.Inventory.{{ name }}_item_id = Column(Integer, ForeignKey('item.id'))
 inventory.Inventory.{{ name }} = relationship("Item", backref=backref("inventory_{{ name }}",
-    uselist=False), foreign_keys="[Inventory.{{ name }}_id]")
+    uselist=False), foreign_keys="[Inventory.{{ name }}_item_id]")
 {%- endfor %}
 #One to Many
 {%- for name in ALL_INVENTORY_ONE_TO_MANY_CATEGORIES %}
-items.Item.{{ name }}_id = Column(Integer, ForeignKey('inventory.id'))
+items.Item.{{ name }}_inventory_id = Column(Integer, ForeignKey('inventory.id'))
 items.Item.{{ name }}_position = Column(Integer)
 inventory.Inventory.{{ name }} = relationship("Item", order_by="Item.{{ name }}_position",
     collection_class=ordering_list("{{ name }}_position"),
-    backref=backref("inventory_{{ name }}"), foreign_keys="[Item.{{ name }}_id]")
+    backref=backref("inventory_{{ name }}"), foreign_keys="[Item.{{ name }}_inventory_id]")
 {%- endfor %}
 
 ###########
