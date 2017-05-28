@@ -39,20 +39,6 @@ class Inventory(Base):
     
     }
     
-    all_slot_names = [
-        "helmet",
-        "shirt",
-        "left_hand",
-        "right_hand",
-        "both_hands",
-        "sleeves",
-        "gloves",
-        "rings",
-        "legs",
-        "feet",
-        "unequipped",
-    ]
-    
     single_slots = [
         "helmet",
         "shirt",
@@ -70,15 +56,8 @@ class Inventory(Base):
         "unequipped",
     ]
     
-    # def slots(self, name, value="null"):
-        # """Return the value of an attribute by its name.
-        
-        # eg. self.slots("legs") -> self.legs
-        # """
-        # if value != "null":
-            # setattr(self, name, value)
-        # return getattr(self, name)
-
+    all_slot_names = single_slots + multiple_slots
+    
 
     def equip_all(self, equipped_items):
         """Equip all passed items.
@@ -88,48 +67,7 @@ class Inventory(Base):
         """
         for item in equipped_items:
             self.equip(item)
-            
-    # @orm.validates("helmet")
-    # def validate_helmet(self, key, value):
-        # """When new helmet is added move old one to unequipped.
 
-        # """
-        # pdb.set_trace()
-        
-        # Remove item from current location (currently in unequipped)
-        # self.unequipped.remove(value)
-        
-        # Get reference to current helmet (if it exists).
-        # item = self.helmet
-        # Need commit here .. or some kind of auto-flush/update/cascade?
-        # value._sa_instance_state.session.commit()
-        
-        # Now set current helmet to new value of helmet
-        # if item:
-            # self.unequipped.append(item)
-        # value._sa_instance_state.session.commit()
-        # return value
-        
-    # @orm.validates("rings")
-    # def equip_ring(self, key, value):
-        # if name == "rings" and len(self.rings) <= 10:
-                # self.rings.append(item)
-                
-    # def move(self, start, end, item, index=0):
-        # """Move and item from one slot to another -> return item in end slot.
-        # """
-        
-        # getattr(self, start).remove(item)
-        # self._sa_instance_state.session.commit()
-        
-        # old_item = getattr(self, end)
-        
-        # if index:
-            # getattr(self, start)[index]
-        # else:
-            # setattr(self, end, item)
-        
-        # return old_item
 
     def equip(self, item, index=0):
         """Equip the an item in the correct slot -> Return ids of items manipulated.
@@ -226,19 +164,21 @@ class Inventory(Base):
         self._sa_instance_state.session.commit()
         
         self.unequipped.append(item)
-        # pdb.set_trace()
         
 
     def add_item(self, item):
-        # pdb.set_trace()
+        """Add an item to the unequipped slot of this inventory.
+        """
         self.unequipped.append(item)
 
     def __iter__(self):
-        items = []
-        for name in self.slot_names:
-            if name in Inventory.single_slots:
-                items.append(self.slots(name))
-            elif name in Inventory.multiple_slots:
-                items += self.slots(name)
-        return items
+        """Return a list of _all_ items in this inventory.
+        
+        Untested!
+        Use: 
+        for item in inventory:
+            print(item)
+        """
+
+        return [getattr(self, name) for name in Inventory.all_slot_names]
 

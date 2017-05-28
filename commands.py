@@ -114,7 +114,7 @@ class Command:
         item_id = arg_dict.get('data', None, type=int)
         item = database.get_item_by_id(item_id)
         ids_to_unequip = hero.inventory.equip(item)
-        print("When item.id={} equipped, these items {} are removed.".format(item.id, ids_to_unequip))
+        #print("When item.id={} equipped, these items {} are removed.".format(item.id, ids_to_unequip))
         return item.type + "&&" + str(ids_to_unequip) #Maybe render_template from string {{ x | tojson }}?
         # return "{}&&{}".format(item.type, render_template("render_item_equipped.html", item=item))
         # return "success", 200, {'Content-Type': 'text/plain'}
