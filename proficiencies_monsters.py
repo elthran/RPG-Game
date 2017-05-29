@@ -29,6 +29,7 @@ class MonsterProficiencies():
         self.evade = MonsterEvade("Evade", monster_attributes.reflexes.level)
         self.parry = MonsterParry("Parry", monster_attributes.reflexes.level)
         self.riposte = MonsterRiposte("Riposte", monster_attributes.reflexes.level)
+        self.fatigue = MonsterFatigue("Fatigue", monster_attributes.fortitude.level)
         self.block = MonsterBlock("Block", monster_attributes.fortitude.level)
 
     def items(self):
@@ -50,6 +51,7 @@ class MonsterHealth(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
         self.maximum = floor(modifier*randint(275,325)*0.01)
+        self.current = self.maximum
         
 class MonsterAttackDamage(MonsterProficiency):
     def __init__(self, name, modifier):
@@ -97,6 +99,12 @@ class MonsterRiposte(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
         self.chance = floor((- (20*15)/((0.3 * modifier) + 20) + 15) * 5)
+
+class MonsterFatigue(MonsterProficiency):
+    def __init__(self, name, modifier):
+        super().__init__(name)
+        self.maximum = floor(modifier) + randint(1,3)
+        self.current = self.maximum
 
 class MonsterBlock(MonsterProficiency):
     def __init__(self, name, modifier):

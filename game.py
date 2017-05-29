@@ -115,14 +115,6 @@ class Hero(Base):
     attribute_points = Column(Integer)
     proficiency_points = Column(Integer)
 
-    sanctity = Column(Integer)
-    health = Column(Integer)
-    endurance = Column(Integer)
-    storage = Column(Integer)
-    health_maximum = Column(Integer)
-    sanctity_maximum = Column(Integer)
-    endurance_maximum = Column(Integer)
-
     #Time code of when the (account?) was created
     timestamp = Column(DateTime)
 
@@ -169,6 +161,7 @@ class Hero(Base):
         self.proficiency_points = 10
 
         #Build before *_current so that *_percents and validators work.
+        """
         self.sanctity_maximum = 0
         self.endurance_maximum = 0
 
@@ -176,6 +169,11 @@ class Hero(Base):
         self.health = 0
         self.endurance = 0
         self.storage = 0
+        """
+
+        # Hidden attributes // Maybe they should be a special type of proficiency?
+        self.experience_gain_modifier = 1 # This is the percentage of exp you gain
+        self.gold_gain_modifier = 1 # This is the percentage of gold you gain
 
         #Time code
         self.timestamp = datetime.datetime.utcnow()
@@ -212,7 +210,7 @@ class Hero(Base):
     def non_equipped_items(self):
         return self.inventory.unequipped or [None]
 
-    def update_proficiencies(self):
+    def update_proficiencies(self): # This needs to be renamed because it is not a proficiency updater
         """Update secondary attributes of Hero object on database load.
 
         See: init_on_load() in SQLAlchemy
@@ -228,27 +226,13 @@ class Hero(Base):
         self.wolf_kills = 0
         #######
 
-        #Marked for review
-        #Make all of these Proficiencies?
-        # Want to delete these since they are redundant. Instead of calling on them we should call on their value in proficiencies
-        self.health_maximum = self.proficiencies.health.maximum # Deleting this one breaks the "def sync_health"
-        self.sanctity_maximum = self.proficiencies.sanctity.maximum # Deleting this one breaks the "def sync_sanct"
-        self.endurance_maximum = self.proficiencies.endurance.maximum # Deleting this one breaks the "def sync_endr"
-        self.storage_maximum = self.proficiencies.storage.maximum # Deleting this one breaks the "def sync_storage"
-
-        # Hidden attributes
-        self.experience_gain_modifier = 1 # This is the percentage of exp you gain
-        self.gold_gain_modifier = 1 # This is the percentage of gold you gain
-
         for ability in self.abilities:
             ability.update_stats(self)
         for item in self.equipped_items:
             item.update_stats(self)
 
         #Rebuild percent values. Silly but effective.
-        self.endurance = self.endurance
         self.experience = self.experience
-        self.sanctity = self.sanctity
 
 
     @validates('health_maximum')
@@ -256,9 +240,9 @@ class Hero(Base):
         """Reduce health if health overflows health_maximum.
         """
         try:
-            self.health = min(self.health, health_value)
+            self.proficiencies.health = min(self.proficiencies.health, health_value)
         except TypeError:
-            self.health = 0
+            self.proficiencies.health = 0
         return health_value
 
 
@@ -269,7 +253,7 @@ class Hero(Base):
         """
 
         try:
-            self.endurance_percent = round(endurance_value / self.endurance_maximum, 2) * 100
+            self.endurance_percent = round(endurance_value / self.proficiencies.endurance.maximum, 2) * 100
         except (TypeError, ZeroDivisionError):
             self.endurance_percent = 0
 
@@ -282,7 +266,7 @@ class Hero(Base):
         """
 
         try:
-            self.sanctity_percent = round(sanctity_value / self.sanctity_maximum, 2) * 100
+            self.sanctity_percent = round(sanctity_value / self.proficiencies.sanctity.maximum, 2) * 100
         except (TypeError, ZeroDivisionError):
             self.sanctity_percent = 0
 
@@ -310,16 +294,16 @@ class Hero(Base):
         """
 
         try:
-            self.health_percent = round(health_value / self.health_maximum, 2) * 100
+            self.health_percent = round(health_value / self.proficiencies.health.maximum, 2) * 100
         except (TypeError, ZeroDivisionError):
             self.health_percent = 0
 
         return max(health_value or 0, 0)
 
     def refresh_character(self):
-        self.sanctity = self.sanctity_maximum
-        self.health = self.health_maximum
-        self.endurance = self.endurance_maximum
+        self.proficiencies.health.current = self.proficiencies.health.maximum
+        self.proficiencies.sanctity.current = self.proficiencies.sanctity.maximum
+        self.proficiencies.endurance.current = self.proficiencies.endurance.maximum
         #self.storage = self.storage_maximum
 
     def page_refresh_character(self):
@@ -334,7 +318,7 @@ class Hero(Base):
         self.attribute_points += 1
         self.proficiency_points += 1
         self.age += 1
-        self.health = self.health_maximum
+        self.proficiencies.health.current = self.proficiencies.health.maximum
         self.update_proficiencies()
         return True
 

@@ -87,8 +87,8 @@ def determine_riposte_chance(chance):
 
 def battle_logic(active_player, inactive_player):
     """ Runs the entire battle simulator """
-    combat_log = [active_player.name + " Health: " + str(active_player.health) + "  " + inactive_player.name + " Health: " + str(inactive_player.health)]
-    while (active_player.health > 0) and (inactive_player.health > 0):
+    combat_log = [active_player.name + " Health: " + str(active_player.proficiencies.health.current) + "  " + inactive_player.name + " Health: " + str(inactive_player.proficiencies.health.current)]
+    while (active_player.proficiencies.health.current > 0) and (inactive_player.proficiencies.health.current > 0):
         attacker, defender = determine_attacker(active_player, inactive_player,
                                                 active_player.proficiencies.attack_speed.speed,inactive_player.proficiencies.attack_speed.speed,
                                                 active_player.proficiencies.first_strike.chance, inactive_player.proficiencies.first_strike.chance
@@ -110,12 +110,12 @@ def battle_logic(active_player, inactive_player):
             continue
         if determine_riposte_chance(defender.proficiencies.riposte.chance):
             continue
-        defender.health -= damage
-        combat_log.append("%s hits for %i. %s has %i health left.\n" % (attacker.name, damage, defender.name, defender.health))
-    if active_player.health <= 0:
-        active_player.health = 0
+        defender.proficiencies.health.current -= damage
+        combat_log.append("%s hits for %i. %s has %i health left.\n" % (attacker.name, damage, defender.name, defender.proficiencies.health.current))
+    if active_player.proficiencies.health.current <= 0:
+        active_player.proficiencies.health.current = 0
         combat_log.append(active_player.name + " is dead")
     else:
-        inactive_player.health = 0
+        inactive_player.proficiencies.health.current = 0
         combat_log.append(inactive_player.name + " is dead.\nYou gain " + str(inactive_player.experience_rewarded) + " experience.")
-    return active_player.health, inactive_player.health, combat_log
+    return active_player.proficiencies.health.current, inactive_player.proficiencies.health.current, combat_log
