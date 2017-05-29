@@ -8,7 +8,7 @@
     {% for item in items_for_sale %}
         <tr>
             <td>{{ item.name }}</td>
-            <td><button class="command  command-store-buy-blacksmith" value="buy?item_name={{ item.name }}">Buy</button></td>
+            <td><button class="command" data="{{ item.id }}">Buy</button></td>
             <td><b>{{ item.buy_price }}</b> gold</td>
         </tr>
     {% endfor %}  

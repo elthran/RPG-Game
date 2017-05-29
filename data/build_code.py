@@ -24,8 +24,8 @@ if __name__ == "__main__":
         autoescape=select_autoescape(default_for_string=False, default=False)
     )
     
-    
-    names = ["attributes", "proficiencies"]
+    #This should be an automatic function! Not manual.
+    names = ["attributes", "proficiencies", "complex_relationships"]
     
     for name in names:
         filename = "../" + name + ".py"

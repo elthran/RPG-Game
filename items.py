@@ -24,6 +24,7 @@ Item Specification:
         -amount_owned (inventory)
         -broken (item)
         -consumed (unless consumable just removes the item) (item, may cause two columns in inventory)
+        -equipped true/false
 """
 
 
@@ -48,6 +49,7 @@ class Item(Base):
     consumed = Column(Boolean)
     name = Column(String)
     
+    
     def __init__(self, template):
         """Build a new item from a given template.
         
@@ -63,9 +65,9 @@ class Item(Base):
             pass
         self.broken = False
         self.consumed = False
-
-        self.load_template()
         
+        self.load_template()
+
     
     @orm.reconstructor
     def load_template(self):
@@ -94,6 +96,9 @@ class Item(Base):
         
         for key in template_keys:
             setattr(self, key, getattr(self.template, key))
+            
+    def is_equipped(self):
+        return self.inventory and self not in self.inventory.unequipped
 
     
     def update_stats(self, hero):
@@ -160,6 +165,9 @@ class ItemTemplate(Base):
         self.buy_price = buy_price
         self.wearable = False
         self.consumable = False
+        
+    def update_stats(self, hero):
+        pass
         
 
 # Subclass of ItemTemplate
@@ -345,7 +353,7 @@ class Feet_Armour(Garment):
         self.feet_armour = True
 
 class Arm_Armour(Garment):
-    __tablename__ = 'Arm_Armour'
+    __tablename__ = 'arm_armour'
     
     id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
     
@@ -422,12 +430,13 @@ class Consumable(ItemTemplate):
         self.consumable = True
 		
     def apply_effect(self, hero):
-        hero.health += self.healing_amount
-        hero.sanctity += self.sanctity_amount
-        if hero.health > hero.health_maximum:
-            hero.health = hero.health_maximum
-        if hero.sanctity > hero.max_sanctity:
-            hero.sanctity = hero.max_sanctity
+        # hero.health += self.healing_amount
+        # hero.sanctity += self.sanctity_amount
+        # if hero.health > hero.health_maximum:
+            # hero.health = hero.health_maximum
+        # if hero.sanctity > hero.max_sanctity:
+            # hero.sanctity = hero.max_sanctity
+        print("Applied item effect. But not really.")
 
 # New Class
 class Quest_Item(ItemTemplate):

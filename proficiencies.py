@@ -196,6 +196,9 @@ class Proficiency(Base):
         
         self.level = 1
         self.is_not_max_level = False
+    
+    def update(self, hero):
+        pass
 
     def level_up(self):
         self.level += 1
@@ -319,7 +322,7 @@ class Endurance(Proficiency):
         self.maximum = floor(0.25*self.level + 5)
         self.tooltip += "Maximum: " + str(self.maximum) + ";"
         self.tooltip = self.tooltip[:-1]
-        
+
 
 class AttackDamage(Proficiency):
     __tablename__ = "attack_damage"
@@ -1117,3 +1120,4 @@ class ResistPiercing(Proficiency):
     
     def __iter__(self):
         pass
+

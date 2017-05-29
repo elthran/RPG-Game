@@ -15,6 +15,7 @@ from bestiary import *
 #import database
 from items import Quest_Item
 from commands import Command
+from events import Event
 
 #MUST be imported after all other game objects but before any of them are used.
 import complex_relationships
@@ -236,7 +237,7 @@ def admin():
         myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
         myHero.attribute_points = convert_input(request.form["Attribute_points"])
         myHero.proficiency_points = convert_input(request.form['Proficiency_Points'])
-        myHero.update_proficiencies()
+        myHero.refresh_proficiencies()
         myHero.refresh_character()
         database.update()
         return redirect(url_for('home'))
@@ -271,7 +272,7 @@ def home():
     myHero = database.fetch_hero(session['hero_id'])
     database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
     #This should be uneccessary -> but isn't?
-    myHero.update_proficiencies()
+    myHero.refresh_proficiencies()
 
     if myHero.name == "Haldon" or myHero.name == "Admin":
         myHero.refresh_character()
@@ -338,7 +339,7 @@ def attributes():
 
         myHero.attribute_points -= points_spent
 
-        myHero.update_proficiencies()
+        myHero.refresh_proficiencies()
         myHero.refresh_character()
         for proficiency in myHero.proficiencies:
             proficiency.update(myHero)
@@ -421,7 +422,7 @@ def inventory_page():
     # for item in myHero.inventory:
         # if item.wearable:
             # item.check_if_improvement()
-    return render_template('inventory.html', myHero=myHero, page_title=page_title)  # return a string
+    return render_template('inventory.html', hero=myHero, page_title=page_title)  # return a string
 
 @app.route('/quest_log')
 @login_required
@@ -842,7 +843,7 @@ def command(cmd=None):
     if cmd == 'favicon.ico':
         return "success", 200, {'Content-Type': 'text/plain'}
 
-    testing = True
+    testing = False # True
     if testing:
         print('request is:', repr(request))
         # print('request data:', repr(request.data))
@@ -851,12 +852,12 @@ def command(cmd=None):
         print('request args:', repr(request.args))
         print('cmd is:', repr(cmd))
 
-    # event = dict(request.args)
+    # event = Event(request.args)
     # event.add["hero"] = myHero
     # event.add["database"] = database
 
     try:
-        response = Command.cmd_functions[cmd](myHero, database=database, arg_dict=request.args)
+        response = Command.cmd_functions(cmd)(myHero, database=database, arg_dict=request.args)
         database.update()
         # pdb.set_trace()
         return response
@@ -900,7 +901,7 @@ def command(cmd=None):
                 myHero.equipped_items = [x for x in myHero.equipped_items if x not in equipped_items_to_remove] # deletes the items in equipped_items_to_remove from myHero.equipped_items
                 myHero.equipped_items.append(item)
                 myHero.inventory.remove(item)
-                myHero.update_proficiencies()
+                myHero.refresh_proficiencies()
                 for path in myHero.quest_paths:
                     if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 1:
                         path.quest.advance_quest()
@@ -914,7 +915,7 @@ def command(cmd=None):
         if cmd == item.name:
             myHero.inventory.append(item)
             myHero.equipped_items.remove(item)
-            myHero.update_proficiencies()
+            myHero.refresh_proficiencies()
             for path in myHero.quest_paths:
                     if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 2:
                         path.quest.advance_quest()
@@ -929,7 +930,7 @@ def command(cmd=None):
                     myHero.abilities[i].level += 1
                     myHero.abilities[i].update_display()
                     myHero.ability_points -= 1
-            myHero.update_proficiencies()
+            myHero.refresh_proficiencies()
             database.update()
             return "success", 200, {'Content-Type': 'text/plain'} #//
 
@@ -941,7 +942,7 @@ def command(cmd=None):
     for ability in unknown_abilities:
         if cmd == ability.name and myHero.ability_points > 0:
             myHero.abilities.append(ability)
-            myHero.update_proficiencies()
+            myHero.refresh_proficiencies()
             myHero.ability_points -= 1
             database.update()
             return "success", 200, {'Content-Type': 'text/plain'} #//
