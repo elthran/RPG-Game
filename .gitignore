@@ -3,3 +3,5 @@ __pycache__/
 .editorconfig
 static/database.db
 static/database.db-journal
+Design/
+Helpme/
