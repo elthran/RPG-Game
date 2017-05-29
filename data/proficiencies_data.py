@@ -2,12 +2,13 @@
 # Linear: Level multiplier, Base Value
 # Curvy: (larger "0" means it reaches the cap quicker) (smaller "1" means it reaxhes the cap quicker) ("2" is the cap or maximum possible value) ("3" is the negative amount)
 # Sensitive: Like curvy but has decimals (larger "0" means it reaches the cap quicker) (smaller "1" means it reaxhes the cap quicker) ("2" is the cap or maximum possible value) ("3" is the negative amount)
-# Modifier: (larger "a" means greater amplitude), (larger "b" means greater steepness andfaster increase), (greater "c" means greater frequency of waves) 
+# Modifier: (larger "a" means greater amplitude), (larger "b" means greater steepness andfaster increase), (greater "c" means greater frequency of waves)
+# Empty: Sets this value to take on the value of "maximum". Must be placed after "Maximum" in the list of variables
 PROFICIENCY_INFORMATION = [
-    ("Health", "How much you can take before you die", "Vitality", "Offense", [("Maximum", "linear", (5, 0))]),
-    ("Sanctity", "Casting points", "Divinity", "Offense", [("Maximum", "linear", (1.5, -1))]),
-    ("Storage", "Carrying capacity", "Strength", "Offense", [("Maximum", "linear", (2.5, 8))]),
-    ("Endurance", "Actions performed each day", "Fortitude", "Offense", [("Maximum", "linear", (0.25, 5))]),
+    ("Health", "How much you can take before you die", "Vitality", "Offense", [("Maximum", "linear", (5, 0)), ("Current", "empty")]),
+    ("Sanctity", "Casting points", "Divinity", "Offense", [("Maximum", "linear", (1.5, -1)), ("Current", "empty")]),
+    ("Storage", "Carrying capacity", "Strength", "Offense", [("Maximum", "linear", (2.5, 8)), ("Current", "empty")]),
+    ("Endurance", "Actions performed each day", "Fortitude", "Offense", [("Maximum", "linear", (0.25, 5)), ("Current", "empty")]),
     ("Attack damage", "How hard you hit", "Strength", "Offense", [("Minimum", "curvy", (0.5, 0.1, 0.1, 0)), ("Maximum",  "curvy", (0.5, 0.2, 0.1, 1))]),
     ("Attack speed", "How fast you attack", "Agility", "Offense", [("Speed", "sensitive", (0.1, 0.1, 0.7, 1))]),
     ("Attack accuracy", "Chance to hit", "Agility", "Offense", [("Accuracy", "percent", (2, 10, 5, 5))]),
@@ -17,6 +18,7 @@ PROFICIENCY_INFORMATION = [
     ("Evade", "Chance to dodge", "Reflexes", "Defence", [("Chance", "percent", (0.1, 10, 15, 0))]),
     ("Parry", "Chance to parry", "Reflexes", "Defence", [("Chance", "percent", (0.2, 15, 15, 0))]),
     ("Riposte", "Chance to riposte", "Agility", "Defence", [("Chance", "percent", (0.3, 20, 15, 0))]),
+    ("Fatigue", "How quickly you tire in combat", "Fortitude", "Defence", [("Maximum", "linear", (2, -1)), ("Current", "empty")]),
     ("Block", "Ability to block if a shield is equipped", "Strength", "Defence", [("Chance", "percent", (0.25, 25, 60, 0)), ("Modifier", "percent", (1.5, 20, 100, 0))]),
     ("Stealth", "Chance to avoid detection", "Perception", "Stealth", [("Chance", "percent", (0.5, 20, 65, 0))]),
     ("Pickpocketing", "Chance to steal", "Agility", "Stealth", [("Chance", "percent", (0.6, 15, 70, 0))]),

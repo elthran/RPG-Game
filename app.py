@@ -564,12 +564,12 @@ def world_map(current_world, location_id):
 @app.route('/barracks')
 @login_required
 def barracks():
-    if myHero.health <= 0:
+    if myHero.proficiencies.health.current <= 0:
         page_heading = "Your hero is currently dead."
         page_image = "dead"
         page_links = [("You have no health."),"","",""]
     else:
-        page_heading = "Welcome to the arena " + myHero.name+"!"
+        page_heading = "Welcome to the arena " + myHero.name + "!"
         page_image = "arena"
         page_links = [("Compete in the ", "/arena","arena", ".(temporary)"), ("Pay to ", "/spar", "spar", " against the trainer."), ("Battle another ", "/under_construction", "player",".")]
     return render_template('building_default.html', page_title="Barracks", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links)  # return a string
@@ -592,7 +592,7 @@ def spar():
 @app.route('/arena')
 @login_required
 def arena():
-    if not game.has_enemy or game.enemy.health <= 0:
+    if not game.has_enemy or game.enemy.proficiencies.health.current <= 0:
         enemy = monster_generator(myHero.age)
         if enemy.name == "Wolf":
             enemy.items_rewarded.append((Quest_Item("Wolf Pelt", myHero, 50)))
@@ -632,22 +632,23 @@ def battle():
     print("running function: battle2")
 
     page_links = [("Return to your ","home","profile"," page.")]
-    if myHero.endurance < required_endurance:
+    if myHero.proficiencies.endurance.current < required_endurance:
         page_title = "Battle"
         page_heading = "Not enough endurance, wait a bit!"
         return render_template('layout.html', page_title=page_title, myHero=myHero, page_heading=page_heading, page_links=page_links)
 
-    myHero.health,game.enemy.health,battle_log = combat_simulator.battle_logic(myHero,game.enemy)
-    myHero.endurance -= required_endurance
-    if myHero.health == 0:
+    myHero.proficiencies.health.current,game.enemy.proficiencies.health,battle_log = combat_simulator.battle_logic(myHero,game.enemy)
+    myHero.proficiencies.endurance.current -= required_endurance
+    if myHero.proficiencies.health.current == 0:
         page_title = "Defeat!"
         page_heading = "You have died."
     else:
+        """
         for item in myHero.equipped_items:
             item.durability -= 1
             if item.durability <= 0:
                 item.broken = True
-        """  This code is for the bestiary and should add one to your kill count for that species of monster. If it's a new species it shouls add it to your book.
+        # This code is for the bestiary and should add one to your kill count for that species of monster. If it's a new species it shouls add it to your book.
         newMonster = True
         for key, value in myHero.kill_quests.items():
             if key == game.enemy.species:
@@ -670,7 +671,7 @@ def battle():
             myHero.experience += 5
         """
         game.has_enemy = False
-        myHero.experience += game.enemy.experience_rewarded * myHero.experience_gain_modifier
+        myHero.experience += game.enemy.experience_rewarded # * myHero.experience_gain_modifier  THIS IS CAUSING A WEIRD BUG? I don't know why
         if len(game.enemy.items_rewarded) > 0:
             for item in game.enemy.items_rewarded:
                 if not any(items.name == item.name for items in myHero.inventory):

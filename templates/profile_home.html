@@ -21,10 +21,10 @@
 				<li>Virtue: {{ myHero.virtue }}</li>
 			{% endif %}			
 			<li>Experience: {{ myHero.experience }} / {{ myHero.experience_maximum }}</li>
-			<li>Health: {{ myHero.health }} / {{ myHero.health_maximum }}</li>
-			<li>Sanctity: {{ myHero.sanctity }} / {{ myHero.proficiencies.sanctity.maximum }}</li>
-			<li>Storage: {{ myHero.storage }} / {{ myHero.proficiencies.storage.maximum }}</li>
-			<li>Endurance: {{ myHero.endurance }} / {{ myHero.proficiencies.endurance.maximum }}</li>
+			<li>Health: {{ myHero.proficiencies.health.current }} / {{ myHero.proficiencies.health.maximum }}</li>
+			<li>Sanctity: {{ myHero.proficiencies.sanctity.current }} / {{ myHero.proficiencies.sanctity.maximum }}</li>
+			<li>Storage: {{ myHero.proficiencies.storage.current }} / {{ myHero.proficiencies.storage.maximum }}</li>
+			<li>Endurance: {{ myHero.proficiencies.endurance.current }} / {{ myHero.proficiencies.endurance.maximum }}</li>
 		</ul>
 	</div>
 	<div class="profileColumn">

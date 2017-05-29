@@ -74,10 +74,7 @@ class Proficiency(Base):
         
         self.level = 1
         self.is_not_max_level = False
-    
-    def update(self, hero):
-        pass
-
+        
     def level_up(self):
         self.level += 1
 
@@ -104,10 +101,10 @@ class {{ prof_class }}(Proficiency):
         self.{{ value[0].lower() }} = 0
         {% endfor -%}
         self.error = "You do not have enough {{ prof[2].lower() }}"
-        self.formatted_name = "{{ prof_tablename }}"
+        self.formatted_name = "{{ prof_tablename }}" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = ""
+        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
         if self.level < myHero.attributes.{{ prof[2].lower() }}.level // 2:
             self.is_not_max_level = True
         else:
@@ -121,13 +118,17 @@ class {{ prof_class }}(Proficiency):
         self.{{ value[0].lower() }} = floor(floor(3 * ({{ value[2][0] }}*sin({{ value[2][2] }}*self.level) + {{ value[2][1] }}*self.level)) + {{ value[2][3] }})
         {% elif value[1] == "sensitive" -%}
         self.{{ value[0].lower() }} = round((3 * ({{ value[2][0] }}*sin({{ value[2][2] }}*self.level) + {{ value[2][1] }}*self.level)) + {{ value[2][3] }}, 2)
+        {% elif value[1] == "empty" -%}
+        self.{{ value[0].lower() }} = self.maximum
         {% endif -%}
-        self.tooltip += "{{ value[0].title() }}: " + str(self.{{ value[0].lower() }}) + ";"
+        {% if value[1] != "empty" -%}
+        self.tooltip += "{{ value[0].title() }}: " + str(self.{{ value[0].lower() }}) + ";" # This adds a tooltip for each variable
+        {% endif -%}
         {% endfor -%}
-        self.tooltip = self.tooltip[:-1]
+        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
         
 {% endfor %}
 
     
     def __iter__(self):
-        pass
+        pass # I don't know what to put here yet but it will be used later on.
