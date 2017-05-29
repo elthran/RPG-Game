@@ -9,31 +9,46 @@ from sqlalchemy.orm import relationship
 
 from base_classes import Base
 
+from math import sin, floor
+
+# Name, Description, Attribute_Type, Type, [(Values Name, Value type, (Modifiers of value))]
+# Linear: Level multiplier, Base Value
+# Curvy: (larger "0" means it reaches the cap quicker) (smaller "1" means it reaxhes the cap quicker) ("2" is the cap or maximum possible value) ("3" is the negative amount)
+# Sensitive: Like curvy but has decimals (larger "0" means it reaches the cap quicker) (smaller "1" means it reaxhes the cap quicker) ("2" is the cap or maximum possible value) ("3" is the negative amount)
+# Modifier: (larger "a" means greater amplitude), (larger "b" means greater steepness andfaster increase), (greater "c" means greater frequency of waves) 
 PROFICIENCY_INFORMATION = [
-    ("Attack damage", "", "Strength", "Offense"),
-    ("Attack speed", "", "Agility", "Offense"),
-    ("Attack accuracy", "", "Agility", "Offense"),
-    ("First strike", "", "Agility", "Offense"),
-    ("Critical hit", "", "Agility", "Offense"),
-    ("Defence", "", "Endurance", "Defence"),
-    ("Evade", "", "Strength", "Defence"),
-    ("Parry", "", "Strength", "Defence"),
-    ("Riposte", "", "Strength", "Defence"),
-    ("Block", "", "Strength", "Defence"),
-    ("Stealth", "", "Strength", "Stealth"),
-    ("Pickpocketing", "", "Strength", "Stealth"),
-    ("Faith", "", "Strength", "Holiness"),
-    ("Bartering", "", "Strength", "Diplomacy"),
-    ("Oration", "", "Strength", "Diplomacy"),
-    ("Knowledge", "", "Strength", "Diplomacy"),
-    ("Resist frost", "", "Strength", "Resistance"),
-    ("Resist flame", "", "Strength", "Resistance"),
-    ("Resist shadow", "", "Strength", "Resistance"),
-    ("Resist holy", "", "Strength", "Resistance"),
-    ("Resist blunt", "", "Strength", "Resistance"),
-    ("Resist slashing", "", "Strength", "Resistance"),
-    ("Resist piercing", "", "Strength", "Resistance")
-]
+    ("Health", "How much you can take before you die", "Vitality", "Offense", [("Maximum", "linear", (5, 0))]),
+    ("Sanctity", "Casting points", "Divinity", "Offense", [("Maximum", "linear", (1.5, -1))]),
+    ("Storage", "Carrying capacity", "Strength", "Offense", [("Maximum", "linear", (2.5, 8))]),
+    ("Endurance", "Actions performed each day", "Fortitude", "Offense", [("Maximum", "linear", (0.25, 5))]),
+    ("Attack damage", "How hard you hit", "Strength", "Offense", [("Minimum", "curvy", (0.5, 0.1, 0.1, 0)), ("Maximum",  "curvy", (0.5, 0.2, 0.1, 1))]),
+    ("Attack speed", "How fast you attack", "Agility", "Offense", [("Speed", "sensitive", (0.1, 0.1, 0.7, 1))]),
+    ("Attack accuracy", "Chance to hit", "Agility", "Offense", [("Accuracy", "percent", (2, 10, 5, 5))]),
+    ("First strike", "Chance to strike first", "Agility", "Offense", [("Chance", "percent", (0.5, 5, 50, -30))]),
+    ("Critical hit", "Ability to hit your enemy's weakspots", "Perception", "Offense", [("Chance", "percent", (0.3, 5, 50, -22)), ("Modifier", "percent", (0.5, 1, 0.5, 0))]),
+    ("Defence", "Damage reduction", "Fortitude", "Defence", [("Modifier", "percent", (0.1, 7, 35, 0))]),
+    ("Evade", "Chance to dodge", "Reflexes", "Defence", [("Chance", "percent", (0.1, 10, 15, 0))]),
+    ("Parry", "Chance to parry", "Reflexes", "Defence", [("Chance", "percent", (0.2, 15, 15, 0))]),
+    ("Riposte", "Chance to riposte", "Agility", "Defence", [("Chance", "percent", (0.3, 20, 15, 0))]),
+    ("Block", "Ability to block if a shield is equipped", "Strength", "Defence", [("Chance", "percent", (0.25, 25, 60, 0)), ("Modifier", "percent", (1.5, 20, 100, 0))]),
+    ("Stealth", "Chance to avoid detection", "Perception", "Stealth", [("Chance", "percent", (0.5, 20, 65, 0))]),
+    ("Pickpocketing", "Chance to steal", "Agility", "Stealth", [("Chance", "percent", (0.6, 15, 70, 0))]),
+    ("Faith", "Ability to cast spells", "Divinity", "Holiness", [("Modifier", "percent", (2, 10, 5, 0))]),
+    ("Bartering", "Chance to negotiate prices", "Charisma", "Diplomacy", [("Chance", "percent", (0.5, 20, 60, 0))]),
+    ("Oration", "Ability to speak", "Strength", "Wisdom", [("Modifier", "percent", (0.75, 15, 60, 0))]),
+    ("Knowledge", "Ability to understand", "Wisdom", "Diplomacy", [("Modifier", "percent", (0.1, 5, 50, 0))]),
+    ("Literacy", "Ability to read", "Wisdom", "Diplomacy", [("Modifier", "percent", (0.25, 10, 75, 0))]),
+    ("Luck", "Chance to have things turn your way against all odds", "Fortuity", "Diplomacy", [("Chance", "percent", (0.2, 5, 10, 0))]),
+    ("Resist frost", "Ability to resist frost damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))]),
+    ("Resist flame", "Ability to resist flame damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))]),
+    ("Resist shadow", "Ability to resist shadow damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))]),
+    ("Resist holy", "Ability to resist holy damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))]),
+    ("Resist poison", "Ability to resist poison damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))]),
+    ("Resist blunt", "Ability to resist blunt damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))]),
+    ("Resist slashing", "Ability to resist slashing damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))]),
+    ("Resist piercing", "Ability to resist piercing damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))])
+    ]
+
 
 ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_") for attrib in PROFICIENCY_INFORMATION]
 
@@ -43,6 +58,14 @@ class Proficiencies(Base):
     id = Column(Integer, primary_key=True)
 
     #Relationships
+    health_id = Column(Integer, ForeignKey('proficiency.id'))
+    health = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.health_id]")
+    sanctity_id = Column(Integer, ForeignKey('proficiency.id'))
+    sanctity = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.sanctity_id]")
+    storage_id = Column(Integer, ForeignKey('proficiency.id'))
+    storage = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.storage_id]")
+    endurance_id = Column(Integer, ForeignKey('proficiency.id'))
+    endurance = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.endurance_id]")
     attack_damage_id = Column(Integer, ForeignKey('proficiency.id'))
     attack_damage = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.attack_damage_id]")
     attack_speed_id = Column(Integer, ForeignKey('proficiency.id'))
@@ -75,6 +98,10 @@ class Proficiencies(Base):
     oration = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.oration_id]")
     knowledge_id = Column(Integer, ForeignKey('proficiency.id'))
     knowledge = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.knowledge_id]")
+    literacy_id = Column(Integer, ForeignKey('proficiency.id'))
+    literacy = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.literacy_id]")
+    luck_id = Column(Integer, ForeignKey('proficiency.id'))
+    luck = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.luck_id]")
     resist_frost_id = Column(Integer, ForeignKey('proficiency.id'))
     resist_frost = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_frost_id]")
     resist_flame_id = Column(Integer, ForeignKey('proficiency.id'))
@@ -83,6 +110,8 @@ class Proficiencies(Base):
     resist_shadow = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_shadow_id]")
     resist_holy_id = Column(Integer, ForeignKey('proficiency.id'))
     resist_holy = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_holy_id]")
+    resist_poison_id = Column(Integer, ForeignKey('proficiency.id'))
+    resist_poison = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_poison_id]")
     resist_blunt_id = Column(Integer, ForeignKey('proficiency.id'))
     resist_blunt = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_blunt_id]")
     resist_slashing_id = Column(Integer, ForeignKey('proficiency.id'))
@@ -92,29 +121,36 @@ class Proficiencies(Base):
     
     def __init__(self):
         
-        self.attack_damage = Proficiency("Attack damage", "", "Strength", "Offense")
-        self.attack_speed = Proficiency("Attack speed", "", "Agility", "Offense")
-        self.attack_accuracy = Proficiency("Attack accuracy", "", "Agility", "Offense")
-        self.first_strike = Proficiency("First strike", "", "Agility", "Offense")
-        self.critical_hit = Proficiency("Critical hit", "", "Agility", "Offense")
-        self.defence = Proficiency("Defence", "", "Endurance", "Defence")
-        self.evade = Proficiency("Evade", "", "Strength", "Defence")
-        self.parry = Proficiency("Parry", "", "Strength", "Defence")
-        self.riposte = Proficiency("Riposte", "", "Strength", "Defence")
-        self.block = Proficiency("Block", "", "Strength", "Defence")
-        self.stealth = Proficiency("Stealth", "", "Strength", "Stealth")
-        self.pickpocketing = Proficiency("Pickpocketing", "", "Strength", "Stealth")
-        self.faith = Proficiency("Faith", "", "Strength", "Holiness")
-        self.bartering = Proficiency("Bartering", "", "Strength", "Diplomacy")
-        self.oration = Proficiency("Oration", "", "Strength", "Diplomacy")
-        self.knowledge = Proficiency("Knowledge", "", "Strength", "Diplomacy")
-        self.resist_frost = Proficiency("Resist frost", "", "Strength", "Resistance")
-        self.resist_flame = Proficiency("Resist flame", "", "Strength", "Resistance")
-        self.resist_shadow = Proficiency("Resist shadow", "", "Strength", "Resistance")
-        self.resist_holy = Proficiency("Resist holy", "", "Strength", "Resistance")
-        self.resist_blunt = Proficiency("Resist blunt", "", "Strength", "Resistance")
-        self.resist_slashing = Proficiency("Resist slashing", "", "Strength", "Resistance")
-        self.resist_piercing = Proficiency("Resist piercing", "", "Strength", "Resistance")
+        self.health = Health("Health", "How much you can take before you die", "Vitality", "Offense")
+        self.sanctity = Sanctity("Sanctity", "Casting points", "Divinity", "Offense")
+        self.storage = Storage("Storage", "Carrying capacity", "Strength", "Offense")
+        self.endurance = Endurance("Endurance", "Actions performed each day", "Fortitude", "Offense")
+        self.attack_damage = AttackDamage("Attack damage", "How hard you hit", "Strength", "Offense")
+        self.attack_speed = AttackSpeed("Attack speed", "How fast you attack", "Agility", "Offense")
+        self.attack_accuracy = AttackAccuracy("Attack accuracy", "Chance to hit", "Agility", "Offense")
+        self.first_strike = FirstStrike("First strike", "Chance to strike first", "Agility", "Offense")
+        self.critical_hit = CriticalHit("Critical hit", "Ability to hit your enemy's weakspots", "Perception", "Offense")
+        self.defence = Defence("Defence", "Damage reduction", "Fortitude", "Defence")
+        self.evade = Evade("Evade", "Chance to dodge", "Reflexes", "Defence")
+        self.parry = Parry("Parry", "Chance to parry", "Reflexes", "Defence")
+        self.riposte = Riposte("Riposte", "Chance to riposte", "Agility", "Defence")
+        self.block = Block("Block", "Ability to block if a shield is equipped", "Strength", "Defence")
+        self.stealth = Stealth("Stealth", "Chance to avoid detection", "Perception", "Stealth")
+        self.pickpocketing = Pickpocketing("Pickpocketing", "Chance to steal", "Agility", "Stealth")
+        self.faith = Faith("Faith", "Ability to cast spells", "Divinity", "Holiness")
+        self.bartering = Bartering("Bartering", "Chance to negotiate prices", "Charisma", "Diplomacy")
+        self.oration = Oration("Oration", "Ability to speak", "Strength", "Wisdom")
+        self.knowledge = Knowledge("Knowledge", "Ability to understand", "Wisdom", "Diplomacy")
+        self.literacy = Literacy("Literacy", "Ability to read", "Wisdom", "Diplomacy")
+        self.luck = Luck("Luck", "Chance to have things turn your way against all odds", "Fortuity", "Diplomacy")
+        self.resist_frost = ResistFrost("Resist frost", "Ability to resist frost damage", "Resilience", "Resistance")
+        self.resist_flame = ResistFlame("Resist flame", "Ability to resist flame damage", "Resilience", "Resistance")
+        self.resist_shadow = ResistShadow("Resist shadow", "Ability to resist shadow damage", "Resilience", "Resistance")
+        self.resist_holy = ResistHoly("Resist holy", "Ability to resist holy damage", "Resilience", "Resistance")
+        self.resist_poison = ResistPoison("Resist poison", "Ability to resist poison damage", "Resilience", "Resistance")
+        self.resist_blunt = ResistBlunt("Resist blunt", "Ability to resist blunt damage", "Resilience", "Resistance")
+        self.resist_slashing = ResistSlashing("Resist slashing", "Ability to resist slashing damage", "Resilience", "Resistance")
+        self.resist_piercing = ResistPiercing("Resist piercing", "Ability to resist piercing damage", "Resilience", "Resistance")
         
 
     def items(self):
@@ -138,416 +174,950 @@ class Proficiency(Base):
 
     name = Column(String)
     description = Column(String)
+    tooltip = Column(String)
     attribute_type = Column(String)
     type = Column(String)
     level = Column(Integer)
-    value = Column(Integer)
     next_value = Column(Integer)
     is_not_max_level = Column(Boolean)
+    
+    _class = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Proficiency",
+        'polymorphic_on':_class
+    }
 
     def __init__(self, name, description, attribute_type, type):
         self.name = name
         self.description = description
         self.attribute_type = attribute_type
         self.type = type
+        self.tooltip = ""
         
         self.level = 1
-        self.value = 10
-        self.next_value = 15
         self.is_not_max_level = False
     
     def update(self, hero):
         pass
 
+    def level_up(self):
+        self.level += 1
+
+
+class Health(Proficiency):
+    __tablename__ = "health"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    maximum = Column(Integer)
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Health",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.maximum = 0
+        self.error = "You do not have enough vitality"
+        self.formatted_name = "health"
+        
+    def update(self, myHero):
+        self.tooltip = ""
+        if self.level < myHero.attributes.vitality.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.maximum = floor(5*self.level + 0)
+        self.tooltip += "Maximum: " + str(self.maximum) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
+
+class Sanctity(Proficiency):
+    __tablename__ = "sanctity"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    maximum = Column(Integer)
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Sanctity",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.maximum = 0
+        self.error = "You do not have enough divinity"
+        self.formatted_name = "sanctity"
+        
+    def update(self, myHero):
+        self.tooltip = ""
+        if self.level < myHero.attributes.divinity.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.maximum = floor(1.5*self.level + -1)
+        self.tooltip += "Maximum: " + str(self.maximum) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
+
+class Storage(Proficiency):
+    __tablename__ = "storage"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    maximum = Column(Integer)
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Storage",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.maximum = 0
+        self.error = "You do not have enough strength"
+        self.formatted_name = "storage"
+        
+    def update(self, myHero):
+        self.tooltip = ""
+        if self.level < myHero.attributes.strength.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.maximum = floor(2.5*self.level + 8)
+        self.tooltip += "Maximum: " + str(self.maximum) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
+
+class Endurance(Proficiency):
+    __tablename__ = "endurance"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    maximum = Column(Integer)
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Endurance",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.maximum = 0
+        self.error = "You do not have enough fortitude"
+        self.formatted_name = "endurance"
+        
+    def update(self, myHero):
+        self.tooltip = ""
+        if self.level < myHero.attributes.fortitude.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.maximum = floor(0.25*self.level + 5)
+        self.tooltip += "Maximum: " + str(self.maximum) + ";"
+        self.tooltip = self.tooltip[:-1]
+
 
 class AttackDamage(Proficiency):
     __tablename__ = "attack_damage"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    minimum = Column(Integer)
+    maximum = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"AttackDamage",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.minimum = 0
+        self.maximum = 0
+        self.error = "You do not have enough strength"
+        self.formatted_name = "attack_damage"
+        
     def update(self, myHero):
+        self.tooltip = ""
         if self.level < myHero.attributes.strength.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
+        self.minimum = floor(floor(3 * (0.5*sin(0.1*self.level) + 0.1*self.level)) + 0)
+        self.tooltip += "Minimum: " + str(self.minimum) + ";"
+        self.maximum = floor(floor(3 * (0.5*sin(0.1*self.level) + 0.2*self.level)) + 1)
+        self.tooltip += "Maximum: " + str(self.maximum) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class AttackSpeed(Proficiency):
     __tablename__ = "attack_speed"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    speed = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"AttackSpeed",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.speed = 0
+        self.error = "You do not have enough agility"
+        self.formatted_name = "attack_speed"
+        
     def update(self, myHero):
+        self.tooltip = ""
         if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
+        self.speed = round((3 * (0.1*sin(0.7*self.level) + 0.1*self.level)) + 1, 2)
+        self.tooltip += "Speed: " + str(self.speed) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class AttackAccuracy(Proficiency):
     __tablename__ = "attack_accuracy"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    accuracy = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"AttackAccuracy",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.accuracy = 0
+        self.error = "You do not have enough agility"
+        self.formatted_name = "attack_accuracy"
+        
     def update(self, myHero):
+        self.tooltip = ""
         if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
+        self.accuracy = floor((- (10*5)/((2 * self.level) + 10) + 5) * 7.9 + 5)
+        self.tooltip += "Accuracy: " + str(self.accuracy) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class FirstStrike(Proficiency):
     __tablename__ = "first_strike"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    chance = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"FirstStrike",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chance = 0
+        self.error = "You do not have enough agility"
+        self.formatted_name = "first_strike"
+        
     def update(self, myHero):
+        self.tooltip = ""
         if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
+        self.chance = floor((- (5*50)/((0.5 * self.level) + 5) + 50) * 7.9 + -30)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class CriticalHit(Proficiency):
     __tablename__ = "critical_hit"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    chance = Column(Integer)
+    modifier = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"CriticalHit",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chance = 0
+        self.modifier = 0
+        self.error = "You do not have enough perception"
+        self.formatted_name = "critical_hit"
+        
     def update(self, myHero):
+        self.tooltip = ""
+        if self.level < myHero.attributes.perception.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.chance = floor((- (5*50)/((0.3 * self.level) + 5) + 50) * 7.9 + -22)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.modifier = floor((- (1*0.5)/((0.5 * self.level) + 1) + 0.5) * 7.9 + 0)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
+
+class Defence(Proficiency):
+    __tablename__ = "defence"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Defence",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        self.error = "You do not have enough fortitude"
+        self.formatted_name = "defence"
+        
+    def update(self, myHero):
+        self.tooltip = ""
+        if self.level < myHero.attributes.fortitude.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.modifier = floor((- (7*35)/((0.1 * self.level) + 7) + 35) * 7.9 + 0)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
+
+class Evade(Proficiency):
+    __tablename__ = "evade"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    chance = Column(Integer)
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Evade",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chance = 0
+        self.error = "You do not have enough reflexes"
+        self.formatted_name = "evade"
+        
+    def update(self, myHero):
+        self.tooltip = ""
+        if self.level < myHero.attributes.reflexes.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.chance = floor((- (10*15)/((0.1 * self.level) + 10) + 15) * 7.9 + 0)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
+
+class Parry(Proficiency):
+    __tablename__ = "parry"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    chance = Column(Integer)
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Parry",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chance = 0
+        self.error = "You do not have enough reflexes"
+        self.formatted_name = "parry"
+        
+    def update(self, myHero):
+        self.tooltip = ""
+        if self.level < myHero.attributes.reflexes.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.chance = floor((- (15*15)/((0.2 * self.level) + 15) + 15) * 7.9 + 0)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
+
+class Riposte(Proficiency):
+    __tablename__ = "riposte"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    chance = Column(Integer)
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Riposte",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chance = 0
+        self.error = "You do not have enough agility"
+        self.formatted_name = "riposte"
+        
+    def update(self, myHero):
+        self.tooltip = ""
         if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-
-class Defence(Proficiency):
-    __tablename__ = "defence"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"Defence",
-    }
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.endurance.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-
-class Evade(Proficiency):
-    __tablename__ = "evade"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"Evade",
-    }
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-
-class Parry(Proficiency):
-    __tablename__ = "parry"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"Parry",
-    }
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
-
-class Riposte(Proficiency):
-    __tablename__ = "riposte"
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
-    __mapper_args__ = {
-        'polymorphic_identity':"Riposte",
-    }
-    
-    def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
+        self.chance = floor((- (20*15)/((0.3 * self.level) + 20) + 15) * 7.9 + 0)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class Block(Proficiency):
     __tablename__ = "block"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    chance = Column(Integer)
+    modifier = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Block",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chance = 0
+        self.modifier = 0
+        self.error = "You do not have enough strength"
+        self.formatted_name = "block"
+        
     def update(self, myHero):
+        self.tooltip = ""
         if self.level < myHero.attributes.strength.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
+        self.chance = floor((- (25*60)/((0.25 * self.level) + 25) + 60) * 7.9 + 0)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.modifier = floor((- (20*100)/((1.5 * self.level) + 20) + 100) * 7.9 + 0)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class Stealth(Proficiency):
     __tablename__ = "stealth"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    chance = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Stealth",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chance = 0
+        self.error = "You do not have enough perception"
+        self.formatted_name = "stealth"
+        
     def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
+        self.tooltip = ""
+        if self.level < myHero.attributes.perception.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
+        self.chance = floor((- (20*65)/((0.5 * self.level) + 20) + 65) * 7.9 + 0)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class Pickpocketing(Proficiency):
     __tablename__ = "pickpocketing"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    chance = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Pickpocketing",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chance = 0
+        self.error = "You do not have enough agility"
+        self.formatted_name = "pickpocketing"
+        
     def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
+        self.tooltip = ""
+        if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
+        self.chance = floor((- (15*70)/((0.6 * self.level) + 15) + 70) * 7.9 + 0)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class Faith(Proficiency):
     __tablename__ = "faith"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Faith",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        self.error = "You do not have enough divinity"
+        self.formatted_name = "faith"
+        
     def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
+        self.tooltip = ""
+        if self.level < myHero.attributes.divinity.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
+        self.modifier = floor((- (10*5)/((2 * self.level) + 10) + 5) * 7.9 + 0)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class Bartering(Proficiency):
     __tablename__ = "bartering"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    chance = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Bartering",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chance = 0
+        self.error = "You do not have enough charisma"
+        self.formatted_name = "bartering"
+        
     def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
+        self.tooltip = ""
+        if self.level < myHero.attributes.charisma.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
+        self.chance = floor((- (20*60)/((0.5 * self.level) + 20) + 60) * 7.9 + 0)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class Oration(Proficiency):
     __tablename__ = "oration"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Oration",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        self.error = "You do not have enough strength"
+        self.formatted_name = "oration"
+        
     def update(self, myHero):
+        self.tooltip = ""
         if self.level < myHero.attributes.strength.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
+        self.modifier = floor((- (15*60)/((0.75 * self.level) + 15) + 60) * 7.9 + 0)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class Knowledge(Proficiency):
     __tablename__ = "knowledge"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"Knowledge",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        self.error = "You do not have enough wisdom"
+        self.formatted_name = "knowledge"
+        
     def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
+        self.tooltip = ""
+        if self.level < myHero.attributes.wisdom.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.modifier = floor((- (5*50)/((0.1 * self.level) + 5) + 50) * 7.9 + 0)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
+class Literacy(Proficiency):
+    __tablename__ = "literacy"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Literacy",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        self.error = "You do not have enough wisdom"
+        self.formatted_name = "literacy"
+        
+    def update(self, myHero):
+        self.tooltip = ""
+        if self.level < myHero.attributes.wisdom.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.modifier = floor((- (10*75)/((0.25 * self.level) + 10) + 75) * 7.9 + 0)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
+
+class Luck(Proficiency):
+    __tablename__ = "luck"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    chance = Column(Integer)
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Luck",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chance = 0
+        self.error = "You do not have enough fortuity"
+        self.formatted_name = "luck"
+        
+    def update(self, myHero):
+        self.tooltip = ""
+        if self.level < myHero.attributes.fortuity.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
+        self.tooltip += "Chance: " + str(self.chance) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class ResistFrost(Proficiency):
     __tablename__ = "resist_frost"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"ResistFrost",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        self.error = "You do not have enough resilience"
+        self.formatted_name = "resist_frost"
+        
     def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
+        self.tooltip = ""
+        if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
+        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class ResistFlame(Proficiency):
     __tablename__ = "resist_flame"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"ResistFlame",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        self.error = "You do not have enough resilience"
+        self.formatted_name = "resist_flame"
+        
     def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
+        self.tooltip = ""
+        if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
+        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class ResistShadow(Proficiency):
     __tablename__ = "resist_shadow"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"ResistShadow",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        self.error = "You do not have enough resilience"
+        self.formatted_name = "resist_shadow"
+        
     def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
+        self.tooltip = ""
+        if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
+        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class ResistHoly(Proficiency):
     __tablename__ = "resist_holy"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"ResistHoly",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        self.error = "You do not have enough resilience"
+        self.formatted_name = "resist_holy"
+        
     def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
+        self.tooltip = ""
+        if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
+class ResistPoison(Proficiency):
+    __tablename__ = "resist_poison"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"ResistPoison",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        self.error = "You do not have enough resilience"
+        self.formatted_name = "resist_poison"
+        
+    def update(self, myHero):
+        self.tooltip = ""
+        if self.level < myHero.attributes.resilience.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class ResistBlunt(Proficiency):
     __tablename__ = "resist_blunt"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"ResistBlunt",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        self.error = "You do not have enough resilience"
+        self.formatted_name = "resist_blunt"
+        
     def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
+        self.tooltip = ""
+        if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
+        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class ResistSlashing(Proficiency):
     __tablename__ = "resist_slashing"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"ResistSlashing",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        self.error = "You do not have enough resilience"
+        self.formatted_name = "resist_slashing"
+        
     def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
+        self.tooltip = ""
+        if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
-
+        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
 
 class ResistPiercing(Proficiency):
     __tablename__ = "resist_piercing"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
     
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"ResistPiercing",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        self.error = "You do not have enough resilience"
+        self.formatted_name = "resist_piercing"
+        
     def update(self, myHero):
-        if self.level < myHero.attributes.strength.level // 2:
+        self.tooltip = ""
+        if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.tooltip += "Modifier: " + str(self.modifier) + ";"
+        self.tooltip = self.tooltip[:-1]
+        
+
 
     
+    def __iter__(self):
+        pass
+

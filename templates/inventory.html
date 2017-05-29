@@ -2,6 +2,7 @@
 
 {% extends "layout.html" %}
 {% block block1 %}
+
 <script>
 /* A script to hide the row in a table.
 The element is hidden based on the button clicked having the same data value
@@ -40,7 +41,9 @@ function toggleEquip(button, itemType, idsArrayStr) {
         slot.appendChild(tr);
     }
 }
-</script>   
+</script>
+<img src="/static/images/inventory_template.jpg" alt="Sample">
+
 <!-- This is the inventory page and displays everything your character wears/owns and gives you CMD buttons to equip/unequip -->
       {%- set inventory = hero.inventory %}
       <h1>Equipped:</h1>

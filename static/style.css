@@ -260,9 +260,9 @@ ul {
 	margin-bottom: 0px;
 }
 
-.profilePageInfo {
+.profilePageInfo { /* This page shows the description for each attribute */
 	float: right;
-	height: 50%;
+	height: 350px;
 }
 
 .profilePageInfo h1 {
@@ -331,6 +331,54 @@ input.abilityButtonMinus {
 	padding: 0;
 	float: left;
 	background-color: Darkgray;
+}
+
+#proficiencyButton {
+	background-color: transparent; /* make the button transparent */
+	background-repeat: no-repeat;  /* make the background image appear only once */
+	background-position: 0px 0px;  /* equivalent to 'top left' */
+	border: none;           /* assuming we don't want any borders */
+	cursor: pointer;        /* make the cursor like hovering over an <a> element */
+	height: 20px;           /* make this the size of your image */
+	padding-left: 15px;     /* make text start to the right of the image */
+	vertical-align: middle; /* align the text vertically centered */
+	background-image: url(/static/images/prof_button.jpg); /* Image size needs to match abilityButton (about 16px x 16px) */
+}
+
+.tooltip {
+	outline:none; 
+}
+
+.tooltip:hover {
+	text-decoration:none;
+} 
+
+.tooltip span {
+    z-index: 1;
+    display: none; 
+    padding: 25px 25px; /* Padding inside the tooltip */
+    margin-top:-50px; /* Moves the tooltip relative to the text you are hovering over */
+    margin-left: 28px;    /* How far to the right of your text the display box will show */
+    width: auto; 
+    line-height: 35px;
+}
+
+.tooltipLeft span {   /* Add this if you want the tooltip to display to the left of what you are hovering over */
+	margin-left: -500px;
+}
+
+.tooltip:hover span {
+    display:inline; 
+    position:absolute; 
+    color:White;
+    border:1px 
+    solid #DCA;
+    background-color: Black;
+}
+
+.tooltip span {
+    border-radius:4px;
+    box-shadow: 5px 5px 8px #CCC;
 }
 
 /* The % full bars used in the game */

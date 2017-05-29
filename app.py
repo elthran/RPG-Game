@@ -6,11 +6,11 @@
 #//////////////////////////////////////////////////////////////////////////////#
 
 # from game import * #Must go before login method???
-from game import Hero, Game
+from game import Hero, Game, User
 # import the Flask class from the flask module
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from functools import wraps
-from combat_simulator import *
+import combat_simulator
 from bestiary import *
 #import database
 from items import Quest_Item
@@ -202,6 +202,7 @@ def create_character():
             myHero.attributes.divinity.level += 3
     if myHero.character_name != None and fathers_job != None:
         myHero.archetype = fathers_job
+        myHero.refresh_character()
         database.update()
         return redirect(url_for('home'))
     else:
@@ -273,6 +274,9 @@ def home():
     #This should be uneccessary -> but isn't?
     myHero.refresh_proficiencies()
 
+    if myHero.name == "Haldon" or myHero.name == "Admin":
+        myHero.refresh_character()
+
     # pdb.set_trace()
     #Consider moving this to the login function? Or instantiate during "create_account?"
     # initialize current_world
@@ -280,6 +284,9 @@ def home():
         myHero.current_world = database.get_default_world()
         myHero.current_location = database.get_default_location()
         database.update()
+
+    for proficiency in myHero.proficiencies:
+        proficiency.update(myHero)
 
     #Not implemented. Control user moves on map.
     #Sets up initial valid moves on the map.
@@ -334,7 +341,8 @@ def attributes():
 
         myHero.refresh_proficiencies()
         myHero.refresh_character()
-        myHero.proficiencies.attack_damage.update(myHero)
+        for proficiency in myHero.proficiencies:
+            proficiency.update(myHero)
         #By Marlen
         #This will be replaced with:
         #hero.proficiencies.update_all(hero) or something.
@@ -351,8 +359,6 @@ def proficiencies():
     Below is a mock-up list to test my HTML. I assume the hero will carry the true list. Each proficiency should probably have
     a flag for Offense, Defence, etc. so HTML knows which category to display it under
     """
-    #You shouldn't need this: see my comments on github and push.
-    ALL_PROFICIENCIES = [myHero.proficiencies.attack_damage, myHero.proficiencies.attack_speed] # This is temporary
     if request.method == 'POST':
         points_spent = 0
         for element in request.form:
@@ -561,7 +567,7 @@ def barracks():
     if myHero.health <= 0:
         page_heading = "Your hero is currently dead."
         page_image = "dead"
-        page_links = ["","","",""]
+        page_links = [("You have no health."),"","",""]
     else:
         page_heading = "Welcome to the arena " + myHero.name+"!"
         page_image = "arena"
@@ -599,25 +605,21 @@ def arena():
     page_image = str(game.enemy.name)
     conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
                     ("Level: ", str(game.enemy.level), "Combat Details"),
-                    ("Damage: ", str(game.enemy.minimum_damage) + " - " + str(game.enemy.maximum_damage)),
-                    ("Attack Speed: ", str(game.enemy.attack_speed)),
-                    ("Accuracy: ", str(game.enemy.attack_accuracy) + "%"),
-                    ("First Strike: ", str(game.enemy.first_strike) + "%"),
-                    ("Critical Hit Chance: ", str(game.enemy.critical_hit_chance) + "%"),
-                    ("Critical Hit Modifier: ", str(game.enemy.critical_hit_modifier)),
-                    ("Defence: ", str(game.enemy.defence_modifier) + "%"),
-                    ("Evade: ", str(game.enemy.evade_chance) + "%"),
-                    ("Parry: ", str(game.enemy.parry_chance) + "%"),
-                    ("Riposte: ", str(game.enemy.riposte_chance) + "%"),
-                    ("Block Chance: ", str(game.enemy.block_chance) + "%"),
-                    ("Block Reduction: ", str(game.enemy.block_reduction) + "%"),
-                    ("Stealth: ", str(game.enemy.stealth_skill) + "%"),
-                    ("Faith: ", str(game.enemy.faith)),
-                    ("Sanctity: ", str(game.enemy.sanctity) + "/" + str(game.enemy.sanctity_maximum)),
-                    ("Luck: ", str(game.enemy.luck)),
-                    ("Health: ", str(game.enemy.health) + " / " + str(game.enemy.health_maximum))]
+                    ("Health: ", str(game.enemy.health) + " / " + str(game.enemy.proficiencies.health.maximum)),
+                    ("Damage: ", str(game.enemy.proficiencies.attack_damage.minimum) + " - " + str(game.enemy.proficiencies.attack_damage.maximum)),
+                    ("Attack Speed: ", str(game.enemy.proficiencies.attack_speed.speed)),
+                    ("Accuracy: ", str(game.enemy.proficiencies.attack_accuracy.accuracy) + "%"),
+                    ("First Strike: ", str(game.enemy.proficiencies.first_strike.chance) + "%"),
+                    ("Critical Hit Chance: ", str(game.enemy.proficiencies.critical_hit.chance) + "%"),
+                    ("Critical Hit Modifier: ", str(game.enemy.proficiencies.critical_hit.modifier)),
+                    ("Defence: ", str(game.enemy.proficiencies.defence.modifier) + "%"),
+                    ("Evade: ", str(game.enemy.proficiencies.evade.chance) + "%"),
+                    ("Parry: ", str(game.enemy.proficiencies.parry.chance) + "%"),
+                    ("Riposte: ", str(game.enemy.proficiencies.riposte.chance) + "%"),
+                    ("Block Chance: ", str(game.enemy.proficiencies.block.chance) + "%"),
+                    ("Block Reduction: ", str(game.enemy.proficiencies.block.modifier) + "%")]
     page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
-    return render_template('building_default.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, enemy_info=conversation)  # return a string
+    return render_template('building_default.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=myHero, game=game, page_links=page_links, enemy_info=conversation, enemy=game.enemy)  # return a string
 
 # this gets called if you fight in the arena
 @app.route('/battle')
@@ -635,19 +637,18 @@ def battle():
         page_heading = "Not enough endurance, wait a bit!"
         return render_template('layout.html', page_title=page_title, myHero=myHero, page_heading=page_heading, page_links=page_links)
 
-    myHero.health,game.enemy.health,battle_log,battle_results = battle_logic(myHero,game.enemy)
+    myHero.health,game.enemy.health,battle_log = combat_simulator.battle_logic(myHero,game.enemy)
+    myHero.endurance -= required_endurance
     if myHero.health == 0:
-        myHero.endurance -= required_endurance
         page_title = "Defeat!"
         page_heading = "You have died."
     else:
-        myHero.endurance -= required_endurance
         for item in myHero.equipped_items:
             item.durability -= 1
             if item.durability <= 0:
                 item.broken = True
+        """  This code is for the bestiary and should add one to your kill count for that species of monster. If it's a new species it shouls add it to your book.
         newMonster = True
-        """
         for key, value in myHero.kill_quests.items():
             if key == game.enemy.species:
                 myHero.kill_quests[key] += 1
@@ -660,7 +661,6 @@ def battle():
                     myHero.experience += 10
                 newMonster = False
                 break
-        """
         if newMonster:
             #myHero.kill_quests[game.enemy.species] = 1
             myHero.completed_achievements.append(("Kill a " + game.enemy.species, "5"))
@@ -668,6 +668,7 @@ def battle():
                 if monster.name == game.enemy.name:
                     myHero.bestiary.append(monster)
             myHero.experience += 5
+        """
         game.has_enemy = False
         myHero.experience += game.enemy.experience_rewarded * myHero.experience_gain_modifier
         if len(game.enemy.items_rewarded) > 0:
@@ -678,7 +679,7 @@ def battle():
                     for items in myHero.inventory:
                         if items.name == item.name:
                             items.amount_owned += 1
-        level_up = myHero.level_up(myHero.attribute_points, myHero.experience, myHero.experience_maximum)
+        level_up = myHero.level_up(myHero.attribute_points, myHero.experience, myHero.experience_maximum) # Whi is it creating a variable here?
         page_title = "Victory!"
         page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience!"
         page_links = [("Compete in the ","/arena","arena","."), ("Go back to the ","/barracks","barracks","."), ("Return to your ","/home","profile"," page.")]
@@ -687,7 +688,7 @@ def battle():
             page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
 
     database.update()
-    return render_template('battle.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log, battle_results=battle_results, myHero=myHero, enemy=game.enemy, page_links=page_links)  # return a string
+    return render_template('battle.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log, myHero=myHero, enemy=game.enemy, page_links=page_links)  # return a string
 
 #A.k.a "Blacksmith"
 @app.route('/store/<inventory>')
@@ -813,7 +814,7 @@ def leave_town():
     page_heading = "Village Gate"
     conversation = [("City Guard: ", "You are too young to be out on your own.")]
     page_links = [("Return to the ", "/Town/" + myHero.current_city.name, "city", ".")]
-    return render_template('layout.html', myHero=myHero, page_heading=page_heading, conversation=conversation, page_links=page_links)  # return a string
+    return render_template('gate.html', myHero=myHero, page_heading=page_heading, conversation=conversation, page_links=page_links)  # return a string
 
 ### END OF STARTING TOWN FUNCTIONS
 
@@ -974,7 +975,8 @@ def command(cmd=None):
 
 @app.route('/about')
 def about_page():
-    return render_template('about.html', myHero=myHero, gameVersion = "0.00.01")
+    info = "The game is being created by Elthran and Haldon, with some help from Gnahz. Any inquiries can be made to elthranRPG@gmail.com"
+    return render_template('about.html', myHero=myHero, gameVersion = "0.00.02", about_info=info)
 
 ###testing by Marlen ####
 @app.route('/')

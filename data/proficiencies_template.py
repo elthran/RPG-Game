@@ -9,6 +9,8 @@ from sqlalchemy.orm import relationship
 
 from base_classes import Base
 
+from math import sin, floor
+
 {% include "proficiencies_data.py" %}
 
 class Proficiencies(Base):
@@ -24,7 +26,8 @@ class Proficiencies(Base):
     
     def __init__(self):
         {% for prof in PROFICIENCY_INFORMATION %}
-        self.{{ prof[0].lower().replace(' ', '_') }} = Proficiency("{{ prof[0] }}", "{{ prof[1] }}", "{{ prof[2] }}", "{{ prof[3] }}")
+        {% set objectValue = prof[0].title().replace(" ", '') -%}
+        self.{{ prof[0].lower().replace(' ', '_') }} = {{ objectValue }}("{{ prof[0] }}", "{{ prof[1] }}", "{{ prof[2] }}", "{{ prof[3] }}")
         {%- endfor %}
         
 
@@ -49,45 +52,82 @@ class Proficiency(Base):
 
     name = Column(String)
     description = Column(String)
+    tooltip = Column(String)
     attribute_type = Column(String)
     type = Column(String)
     level = Column(Integer)
-    value = Column(Integer)
     next_value = Column(Integer)
     is_not_max_level = Column(Boolean)
+    
+    _class = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Proficiency",
+        'polymorphic_on':_class
+    }
 
     def __init__(self, name, description, attribute_type, type):
         self.name = name
         self.description = description
         self.attribute_type = attribute_type
         self.type = type
+        self.tooltip = ""
         
         self.level = 1
-        self.value = 10
-        self.next_value = 15
         self.is_not_max_level = False
     
     def update(self, hero):
         pass
+
+    def level_up(self):
+        self.level += 1
 
 {% for prof in PROFICIENCY_INFORMATION %}
 {% set prof_class = prof[0].title().replace(" ", '') -%}
 {% set prof_tablename = prof[0].lower().replace(" ", '_') -%}
 class {{ prof_class }}(Proficiency):
     __tablename__ = "{{ prof_tablename }}"
+
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-    
+
+    {% for column in prof[4] -%}
+    {{ column[0].lower() }} = Column(Integer)
+    {% endfor %}
+    error = Column(String)
+    formatted_name = Column(String)
     __mapper_args__ = {
         'polymorphic_identity':"{{ prof_class }}",
-    }
-    
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        {% for value in prof[4] -%}
+        self.{{ value[0].lower() }} = 0
+        {% endfor -%}
+        self.error = "You do not have enough {{ prof[2].lower() }}"
+        self.formatted_name = "{{ prof_tablename }}"
+        
     def update(self, myHero):
+        self.tooltip = ""
         if self.level < myHero.attributes.{{ prof[2].lower() }}.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.value = (self.level * 5) + 5
-        self.next_value = ((self.level + 1) * 5) + 5
+        {% for value in prof[4] -%}
+        {% if value[1] == "percent" -%}
+        self.{{ value[0].lower() }} = floor((- ({{ value[2][1] }}*{{ value[2][2] }})/(({{ value[2][0] }} * self.level) + {{ value[2][1] }}) + {{ value[2][2] }}) * 7.9 + {{ value[2][3] }})
+        {% elif value[1] == "linear" -%}
+        self.{{ value[0].lower() }} = floor({{ value[2][0] }}*self.level + {{ value[2][1] }})
+        {% elif value[1] == "curvy" -%}
+        self.{{ value[0].lower() }} = floor(floor(3 * ({{ value[2][0] }}*sin({{ value[2][2] }}*self.level) + {{ value[2][1] }}*self.level)) + {{ value[2][3] }})
+        {% elif value[1] == "sensitive" -%}
+        self.{{ value[0].lower() }} = round((3 * ({{ value[2][0] }}*sin({{ value[2][2] }}*self.level) + {{ value[2][1] }}*self.level)) + {{ value[2][3] }}, 2)
+        {% endif -%}
+        self.tooltip += "{{ value[0].title() }}: " + str(self.{{ value[0].lower() }}) + ";"
+        {% endfor -%}
+        self.tooltip = self.tooltip[:-1]
+        
+{% endfor %}
 
-{% endfor %}    
-
+    
+    def __iter__(self):
+        pass
