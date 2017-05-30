@@ -1,0 +1,58 @@
+{% raw %}{% extends "profile_template.html" %}
+{% block block1 %}
+
+<script>
+function updateProf(button) {
+    var id = "proficiency-" + button.getAttribute("data");
+    console.log("id: " + id);
+    console.log(document.getElementById(id));
+    var profCurrentLvDiv = document.getElementById(id);
+    var heroProfPointsDiv = document.getElementById("points_remaining");
+    
+    //profCurrentLvDiv.innHTML += 1 #concept
+    
+    profCurrentLvDiv.innerHTML = parseInt(profCurrentLvDiv.innerHTML) + 1;
+    heroProfPointsDiv.innerHTML = parseInt(heroProfPointsDiv.innerHTML) - 1;
+}
+//NOTE: <div style="display: inline"> should be replaced by a span tag
+// once I figure out how make them visible again.
+</script>
+
+<!-- Basic Skill Page -->
+<div class="profilePage">
+    Points Remaining: <div style="display: inline" id="points_remaining">{{ myHero.proficiency_points }}</div>
+</div>
+<div style="clear: both;"></div>{% endraw %}
+    <div class="proficiencyPage">{% for type in PROFICIENCY_INFORMATION %}{% if loop.index is odd %}
+		<div class="proficiencyPageInner">{% endif %}
+			<h1>{{ type }}</h1>
+			<ul>{% raw %}
+            {%- for proficiency in myHero.proficiencies %}
+				{%- if proficiency.type == "{% endraw %}{{ type }}"{% raw %} %}
+                <li>{% endraw %}
+                    <div class="tooltip{% if loop.index is greaterthan 4 %} tooltipLeft{% endif %}">{% raw %}
+                        {{ proficiency.name}}: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
+                        <span>
+                            {{ proficiency.description }}:
+                            {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
+                            {%- for tooltip in proficiency_tooltip %}
+                            <br>&bull; {{ tooltip }}
+                            {%- endfor %}
+                            {%- if not proficiency.is_not_max_level %}
+                            <br>{{ proficiency.error }}
+                            {%- endif %}
+                        </span>
+                        {%- if myHero.proficiency_points and proficiency.is_not_max_level %}
+                        <button class="command" name="level_proficiency" data="{{ proficiency.id }}"
+                            id="proficiencyButton" data-function="updateProf"></button>
+                        {%- endif %}
+                    </div>							
+                </li>
+                {%- endif %}
+            {%- endfor %}{% endraw %}
+			</ul>{% if loop.index is even %}
+		</div>{% endif %}{% endfor %}
+    </div>	
+<div style="clear: both;"></div>
+{% raw %}{% endblock %}
+{% endraw %}

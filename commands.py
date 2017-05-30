@@ -129,17 +129,13 @@ class Command:
         # return "success", 200, {'Content-Type': 'text/plain'}
 
     def level_proficiency(hero, database, arg_dict):
-        this_proficiency = arg_dict.get('data', None, type=str)
+        id = arg_dict.get('data', None, type=int)
         
-        #I recommend changing this to passing ID of proficiency.
-        #Then getting the correct object from the database and updating it that way.
+        proficiency = database.get_proficiency_by_id(id)
 
-        for proficiency in hero.proficiencies:
-            if proficiency.formatted_name == this_proficiency:
-                proficiency.level_up()
-                hero.proficiency_points -= 1
-                proficiency.update(hero)
-                return "success", 200, {'Content-Type': 'text/plain'}
+        proficiency.level_up()
+        hero.proficiency_points -= 1
+        proficiency.update(hero)
         return "success", 200, {'Content-Type': 'text/plain'}
 
         

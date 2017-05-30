@@ -1,170 +1,191 @@
 {% extends "profile_template.html" %}
 {% block block1 %}
 
+<script>
+function updateProf(button) {
+    var id = "proficiency-" + button.getAttribute("data");
+    console.log("id: " + id);
+    console.log(document.getElementById(id));
+    var profCurrentLvDiv = document.getElementById(id);
+    var heroProfPointsDiv = document.getElementById("points_remaining");
+    
+    //profCurrentLvDiv.innHTML += 1 #concept
+    
+    profCurrentLvDiv.innerHTML = parseInt(profCurrentLvDiv.innerHTML) + 1;
+    heroProfPointsDiv.innerHTML = parseInt(heroProfPointsDiv.innerHTML) - 1;
+}
+//NOTE: <div style="display: inline"> should be replaced by a span tag
+// once I figure out how make them visible again.
+</script>
+
 <!-- Basic Skill Page -->
 <div class="profilePage">
-        Points Remaining:<output type="text" name="testplz"> {{ myHero.proficiency_points }}</output>
+    Points Remaining: <div style="display: inline" id="points_remaining">{{ myHero.proficiency_points }}</div>
 </div>
-<form method="post">
-    <div style="clear: both;"></div>
+<div style="clear: both;"></div>
     <div class="proficiencyPage">
 		<div class="proficiencyPageInner">
 			<h1>Offense</h1>
 			<ul>
-				{%- for proficiency in myHero.proficiencies %}
-					{%- if proficiency.type == "Offense" %}
-						<li>
-							<div class="tooltip">
-								{{ proficiency.name}}: {{ proficiency.level }}
-								<span>
-									{{ proficiency.description }}:
-									{% set proficiency_tooltip = proficiency.tooltip.split(';') %}
-									{% for tooltip in proficiency_tooltip %}
-										<br>• {{ tooltip }}
-									{% endfor -%}
-									{% if not proficiency.is_not_max_level %}
-										<br>{{ proficiency.error }}
-									{% endif %}
-								</span>
-								{% if myHero.proficiency_points and proficiency.is_not_max_level %}
-									<button class="command" name="level_proficiency" data="{{ proficiency.formatted_name }}" id="proficiencyButton"></button>
-								{% endif %}
-							</div>							
-						</li>
-					{%- endif %}
-                {%- endfor %}
+            {%- for proficiency in myHero.proficiencies %}
+				{%- if proficiency.type == "Offense" %}
+                <li>
+                    <div class="tooltip">
+                        {{ proficiency.name}}: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
+                        <span>
+                            {{ proficiency.description }}:
+                            {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
+                            {%- for tooltip in proficiency_tooltip %}
+                            <br>&bull; {{ tooltip }}
+                            {%- endfor %}
+                            {%- if not proficiency.is_not_max_level %}
+                            <br>{{ proficiency.error }}
+                            {%- endif %}
+                        </span>
+                        {%- if myHero.proficiency_points and proficiency.is_not_max_level %}
+                        <button class="command" name="level_proficiency" data="{{ proficiency.id }}"
+                            id="proficiencyButton" data-function="updateProf"></button>
+                        {%- endif %}
+                    </div>							
+                </li>
+                {%- endif %}
+            {%- endfor %}
 			</ul>
 			<h1>Stealth</h1>
 			<ul>
-				{%- for proficiency in myHero.proficiencies %}
-					{%- if proficiency.type == "Stealth" %}
-						<li>
-							<div class="tooltip">
-								{{ proficiency.name}}: {{ proficiency.level }}
-								<span>
-									{{ proficiency.description }}:
-									{% set proficiency_tooltip = proficiency.tooltip.split(';') %}
-									{% for tooltip in proficiency_tooltip %}
-										<br>• {{ tooltip }}
-									{% endfor -%}
-									{% if not proficiency.is_not_max_level %}
-										<br>{{ proficiency.error }}
-									{% endif %}
-								</span>
-								{% if myHero.proficiency_points and proficiency.is_not_max_level %}
-									<button class="command" name="level_proficiency" data="{{ proficiency.formatted_name }}" id="proficiencyButton"></button>
-								{% endif %}
-							</div>							
-						</li>
-					{%- endif %}
-                {%- endfor %}
+            {%- for proficiency in myHero.proficiencies %}
+				{%- if proficiency.type == "Stealth" %}
+                <li>
+                    <div class="tooltip">
+                        {{ proficiency.name}}: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
+                        <span>
+                            {{ proficiency.description }}:
+                            {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
+                            {%- for tooltip in proficiency_tooltip %}
+                            <br>&bull; {{ tooltip }}
+                            {%- endfor %}
+                            {%- if not proficiency.is_not_max_level %}
+                            <br>{{ proficiency.error }}
+                            {%- endif %}
+                        </span>
+                        {%- if myHero.proficiency_points and proficiency.is_not_max_level %}
+                        <button class="command" name="level_proficiency" data="{{ proficiency.id }}"
+                            id="proficiencyButton" data-function="updateProf"></button>
+                        {%- endif %}
+                    </div>							
+                </li>
+                {%- endif %}
+            {%- endfor %}
 			</ul>
 		</div>
 		<div class="proficiencyPageInner">
 			<h1>Defence</h1>
 			<ul>
-				{%- for proficiency in myHero.proficiencies %}
-					{%- if proficiency.type == "Defence" %}
-						<li>
-							<div class="tooltip">
-								{{ proficiency.name}}: {{ proficiency.level }}
-								<span>
-									{{ proficiency.description }}:
-									{% set proficiency_tooltip = proficiency.tooltip.split(';') %}
-									{% for tooltip in proficiency_tooltip %}
-										<br>• {{ tooltip }}
-									{% endfor -%}
-									{% if not proficiency.is_not_max_level %}
-										<br>{{ proficiency.error }}
-									{% endif %}
-								</span>
-								{% if myHero.proficiency_points and proficiency.is_not_max_level %}
-									<button class="command" name="level_proficiency" data="{{ proficiency.formatted_name }}" id="proficiencyButton"></button>
-								{% endif %}
-							</div>							
-						</li>
-					{%- endif %}
-                {%- endfor %}
+            {%- for proficiency in myHero.proficiencies %}
+				{%- if proficiency.type == "Defence" %}
+                <li>
+                    <div class="tooltip">
+                        {{ proficiency.name}}: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
+                        <span>
+                            {{ proficiency.description }}:
+                            {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
+                            {%- for tooltip in proficiency_tooltip %}
+                            <br>&bull; {{ tooltip }}
+                            {%- endfor %}
+                            {%- if not proficiency.is_not_max_level %}
+                            <br>{{ proficiency.error }}
+                            {%- endif %}
+                        </span>
+                        {%- if myHero.proficiency_points and proficiency.is_not_max_level %}
+                        <button class="command" name="level_proficiency" data="{{ proficiency.id }}"
+                            id="proficiencyButton" data-function="updateProf"></button>
+                        {%- endif %}
+                    </div>							
+                </li>
+                {%- endif %}
+            {%- endfor %}
 			</ul>
-			<h1>Resistances</h1>
+			<h1>Resistance</h1>
 			<ul>
-				{%- for proficiency in myHero.proficiencies %}
-					{%- if proficiency.type == "Resistance" %}
-						<li>
-							<div class="tooltip">
-								{{ proficiency.name}}: {{ proficiency.level }}
-								<span>
-									{{ proficiency.description }}:
-									{% set proficiency_tooltip = proficiency.tooltip.split(';') %}
-									{% for tooltip in proficiency_tooltip %}
-										<br>• {{ tooltip }}
-									{% endfor -%}
-									{% if not proficiency.is_not_max_level %}
-										<br>{{ proficiency.error }}
-									{% endif %}
-								</span>
-								{% if myHero.proficiency_points and proficiency.is_not_max_level %}
-									<button class="command" name="level_proficiency" data="{{ proficiency.formatted_name }}" id="proficiencyButton"></button>
-								{% endif %}
-							</div>							
-						</li>
-					{%- endif %}
-                {%- endfor %}
+            {%- for proficiency in myHero.proficiencies %}
+				{%- if proficiency.type == "Resistance" %}
+                <li>
+                    <div class="tooltip">
+                        {{ proficiency.name}}: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
+                        <span>
+                            {{ proficiency.description }}:
+                            {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
+                            {%- for tooltip in proficiency_tooltip %}
+                            <br>&bull; {{ tooltip }}
+                            {%- endfor %}
+                            {%- if not proficiency.is_not_max_level %}
+                            <br>{{ proficiency.error }}
+                            {%- endif %}
+                        </span>
+                        {%- if myHero.proficiency_points and proficiency.is_not_max_level %}
+                        <button class="command" name="level_proficiency" data="{{ proficiency.id }}"
+                            id="proficiencyButton" data-function="updateProf"></button>
+                        {%- endif %}
+                    </div>							
+                </li>
+                {%- endif %}
+            {%- endfor %}
 			</ul>
 		</div>
 		<div class="proficiencyPageInner">
 			<h1>Diplomacy</h1>
 			<ul>
-				{%- for proficiency in myHero.proficiencies %}
-					{%- if proficiency.type == "Diplomacy" %}
-						<li>
-							<div class="tooltip tooltipLeft">
-								{{ proficiency.name}}: {{ proficiency.level }}
-								<span>
-									{{ proficiency.description }}:
-									{% set proficiency_tooltip = proficiency.tooltip.split(';') %}
-									{% for tooltip in proficiency_tooltip %}
-										<br>• {{ tooltip }}
-									{% endfor -%}
-									{% if not proficiency.is_not_max_level %}
-										<br>{{ proficiency.error }}
-									{% endif %}
-								</span>
-								{% if myHero.proficiency_points and proficiency.is_not_max_level %}
-									<button class="command" name="level_proficiency" data="{{ proficiency.formatted_name }}" id="proficiencyButton"></button>
-								{% endif %}
-							</div>							
-						</li>
-					{%- endif %}
-                {%- endfor %}
+            {%- for proficiency in myHero.proficiencies %}
+				{%- if proficiency.type == "Diplomacy" %}
+                <li>
+                    <div class="tooltip tooltipLeft">
+                        {{ proficiency.name}}: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
+                        <span>
+                            {{ proficiency.description }}:
+                            {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
+                            {%- for tooltip in proficiency_tooltip %}
+                            <br>&bull; {{ tooltip }}
+                            {%- endfor %}
+                            {%- if not proficiency.is_not_max_level %}
+                            <br>{{ proficiency.error }}
+                            {%- endif %}
+                        </span>
+                        {%- if myHero.proficiency_points and proficiency.is_not_max_level %}
+                        <button class="command" name="level_proficiency" data="{{ proficiency.id }}"
+                            id="proficiencyButton" data-function="updateProf"></button>
+                        {%- endif %}
+                    </div>							
+                </li>
+                {%- endif %}
+            {%- endfor %}
 			</ul>
 			<h1>Holiness</h1>
 			<ul>
-				{%- for proficiency in myHero.proficiencies %}
-					{%- if proficiency.type == "Holiness" %}
-						<li>
-							<div class="tooltip tooltipLeft">
-								{{ proficiency.name}}: {{ proficiency.level }}
-								<span>
-									{{ proficiency.description }}:
-									{% set proficiency_tooltip = proficiency.tooltip.split(';') %}
-									{% for tooltip in proficiency_tooltip %}
-										<br>• {{ tooltip }}
-									{% endfor -%}
-									{% if not proficiency.is_not_max_level %}
-										<br>{{ proficiency.error }}
-									{% endif %}
-								</span>
-								{% if myHero.proficiency_points and proficiency.is_not_max_level %}
-									<button class="command" name="level_proficiency" data="{{ proficiency.formatted_name }}" id="proficiencyButton"></button>
-								{% endif %}
-							</div>							
-						</li>
-					{%- endif %}
-                {%- endfor %}
+            {%- for proficiency in myHero.proficiencies %}
+				{%- if proficiency.type == "Holiness" %}
+                <li>
+                    <div class="tooltip tooltipLeft">
+                        {{ proficiency.name}}: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
+                        <span>
+                            {{ proficiency.description }}:
+                            {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
+                            {%- for tooltip in proficiency_tooltip %}
+                            <br>&bull; {{ tooltip }}
+                            {%- endfor %}
+                            {%- if not proficiency.is_not_max_level %}
+                            <br>{{ proficiency.error }}
+                            {%- endif %}
+                        </span>
+                        {%- if myHero.proficiency_points and proficiency.is_not_max_level %}
+                        <button class="command" name="level_proficiency" data="{{ proficiency.id }}"
+                            id="proficiencyButton" data-function="updateProf"></button>
+                        {%- endif %}
+                    </div>							
+                </li>
+                {%- endif %}
+            {%- endfor %}
 			</ul>
 		</div>
     </div>	
-	<div style="clear: both;"></div>
-</form>
+<div style="clear: both;"></div>
 {% endblock %}
