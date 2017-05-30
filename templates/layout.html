@@ -131,8 +131,16 @@ document.addEventListener("DOMContentLoaded", function () {
             // Then you can send the data raw or in lots of other formats.
             // See https://www.w3schools.com/xml/ajax_xmlhttprequest_send.asp
             // "&&" acts like the "," in pythonic {key:value, key2:value2}
+            
+            // "innerHTML was quick and simple and didn't account for having complex buttons
+            // and now I will need to switch over to using the "name" attribute.
+            // use of "innerHTML" will cause conflict in the future but it is here now.
             var action = clickedButton.innerHTML.toLowerCase();
-
+            if (action === "") {
+                action = clickedButton.getAttribute("name");
+            }
+            //console.log("action if name: " + action);
+            
             //get buttons class and save it as the .
             console.log("Button clicked was:", clickedButton);
 
