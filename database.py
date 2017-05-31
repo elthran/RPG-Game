@@ -31,6 +31,7 @@ from abilities import Ability
 from locations import Location, WorldMap, Town, Cave
 from items import ItemTemplate, Item
 from quests import Quest
+from proficiencies import Proficiency
 import complex_relationships
 import prebuilt_objects
 
@@ -103,7 +104,25 @@ class EZDB:
         """
         self.session.query(Item).filter(Item.id == id).delete()
         self.session.commit()
-                    
+        
+    def get_object_by_id(self, obj_name, id):
+        """Return an object given its class name and id.
+        
+        Return error if name doesn't exist in global scope. 
+        obj = getattr(globals(), name) #Where name is capitalized?
+        """
+        pdb.set_trace() #untested
+        try:
+            obj = globals()[obj_name]
+            #test if obj is a class.?
+            return self.session.query(obj).get(id)
+        except IndexError:
+            raise Exception("Object name: '{}' is not an".format(obj_name) + \
+                "object, or has not been imported into 'database' module yet.")
+        
+    def get_proficiency_by_id(self, id):
+        """Return a proficiency object by id."""
+        return self.session.query(Proficiency).get(id)
     
     def get_item_by_id(self, id):
         """Return an item from its ID.

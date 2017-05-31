@@ -9,7 +9,15 @@ Event specification:
     -an event should occur whenever the User interacts with the game.
         i.e. mainly <button> and <a> tags.
     
-Format
+Format:
+    -<button class="command" name="consume" data="{{ item.id }}" data-function="functionName">
+        AnyHTML you want.</button>
+    -Where class="command" means this object runs command code.
+    -Where data is the items database id or any other data you want to send.
+        Id is just the simplest.
+    -Where Consume is the buttons command identifier (the command function to run).
+
+Old Format:
     -<button class="command" data="{{ item.id }}" data-function="functionName">Consume</button>
     -<button class="command" data="{{ item.id }}" onClick="remove(this)">Consume</button>
     -Where class="command" means this object runs command code.
