@@ -202,6 +202,17 @@ class Proficiency(Base):
         self.level = 1
         self.is_not_max_level = False
         
+    def is_max_level(self, hero):
+        """Return whether proficiency is max level.
+        
+        Should be able to get hero internally but the 
+        relationships may be messed up.
+        
+        Replaces:
+            is_not_max_level attribute.
+        """
+        return self.level >= getattr(hero.attributes, self.attribute_type.lower()).level // 2
+        
     def level_up(self):
         self.level += 1
 

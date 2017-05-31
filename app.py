@@ -862,9 +862,8 @@ def command(cmd=None):
         database.update()
         # pdb.set_trace()
         return response
-    except KeyError as ex:
-        print("Warning: invalid key {}".format(ex))
-        print("Valid keys are: {}".format(list(Command.cmd_functions.keys())))
+    except AttributeError:
+        print("Warning: Using old code for command: '{}'".format(cmd))
         # Look in the not yet refractored list of if statemens ...
 
     if cmd == "woodsman":
