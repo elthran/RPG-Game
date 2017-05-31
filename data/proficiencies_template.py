@@ -5,7 +5,7 @@ build_code.py.
 
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 
 from base_classes import Base
 
@@ -89,6 +89,9 @@ class {{ prof_class }}(Proficiency):
     {% for column in prof[4] -%}
     {{ column[0].lower() }} = Column(Integer)
     {% endfor %}
+    {% if prof[4][0][0] == "Maximum" -%}
+    percent = Column(Integer)
+    {%- endif %}
     error = Column(String)
     formatted_name = Column(String)
     __mapper_args__ = {
@@ -100,6 +103,9 @@ class {{ prof_class }}(Proficiency):
         {% for value in prof[4] -%}
         self.{{ value[0].lower() }} = 0
         {% endfor -%}
+        {% if prof[4][0][0] == "Maximum" -%}
+        self.percent = 0
+        {%- endif %}
         self.error = "You do not have enough {{ prof[2].lower() }}"
         self.formatted_name = "{{ prof_tablename }}" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -126,19 +132,23 @@ class {{ prof_class }}(Proficiency):
         {% endif -%}
         {% endfor -%}
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    {% if prof[4][0][0] == "Maximum" -%}
+    @validates('current')
+    def validate_{{ prof[0].lower() }}(self, key_name, current):
+        #Update {{ prof[0].lower() }} percent on health change.
+        try:
+            self.percent = round(current / self.maximum, 2) * 100
+        except (TypeError, ZeroDivisionError):
+            self.percent = 0
+        return max(current or 0, 0)
+    {%- endif %}
+    
 {% endfor %}
 
-    """
-    @validates('health_maximum')
-    def sync_health(self, key_name, health_value):
-        #Reduce health if health overflows health_maximum.
-        try:
-            self.proficiencies.health = min(self.proficiencies.health, health_value)
-        except TypeError:
-            self.proficiencies.health = 0
-        return health_value
 
+
+    """
 
     @validates('endurance')
     def sync_endurance_percent(self, key_name, endurance_value):

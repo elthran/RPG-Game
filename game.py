@@ -103,6 +103,7 @@ class Hero(Base):
     house = Column(String)
     experience = Column(Integer)
     experience_maximum = Column(Integer)
+    experience_percent = Column(Integer)
     renown = Column(Integer)    # How famous you are
     virtue = Column(Integer)    # How good/evil you are
     devotion = Column(Integer)  # How religious you are
@@ -146,6 +147,7 @@ class Hero(Base):
 
         self.experience = 0
         self.experience_maximum = 10
+        self.experience_percent = 0
 
         self.renown = 0
         self.virtue = 0
@@ -170,28 +172,51 @@ class Hero(Base):
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
-        #self.refresh_proficiencies()
-        self.refresh_character()
-
-
     def not_yet_implemented():
         self.kill_quests = BaseDict()
-
         self.chest_equipped = []
         self.errands = []
         self.completed_quests = []
         self.completed_achievements = []
         self.bestiary = []
-
         self.wolf_kills = 0
 
-
-    #May no longer be neccessary? As Proficiencies are dynamic objects.
-    # Sets damage
     @orm.reconstructor # Database gatekeeper? Delete this? break into separate parts
     def refresh_proficiencies(self):
         for proficiency in self.proficiencies:
             proficiency.update(self)
+
+    def refresh_abilities(self):
+        for ability in self.abilities:
+            ability.update_stats(self)
+
+    def refresh_items(self):
+        for item in self.equipped_items:
+            item.update_stats(self)
+
+    def refresh_character(self, full=True):
+        self.refresh_proficiencies()
+        self.refresh_abilities()
+        #self.refresh_items()   #Broken: waiting for Marlen to fix or delete if he has replaced
+        if full:
+            self.proficiencies.health.current = self.proficiencies.health.maximum
+            self.proficiencies.sanctity.current = self.proficiencies.sanctity.maximum
+            self.proficiencies.endurance.current = self.proficiencies.endurance.maximum
+
+    def update_experience_bar(self):
+        self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100 
+
+    # updates field variables when hero levels up
+    def level_up(self):
+        if self.experience >= self.experience_maximum:
+            self.experience -= self.experience_maximum
+            self.experience_maximum = math.floor(1.5 * self.experience_maximum)
+            self.attribute_points += 1
+            self.proficiency_points += 1
+            self.age += 1
+            self.refresh_character()
+            return True
+        return False
             
     def equipped_items(self):
         return [item for item in self.inventory if item.equipped] or [None]
@@ -199,51 +224,8 @@ class Hero(Base):
     def non_equipped_items(self):
         return self.inventory.unequipped or [None]
 
-    def update_proficiencies(self): # This needs to be renamed because it is not a proficiency updater
-        """Update secondary attributes of Hero object on database load.
-
-        See: init_on_load() in SQLAlchemy
-        """
-
-        ######Not implemented
-        self.chest_equipped = []
-        self.errands = []
-        self.completed_quests = []
-        self.completed_achievements = []
-        self.bestiary = []
-
-        self.wolf_kills = 0
-        #######
-
-        for ability in self.abilities:
-            ability.update_stats(self)
-        for item in self.equipped_items:
-            item.update_stats(self)
-
-        #Rebuild percent values. Silly but effective.
-        self.experience = self.experience
-
-    def refresh_character(self):
-        self.proficiencies.health.current = self.proficiencies.health.maximum
-        self.proficiencies.sanctity.current = self.proficiencies.sanctity.maximum
-        self.proficiencies.endurance.current = self.proficiencies.endurance.maximum
-        #self.storage = self.storage_maximum
-
-    def page_refresh_character(self):
+    def page_refresh_character(self):   # Can we renamed this? I don't really get what it is from the name
         self.quest_notification = None
-
-    # updates field variables when hero levels up
-    def level_up(self, attribute_points, experience, experience_maximum):
-        if self.experience < self.experience_maximum:
-            return False
-        self.experience -= self.experience_maximum
-        self.experience_maximum = math.floor(1.5 * self.experience_maximum)
-        self.attribute_points += 1
-        self.proficiency_points += 1
-        self.age += 1
-        self.proficiencies.health.current = self.proficiencies.health.maximum
-        self.update_proficiencies()
-        return True
 
     def consume_item(self, item_name):
         for my_item in self.inventory:
@@ -253,7 +235,6 @@ class Hero(Base):
                 if my_item.amount_owned == 0:
                     self.inventory.remove(my_item)
                 break
-
 
     # @validates('current_city')
     # def validate_current_city(self, key, location):

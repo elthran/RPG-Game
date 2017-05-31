@@ -5,7 +5,7 @@ build_code.py.
 
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 
 from base_classes import Base
 
@@ -214,6 +214,7 @@ class Health(Proficiency):
     maximum = Column(Integer)
     current = Column(Integer)
     
+    percent = Column(Integer)
     error = Column(String)
     formatted_name = Column(String)
     __mapper_args__ = {
@@ -224,6 +225,7 @@ class Health(Proficiency):
         super().__init__(*args, **kwargs)
         self.maximum = 0
         self.current = 0
+        self.percent = 0
         self.error = "You do not have enough vitality"
         self.formatted_name = "health" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -237,7 +239,16 @@ class Health(Proficiency):
         self.tooltip += "Maximum: " + str(self.maximum) + ";" # This adds a tooltip for each variable
         self.current = self.maximum
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    @validates('current')
+    def validate_health(self, key_name, current):
+        #Update health percent on health change.
+        try:
+            self.percent = round(current / self.maximum, 2) * 100
+        except (TypeError, ZeroDivisionError):
+            self.percent = 0
+        return max(current or 0, 0)
+    
 
 class Sanctity(Proficiency):
     __tablename__ = "sanctity"
@@ -247,6 +258,7 @@ class Sanctity(Proficiency):
     maximum = Column(Integer)
     current = Column(Integer)
     
+    percent = Column(Integer)
     error = Column(String)
     formatted_name = Column(String)
     __mapper_args__ = {
@@ -257,6 +269,7 @@ class Sanctity(Proficiency):
         super().__init__(*args, **kwargs)
         self.maximum = 0
         self.current = 0
+        self.percent = 0
         self.error = "You do not have enough divinity"
         self.formatted_name = "sanctity" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -270,7 +283,16 @@ class Sanctity(Proficiency):
         self.tooltip += "Maximum: " + str(self.maximum) + ";" # This adds a tooltip for each variable
         self.current = self.maximum
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    @validates('current')
+    def validate_sanctity(self, key_name, current):
+        #Update sanctity percent on health change.
+        try:
+            self.percent = round(current / self.maximum, 2) * 100
+        except (TypeError, ZeroDivisionError):
+            self.percent = 0
+        return max(current or 0, 0)
+    
 
 class Storage(Proficiency):
     __tablename__ = "storage"
@@ -280,6 +302,7 @@ class Storage(Proficiency):
     maximum = Column(Integer)
     current = Column(Integer)
     
+    percent = Column(Integer)
     error = Column(String)
     formatted_name = Column(String)
     __mapper_args__ = {
@@ -290,6 +313,7 @@ class Storage(Proficiency):
         super().__init__(*args, **kwargs)
         self.maximum = 0
         self.current = 0
+        self.percent = 0
         self.error = "You do not have enough strength"
         self.formatted_name = "storage" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -303,7 +327,16 @@ class Storage(Proficiency):
         self.tooltip += "Maximum: " + str(self.maximum) + ";" # This adds a tooltip for each variable
         self.current = self.maximum
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    @validates('current')
+    def validate_storage(self, key_name, current):
+        #Update storage percent on health change.
+        try:
+            self.percent = round(current / self.maximum, 2) * 100
+        except (TypeError, ZeroDivisionError):
+            self.percent = 0
+        return max(current or 0, 0)
+    
 
 class Endurance(Proficiency):
     __tablename__ = "endurance"
@@ -313,6 +346,7 @@ class Endurance(Proficiency):
     maximum = Column(Integer)
     current = Column(Integer)
     
+    percent = Column(Integer)
     error = Column(String)
     formatted_name = Column(String)
     __mapper_args__ = {
@@ -323,6 +357,7 @@ class Endurance(Proficiency):
         super().__init__(*args, **kwargs)
         self.maximum = 0
         self.current = 0
+        self.percent = 0
         self.error = "You do not have enough fortitude"
         self.formatted_name = "endurance" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -336,7 +371,16 @@ class Endurance(Proficiency):
         self.tooltip += "Maximum: " + str(self.maximum) + ";" # This adds a tooltip for each variable
         self.current = self.maximum
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    @validates('current')
+    def validate_endurance(self, key_name, current):
+        #Update endurance percent on health change.
+        try:
+            self.percent = round(current / self.maximum, 2) * 100
+        except (TypeError, ZeroDivisionError):
+            self.percent = 0
+        return max(current or 0, 0)
+    
 
 class AttackDamage(Proficiency):
     __tablename__ = "attack_damage"
@@ -345,6 +389,7 @@ class AttackDamage(Proficiency):
 
     minimum = Column(Integer)
     maximum = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -356,6 +401,7 @@ class AttackDamage(Proficiency):
         super().__init__(*args, **kwargs)
         self.minimum = 0
         self.maximum = 0
+        
         self.error = "You do not have enough strength"
         self.formatted_name = "attack_damage" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -370,7 +416,9 @@ class AttackDamage(Proficiency):
         self.maximum = floor(floor(3 * (0.5*sin(0.1*self.level) + 0.2*self.level)) + 1)
         self.tooltip += "Maximum: " + str(self.maximum) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class AttackSpeed(Proficiency):
     __tablename__ = "attack_speed"
@@ -378,6 +426,7 @@ class AttackSpeed(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     speed = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -388,6 +437,7 @@ class AttackSpeed(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.speed = 0
+        
         self.error = "You do not have enough agility"
         self.formatted_name = "attack_speed" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -400,7 +450,9 @@ class AttackSpeed(Proficiency):
         self.speed = round((3 * (0.1*sin(0.7*self.level) + 0.1*self.level)) + 1, 2)
         self.tooltip += "Speed: " + str(self.speed) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class AttackAccuracy(Proficiency):
     __tablename__ = "attack_accuracy"
@@ -408,6 +460,7 @@ class AttackAccuracy(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     accuracy = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -418,6 +471,7 @@ class AttackAccuracy(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.accuracy = 0
+        
         self.error = "You do not have enough agility"
         self.formatted_name = "attack_accuracy" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -430,7 +484,9 @@ class AttackAccuracy(Proficiency):
         self.accuracy = floor((- (10*5)/((2 * self.level) + 10) + 5) * 7.9 + 5)
         self.tooltip += "Accuracy: " + str(self.accuracy) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class FirstStrike(Proficiency):
     __tablename__ = "first_strike"
@@ -438,6 +494,7 @@ class FirstStrike(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     chance = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -448,6 +505,7 @@ class FirstStrike(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.chance = 0
+        
         self.error = "You do not have enough agility"
         self.formatted_name = "first_strike" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -460,7 +518,9 @@ class FirstStrike(Proficiency):
         self.chance = floor((- (5*50)/((0.5 * self.level) + 5) + 50) * 7.9 + -30)
         self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class CriticalHit(Proficiency):
     __tablename__ = "critical_hit"
@@ -469,6 +529,7 @@ class CriticalHit(Proficiency):
 
     chance = Column(Integer)
     modifier = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -480,6 +541,7 @@ class CriticalHit(Proficiency):
         super().__init__(*args, **kwargs)
         self.chance = 0
         self.modifier = 0
+        
         self.error = "You do not have enough perception"
         self.formatted_name = "critical_hit" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -494,7 +556,9 @@ class CriticalHit(Proficiency):
         self.modifier = floor((- (1*0.5)/((0.5 * self.level) + 1) + 0.5) * 7.9 + 0)
         self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class Defence(Proficiency):
     __tablename__ = "defence"
@@ -502,6 +566,7 @@ class Defence(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     modifier = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -512,6 +577,7 @@ class Defence(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.modifier = 0
+        
         self.error = "You do not have enough fortitude"
         self.formatted_name = "defence" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -524,7 +590,9 @@ class Defence(Proficiency):
         self.modifier = floor((- (7*35)/((0.1 * self.level) + 7) + 35) * 7.9 + 0)
         self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class Evade(Proficiency):
     __tablename__ = "evade"
@@ -532,6 +600,7 @@ class Evade(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     chance = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -542,6 +611,7 @@ class Evade(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.chance = 0
+        
         self.error = "You do not have enough reflexes"
         self.formatted_name = "evade" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -554,7 +624,9 @@ class Evade(Proficiency):
         self.chance = floor((- (10*15)/((0.1 * self.level) + 10) + 15) * 7.9 + 0)
         self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class Parry(Proficiency):
     __tablename__ = "parry"
@@ -562,6 +634,7 @@ class Parry(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     chance = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -572,6 +645,7 @@ class Parry(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.chance = 0
+        
         self.error = "You do not have enough reflexes"
         self.formatted_name = "parry" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -584,7 +658,9 @@ class Parry(Proficiency):
         self.chance = floor((- (15*15)/((0.2 * self.level) + 15) + 15) * 7.9 + 0)
         self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class Riposte(Proficiency):
     __tablename__ = "riposte"
@@ -592,6 +668,7 @@ class Riposte(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     chance = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -602,6 +679,7 @@ class Riposte(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.chance = 0
+        
         self.error = "You do not have enough agility"
         self.formatted_name = "riposte" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -614,7 +692,9 @@ class Riposte(Proficiency):
         self.chance = floor((- (20*15)/((0.3 * self.level) + 20) + 15) * 7.9 + 0)
         self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class Fatigue(Proficiency):
     __tablename__ = "fatigue"
@@ -624,6 +704,7 @@ class Fatigue(Proficiency):
     maximum = Column(Integer)
     current = Column(Integer)
     
+    percent = Column(Integer)
     error = Column(String)
     formatted_name = Column(String)
     __mapper_args__ = {
@@ -634,6 +715,7 @@ class Fatigue(Proficiency):
         super().__init__(*args, **kwargs)
         self.maximum = 0
         self.current = 0
+        self.percent = 0
         self.error = "You do not have enough fortitude"
         self.formatted_name = "fatigue" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -647,7 +729,16 @@ class Fatigue(Proficiency):
         self.tooltip += "Maximum: " + str(self.maximum) + ";" # This adds a tooltip for each variable
         self.current = self.maximum
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    @validates('current')
+    def validate_fatigue(self, key_name, current):
+        #Update fatigue percent on health change.
+        try:
+            self.percent = round(current / self.maximum, 2) * 100
+        except (TypeError, ZeroDivisionError):
+            self.percent = 0
+        return max(current or 0, 0)
+    
 
 class Block(Proficiency):
     __tablename__ = "block"
@@ -656,6 +747,7 @@ class Block(Proficiency):
 
     chance = Column(Integer)
     modifier = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -667,6 +759,7 @@ class Block(Proficiency):
         super().__init__(*args, **kwargs)
         self.chance = 0
         self.modifier = 0
+        
         self.error = "You do not have enough strength"
         self.formatted_name = "block" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -681,7 +774,9 @@ class Block(Proficiency):
         self.modifier = floor((- (20*100)/((1.5 * self.level) + 20) + 100) * 7.9 + 0)
         self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class Stealth(Proficiency):
     __tablename__ = "stealth"
@@ -689,6 +784,7 @@ class Stealth(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     chance = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -699,6 +795,7 @@ class Stealth(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.chance = 0
+        
         self.error = "You do not have enough perception"
         self.formatted_name = "stealth" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -711,7 +808,9 @@ class Stealth(Proficiency):
         self.chance = floor((- (20*65)/((0.5 * self.level) + 20) + 65) * 7.9 + 0)
         self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class Pickpocketing(Proficiency):
     __tablename__ = "pickpocketing"
@@ -719,6 +818,7 @@ class Pickpocketing(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     chance = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -729,6 +829,7 @@ class Pickpocketing(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.chance = 0
+        
         self.error = "You do not have enough agility"
         self.formatted_name = "pickpocketing" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -741,7 +842,9 @@ class Pickpocketing(Proficiency):
         self.chance = floor((- (15*70)/((0.6 * self.level) + 15) + 70) * 7.9 + 0)
         self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class Faith(Proficiency):
     __tablename__ = "faith"
@@ -749,6 +852,7 @@ class Faith(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     modifier = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -759,6 +863,7 @@ class Faith(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.modifier = 0
+        
         self.error = "You do not have enough divinity"
         self.formatted_name = "faith" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -771,7 +876,9 @@ class Faith(Proficiency):
         self.modifier = floor((- (10*5)/((2 * self.level) + 10) + 5) * 7.9 + 0)
         self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class Bartering(Proficiency):
     __tablename__ = "bartering"
@@ -779,6 +886,7 @@ class Bartering(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     chance = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -789,6 +897,7 @@ class Bartering(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.chance = 0
+        
         self.error = "You do not have enough charisma"
         self.formatted_name = "bartering" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -801,7 +910,9 @@ class Bartering(Proficiency):
         self.chance = floor((- (20*60)/((0.5 * self.level) + 20) + 60) * 7.9 + 0)
         self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class Oration(Proficiency):
     __tablename__ = "oration"
@@ -809,6 +920,7 @@ class Oration(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     modifier = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -819,6 +931,7 @@ class Oration(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.modifier = 0
+        
         self.error = "You do not have enough strength"
         self.formatted_name = "oration" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -831,7 +944,9 @@ class Oration(Proficiency):
         self.modifier = floor((- (15*60)/((0.75 * self.level) + 15) + 60) * 7.9 + 0)
         self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class Knowledge(Proficiency):
     __tablename__ = "knowledge"
@@ -839,6 +954,7 @@ class Knowledge(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     modifier = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -849,6 +965,7 @@ class Knowledge(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.modifier = 0
+        
         self.error = "You do not have enough wisdom"
         self.formatted_name = "knowledge" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -861,7 +978,9 @@ class Knowledge(Proficiency):
         self.modifier = floor((- (5*50)/((0.1 * self.level) + 5) + 50) * 7.9 + 0)
         self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class Literacy(Proficiency):
     __tablename__ = "literacy"
@@ -869,6 +988,7 @@ class Literacy(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     modifier = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -879,6 +999,7 @@ class Literacy(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.modifier = 0
+        
         self.error = "You do not have enough wisdom"
         self.formatted_name = "literacy" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -891,7 +1012,9 @@ class Literacy(Proficiency):
         self.modifier = floor((- (10*75)/((0.25 * self.level) + 10) + 75) * 7.9 + 0)
         self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class Luck(Proficiency):
     __tablename__ = "luck"
@@ -899,6 +1022,7 @@ class Luck(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     chance = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -909,6 +1033,7 @@ class Luck(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.chance = 0
+        
         self.error = "You do not have enough fortuity"
         self.formatted_name = "luck" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -921,7 +1046,9 @@ class Luck(Proficiency):
         self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
         self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class ResistFrost(Proficiency):
     __tablename__ = "resist_frost"
@@ -929,6 +1056,7 @@ class ResistFrost(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     modifier = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -939,6 +1067,7 @@ class ResistFrost(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.modifier = 0
+        
         self.error = "You do not have enough resilience"
         self.formatted_name = "resist_frost" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -951,7 +1080,9 @@ class ResistFrost(Proficiency):
         self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
         self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class ResistFlame(Proficiency):
     __tablename__ = "resist_flame"
@@ -959,6 +1090,7 @@ class ResistFlame(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     modifier = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -969,6 +1101,7 @@ class ResistFlame(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.modifier = 0
+        
         self.error = "You do not have enough resilience"
         self.formatted_name = "resist_flame" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -981,7 +1114,9 @@ class ResistFlame(Proficiency):
         self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
         self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class ResistShadow(Proficiency):
     __tablename__ = "resist_shadow"
@@ -989,6 +1124,7 @@ class ResistShadow(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     modifier = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -999,6 +1135,7 @@ class ResistShadow(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.modifier = 0
+        
         self.error = "You do not have enough resilience"
         self.formatted_name = "resist_shadow" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -1011,7 +1148,9 @@ class ResistShadow(Proficiency):
         self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
         self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class ResistHoly(Proficiency):
     __tablename__ = "resist_holy"
@@ -1019,6 +1158,7 @@ class ResistHoly(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     modifier = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -1029,6 +1169,7 @@ class ResistHoly(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.modifier = 0
+        
         self.error = "You do not have enough resilience"
         self.formatted_name = "resist_holy" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -1041,7 +1182,9 @@ class ResistHoly(Proficiency):
         self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
         self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class ResistPoison(Proficiency):
     __tablename__ = "resist_poison"
@@ -1049,6 +1192,7 @@ class ResistPoison(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     modifier = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -1059,6 +1203,7 @@ class ResistPoison(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.modifier = 0
+        
         self.error = "You do not have enough resilience"
         self.formatted_name = "resist_poison" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -1071,7 +1216,9 @@ class ResistPoison(Proficiency):
         self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
         self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class ResistBlunt(Proficiency):
     __tablename__ = "resist_blunt"
@@ -1079,6 +1226,7 @@ class ResistBlunt(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     modifier = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -1089,6 +1237,7 @@ class ResistBlunt(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.modifier = 0
+        
         self.error = "You do not have enough resilience"
         self.formatted_name = "resist_blunt" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -1101,7 +1250,9 @@ class ResistBlunt(Proficiency):
         self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
         self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class ResistSlashing(Proficiency):
     __tablename__ = "resist_slashing"
@@ -1109,6 +1260,7 @@ class ResistSlashing(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     modifier = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -1119,6 +1271,7 @@ class ResistSlashing(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.modifier = 0
+        
         self.error = "You do not have enough resilience"
         self.formatted_name = "resist_slashing" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -1131,7 +1284,9 @@ class ResistSlashing(Proficiency):
         self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
         self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
 
 class ResistPiercing(Proficiency):
     __tablename__ = "resist_piercing"
@@ -1139,6 +1294,7 @@ class ResistPiercing(Proficiency):
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     modifier = Column(Integer)
+    
     
     error = Column(String)
     formatted_name = Column(String)
@@ -1149,6 +1305,7 @@ class ResistPiercing(Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.modifier = 0
+        
         self.error = "You do not have enough resilience"
         self.formatted_name = "resist_piercing" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -1161,19 +1318,14 @@ class ResistPiercing(Proficiency):
         self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
         self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
         self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
-        
+
+    
+    
+
+
 
 
     """
-    @validates('health_maximum')
-    def sync_health(self, key_name, health_value):
-        #Reduce health if health overflows health_maximum.
-        try:
-            self.proficiencies.health = min(self.proficiencies.health, health_value)
-        except TypeError:
-            self.proficiencies.health = 0
-        return health_value
-
 
     @validates('endurance')
     def sync_endurance_percent(self, key_name, endurance_value):

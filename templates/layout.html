@@ -21,9 +21,9 @@
         </div>
         <div id="sidebarmiddle">
             <ul>
-                <li>Health: <div class="progressBar"><span style="width:{{ myHero.health_percent }}%"></span></div></li>
-                <li>Sanctity: <div class="progressBar sanctity"><span style="width:{{ myHero.sanctity_percent }}%"></span></div></li>
-                <li>Endurance: <div class="progressBar endurance"><span style="width:{{ myHero.endurance_percent }}%"></span></div></li>
+                <li>Health: <div class="progressBar"><span style="width:{{ myHero.proficiencies.health.percent }}%"></span></div></li>
+                <li>Sanctity: <div class="progressBar sanctity"><span style="width:{{ myHero.proficiencies.sanctity.percent }}%"></span></div></li>
+                <li>Endurance: <div class="progressBar endurance"><span style="width:{{ myHero.proficiencies.endurance.percent }}%"></span></div></li>
                 <li>Progress: <div class="progressBar progress"><span style="width:{{ myHero.experience_percent }}%"></span></div></li>
             </ul>
          </div>

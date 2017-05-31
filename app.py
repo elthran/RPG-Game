@@ -272,10 +272,11 @@ def home():
     myHero = database.fetch_hero(session['hero_id'])
     database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
     #This should be uneccessary -> but isn't?
-    myHero.refresh_proficiencies()
 
     if myHero.name == "Haldon" or myHero.name == "Admin":
         myHero.refresh_character()
+
+    print (myHero.proficiencies.health.percent + myHero.experience_percent)
 
     # pdb.set_trace()
     #Consider moving this to the login function? Or instantiate during "create_account?"
@@ -284,9 +285,6 @@ def home():
         myHero.current_world = database.get_default_world()
         myHero.current_location = database.get_default_location()
         database.update()
-
-    for proficiency in myHero.proficiencies:
-        proficiency.update(myHero)
 
     #Not implemented. Control user moves on map.
     #Sets up initial valid moves on the map.
@@ -336,16 +334,8 @@ def attributes():
             attribute = getattr(myHero.attributes, element[0:-5]) #Convert name e.g. agilityInput becomes agility.
             points_spent += form_value - attribute.level
             attribute.level = form_value
-
         myHero.attribute_points -= points_spent
-
-        myHero.refresh_proficiencies()
-        myHero.refresh_character()
-        for proficiency in myHero.proficiencies:
-            proficiency.update(myHero)
-        #By Marlen
-        #This will be replaced with:
-        #hero.proficiencies.update_all(hero) or something.
+        myHero.refresh_character(full=False)
         database.update()
         return render_template('profile_attributes.html', page_title="Attributes", myHero=myHero, attribute_information=attribute_information)
     return render_template('profile_attributes.html', page_title="Attributes", myHero=myHero, attribute_information=attribute_information)
@@ -371,9 +361,7 @@ def proficiencies():
             this_proficiency.level += form_value
             
         myHero.proficiency_points -= points_spent
-        
-        myHero.proficiencies.attack_damage.update(myHero)
-        myHero.refresh_character()
+        myHero.refresh_character(full=False)
         database.update()
         return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero)
     return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero)
@@ -592,7 +580,7 @@ def spar():
 @app.route('/arena')
 @login_required
 def arena():
-    if not game.has_enemy or game.enemy.proficiencies.health.current <= 0:
+    if not game.has_enemy: # If I try to check if the enemy has 0 health and there is no enemy, I randomly get an error
         enemy = monster_generator(myHero.age)
         if enemy.name == "Wolf":
             enemy.items_rewarded.append((Quest_Item("Wolf Pelt", myHero, 50)))
@@ -672,6 +660,7 @@ def battle():
         """
         game.has_enemy = False
         myHero.experience += game.enemy.experience_rewarded # * myHero.experience_gain_modifier  THIS IS CAUSING A WEIRD BUG? I don't know why
+        myHero.update_experience_bar()
         if len(game.enemy.items_rewarded) > 0:
             for item in game.enemy.items_rewarded:
                 if not any(items.name == item.name for items in myHero.inventory):
@@ -680,10 +669,10 @@ def battle():
                     for items in myHero.inventory:
                         if items.name == item.name:
                             items.amount_owned += 1
-        level_up = myHero.level_up(myHero.attribute_points, myHero.experience, myHero.experience_maximum) # Whi is it creating a variable here?
         page_title = "Victory!"
         page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience!"
         page_links = [("Compete in the ","/arena","arena","."), ("Go back to the ","/barracks","barracks","."), ("Return to your ","/home","profile"," page.")]
+        level_up = myHero.level_up()
         if level_up:
             page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience. You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
