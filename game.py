@@ -160,17 +160,6 @@ class Hero(Base):
         self.attribute_points = 10
         self.proficiency_points = 10
 
-        #Build before *_current so that *_percents and validators work.
-        """
-        self.sanctity_maximum = 0
-        self.endurance_maximum = 0
-
-        self.sanctity = 0
-        self.health = 0
-        self.endurance = 0
-        self.storage = 0
-        """
-
         # Hidden attributes // Maybe they should be a special type of proficiency?
         self.experience_gain_modifier = 1 # This is the percentage of exp you gain
         self.gold_gain_modifier = 1 # This is the percentage of gold you gain
@@ -199,7 +188,7 @@ class Hero(Base):
 
     #May no longer be neccessary? As Proficiencies are dynamic objects.
     # Sets damage
-    @orm.reconstructor
+    @orm.reconstructor # Database gatekeeper? Delete this? break into separate parts
     def refresh_proficiencies(self):
         for proficiency in self.proficiencies:
             proficiency.update(self)
@@ -233,72 +222,6 @@ class Hero(Base):
 
         #Rebuild percent values. Silly but effective.
         self.experience = self.experience
-
-
-    @validates('health_maximum')
-    def sync_health(self, key_name, health_value):
-        """Reduce health if health overflows health_maximum.
-        """
-        try:
-            self.proficiencies.health = min(self.proficiencies.health, health_value)
-        except TypeError:
-            self.proficiencies.health = 0
-        return health_value
-
-
-    @validates('endurance')
-    def sync_endurance_percent(self, key_name, endurance_value):
-        """Update endurance_percent on endurance change.
-
-        """
-
-        try:
-            self.endurance_percent = round(endurance_value / self.proficiencies.endurance.maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.endurance_percent = 0
-
-        return max(endurance_value, 0)
-
-    @validates('sanctity')
-    def sync_sanctity_percent(self, key_name, sanctity_value):
-        """Update sanctity_percent on sanctity change.
-
-        """
-
-        try:
-            self.sanctity_percent = round(sanctity_value / self.proficiencies.sanctity.maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.sanctity_percent = 0
-
-        return max(sanctity_value, 0)
-
-    @validates('experience')
-    def sync_experience_percent(self, key_name, xp_value):
-        """Update exp_percent on current_exp change.
-
-        String conversion occurs in HTML and add the percent sign is added there to.
-        key_name is "current_exp" .. not actually used here at this time but it is sent to
-        this function so it must be accepted.
-        """
-
-        try:
-            self.experience_percent = round(xp_value / self.experience_maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.experience_percent = 0
-        return xp_value
-
-    @validates('health')
-    def sync_health_percent(self, key_name, health_value):
-        """Update health_percent on health change.
-
-        """
-
-        try:
-            self.health_percent = round(health_value / self.proficiencies.health.maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.health_percent = 0
-
-        return max(health_value or 0, 0)
 
     def refresh_character(self):
         self.proficiencies.health.current = self.proficiencies.health.maximum
