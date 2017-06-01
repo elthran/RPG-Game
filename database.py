@@ -109,11 +109,12 @@ class EZDB:
         """Return an object given its class name and id.
         
         Return error if name doesn't exist in global scope. 
-        obj = getattr(globals(), name) #Where name is capitalized?
+        obj = getattr(globals(), name) 
+        
+        Name can be capitalized or not e.g. "hero" or "Hero"
         """
-        pdb.set_trace() #untested
         try:
-            obj = globals()[obj_name]
+            obj = globals()[obj_name.capitalize()]
             #test if obj is a class.?
             return self.session.query(obj).get(id)
         except IndexError:
@@ -229,25 +230,19 @@ class EZDB:
                 raise e
         
         
-    def fetch_hero(self, username_or_id=None, character_name_or_id=None):
+    def fetch_hero_by_username(self, username, character_name=None):
         """Return live hero objected based on username_or_id and character_name.
         
         If no character_name is passed just return first hero.
         Note: Providing a username when you have the hero/character id is redundant.
         """
+        user_id = self.get_user_id(username)
+        if character_name:
+            return self.session.query(Hero).filter_by(user_id=user_id, character_name=character_name).first()
+        return self.session.query(User).filter_by(id=user_id).first().heroes[0]
         
-        if character_name_or_id and isinstance(character_name_or_id, int):
-            if username_or_id:
-                exit("Providing a username when you have the hero/character id is redundant.")
-            return self.session.query(Hero).filter_by(id=character_name_or_id).first()
-           
-        if isinstance(username_or_id, str):
-            username_or_id = self.get_user_id(username_or_id)
-        
-        if character_name_or_id:
-            return self.session.query(Hero).filter_by(user_id=username_or_id, character_name=character_name_or_id).first()
-        return self.session.query(User).filter_by(id=username_or_id).first().heroes[0]
-    
+    def fetch_hero_by_id(self, id):
+        return self.session.query(Hero).get(id)
     
     def update(self):
         """Commit current session.
