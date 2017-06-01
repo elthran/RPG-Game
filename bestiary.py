@@ -9,11 +9,17 @@ from random import randint, choice
 from proficiencies_monsters import MonsterProficiencies
 
 # Give each monster a rating for their attribute where 1 is about average. (So 2 is double, 4 is quadruple, 0.5 is half, 0.25 is a quarter, etc.)
-archetypes = {"wolf": {"Agility": 3, "Charisma": 0.1, "Divinity": 0.1, "Fortitude": 0.7, "Fortuity": 0.25, "Perception": 0.75,
-                               "Reflexes": 4, "Resilience": 1, "Strength": 1, "Survivalism": 2, "Vitality": 1.25, "Wisdom": 0.1},
-                      "goblin": {"Agility": 1.5, "Charisma": 0.25, "Divinity": 0.25, "Fortitude": 0.7, "Fortuity": 1.25, "Perception": 0.6,
-                               "Reflexes": 1.2, "Resilience": 1.1, "Strength": 0.8, "Survivalism": 1.2, "Vitality": 0.8, "Wisdom": 0.75}
-                      }
+archetypes = {
+    "wolf": {"Agility": 3, "Charisma": 0.1, "Divinity": 0.1, "Fortitude": 0.7, "Fortuity": 0.25, "Perception": 0.75,
+             "Reflexes": 4, "Resilience": 1, "Strength": 1, "Survivalism": 2, "Vitality": 1.25, "Wisdom": 0.1,
+             "Species": "Wolf", "Plural": "Wolves"},
+    "goblin": {"Agility": 1.5, "Charisma": 0.25, "Divinity": 0.25, "Fortitude": 0.7, "Fortuity": 1.25, "Perception": 0.6,
+               "Reflexes": 1.2, "Resilience": 1.1, "Strength": 0.8, "Survivalism": 1.2, "Vitality": 0.8, "Wisdom": 0.75,
+             "Species": "Goblin", "Plural": "Goblins"},
+    "spider": {"Agility": 2, "Charisma": 0.1, "Divinity": 0.1, "Fortitude": 0.4, "Fortuity": 0.8, "Perception": 0.9,
+               "Reflexes": 0.8, "Resilience": 0.7, "Strength": 0.5, "Survivalism": 2, "Vitality": 0.5, "Wisdom": 0.25,
+             "Species": "Spider", "Plural": "Spiders"}
+    }
 
 class AttributesMonster(object):
     def __init__(self, monster_level, monster_type):        
@@ -36,11 +42,10 @@ class AttributeMonster(object):
         self.level = monster_level * modifier * randint(10,30) * 0.05
 
 class Monster(object):
-    def __init__(self, monster_id, name, species, species_plural, level, archetype):
-        self.monster_id = monster_id
+    def __init__(self, name, archetype, level):
         self.name = name
-        self.species = species
-        self.species_plural = species_plural
+        self.species = archetype["Species"]
+        self.species_plural = archetype["Plural"]
         self.level = level
         self.experience_rewarded = level + 1
         self.items_rewarded = []
@@ -56,13 +61,13 @@ class Monster(object):
 
 # THE CODE BELOW HERE IS SHIT AND I NEED HELP IMPROVING IT
 def monster_generator(level):
-    temp_monster = choice(bestiary_data)
-    temp_level = level - 6
-    monster = Monster(temp_monster.monster_id, temp_monster.name, temp_monster.species, temp_monster.species_plural, temp_level, temp_monster.archetype)
+    data = choice(bestiary_data)
+    monster = Monster(*data, level)
     return monster
 
-bestiary_data = [Monster("001", "Feral Dog", "Wolf", "Wolves", level=1, archetype=archetypes["wolf"]),
-                 Monster("002", "Giant Rat", "Goblin", "Goblins", level=1, archetype=archetypes["goblin"])]
+bestiary_data = [("Feral Dog", archetypes["wolf"]),
+                 ("Giant Rat", archetypes["goblin"]),
+                 ("Poisonous Spider", archetypes["spider"])]
 
 
 

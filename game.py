@@ -103,7 +103,6 @@ class Hero(Base):
     house = Column(String)
     experience = Column(Integer)
     experience_maximum = Column(Integer)
-    experience_percent = Column(Integer)
     renown = Column(Integer)    # How famous you are
     virtue = Column(Integer)    # How good/evil you are
     devotion = Column(Integer)  # How religious you are
@@ -147,7 +146,6 @@ class Hero(Base):
 
         self.experience = 0
         self.experience_maximum = 10
-        self.experience_percent = 0
 
         self.renown = 0
         self.virtue = 0
@@ -171,6 +169,22 @@ class Hero(Base):
 
         for key in kwargs:
             setattr(self, key, kwargs[key])
+
+    @orm.reconstructor
+    def init_only_on_load(self):
+        try:
+            self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100
+        except (TypeError, ZeroDivisionError):
+            self.experience_percent = 0
+
+    @validates('experience')
+    def validate_experience(self, key_name, current):
+        #Update experience percent on experience change.
+        try:
+            self.experience_percent = round(current / self.experience_maximum, 2) * 100
+        except (TypeError, ZeroDivisionError):
+            self.experience_percent = 0
+        return max(current or 0, 0)
 
     def not_yet_implemented():
         self.kill_quests = BaseDict()

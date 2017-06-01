@@ -117,6 +117,14 @@ def login():
         else:
             error = 'Invalid Credentials. Please try again.'
 
+    global myHero
+    myHero = database.fetch_hero_by_id(session['hero_id'])
+    database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
+    #This should be uneccessary -> but isn't?
+
+    if myHero.name == "Haldon" or myHero.name == "Admin":
+        myHero.refresh_character()
+    myHero.init_only_on_load() # Creates percent variables. This is in testing (Elthran)
     return render_template('index.html', error=error, login=True)
 
 # route for handling the account creation page logic
@@ -268,16 +276,6 @@ def display_user_page():
 @app.route('/home')
 @login_required
 def home():
-    global myHero
-    myHero = database.fetch_hero_by_id(session['hero_id'])
-    database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
-    #This should be uneccessary -> but isn't?
-
-    if myHero.name == "Haldon" or myHero.name == "Admin":
-        myHero.refresh_character()
-
-    print (myHero.proficiencies.health.percent + myHero.experience_percent)
-
     # pdb.set_trace()
     #Consider moving this to the login function? Or instantiate during "create_account?"
     # initialize current_world
@@ -581,7 +579,7 @@ def spar():
 @login_required
 def arena():
     if not game.has_enemy: # If I try to check if the enemy has 0 health and there is no enemy, I randomly get an error
-        enemy = monster_generator(myHero.age)
+        enemy = monster_generator(myHero.age-6)
         if enemy.name == "Wolf":
             enemy.items_rewarded.append((Quest_Item("Wolf Pelt", myHero, 50)))
         if enemy.name == "Scout":
@@ -593,7 +591,7 @@ def arena():
     page_image = str(game.enemy.name)
     conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
                     ("Level: ", str(game.enemy.level), "Combat Details"),
-                    ("Health: ", str(game.enemy.health) + " / " + str(game.enemy.proficiencies.health.maximum)),
+                    ("Health: ", str(game.enemy.proficiencies.health.current) + " / " + str(game.enemy.proficiencies.health.maximum)),
                     ("Damage: ", str(game.enemy.proficiencies.attack_damage.minimum) + " - " + str(game.enemy.proficiencies.attack_damage.maximum)),
                     ("Attack Speed: ", str(game.enemy.proficiencies.attack_speed.speed)),
                     ("Accuracy: ", str(game.enemy.proficiencies.attack_accuracy.accuracy) + "%"),
@@ -625,8 +623,9 @@ def battle():
         page_heading = "Not enough endurance, wait a bit!"
         return render_template('layout.html', page_title=page_title, myHero=myHero, page_heading=page_heading, page_links=page_links)
 
-    myHero.proficiencies.health.current,game.enemy.proficiencies.health,battle_log = combat_simulator.battle_logic(myHero,game.enemy)
+    myHero.proficiencies.health.current,game.enemy.proficiencies.health.current,battle_log = combat_simulator.battle_logic(myHero,game.enemy)
     myHero.proficiencies.endurance.current -= required_endurance
+    game.has_enemy = False
     if myHero.proficiencies.health.current == 0:
         page_title = "Defeat!"
         page_heading = "You have died."
@@ -658,7 +657,6 @@ def battle():
                     myHero.bestiary.append(monster)
             myHero.experience += 5
         """
-        game.has_enemy = False
         myHero.experience += game.enemy.experience_rewarded # * myHero.experience_gain_modifier  THIS IS CAUSING A WEIRD BUG? I don't know why
         myHero.update_experience_bar()
         if len(game.enemy.items_rewarded) > 0:

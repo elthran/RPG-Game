@@ -71,6 +71,8 @@ def determine_block_chance(chance):
 def determine_block_amount(original_damage, modifier):
     print ("You will block this percent of damage: " + str(modifier) + "%")
     damage = original_damage * (1 - modifier)
+    if damage < 1:
+        damage = 1
     return damage
 
 def determine_parry_chance(chance):
