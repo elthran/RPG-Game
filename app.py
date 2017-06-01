@@ -110,7 +110,7 @@ def login():
 
             #I recommend a dialogue here to select the specific hero that the user wants to play with.
             #Or a page redirect whatever ...
-            session['hero_id'] = database.fetch_hero(username).id #Gets the hero's id.
+            session['hero_id'] = database.fetch_hero_by_username(username).id #Gets the hero's id.
 
             return redirect(url_for('home'))
         #Marked for upgrade, consider checking if user exists and redirect to account creation page.
@@ -221,42 +221,42 @@ def reset_character():
 @app.route('/admin',methods=['GET', 'POST'])
 @login_required
 def admin():
+    hero = database.get_object_by_id("Hero", session["hero_id"])
     page_title = "Admin"
+    
     if request.method == 'POST':
-        # pdb.set_trace()
-        myHero.age = convert_input(request.form["Age"])
-        myHero.experience = convert_input(request.form["Experience"])
-        myHero.experience_maximum = convert_input(request.form["Experience_maximum"])
-        myHero.renown = convert_input(request.form["Renown"])
-        myHero.virtue = convert_input(request.form["Virtue"])
-        myHero.devotion = convert_input(request.form["Devotion"])
-        myHero.gold = convert_input(request.form["Gold"])
-        myHero.basic_ability_points = convert_input(request.form["Basic_ability_points"])
-        myHero.archetype_ability_points = convert_input(request.form["Archetypic_ability_points"])
-        myHero.specialization_ability_points = convert_input(request.form["Specialized_ability_points"])
-        myHero.pantheonic_ability_points = convert_input(request.form["Pantheonic_ability_points"])
-        myHero.attribute_points = convert_input(request.form["Attribute_points"])
-        myHero.proficiency_points = convert_input(request.form['Proficiency_Points'])
-        myHero.refresh_proficiencies()
-        myHero.refresh_character()
+        hero.age = int(request.form["Age"])
+        hero.experience = int(request.form["Experience"])
+        hero.experience_maximum = int(request.form["Experience_maximum"])
+        hero.renown = int(request.form["Renown"])
+        hero.virtue = int(request.form["Virtue"])
+        hero.devotion = int(request.form["Devotion"])
+        hero.gold = int(request.form["Gold"])
+        hero.basic_ability_points = int(request.form["Basic_ability_points"])
+        hero.archetype_ability_points = int(request.form["Archetypic_ability_points"])
+        hero.specialization_ability_points = int(request.form["Specialized_ability_points"])
+        hero.pantheonic_ability_points = int(request.form["Pantheonic_ability_points"])
+        hero.attribute_points = int(request.form["Attribute_points"])
+        hero.proficiency_points = int(request.form['Proficiency_Points'])
+        hero.refresh_character()
         database.update()
         return redirect(url_for('home'))
 
-    admin = [("Age", myHero.age),
-        ("Experience", myHero.experience),
-        ("experience_maximum", myHero.experience_maximum),
-        ("Renown", myHero.renown),
-        ("Virtue", myHero.virtue),
-        ("Devotion", myHero.devotion),
-        ("Gold", myHero.gold),
-        ("Basic_ability_points", myHero.basic_ability_points),
-        ("Archetypic_ability_points", myHero.archetypic_ability_points),
-        ("Specialized_ability_points", myHero.specialized_ability_points),
-        ("Pantheonic_ability_points", myHero.pantheonic_ability_points),
-        ("Attribute_points", myHero.attribute_points),
-        ("Proficiency_Points", myHero.proficiency_points)]
+    admin = [("Age", hero.age),
+        ("Experience", hero.experience),
+        ("Experience_maximum", hero.experience_maximum),
+        ("Renown", hero.renown),
+        ("Virtue", hero.virtue),
+        ("Devotion", hero.devotion),
+        ("Gold", hero.gold),
+        ("Basic_ability_points", hero.basic_ability_points),
+        ("Archetypic_ability_points", hero.archetypic_ability_points),
+        ("Specialized_ability_points", hero.specialized_ability_points),
+        ("Pantheonic_ability_points", hero.pantheonic_ability_points),
+        ("Attribute_points", hero.attribute_points),
+        ("Proficiency_Points", hero.proficiency_points)]
 
-    return render_template('admin.html', page_title=page_title, myHero=myHero, admin=admin)  # return a string
+    return render_template('admin.html', page_title=page_title, hero=hero, admin=admin)  # return a string
 
 @app.route('/display_users')
 def display_user_page():
@@ -269,7 +269,7 @@ def display_user_page():
 @login_required
 def home():
     global myHero
-    myHero = database.fetch_hero(session['hero_id'])
+    myHero = database.fetch_hero_by_id(session['hero_id'])
     database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
     #This should be uneccessary -> but isn't?
 
