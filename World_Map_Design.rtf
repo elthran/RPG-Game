@@ -1,0 +1,72 @@
+*Note: Names and whatnot are placeholders* **Page Title should be the same as "Name"** #Going inside/outside should use 1 endurance. Exploring should use 3 endurance#
+[LEGEND: 	- Outside: What you see when you get to a location on the map
+			- Inside: What you see if you enter a location on the map
+			- Adjacent Locations: Places you can go to when you are 'Outside' this location 
+			- Places of Interest: Places on the map that you can interact with or enter if you are there
+			- Monsters: What monster type you find if a battle starts here
+			- Events: What happens if you "explore" this place
+
+class Country(World Map):
+	Name: Eastern Shores
+	Locations: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+	Places of Interest: [Old Man's House(3), Fishing Village(4), City(11), Isle of Myaar(7), Foothills(2), Grove(10)]
+	Page Image: https://lh3.googleusercontent.com/-QebsXov1U0Y/TY1xuFB1oxI/AAAAAAAAAbM/RbwHJyHxoA8/w1200-h630-p-k-no-nu/ivalice_map.gif
+	#This is a "world" map. Therefore there is nothing to "do" here. It is just a map of this country. 
+	#What you can "do" is based on where you are on the map.
+	
+class House(Location):
+	Name: Old Man's House
+	Adjacent Locations: [1, 4]
+	Outside: Do you wish to enter the house? 
+	Inside: A house. You can rest (heals slowly and you are safe) or talk to the inhabitants.
+	Page Heading: An old, fishing house near the ocean.
+	Page Image: https://images.fineartamerica.com/images-medium-large-5/old-lanes-cove-fishing-shack-james-oliver.jpg
+	
+class Village(Location):
+	Name: Fishing Village (Myaar)
+	Adjacent Locations: [1, 3, 5, 7, 8]
+	Outside: Do you wish to enter the village?
+	Inside: A smaller version of a city. There is a merchant, doctor, blacksmith, and tanner.
+	Page Heading: The small fishing village of Myaar.
+	Page Image: https://previews.123rf.com/images/torky/torky1406/torky140600010/29234144-Fishing-village-sketch-Stock-Vector-sketch-pencil-drawing.jpg
+	
+class City(Village):
+	Name: Iirdatha
+	Adjacent Locations: [9, 10]
+	Outside: Do you wish to approach the city?
+	Inside: Merchant, Apothecary, Shaman, Blacksmith, Tanner, Tavern, Fletcher, Church of Vesira, Shrine of Kel-Nori, Book Store
+	Page Heading: The city of Iirdatha. Capital of the Eastern Shores.
+	Page Image: https://s-media-cache-ak0.pinimg.com/originals/72/e9/0a/72e90ad6f12e2372341d2b920604fd41.jpg
+	
+class Explorable(Location): #Placeholder. Below are 3 examples of subclasses that have been filled out.
+	Name:
+	Events:
+	Monsters:
+	
+class Swamp(Explorable):
+	Name: Isle of Myaar
+	Adjacent Locations: [4, 8]
+	Outside: Do you wish to explore? #A field doesn't have an "inside" #Exploring gives you a chance of some event happening (eg. battle, finding item)
+	Monsters: Goblin
+	Events: 50% chance of starting a battle. 10% chance of finding an item.
+	Page Heading: You are wandering the Isle of Myaar
+	Page Image: http://freepages.history.rootsweb.ancestry.com/~wcarr1/Lossing1/50-01.gif
+	
+class Foothill(Explorable):
+	Name: Foothills if Iirdatha
+	Adjacent Locations: [1, 5]
+	Outside: Do you wish to explore? #A field doesn't have an "inside" #Exploring gives you a chance of some event happening (eg. battle, finding item)
+	Monsters: Grey Wolf
+	Events: 50% chance of starting a battle. 10% chance of finding an item.
+	Page Heading: You are wandering the Foothills of Iirdatha
+	Page Image: http://drawingimage.com/files/2/Mountain-Amazing-Drawing.jpg
+	
+class Forest(Explorable):
+	Name: Ashen Grove
+	Adjacent Locations: [6, 11]
+	Outside: Do you wish to explore? #A field doesn't have an "inside" #Exploring gives you a chance of some event happening (eg. battle, finding item)
+	Monsters: Spider
+	Events: 50% chance of starting a battle. 10% chance of finding an item.
+	Page Heading: You are wandering the Ashen Grove
+	Page Image: https://s3.amazonaws.com/wbstaticfiles/users/567/408082_forest-drawing-i.jpg
+	
