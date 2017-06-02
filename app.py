@@ -107,7 +107,6 @@ def login():
             session['logged_in'] = True
             flash("LOG IN SUCCESSFUL")
             session['id'] = database.get_user_id(username)
-
             #I recommend a dialogue here to select the specific hero that the user wants to play with.
             #Or a page redirect whatever ...
             session['hero_id'] = database.fetch_hero_by_username(username).id #Gets the hero's id.
@@ -266,10 +265,25 @@ def admin():
 
     return render_template('admin.html', page_title=page_title, hero=hero, admin=admin)  # return a string
 
-@app.route('/display_users')
-def display_user_page():
-	users = database.session.query(User).order_by(User.id).all()
-	return render_template('users.html', myHero=myHero, users=users)
+# The if statement works and displays the user page as normal. Now if you click on a user it should run the else statement and pass in the user's username (which is unique).
+# Now, I am having trouble sending the user to HTML. I can't seem to understand how to store the user information as a variable.
+
+@app.route('/display_users/<users_username>')
+def display_user_page(users_username):
+    database.update()
+    if users_username == "all":
+        users = database.session.query(User).order_by(User.id).all()
+        return render_template('users.html', myHero=myHero, users=users)
+    else:
+        elthran_test = database.get_user_id(users_username)
+        this_user = database.fetch_hero_by_id(elthran_test)
+        return render_template('user_page.html', myHero=myHero, user=this_user)
+
+@app.route('/global_chat')
+def global_chat():
+    chat = game.global_chat
+    return render_template('user_page.html', myHero=myHero, chat=chat)
+
 
 ### PROFILE PAGES (Basically the home page of the game with your character display and stats)
 

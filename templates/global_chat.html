@@ -1,0 +1,10 @@
+<!-- This shows the admin page -->
+
+{% extends "layout.html" %}
+{% block block1 %}
+<ul>
+	{% for message in chat %}
+	<li>{{ message }}</li>
+	{% endfor %}
+</ul>
+{% endblock %}

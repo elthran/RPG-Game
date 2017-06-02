@@ -65,6 +65,7 @@ class Game(object):
     def __init__(self, hero):
         self.hero = hero
         self.has_enemy = False
+        self.global_chat = ["Elthran: Hello", "Haldon: You are awesome"]
 
     def set_enemy(self, enemy):
         self.enemy = enemy
@@ -84,7 +85,6 @@ class User(Base):
     email = Column(String)
     timestamp = Column(DateTime)
     is_admin = Column(Boolean)
-
 
 class Hero(Base):
     """Store data about the Hero/Character object.

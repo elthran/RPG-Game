@@ -62,7 +62,7 @@ class Monster(object):
 # THE CODE BELOW HERE IS SHIT AND I NEED HELP IMPROVING IT
 def monster_generator(level):
     data = choice(bestiary_data)
-    monster = Monster(*data, level)
+    monster = Monster(*data, level=level)
     return monster
 
 bestiary_data = [("Feral Dog", archetypes["wolf"]),

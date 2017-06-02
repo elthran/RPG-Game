@@ -1,0 +1,33 @@
+{% extends "profile_template.html" %}
+{% block block1 %}
+
+<!-- This is the User page -->	
+<img class="profileImage" src="/static/images/character_background.jpg" alt="Sample">
+<div style="clear: both;"></div>
+<div class="profileContainer">
+<h1>General Statistics</h1>
+	<div class="profileColumn">
+		<h2>Basic</h2>
+		<ul> 
+			<li>Name: {{ user.character_name}}</li>
+			<li>Age: {{ user.age }}</li>
+			{% if user.renown %}}
+				<li>Renown: {{ user.character_name}}</li>
+			{% endif %}
+			{% if user.devotion %}}
+				<li>Devotion: {{ user.age }}</li>
+			{% endif %}
+			{% if user.virtue %}}
+				<li>Virtue: {{ user.virtue }}</li>
+			{% endif %}			
+			<li>Experience: {{ user.experience }} / {{ user.experience_maximum }}</li>
+			<li>Health: {{ user.proficiencies.health.current }} / {{ user.proficiencies.health.maximum }}</li>
+			<li>Sanctity: {{ user.proficiencies.sanctity.current }} / {{ user.proficiencies.sanctity.maximum }}</li>
+			<li>Storage: {{ user.proficiencies.storage.current }} / {{ user.proficiencies.storage.maximum }}</li>
+			<li>Endurance: {{ user.proficiencies.endurance.current }} / {{ user.proficiencies.endurance.maximum }}</li>
+		</ul>
+	</div>
+</div>
+<div style="clear:both;"></div>
+<h1>Return to <a href=/display_users/all>Users</a> page.</h1>
+{% endblock %}
