@@ -25,7 +25,9 @@
         <div id="sidebarmiddle">
             <ul>
                 <li>Health: <div class="progressBar"><span style="width:{{ myHero.proficiencies.health.percent }}%"></span></div></li>
+				{% if myHero.proficiencies.sanctity.maximum %}
                 <li>Sanctity: <div class="progressBar sanctity"><span style="width:{{ myHero.proficiencies.sanctity.percent }}%"></span></div></li>
+				{% endif %}
                 <li>Endurance: <div class="progressBar endurance"><span style="width:{{ myHero.proficiencies.endurance.percent }}%"></span></div></li>
                 <li>Progress: <div class="progressBar progress"><span style="width:{{ myHero.experience_percent }}%"></span></div></li>
             </ul>
@@ -47,7 +49,8 @@
                 {% endif %}
                 <li><a href=/display_users/all>Users</a></li>
 				<li><a href=/about>About</a></li>
-				<li><a href=/global_chat>Chat</a></li>
+				<li><a href=/inbox>Inbox (testing)</a></li>
+		  <!--  <li><a href=/global_chat>Chat (testing)</a></li>  -->
                 <li><a href=/logout>Logout</a></li>
             </ul>
          </div>
@@ -67,6 +70,7 @@
 <!-- This is info pulled from other html files -->
 	{% block block1 %}{% endblock %}
         {% block block2 %}{% endblock %}
+		
 
 <!-- You can pass Red Error messages through this variable -->
 	{% for message in get_flashed_messages() %}

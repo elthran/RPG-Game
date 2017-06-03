@@ -85,6 +85,7 @@ class User(Base):
     email = Column(String)
     timestamp = Column(DateTime)
     is_admin = Column(Boolean)
+    inbox = Column(String)
 
 class Hero(Base):
     """Store data about the Hero/Character object.

@@ -5,14 +5,8 @@
 #                                                                              #
 #//////////////////////////////////////////////////////////////////////////////#
 
-""" this is called if you fight. it runs the battle simulator """
+""" These functions control each battle within the game """
 
-
-
-from flask import Flask, render_template, redirect, url_for, request, session, flash
-from functools import wraps
-from game import *
-from bestiary import *
 from random import randint
 
 def determine_attacker(hero, monster, hero_speed, monster_speed, hero_first_strike, monster_first_strike):

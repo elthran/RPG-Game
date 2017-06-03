@@ -1,9 +1,19 @@
-{% extends "profile_template.html" %}
+{% extends "layout.html" %}
 {% block block1 %}
+
+<!-- Messing with inbox for fun stuff -->
+<div>
+<h1>Message user</h1>
+<form method="post" action="" autocomplete="off">
+<input type="text" name="message" value="">
+<input type="submit" value="Send">
+</div>
+<!-- End of funny code -->
 
 <!-- This is the User page -->	
 <img class="profileImage" src="/static/images/character_background.jpg" alt="Sample">
 <div style="clear: both;"></div>
+
 <div class="profileContainer">
 <h1>General Statistics</h1>
 	<div class="profileColumn">

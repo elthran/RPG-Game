@@ -116,11 +116,6 @@ def login():
         else:
             error = 'Invalid Credentials. Please try again.'
 
-    global myHero
-    myHero = database.fetch_hero_by_id(session['hero_id'])
-    database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
-    #This should be uneccessary -> but isn't?
-
     if myHero.name == "Haldon" or myHero.name == "Admin":
         myHero.refresh_character()
     myHero.init_only_on_load() # Creates percent variables. This is in testing (Elthran)
@@ -268,15 +263,22 @@ def admin():
 # The if statement works and displays the user page as normal. Now if you click on a user it should run the else statement and pass in the user's username (which is unique).
 # Now, I am having trouble sending the user to HTML. I can't seem to understand how to store the user information as a variable.
 
-@app.route('/display_users/<users_username>')
+@app.route('/display_users/<users_username>', methods=['GET', 'POST'])
 def display_user_page(users_username):
     database.update()
+    users = database.session.query(User).order_by(User.id).all()
     if users_username == "all":
-        users = database.session.query(User).order_by(User.id).all()
         return render_template('users.html', myHero=myHero, users=users)
     else:
         elthran_test = database.get_user_id(users_username)
         this_user = database.fetch_hero_by_id(elthran_test)
+        # Below code is just messing with inbox
+        if request.method == "POST":
+            message = request.form['message']
+            for user in users:
+                if user.heroes[0] == this_user:
+                    user.inbox += "From " + myHero.name + ": " + message
+        # Above this is inbox nonsense
         return render_template('user_page.html', myHero=myHero, user=this_user)
 
 @app.route('/global_chat')
@@ -284,12 +286,25 @@ def global_chat():
     chat = game.global_chat
     return render_template('user_page.html', myHero=myHero, chat=chat)
 
+@app.route('/inbox')
+def inbox():
+    users = database.session.query(User).order_by(User.id).all()
+    for user in users:
+        if user.heroes[0] == myHero:
+            inbox = user.inbox
+            return render_template('inbox.html', myHero=myHero, inbox=inbox)
+    return render_template('inbox.html', myHero=myHero, inbox="empty")
+
 
 ### PROFILE PAGES (Basically the home page of the game with your character display and stats)
 
 @app.route('/home')
 @login_required
 def home():
+    global myHero
+    myHero = database.fetch_hero_by_id(session['hero_id'])
+    database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
+    #This should be uneccessary -> but isn't?
     # pdb.set_trace()
     #Consider moving this to the login function? Or instantiate during "create_account?"
     # initialize current_world
@@ -357,25 +372,7 @@ def attributes():
 @app.route('/proficiencies', methods=['GET', 'POST'])
 @login_required
 def proficiencies():
-    """
-    Below is a mock-up list to test my HTML. I assume the hero will carry the true list. Each proficiency should probably have
-    a flag for Offense, Defence, etc. so HTML knows which category to display it under
-    """
-    if request.method == 'POST':
-        points_spent = 0
-        for element in request.form:
-            form_value = int(request.form[element])
-            for proficiency in myHero.proficiencies:
-                if proficiency.name == element:
-                    this_proficiency = proficiency
-                    break
-            points_spent += form_value
-            this_proficiency.level += form_value
-            
-        myHero.proficiency_points -= points_spent
-        myHero.refresh_character(full=False)
-        database.update()
-        return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero)
+    #This page is literally just a html page with tooltips and proficiency level up buttons. No python code is needed. Python only tells html which page to load.
     return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=myHero)
 
 @app.route('/ability_tree/<spec>')
@@ -636,7 +633,7 @@ def battle():
         page_title = "Battle"
         page_heading = "Not enough endurance, wait a bit!"
         return render_template('layout.html', page_title=page_title, myHero=myHero, page_heading=page_heading, page_links=page_links)
-
+    # This should return the full heros, not just their health
     myHero.proficiencies.health.current,game.enemy.proficiencies.health.current,battle_log = combat_simulator.battle_logic(myHero,game.enemy)
     myHero.proficiencies.endurance.current -= required_endurance
     game.has_enemy = False
