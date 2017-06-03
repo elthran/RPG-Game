@@ -48,6 +48,11 @@ def get_proficiency(id):
     if id == FATIGUE:
 	    return "FATIGUE"
 
+def get_proficiencies_string(enum_list):
+    result = []
+    for num in enum_list:
+        result.append(get_proficiency(num))
+    return result
 
 class Hero():
     """Store data about the Hero/Character object.
@@ -100,7 +105,7 @@ class Hero():
 
         for key in kwargs:
             setattr(self, key, kwargs[key])
-	
+
     def update(self):
         self.proficiencies_health_current = floor(5*self.proficiencies_health_level + 0)
         self.proficiencies_attack_damage_minimum = floor(floor(3 * (0.5*sin(0.1*self.proficiencies_attack_damage_level) + 0.1*self.proficiencies_attack_damage_level)) + 0)
@@ -231,6 +236,7 @@ def battle_logic(active_player, inactive_player):
     """ Runs the entire battle simulator """
     combat_log = [active_player.name + " Health: " + str(active_player.proficiencies_health_current) + "  " + inactive_player.name + " Health: " + str(inactive_player.proficiencies_health_current)]
     while (active_player.proficiencies_health_current > 0) and (inactive_player.proficiencies_health_current > 0):
+        damage = 0
         attacker, defender = determine_attacker(active_player, inactive_player)
         if determine_if_hits(attacker.proficiencies_attack_accuracy_accuracy):
             damage = calculate_damage(attacker.proficiencies_attack_damage_minimum, attacker.proficiencies_attack_damage_maximum)
@@ -249,7 +255,8 @@ def battle_logic(active_player, inactive_player):
             continue
         if determine_riposte_chance(defender.proficiencies_riposte_chance):
             continue
-        damage = 1
+        if damage < 0:
+            damage = 0
         defender.proficiencies_health_current -= damage
         #print("defender health ", defender.proficiencies_health_current, attacker.proficiencies_health_current)
         #combat_log.append("%s hits for %i. %s has %i health left.\n" % (attacker.name, damage, defender.name, defender.proficiencies_health_current))
@@ -295,6 +302,7 @@ def create_biased_hero_helper(num_of_biased,total_level_points):
         result.append(1)	
     return result
 	
+# creates a hero that is biased in proficiencies	
 def create_biased_hero(list_of_biased_proficiencies,average_level):
     hero = Hero()
     total_level_points = CURRENT_NUMBER_OF_PROFICIENCIES * average_level
@@ -332,8 +340,8 @@ def output_battle_data(hero_list, monster_list, max_proficiency_level, simulatio
     #f = open('out.txt', 'w')
     #sys.stdout = f
     print("This is the output file for a battle simulation. Here are some info:")
-    print("Hero is biased towards these proficiencies: " + str(hero_list) + ".")
-    print("Monster is biased towards these proficiencies: " + str(monster_list) + ".")
+    print("Hero is biased towards these proficiencies: " + str(get_proficiencies_string(hero_list)) + ".")
+    print("Monster is biased towards these proficiencies: " + str(get_proficiencies_string(monster_list)) + ".")
     print("Simulation is done " + str(simulation_count) + " number of times for each block on the grid.")
     print("The x-axis is the average proficiency level of the monster.")
     print("The y-axis is the average proficiency level of the hero.")
@@ -352,7 +360,7 @@ def output_battle_data(hero_list, monster_list, max_proficiency_level, simulatio
     #sys.stdout = orig_stdout
     #f.close()
        
-output_battle_data([ATTACK_DAMAGE,ATTACK_SPEED,FIRST_STRIKE],ALL_PROFICIENCIES,10,100)
+output_battle_data([CRITICAL_HIT],ALL_PROFICIENCIES,10,20)
 
 # testing functions
 #print(get_win_rate(create_biased_hero(ALL_PROFICIENCIES, 2),create_biased_hero(ALL_PROFICIENCIES, 3),10))
