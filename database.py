@@ -143,7 +143,7 @@ class EZDB:
     def get_all_users(self):
         """Return all Users order_by name.
         """
-        return database.session.query(User).order_by(User.id).all()
+        return self.session.query(User).order_by(User.id).all()
                     
     def get_all_abilities(self):
         """Return all abilities in the database ordered by name.

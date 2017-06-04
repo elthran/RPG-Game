@@ -36,8 +36,7 @@ database = EZDB('sqlite:///static/database.db', debug=False)
 
 #Disable will need to be restructured (Marlen)
 # initialization
-# game = Game(hero)
-# game.set_enemy(monster_generator(hero.age))
+game = Game()
 
 # create the application object
 app = Flask(__name__)
@@ -106,9 +105,10 @@ def login():
 
     Access data from the static/user.db using the EasyDatabase class.
     """
-    #considering adding
-    #session.clear()
-    #to prevent contamination between logging in with 2 different accounts.
+    #Testing:
+    #Should prevent contamination between logging in with 2 different accounts.
+    session.clear()
+    
     error = None
     if request.method == 'POST':
         username = request.form['username']
@@ -125,8 +125,13 @@ def login():
             hero = user.heroes[0]
             session['hero_id'] = hero.id
             
+            #Now I need to work out how to make game not global *sigh* (Marlen)
+            global game
+            game.hero = hero
+            game.set_enemy(monster_generator(hero.age))
+            
             #Refresh admin accounts on login.
-            if hero.is_admin:
+            if user.is_admin:
                 hero.refresh_character()
                 
             # If it's a new character, send them to cerate_character url
@@ -1010,7 +1015,7 @@ def command(cmd=None, hero=None):
 
 @app.route('/about')
 @uses_hero_and_update
-def about_page():
+def about_page(hero=None):
     info = "The game is being created by Elthran and Haldon, with some help from Gnahz. Any inquiries can be made to elthranRPG@gmail.com"
     return render_template('about.html', myHero=hero, gameVersion = "0.00.02", about_info=info)
 

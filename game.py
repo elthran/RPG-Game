@@ -62,7 +62,7 @@ primary_attributes[FORTITUDE] == value of fortitude stored in list at position 4
 """
 
 class Game(object):
-    def __init__(self, hero):
+    def __init__(self, hero=None):
         self.hero = hero
         self.has_enemy = False
         self.global_chat = ["Elthran: Hello", "Haldon: You are awesome"]
