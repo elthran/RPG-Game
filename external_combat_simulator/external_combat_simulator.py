@@ -1,6 +1,7 @@
 import sys
 import time
 
+from combat_formulas import *
 from math import floor, sin
 from random import randint, seed
 from enum import Enum
@@ -54,6 +55,7 @@ def get_proficiencies_string(enum_list):
         result.append(get_proficiency(num))
     return result
 
+# Do not need to copy over
 class Hero():
     """Store data about the Hero/Character object.
 
@@ -105,23 +107,52 @@ class Hero():
 
         for key in kwargs:
             setattr(self, key, kwargs[key])
-
+			
     def update(self):
-        self.proficiencies_health_current = floor(5*self.proficiencies_health_level + 0)
-        self.proficiencies_attack_damage_minimum = floor(floor(3 * (0.5*sin(0.1*self.proficiencies_attack_damage_level) + 0.1*self.proficiencies_attack_damage_level)) + 0)
-        self.proficiencies_attack_damage_maximum = floor(floor(3 * (0.5*sin(0.1*self.proficiencies_attack_damage_level) + 0.2*self.proficiencies_attack_damage_level)) + 1)	
-        self.proficiencies_attack_speed_speed = round((3 * (0.1*sin(0.7*self.proficiencies_attack_speed_level) + 0.1*self.proficiencies_attack_speed_level)) + 1, 2)
-        self.proficiencies_attack_accuracy_accuracy = floor((- (10*5)/((2 * self.proficiencies_attack_accuracy_level) + 10) + 5) * 7.9 + 5)
-        self.proficiencies_first_strike_chance = floor((- (5*50)/((0.5 * self.proficiencies_first_strike_level) + 5) + 50) * 7.9 + -30)
-        self.proficiencies_critical_hit_chance = floor((- (5*50)/((0.3 * self.proficiencies_critical_hit_level) + 5) + 50) * 7.9 + -22)
-        self.proficiencies_critical_hit_modifier = floor((- (1*0.5)/((0.5 * self.proficiencies_critical_hit_level) + 1) + 0.5) * 7.9 + 0)
-        self.proficiencies_defence_modifier = floor((- (7*35)/((0.1 * self.proficiencies_defence_level) + 7) + 35) * 7.9 + 0)
-        self.proficiencies_evade_chance = floor((- (10*15)/((0.1 * self.proficiencies_evade_level) + 10) + 15) * 7.9 + 0)
-        self.proficiencies_parry_chance = floor((- (15*15)/((0.2 * self.proficiencies_parry_level) + 15) + 15) * 7.9 + 0)
-        self.proficiencies_riposte_chance = floor((- (20*15)/((0.3 * self.proficiencies_riposte_level) + 20) + 15) * 7.9 + 0)
-        self.proficiencies_fatigue_maximum = floor(2*self.proficiencies_fatigue_level + -1)
-        self.proficiencies_block_chance = floor((- (25*60)/((0.25 * self.proficiencies_block_level) + 25) + 60) * 7.9 + 0)
-        self.proficiencies_block_modifier = floor((- (20*100)/((1.5 * self.proficiencies_block_level) + 20) + 100) * 7.9 + 0)
+        self.proficiencies_health_current = p_linear(self.proficiencies_health_level,5,0)
+        #self.proficiencies_health_current = floor(5*self.proficiencies_health_level + 0)
+		
+        self.proficiencies_attack_damage_minimum = p_sinusoidal_linear(self.proficiencies_attack_damage_level,1,0,1,2)
+        #self.proficiencies_attack_damage_minimum = floor(floor(3 * (0.5*sin(0.1*self.proficiencies_attack_damage_level) + 0.1*self.proficiencies_attack_damage_level)) + 0)
+
+        self.proficiencies_attack_damage_maximum = p_sinusoidal_linear(self.proficiencies_attack_damage_level,2,0,1,2) 
+        #self.proficiencies_attack_damage_maximum = floor(floor(3 * (0.5*sin(0.1*self.proficiencies_attack_damage_level) + 0.2*self.proficiencies_attack_damage_level)) + 1)	
+		
+        self.proficiencies_attack_speed_speed = p_sinusoidal_linear(self.proficiencies_attack_speed_level, 30, 300, 30, 2)
+        #self.proficiencies_attack_speed_speed = round((3 * (0.1*sin(0.7*self.proficiencies_attack_speed_level) + 0.1*self.proficiencies_attack_speed_level)) + 1, 2)
+		
+        self.proficiencies_attack_accuracy_accuracy = p_increasing_bounded(self.proficiencies_attack_accuracy_level, 5, 50, 3)
+        #self.proficiencies_attack_accuracy_accuracy = floor((- (10*5)/((2 * self.proficiencies_attack_accuracy_level) + 10) + 5) * 7.9 + 5)
+        
+        self.proficiencies_first_strike_chance = p_increasing_bounded(proficiencies_first_strike_level, -30, 50, 3)
+        #self.proficiencies_first_strike_chance = floor((- (5*50)/((0.5 * self.proficiencies_first_strike_level) + 5) + 50) * 7.9 + -30)
+		
+        self.proficiencies_critical_hit_chance = p_increasing_bounded(self.proficiencies_critical_hit_level, -22, 50, 6)
+        #self.proficiencies_critical_hit_chance = floor((- (5*50)/((0.3 * self.proficiencies_critical_hit_level) + 5) + 50) * 7.9 + -22)
+		
+        self.proficiencies_critical_hit_modifier = p_increasing_bounded(self.proficiencies_critical_hit_level, -22, 5, 4)
+        #self.proficiencies_critical_hit_modifier = floor((- (1*0.5)/((0.5 * self.proficiencies_critical_hit_level) + 1) + 0.5) * 7.9 + 0)
+		
+        self.proficiencies_defence_modifier = p_increasing_bounded(self.proficiencies_defence_level, 0, 270, 4) 
+        #self.proficiencies_defence_modifier = floor((- (7*35)/((0.1 * self.proficiencies_defence_level) + 7) + 35) * 7.9 + 0)
+		
+        self.proficiencies_evade_chance = p_increasing_bounded(self.proficiencies_evade_level, 0, 110, 4) 
+        #self.proficiencies_evade_chance = floor((- (10*15)/((0.1 * self.proficiencies_evade_level) + 10) + 15) * 7.9 + 0)
+		
+        self.proficiencies_parry_chance = p_increasing_bounded(self.proficiencies_parry_level, 0, 115, 4)
+        #self.proficiencies_parry_chance = floor((- (15*15)/((0.2 * self.proficiencies_parry_level) + 15) + 15) * 7.9 + 0)
+		
+        self.proficiencies_riposte_chance = p_increasing_bounded(self.proficiencies_riposte_level, 0, 120, 4)
+        #self.proficiencies_riposte_chance = floor((- (20*15)/((0.3 * self.proficiencies_riposte_level) + 20) + 15) * 7.9 + 0)
+
+        self.proficiencies_fatigue_maximum = p_linear(self.proficiencies_fatigue_level, 2, -1)
+        #self.proficiencies_fatigue_maximum = floor(2*self.proficiencies_fatigue_level + -1)
+		
+        self.proficiencies_block_chance = p_increasing_bounded(self.proficiencies_block_level, 0, 430, 4)
+        #self.proficiencies_block_chance = floor((- (25*60)/((0.25 * self.proficiencies_block_level) + 25) + 60) * 7.9 + 0)
+        
+        self.proficiencies_block_modifier = p_increasing_bounded(self.proficiencies_block_level, 0, 800, 4)
+        #self.proficiencies_block_modifier = floor((- (20*100)/((1.5 * self.proficiencies_block_level) + 20) + 100) * 7.9 + 0)
 
     def set_level(self, enum, value):
         if enum == HEALTH:
