@@ -36,14 +36,14 @@ database = EZDB('sqlite:///static/database.db', debug=False)
 
 #I know there is a better way ... primary_attributes should be defined on initialization.
 #This allows myHero to be global variable in this module/file without magic. I think.
-myHero = Hero(gold=5000, age=7)
+# myHero = Hero(gold=5000, age=7)
 #Because hero is easier for me to type.
 #Note: they are the same object!
-hero = myHero
+#hero = myHero
 
 # initialization
-game = Game(hero)
-game.set_enemy(monster_generator(hero.age))
+# game = Game(hero)
+# game.set_enemy(monster_generator(hero.age))
 
 # create the application object
 app = Flask(__name__)
@@ -54,15 +54,27 @@ def login_required(f):
 
     This should redirect you to the login page."""
     @wraps(f)
-    def wrap(*args, **kwargs):
+    def wrap_login(*args, **kwargs):
         if 'logged_in' in session:
             return f(*args, **kwargs)
         else:
             flash('You need to login first.')
             return redirect(url_for('login'))
-    return wrap
+    return wrap_login
 
-#Not implemented. Control user moves on map.
+#Not implemented, and untested (Marlen)
+def uses_hero(f):
+    """Preloads hero object and saves it afterwards.
+    
+    gets hero before, updates database after.
+    """
+    @wraps(f)
+    def wrap_hero(*args, **kwargs):
+        hero = database.get_object_by_id("Hero", session["hero_id"])
+        return f(*args, hero=hero, **kwargs)
+    return wrap_hero
+
+#Not implemented. Broken. Control user moves on map. (Marlen)
 def prevent_url_typing(f):
     """Set certain pages as requiring a login to visit.
 
@@ -70,7 +82,7 @@ def prevent_url_typing(f):
     This needs a lot more work. It should be dealing with actual URLs ...
     """
     @wraps(f)
-    def wrap(*args, **kwargs):
+    def wrap_url(*args, **kwargs):
         try:
             requested_move = set([kwargs['location_id']])
         except KeyError:
@@ -89,7 +101,7 @@ def prevent_url_typing(f):
         else:
             flash("You can't access that location from here.")
             return redirect(url_for(f))
-    return wrap
+    return wrap_url
 
 # use decorators to link the function to a url
 # route for handling the login page logic
@@ -99,6 +111,9 @@ def login():
 
     Access data from the static/user.db using the EasyDatabase class.
     """
+    #considering adding
+    #session.clear()
+    #to prevent contamination between logging in with 2 different accounts.
     error = None
     if request.method == 'POST':
         username = request.form['username']
@@ -109,16 +124,15 @@ def login():
             session['id'] = database.get_user_id(username)
             #I recommend a dialogue here to select the specific hero that the user wants to play with.
             #Or a page redirect whatever ...
-            session['hero_id'] = database.fetch_hero_by_username(username).id #Gets the hero's id.
-
+            hero = database.fetch_hero_by_username(username)
+            session['hero_id'] = hero.id #Gets the hero's id.
+            if hero.name in ["Haldon", "Admin"]:
+                hero.refresh_character()
             return redirect(url_for('home'))
         #Marked for upgrade, consider checking if user exists and redirect to account creation page.
         else:
             error = 'Invalid Credentials. Please try again.'
 
-    if myHero.name == "Haldon" or myHero.name == "Admin":
-        myHero.refresh_character()
-    myHero.init_only_on_load() # Creates percent variables. This is in testing (Elthran)
     return render_template('index.html', error=error, login=True)
 
 # route for handling the account creation page logic
@@ -160,9 +174,9 @@ def create_account():
 # this gets called if you press "logout"
 @app.route('/logout')
 @login_required
-def logout():
-    # pdb.set_trace()
-    myHero.refresh_character()
+@uses_hero
+def logout(hero=None):
+    hero.refresh_character()
     database.update() ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
     session.pop('logged_in', None)
     flash("Thank you for playing! Your have successfully logged out.")
@@ -171,7 +185,8 @@ def logout():
 # this gets called if you are logged in and there is no character info stored
 @app.route('/create_character', methods=['GET', 'POST'])
 @login_required
-def create_character():
+@uses_hero
+def create_character(hero=None):
     display = True
     fathers_job = None
     page_title = "Create Character"
@@ -222,8 +237,8 @@ def reset_character():
 # this is a temporary page that lets you modify any attributes for testing
 @app.route('/admin',methods=['GET', 'POST'])
 @login_required
-def admin():
-    hero = database.get_object_by_id("Hero", session["hero_id"])
+@uses_hero
+def admin(hero=None):
     page_title = "Admin"
     
     if request.method == 'POST':
@@ -241,7 +256,6 @@ def admin():
         hero.attribute_points = int(request.form["Attribute_points"])
         hero.proficiency_points = int(request.form['Proficiency_Points'])
         hero.refresh_character()
-        database.update()
         return redirect(url_for('home'))
 
     admin = [("Age", hero.age),
@@ -257,14 +271,14 @@ def admin():
         ("Pantheonic_ability_points", hero.pantheonic_ability_points),
         ("Attribute_points", hero.attribute_points),
         ("Proficiency_Points", hero.proficiency_points)]
-
     return render_template('admin.html', page_title=page_title, hero=hero, admin=admin)  # return a string
 
 # The if statement works and displays the user page as normal. Now if you click on a user it should run the else statement and pass in the user's username (which is unique).
 # Now, I am having trouble sending the user to HTML. I can't seem to understand how to store the user information as a variable.
 
 @app.route('/display_users/<users_username>', methods=['GET', 'POST'])
-def display_user_page(users_username):
+@uses_hero
+def display_user_page(users_username, hero=None):
     database.update()
     users = database.session.query(User).order_by(User.id).all()
     if users_username == "all":
@@ -301,7 +315,7 @@ def inbox():
 @app.route('/home')
 @login_required
 def home():
-    global myHero
+    # global myHero
     myHero = database.fetch_hero_by_id(session['hero_id'])
     database.update_time(myHero) #Or is this supposed to update the time of all hero objects?
     #This should be uneccessary -> but isn't?
@@ -312,6 +326,7 @@ def home():
         myHero.current_world = database.get_default_world()
         myHero.current_location = database.get_default_location()
         database.update()
+        pdb.set_trace()
 
     #Not implemented. Control user moves on map.
     #Sets up initial valid moves on the map.
@@ -377,13 +392,14 @@ def proficiencies():
 
 @app.route('/ability_tree/<spec>')
 @login_required
-def ability_tree(spec):
+@uses_hero
+def ability_tree(spec, hero=None):
     page_title = "Abilities"
 
     unknown_abilities = []
     learnable_abilities = []
     mastered_abilities = []
-
+    myHero = hero
     # Create a list of learned abilities that match current spec.
     for ability in myHero.abilities:
         if ability.ability_type == spec:
