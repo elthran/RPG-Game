@@ -126,8 +126,7 @@ def login():
             session['hero_id'] = hero.id
             
             #Now I need to work out how to make game not global *sigh* (Marlen)
-            global game
-            game.hero = hero
+            game.set_hero(hero)
             game.set_enemy(monster_generator(hero.age))
             
             #Refresh admin accounts on login.
@@ -921,6 +920,7 @@ def command(cmd=None, hero=None):
     # END OF TEST CODE
 
     for item in hero.inventory:
+        # print(item)
         if cmd == item.name:
             if item.wearable:            # EQUIP ITEMS
                 equipped_items_to_remove = []
@@ -951,7 +951,7 @@ def command(cmd=None, hero=None):
                 return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # UNEQUIP ITEMS
-    for item in hero.equipped_items:
+    for item in hero.equipped_items():
         if cmd == item.name:
             hero.inventory.append(item)
             hero.equipped_items.remove(item)

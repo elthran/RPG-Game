@@ -70,6 +70,9 @@ class Game(object):
     def set_enemy(self, enemy):
         self.enemy = enemy
         self.has_enemy = True
+    
+    def set_hero(self, hero):
+        self.hero = hero
 
 
 class User(Base):
@@ -161,22 +164,27 @@ class Hero(Base):
         self.attribute_points = 10
         self.proficiency_points = 10
 
-        # Hidden attributes // Maybe they should be a special type of proficiency?
-        self.experience_gain_modifier = 1 # This is the percentage of exp you gain
-        self.gold_gain_modifier = 1 # This is the percentage of gold you gain
-
         #Time code
         self.timestamp = datetime.datetime.utcnow()
 
         for key in kwargs:
             setattr(self, key, kwargs[key])
+        
+        self.init_on_load()
 
     @orm.reconstructor
-    def init_only_on_load(self):
-        try:
-            self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.experience_percent = 0
+    def init_on_load(self):
+        """Runs when the database is reload and at the end of __init__.
+        """
+        #I don't even know if this is supposed to be rebuilt? (Marlen)
+        self.refresh_proficiencies()
+    
+        # Hidden attributes // Maybe they should be a special type of proficiency?
+        self.experience_gain_modifier = 1 # This is the percentage of exp you gain
+        self.gold_gain_modifier = 1 # This is the percentage of gold you gain
+        
+        #resets experience_percent
+        self.experience = self.experience
 
     @validates('experience')
     def validate_experience(self, key_name, current):
@@ -196,7 +204,6 @@ class Hero(Base):
         self.bestiary = []
         self.wolf_kills = 0
 
-    @orm.reconstructor # Database gatekeeper? Delete this? break into separate parts
     def refresh_proficiencies(self):
         for proficiency in self.proficiencies:
             proficiency.update(self)
@@ -234,7 +241,7 @@ class Hero(Base):
         return False
             
     def equipped_items(self):
-        return [item for item in self.inventory if item.equipped] or [None]
+        return [item for item in self.inventory if item.is_equipped()] or [None]
         
     def non_equipped_items(self):
         return self.inventory.unequipped or [None]

@@ -98,7 +98,8 @@ class Item(Base):
             setattr(self, key, getattr(self.template, key))
             
     def is_equipped(self):
-        return self.inventory and self not in self.inventory.unequipped
+        #Untested!
+        return self not in (self.inventory_unequipped or [])
 
     
     def update_stats(self, hero):

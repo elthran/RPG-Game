@@ -172,13 +172,24 @@ class Inventory(Base):
         self.unequipped.append(item)
 
     def __iter__(self):
-        """Return a list of _all_ items in this inventory.
+        """Return an iterator of _all_ items in this inventory.
         
-        Untested!
+        Slightly tested.
+        
         Use: 
         for item in inventory:
             print(item)
         """
 
-        return [getattr(self, name) for name in Inventory.all_slot_names]
+        
+        all_items = [getattr(self, name) for name in Inventory.single_slots
+            if getattr(self, name)]
+ 
+        multi_items= [getattr(self, name) for name in Inventory.multiple_slots
+            if getattr(self, name)]
+        
+        for item_list in multi_items:
+            all_items += item_list
+
+        return (item for item in all_items)
 
