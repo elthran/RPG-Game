@@ -173,9 +173,9 @@ class ItemTemplate(Base):
 
 # Subclass of ItemTemplate
 class Wearable(ItemTemplate):
-    __tablename__ = 'wearable'
+    # __tablename__ = 'wearable'
     
-    id = Column(Integer, ForeignKey("item_template.id"), primary_key=True)
+    # id = Column(Integer, ForeignKey("item_template.id"), primary_key=True)
     
     max_durability = Column(Integer)
     item_rating = Column(Integer)
@@ -200,9 +200,9 @@ class Wearable(ItemTemplate):
 
 # Subclass of ItemTemplate
 class Weapon(Wearable):
-    __tablename__ = 'weapon'
+    # __tablename__ = 'weapon'
     
-    id = Column(Integer, ForeignKey("wearable.id"), primary_key=True)
+    # id = Column(Integer, ForeignKey("wearable.id"), primary_key=True)
     
     min_damage = Column(Integer)
     max_damage = Column(Integer)
@@ -236,9 +236,9 @@ class Weapon(Wearable):
         hero.attack_speed += self.attack_speed
 		
 class One_Handed_Weapon(Weapon):
-    __tablename__ = 'one_handed_weapon'
+    # __tablename__ = 'one_handed_weapon'
     
-    id = Column(Integer, ForeignKey("weapon.id"), primary_key=True)
+    # id = Column(Integer, ForeignKey("weapon.id"), primary_key=True)
     
     __mapper_args__ = {
         'polymorphic_identity':"One_Handed_Weapon",
@@ -249,9 +249,9 @@ class One_Handed_Weapon(Weapon):
         self.one_handed_weapon = True
 
 class Shield(Weapon):
-    __tablename__ = 'shield'
+    # __tablename__ = 'shield'
     
-    id = Column(Integer, ForeignKey("weapon.id"), primary_key=True)
+    # id = Column(Integer, ForeignKey("weapon.id"), primary_key=True)
     
     __mapper_args__ = {
         'polymorphic_identity':"Shield",
@@ -263,9 +263,9 @@ class Shield(Weapon):
         self.weapon = False
 
 class Two_Handed_Weapon(Weapon):
-    __tablename__ = 'two_handed_weapon'
+    # __tablename__ = 'two_handed_weapon'
     
-    id = Column(Integer, ForeignKey("weapon.id"), primary_key=True)
+    # id = Column(Integer, ForeignKey("weapon.id"), primary_key=True)
     
     __mapper_args__ = {
         'polymorphic_identity':"Two_Handed_Weapon",
@@ -277,9 +277,9 @@ class Two_Handed_Weapon(Weapon):
 
 # New Class		
 class Garment(Wearable):
-    __tablename__ = 'garment'
+    # __tablename__ = 'garment'
     
-    id = Column(Integer, ForeignKey("wearable.id"), primary_key=True)
+    # id = Column(Integer, ForeignKey("wearable.id"), primary_key=True)
     
     health_modifier = Column(Integer)
     
@@ -296,9 +296,9 @@ class Garment(Wearable):
         hero.health_maximum += self.health_modifier
 
 class Chest_Armour(Garment):
-    __tablename__ = 'chest_armour'
+    # __tablename__ = 'chest_armour'
     
-    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
+    # id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
     
     chest_armour = Column(Boolean)
     
@@ -311,9 +311,9 @@ class Chest_Armour(Garment):
         self.chest_armour = True
 
 class Head_Armour(Garment):
-    __tablename__ = 'head_armour'
+    # __tablename__ = 'head_armour'
     
-    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
+    # id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
     
     head_armour = Column(Boolean)
     
@@ -326,9 +326,9 @@ class Head_Armour(Garment):
         self.head_armour = True
 
 class Leg_Armour(Garment):
-    __tablename__ = 'leg_armour'
+    # __tablename__ = 'leg_armour'
     
-    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
+    # id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
     
     leg_armour = Column(Boolean)
     
@@ -340,9 +340,9 @@ class Leg_Armour(Garment):
         self.leg_armour = True
 
 class Feet_Armour(Garment):
-    __tablename__ = 'feet_armour'
+    # __tablename__ = 'feet_armour'
     
-    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
+    # id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
     
     feet_armour = Column(Boolean)
     
@@ -354,9 +354,9 @@ class Feet_Armour(Garment):
         self.feet_armour = True
 
 class Arm_Armour(Garment):
-    __tablename__ = 'arm_armour'
+    # __tablename__ = 'arm_armour'
     
-    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
+    # id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
     
     arm_armour = Column(Boolean)
     
@@ -368,9 +368,9 @@ class Arm_Armour(Garment):
         self.arm_armour = True
 
 class Hand_Armour(Garment):
-    __tablename__ = 'hand_armour'
+    # __tablename__ = 'hand_armour'
     
-    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
+    # id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
     
     hand_armour = Column(Boolean)
     
@@ -383,9 +383,9 @@ class Hand_Armour(Garment):
 
 # New Class
 class Jewelry(Wearable):
-    __tablename__ = 'jewelry'
+    # __tablename__ = 'jewelry'
     
-    id = Column(Integer, ForeignKey("wearable.id"), primary_key=True)
+    # id = Column(Integer, ForeignKey("wearable.id"), primary_key=True)
     
     __mapper_args__ = {
         'polymorphic_identity':"Jewelry",
@@ -396,9 +396,9 @@ class Jewelry(Wearable):
         self.jewelry = True
 
 class Ring(Jewelry):
-    __tablename__ = 'ring'
+    # __tablename__ = 'ring'
     
-    id = Column(Integer, ForeignKey("jewelry.id"), primary_key=True)
+    # id = Column(Integer, ForeignKey("jewelry.id"), primary_key=True)
     
     ring = Column(Boolean)
     
@@ -414,9 +414,9 @@ class Ring(Jewelry):
 
 # Subclass of ItemTemplate
 class Consumable(ItemTemplate):
-    __tablename__ = 'consumable'
+    # __tablename__ = 'consumable'
     
-    id = Column(Integer, ForeignKey("item_template.id"), primary_key=True)
+    # id = Column(Integer, ForeignKey("item_template.id"), primary_key=True)
     
     healing_amount = Column(Integer)
     sanctity_amount = Column(Integer)
@@ -441,9 +441,9 @@ class Consumable(ItemTemplate):
 
 # New Class
 class Quest_Item(ItemTemplate):
-    __tablename__ = 'quest_item'
+    # __tablename__ = 'quest_item'
     
-    id = Column(Integer, ForeignKey("item_template.id"), primary_key=True)
+    # id = Column(Integer, ForeignKey("item_template.id"), primary_key=True)
     
     __mapper_args__ = {
         'polymorphic_identity':"Quest_Item",
