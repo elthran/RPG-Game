@@ -49,6 +49,8 @@ class EZDB:
     
     This class allows you to use the old game methods with modern SQLAlchemy.
     At some point it may be worth using SQLAlchemy directly.
+    
+    All add_* methods should end with a commit!
     """
     def __init__(self, database='sqlite:///:memory:', debug=True, testing=False):
         """Create a basic sqlalchemy engine and session.
@@ -138,6 +140,10 @@ class EZDB:
         item = Item(template)
         return item
         
+    def get_all_users(self):
+        """Return all Users order_by name.
+        """
+        return database.session.query(User).order_by(User.id).all()
                     
     def get_all_abilities(self):
         """Return all abilities in the database ordered by name.
@@ -191,6 +197,9 @@ class EZDB:
                 return
             else:
                 raise e
+    
+    def get_user_by_username(self, username):
+        return self.session.query(User).filter_by(username=username).first()
                 
     def add_new_user(self, username, password, email=''):
         """Add a user to the username with a given a unique username and a password.
@@ -199,22 +208,19 @@ class EZDB:
         """
         
         hashed_password = hashlib.md5(password.encode()).hexdigest()
-        self.session.add(User(username=username, password=hashed_password, email=email,
-            timestamp=EZDB.now()))
+        user = User(username=username, password=hashed_password, email=email,
+            timestamp=EZDB.now())
+        self.session.add(user)
         self.session.commit()
+        return user
         
-    def add_new_character(self, username_or_id, character_name=None, archetype=None):
-        """Add a character with the specified archetype to a given user by id or username.
+    def add_new_hero_to_user(self, user):
+        """Create a new blank character object for a user.
         
-        Username is a unique field and is more human readable then using id's.
+        May not be future proof if a user has multiple heroes.
         """
         
-        user = None
-        if isinstance(username_or_id, int):
-            user = self.session.query(User).filter_by(id=username_or_id).first()
-        else:
-            user = self.session.query(User).filter_by(username=username_or_id).first()
-        self.session.add(Hero(name=character_name, archetype=archetype, user=user))
+        self.session.add(Hero(user=user))
         self.session.commit()
     
     def validate(self, username, password):
