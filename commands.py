@@ -68,6 +68,7 @@ class Command:
         Returns an error if the character doesn't have enough gold.
         """
         item_id = arg_dict.get('data', None, type=int)
+        location = arg_dict.get('location', None, type=str)
  
         item = database.create_item(item_id)
         if hero.gold >= item.buy_price:
@@ -76,10 +77,12 @@ class Command:
             #return buy success event.
             #Test event later against posible quest events conditions.
             for path in hero.quest_paths:
-                if path.active and path.quest.name == "Get Acquainted with the Blacksmith" and \
-                    path.stage == 2:
+                if (path.active and 
+                    path.quest.name == "Get Acquainted with the Blacksmith" and 
+                    path.stage == 2 and 
+                    location in ["/store/armoury", "/store/weaponry"]):
                     path.advance()
-            return "success" 
+            return "{}: id={}&&{}".format(item.name, item.id, hero.gold)
         return "error: not enough gold!"
         
     def consume(hero, database, arg_dict):

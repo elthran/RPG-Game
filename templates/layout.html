@@ -11,7 +11,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='style.css') }}">
     <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='command_script.js') }}"></script>
   </head>
 
   <body>
@@ -20,7 +19,7 @@
 			<h1>{{ myHero.name }}</h1>
             <h3><img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px">
             Age: {{ myHero.age }}<br>
-            Gold: {{ myHero.gold }}</h3>
+            Gold: <span id="heroGold">{{ myHero.gold }}</span></h3>
         </div>
         <div id="sidebarmiddle">
             <ul>
@@ -64,7 +63,11 @@
 	<div id="content">
 <!-- This calls a notification script to run if the Hero has any new quests completed -->
 	{% if myHero.quest_notification %}
-		<div class="popup" onclick="quest_popup()" style="color:red">You have completed a quest stage! (+{{ myHero.quest_notification[1] }}xp)<span class="popupachievement" id="js_popupachievement">{{ myHero.quest_notification[0] }}</span></div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
+		<div class="popup" onclick="quest_popup()" style="color:red"
+        >You have completed a quest stage! (+{{ myHero.quest_notification[1] }}xp)
+        <span class="popupachievement" id="js_popupachievement"
+        >{{ myHero.quest_notification[0] }}</span>
+        </div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
               {% endif %}
 
 <!-- This is info pulled from other html files -->
