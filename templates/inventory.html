@@ -2,46 +2,6 @@
 
 {% extends "layout.html" %}
 {% block block1 %}
-
-<script>
-/* A script to hide the row in a table.
-The element is hidden based on the button clicked having the same data value
-as the id value of the table row id. These should both be unique.
-*/
-function removeRow(button) {
-    "use strict";
-    var tr = document.getElementById(button.getAttribute("data"));
-    // console.log(tr);
-    tr.style.display = "none";
-    // button.style.display = 'none';
-}
-
-function toggleEquip(button, itemType, idsArrayStr) {
-    "use strict";
-    //console.log(button);
-    //console.log(itemType);
-    //console.log(idsArray);
-    var slot = document.getElementById(itemType);
-    var tr = document.getElementById(button.getAttribute("data"));
-    if (button.innerHTML === "Equip") {
-        button.innerHTML = "Unequip";
-
-        var idsArray = JSON.parse(idsArrayStr);
-        idsArray.forEach(function (id) {
-            //console.log("id: " + id);
-            button = document.getElementById(id).querySelector("button");
-            //console.log("Buttons to replace: " + button);
-            //console.log("If button is real, data: " + button.getAttribute("data"))
-            toggleEquip(button);
-        });
-        slot.insertAdjacentElement("afterend", tr);
-    } else if (button.innerHTML === "Unequip") {
-        slot = document.getElementById("non_equipped_items");
-        button.innerHTML = "Equip";
-        slot.appendChild(tr);
-    }
-}
-</script>
 <img src="/static/images/inventory_template.jpg" alt="Sample">
 
 <!-- This is the inventory page and displays everything your character wears/owns and gives you CMD buttons to equip/unequip -->
