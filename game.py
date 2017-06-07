@@ -88,7 +88,39 @@ class User(Base):
     email = Column(String)
     timestamp = Column(DateTime)
     is_admin = Column(Boolean)
-    inbox = Column(String)
+
+class Inbox(Base):
+    __tablename__ = 'inbox'
+
+    id = Column(Integer, primary_key=True)
+
+    sender_id = Column(Integer, ForeignKey('message.id'))
+    sender = relationship("Message", uselist=False, foreign_keys="[Inbox.sender_id]")
+    receiver_id = Column(Integer, ForeignKey('message.id'))
+    receiver = relationship("Message", uselist=False, foreign_keys="[Inbox.receiver_id]")
+    content_id = Column(Integer, ForeignKey('message.id'))
+    content = relationship("Message", uselist=False, foreign_keys="[Inbox.content_id]")
+
+    def __init__(self, **kwargs):
+        self.messages = Message("Sender", "Receiver", "Content")
+        self.my_messages = []
+
+    def add_message(self, sender, content):
+        self.my_messages.append(Message(sender, receiver, content))
+        
+class Message(Base):
+    __tablename__ = "message"
+    
+    id = Column(Integer, primary_key=True)
+
+    sender = Column(String)
+    receiver = Column(String)
+    content = Column(String)
+
+    def __init__(self, sender, receiver, content):
+        self.sender = sender
+        self.receiver = receiver
+        self.content = content
 
 class Hero(Base):
     """Store data about the Hero/Character object.
@@ -137,6 +169,8 @@ class Hero(Base):
         exp_percent is now updated by current_exp using a validator.
         max_exp should be assigned a value before current_exp.
         """
+        self.inbox = Inbox()
+        
         self.attributes = Attributes()
         self.proficiencies = Proficiencies()
         self.inventory = Inventory()

@@ -189,10 +189,10 @@ NOTE: password is set as plaintext here. It must (and currently is) hashed in da
 when prebuilt_objects are preloaded into the database.
 """
 ##########
-admin = User(username="admin", password="admin", is_admin=True, inbox="")
+admin = User(username="admin", password="admin", is_admin=True)
 adminHero = Hero(name="Admin", fathers_job="Priest", current_world=world, current_location=town, gold = 5000)
 admin.heroes = [adminHero]
-marlen = User(username="marlen", password="brunner", is_admin=True, inbox="")
+marlen = User(username="marlen", password="brunner", is_admin=True)
 haldon = Hero(name="Haldon", fathers_job="Priest", current_world=world, current_location=town, gold = 5000)
 QuestPath(blacksmith_quest, haldon) # What are these?
 QuestPath(equipment_quest, haldon)  # ///

@@ -26,7 +26,7 @@ import os #Testing only
 import imp
 
 #Internal game modules
-from game import User, Hero
+from game import User, Hero, Inbox
 from abilities import Ability
 from locations import Location, WorldMap, Town, Cave
 from items import ItemTemplate, Item

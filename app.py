@@ -298,12 +298,14 @@ def display_user_page(users_username, hero=None):
         elthran_test = database.get_user_id(users_username)
         this_user = database.fetch_hero_by_id(elthran_test)
         # Below code is just messing with inbox
+        """
         if request.method == "POST":
             message = request.form['message']
             for user in users:
                 if user.heroes[0] == this_user:
                     user.inbox += "From " + hero.name + ": " + message
         # Above this is inbox nonsense
+        """
         return render_template('user_page.html', myHero=hero, user=this_user)
 
 @app.route('/global_chat')
@@ -394,6 +396,7 @@ def attributes(hero=None):
 @login_required
 @uses_hero_and_update
 def proficiencies(hero=None):
+    print (hero.inbox.ok)
     #This page is literally just a html page with tooltips and proficiency level up buttons. No python code is needed. Python only tells html which page to load.
     return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=hero)
 
