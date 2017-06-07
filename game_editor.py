@@ -102,16 +102,35 @@ class Editor:
             fieldnames.remove("*args")
             fieldnames.remove("**kwargs")
             
-            print(fieldnames)
-            exit('testing build csv from prebuilt_objects')
-            fieldnames = sorted(set(prebuilt_objects.all_abilities[class_names[0]].keys()))
+            #Clean fieldnames even more by removing default arguments.
+            #Remove everything after the equal sign.
+            #NOTE: uses eval. Which may be unsecure.
+            #Make a dict of field to default argument just in case.
+            default_arguments = {}
+            for index, field in enumerate(fieldnames):
+                if "=" in field:
+                    field, default = field.split('=')
+                    default_arguments[field] = eval(default)
+                fieldnames[index] = field
             
+            #Write the header or table field names.
+            #The object class is added as the first field.
             writer = csv.DictWriter(csvfile, fieldnames=["Class"] + fieldnames)
             writer.writeheader()
+            
+            #Build a row dict with the fieldnames as keys.
+            #The Class is the objects class name.
+            #Try and populate each field by getting an attribute of that name
+            #from the object if the attribute exists.
+            row = {}
             for obj in prebuilt_objects.all_abilities:
                 row["Class"] = type(obj).__name__
-                
-                writer.writerow(archtype_row)
+                for field in fieldnames:
+                    try:
+                        row[field] = getattr(obj, field)
+                    except AttributeError:
+                        pass
+                writer.writerow(row)
         
         if Editor.args.verbose:
             print("Built: {}".format(filename))

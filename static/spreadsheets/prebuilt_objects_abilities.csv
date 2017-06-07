@@ -1,0 +1,13 @@
+Class,name,max_level,description,hero,castable,cost,archetype,specialization,religion
+Ability,Determination,5,Increases Endurance by 3 for each level.,,False,0,,,
+Ability,Salubrity,5,Increases Health by 4 for each level.,,False,0,,,
+Ability,Gain Gold to Test,5,"Gain 3 gold for each level, every time you actvate this ability.",,True,2,,,
+Archetype_Ability,Survivalism,10,Increases survivalism by 1 for each level.,,False,0,Woodsman,,
+Archetype_Ability,Piety,10,Increases divinity by 1 for each level.,,False,0,Priest,,
+Archetype_Ability,Sagacious,10,Increases experience gained by 5% for each level.,,False,0,All,,
+Class_Ability,Panther Aspect,10,Increases evade chance by 1% for each level.,,False,0,All,Hunter,
+Class_Ability,Camouflage,10,Increases stealth by 1% for each level.,,False,0,All,Trapper,
+Class_Ability,Luck,10,Increases luck by 2 for each level.,,False,0,All,All,
+Religious_Ability,Iron Bark,10,Increases defence by 2% for each level.,,False,0,All,All,Dryarch
+Religious_Ability,Wreath of Flames,10,Increases fire damage by 3 for each level.,,False,0,All,All,Forgoth
+Religious_Ability,Blessed,10,Increases devotion by 5 for each level.,,False,0,All,All,All
