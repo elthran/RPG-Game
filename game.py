@@ -88,39 +88,85 @@ class User(Base):
     email = Column(String)
     timestamp = Column(DateTime)
     is_admin = Column(Boolean)
+    
+    def __init__(self, username, password, is_admin=False):
+        """Create a new user object.
+        
+        The user gets special privileges if it is an admin.
+        """
+    
+        self.inbox = Inbox()
+        
+        self.username = username
+        self.password = password
+        self.is_admin = is_admin
+
 
 class Inbox(Base):
     __tablename__ = 'inbox'
 
     id = Column(Integer, primary_key=True)
 
-    sender_id = Column(Integer, ForeignKey('message.id'))
-    sender = relationship("Message", uselist=False, foreign_keys="[Inbox.sender_id]")
-    receiver_id = Column(Integer, ForeignKey('message.id'))
-    receiver = relationship("Message", uselist=False, foreign_keys="[Inbox.receiver_id]")
-    content_id = Column(Integer, ForeignKey('message.id'))
-    content = relationship("Message", uselist=False, foreign_keys="[Inbox.content_id]")
+    def __init__(self):
+        pass
+        
+        
+    def get_sent_messages(self):
+        """Return a list of all sent messages.
+        
+        These methods can be used for additional functionality
+        such as sorting. NotImplemented!
+        
+        You can just use:
+            user.inbox.sent_messages
+        """
+        return self.sent_messages
+        
+    def get_received_messages(self):
+        """Return a list of all received messages.
+        
+        These methods can be used for additional functionality
+        such as sorting. NotImplemented!
+        
+        You can just use:
+            user.inbox.received_messages
+        """
+        return self.received_messages
 
-    def __init__(self, **kwargs):
-        self.messages = Message("Sender", "Receiver", "Content")
-        self.my_messages = []
+    def send_message(self, receiver, content):
+        """Create a message between the inbox's user and another user.
+        
+        A database commit must take place after this method or the
+        message won't stay in existance?
+        
+        Basically ... the user is in a current session so when
+        you add create a message (with bidirectional relationships)
+        The Message is automatically added to both users inboxes.
+        To save you need to commit. 
+        
+        So in app.py you will call:
+        user.inbox.send_message(other_user, content)
+        database.update()
+        """
+        Message(self.user, receiver, content)        
 
-    def add_message(self, sender, content):
-        self.my_messages.append(Message(sender, receiver, content))
         
 class Message(Base):
     __tablename__ = "message"
     
     id = Column(Integer, primary_key=True)
-
-    sender = Column(String)
-    receiver = Column(String)
     content = Column(String)
 
     def __init__(self, sender, receiver, content):
+        """A message between two users with some content.
+        
+        Both the sender and receiver are User objects.
+        The content is a (formated?) string of text.
+        """
         self.sender = sender
         self.receiver = receiver
         self.content = content
+
 
 class Hero(Base):
     """Store data about the Hero/Character object.
@@ -169,7 +215,6 @@ class Hero(Base):
         exp_percent is now updated by current_exp using a validator.
         max_exp should be assigned a value before current_exp.
         """
-        self.inbox = Inbox()
         
         self.attributes = Attributes()
         self.proficiencies = Proficiencies()

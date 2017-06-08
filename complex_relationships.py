@@ -18,6 +18,26 @@ import inventory
 import pdb
 
 ###########
+#User relationships
+###########
+#Each user can have one inbox. One to One (bidirectional).
+game.User.inbox_id = Column(Integer, ForeignKey('inbox.id'))
+game.User.inbox = relationship("Inbox", backref=backref("user", uselist=False))
+
+
+###########
+#Message relationships
+###########
+#Each user can send or receive multiple messages. One to Many (bi).
+game.Message.sender_id = Column(Integer, ForeignKey('inbox.id'))
+game.Message.sender = relationship("Inbox", backref="sent_messages",
+    foreign_keys="[Message.sender_id]")
+game.Message.receiver_id = Column(Integer, ForeignKey('inbox.id'))
+game.Message.receiver = relationship("Inbox", backref="received_messages",
+    foreign_keys="[Message.receiver_id]")
+
+    
+###########
 #Inventory relationships
 ###########
 #One to One

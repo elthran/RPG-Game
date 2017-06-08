@@ -317,6 +317,33 @@ def global_chat(hero=None):
 @app.route('/inbox')
 @uses_hero_and_update
 def inbox(hero=None):
+    """
+    Sugestions by Marlen (may not be correct syntax or theory)
+    me = database.get_object_by_id("User", session[id])
+    
+    In HTML:
+    select user to send to from dropdown list or text search.
+    Create a message.
+    return username of receiver
+    return message content
+    
+    HERE:
+    if request.method == 'POST':
+        username_of_receiver = request.form["Username"])
+        content = request.form["Content"]
+
+        receiver = database.get_user_by_username(username_of_receiver)
+    
+        me.inbox.send_message(receiver, content)
+        database.update() #IMPORTANT!
+        
+    return render_template('inbox.html', myHero=hero, inbox=inbox)
+    
+    In HTML:
+    {% for message in inbox.received_messages %}:
+        <br>{{ message }}
+    {% endfor %}
+    """
     users = database.get_all_users()
     for user in users:
         if user.heroes[0] == hero:

@@ -92,7 +92,7 @@ class EZDB:
                 prebuilt_objects.all_quests]:
             for obj in obj_list:
                 try:
-                    if type(User()) == type(obj):
+                    if User == type(obj):
                         obj.password = hashlib.md5(obj.password.encode()).hexdigest()
                         obj.timestamp = EZDB.now()
                     self.session.add(obj)
