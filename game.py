@@ -148,7 +148,7 @@ class Inbox(Base):
         user.inbox.send_message(other_user, content)
         database.update()
         """
-        Message(self.user, receiver, content)        
+        Message(self, receiver.inbox, content)        
 
         
 class Message(Base):
