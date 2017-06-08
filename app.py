@@ -293,7 +293,7 @@ def admin(hero=None):
 def display_user_page(users_username, hero=None):
     users = database.get_all_users()
     if users_username == "all":
-        return render_template('users.html', myHero=hero, users=users)
+        return render_template('users.html', page_title="Users", myHero=hero, users=users)
     else:
         this_user = database.get_user_by_username(users_username)
         this_hero = database.fetch_hero_by_username(users_username)
@@ -303,7 +303,7 @@ def display_user_page(users_username, hero=None):
             hero.user.inbox.send_message(this_user, this_message)
             return redirect(url_for('home'))
         # Above this is inbox nonsense
-        return render_template('user_page.html', myHero=hero, enemy_hero=this_hero)
+        return render_template('user_page.html', myHero=hero, page_title=str(this_user.username), enemy_hero=this_hero)
 
 @app.route('/global_chat')
 @uses_hero_and_update
@@ -311,41 +311,17 @@ def global_chat(hero=None):
     chat = game.global_chat
     return render_template('user_page.html', myHero=hero, chat=chat)
 
-@app.route('/inbox')
+@app.route('/inbox', methods=['GET', 'POST'])
 @uses_hero_and_update
 def inbox(hero=None):
-    inbox = hero.user.inbox
-    """
-    Sugestions by Marlen (may not be correct syntax or theory)
-    me = database.get_object_by_id("User", session[id])
-    OR
-    hero.user #A derp :P since you already have the hero object.
-    
-    In HTML:
-    select user to send to from dropdown list or text search.
-    Create a message.
-    return username of receiver
-    return message content
-    
-    HERE:
     if request.method == 'POST':
-        username_of_receiver = request.form["Username"])
-        content = request.form["Content"]
-
+        username_of_receiver = request.form["receiver"]
+        content = request.form["message"]
         receiver = database.get_user_by_username(username_of_receiver)
-    
-        me.inbox.send_message(receiver, content)
+        hero.user.inbox.send_message(receiver, content)
         database.update() #IMPORTANT!
-        
-    return render_template('inbox.html', myHero=hero, inbox=inbox)
-    
-    In HTML:
-    {% for message in inbox.received_messages %}:
-        <br>{{ message }}
-    {% endfor %}
-    """
-    return render_template('inbox.html', myHero=hero, inbox=inbox)
-
+        return render_template('inbox.html', page_title="Inbox", myHero=hero)
+    return render_template('inbox.html', page_title="Inbox", myHero=hero)
 
 ### PROFILE PAGES (Basically the home page of the game with your character display and stats)
 
@@ -1041,7 +1017,7 @@ def command(cmd=None, hero=None):
 @uses_hero_and_update
 def about_page(hero=None):
     info = "The game is being created by Elthran and Haldon, with some help from Gnahz. Any inquiries can be made to elthranRPG@gmail.com"
-    return render_template('about.html', myHero=hero, gameVersion = "0.00.02", about_info=info)
+    return render_template('about.html', myHero=hero, page_title="About", gameVersion = "0.00.02", about_info=info)
 
 ###testing by Marlen ####
 @app.route('/')

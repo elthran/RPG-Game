@@ -1,6 +1,46 @@
-<!--inbox-->
-
 {% extends "layout.html" %}
 {% block block1 %}
-{{ inbox }}
+
+<script type="text/javascript">
+function toggleReplyText() {
+    var x = document.getElementById('replyText');
+    if (x.style.display === 'block') {
+        x.style.display = 'none';
+    } 
+	else {
+        x.style.display = 'block';
+    }
+}
+</script>
+
+<h1>Inbox:</h1>
+<ul>
+	{% for message in hero.user.inbox.received_messages %}
+	<li>
+		<h3>From: <a href=/display_users/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></h3>
+		<p>{{ message.content }}</p>
+		<button onclick="toggleReplyText()">Reply</button>
+		<div id="replyText" style="display: none">
+			<form method="post" action="" autocomplete="off">
+			<input type="text" name="message" value="">
+			<input type="submit" name="receiver" value="{{ message.sender.user.username }}">
+		</div>
+	</li>
+	{% endfor %}
+</ul>
+<h1>Outbox:</h1>
+<ul>
+	{% for message in hero.user.inbox.sent_messages %}
+	<li>
+		<h3>To: <a href=/display_users/{{ message.receiver.user.username }}>{{ message.receiver.user.username }}</a></h3>
+		<p>{{ message.content }}</p>
+		<button onclick="toggleReplyText()">Reply</button>
+		<div id="replyText" style="display: none">
+			<form method="post" action="" autocomplete="off">
+			<input type="text" name="message" value="">
+			<input type="submit" name="receiver" value="{{ message.sender.user.username }}">
+		</div>
+	</li>
+	{% endfor %}
+</ul>
 {% endblock %}
