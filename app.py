@@ -295,18 +295,15 @@ def display_user_page(users_username, hero=None):
     if users_username == "all":
         return render_template('users.html', myHero=hero, users=users)
     else:
-        elthran_test = database.get_user_id(users_username)
-        this_user = database.fetch_hero_by_id(elthran_test)
+        this_user = database.get_user_by_username(users_username)
+        this_hero = database.fetch_hero_by_username(users_username)
         # Below code is just messing with inbox
-        """
-        if request.method == "POST":
-            message = request.form['message']
-            for user in users:
-                if user.heroes[0] == this_user:
-                    user.inbox += "From " + hero.name + ": " + message
+        if request.method == 'POST': 
+            this_message = request.form['message']
+            hero.user.inbox.send_message(this_user, this_message)
+            return redirect(url_for('home'))
         # Above this is inbox nonsense
-        """
-        return render_template('user_page.html', myHero=hero, user=this_user)
+        return render_template('user_page.html', myHero=hero, enemy_hero=this_hero)
 
 @app.route('/global_chat')
 @uses_hero_and_update
@@ -317,6 +314,7 @@ def global_chat(hero=None):
 @app.route('/inbox')
 @uses_hero_and_update
 def inbox(hero=None):
+    inbox = hero.user.inbox
     """
     Sugestions by Marlen (may not be correct syntax or theory)
     me = database.get_object_by_id("User", session[id])
@@ -346,12 +344,7 @@ def inbox(hero=None):
         <br>{{ message }}
     {% endfor %}
     """
-    users = database.get_all_users()
-    for user in users:
-        if user.heroes[0] == hero:
-            inbox = user.inbox
-            return render_template('inbox.html', myHero=hero, inbox=inbox)
-    return render_template('inbox.html', myHero=hero, inbox="empty")
+    return render_template('inbox.html', myHero=hero, inbox=inbox)
 
 
 ### PROFILE PAGES (Basically the home page of the game with your character display and stats)
