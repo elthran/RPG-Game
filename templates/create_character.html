@@ -34,15 +34,16 @@
 <br>
       <form action="" method="post">
 Me: ...I don't remember what happened. My name is
-        <input type="text" placeholder="Character Name" name="name" value="{{ request.form.name }}">
-        <input class="btn btn-default" type="submit" value="Next">
+        <input type="text" placeholder="Character Name" name="name"
+            value="{{ request.form.name }}" autofocus tabindex=1 />
+        <input class="btn btn-default" type="submit" value="Next" tabindex=2 />
       </form>
 
 {% else %}
 <br>
 <form action="" method="post">
 	<b>Me:</b> My father was a great
-        <select name="archetype">
+        <select name="archetype" autofocus tabindex=1>
 	<option value="Brute" title="BE STRONG">Brute</option>
 	<option value="Scholar">Scholar</option>
 	<option value="Hunter">Hunter</option>
@@ -50,7 +51,7 @@ Me: ...I don't remember what happened. My name is
         <option value="Priest">Priest</option>
 	</select>
 from the lands in the north.
-<input class="btn btn-default" type="submit" value="Next">
+<input class="btn btn-default" type="submit" value="Next" tabindex=2 />
       </form>
 
 {% endif %}

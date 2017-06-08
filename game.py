@@ -89,7 +89,7 @@ class User(Base):
     timestamp = Column(DateTime)
     is_admin = Column(Boolean)
     
-    def __init__(self, username, password, is_admin=False):
+    def __init__(self, username, password, email='', timestamp=None, is_admin=False):
         """Create a new user object.
         
         The user gets special privileges if it is an admin.
@@ -99,6 +99,8 @@ class User(Base):
         
         self.username = username
         self.password = password
+        self.email = email
+        self.timestamp = timestamp
         self.is_admin = is_admin
 
 
