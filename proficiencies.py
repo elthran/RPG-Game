@@ -241,15 +241,19 @@ class Health(Proficiency):
         self.formatted_name = "health" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Health's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.vitality.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.maximum = floor(5*self.level + 0)
-        self.tooltip += "Maximum: " + str(self.maximum) + ";" # This adds a tooltip for each variable
+        # This creates a tooltip for each variable
+        tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     @validates('current')
     def validate_health(self, key_name, current):
@@ -285,15 +289,19 @@ class Sanctity(Proficiency):
         self.formatted_name = "sanctity" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Sanctity's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.divinity.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.maximum = floor(1.5*self.level + -1)
-        self.tooltip += "Maximum: " + str(self.maximum) + ";" # This adds a tooltip for each variable
+        # This creates a tooltip for each variable
+        tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     @validates('current')
     def validate_sanctity(self, key_name, current):
@@ -329,15 +337,19 @@ class Storage(Proficiency):
         self.formatted_name = "storage" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Storage's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.strength.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.maximum = floor(2.5*self.level + 8)
-        self.tooltip += "Maximum: " + str(self.maximum) + ";" # This adds a tooltip for each variable
+        # This creates a tooltip for each variable
+        tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     @validates('current')
     def validate_storage(self, key_name, current):
@@ -373,15 +385,19 @@ class Endurance(Proficiency):
         self.formatted_name = "endurance" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Endurance's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.fortitude.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.maximum = floor(0.25*self.level + 5)
-        self.tooltip += "Maximum: " + str(self.maximum) + ";" # This adds a tooltip for each variable
+        # This creates a tooltip for each variable
+        tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     @validates('current')
     def validate_endurance(self, key_name, current):
@@ -417,16 +433,21 @@ class AttackDamage(Proficiency):
         self.formatted_name = "attack_damage" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update AttackDamage's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.strength.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.minimum = floor(floor(3 * (0.5*sin(0.1*self.level) + 0.1*self.level)) + 0)
-        self.tooltip += "Minimum: " + str(self.minimum) + ";" # This adds a tooltip for each variable
+        # This creates a tooltip for each variable
+        tooltips.append("Minimum: " + str(self.minimum)) 
         self.maximum = floor(floor(3 * (0.5*sin(0.1*self.level) + 0.2*self.level)) + 1)
-        self.tooltip += "Maximum: " + str(self.maximum) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Maximum: " + str(self.maximum)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -453,14 +474,18 @@ class AttackSpeed(Proficiency):
         self.formatted_name = "attack_speed" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update AttackSpeed's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.speed = round((3 * (0.1*sin(0.7*self.level) + 0.1*self.level)) + 1, 2)
-        self.tooltip += "Speed: " + str(self.speed) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Speed: " + str(self.speed)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -487,14 +512,18 @@ class AttackAccuracy(Proficiency):
         self.formatted_name = "attack_accuracy" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update AttackAccuracy's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.accuracy = floor((- (10*5)/((2 * self.level) + 10) + 5) * 7.9 + 5)
-        self.tooltip += "Accuracy: " + str(self.accuracy) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Accuracy: " + str(self.accuracy)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -521,14 +550,18 @@ class FirstStrike(Proficiency):
         self.formatted_name = "first_strike" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update FirstStrike's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = floor((- (5*50)/((0.5 * self.level) + 5) + 50) * 7.9 + -30)
-        self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Chance: " + str(self.chance)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -557,16 +590,21 @@ class CriticalHit(Proficiency):
         self.formatted_name = "critical_hit" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update CriticalHit's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.perception.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = floor((- (5*50)/((0.3 * self.level) + 5) + 50) * 7.9 + -22)
-        self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
+        # This creates a tooltip for each variable
+        tooltips.append("Chance: " + str(self.chance)) 
         self.modifier = floor((- (1*0.5)/((0.5 * self.level) + 1) + 0.5) * 7.9 + 0)
-        self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -593,14 +631,18 @@ class Defence(Proficiency):
         self.formatted_name = "defence" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Defence's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.fortitude.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = floor((- (7*35)/((0.1 * self.level) + 7) + 35) * 7.9 + 0)
-        self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -627,14 +669,18 @@ class Evade(Proficiency):
         self.formatted_name = "evade" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Evade's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.reflexes.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = floor((- (10*15)/((0.1 * self.level) + 10) + 15) * 7.9 + 0)
-        self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Chance: " + str(self.chance)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -661,14 +707,18 @@ class Parry(Proficiency):
         self.formatted_name = "parry" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Parry's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.reflexes.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = floor((- (15*15)/((0.2 * self.level) + 15) + 15) * 7.9 + 0)
-        self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Chance: " + str(self.chance)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -695,14 +745,18 @@ class Riposte(Proficiency):
         self.formatted_name = "riposte" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Riposte's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = floor((- (20*15)/((0.3 * self.level) + 20) + 15) * 7.9 + 0)
-        self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Chance: " + str(self.chance)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -731,15 +785,19 @@ class Fatigue(Proficiency):
         self.formatted_name = "fatigue" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Fatigue's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.fortitude.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.maximum = floor(2*self.level + -1)
-        self.tooltip += "Maximum: " + str(self.maximum) + ";" # This adds a tooltip for each variable
+        # This creates a tooltip for each variable
+        tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     @validates('current')
     def validate_fatigue(self, key_name, current):
@@ -775,16 +833,21 @@ class Block(Proficiency):
         self.formatted_name = "block" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Block's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.strength.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = floor((- (25*60)/((0.25 * self.level) + 25) + 60) * 7.9 + 0)
-        self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
+        # This creates a tooltip for each variable
+        tooltips.append("Chance: " + str(self.chance)) 
         self.modifier = floor((- (20*100)/((1.5 * self.level) + 20) + 100) * 7.9 + 0)
-        self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -811,14 +874,18 @@ class Stealth(Proficiency):
         self.formatted_name = "stealth" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Stealth's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.perception.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = floor((- (20*65)/((0.5 * self.level) + 20) + 65) * 7.9 + 0)
-        self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Chance: " + str(self.chance)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -845,14 +912,18 @@ class Pickpocketing(Proficiency):
         self.formatted_name = "pickpocketing" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Pickpocketing's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = floor((- (15*70)/((0.6 * self.level) + 15) + 70) * 7.9 + 0)
-        self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Chance: " + str(self.chance)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -879,14 +950,18 @@ class Faith(Proficiency):
         self.formatted_name = "faith" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Faith's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.divinity.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = floor((- (10*5)/((2 * self.level) + 10) + 5) * 7.9 + 0)
-        self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -913,14 +988,18 @@ class Bartering(Proficiency):
         self.formatted_name = "bartering" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Bartering's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.charisma.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = floor((- (20*60)/((0.5 * self.level) + 20) + 60) * 7.9 + 0)
-        self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Chance: " + str(self.chance)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -947,14 +1026,18 @@ class Oration(Proficiency):
         self.formatted_name = "oration" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Oration's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.strength.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = floor((- (15*60)/((0.75 * self.level) + 15) + 60) * 7.9 + 0)
-        self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -981,14 +1064,18 @@ class Knowledge(Proficiency):
         self.formatted_name = "knowledge" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Knowledge's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.wisdom.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = floor((- (5*50)/((0.1 * self.level) + 5) + 50) * 7.9 + 0)
-        self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -1015,14 +1102,18 @@ class Literacy(Proficiency):
         self.formatted_name = "literacy" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Literacy's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.wisdom.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = floor((- (10*75)/((0.25 * self.level) + 10) + 75) * 7.9 + 0)
-        self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -1049,14 +1140,18 @@ class Luck(Proficiency):
         self.formatted_name = "luck" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update Luck's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.fortuity.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
-        self.tooltip += "Chance: " + str(self.chance) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Chance: " + str(self.chance)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -1083,14 +1178,18 @@ class ResistFrost(Proficiency):
         self.formatted_name = "resist_frost" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update ResistFrost's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
-        self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -1117,14 +1216,18 @@ class ResistFlame(Proficiency):
         self.formatted_name = "resist_flame" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update ResistFlame's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
-        self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -1151,14 +1254,18 @@ class ResistShadow(Proficiency):
         self.formatted_name = "resist_shadow" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update ResistShadow's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
-        self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -1185,14 +1292,18 @@ class ResistHoly(Proficiency):
         self.formatted_name = "resist_holy" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update ResistHoly's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
-        self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -1219,14 +1330,18 @@ class ResistPoison(Proficiency):
         self.formatted_name = "resist_poison" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update ResistPoison's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
-        self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -1253,14 +1368,18 @@ class ResistBlunt(Proficiency):
         self.formatted_name = "resist_blunt" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update ResistBlunt's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
-        self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -1287,14 +1406,18 @@ class ResistSlashing(Proficiency):
         self.formatted_name = "resist_slashing" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update ResistSlashing's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
-        self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     
@@ -1321,14 +1444,18 @@ class ResistPiercing(Proficiency):
         self.formatted_name = "resist_piercing" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update ResistPiercing's attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
         self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
-        self.tooltip += "Modifier: " + str(self.modifier) + ";" # This adds a tooltip for each variable
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     
     

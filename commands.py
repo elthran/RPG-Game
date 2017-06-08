@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import render_template_string
 import pdb
 
 class Command:
@@ -117,6 +117,16 @@ class Command:
         Return status of: success, hide_all, hide_this.
         "succes" means hide none ... maybe I should call it that instead?
         """
+
+        tooltip_template = """{{ proficiency.description }}:
+{%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
+{%- for tooltip in proficiency_tooltip %}
+<br>&bull; {{ tooltip }}
+{%- endfor %}
+<div id="error-{{ proficiency.id }}" style="display:
+{%- if proficiency.is_max_level(hero) %} inline{% else %} none
+{%- endif %}"><br>{{ proficiency.error }}</div>"""
+
         id = arg_dict.get('data', None, type=int)
         proficiency = database.get_proficiency_by_id(id)
         
@@ -129,12 +139,15 @@ class Command:
         hero.proficiency_points -= 1
         proficiency.level_up()
         proficiency.update(hero)
-                       
+        
+        tooltip = render_template_string(tooltip_template,
+            proficiency=proficiency, hero=hero)
+        
         if hero.proficiency_points == 0:
-            return "hide_all"
+            return "hide_all&&{}".format(tooltip)
         elif proficiency.is_max_level(hero):
-            return "hide_this"
-        return "success"
+            return "hide_this&&{}".format(tooltip)
+        return "success&&{}".format(tooltip)
 
         
     def cmd_functions(name):

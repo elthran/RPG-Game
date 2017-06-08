@@ -170,3 +170,43 @@ function itemPurchasedPopup(button, message, heroGold) {
     var span = document.getElementById("heroGold");
     span.innerHTML = heroGold
 }
+
+// This function is used in the profile_proficiencies.html
+// This function only runs if command code return successfully from Python.
+// Could be updated to just rerender all html for tooltip :P
+function updateProf(button, status, newTooltip) {
+    "use strict";
+
+    var id = 0;
+    var i = 0;
+    var heroProfPointsDiv = {};
+    var profCurrentLvDiv = {};
+    var tooltipPopupSpan = {};
+    var buttonsNodeList = {};
+    var errorDivNodeList = {};
+
+    id = button.getAttribute("data");
+    profCurrentLvDiv = document.getElementById("proficiency-" + id);
+    heroProfPointsDiv = document.getElementById("points_remaining");
+    tooltipPopupSpan = document.getElementById("tooltipPopup-" + id);
+
+    profCurrentLvDiv.innerHTML = parseInt(profCurrentLvDiv.innerHTML) + 1;
+    heroProfPointsDiv.innerHTML = parseInt(heroProfPointsDiv.innerHTML) - 1;
+    tooltipPopupSpan.innerHTML = newTooltip;
+
+    //hide this button
+    if (status === "hide_this") {
+        button.style.display = "none";
+    //hide all buttons
+    //show all errors
+    } else if (status === "hide_all") {
+        buttonsNodeList = document.querySelectorAll("button[id=proficiencyButton]");
+        errorDivNodeList = document.querySelectorAll("div[id^=error-]");
+        for (i = 0; i < buttonsNodeList.length; i += 1) {
+            buttonsNodeList[i].style.display = "none";
+            errorDivNodeList[i].style.display = "inline";
+        }
+    }
+}
+//NOTE: <div style="display: inline"> should be replaced by a span tag
+// once I figure out how make them visible again.

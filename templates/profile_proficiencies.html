@@ -1,47 +1,5 @@
 {% extends "profile_template.html" %}
 {% block block1 %}{% set hero = myHero %}
-
-<script>
-// This function only runs if command code return successfully from Python.
-function updateProf(button, status) {
-    "use strict";
-
-    var id = 0;
-    var i = 0;
-    var heroProfPointsDiv = {};
-    var profCurrentLvDiv = {};
-    var errorDiv = {};
-    var buttonsNodeList = {};
-    var errorDivNodeList = {};
-
-    id = button.getAttribute("data");
-    profCurrentLvDiv = document.getElementById("proficiency-" + id);
-    heroProfPointsDiv = document.getElementById("points_remaining");
-
-    profCurrentLvDiv.innerHTML = parseInt(profCurrentLvDiv.innerHTML) + 1;
-    heroProfPointsDiv.innerHTML = parseInt(heroProfPointsDiv.innerHTML) - 1;
-
-    //hide this button
-    //show this error
-    if (status === "hide_this") {
-        button.style.display = "none";
-        errorDiv = document.getElementById("error-" + id);
-        errorDiv.style.display = "inline";
-    //hide all buttons
-    //show all errors
-    } else if (status === "hide_all") {
-        buttonsNodeList = document.querySelectorAll("button[id=proficiencyButton]");
-        errorDivNodeList = document.querySelectorAll("div[id^=error-]");
-        for (i = 0; i < buttonsNodeList.length; i += 1) {
-            buttonsNodeList[i].style.display = "none";
-            errorDivNodeList[i].style.display = "inline";
-        }
-    }
-}
-//NOTE: <div style="display: inline"> should be replaced by a span tag
-// once I figure out how make them visible again.
-</script>
-
 <!-- Basic Skill Page -->
 <div class="profilePage">
     Points Remaining: <div style="display: inline" id="points_remaining">{{ myHero.proficiency_points }}</div>
@@ -56,13 +14,13 @@ function updateProf(button, status) {
                 <li>
                     <div class="tooltip">
                         {{ proficiency.name}}: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
-                        <span>
+                        <span id="tooltipPopup-{{ proficiency.id }}">
                             {{ proficiency.description }}:
                             {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
                             {%- for tooltip in proficiency_tooltip %}
                             <br>&bull; {{ tooltip }}
                             {%- endfor %}
-                            <div id="error-{{ proficiency.id }}" style="display:
+                            <div style="display:
                             {%- if proficiency.is_max_level(hero) %} inline{% else %} none
                             {%- endif %}"><br>{{ proficiency.error }}</div>
                         </span>
@@ -82,13 +40,13 @@ function updateProf(button, status) {
                 <li>
                     <div class="tooltip">
                         {{ proficiency.name}}: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
-                        <span>
+                        <span id="tooltipPopup-{{ proficiency.id }}">
                             {{ proficiency.description }}:
                             {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
                             {%- for tooltip in proficiency_tooltip %}
                             <br>&bull; {{ tooltip }}
                             {%- endfor %}
-                            <div id="error-{{ proficiency.id }}" style="display:
+                            <div style="display:
                             {%- if proficiency.is_max_level(hero) %} inline{% else %} none
                             {%- endif %}"><br>{{ proficiency.error }}</div>
                         </span>
@@ -110,13 +68,13 @@ function updateProf(button, status) {
                 <li>
                     <div class="tooltip">
                         {{ proficiency.name}}: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
-                        <span>
+                        <span id="tooltipPopup-{{ proficiency.id }}">
                             {{ proficiency.description }}:
                             {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
                             {%- for tooltip in proficiency_tooltip %}
                             <br>&bull; {{ tooltip }}
                             {%- endfor %}
-                            <div id="error-{{ proficiency.id }}" style="display:
+                            <div style="display:
                             {%- if proficiency.is_max_level(hero) %} inline{% else %} none
                             {%- endif %}"><br>{{ proficiency.error }}</div>
                         </span>
@@ -136,13 +94,13 @@ function updateProf(button, status) {
                 <li>
                     <div class="tooltip">
                         {{ proficiency.name}}: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
-                        <span>
+                        <span id="tooltipPopup-{{ proficiency.id }}">
                             {{ proficiency.description }}:
                             {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
                             {%- for tooltip in proficiency_tooltip %}
                             <br>&bull; {{ tooltip }}
                             {%- endfor %}
-                            <div id="error-{{ proficiency.id }}" style="display:
+                            <div style="display:
                             {%- if proficiency.is_max_level(hero) %} inline{% else %} none
                             {%- endif %}"><br>{{ proficiency.error }}</div>
                         </span>
@@ -164,13 +122,13 @@ function updateProf(button, status) {
                 <li>
                     <div class="tooltip tooltipLeft">
                         {{ proficiency.name}}: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
-                        <span>
+                        <span id="tooltipPopup-{{ proficiency.id }}">
                             {{ proficiency.description }}:
                             {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
                             {%- for tooltip in proficiency_tooltip %}
                             <br>&bull; {{ tooltip }}
                             {%- endfor %}
-                            <div id="error-{{ proficiency.id }}" style="display:
+                            <div style="display:
                             {%- if proficiency.is_max_level(hero) %} inline{% else %} none
                             {%- endif %}"><br>{{ proficiency.error }}</div>
                         </span>
@@ -190,13 +148,13 @@ function updateProf(button, status) {
                 <li>
                     <div class="tooltip tooltipLeft">
                         {{ proficiency.name}}: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
-                        <span>
+                        <span id="tooltipPopup-{{ proficiency.id }}">
                             {{ proficiency.description }}:
                             {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
                             {%- for tooltip in proficiency_tooltip %}
                             <br>&bull; {{ tooltip }}
                             {%- endfor %}
-                            <div id="error-{{ proficiency.id }}" style="display:
+                            <div style="display:
                             {%- if proficiency.is_max_level(hero) %} inline{% else %} none
                             {%- endif %}"><br>{{ proficiency.error }}</div>
                         </span>

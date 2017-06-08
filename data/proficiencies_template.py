@@ -121,7 +121,9 @@ class {{ prof_class }}(Proficiency):
         self.formatted_name = "{{ prof_tablename }}" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update {{ prof_class }}'s attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.{{ prof[2].lower() }}.level // 2:
             self.is_not_max_level = True
         else:
@@ -139,10 +141,13 @@ class {{ prof_class }}(Proficiency):
         self.{{ value[0].lower() }} = self.maximum
         {% endif -%}
         {% if value[1] != "empty" -%}
-        self.tooltip += "{{ value[0].title() }}: " + str(self.{{ value[0].lower() }}) + ";" # This adds a tooltip for each variable
+        # This creates a tooltip for each variable
+        tooltips.append("{{ value[0].title() }}: " + str(self.{{ value[0].lower() }})) 
         {% endif -%}
         {% endfor -%}
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
+        
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
 
     {% if prof[4][0][0] == "Maximum" -%}
     @validates('current')

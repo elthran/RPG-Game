@@ -320,6 +320,8 @@ def inbox(hero=None):
     """
     Sugestions by Marlen (may not be correct syntax or theory)
     me = database.get_object_by_id("User", session[id])
+    OR
+    hero.user #A derp :P since you already have the hero object.
     
     In HTML:
     select user to send to from dropdown list or text search.
@@ -423,7 +425,6 @@ def attributes(hero=None):
 @login_required
 @uses_hero_and_update
 def proficiencies(hero=None):
-    print (hero.inbox.ok)
     #This page is literally just a html page with tooltips and proficiency level up buttons. No python code is needed. Python only tells html which page to load.
     return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=hero)
 
