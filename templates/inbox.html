@@ -20,8 +20,8 @@ function toggleReplyText(button) {
 	<li>
 		<h3>From: <a href=/display_users/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></h3>
 		<p>{{ message.content }}</p>
-		<button onclick="toggleReplyText(this)" id="in-{{ message.sender.user.id }}">Reply</button>
-		<div id="replyText-in-{{ message.sender.user.id }}" style="display: none">
+		<button onclick="toggleReplyText(this)" id="in-{{ message.id }}">Reply</button>
+		<div id="replyText-in-{{ message.id }}" style="display: none">
 			<form method="post" action="" autocomplete="off">
 			<input type="text" name="message" value="">
 			<input type="submit" name="receiver" value="{{ message.sender.user.username }}">
@@ -36,8 +36,8 @@ function toggleReplyText(button) {
 	<li>
 		<h3>To: <a href=/display_users/{{ message.receiver.user.username }}>{{ message.receiver.user.username }}</a></h3>
 		<p>{{ message.content }}</p>
-		<button onclick="toggleReplyText(this)" id="out-{{ message.receiver.user.id }}">Reply</button>
-		<div id="replyText-out-{{ message.receiver.user.id }}" style="display: none">
+		<button onclick="toggleReplyText(this)" id="out-{{ message.id }}">Reply</button>
+		<div id="replyText-out-{{ message.id }}" style="display: none">
 			<form method="post" action="" autocomplete="off">
 			<input type="text" name="message" value="">
 			<input type="submit" name="receiver" value="{{ message.receiver.user.username }}">
