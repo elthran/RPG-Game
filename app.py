@@ -301,7 +301,7 @@ def display_user_page(users_username, hero=None):
         if request.method == 'POST': 
             this_message = request.form['message']
             hero.user.inbox.send_message(this_user, this_message)
-            return redirect(url_for('home'))
+            return render_template('user_page.html', myHero=hero, page_title=str(this_user.username), enemy_hero=this_hero)
         # Above this is inbox nonsense
         return render_template('user_page.html', myHero=hero, page_title=str(this_user.username), enemy_hero=this_hero)
 
