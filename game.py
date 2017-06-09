@@ -25,7 +25,7 @@ except ImportError as e:
 from base_classes import Base, BaseDict
 
 import math
-from flask import request
+# from flask import request
 from attributes import Attributes
 from proficiencies import Proficiencies
 from inventory import Inventory
@@ -35,31 +35,13 @@ import pdb
 
 # function used in '/level_up'
 #Fix ME! Or put me in a class as a method or something.
-def convert_input(x):
+def convert_input(x:int):
     try:
         x = int(x)
     except:
         x = 0
     return x
 
-#Custom constants for primary_attributes list.
-AGILITY = 0
-CHARISMA = 1
-DIVINITY = 2
-FORTITUDE = 3
-FORTUITY = 4
-PERCEPTION = 5
-REFLEXES = 6
-RESILIENCE = 7
-STRENGTH = 8
-SURVIVALISM = 10
-VITALITY = 11
-WISDOM = 11
-
-"""
-USE: primary_attributes[AGILITY] == value of agility stored in list at position 0
-primary_attributes[FORTITUDE] == value of fortitude stored in list at position 4
-"""
 
 class Game(object):
     def __init__(self, hero=None):

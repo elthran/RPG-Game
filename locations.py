@@ -127,7 +127,7 @@ class Display(Base):
     def places_of_interest(self, places):
         """Create list of PlaceOfInterest objects.
         """
-        if places:
+        if places is not None:
             self._places_of_interest = [PlaceOfInterest(url=p[0], places=p[1:]) for p in places]
         else:
             self._places_of_interest = []

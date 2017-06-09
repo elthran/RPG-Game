@@ -29,6 +29,7 @@ import hashlib
 
 #For testing!
 import pdb
+import pprint
 
 # INIT AND LOGIN FUNCTIONS
 from database import EZDB
@@ -75,8 +76,11 @@ def prevent_url_typing(f):
     This should redirect you to the login page.
     This needs a lot more work. It should be dealing with actual URLs ...
     """
+    
     @wraps(f)
     def wrap_url(*args, **kwargs):
+        pprint.pprint(args)
+        pprint.pprint(kwargs)
         try:
             requested_move = set([kwargs['location_id']])
         except KeyError:
@@ -134,7 +138,7 @@ def login():
                 hero.refresh_character()
                 
             # If it's a new character, send them to cerate_character url
-            if hero.character_name == None:
+            if hero.character_name is None:
                 return redirect(url_for('create_character'))
             #If the character already exist go straight the main home page!
             return redirect(url_for('home'))
@@ -206,16 +210,16 @@ def create_character(hero=None):
         #pdb.set_trace()
         for quest in database.get_default_quests():
             quest.add_hero(hero)
-    if hero.current_world == None:
+    if hero.current_world is None:
         hero.current_world = database.get_default_world()
         hero.current_location = database.get_default_location()
-    if request.method == 'POST' and hero.name == None:
+    if request.method == 'POST' and hero.name is None:
         hero.name = request.form["name"]
         page_image = "old_man"
         paragraph = None
         conversation = [("Stranger: ", "Where do you come from, child?")]
         display = False
-    elif request.method == 'POST' and fathers_job == None:
+    elif request.method == 'POST' and fathers_job is None:
         fathers_job = request.form["archetype"]
         if fathers_job == "Brute":
             hero.attributes.strength.level += 3
@@ -549,7 +553,7 @@ def cave(cave_name, hero=None):
 @app.route('/WorldMap/<current_world>/<int:location_id>') # Test function while experimenting with locations
 @login_required
 #Not implemented. Control user moves on map.
-# @prevent_url_typing
+@prevent_url_typing
 @uses_hero_and_update
 def world_map(current_world, location_id, hero=None):
     """Set up World Map web page. Return html string/web page.
@@ -695,7 +699,7 @@ def battle(hero=None):
                     hero.experience += 10
                 newMonster = False
                 break
-        if newMonster:
+        if newMonster is not None:
             #hero.kill_quests[game.enemy.species] = 1
             hero.completed_achievements.append(("Kill a " + game.enemy.species, "5"))
             for monster in bestiary_data:
@@ -919,47 +923,14 @@ def command(cmd=None, hero=None):
         return "success", 200, {'Content-Type': 'text/plain'} #//
     # END OF TEST CODE
 
-    for item in hero.inventory:
-        # print(item)
-        if cmd == item.name:
-            if item.wearable:            # EQUIP ITEMS
-                equipped_items_to_remove = []
-                for equipped_item in hero.equipped_items:
-                    if type(item) is Weapon:
-                        if item.two_handed_weapon and (equipped_item.shield or equipped_item.one_handed_weapon):
-                            equipped_items_to_remove.append(equipped_item)
-                            hero.inventory.append(equipped_item)
-                        if item.one_handed_weapon and equipped_item.two_handed_weapon:
-                            equipped_items_to_remove.append(equipped_item)
-                            hero.inventory.append(equipped_item)
-                        if item.shield and equipped_item.two_handed_weapon:
-                            equipped_items_to_remove.append(equipped_item)
-                            hero.inventory.append(equipped_item)
-                    if type(equipped_item) is type(item):
-                        equipped_items_to_remove.append(equipped_item)
-                        hero.inventory.append(equipped_item)
-                hero.equipped_items = [x for x in hero.equipped_items if x not in equipped_items_to_remove] # deletes the items in equipped_items_to_remove from hero.equipped_items
-                hero.equipped_items.append(item)
-                hero.inventory.remove(item)
-                hero.refresh_proficiencies()
-                for path in hero.quest_paths:
-                    if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 1:
-                        path.quest.advance_quest()
-                return "success", 200, {'Content-Type': 'text/plain'} #//
-            if item.consumable == True:                # CONSUME ITEMS
-                hero.consume_item(item.name)
-                return "success", 200, {'Content-Type': 'text/plain'} #//
-
-    # UNEQUIP ITEMS
-    for item in hero.equipped_items():
-        if cmd == item.name:
-            hero.inventory.append(item)
-            hero.equipped_items.remove(item)
-            hero.refresh_proficiencies()
-            for path in hero.quest_paths:
-                    if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 2:
-                        path.quest.advance_quest()
-            return "success", 200, {'Content-Type': 'text/plain'} #//
+    
+    # for path in hero.quest_paths:
+        # if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 1:
+            # path.quest.advance_quest()
+    # for path in hero.quest_paths:
+            # if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 2:
+                # path.quest.advance_quest()
+            # return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # UPGRADE ABILITIES
     learnable_known_abilities = [ability for ability in hero.abilities if ability.level < ability.max_level]
@@ -994,24 +965,7 @@ def command(cmd=None, hero=None):
             ability.cast(hero)
             database.update()
             return "success", 200, {'Content-Type': 'text/plain'} #//
-
-
-    # BUY FROM MARKETPLACE
-    for item in database.get_all_marketplace_items():
-        if cmd == item.buy_name and hero.gold >= item.buy_price:
-            for my_item in hero.inventory:
-                if my_item.name == item.name:
-                    my_item.amount_owned += 1
-                    break
-            else:
-                newItem = item
-                newItem.update_owner(hero)
-                hero.inventory.append(newItem)
-                newItem.amount_owned = 1
-            hero.gold -= item.buy_price
-            return "success", 200, {'Content-Type': 'text/plain'} #//
-
-    return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
+    return "No content", 204 #https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 
 @app.route('/about')
 @uses_hero_and_update

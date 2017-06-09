@@ -92,7 +92,7 @@ class EZDB:
                 prebuilt_objects.all_quests]:
             for obj in obj_list:
                 try:
-                    if User == type(obj):
+                    if isinstance(obj, User):
                         obj.password = hashlib.md5(obj.password.encode()).hexdigest()
                         obj.timestamp = EZDB.now()
                     self.session.add(obj)
@@ -243,7 +243,7 @@ class EZDB:
         Note: Providing a username when you have the hero/character id is redundant.
         """
         user_id = self.get_user_id(username)
-        if character_name:
+        if character_name is not None:
             return self.session.query(Hero).filter_by(user_id=user_id, character_name=character_name).first()
         return self.session.query(User).filter_by(id=user_id).first().heroes[0]
         
