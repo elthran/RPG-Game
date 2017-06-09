@@ -65,7 +65,7 @@ class Game(object):
     def __init__(self, hero=None):
         self.hero = hero
         self.has_enemy = False
-        self.global_chat = ["Elthran: Hello", "Haldon: You are awesome"]
+        self.global_chat = [] # I am not sure if this should goin database? Just very temporary chat log that all users can see
 
     def set_enemy(self, enemy):
         self.enemy = enemy
@@ -168,6 +168,7 @@ class Message(Base):
         self.sender = sender
         self.receiver = receiver
         self.content = content
+        #self.timestamp = timestamp
 
 
 class Hero(Base):

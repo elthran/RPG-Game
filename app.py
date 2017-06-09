@@ -305,23 +305,32 @@ def display_user_page(users_username, hero=None):
         # Above this is inbox nonsense
         return render_template('user_page.html', myHero=hero, page_title=str(this_user.username), enemy_hero=this_hero)
 
-@app.route('/global_chat')
+@app.route('/global_chat', methods=['GET', 'POST'])
 @uses_hero_and_update
 def global_chat(hero=None):
-    chat = game.global_chat
-    return render_template('user_page.html', myHero=hero, chat=chat)
+    if request.method == 'POST':
+        message = request.form["message"]
+        game.global_chat.append((hero.name + ": ", message)) # Currently it just appends tuples to the chat list, containing the hero's name and the message
+        if len(game.global_chat) > 5:                   # After it reaches 5 messages, more messages will delete theoldest ones
+               game.global_chat = game.global_chat[1:]
+        return render_template('global_chat.html', myHero=hero, chat=game.global_chat)
+    return render_template('global_chat.html', page_title="Chat", myHero=hero, chat=game.global_chat)
 
-@app.route('/inbox', methods=['GET', 'POST'])
+@app.route('/inbox/<outbox>', methods=['GET', 'POST'])
 @uses_hero_and_update
-def inbox(hero=None):
+def inbox(outbox, hero=None):
+    if outbox == "outbox":
+        outbox = True
+    else:
+        outbox = False
     if request.method == 'POST':
         username_of_receiver = request.form["receiver"]
         content = request.form["message"]
         receiver = database.get_user_by_username(username_of_receiver)
         hero.user.inbox.send_message(receiver, content)
         database.update() #IMPORTANT!
-        return render_template('inbox.html', page_title="Inbox", myHero=hero)
-    return render_template('inbox.html', page_title="Inbox", myHero=hero)
+        return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)
+    return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)
 
 ### PROFILE PAGES (Basically the home page of the game with your character display and stats)
 

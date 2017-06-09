@@ -263,6 +263,37 @@ ul {
 	display: block;
 }
 
+/* Topbar used in inbox */
+
+.inboxTopbar {
+	float: left;
+	width: auto;
+}
+
+.inboxTopbar ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background: Black;
+}
+
+.inboxTopbar li {
+	float: left;
+}
+
+.inboxTopbar li a {
+	display: block;
+	color: white;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+}
+
+.inboxTopbar li a:hover:not(.active) {
+	background-color: Green;
+}
+
 /* Attribute Page */
 
 .profilePage {
