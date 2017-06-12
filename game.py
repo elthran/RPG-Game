@@ -9,29 +9,21 @@
 
 Suggestion: change name to game_objects.py
 """
+import math
+import datetime
+import pdb
 
-try:
-    from sqlalchemy import Table, Column, Integer, String, DateTime, Boolean
-
-    from sqlalchemy import ForeignKey
-    from sqlalchemy.orm import relationship
-
-    from sqlalchemy import orm
-    from sqlalchemy.orm.collections import attribute_mapped_collection
-    from sqlalchemy.orm import validates
-except ImportError as e:
-    exit("Open a command prompt and type: pip install sqlalchemy."), e
+from sqlalchemy import Table, Column, Integer, String, DateTime, Boolean
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+from sqlalchemy import orm
+from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.orm import validates
 
 from base_classes import Base, BaseDict
-
-import math
-# from flask import request
 from attributes import Attributes
 from proficiencies import Proficiencies
 from inventory import Inventory
-
-import datetime
-import pdb
 
 # function used in '/level_up'
 #Fix ME! Or put me in a class as a method or something.

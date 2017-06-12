@@ -6,25 +6,22 @@ To solve this I am rewriting the whole thing with SQLAlchemy ORM.
 Mainly using the tutorial at: http://docs.sqlalchemy.org/en/latest/orm/tutorial.html
 
 """
+import hashlib
+import datetime
+import imp
+import os
+import datetime
+import pdb #Testing only
 
-try:
-    from sqlalchemy import create_engine
-    from sqlalchemy.orm import sessionmaker
-    import sqlalchemy
-except ImportError as e:
-    exit("Open a command prompt and type: pip install sqlalchemy."), e
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+import sqlalchemy
 
 #Base is the initialize SQLAlchemy base class. It is used to set up the table metadata.
 #Used like so in the __init__ method: Base.metadata.create_all(engine)
 #What this actually means or does I have no idea but it is neccessary. And I know how to use it.
 #!Important!: Base can only be defined in ONE location and ONE location ONLY!
 import base_classes
-
-import hashlib
-import datetime
-import os #Testing only
-import imp
-
 #Internal game modules
 from game import User, Hero, Inbox
 from abilities import Ability
@@ -34,10 +31,6 @@ from quests import Quest
 from proficiencies import Proficiency
 import complex_relationships
 import prebuilt_objects
-
-import pdb
-
-import datetime
 
 
 #Constants#
@@ -189,14 +182,11 @@ class EZDB:
         """Return the id of the user by username from the User's table.
         
         """
-        try:
-            return self.session.query(User).filter_by(username=username).first().id
-        except AttributeError as e:
-            #If no user of that username exists return None/False.
-            if str(e) == "'NoneType' object has no attribute 'id'":
-                return
-            else:
-                raise e
+        user = self.session.query(User).filter_by(username=username).first()
+        if user is None:
+            return None
+        return user.id
+
     
     def get_user_by_username(self, username):
         return self.session.query(User).filter_by(username=username).first()
@@ -226,14 +216,10 @@ class EZDB:
     def validate(self, username, password):
         """Check if password if valid for user.
         """
-        try:
-            hashed_password = self.session.query(User).filter_by(username=username).first().password
-            return  hashed_password == hashlib.md5(password.encode()).hexdigest()
-        except AttributeError as e:
-            if str(e) == "'NoneType' object has no attribute 'password'":
-                return
-            else:
-                raise e
+        user = self.session.query(User).filter_by(username=username).first()
+        if user is not None:
+            return user.password == hashlib.md5(password.encode()).hexdigest()
+        return None
         
         
     def fetch_hero_by_username(self, username, character_name=None):

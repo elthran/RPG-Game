@@ -5,34 +5,26 @@
 #                                                                              #
 #//////////////////////////////////////////////////////////////////////////////#
 
-# from game import * #Must go before login method???
-from game import Game
-# import the Flask class from the flask module
-from flask import Flask, render_template, redirect, url_for, request, session, flash
+
+import pdb #For testing!
+import pprint #For testing!
 from functools import wraps
+
+from flask import Flask, render_template, redirect, url_for, request, session, flash
+
+from game import Game
 import combat_simulator
+#Marked for restructure! Avoid use of import * in production code.
 from bestiary import *
-#import database
 from items import Quest_Item
 from commands import Command
 from events import Event
-
 #MUST be imported after all other game objects but before any of them are used.
 import complex_relationships
+from database import EZDB
 
-#Last module to be imported (of our custom ones)
-
-#Marked for restructure: probably should only be used in Hero object (in game.py) directly.
-#If it is needed elsewhere the method should be moved to the Hero object.
-import sqlite3
-import hashlib
-
-#For testing!
-import pdb
-import pprint
 
 # INIT AND LOGIN FUNCTIONS
-from database import EZDB
 database = EZDB('sqlite:///static/database.db', debug=False)
 
 #Disable will need to be restructured (Marlen)

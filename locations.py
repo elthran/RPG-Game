@@ -35,23 +35,20 @@ Town
     
 """
 
-try:
-    from sqlalchemy import Column, Integer, String, Boolean
-    from sqlalchemy import ForeignKey
-    from sqlalchemy.orm import relationship
-    from sqlalchemy import orm
-    from sqlalchemy.ext.hybrid import hybrid_property
-    ####!IMPORTANT!####
-    #Sqlite does not implement sqlalchemy.ARRAY so don't try and use it.
-except ImportError as e:
-    exit("Open a command prompt and type: pip install sqlalchemy."), e
+import pdb
+
+from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+from sqlalchemy import orm
+from sqlalchemy.ext.hybrid import hybrid_property
+####!IMPORTANT!####
+#Sqlite does not implement sqlalchemy.ARRAY so don't try and use it.
 
 #!Important!: Base can only be defined in ONE location and ONE location ONLY!
 #Well ... ok, but for simplicity sake just pretend that that is true.
 from base_classes import Base, BaseListElement
 
-import pdb
-                        
 
 class Place(Base):
     """Store the name of a place.

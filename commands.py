@@ -1,5 +1,7 @@
-from flask import render_template_string
 import pdb
+
+from flask import render_template_string
+
 
 class Command:
     """Run a list of html update commands based on the string cmd.
@@ -149,6 +151,10 @@ class Command:
             return "hide_this&&{}".format(tooltip)
         return "success&&{}".format(tooltip)
 
-        
+
     def cmd_functions(name):
+        """Use to refer to return a function from string of its name.
+        
+        Getattr wrapper ...
+        """
         return getattr(Command, name)
