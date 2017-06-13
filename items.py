@@ -448,5 +448,6 @@ class Quest_Item(ItemTemplate):
     __mapper_args__ = {
         'polymorphic_identity':"Quest_Item",
     }
+
     def __init__(self, name, buy_price):
         super().__init__(name, buy_price)

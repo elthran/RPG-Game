@@ -1,25 +1,29 @@
-#//////////////////////////////////////////////////////////////////////////////#
+# //////////////////////////////////////////////////////////////////////////////#
 #                                                                              #
 #  Author: Elthran B, Jimmy Zhang                                              #
 #  Email : jimmy.gnahz@gmail.com                                               #
 #                                                                              #
-#//////////////////////////////////////////////////////////////////////////////#
+# //////////////////////////////////////////////////////////////////////////////#
 
 
-import pdb #For testing!
-import pprint #For testing!
+import pdb  # For testing!
+import pprint  # For testing!
 from functools import wraps
+import os
 
-from flask import Flask, render_template, redirect, url_for, request, session, flash
+from flask import (
+    Flask, render_template, redirect, url_for, request, session,
+    flash, send_from_directory)
 
 from game import Game
 import combat_simulator
-#Marked for restructure! Avoid use of import * in production code.
+# Marked for restructure! Avoid use of import * in production code.
 from bestiary import *
 from items import Quest_Item
 from commands import Command
-from events import Event
-#MUST be imported after all other game objects but before any of them are used.
+# from events import Event
+# MUST be imported _after_ all other game objects but 
+# _before_ any of them are used.
 import complex_relationships
 from database import EZDB
 
@@ -27,7 +31,7 @@ from database import EZDB
 # INIT AND LOGIN FUNCTIONS
 database = EZDB('sqlite:///static/database.db', debug=False)
 
-#Disable will need to be restructured (Marlen)
+# Disable will need to be restructured (Marlen)
 # initialization
 game = Game()
 
@@ -35,10 +39,82 @@ game = Game()
 app = Flask(__name__)
 app.secret_key = 'starcraft'
 
+ALWAYS_VALID_URLS = [
+    '/login', '/home', '/about', '/inventory_page', '/quest_log',
+    '/attributes', '/proficiencies', '/ability_tree/*', '/bestiary/*',
+    '/people_log/*', '/map_log', '/quest_log', '/display_users/*',
+    '/inbox', '/logout',
+]
+
+# Not implemented. Control user moves on map.
+# Not implemented. Broken. Control user moves on map. (Marlen)
+def prevent_url_typing(f):
+    """Redirects to home page if hero can't travel here.
+    
+    This needs a lot more work. It should be dealing with actual URLs ...
+    """
+
+    @wraps(f)
+    def wrap_url(*args, **kwargs):
+        # pprint.pprint(app.url_map)
+        # pprint.pprint(request.url_rule)
+        pprint.pprint(args)
+        pprint.pprint(kwargs)
+        # pprint.pprint(session)
+        # print(dir(session))
+        # f(*args, **kwargs)
+        # print('after app.route')
+        #Break imediately if server is just being set up.
+        if dir(session) == []:
+            return f(*args, **kwargs)
+
+        valid_urls = ALWAYS_VALID_URLS
+
+        hero = kwargs['hero']
+        if hero.user.is_admin:
+            valid_urls.append('/admin')
+
+        local_places = hero.current_location.display.places_of_interest
+        valid_urls += [] #all places of places_of_interest
+
+        requested_move = '' # I don't know how to get this ...
+        pdb.set_trace()
+        # try:
+            # requested_move = set([kwargs['location_id']])
+        # except KeyError:
+            # pass
+        # try:
+            # requested_move = set([kwargs['cave_name']])
+        # except KeyError:
+            # pass
+        # try:
+            # requested_move = set([kwargs['town_name']])
+        # except KeyError:
+            # pass
+        if ('valid_moves' in session
+                and any(move in session['valid_moves'] for move in requested_move)):
+            return f(*args, **kwargs)
+        else:
+            flash("You can't access '{}' from here.".format(requested_move))
+            return redirect(url_for("/home"))
+    return wrap_url
+
+# app.route = prevent_url_typing(app.route)
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(
+        os.path.join(app.root_path, 'static'),
+        'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+
+@prevent_url_typing
 def login_required(f):
     """Set certain pages as requiring a login to visit.
 
     This should redirect you to the login page."""
+
     @wraps(f)
     def wrap_login(*args, **kwargs):
         if 'logged_in' in session:
@@ -48,11 +124,15 @@ def login_required(f):
             return redirect(url_for('login'))
     return wrap_login
 
-#Not implemented, and untested (Marlen)
+# Untested (Marlen)
 def uses_hero_and_update(f):
     """Preloads hero object and saves it afterwards.
     
-    gets hero before, updates database after.
+    If this function returns an error ... please document.
+    
+    Especially if the error is KeyError on "hero_id". I had a
+    bug with this but it disapeared and I don't know why it
+    occured.
     """
     @wraps(f)
     def wrap_hero_and_update(*args, **kwargs):
@@ -60,38 +140,6 @@ def uses_hero_and_update(f):
         hero = database.get_object_by_id("Hero", session["hero_id"])
         return f(*args, hero=hero, **kwargs)
     return wrap_hero_and_update
-
-#Not implemented. Broken. Control user moves on map. (Marlen)
-def prevent_url_typing(f):
-    """Set certain pages as requiring a login to visit.
-
-    This should redirect you to the login page.
-    This needs a lot more work. It should be dealing with actual URLs ...
-    """
-    
-    @wraps(f)
-    def wrap_url(*args, **kwargs):
-        pprint.pprint(args)
-        pprint.pprint(kwargs)
-        try:
-            requested_move = set([kwargs['location_id']])
-        except KeyError:
-            pass
-        try:
-            requested_move = set([kwargs['cave_name']])
-        except KeyError:
-            pass
-        try:
-            requested_move = set([kwargs['town_name']])
-        except KeyError:
-            pass
-        pdb.set_trace()
-        if 'valid_moves' in session and any(move in session['valid_moves'] for move in requested_move):
-            return f(*args, **kwargs)
-        else:
-            flash("You can't access that location from here.")
-            return redirect(url_for(f))
-    return wrap_url
 
 # use decorators to link the function to a url
 # route for handling the login page logic
@@ -104,7 +152,7 @@ def login():
     #Testing:
     #Should prevent contamination between logging in with 2 different accounts.
     session.clear()
-    
+
     error = None
     if request.method == 'POST':
         username = request.form['username']
@@ -114,21 +162,21 @@ def login():
             flash("LOG IN SUCCESSFUL")
             user = database.get_user_by_username(username)
             session['id'] = user.id
-            
+
             #I recommend a dialogue here to select the specific hero that the
             # user wants to play with. Or a page redirect whatever ...
             # Choose hero dialogue ... not implemented.
             hero = user.heroes[0]
             session['hero_id'] = hero.id
-            
+
             #Now I need to work out how to make game not global *sigh* (Marlen)
             game.set_hero(hero)
             game.set_enemy(monster_generator(hero.age))
-            
+
             #Refresh admin accounts on login.
             if user.is_admin:
                 hero.refresh_character()
-                
+
             # If it's a new character, send them to cerate_character url
             if hero.character_name is None:
                 return redirect(url_for('create_character'))
@@ -140,24 +188,26 @@ def login():
 
     return render_template('index.html', error=error, login=True)
 
+
 # route for handling the account creation page logic
-@app.route('/password_recovery', methods=['GET', 'POST'])
-def password_recovery():
-    error = "Password Not Found"
+# @app.route('/password_recovery', methods=['GET', 'POST'])
+# def password_recovery():
+#     error = "Password Not Found"
+#
+#     if request.method == 'POST':
+#         username = request.form['username']
+#
+#         con = sqlite3.connect('static/user.db')
+#         with con:
+#             cur = con.cursor()
+#             cur.execute("SELECT * FROM Users")
+#             rows = cur.fetchall()
+#             for row in rows:
+#                 if row[0] == username:
+#                     error = "We found your password, but it was hashed into this: " + row[1] + ". We are unable to decode the jargon. Sorry, please restart the game!"
+#         con.close()
+#     return render_template('index.html', error=error, password_recovery=True)
 
-    if request.method == 'POST':
-        username = request.form['username']
-
-        con = sqlite3.connect('static/user.db')
-        with con:
-            cur = con.cursor()
-            cur.execute("SELECT * FROM Users")
-            rows = cur.fetchall()
-            for row in rows:
-                if row[0] == username:
-                    error = "We found your password, but it was hashed into this: " + row[1] + ". We are unable to decode the jargon. Sorry, please restart the game!"
-        con.close()
-    return render_template('index.html', error=error, password_recovery=True)
 
 # route for handling the account creation page logic
 @app.route('/create_account', methods=['GET', 'POST'])
@@ -175,16 +225,18 @@ def create_account():
             return redirect(url_for('login'))
     return render_template('index.html', error=error, create_account=True)
 
+
 # this gets called if you press "logout"
 @app.route('/logout')
 @login_required
 @uses_hero_and_update
 def logout(hero=None):
     hero.refresh_character()
-    database.update() ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
+    database.update()
     session.pop('logged_in', None)
     flash("Thank you for playing! Your have successfully logged out.")
     return redirect(url_for('login'))
+
 
 # this gets called if you are logged in and there is no character info stored
 @app.route('/create_character', methods=['GET', 'POST'])
@@ -224,7 +276,7 @@ def create_character(hero=None):
             hero.gold += 50
         elif fathers_job == "Priest":
             hero.attributes.divinity.level += 3
-    if hero.character_name != None and fathers_job != None:
+    if hero.character_name is not None and fathers_job is not None:
         hero.archetype = fathers_job
         hero.refresh_character()
         database.update()
@@ -236,12 +288,12 @@ def create_character(hero=None):
 # this is a temp button that can call this to erase your chracter information
 # and redirect you to the create character page
 # Current not in use? (Marlen)
-@app.route('/reset_character')
-@login_required
-def reset_character():
-    myHero = create_random_hero()
-    game = Game(myHero)
-    return redirect(url_for('home'))  # return a string
+# @app.route('/reset_character')
+# @login_required
+# def reset_character():
+#     myHero = create_random_hero()
+#     game = Game(myHero)
+#     return redirect(url_for('home'))  # return a string
 
 # this is a temporary page that lets you modify any attributes for testing
 @app.route('/admin',methods=['GET', 'POST'])
@@ -294,7 +346,7 @@ def display_user_page(users_username, hero=None):
         this_user = database.get_user_by_username(users_username)
         this_hero = database.fetch_hero_by_username(users_username)
         # Below code is just messing with inbox
-        if request.method == 'POST': 
+        if request.method == 'POST':
             this_message = request.form['message']
             hero.user.inbox.send_message(this_user, this_message)
             return redirect(url_for('home'))
@@ -320,7 +372,6 @@ def inbox(hero=None):
     return render_template('inbox.html', page_title="Inbox", myHero=hero)
 
 ### PROFILE PAGES (Basically the home page of the game with your character display and stats)
-
 @app.route('/home')
 @login_required
 @uses_hero_and_update
@@ -544,8 +595,6 @@ def cave(cave_name, hero=None):
 
 @app.route('/WorldMap/<current_world>/<int:location_id>') # Test function while experimenting with locations
 @login_required
-#Not implemented. Control user moves on map.
-@prevent_url_typing
 @uses_hero_and_update
 def world_map(current_world, location_id, hero=None):
     """Set up World Map web page. Return html string/web page.
@@ -856,7 +905,7 @@ def leave_town(hero=None):
 # This gets called anytime a button gets clicked in html using
 # <button class="command", value="foo">. "foo" is what gets sent to this
 # Python code.
-@app.route('/<cmd>') # need to make sure this doesn't conflict with other routes
+@app.route('/command/<cmd>') # need to make sure this doesn't conflict with other routes
 @uses_hero_and_update
 def command(cmd=None, hero=None):
     """Accept a string from HTML button code -> send back a response.
@@ -876,8 +925,6 @@ def command(cmd=None, hero=None):
     and then parse it on this end based on the headers. But that is more complicated
     than I need right now.
     """
-    if cmd == 'favicon.ico':
-        return "success", 200, {'Content-Type': 'text/plain'}
 
     testing = False # True
     if testing:
@@ -915,7 +962,7 @@ def command(cmd=None, hero=None):
         return "success", 200, {'Content-Type': 'text/plain'} #//
     # END OF TEST CODE
 
-    
+
     # for path in hero.quest_paths:
         # if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 1:
             # path.quest.advance_quest()

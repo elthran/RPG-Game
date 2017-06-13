@@ -1,9 +1,9 @@
-#//////////////////////////////////////////////////////////////////////////////#
+# //////////////////////////////////////////////////////////////////////////////#
 #                                                                              #
 #  Author: Elthran B, Jimmy Zhang                                              #
 #  Email : jimmy.gnahz@gmail.com                                               #
 #                                                                              #
-#//////////////////////////////////////////////////////////////////////////////#
+# //////////////////////////////////////////////////////////////////////////////#
 
 """Objects used in the database and the game.
 
@@ -25,9 +25,10 @@ from attributes import Attributes
 from proficiencies import Proficiencies
 from inventory import Inventory
 
+
 # function used in '/level_up'
-#Fix ME! Or put me in a class as a method or something.
-def convert_input(x:int):
+# Fix ME! Or put me in a class as a method or something.
+def convert_input(x: int):
     try:
         x = int(x)
     except:
@@ -44,7 +45,7 @@ class Game(object):
     def set_enemy(self, enemy):
         self.enemy = enemy
         self.has_enemy = True
-    
+
     def set_hero(self, hero):
         self.hero = hero
 
@@ -62,15 +63,15 @@ class User(Base):
     email = Column(String)
     timestamp = Column(DateTime)
     is_admin = Column(Boolean)
-    
+
     def __init__(self, username, password, email='', timestamp=None, is_admin=False):
         """Create a new user object.
         
         The user gets special privileges if it is an admin.
         """
-    
+
         self.inbox = Inbox()
-        
+
         self.username = username
         self.password = password
         self.email = email
@@ -85,8 +86,7 @@ class Inbox(Base):
 
     def __init__(self):
         pass
-        
-        
+
     def get_sent_messages(self):
         """Return a list of all sent messages.
         
@@ -97,7 +97,7 @@ class Inbox(Base):
             user.inbox.sent_messages
         """
         return self.sent_messages
-        
+
     def get_received_messages(self):
         """Return a list of all received messages.
         
@@ -124,12 +124,12 @@ class Inbox(Base):
         user.inbox.send_message(other_user, content)
         database.update()
         """
-        Message(self, receiver.inbox, content)        
+        Message(self, receiver.inbox, content)
 
-        
+
 class Message(Base):
     __tablename__ = "message"
-    
+
     id = Column(Integer, primary_key=True)
     content = Column(String)
 
@@ -151,7 +151,7 @@ class Hero(Base):
     __tablename__ = 'hero'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String) #Was nullable=False now it isn't. I hope that is a good idea.
+    name = Column(String)  # Was nullable=False now it isn't. I hope that is a good idea.
     character_name = orm.synonym('name')
 
     age = Column(Integer)
@@ -161,8 +161,8 @@ class Hero(Base):
     house = Column(String)
     experience = Column(Integer)
     experience_maximum = Column(Integer)
-    renown = Column(Integer)    # How famous you are
-    virtue = Column(Integer)    # How good/evil you are
+    renown = Column(Integer)  # How famous you are
+    virtue = Column(Integer)  # How good/evil you are
     devotion = Column(Integer)  # How religious you are
     gold = Column(Integer)
 
@@ -173,10 +173,10 @@ class Hero(Base):
     attribute_points = Column(Integer)
     proficiency_points = Column(Integer)
 
-    #Time code of when the (account?) was created
+    # Time code of when the (account?) was created
     timestamp = Column(DateTime)
 
-    #Relationships: see complex_relationships.py
+    # Relationships: see complex_relationships.py
 
     def __init__(self, **kwargs):
         """Initialize the Hero object.
@@ -191,12 +191,12 @@ class Hero(Base):
         exp_percent is now updated by current_exp using a validator.
         max_exp should be assigned a value before current_exp.
         """
-        
+
         self.attributes = Attributes()
         self.proficiencies = Proficiencies()
         self.inventory = Inventory()
 
-        #Defaults will remain unchanged if no arguments are passed.
+        # Defaults will remain unchanged if no arguments are passed.
         self.age = 7
         self.archetype = None
         self.specialization = None
@@ -215,35 +215,35 @@ class Hero(Base):
         self.archetypic_ability_points = 0
         self.specialized_ability_points = 0
         self.pantheonic_ability_points = 0
-    
+
         self.attribute_points = 10
         self.proficiency_points = 10
 
-        #Time code
+        # Time code
         self.timestamp = datetime.datetime.utcnow()
 
         for key in kwargs:
             setattr(self, key, kwargs[key])
-        
+
         self.init_on_load()
 
     @orm.reconstructor
     def init_on_load(self):
         """Runs when the database is reload and at the end of __init__.
         """
-        #I don't even know if this is supposed to be rebuilt? (Marlen)
+        # I don't even know if this is supposed to be rebuilt? (Marlen)
         self.refresh_proficiencies()
-    
+
         # Hidden attributes // Maybe they should be a special type of proficiency?
-        self.experience_gain_modifier = 1 # This is the percentage of exp you gain
-        self.gold_gain_modifier = 1 # This is the percentage of gold you gain
-        
-        #resets experience_percent
+        self.experience_gain_modifier = 1  # This is the percentage of exp you gain
+        self.gold_gain_modifier = 1  # This is the percentage of gold you gain
+
+        # resets experience_percent
         self.experience = self.experience
 
     @validates('experience')
     def validate_experience(self, key_name, current):
-        #Update experience percent on experience change.
+        # Update experience percent on experience change.
         try:
             self.experience_percent = round(current / self.experience_maximum, 2) * 100
         except (TypeError, ZeroDivisionError):
@@ -274,16 +274,17 @@ class Hero(Base):
     def refresh_character(self, full=True):
         self.refresh_proficiencies()
         self.refresh_abilities()
-        #self.refresh_items()   #Broken: waiting for Marlen to fix or delete if he has replaced
+        # self.refresh_items()   #Broken: waiting for Marlen to fix or delete if he has replaced
         if full:
             self.proficiencies.health.current = self.proficiencies.health.maximum
             self.proficiencies.sanctity.current = self.proficiencies.sanctity.maximum
             self.proficiencies.endurance.current = self.proficiencies.endurance.maximum
 
     def update_experience_bar(self):
-        self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100 
+        self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100
 
-    # updates field variables when hero levels up
+        # updates field variables when hero levels up
+
     def level_up(self):
         if self.experience >= self.experience_maximum:
             self.experience -= self.experience_maximum
@@ -294,14 +295,14 @@ class Hero(Base):
             self.refresh_character()
             return True
         return False
-            
+
     def equipped_items(self):
         return [item for item in self.inventory if item.is_equipped()] or [None]
-        
+
     def non_equipped_items(self):
         return self.inventory.unequipped or [None]
 
-    def page_refresh_character(self):   # Can we renamed this? I don't really get what it is from the name
+    def page_refresh_character(self):  # Can we renamed this? I don't really get what it is from the name
         self.quest_notification = None
 
     def consume_item(self, item_name):
