@@ -310,7 +310,9 @@ def display_user_page(users_username, hero=None):
 def global_chat(hero=None):
     if request.method == 'POST':
         message = request.form["message"]
-        game.global_chat.append((hero.name + ": ", message)) # Currently it just appends tuples to the chat list, containing the hero's name and the message
+        itsnow = EZDB.now()
+        printnow = str(itsnow.hour) + ":" + str(itsnow.minute) + ":" + str(itsnow.second)
+        game.global_chat.append((printnow, hero.name, message)) # Currently it just appends tuples to the chat list, containing the hero's name and the message
         if len(game.global_chat) > 5:                   # After it reaches 5 messages, more messages will delete theoldest ones
                game.global_chat = game.global_chat[1:]
         return render_template('global_chat.html', myHero=hero, chat=game.global_chat)
