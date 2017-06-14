@@ -7,7 +7,7 @@
 
 
 import pdb  # For testing!
-import pprint  # For testing!
+from pprint import pprint  # For testing!
 from functools import wraps
 import os
 
@@ -56,47 +56,54 @@ def prevent_url_typing(f):
 
     @wraps(f)
     def wrap_url(*args, **kwargs):
-        # pprint.pprint(app.url_map)
-        # pprint.pprint(request.url_rule)
-        pprint.pprint(args)
-        pprint.pprint(kwargs)
-        # pprint.pprint(session)
+        # Break immediately if server is just being set up.
+        # Everything after this will run just before the function
+        # runs but not during function setup.
+        try:
+            session['logged_in']
+        except RuntimeError as ex:
+            return f(*args, **kwargs)
+
+        # pprint(app.url_map)
+        pprint(args)
+        pprint(kwargs)
+        pprint(session)
         # print(dir(session))
         # f(*args, **kwargs)
         # print('after app.route')
-        #Break imediately if server is just being set up.
-        if dir(session) == []:
-            return f(*args, **kwargs)
+        # print(dir(request.url_rule))
+        # pprint(request.url_rule)
+        # pprint(request.url_rule.rule)
+        # pprint(request.url_rule.arguments)
+        # pprint(request)
+        # print(dir(request))
+        print(request.path)
 
+        # Build requested move from rule and arguemts.
         valid_urls = ALWAYS_VALID_URLS
 
         hero = kwargs['hero']
         if hero.user.is_admin:
             valid_urls.append('/admin')
 
-        local_places = hero.current_location.display.places_of_interest
-        valid_urls += [] #all places of places_of_interest
+        # Add this in later? Unless I can find out how
+        # to do it another way.
+        # local_places = hero.current_location.display.places_of_interest
+        print(hero.current_location)
+        pprint(hero.current_location.display.places_of_interest)
+        # valid_urls += [] #all places of places_of_interest
 
-        requested_move = '' # I don't know how to get this ...
-        pdb.set_trace()
-        # try:
-            # requested_move = set([kwargs['location_id']])
-        # except KeyError:
-            # pass
-        # try:
-            # requested_move = set([kwargs['cave_name']])
-        # except KeyError:
-            # pass
-        # try:
-            # requested_move = set([kwargs['town_name']])
-        # except KeyError:
-            # pass
-        if ('valid_moves' in session
-                and any(move in session['valid_moves'] for move in requested_move)):
+        # This may work ... it will need more testing.
+        # It may need additional parsing.
+        requested_move = request.path
+        # pdb.set_trace()
+        if requested_move in valid_urls:
+            print("url is valid")
             return f(*args, **kwargs)
         else:
             flash("You can't access '{}' from here.".format(requested_move))
-            return redirect(url_for("/home"))
+            pdb.set_trace()
+            return redirect(url_for("home"))
     return wrap_url
 
 # app.route = prevent_url_typing(app.route)
@@ -375,12 +382,14 @@ def inbox(hero=None):
 @app.route('/home')
 @login_required
 @uses_hero_and_update
+@prevent_url_typing
 def home(hero=None):
     """Build the home page and return it as a string of HTML.
     
-    render_template uses Jinj2 markup.
+    render_template uses Jinja2 markup.
     """
-    #Is this supposed to update the time of all hero objects?
+
+    # Is this supposed to update the time of all hero objects?
     database.update_time(hero)
 
     #Not implemented. Control user moves on map.
@@ -555,9 +564,8 @@ def under_construction():
 
 @app.route('/Town/<town_name>')
 @login_required
-#Not implemented. Control user moves on map.
-# @prevent_url_typing
 @uses_hero_and_update
+@prevent_url_typing
 def town(town_name, hero=None):
     #Marked for refractor as ineficient if easy to understand.
     #These should just be part of the basic world_map function as they don't actually
@@ -574,9 +582,8 @@ def town(town_name, hero=None):
 
 @app.route('/Cave/<cave_name>') # Test function while experimenting with locations
 @login_required
-#Not implemented. Control user moves on map.
-# @prevent_url_typing
 @uses_hero_and_update
+@prevent_url_typing
 def cave(cave_name, hero=None):
     #Marked for refractor as ineficient if easy to understand.
     #Maybe a search function?
@@ -596,6 +603,7 @@ def cave(cave_name, hero=None):
 @app.route('/WorldMap/<current_world>/<int:location_id>') # Test function while experimenting with locations
 @login_required
 @uses_hero_and_update
+@prevent_url_typing
 def world_map(current_world, location_id, hero=None):
     """Set up World Map web page. Return html string/web page.
 
@@ -604,14 +612,14 @@ def world_map(current_world, location_id, hero=None):
     """
     # pdb.set_trace()
 
-    #Very important as current_world is a string variable and should be the object itself.
+    # Very important as current_world is a string variable and should be the object itself.
     current_world = hero.current_world
 
-    #Updates current id. May be redundant. Or it may allow page to be dynamic.
-    #May have originally compensated for the lack of a database.
+    # Updates current id. May be redundant. Or it may allow page to be dynamic.
+    # May have originally compensated for the lack of a database.
     current_location = current_world.find_location(location_id)
 
-    #Needs to be reimplemented/or removed
+    # Needs to be reimplemented/or removed
     # hero.known_locations.append(current_world)
     # hero.current_city = None #?
 
