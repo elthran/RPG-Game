@@ -114,9 +114,9 @@ class Ability(Base):
         """
         #Possibly use a dictionary + lambda function. Switch/Case
         if self.name == "Determination":
-            hero.max_endurance += 3 * self.level
+            hero.proficiencies.endurance.maximum += 3 * self.level
         elif self.name == "Salubrity":
-            hero.max_health += 4 * self.level
+            hero.proficiencies.health.maximum += 4 * self.level
 
     def activate(self, hero):
         return self.cast(hero)
@@ -126,13 +126,13 @@ class Ability(Base):
         
         use:
         ability.activate(hero)
-        NOTE: returns False if spell is too expensive (cost > current_sanctity)
+        NOTE: returns False if spell is too expensive (cost > proficiencies.sanctity.current)
         If cast is succesful then return value is True.
         """
-        if hero.current_sanctity < self.cost:
+        if hero.proficiencies.sanctity.current < self.cost:
             return False
         else:
-            hero.current_sanctity -= self.cost
+            hero.proficiencies.sanctity.current -= self.cost
             if self.name == "Gain Gold to Test":
                 hero.gold += 3 * self.level
             elif self.name == 'foo':
