@@ -1,9 +1,9 @@
-# //////////////////////////////////////////////////////////////////////////////#
-#                                                                              #
-#  Author: Elthran B, Jimmy Zhang                                              #
-#  Email : jimmy.gnahz@gmail.com                                               #
-#                                                                              #
-# //////////////////////////////////////////////////////////////////////////////#
+# ///////////////////////////////////////////////////////////////////////////#
+#                                                                            #
+#  Author: Elthran B, Jimmy Zhang                                            #
+#  Email : jimmy.gnahz@gmail.com                                             #
+#                                                                            #
+# ///////////////////////////////////////////////////////////////////////////#
 
 
 import pdb  # For testing!
@@ -46,12 +46,28 @@ ALWAYS_VALID_URLS = [
     '/inbox', '/logout',
 ]
 
-# Not implemented. Control user moves on map.
-# Not implemented. Broken. Control user moves on map. (Marlen)
+class Engine:
+    @staticmethod
+    def get_valid_redirect(request_path):
+        """Return a valid redirect given a request.path
+
+        This function must parse a path to extract the variables
+        from it.
+        I am sure there is a better way.
+
+        Found it :P since I already have a valid url I just need to
+        redirect(request.path) instead of
+        redirect(url_for(path))
+        """
+
+        return redirect(url_for(request_path, {}))
+
+# Work in progress.
+# Control user moves on map.
 def prevent_url_typing(f):
-    """Redirects to home page if hero can't travel here.
+    """Redirects to last page if hero can't travel here.
     
-    This needs a lot more work. It should be dealing with actual URLs ...
+    I need to update the location.py code to deal more with urls.
     """
 
     @wraps(f)
@@ -59,9 +75,10 @@ def prevent_url_typing(f):
         # Break immediately if server is just being set up.
         # Everything after this will run just before the function
         # runs but not during function setup.
+        # There is probably cleaner way?
         try:
             session['logged_in']
-        except RuntimeError as ex:
+        except RuntimeError:
             return f(*args, **kwargs)
 
         # pprint(app.url_map)
@@ -72,12 +89,12 @@ def prevent_url_typing(f):
         # f(*args, **kwargs)
         # print('after app.route')
         # print(dir(request.url_rule))
-        # pprint(request.url_rule)
-        # pprint(request.url_rule.rule)
-        # pprint(request.url_rule.arguments)
+        # print("url rule", request.url_rule)
+        # print("rule", request.url_rule.rule)
+        # print("arguments", request.url_rule.arguments)
         # pprint(request)
         # print(dir(request))
-        print(request.path)
+        print("Path requested: ", request.path)
 
         # Build requested move from rule and arguemts.
         valid_urls = ALWAYS_VALID_URLS
@@ -86,11 +103,13 @@ def prevent_url_typing(f):
         if hero.user.is_admin:
             valid_urls.append('/admin')
 
+        print("Hero current location url: ", hero.current_location.url)
+        valid_urls.append(hero.current_location.url)
         # Add this in later? Unless I can find out how
         # to do it another way.
         # local_places = hero.current_location.display.places_of_interest
-        print(hero.current_location)
-        pprint(hero.current_location.display.places_of_interest)
+        # print(hero.current_location)
+        # pprint(hero.current_location.display.places_of_interest)
         # valid_urls += [] #all places of places_of_interest
 
         # This may work ... it will need more testing.
@@ -99,11 +118,11 @@ def prevent_url_typing(f):
         # pdb.set_trace()
         if requested_move in valid_urls:
             print("url is valid")
+            session['last_url'] = request.path
             return f(*args, **kwargs)
         else:
-            flash("You can't access '{}' from here.".format(requested_move))
-            pdb.set_trace()
-            return redirect(url_for("home"))
+            flash("You can't access '{}' from there.".format(requested_move))
+            return redirect(session['last_url'])
     return wrap_url
 
 # app.route = prevent_url_typing(app.route)
@@ -116,7 +135,7 @@ def favicon():
         'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
-@prevent_url_typing
+# @prevent_url_typing
 def login_required(f):
     """Set certain pages as requiring a login to visit.
 
@@ -130,6 +149,7 @@ def login_required(f):
             flash('You need to login first.')
             return redirect(url_for('login'))
     return wrap_login
+
 
 # Untested (Marlen)
 def uses_hero_and_update(f):
@@ -148,6 +168,7 @@ def uses_hero_and_update(f):
         return f(*args, hero=hero, **kwargs)
     return wrap_hero_and_update
 
+
 # use decorators to link the function to a url
 # route for handling the login page logic
 @app.route('/login', methods=['GET', 'POST'])
@@ -156,8 +177,9 @@ def login():
 
     Access data from the static/user.db using the EasyDatabase class.
     """
-    #Testing:
-    #Should prevent contamination between logging in with 2 different accounts.
+    # Testing:
+    # Should prevent contamination between logging in with 2 different
+    # accounts.
     session.clear()
 
     error = None
@@ -170,26 +192,28 @@ def login():
             user = database.get_user_by_username(username)
             session['id'] = user.id
 
-            #I recommend a dialogue here to select the specific hero that the
+            # I recommend a dialogue here to select the specific hero that the
             # user wants to play with. Or a page redirect whatever ...
             # Choose hero dialogue ... not implemented.
             hero = user.heroes[0]
             session['hero_id'] = hero.id
 
-            #Now I need to work out how to make game not global *sigh* (Marlen)
+            # Now I need to work out how to make game not global *sigh*
+            # (Marlen)
             game.set_hero(hero)
             game.set_enemy(monster_generator(hero.age))
 
-            #Refresh admin accounts on login.
+            # Refresh admin accounts on login.
             if user.is_admin:
                 hero.refresh_character()
 
             # If it's a new character, send them to cerate_character url
             if hero.character_name is None:
                 return redirect(url_for('create_character'))
-            #If the character already exist go straight the main home page!
+            # If the character already exist go straight the main home page!
             return redirect(url_for('home'))
-        #Marked for upgrade, consider checking if user exists and redirect to account creation page.
+        # Marked for upgrade, consider checking if user exists
+        # and redirect to account creation page.
         else:
             error = 'Invalid Credentials. Please try again.'
 
@@ -211,7 +235,9 @@ def login():
 #             rows = cur.fetchall()
 #             for row in rows:
 #                 if row[0] == username:
-#                     error = "We found your password, but it was hashed into this: " + row[1] + ". We are unable to decode the jargon. Sorry, please restart the game!"
+#                     error = "We found your password, but it was hashed into"
+#                         "this: " + row[1] + ". We are unable to decode the"
+#                         " jargon. Sorry, please restart the game!"
 #         con.close()
 #     return render_template('index.html', error=error, password_recovery=True)
 
@@ -255,10 +281,13 @@ def create_character(hero=None):
     page_title = "Create Character"
     page_heading = "A New Beginning"
     page_image = "beached"
-    paragraph = "You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. A firm and inquisitive voice pierces the air."
+    paragraph = """You awake to great pain and confusion as you hear footsteps
+approaching in the sand. Unsure of where you are, you quickly look
+around for something to defend yourself. A firm and inquisitive voice
+pierces the air.""".replace('\n', ' ').replace('\r', '')
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
     if len(hero.quest_paths) == 0:
-        #pdb.set_trace()
+        # pdb.set_trace()
         for quest in database.get_default_quests():
             quest.add_hero(hero)
     if hero.current_world is None:
@@ -290,7 +319,11 @@ def create_character(hero=None):
         return redirect(url_for('home'))
     else:
         database.update()
-        return render_template('create_character.html', page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, conversation=conversation, display=display)  # render a template
+        # Builds a web page from a list of variables and a template file.
+        return render_template(
+            'create_character.html', page_title=page_title,
+            page_heading=page_heading, page_image=page_image,
+            paragraph=paragraph, conversation=conversation, display=display)
 
 # this is a temp button that can call this to erase your chracter information
 # and redirect you to the create character page
@@ -302,8 +335,9 @@ def create_character(hero=None):
 #     game = Game(myHero)
 #     return redirect(url_for('home'))  # return a string
 
+
 # this is a temporary page that lets you modify any attributes for testing
-@app.route('/admin',methods=['GET', 'POST'])
+@app.route('/admin', methods=['GET', 'POST'])
 @login_required
 @uses_hero_and_update
 def admin(hero=None):

@@ -1,37 +1,46 @@
 """
 Author: Marlen Brunner and Elthran B.
 
-1. This module should provide a class for each type of location within the game.
+1. This module should provide a class for each type of location within
+     the game.
 2. These classes should use inheritance as much as possible.
 3. Each class should provide a render function which uses a flask template and
 can be inserted into the main website.
 
 Basic layout should be:
-Map
-    WorldMap - I tried to make this a location too, but the relationships are too hard to implement.
-    TownMap
-    CaveMap
-    LocationMap
-Location
-    Town
-    Cave
+BaseLocation
+    BaseMap
+        WorldMap
+        TownMap
+        CaveMap
+        Map
+    Location
+        Town
+        Cave
+        Shop
+        Arena (might be a shop?)
+
 Display
+    MapDisplay
+    LocationDisplay
     ...?
     
-Each object should have separte data and display properties.
+Each object should have separate data and display properties.
 eg.
 
 Town
     id
     name
-    adjacent_locations
-    location_world
+    adjacent_locations = many to many relationship with self.
+    world_map
+    url
     display
-        page_title
-        page_heading
-        page_image
-        paragraph
-        places_of_interest
+        display_name - Specially formatted name?
+        page_title - specially formatted version of 'name'
+        page_heading - specially formatted version of 'name'
+        page_image - derived from 'name'
+        paragraph - description of location
+        places_of_interest - replace with adjacent_locations?
     
 """
 
@@ -176,6 +185,7 @@ class Location(Base):
     name = Column(String, nullable=False)
     type = Column(String)
     location_type = orm.synonym('type')
+    url = Column(String)
     
     map_id = Column(Integer, ForeignKey('map.id'))
     map = relationship("Map", foreign_keys=[map_id], back_populates="locations")
@@ -187,6 +197,7 @@ class Location(Base):
         self.id = id
         self.name = name
         self.adjacent_locations = []
+        self.url = "/{}/{}".format(self.type, self.name)
      
         
     __mapper_args__ = {
