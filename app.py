@@ -300,8 +300,12 @@ def display_user_page(users_username, hero=None):
         # Below code is just messing with inbox
         if request.method == 'POST': 
             this_message = request.form['message']
-            hero.user.inbox.send_message(this_user, this_message)
-            return render_template('user_page.html', myHero=hero, page_title=str(this_user.username), enemy_hero=this_hero)
+            if len(this_message) > 1:
+                hero.user.inbox.send_message(this_user, this_message)
+                confirmation_message = "Message sent!"
+            else:
+                confirmation_message = "Please type your message"
+            return render_template('user_page.html', myHero=hero, page_title=str(this_user.username), enemy_hero=this_hero, confirmation=confirmation_message)
         # Above this is inbox nonsense
         return render_template('user_page.html', myHero=hero, page_title=str(this_user.username), enemy_hero=this_hero)
 
@@ -313,7 +317,7 @@ def global_chat(hero=None):
         itsnow = EZDB.now()
         printnow = str(itsnow.hour) + ":" + str(itsnow.minute) + ":" + str(itsnow.second)
         game.global_chat.append((printnow, hero.name, message)) # Currently it just appends tuples to the chat list, containing the hero's name and the message
-        if len(game.global_chat) > 5:                   # After it reaches 5 messages, more messages will delete theoldest ones
+        if len(game.global_chat) > 25:                   # After it reaches 5 messages, more messages will delete theoldest ones
                game.global_chat = game.global_chat[1:]
         return render_template('global_chat.html', myHero=hero, chat=game.global_chat)
     return render_template('global_chat.html', page_title="Chat", myHero=hero, chat=game.global_chat)
