@@ -416,7 +416,7 @@ def inbox(hero=None):
 @app.route('/home')
 @login_required
 @uses_hero_and_update
-@prevent_url_typing
+# @prevent_url_typing
 def home(hero=None):
     """Build the home page and return it as a string of HTML.
     
@@ -599,9 +599,9 @@ def under_construction():
 @app.route('/Town/<town_name>')
 @login_required
 @uses_hero_and_update
-@prevent_url_typing
+# @prevent_url_typing
 def town(town_name, hero=None):
-    #Marked for refractor as ineficient if easy to understand.
+    #Marked for refactor as ineficient if easy to understand.
     #These should just be part of the basic world_map function as they don't actually
     #add anything yet.
     for location in hero.current_world.all_map_locations:
@@ -617,9 +617,9 @@ def town(town_name, hero=None):
 @app.route('/Cave/<cave_name>') # Test function while experimenting with locations
 @login_required
 @uses_hero_and_update
-@prevent_url_typing
+# @prevent_url_typing
 def cave(cave_name, hero=None):
-    #Marked for refractor as ineficient if easy to understand.
+    #Marked for refactor as ineficient if easy to understand.
     #Maybe a search function?
     #hero.current_city = hero.current_world.get_city(cave_name)?
     for location in hero.current_world.all_map_locations:
@@ -637,7 +637,7 @@ def cave(cave_name, hero=None):
 @app.route('/WorldMap/<current_world>/<int:location_id>') # Test function while experimenting with locations
 @login_required
 @uses_hero_and_update
-@prevent_url_typing
+# @prevent_url_typing
 def world_map(current_world, location_id, hero=None):
     """Set up World Map web page. Return html string/web page.
 
@@ -988,7 +988,7 @@ def command(cmd=None, hero=None):
         return response
     except AttributeError:
         print("Warning: Using old code for command: '{}'".format(cmd))
-        # Look in the not yet refractored list of if statemens ...
+        # Look in the not yet refactored list of if statemens ...
 
     if cmd == "woodsman":
         hero.archetype = "Woodsman"

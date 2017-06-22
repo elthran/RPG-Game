@@ -19,7 +19,7 @@ class Command:
             return response
         except KeyError as ex:
             print("Warning: invalid key {}".format(ex))
-            # Look in the not yet refractored list of if statemens ...
+            # Look in the not yet refactored list of if statements ...
         
     This should call the function and execute it in the Command class.
     

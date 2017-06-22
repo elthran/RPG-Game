@@ -1,4 +1,4 @@
-from locations import Location, Cave, Town, WorldMap, Display
+from locations import Location , Cave, Town, WorldMap, Display
 from abilities import Ability, Archetype_Ability, Class_Ability, Religious_Ability
 from game import User, Hero
 from quests import Quest, QuestPath

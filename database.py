@@ -28,12 +28,12 @@ import base_classes
 # Internal game modules
 from game import User, Hero, Inbox
 from abilities import Ability
-from locations import Location, WorldMap, Town, Cave
+from locations import Location  # , WorldMap, Town, Cave
 from items import ItemTemplate, Item
 from quests import Quest
 from proficiencies import Proficiency
 import complex_relationships
-import prebuilt_objects
+#import prebuilt_objects
 
 
 # Constants#

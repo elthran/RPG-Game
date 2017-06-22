@@ -126,6 +126,16 @@ def pretty_str(self):
 
 Base.pretty_str = pretty_str
 
+
+def pretty_list(obj_list, key='id'):
+    return '[' + ', '.join('{}.{}={}'.format(
+        obj.__class__.__name__,
+        key,
+        getattr(obj, key)
+    ) for obj in obj_list) + ']'
+
+Base.pretty_list = pretty_list
+
 def is_equal(self, other):
     """Test if two database objects are equal.
     
