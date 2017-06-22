@@ -314,8 +314,19 @@ def display_user_page(users_username, hero=None):
 def global_chat(hero=None):
     if request.method == 'POST':
         message = request.form["message"]
+        #MUST BE A BETTER WAY TO FORMAT THE TIME
         itsnow = EZDB.now()
-        printnow = str(itsnow.hour) + ":" + str(itsnow.minute) + ":" + str(itsnow.second)
+        the_hour = str((itsnow.hour + 17) % 24)
+        the_minute = str(itsnow.minute)
+        the_second = str(itsnow.second)
+        if len(the_hour) < 2:
+            the_hour = "0" + the_hour
+        if len(the_minute) < 2:
+            the_minute = "0" + the_minute
+        if len(the_second) < 2:
+            the_second = "0" + the_second
+        printnow = the_hour + ":" + the_minute + ":" + the_second
+        # END OF SHITTY TIME FORMAT. TOOK 11 LINES OF CODE TO TURN IT INTO A DECENT PICTURE
         game.global_chat.append((printnow, hero.name, message)) # Currently it just appends tuples to the chat list, containing the hero's name and the message
         if len(game.global_chat) > 25:                   # After it reaches 5 messages, more messages will delete theoldest ones
                game.global_chat = game.global_chat[1:]
@@ -325,6 +336,7 @@ def global_chat(hero=None):
 @app.route('/inbox/<outbox>', methods=['GET', 'POST'])
 @uses_hero_and_update
 def inbox(outbox, hero=None):
+    hero.user.inbox_alert = False
     if outbox == "outbox":
         outbox = True
     else:
@@ -334,6 +346,7 @@ def inbox(outbox, hero=None):
         content = request.form["message"]
         receiver = database.get_user_by_username(username_of_receiver)
         hero.user.inbox.send_message(receiver, content)
+        receiver.inbox_alert = True
         database.update() #IMPORTANT!
         return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)
     return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)

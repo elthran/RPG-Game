@@ -30,25 +30,27 @@
                 <li>Endurance: <div class="progressBar endurance"><span style="width:{{ myHero.proficiencies.endurance.percent }}%"></span></div></li>
                 <li>Progress: <div class="progressBar progress"><span style="width:{{ myHero.experience_percent }}%"></span></div></li>
             </ul>
-         </div>
-         <div id="sidebarbottom">
+        </div>
+        <div id="sidebarbottom">
             <ul>
 				<li><a href=/home>Profile</a></li>
                 <li><a href=/inventory_page>Inventory</a></li>
                 {% if myHero.current_city %}
-                   <li><a href=/{{ myHero.current_city.location_type }}/{{ myHero.current_city.name }}>{{ myHero.current_city.name }}</a></li>
+                    <li><a href=/{{ myHero.current_city.location_type }}/{{ myHero.current_city.name }}>{{ myHero.current_city.name }}</a></li>
                 {% else %}
-                  <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_location.id }}>{{ myHero.current_world.location_type }}</a></li>
+                    <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_location.id }}>{{ myHero.current_world.location_type }}</a></li>
                 {% endif %}
                 <li><a href=/quest_log>Journal</a></li>
-                <!-- Not sure if there is a way to access the user from the hero data?-->
-                <!--Marlen: try hero.user :) @Elthran-->
                 {% if hero.user.is_admin %}
-                <li><a href=/admin>Admin</a></li>
+                    <li><a href=/admin>Admin</a></li>
                 {% endif %}
                 <li><a href=/display_users/all>Users</a></li>
 				<li><a href=/about>About</a></li>
-				<li><a href=/inbox/inbox>Inbox</a></li>
+                {% if hero.user.inbox_alert %}
+                    <li><a href=/inbox/inbox><font color="blue">New Message</font></a></li>
+                {% else %}
+				    <li><a href=/inbox/inbox>Inbox</a></li>
+                {% endif %}
 				<li><a href=/global_chat>Chat</a></li>
                 <li><a href=/logout>Logout</a></li>
             </ul>

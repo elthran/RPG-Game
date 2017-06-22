@@ -88,8 +88,9 @@ class User(Base):
     email = Column(String)
     timestamp = Column(DateTime)
     is_admin = Column(Boolean)
+    inbox_alert = Column(Boolean)
     
-    def __init__(self, username, password, email='', timestamp=None, is_admin=False):
+    def __init__(self, username, password, email='', timestamp=None, is_admin=False, inbox_alert=False):
         """Create a new user object.
         
         The user gets special privileges if it is an admin.
@@ -102,6 +103,7 @@ class User(Base):
         self.email = email
         self.timestamp = timestamp
         self.is_admin = is_admin
+        self.inbox_alert = inbox_alert
 
 
 class Inbox(Base):
