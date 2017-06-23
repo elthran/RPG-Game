@@ -6,7 +6,7 @@
 #//////////////////////////////////////////////////////////////////////////////#
 
 # from game import * #Must go before login method???
-from game import Game
+from game import Game, Hero
 # import the Flask class from the flask module
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from functools import wraps
@@ -237,18 +237,36 @@ def create_character(hero=None):
         database.update()
         return render_template('create_character.html', page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, conversation=conversation, display=display)  # render a template
 
-# this is a temp button that can call this to erase your chracter information
-# and redirect you to the create character page
-# Current not in use? (Marlen)
+# An admin button that lets you reset your character. Currently doesnt reset attributes/proficiencies, nor inventory and other stuff. Should be rewritten as something
+# like deleting the current hero and rebuilding the admin hero. I commented out the beginning of that but I cant get it to work
 @app.route('/reset_character')
 @login_required
-def reset_character():
-    myHero = create_random_hero()
-    game = Game(myHero)
+@uses_hero_and_update
+def reset_character(hero=None):
+    """
+    resetHero = Hero(name=hero.name, fathers_job="Priest", current_world=world, current_location=town, gold = 5000)
+    hero.user.heroes = [resetHero]
+    hero = hero.user.heroes[0]
+    session['hero_id'] = hero.id
+    game.set_hero(hero)
+    """
+    hero.age = 7
+    hero.experience = 0
+    hero.experience_maximum = 10
+    hero.renown = 0
+    hero.virtue = 0
+    hero.devotion = 0
+    hero.gold = 5000
+    hero.basic_ability_points = 0
+    hero.archetype_ability_points = 0
+    hero.specialization_ability_points = 0
+    hero.pantheonic_ability_points = 0
+    hero.attribute_points = 0
+    hero.proficiency_points = 0
     return redirect(url_for('home'))  # return a string
 
 # this is a temporary page that lets you modify any attributes for testing
-@app.route('/admin',methods=['GET', 'POST'])
+@app.route('/admin', methods=['GET', 'POST'])
 @login_required
 @uses_hero_and_update
 def admin(hero=None):
