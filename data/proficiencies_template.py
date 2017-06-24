@@ -27,7 +27,7 @@ class Proficiencies(Base):
     def __init__(self):
         {% for prof in PROFICIENCY_INFORMATION %}
         {% set objectValue = prof[0].title().replace(" ", '') -%}
-        self.{{ prof[0].lower().replace(' ', '_') }} = {{ objectValue }}("{{ prof[0] }}", "{{ prof[1] }}", "{{ prof[2] }}", "{{ prof[3] }}")
+        self.{{ prof[0].lower().replace(' ', '_') }} = {{ objectValue }}("{{ prof[0] }}", "{{ prof[1] }}", "{{ prof[2] }}")
         {%- endfor %}
         
 
@@ -54,7 +54,6 @@ class Proficiency(Base):
     description = Column(String)
     tooltip = Column(String)
     attribute_type = Column(String)
-    type = Column(String)
     level = Column(Integer)
     next_value = Column(Integer)
     is_not_max_level = Column(Boolean)
@@ -65,11 +64,10 @@ class Proficiency(Base):
         'polymorphic_on':_class
     }
 
-    def __init__(self, name, description, attribute_type, type):
+    def __init__(self, name, description, attribute_type):
         self.name = name
         self.description = description
         self.attribute_type = attribute_type
-        self.type = type
         self.tooltip = ""
         
         self.level = 1
@@ -97,10 +95,10 @@ class {{ prof_class }}(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    {% for column in prof[4] -%}
+    {% for column in prof[3] -%}
     {{ column[0].lower() }} = Column(Integer)
     {% endfor %}
-    {% if prof[4][0][0] == "Maximum" -%}
+    {% if prof[3][0][0] == "Maximum" -%}
     percent = Column(Integer)
     {%- endif %}
     error = Column(String)
@@ -111,10 +109,10 @@ class {{ prof_class }}(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        {% for value in prof[4] -%}
+        {% for value in prof[3] -%}
         self.{{ value[0].lower() }} = 0
         {% endfor -%}
-        {% if prof[4][0][0] == "Maximum" -%}
+        {% if prof[3][0][0] == "Maximum" -%}
         self.percent = 0
         {%- endif %}
         self.error = "You do not have enough {{ prof[2].lower() }}"
@@ -128,7 +126,7 @@ class {{ prof_class }}(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        {% for value in prof[4] -%}
+        {% for value in prof[3] -%}
         {% if value[1] == "percent" -%}
         self.{{ value[0].lower() }} = floor((- ({{ value[2][1] }}*{{ value[2][2] }})/(({{ value[2][0] }} * self.level) + {{ value[2][1] }}) + {{ value[2][2] }}) * 7.9 + {{ value[2][3] }})
         {% elif value[1] == "linear" -%}
@@ -149,7 +147,7 @@ class {{ prof_class }}(Proficiency):
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
-    {% if prof[4][0][0] == "Maximum" -%}
+    {% if prof[3][0][0] == "Maximum" -%}
     @validates('current')
     def validate_{{ prof[0].lower() }}(self, key_name, current):
         #Update {{ prof[0].lower() }} percent on health change.

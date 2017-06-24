@@ -396,7 +396,7 @@ input.abilityButtonMinus {
 
 .proficiencyPageInner {
 	width: 350px;
-	height: 99%;
+	height: auto;
 	border: 5px Double Black;
 	margin: 0;
 	padding: 0;
