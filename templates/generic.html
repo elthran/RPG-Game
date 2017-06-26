@@ -1,0 +1,15 @@
+<!-- This shows the admin page -->
+
+{% extends "layout.html" %}
+{% block block1 %}
+{{ page_heading }}<br>
+<img src="/static/images/barracks.jpg" alt="Sample" width="300" height="400"><br>
+{% for text,link in page_links.items() %}
+    {% if link %}
+        <a href="{{ link }}">{{ text }}</a><br><br>
+    {% else %}
+        {{ text }}
+    {% endif %}
+{% endfor %}
+{% endblock %}
+

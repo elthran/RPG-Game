@@ -170,6 +170,7 @@ class Message(Base):
         self.sender = sender
         self.receiver = receiver
         self.content = content
+        self.unread = True
         #self.timestamp = timestamp
 
 

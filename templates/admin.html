@@ -2,23 +2,32 @@
 
 {% extends "layout.html" %}
 {% block block1 %}
-<h1><center><a href=/reset_character>Reset Character</a></center></h1>
+<h1>
+    <center>Reset Character
+        <ul>
+            <li><a href=/reset_character/tough>Tough Guy</a></li>
+            <li><a href=/reset_character/rich>Rich Guy</a></li>
+            <li><a href=/reset_character/custom>Customizable</a></li>
+        </ul>
+    </center>
+</h1>
 <br><br>
-  <h1 style="text-align:center;">Primary Attributes</h1>
-  <form method="post" action="" autocomplete="off">
+<h1 style="text-align:center;">Primary Attributes</h1>
+<form method="post" action="" autocomplete="off">
     <ul>
-      {%- for attribute in admin %}
+        {%- for attribute in admin %}
         <li><label for="name">{{ attribute[0] }}: {{ attribute[1] }}</label>
-        <input type="number" name="{{ attribute[0] }}" min="0" title="Numbers only" value={{ attribute[1] }}><br></li>
-      {%- endfor %}
+            <input type="number" name="{{ attribute[0] }}" min="0" title="Numbers only" value={{ attribute[1] }}><br>
+        </li>
+        {%- endfor %}
     </ul>
     <input class="btn btn-default" type="submit" value="Save">
-  </form>
-  <h1 style="text-align:center;">Hidden Attributes</h1>
-  <ul>
+</form>
+<h1 style="text-align:center;">Hidden Attributes</h1>
+<ul>
     <li>Experience Modifier: {{ hero.experience_gain_modifier }}</li>
     <li>Gold Modifier: {{ hero.gold_gain_modifier }}</li>
-  </ul>
+</ul>
 {% endblock %}
 
 

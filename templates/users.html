@@ -3,46 +3,37 @@
 {% extends "layout.html" %}
 {% block block1 %}
 <!-- This is called on the "Users" page and displays all accounts in the database -->
-      <h2>Here is a list of all current users:</h2>
-      <table style="width:75%" border="1">
-        <tr>
-          <th>Account ID:</th>
-          <th>Username:</th>
-          <th>Character Name:</th>
-          <th>Age:</th>
-          <th>Account Creation Date:</th>
-        </tr>
-        {% for user in users %}
-		{% if not user.is_admin %}
-			<tr>
-				<td>{{ user.id }}</td>
-				<td><a href=/display_users/{{ user.username }}>{{ user.username }}</a></td>
-				<td>{{ user.heroes[0].character_name }}</td>
-				<td>{{ user.heroes[0].age }}</td>
-				<td>{{ user.timestamp.year }}/{{ user.timestamp.month }}/{{ user.timestamp.day }} {{ user.timestamp.hour }}:{{ user.timestamp.minute }}:{{ user.timestamp.second }}</td>
-			</tr>
-		 {% endif %}
-        {% endfor %}
-      </table>
-	  <h2>Here is a list of all current admins:</h2>
-      <table style="width:75%" border="1">
-        <tr>
-          <th>Account ID:</th>
-          <th>Username:</th>
-          <th>Character Name:</th>
-          <th>Age:</th>
-          <th>Account Creation Date:</th>
-        </tr>
-        {% for user in users %}
-		{% if user.is_admin %}
-			<tr>
-				<td>{{ user.id }}</td>
-				<td><a href=/display_users/{{ user.username }}>{{ user.username }}</a></td>
-				<td>{{ user.heroes[0].character_name }}</td>
-				<td>{{ user.heroes[0].age }}</td>
-				<td>{{ user.timestamp.year }}/{{ user.timestamp.month }}/{{ user.timestamp.day }} {{ user.timestamp.hour }}:{{ user.timestamp.minute }}:{{ user.timestamp.second }}</td>
-			</tr>
-		{% endif %}
-		{% endfor %}
-      </table>
+<h2>Here is a list of all current users:</h2>
+<table style="width:75%" border="1">
+    <tr>
+        <th><a href=/display_users/display/id>ID #:</a></th>
+        <th><a href=/display_users/display/username>Username:</a></th>
+        <th>Character Name:</th>
+        <th><a href=/display_users/display/age>Age:</a></th>
+        <th>Account Creation Date:</th>
+    </tr>
+    <!-- This should be below where it says 'id' but it's giving me an error-->{{ page_detail }}
+    <!-- maybe easier to sort in python beforesending data?-->
+    {% for user in users|sort(attribute='id') %}
+    <tr>
+        <td>{{ user.id }}</td>
+        <td><a href=/display_users/see_user/{{ user.username }}>{{ user.username }}</a> {% if user.is_admin %}[ADMIN]{%
+            endif %}
+        </td>
+        <td>{{ user.heroes[0].character_name }}</td>
+        <td>{{ user.heroes[0].age }}</td>
+        <td>{{ user.timestamp.year }}/{{ user.timestamp.month }}/{{ user.timestamp.day }} {{ user.timestamp.hour }}:{{
+            user.timestamp.minute }}:{{ user.timestamp.second }}
+        </td>
+    </tr>
+    {% else %}
+    <tr>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
+    </tr>
+    {% endfor %}
+</table>
 {% endblock %}

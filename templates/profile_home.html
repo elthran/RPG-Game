@@ -32,7 +32,7 @@
 	<div class="profileColumn">
 	<h2>Skills</h2>	
 		<ul> 
-			{% if myHero.archetype %}}
+			{% if myHero.archetype %}
 				<li>Archetype: {{ myHero.archetype }}</li>
 			{% endif %}
 			{% if myHero.specialization %}}
@@ -75,6 +75,7 @@
 		<h2>Defence</h2>
 		<ul>
 			<li>Block Chance: {{ myHero.proficiencies.block.chance }}% (Modifier: {{ myHero.proficiencies.block.modifier }}%)</li>
+			<li>Fatigue: {{ myHero.proficiencies.fatigue.current }}</li>
 			<li>Resist Frost: {{ myHero.proficiencies.resist_frost.modifier }}%</li>
 			<li>Resist Flame: {{ myHero.proficiencies.resist_flame.modifier }}%</li>
 			<li>Resist Shadow: {{ myHero.proficiencies.resist_shadow.modifier }}%</li>

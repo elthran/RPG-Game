@@ -13,9 +13,10 @@ from math import sin, floor
 
 # Name, Description, Attribute_Type, Type, [(Values Name, Value type, (Modifiers of value))]
 # Linear: Level multiplier, Base Value
-# Curvy: (larger "0" means it reaches the cap quicker) (smaller "1" means it reaxhes the cap quicker) ("2" is the cap or maximum possible value) ("3" is the negative amount)
-# Sensitive: Like curvy but has decimals (larger "0" means it reaches the cap quicker) (smaller "1" means it reaxhes the cap quicker) ("2" is the cap or maximum possible value) ("3" is the negative amount)
-# Modifier: (larger "a" means greater amplitude), (larger "b" means greater steepness andfaster increase), (greater "c" means greater frequency of waves)
+# Curvy: (larger "0" means it reaches the cap quicker) (smaller [1] means it reaxhes the cap quicker) ([2] is the cap or maximum possible value) ([3] is the negative amount)
+# Sensitive: Like curvy but has decimals (larger [0] means it reaches the cap quicker) (smaller [1] means it reaches the cap quicker) ([2] is the cap or maximum possible value) ([3] is the negative amount)
+# Modifier: (larger [0] means greater amplitude), (larger [1] means greater steepness andfaster increase), (greater [2]  means greater frequency of waves)
+# Percent: ???
 # Empty: Sets this value to take on the value of "maximum". Must be placed after "Maximum" in the list of variables
 PROFICIENCY_INFORMATION = [
     ("Health", "How much you can take before you die", "Vitality", [("Maximum", "linear", (5, 0)), ("Current", "empty")]),
@@ -36,7 +37,7 @@ PROFICIENCY_INFORMATION = [
     ("Flee", "Chance to run from a battle", "Quickness", [("Chance", "percent", (0.2, 15, 15, 0))]),
     ("Riposte", "Chance to riposte an enrmy attack", "Agility", [("Chance", "percent", (0.3, 20, 15, 0))]),
     ("Fatigue", "How quickly you tire in combat", "Resilience", [("Maximum", "linear", (2, -1)), ("Current", "empty")]),
-    ("Block", "Ability to block if a shield is equipped", "Resilience", [("Chance", "percent", (0.25, 25, 60, 0)), ("Modifier", "percent", (1.5, 20, 100, 0))]),
+    ("Block", "Ability to block if a shield is equipped", "Resilience", [("Chance", "percent", (0.25, 25, 60, 0)), ("Modifier", "percent", (0.5, 25, 50, -5))]),
     ("Stealth", "Chance to avoid detection", "Agility", [("Chance", "percent", (0.5, 20, 65, 0))]),
     ("Pickpocketing", "Skill at stealing from others", "Agility", [("Chance", "percent", (0.6, 15, 70, 0))]),
     ("Faith", "Strength of spells you cast", "Divinity", [("Modifier", "percent", (2, 10, 5, 0))]),
@@ -1091,7 +1092,7 @@ class Block(Proficiency):
         self.chance = floor((- (25*60)/((0.25 * self.level) + 25) + 60) * 7.9 + 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
-        self.modifier = floor((- (20*100)/((1.5 * self.level) + 20) + 100) * 7.9 + 0)
+        self.modifier = floor((- (25*50)/((0.5 * self.level) + 25) + 50) * 7.9 + -5)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.

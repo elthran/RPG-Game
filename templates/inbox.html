@@ -12,51 +12,62 @@ function toggleReplyText(button) {
         x.style.display = 'block';
     }
 }
+
 </script>
 
 <div class="inboxTopbar">
-	<ul>
-		{% if outbox %}
-		<li><a href="/inbox/inbox">Inbox</a></li>
-		<li><a class="topbarActive" href="/inbox/outbox">Outbox</a></li>
-		{% else %}
-		<li><a class="topbarActive" href="/inbox/inbox">Inbox</a></li>
-		<li><a href="/inbox/outbox">Outbox</a></li>
-		{% endif %}
-	</ul>
+    <ul>
+        {% if outbox %}
+        <li><a href="/inbox/inbox">Inbox</a></li>
+        <li><a class="topbarActive" href="/inbox/outbox">Outbox</a></li>
+        {% else %}
+        <li><a class="topbarActive" href="/inbox/inbox">Inbox</a></li>
+        <li><a href="/inbox/outbox">Outbox</a></li>
+        {% endif %}
+    </ul>
 </div>
 <div style="clear: both;"></div>
 {% if outbox %}
-	<ul>
-		{% for message in hero.user.inbox.sent_messages %}
-		<li>
-			<h3>To: <a href=/display_users/{{ message.receiver.user.username }}>{{ message.receiver.user.username }}</a></h3>
-			<p>{{ message.content }}</p>
-			<button onclick="toggleReplyText(this)" id="out-{{ message.receiver.user.id }}">Message</button>
-			<div id="replyText-out-{{ message.receiver.user.id }}" style="display: none">
-				<form method="post" action="" autocomplete="off">
-				<input type="text" name="message" value="">
-				<input type="submit" name="receiver" value="{{ message.receiver.user.username }}">
-				</form>
-			</div>
-		</li>
-		{% endfor %}
-	</ul>
+<ul>
+    {% for message in hero.user.inbox.sent_messages %}
+    <li>
+        <h3>To: <a href=/display_users/{{ message.receiver.user.username }}>{{ message.receiver.user.username }}</a>
+        </h3>
+        <p>{{ message.content }}</p>
+        <button onclick="toggleReplyText(this)" id="out-{{ message.receiver.user.id }}">Message</button>
+        <div id="replyText-out-{{ message.receiver.user.id }}" style="display: none">
+            <form method="post" action="" autocomplete="off">
+                <input type="text" name="message" value="">
+                <input type="submit" name="receiver" value="{{ message.receiver.user.username }}">
+            </form>
+        </div>
+    </li>
+    {% else %}
+    Outbox is empty
+    {% endfor %}
+</ul>
 {% else %}
-	<ul>
-		{% for message in hero.user.inbox.received_messages %}
-		<li>
-			<h3>From: <a href=/display_users/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></h3>
-			<p>{{ message.content }}</p>
-			<button onclick="toggleReplyText(this)" id="in-{{ message.sender.user.id }}">Reply</button>
-			<div id="replyText-in-{{ message.sender.user.id }}" style="display: none">
-				<form method="post" action="" autocomplete="off">
-				<input type="text" name="message" value="">
-				<input type="submit" name="receiver" value="{{ message.sender.user.username }}">
-				</form>
-			</div>
-		</li>
-		{% endfor %}
-	</ul>
+<ul>
+    {% for message in hero.user.inbox.received_messages %}
+    <li>
+        {% if message.unread %}
+        <center>NEW MESSAGE</center>
+        {% else %}
+        <center>OLD MESSAGE</center>
+        {% endif %}
+        <h3>From: <a href=/display_users/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></h3>
+        <p>{{ message.content }}</p>
+        <button onclick="toggleReplyText(this)" id="in-{{ message.sender.user.id }}">Reply</button>
+        <div id="replyText-in-{{ message.sender.user.id }}" style="display: none">
+            <form method="post" action="" autocomplete="off">
+                <input type="text" name="message" value="">
+                <input type="submit" name="receiver" value="{{ message.sender.user.username }}">
+            </form>
+        </div>
+    </li>
+    {% else %}
+    Inbox is empty
+    {% endfor %}
+</ul>
 {% endif %}
 {% endblock %}
