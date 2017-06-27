@@ -84,6 +84,11 @@
     </div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
     {% endif %}
 
+    <!-- This displays notifications at the top of the page -->
+    {% for notice in notifications %}
+        {{ notice }}
+    {% endfor %}
+
     <!-- This is info pulled from other html files -->
     {% block block1 %}{% endblock %}
     {% block block2 %}{% endblock %}

@@ -137,6 +137,22 @@ def login():
             # user wants to play with. Or a page redirect whatever ...
             # Choose hero dialogue ... not implemented.
             hero = user.heroes[0]
+            # Below is code for daily login reward. It's temporary as I am just trying to play with and learn about timestamps and whatnot.
+            time_now = str(EZDB.now())
+            time_now = time_now.split(" ")
+            time_now = time_now[0]
+            if hero.last_login == "":
+                print ("First time logging in!")
+                hero.last_login = time_now
+            elif hero.last_login == time_now:
+                print("You already logged in today")
+            else:
+                reward = 3
+                print("Thanks for logging in today! You earn " + str(reward) + " experience.")
+                hero.experience += reward
+                hero.level_up()
+                hero.last_login = time_now
+            # End of daily login reward code (Elthran)
             session['hero_id'] = hero.id
 
             # Now I need to work out how to make game not global *sigh* (Marlen)

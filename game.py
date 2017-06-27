@@ -205,6 +205,8 @@ class Hero(Base):
 
     #Time code of when the (account?) was created
     timestamp = Column(DateTime)
+    #Date of last login
+    last_login = Column(String)
 
     #Relationships: see complex_relationships.py
 
@@ -251,6 +253,7 @@ class Hero(Base):
 
         #Time code
         self.timestamp = datetime.datetime.utcnow()
+        self.last_login = ""
 
         for key in kwargs:
             setattr(self, key, kwargs[key])
