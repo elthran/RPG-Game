@@ -70,7 +70,7 @@ class Proficiency(Base):
         self.attribute_type = attribute_type
         self.tooltip = ""
         
-        self.level = 1
+        self.level = 0
         self.is_not_max_level = False
         
     def is_max_level(self, hero):
@@ -127,14 +127,10 @@ class {{ prof_class }}(Proficiency):
         else:
             self.is_not_max_level = False
         {% for value in prof[3] -%}
-        {% if value[1] == "percent" -%}
-        self.{{ value[0].lower() }} = floor((- ({{ value[2][1] }}*{{ value[2][2] }})/(({{ value[2][0] }} * self.level) + {{ value[2][1] }}) + {{ value[2][2] }}) * 7.9 + {{ value[2][3] }})
+        {% if value[1] == "root" -%}
+        self.{{ value[0].lower() }} = round((100 * self.level)**0.5 - (self.level / 4), {{ value[2][1]}})
         {% elif value[1] == "linear" -%}
-        self.{{ value[0].lower() }} = floor({{ value[2][0] }}*self.level + {{ value[2][1] }})
-        {% elif value[1] == "curvy" -%}
-        self.{{ value[0].lower() }} = floor(floor(3 * ({{ value[2][0] }}*sin({{ value[2][2] }}*self.level) + {{ value[2][1] }}*self.level)) + {{ value[2][3] }})
-        {% elif value[1] == "sensitive" -%}
-        self.{{ value[0].lower() }} = round((3 * ({{ value[2][0] }}*sin({{ value[2][2] }}*self.level) + {{ value[2][1] }}*self.level)) + {{ value[2][3] }}, 2)
+        self.{{ value[0].lower() }} = round({{ value[2][0] }} * self.level + {{ value[2][1] }}, {{ value[2][2]}})
         {% elif value[1] == "empty" -%}
         self.{{ value[0].lower() }} = self.maximum
         {% endif -%}

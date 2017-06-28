@@ -11,68 +11,70 @@ from base_classes import Base
 
 from math import sin, floor
 
-# Name, Description, Attribute_Type, Type, [(Values Name, Value type, (Modifiers of value))]
-# Linear: Level multiplier, Base Value
+# Name, Description, Attribute_Type, Type, [(Values Name, Value type, (Modifiers of value), Decimal Places)]
+# Linear: (Level multiplier), (Starting Value)
+# Root: Not finished. Looks like square root function. Used for diminishing returns and things that get better the larger they are. (Starting value) [Currently approaches 100]
+
 # Curvy: (larger "0" means it reaches the cap quicker) (smaller [1] means it reaxhes the cap quicker) ([2] is the cap or maximum possible value) ([3] is the negative amount)
 # Sensitive: Like curvy but has decimals (larger [0] means it reaches the cap quicker) (smaller [1] means it reaches the cap quicker) ([2] is the cap or maximum possible value) ([3] is the negative amount)
 # Modifier: (larger [0] means greater amplitude), (larger [1] means greater steepness andfaster increase), (greater [2]  means greater frequency of waves)
 # Percent: ???
 # Empty: Sets this value to take on the value of "maximum". Must be placed after "Maximum" in the list of variables
 PROFICIENCY_INFORMATION = [
-    ("Health", "How much you can take before you die", "Vitality", [("Maximum", "linear", (5, 0)), ("Current", "empty")]),
-    ("Regeneration", "How quickly your wounds heal", "Vitality", [("Maximum", "linear", (5, 0)), ("Current", "empty")]),
-    ("Recovery", "How quickly you recover from poisons and negative effects", "Vitality",[("Maximum", "linear", (5, 0)), ("Current", "empty")]),
-    ("Climbing", "Your ability to climb obstacles", "Agility", [("Chance", "percent", (0.5, 20, 65, 0))]),
-    ("Storage", "Your carrying capacity", "Brawn", [("Maximum", "linear", (2.5, 8)), ("Current", "empty")]),
-    ("Encumbrance", "How much your are slowed down in combat by your equipment", "Brawn", [("Accuracy", "percent", (2, 10, 5, 5))]),
-    ("Endurance", "Actions performed each day", "Resilience", [("Maximum", "linear", (0.25, 5)), ("Current", "empty")]),
-    ("Damage", "How much damage you do on each hit", "Brawn", [("Minimum", "curvy", (0.5, 0.1, 0.1, 0)), ("Maximum",  "curvy", (0.5, 0.2, 0.1, 1))]),
-    ("Speed", "How fast you attack", "Quickness", [("Speed", "sensitive", (0.1, 0.1, 0.7, 1))]),
-    ("Accuracy", "The chance of your attacks hitting their target.", "Agility", [("Accuracy", "percent", (2, 10, 5, 5))]),
-    ("First strike", "Chance to strike first", "Quickness", [("Chance", "percent", (0.5, 5, 50, -30))]),
-    ("Killshot", "Ability to hit enemies in their weak spot", "Agility", [("Chance", "percent", (0.3, 5, 50, -22)), ("Modifier", "percent", (0.5, 1, 0.5, 0))]),
-    ("Defence", "Damage reduction", "Resilience", [("Modifier", "percent", (0.1, 7, 35, 0))]),
-    ("Evade", "Chance to dodge", "Quickness", [("Chance", "percent", (0.1, 10, 15, 0))]),
-    ("Parry", "Chance to parry", "Quickness", [("Chance", "percent", (0.2, 15, 15, 0))]),
-    ("Flee", "Chance to run from a battle", "Quickness", [("Chance", "percent", (0.2, 15, 15, 0))]),
-    ("Riposte", "Chance to riposte an enrmy attack", "Agility", [("Chance", "percent", (0.3, 20, 15, 0))]),
-    ("Fatigue", "How quickly you tire in combat", "Resilience", [("Maximum", "linear", (2, -1)), ("Current", "empty")]),
-    ("Block", "Ability to block if a shield is equipped", "Resilience", [("Chance", "percent", (0.25, 25, 60, 0)), ("Modifier", "percent", (0.5, 25, 50, -5))]),
-    ("Stealth", "Chance to avoid detection", "Agility", [("Chance", "percent", (0.5, 20, 65, 0))]),
-    ("Pickpocketing", "Skill at stealing from others", "Agility", [("Chance", "percent", (0.6, 15, 70, 0))]),
-    ("Faith", "Strength of spells you cast", "Divinity", [("Modifier", "percent", (2, 10, 5, 0))]),
-    ("Sanctity", "Amount of sanctity you can have", "Divinity", [("Maximum", "linear", (5, 0)), ("Current", "empty")]),
-    ("Resist holy", "Ability to resist holy damage", "Divinity", [("Modifier", "percent", (1, 50, 100, -15))]),
-    ("Bartering", "Chance to negotiate prices", "Charisma", [("Chance", "percent", (0.5, 20, 60, 0))]),
-    ("Oration", "Proficiency in speaking to others", "Charisma", [("Modifier", "percent", (0.75, 15, 60, 0))]),
-    ("Charm", "How quickly other people will like you", "Charisma", [("Modifier", "percent", (0.75, 15, 60, 0))]),
-    ("Trustworthiness", "How much other players trust you", "Charisma", [("Modifier", "percent", (0.75, 15, 60, 0))]),
-    ("Renown", "How much your actions affect your reputation", "Charisma", [("Modifier", "percent", (0.75, 15, 60, 0))]),
-    ("Knowledge", "Ability to understand", "Intellect", [("Modifier", "percent", (0.1, 5, 50, 0))]),
-    ("Literacy", "Ability to read", "Intellect", [("Modifier", "percent", (0.25, 10, 75, 0))]),
-    ("Understanding", "How quickly you level up", "Intellect", [("Chance", "percent", (0.2, 5, 10, 0))]),
-    ("Luckiness", "Chance to have things turn your way against all odds", "Fortuity", [("Chance", "percent", (0.2, 5, 10, 0))]),
-    ("Adventuring", "Chance to discover treasure", "Fortuity", [("Chance", "percent", (0.2, 5, 10, 0))]),
-    ("Logistics",  "How far you can move on the map", "Pathfinding", [("Chance", "percent", (0.2, 5, 10, 0))]),
-    ("Mountaineering", "Modifier for mountain movement", "Pathfinding", [("Chance", "percent", (0.2, 5, 10, 0))]),
-    ("Woodsman", "Modifier for forest movement", "Pathfinding", [("Chance", "percent", (0.2, 5, 10, 0))]),
-    ("Navigator", "Modifier for water movement", "Pathfinding", [("Chance", "percent", (0.2, 5, 10, 0))]),
-    ("Luck", "Chance to have things turn your way against all odds", "Survivalism", [("Chance", "percent", (0.2, 5, 10, 0))]),
-    ("Detection", "Chance to discover enemy stealth and traps", "Survivalism", [("Chance", "percent", (0.2, 5, 10, 0))]),
-    ("Caution",  "See information about a new grid before going there", "Survivalism", [("Chance", "percent", (0.2, 5, 10, 0))]),
-    ("Explorer", "Additional options on the map, such as foraging", "Survivalism", [("Chance", "percent", (0.2, 5, 10, 0))]),
-    ("Huntsman", "Learn additional information about enemies", "Survivalism", [("Chance", "percent", (0.2, 5, 10, 0))]),
-    ("Survivalist", "Create bandages, tents, and other useful objects", "Survivalism", [("Chance", "percent", (0.2, 5, 10, 0))]),
-    ("Resist frost", "Ability to resist frost damage", "Resilience", [("Modifier", "percent", (1, 50, 100, -15))]),
-    ("Resist flame", "Ability to resist flame damage", "Resilience", [("Modifier", "percent", (1, 50, 100, -15))]),
-    ("Resist shadow", "Ability to resist shadow damage", "Resilience", [("Modifier", "percent", (1, 50, 100, -15))]),
-    ("Resist poison", "Ability to resist poison damage", "Resilience", [("Modifier", "percent", (1, 50, 100, -15))]),
-    ("Resist blunt", "Ability to resist blunt damage", "Resilience", [("Modifier", "percent", (1, 50, 100, -15))]),
-    ("Resist slashing", "Ability to resist slashing damage", "Resilience", [("Modifier", "percent", (1, 50, 100, -15))]),
-    ("Resist piercing", "Ability to resist piercing damage", "Resilience", [("Modifier", "percent", (1, 50, 100, -15))]),
-    ("Courage", "Your ability to overcome fears", "Willpower", [("Modifier", "percent", (1, 50, 100, -15))]),
-    ("Sanity", "Your ability to resist mind altering affects", "Willpower", [("Modifier", "percent", (1, 50, 100, -15))])
+    ("Health", "How much you can take before you die", "Vitality", [("Maximum", "linear", (2, 5, 0)), ("Current", "empty")]),
+    ("Regeneration", "How quickly your wounds heal", "Vitality", [("Speed", "root", (1, 2))]),
+    ("Recovery", "How quickly you recover from poisons and negative effects", "Vitality",[("Efficiency", "root", (0, 0))]),
+    ("Climbing", "Your ability to climb obstacles", "Agility", [("Ability", "linear", (0.5, 0.5, 1))]),
+    ("Storage", "Your carrying capacity", "Brawn", [("Maximum", "linear", (2, 10, 0)), ("Current", "empty")]),
+    ("Encumbrance", "How much your are slowed down in combat by your equipment", "Brawn", [("Amount", "root", (0, 0))]),
+    ("Endurance", "Actions performed each day", "Resilience", [("Maximum", "linear", (1, 3, 0)), ("Current", "empty")]),
+    ("Damage", "How much damage you do on each hit", "Brawn", [("Minimum", "linear", (1, 0, 0)), ("Maximum", "linear", (1, 1, 0)), ("Modifier", "linear", (.1, 1, 1))]),
+    ("Speed", "How fast you attack", "Quickness", [("Speed", "linear", (0.03, 1, 2))]),
+    ("Accuracy", "The chance of your attacks hitting their target.", "Agility", [("Accuracy", "root", (35, 0))]),
+    ("First strike", "Chance to strike first", "Quickness", [("Chance", "root", (0, 0))]),
+    ("Killshot", "Ability to hit enemies in their weak spot", "Agility", [("Chance", "root", (0, 0)), ("Modifier", "linear", (0.1, 1, 1))]),
+    ("Defence", "Damage reduction", "Resilience", [("Modifier", "root", (0, 0))]),
+    ("Evade", "Chance to dodge", "Quickness", [("Chance", "root", (5, 0))]),
+    ("Parry", "Chance to parry", "Quickness", [("Chance", "root", (2, 0))]),
+    ("Flee", "Chance to run from a battle", "Quickness", [("Chance", "root", (7, 0))]),
+    ("Riposte", "Chance to riposte an enrmy attack", "Agility", [("Chance", "root", (0, 0))]),
+    ("Fatigue", "How quickly you tire in combat", "Resilience", [("Maximum", "linear", (1, 5, 0)), ("Current", "empty")]),
+    ("Block", "Ability to block if a shield is equipped", "Resilience", [("Chance", "root", (0, 0)), ("Modifier", "root", (0, 0))]),
+    ("Stealth", "Chance to avoid detection", "Agility", [("Chance", "root", (3, 0))]),
+    ("Pickpocketing", "Skill at stealing from others", "Agility", [("Chance", "root", (1, 0))]),
+    ("Faith", "Strength of spells you cast", "Divinity", [("Modifier", "linear", (0.1, 1, 0))]),
+    ("Sanctity", "Amount of sanctity you can have", "Divinity", [("Maximum", "linear", (3, 0, 0)), ("Current", "empty")]),
+    ("Resist holy", "Ability to resist holy damage", "Divinity", [("Modifier", "root", (0, 0))]),
+    ("Bartering", "Discount from negotiating prices", "Charisma", [("Modifier", "linear", (-0.05, 1, 0))]),
+    ("Oration", "Proficiency in speaking to others", "Charisma", [("Modifier", "root", (11, 0))]),
+    ("Charm", "How quickly other people will like you", "Charisma", [("Modifier", "root", (3, 0))]),
+    ("Trustworthiness", "How much other players trust you", "Charisma", [("Modifier", "root", (0, 0))]),
+    ("Renown", "How much your actions affect your reputation", "Charisma", [("Modifier", "linear", (0.1, 1, 0))]),
+    ("Knowledge", "Ability to understand", "Intellect", [("Modifier", "root", (6, 0))]),
+    ("Literacy", "Ability to read", "Intellect", [("Modifier", "root", (0, 0))]),
+    ("Understanding", "How quickly you level up", "Intellect", [("Modifier", "linear", (0.05, 1, 0))]),
+    ("Luckiness", "Chance to have things turn your way against all odds", "Fortuity", [("Chance", "linear", (0.01, 0, 0))]),
+    ("Adventuring", "Chance to discover treasure", "Fortuity", [("Chance", "root", (0, 0))]),
+    ("Logistics",  "How far you can move on the map", "Pathfinding", [("Modifier", "linear", (0.2, 1, 0))]),
+    ("Mountaineering", "Modifier for mountain movement", "Pathfinding", [("Modifier", "linear", (0.5, 1, 0))]),
+    ("Woodsman", "Modifier for forest movement", "Pathfinding", [("Modifier", "linear", (.5, 1, 0))]),
+    ("Navigator", "Modifier for water movement", "Pathfinding", [("Modifier", "linear", (.5, 1, 0))]),
+    ("Detection", "Chance to discover enemy stealth and traps", "Survivalism", [("Chance", "root", (0, 0))]),
+    ("Caution",  "See information about a new grid before going there", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
+    ("Explorer", "Additional options on the map, such as foraging", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
+    ("Huntsman", "Learn additional information about enemies", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
+    ("Survivalist", "Create bandages, tents, and other useful objects", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
+    ("Resist frost", "Ability to resist frost damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    ("Resist flame", "Ability to resist flame damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    ("Resist shadow", "Ability to resist shadow damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    ("Resist poison", "Ability to resist poison damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    ("Resist blunt", "Ability to resist blunt damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    ("Resist slashing", "Ability to resist slashing damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    ("Resist piercing", "Ability to resist piercing damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    ("Courage", "Your ability to overcome fears", "Willpower", [("Skill", "linear", (1, 0, 0))]),
+    ("Sanity", "Your ability to resist mind altering affects", "Willpower", [("Skill", "linear", (1, 0, 0))]),
     ]
+
 
 
 ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_") for attrib in PROFICIENCY_INFORMATION]
@@ -159,8 +161,6 @@ class Proficiencies(Base):
     woodsman = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.woodsman_id]")
     navigator_id = Column(Integer, ForeignKey('proficiency.id'))
     navigator = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.navigator_id]")
-    luck_id = Column(Integer, ForeignKey('proficiency.id'))
-    luck = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.luck_id]")
     detection_id = Column(Integer, ForeignKey('proficiency.id'))
     detection = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.detection_id]")
     caution_id = Column(Integer, ForeignKey('proficiency.id'))
@@ -216,7 +216,7 @@ class Proficiencies(Base):
         self.faith = Faith("Faith", "Strength of spells you cast", "Divinity")
         self.sanctity = Sanctity("Sanctity", "Amount of sanctity you can have", "Divinity")
         self.resist_holy = ResistHoly("Resist holy", "Ability to resist holy damage", "Divinity")
-        self.bartering = Bartering("Bartering", "Chance to negotiate prices", "Charisma")
+        self.bartering = Bartering("Bartering", "Discount from negotiating prices", "Charisma")
         self.oration = Oration("Oration", "Proficiency in speaking to others", "Charisma")
         self.charm = Charm("Charm", "How quickly other people will like you", "Charisma")
         self.trustworthiness = Trustworthiness("Trustworthiness", "How much other players trust you", "Charisma")
@@ -230,7 +230,6 @@ class Proficiencies(Base):
         self.mountaineering = Mountaineering("Mountaineering", "Modifier for mountain movement", "Pathfinding")
         self.woodsman = Woodsman("Woodsman", "Modifier for forest movement", "Pathfinding")
         self.navigator = Navigator("Navigator", "Modifier for water movement", "Pathfinding")
-        self.luck = Luck("Luck", "Chance to have things turn your way against all odds", "Survivalism")
         self.detection = Detection("Detection", "Chance to discover enemy stealth and traps", "Survivalism")
         self.caution = Caution("Caution", "See information about a new grid before going there", "Survivalism")
         self.explorer = Explorer("Explorer", "Additional options on the map, such as foraging", "Survivalism")
@@ -286,7 +285,7 @@ class Proficiency(Base):
         self.attribute_type = attribute_type
         self.tooltip = ""
         
-        self.level = 1
+        self.level = 0
         self.is_not_max_level = False
         
     def is_max_level(self, hero):
@@ -335,7 +334,7 @@ class Health(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = floor(5*self.level + 0)
+        self.maximum = round(2 * self.level + 5, 0)
         # This creates a tooltip for each variable
         tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
@@ -357,10 +356,9 @@ class Regeneration(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    maximum = Column(Integer)
-    current = Column(Integer)
+    speed = Column(Integer)
     
-    percent = Column(Integer)
+    
     error = Column(String)
     formatted_name = Column(String)
     __mapper_args__ = {
@@ -369,9 +367,8 @@ class Regeneration(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.maximum = 0
-        self.current = 0
-        self.percent = 0
+        self.speed = 0
+        
         self.error = "You do not have enough vitality"
         self.formatted_name = "regeneration" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -383,21 +380,13 @@ class Regeneration(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = floor(5*self.level + 0)
+        self.speed = round((100 * self.level)**0.5 - (self.level / 4), 2)
         # This creates a tooltip for each variable
-        tooltips.append("Maximum: " + str(self.maximum)) 
-        self.current = self.maximum
+        tooltips.append("Speed: " + str(self.speed)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
-    @validates('current')
-    def validate_regeneration(self, key_name, current):
-        #Update regeneration percent on health change.
-        try:
-            self.percent = round(current / self.maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.percent = 0
-        return max(current or 0, 0)
+    
     
 
 class Recovery(Proficiency):
@@ -405,10 +394,9 @@ class Recovery(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    maximum = Column(Integer)
-    current = Column(Integer)
+    efficiency = Column(Integer)
     
-    percent = Column(Integer)
+    
     error = Column(String)
     formatted_name = Column(String)
     __mapper_args__ = {
@@ -417,9 +405,8 @@ class Recovery(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.maximum = 0
-        self.current = 0
-        self.percent = 0
+        self.efficiency = 0
+        
         self.error = "You do not have enough vitality"
         self.formatted_name = "recovery" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
@@ -431,21 +418,13 @@ class Recovery(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = floor(5*self.level + 0)
+        self.efficiency = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
-        tooltips.append("Maximum: " + str(self.maximum)) 
-        self.current = self.maximum
+        tooltips.append("Efficiency: " + str(self.efficiency)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
-    @validates('current')
-    def validate_recovery(self, key_name, current):
-        #Update recovery percent on health change.
-        try:
-            self.percent = round(current / self.maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.percent = 0
-        return max(current or 0, 0)
+    
     
 
 class Climbing(Proficiency):
@@ -453,7 +432,7 @@ class Climbing(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    chance = Column(Integer)
+    ability = Column(Integer)
     
     
     error = Column(String)
@@ -464,7 +443,7 @@ class Climbing(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
+        self.ability = 0
         
         self.error = "You do not have enough agility"
         self.formatted_name = "climbing" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
@@ -477,9 +456,9 @@ class Climbing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (20*65)/((0.5 * self.level) + 20) + 65) * 7.9 + 0)
+        self.ability = round(0.5 * self.level + 0.5, 1)
         # This creates a tooltip for each variable
-        tooltips.append("Chance: " + str(self.chance)) 
+        tooltips.append("Ability: " + str(self.ability)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -517,7 +496,7 @@ class Storage(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = floor(2.5*self.level + 8)
+        self.maximum = round(2 * self.level + 10, 0)
         # This creates a tooltip for each variable
         tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
@@ -539,7 +518,7 @@ class Encumbrance(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    accuracy = Column(Integer)
+    amount = Column(Integer)
     
     
     error = Column(String)
@@ -550,7 +529,7 @@ class Encumbrance(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.accuracy = 0
+        self.amount = 0
         
         self.error = "You do not have enough brawn"
         self.formatted_name = "encumbrance" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
@@ -563,9 +542,9 @@ class Encumbrance(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.accuracy = floor((- (10*5)/((2 * self.level) + 10) + 5) * 7.9 + 5)
+        self.amount = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
-        tooltips.append("Accuracy: " + str(self.accuracy)) 
+        tooltips.append("Amount: " + str(self.amount)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -603,7 +582,7 @@ class Endurance(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = floor(0.25*self.level + 5)
+        self.maximum = round(1 * self.level + 3, 0)
         # This creates a tooltip for each variable
         tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
@@ -627,6 +606,7 @@ class Damage(Proficiency):
 
     minimum = Column(Integer)
     maximum = Column(Integer)
+    modifier = Column(Integer)
     
     
     error = Column(String)
@@ -639,6 +619,7 @@ class Damage(Proficiency):
         super().__init__(*args, **kwargs)
         self.minimum = 0
         self.maximum = 0
+        self.modifier = 0
         
         self.error = "You do not have enough brawn"
         self.formatted_name = "damage" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
@@ -651,12 +632,15 @@ class Damage(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.minimum = floor(floor(3 * (0.5*sin(0.1*self.level) + 0.1*self.level)) + 0)
+        self.minimum = round(1 * self.level + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Minimum: " + str(self.minimum)) 
-        self.maximum = floor(floor(3 * (0.5*sin(0.1*self.level) + 0.2*self.level)) + 1)
+        self.maximum = round(1 * self.level + 1, 0)
         # This creates a tooltip for each variable
         tooltips.append("Maximum: " + str(self.maximum)) 
+        self.modifier = round(0.1 * self.level + 1, 1)
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -692,7 +676,7 @@ class Speed(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.speed = round((3 * (0.1*sin(0.7*self.level) + 0.1*self.level)) + 1, 2)
+        self.speed = round(0.03 * self.level + 1, 2)
         # This creates a tooltip for each variable
         tooltips.append("Speed: " + str(self.speed)) 
         #This updates the main tooltip string variable.
@@ -730,7 +714,7 @@ class Accuracy(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.accuracy = floor((- (10*5)/((2 * self.level) + 10) + 5) * 7.9 + 5)
+        self.accuracy = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Accuracy: " + str(self.accuracy)) 
         #This updates the main tooltip string variable.
@@ -768,7 +752,7 @@ class FirstStrike(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (5*50)/((0.5 * self.level) + 5) + 50) * 7.9 + -30)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -808,10 +792,10 @@ class Killshot(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (5*50)/((0.3 * self.level) + 5) + 50) * 7.9 + -22)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
-        self.modifier = floor((- (1*0.5)/((0.5 * self.level) + 1) + 0.5) * 7.9 + 0)
+        self.modifier = round(0.1 * self.level + 1, 1)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -849,7 +833,7 @@ class Defence(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (7*35)/((0.1 * self.level) + 7) + 35) * 7.9 + 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -887,7 +871,7 @@ class Evade(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (10*15)/((0.1 * self.level) + 10) + 15) * 7.9 + 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -925,7 +909,7 @@ class Parry(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (15*15)/((0.2 * self.level) + 15) + 15) * 7.9 + 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -963,7 +947,7 @@ class Flee(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (15*15)/((0.2 * self.level) + 15) + 15) * 7.9 + 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -1001,7 +985,7 @@ class Riposte(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (20*15)/((0.3 * self.level) + 20) + 15) * 7.9 + 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -1041,7 +1025,7 @@ class Fatigue(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = floor(2*self.level + -1)
+        self.maximum = round(1 * self.level + 5, 0)
         # This creates a tooltip for each variable
         tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
@@ -1089,10 +1073,10 @@ class Block(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (25*60)/((0.25 * self.level) + 25) + 60) * 7.9 + 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
-        self.modifier = floor((- (25*50)/((0.5 * self.level) + 25) + 50) * 7.9 + -5)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1130,7 +1114,7 @@ class Stealth(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (20*65)/((0.5 * self.level) + 20) + 65) * 7.9 + 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -1168,7 +1152,7 @@ class Pickpocketing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (15*70)/((0.6 * self.level) + 15) + 70) * 7.9 + 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -1206,7 +1190,7 @@ class Faith(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (10*5)/((2 * self.level) + 10) + 5) * 7.9 + 0)
+        self.modifier = round(0.1 * self.level + 1, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1246,7 +1230,7 @@ class Sanctity(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = floor(5*self.level + 0)
+        self.maximum = round(3 * self.level + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
@@ -1292,7 +1276,7 @@ class ResistHoly(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1306,7 +1290,7 @@ class Bartering(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    chance = Column(Integer)
+    modifier = Column(Integer)
     
     
     error = Column(String)
@@ -1317,7 +1301,7 @@ class Bartering(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
+        self.modifier = 0
         
         self.error = "You do not have enough charisma"
         self.formatted_name = "bartering" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
@@ -1330,9 +1314,9 @@ class Bartering(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (20*60)/((0.5 * self.level) + 20) + 60) * 7.9 + 0)
+        self.modifier = round(-0.05 * self.level + 1, 0)
         # This creates a tooltip for each variable
-        tooltips.append("Chance: " + str(self.chance)) 
+        tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1368,7 +1352,7 @@ class Oration(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (15*60)/((0.75 * self.level) + 15) + 60) * 7.9 + 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1406,7 +1390,7 @@ class Charm(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (15*60)/((0.75 * self.level) + 15) + 60) * 7.9 + 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1444,7 +1428,7 @@ class Trustworthiness(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (15*60)/((0.75 * self.level) + 15) + 60) * 7.9 + 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1482,7 +1466,7 @@ class Renown(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (15*60)/((0.75 * self.level) + 15) + 60) * 7.9 + 0)
+        self.modifier = round(0.1 * self.level + 1, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1520,7 +1504,7 @@ class Knowledge(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (5*50)/((0.1 * self.level) + 5) + 50) * 7.9 + 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1558,7 +1542,7 @@ class Literacy(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (10*75)/((0.25 * self.level) + 10) + 75) * 7.9 + 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1572,7 +1556,7 @@ class Understanding(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    chance = Column(Integer)
+    modifier = Column(Integer)
     
     
     error = Column(String)
@@ -1583,7 +1567,7 @@ class Understanding(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
+        self.modifier = 0
         
         self.error = "You do not have enough intellect"
         self.formatted_name = "understanding" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
@@ -1596,9 +1580,9 @@ class Understanding(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
+        self.modifier = round(0.05 * self.level + 1, 0)
         # This creates a tooltip for each variable
-        tooltips.append("Chance: " + str(self.chance)) 
+        tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1634,7 +1618,7 @@ class Luckiness(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
+        self.chance = round(0.01 * self.level + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -1672,7 +1656,7 @@ class Adventuring(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -1686,7 +1670,7 @@ class Logistics(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    chance = Column(Integer)
+    modifier = Column(Integer)
     
     
     error = Column(String)
@@ -1697,7 +1681,7 @@ class Logistics(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
+        self.modifier = 0
         
         self.error = "You do not have enough pathfinding"
         self.formatted_name = "logistics" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
@@ -1710,9 +1694,9 @@ class Logistics(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
+        self.modifier = round(0.2 * self.level + 1, 0)
         # This creates a tooltip for each variable
-        tooltips.append("Chance: " + str(self.chance)) 
+        tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1724,7 +1708,7 @@ class Mountaineering(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    chance = Column(Integer)
+    modifier = Column(Integer)
     
     
     error = Column(String)
@@ -1735,7 +1719,7 @@ class Mountaineering(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
+        self.modifier = 0
         
         self.error = "You do not have enough pathfinding"
         self.formatted_name = "mountaineering" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
@@ -1748,9 +1732,9 @@ class Mountaineering(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
+        self.modifier = round(0.5 * self.level + 1, 0)
         # This creates a tooltip for each variable
-        tooltips.append("Chance: " + str(self.chance)) 
+        tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1762,7 +1746,7 @@ class Woodsman(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    chance = Column(Integer)
+    modifier = Column(Integer)
     
     
     error = Column(String)
@@ -1773,7 +1757,7 @@ class Woodsman(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
+        self.modifier = 0
         
         self.error = "You do not have enough pathfinding"
         self.formatted_name = "woodsman" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
@@ -1786,9 +1770,9 @@ class Woodsman(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
+        self.modifier = round(0.5 * self.level + 1, 0)
         # This creates a tooltip for each variable
-        tooltips.append("Chance: " + str(self.chance)) 
+        tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1800,7 +1784,7 @@ class Navigator(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    chance = Column(Integer)
+    modifier = Column(Integer)
     
     
     error = Column(String)
@@ -1811,7 +1795,7 @@ class Navigator(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
+        self.modifier = 0
         
         self.error = "You do not have enough pathfinding"
         self.formatted_name = "navigator" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
@@ -1824,47 +1808,9 @@ class Navigator(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
+        self.modifier = round(0.5 * self.level + 1, 0)
         # This creates a tooltip for each variable
-        tooltips.append("Chance: " + str(self.chance)) 
-        #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
-
-class Luck(Proficiency):
-    __tablename__ = "luck"
-
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    chance = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
-    __mapper_args__ = {
-        'polymorphic_identity':"Luck",
-}
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.chance = 0
-        
-        self.error = "You do not have enough survivalism"
-        self.formatted_name = "luck" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-        
-    def update(self, myHero):
-        """Update Luck's attributes and tooltip variable.
-        """
-        tooltips = []
-        if self.level < myHero.attributes.survivalism.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
-        # This creates a tooltip for each variable
-        tooltips.append("Chance: " + str(self.chance)) 
+        tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1900,7 +1846,7 @@ class Detection(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -1914,7 +1860,7 @@ class Caution(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    chance = Column(Integer)
+    ability = Column(Integer)
     
     
     error = Column(String)
@@ -1925,7 +1871,7 @@ class Caution(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
+        self.ability = 0
         
         self.error = "You do not have enough survivalism"
         self.formatted_name = "caution" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
@@ -1938,9 +1884,9 @@ class Caution(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
+        self.ability = round(0.5 * self.level + 0.5, 0)
         # This creates a tooltip for each variable
-        tooltips.append("Chance: " + str(self.chance)) 
+        tooltips.append("Ability: " + str(self.ability)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1952,7 +1898,7 @@ class Explorer(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    chance = Column(Integer)
+    ability = Column(Integer)
     
     
     error = Column(String)
@@ -1963,7 +1909,7 @@ class Explorer(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
+        self.ability = 0
         
         self.error = "You do not have enough survivalism"
         self.formatted_name = "explorer" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
@@ -1976,9 +1922,9 @@ class Explorer(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
+        self.ability = round(0.5 * self.level + 0.5, 0)
         # This creates a tooltip for each variable
-        tooltips.append("Chance: " + str(self.chance)) 
+        tooltips.append("Ability: " + str(self.ability)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1990,7 +1936,7 @@ class Huntsman(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    chance = Column(Integer)
+    ability = Column(Integer)
     
     
     error = Column(String)
@@ -2001,7 +1947,7 @@ class Huntsman(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
+        self.ability = 0
         
         self.error = "You do not have enough survivalism"
         self.formatted_name = "huntsman" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
@@ -2014,9 +1960,9 @@ class Huntsman(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
+        self.ability = round(0.5 * self.level + 0.5, 0)
         # This creates a tooltip for each variable
-        tooltips.append("Chance: " + str(self.chance)) 
+        tooltips.append("Ability: " + str(self.ability)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -2028,7 +1974,7 @@ class Survivalist(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    chance = Column(Integer)
+    ability = Column(Integer)
     
     
     error = Column(String)
@@ -2039,7 +1985,7 @@ class Survivalist(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
+        self.ability = 0
         
         self.error = "You do not have enough survivalism"
         self.formatted_name = "survivalist" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
@@ -2052,9 +1998,9 @@ class Survivalist(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
+        self.ability = round(0.5 * self.level + 0.5, 0)
         # This creates a tooltip for each variable
-        tooltips.append("Chance: " + str(self.chance)) 
+        tooltips.append("Ability: " + str(self.ability)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -2090,7 +2036,7 @@ class ResistFrost(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -2128,7 +2074,7 @@ class ResistFlame(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -2166,7 +2112,7 @@ class ResistShadow(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -2204,7 +2150,7 @@ class ResistPoison(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -2242,7 +2188,7 @@ class ResistBlunt(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -2280,7 +2226,7 @@ class ResistSlashing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -2318,7 +2264,7 @@ class ResistPiercing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -2332,7 +2278,7 @@ class Courage(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    modifier = Column(Integer)
+    skill = Column(Integer)
     
     
     error = Column(String)
@@ -2343,7 +2289,7 @@ class Courage(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 0
+        self.skill = 0
         
         self.error = "You do not have enough willpower"
         self.formatted_name = "courage" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
@@ -2356,9 +2302,9 @@ class Courage(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.skill = round(1 * self.level + 0, 0)
         # This creates a tooltip for each variable
-        tooltips.append("Modifier: " + str(self.modifier)) 
+        tooltips.append("Skill: " + str(self.skill)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -2370,7 +2316,7 @@ class Sanity(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    modifier = Column(Integer)
+    skill = Column(Integer)
     
     
     error = Column(String)
@@ -2381,7 +2327,7 @@ class Sanity(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.modifier = 0
+        self.skill = 0
         
         self.error = "You do not have enough willpower"
         self.formatted_name = "sanity" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
@@ -2394,9 +2340,9 @@ class Sanity(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.skill = round(1 * self.level + 0, 0)
         # This creates a tooltip for each variable
-        tooltips.append("Modifier: " + str(self.modifier)) 
+        tooltips.append("Skill: " + str(self.skill)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
