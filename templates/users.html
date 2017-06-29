@@ -14,7 +14,7 @@
     </tr>
     <!-- This should be below where it says 'id' but it's giving me an error-->{{ page_detail }}
     <!-- maybe easier to sort in python beforesending data?-->
-    {% for user in users|sort(attribute='id') %}
+    {% for user in users|sort(attribute=page_detail) %}
     <tr>
         <td>{{ user.id }}</td>
         <td><a href=/display_users/see_user/{{ user.username }}>{{ user.username }}</a> {% if user.is_admin %}[ADMIN]{%
