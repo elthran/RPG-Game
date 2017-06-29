@@ -713,24 +713,21 @@ def barracks(hero=None):
 def spar(hero=None):
     spar_cost = 50
     spar_benefit = 5
-    hero.proficiencies.health.current = 0
     if hero.gold < spar_cost:
         page_heading = "You do not have enough gold to spar."
     else:
         hero.gold -= spar_cost
-        hero.experience += spar_benefit * hero.experience_gain_modifier
-        page_heading = str("You spend some time sparring with the trainer at the barracks. You spend " + str(
-            spar_cost) + " gold and gain " + str(spar_benefit) + " experience.")
-        page_links = {
-            "Compete in the arena.": "/arena",
-            "Spar with the trainer.": "/spar",
-            "Battle another player.": "/under_construction"
-        }
-    database.update()
-    hero.level_up()
-    return render_template('generic.html', page_title="Sparring Room", page_heading=page_heading, myHero=hero,
-                           game=game, page_links=page_links)  # return a string
-
+        modified_spar_benefit,level_up = hero.gain_experience(spar_benefit) # This gives you experience and also returns how much experience you gained
+        hero.proficiencies.endurance.current -= 1
+        page_heading = str("You spend some time sparring with the trainer at the barracks. You spend " + str(spar_cost) + " gold and gain " + str(modified_spar_benefit) + " experience.")
+        if level_up:
+            page_heading += " You level up!"
+    page_links = {
+        "Compete in the arena.": "/arena",
+        "Spar with the trainer.": "/spar",
+        "Battle another player.": None
+    }
+    return render_template('generic.html', page_title="Sparring Room", page_heading=page_heading, myHero=hero, game=game, page_links=page_links)  # return a string
 
 # From /barracks
 @app.route('/arena')
@@ -765,33 +762,35 @@ def arena(hero=None):
                     ("Riposte: ", str(game.enemy.proficiencies.riposte.chance) + "%"),
                     ("Block Chance: ", str(game.enemy.proficiencies.block.chance) + "%"),
                     ("Block Reduction: ", str(game.enemy.proficiencies.block.modifier) + "%")]
-    page_links = [("Challenge the enemy to a ", "/battle", "fight", "."),
+    page_links = [("Challenge the enemy to a ", "/battle/monster", "fight", "."),
                   ("Go back to the ", "/barracks", "barracks", ".")]
     return render_template('building_default.html', page_title="War Room", page_heading=page_heading,
                            page_image=page_image, myHero=hero, game=game, page_links=page_links,
                            enemy_info=conversation, enemy=game.enemy)  # return a string
 
-
 # this gets called if you fight in the arena
-@app.route('/battle')
+@app.route('/battle/<this_user>')
 @login_required
 @uses_hero_and_update
-def battle(hero=None):
+def battle(this_user=None, hero=None):
     required_endurance = 1  # T
-
     page_title = "Battle"
     page_heading = "Fighting"
     print("running function: battle2")
-
     page_links = [("Return to your ", "home", "profile", " page.")]
     if hero.proficiencies.endurance.current < required_endurance:
         page_title = "Battle"
         page_heading = "Not enough endurance, wait a bit!"
         return render_template('layout.html', page_title=page_title, myHero=hero, page_heading=page_heading,
                                page_links=page_links)
-    # This should return the full heros, not just their health
-    hero.proficiencies.health.current, game.enemy.proficiencies.health.current, battle_log = combat_simulator.battle_logic(
-        hero, game.enemy)
+    if this_user == "monster":
+        pass
+    else:
+        enemy = database.fetch_hero_by_username(this_user)
+        game.set_enemy(enemy)
+        game.enemy.experience_rewarded = 5
+        game.enemy.items_rewarded = []
+    hero.proficiencies.health.current, game.enemy.proficiencies.health.current, battle_log = combat_simulator.battle_logic(hero, game.enemy) # This should return the full heroes, not just their health
     hero.proficiencies.endurance.current -= required_endurance
     game.has_enemy = False
     if hero.proficiencies.health.current == 0:
@@ -825,8 +824,7 @@ def battle(hero=None):
                     hero.bestiary.append(monster)
             hero.experience += 5
         """
-        hero.experience += game.enemy.experience_rewarded  # * hero.experience_gain_modifier  THIS IS CAUSING A WEIRD BUG? I don't know why
-        hero.update_experience_bar()
+        experience_gained,level_up = hero.gain_experience(game.enemy.experience_rewarded)  # * hero.experience_gain_modifier  THIS IS CAUSING A WEIRD BUG? I don't know why
         if len(game.enemy.items_rewarded) > 0:
             for item in game.enemy.items_rewarded:
                 if not any(items.name == item.name for items in hero.inventory):
@@ -837,13 +835,11 @@ def battle(hero=None):
                             items.amount_owned += 1
         page_title = "Victory!"
         page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(
-            game.enemy.experience_rewarded) + " experience!"
+            experience_gained) + " experience!"
         page_links = [("Compete in the ", "/arena", "arena", "."), ("Go back to the ", "/barracks", "barracks", "."),
                       ("Return to your ", "/home", "profile", " page.")]
-        level_up = hero.level_up()
         if level_up:
-            page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(
-                game.enemy.experience_rewarded) + " experience. You have leveled up! You should return to your profile page to advance in skill."
+            page_heading += " You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ", "/home", "profile", " page and distribute your new attribute points.")]
 
     database.update()

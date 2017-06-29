@@ -24,7 +24,7 @@ except ImportError as e:
 
 from base_classes import Base, BaseDict
 
-import math
+import math, random
 from flask import request
 from attributes import Attributes
 from proficiencies import Proficiencies
@@ -266,10 +266,6 @@ class Hero(Base):
         """
         #I don't even know if this is supposed to be rebuilt? (Marlen)
         self.refresh_proficiencies()
-    
-        # Hidden attributes // Maybe they should be a special type of proficiency?
-        self.experience_gain_modifier = 1 # This is the percentage of exp you gain
-        self.gold_gain_modifier = 1 # This is the percentage of gold you gain
         
         #resets experience_percent
         self.experience = self.experience
@@ -313,6 +309,7 @@ class Hero(Base):
             self.proficiencies.sanctity.current = self.proficiencies.sanctity.maximum
             self.proficiencies.endurance.current = self.proficiencies.endurance.maximum
 
+    # I dont think this is needed if the valifators are working? I don't think I ever call this funvtion and the bar seems to be updating properly
     def update_experience_bar(self):
         self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100 
 
@@ -327,6 +324,13 @@ class Hero(Base):
             self.refresh_character()
             return True
         return False
+
+    def gain_experience(self, amount):
+        new_amount = amount * self.proficiencies.understanding.modifier
+        new_amount = int(new_amount) + (random.random() < new_amount - int(new_amount)) # This will round the number weighted by its decimal (so 1.2 has 20% chance of rounding up)
+        self.experience += new_amount
+        level_up = self.level_up()
+        return new_amount, level_up # Return a variable in case you want to know how much experience you just gained or if you leveled up
             
     def equipped_items(self):
         return [item for item in self.inventory if item.is_equipped()] or [None]
@@ -335,6 +339,7 @@ class Hero(Base):
         return self.inventory.unequipped or [None]
 
     def page_refresh_character(self):   # Can we renamed this? I don't really get what it is from the name
+        # (elthran) It's just temporary code while I amtesting notifications. It will be scrapped soon.
         self.quest_notification = None
 
     def consume_item(self, item_name):
