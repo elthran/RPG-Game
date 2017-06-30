@@ -128,7 +128,7 @@ class {{ prof_class }}(Proficiency):
             self.is_not_max_level = False
         {% for value in prof[3] -%}
         {% if value[1] == "root" -%}
-        self.{{ value[0].lower() }} = round((100 * self.level)**0.5 - (self.level / 4), {{ value[2][1]}})
+        self.{{ value[0].lower() }} = round((100 * self.level)**0.5 - (self.level / 4) + {{ value[2][0]}}, {{ value[2][1]}})
         {% elif value[1] == "linear" -%}
         self.{{ value[0].lower() }} = round({{ value[2][0] }} * self.level + {{ value[2][1] }}, {{ value[2][2]}})
         {% elif value[1] == "empty" -%}

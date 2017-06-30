@@ -380,7 +380,7 @@ class Regeneration(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.speed = round((100 * self.level)**0.5 - (self.level / 4), 2)
+        self.speed = round((100 * self.level)**0.5 - (self.level / 4) + 1, 2)
         # This creates a tooltip for each variable
         tooltips.append("Speed: " + str(self.speed)) 
         #This updates the main tooltip string variable.
@@ -418,7 +418,7 @@ class Recovery(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.efficiency = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.efficiency = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Efficiency: " + str(self.efficiency)) 
         #This updates the main tooltip string variable.
@@ -542,7 +542,7 @@ class Encumbrance(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.amount = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.amount = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Amount: " + str(self.amount)) 
         #This updates the main tooltip string variable.
@@ -714,7 +714,7 @@ class Accuracy(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.accuracy = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.accuracy = round((100 * self.level)**0.5 - (self.level / 4) + 35, 0)
         # This creates a tooltip for each variable
         tooltips.append("Accuracy: " + str(self.accuracy)) 
         #This updates the main tooltip string variable.
@@ -752,7 +752,7 @@ class FirstStrike(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -792,7 +792,7 @@ class Killshot(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         self.modifier = round(0.1 * self.level + 1, 1)
@@ -833,7 +833,7 @@ class Defence(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -871,7 +871,7 @@ class Evade(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 5, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -909,7 +909,7 @@ class Parry(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 2, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -947,7 +947,7 @@ class Flee(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 7, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -985,7 +985,7 @@ class Riposte(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -1073,10 +1073,10 @@ class Block(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1114,7 +1114,7 @@ class Stealth(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -1152,7 +1152,7 @@ class Pickpocketing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 1, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -1276,7 +1276,7 @@ class ResistHoly(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1352,7 +1352,7 @@ class Oration(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 11, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1390,7 +1390,7 @@ class Charm(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1428,7 +1428,7 @@ class Trustworthiness(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1504,7 +1504,7 @@ class Knowledge(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 6, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1542,7 +1542,7 @@ class Literacy(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1656,7 +1656,7 @@ class Adventuring(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -1846,7 +1846,7 @@ class Detection(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -2036,7 +2036,7 @@ class ResistFrost(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -2074,7 +2074,7 @@ class ResistFlame(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -2112,7 +2112,7 @@ class ResistShadow(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -2150,7 +2150,7 @@ class ResistPoison(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -2188,7 +2188,7 @@ class ResistBlunt(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -2226,7 +2226,7 @@ class ResistSlashing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -2264,7 +2264,7 @@ class ResistPiercing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4), 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.

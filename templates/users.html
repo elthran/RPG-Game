@@ -3,32 +3,25 @@
 {% extends "layout.html" %}
 {% block block1 %}
 <!-- This is called on the "Users" page and displays all accounts in the database -->
-<h2>Here is a list of all current users:</h2>
+<h2>Here is a list of all current heroes:</h2>
 <table style="width:75%" border="1">
     <tr>
-        <th><a href=/display_users/display/id>ID #:</a></th>
-        <th><a href=/display_users/display/username>Username:</a></th>
-        <th>Character Name:</th>
+        <th><a href=/display_users/display/user.id>User ID</a></th>
+        <th><a href=/display_users/display/user.username>Username</a></th>
+        <th><a href=/display_users/display/character_name>Character Name:</a></th>
         <th><a href=/display_users/display/age>Age:</a></th>
-        <th>Account Creation Date:</th>
+        <th>Archetype:</th>
     </tr>
-    <!-- This should be below where it says 'id' but it's giving me an error-->{{ page_detail }}
-    <!-- maybe easier to sort in python beforesending data?-->
-    {% for user in users|sort(attribute=page_detail) %}
+    {% for hero in all_heroes|sort(attribute=page_detail) %} <!-- Works great for now unless some fields are None. So needs to be addressed later. -->
     <tr>
-        <td>{{ user.id }}</td>
-        <td><a href=/display_users/see_user/{{ user.username }}>{{ user.username }}</a> {% if user.is_admin %}[ADMIN]{%
-            endif %}
-        </td>
-        <td>{{ user.heroes[0].character_name }}</td>
-        <td>{{ user.heroes[0].age }}</td>
-        <td>{{ user.timestamp.year }}/{{ user.timestamp.month }}/{{ user.timestamp.day }} {{ user.timestamp.hour }}:{{
-            user.timestamp.minute }}:{{ user.timestamp.second }}
-        </td>
+        <td>{{ hero.user.id }}</td>
+        <td><a href=/display_users/see_user/{{ hero.user.username }}>{{ hero.user.username }}</a> {% if hero.user.is_admin %}[ADMIN]{% endif %}</td>
+        <td>{{ hero.character_name }}</td>
+        <td>{{ hero.age }}</td>
+        <td>{{ hero.archetype }}</td>
     </tr>
     {% else %}
     <tr>
-        <td>None</td>
         <td>None</td>
         <td>None</td>
         <td>None</td>
