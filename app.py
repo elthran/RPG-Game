@@ -361,11 +361,10 @@ def admin(hero=None):
 @uses_hero_and_update
 def display_user_page(page_type, page_detail, hero=None):
     if page_type == "display":
-        users = database.get_all_users()
-        all_heroes = []
-        for user in users:
-            all_heroes.append(database.fetch_hero_by_username(user.username))
-        return render_template('users.html', page_title="Users", myHero=hero, page_detail=page_detail, all_heroes=all_heroes)
+        sorted_heroes = database.fetch_sorted_heroes(page_detail)
+        return render_template(
+            'users.html', page_title="Users", myHero=hero,
+            page_detail=page_detail, all_heroes=sorted_heroes)
     elif page_type == "see_user":
         this_user = database.get_user_by_username(page_detail)
         this_hero = database.fetch_hero_by_username(page_detail)

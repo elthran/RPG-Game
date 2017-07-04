@@ -6,24 +6,22 @@ To solve this I am rewriting the whole thing with SQLAlchemy ORM.
 Mainly using the tutorial at: http://docs.sqlalchemy.org/en/latest/orm/tutorial.html
 
 """
+import pdb
+import datetime
+import hashlib
+import datetime
+import os #Testing only
+import importlib
 
-try:
-    from sqlalchemy import create_engine
-    from sqlalchemy.orm import sessionmaker
-    import sqlalchemy
-except ImportError as e:
-    exit("Open a command prompt and type: pip install sqlalchemy."), e
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+import sqlalchemy
 
 #Base is the initialize SQLAlchemy base class. It is used to set up the table metadata.
 #Used like so in the __init__ method: Base.metadata.create_all(engine)
 #What this actually means or does I have no idea but it is neccessary. And I know how to use it.
 #!Important!: Base can only be defined in ONE location and ONE location ONLY!
 import base_classes
-
-import hashlib
-import datetime
-import os #Testing only
-import imp
 
 #Internal game modules
 from game import User, Hero, Inbox
@@ -34,10 +32,6 @@ from quests import Quest
 from proficiencies import Proficiency
 import complex_relationships
 import prebuilt_objects
-
-import pdb
-
-import datetime
 
 
 #Constants#
@@ -52,12 +46,14 @@ class EZDB:
     
     All add_* methods should end with a commit!
     """
-    def __init__(self, database='sqlite:///:memory:', debug=True, testing=False):
+    def __init__(self, database='sqlite:///:memory:', debug=True,
+                 testing=False):
         """Create a basic sqlalchemy engine and session.
         
         Attribute "file_name" is used to find location of database for python.
         
-        Hidden method: _delete_database is for testing and does what it sounds like it does :).
+        Hidden method: _delete_database is for testing and does what it
+        sounds like it does :).
         """
         engine = create_engine(database, echo=debug)
         self.file_name = database[10:]
@@ -73,16 +69,18 @@ class EZDB:
     def add_prebuilt_objects(self):
         """Add all the predefined object into the database.
         
-        If one is already there then igore and continue.
+        If one is already there then ignore and continue.
         Note: each prebuilt_object must be a list.
-        NOTE2: users must come first as it somehow gets built before it gets built if it doesn't?
-        Maybe becuase .. it has a hero which has a current_world? So when current_world gets
-        built then the user gets built too? Which may mean most of my code here is redundant
-        and I only really need to build the users list?
+        NOTE2: users must come first as it somehow gets built before it gets
+        built if it doesn't?
+        Maybe becuase .. it has a hero which has a current_world? So when
+        current_world gets built then the user gets built too? Which may
+        mean most of my code here is redundant and I only really need to
+        build the users list?
         """
         
         global prebuilt_objects
-        imp.reload(prebuilt_objects)
+        importlib.reload(prebuilt_objects)
         
         for obj_list in [prebuilt_objects.users,
                 prebuilt_objects.game_worlds,
@@ -100,7 +98,6 @@ class EZDB:
                 except sqlalchemy.exc.IntegrityError:
                     self.session.rollback()
                     
-    
     def delete_item(self, id):
         """Delete a given object from the database.
         """
@@ -132,7 +129,6 @@ class EZDB:
         """
         return self.session.query(Item).get(id)
                     
-                
     def create_item(self, id):
         """Create a new item from a given template name.
         """
@@ -168,7 +164,6 @@ class EZDB:
         """Get the default world for starting heroes.
         """
         return self.session.query(WorldMap).filter_by(name="Test_World2").first()
-    
     
     def get_default_location(self):
         """Get the default location for starting heroes.
@@ -249,7 +244,35 @@ class EZDB:
         
     def fetch_hero_by_id(self, id):
         return self.session.query(Hero).get(id)
-    
+
+    def fetch_sorted_heroes(self, attribute):
+        """Return a list of all heroes sorted by attribute.
+
+        :param attribute: an attribute of the Hero object.
+        :return: list sorted by attribute.
+
+        NOTE: this code is not very flexible. If you tried to access
+        hero.inventory.id it would not work.
+
+        A more generic function might do:
+        extended_attr, attr = attribute.split('.')
+        join_attr = getattr(Hero, extended_attr)?
+        self.session.query(Hero).join(join_attr).order_by(attr).all()
+
+        NOTE: to order by descending:
+        order_by(attribute + " desc")
+        https://stackoverflow.com/questions/4186062/sqlalchemy-order-by-descending
+        """
+        if '.' not in attribute:
+            return self.session.query(Hero).order_by(attribute).all()
+        elif attribute.startswith('user'):
+            _, attribute = attribute.split('.')
+            return self.session.query(
+                Hero).join(Hero.user).order_by(attribute).all()
+        else:
+            raise Exception("Trying to access an attribute that this code"
+                            " does not accommodate.")
+
     def update(self):
         """Commit current session.
         
