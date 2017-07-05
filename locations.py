@@ -1,36 +1,20 @@
 """
 Author: Marlen Brunner and Elthran B.
 
-1. This module should provide a class for each type of location within
-     the game.
-2. These classes should use inheritance as much as possible.
-3. Each class should provide a render function which uses a flask template and
-can be inserted into the main website.
+1. This module should provide a generic location class.
+2. If more specific function is required you can subclass
+3. Each Location should have a Display which holds the data the HTML page
+    will display.
+4. -potentially- The Display class could pre-render/or hold reference to
+a flask template so that it can be inserted into the main website directly.
 
-Basic layout should be:
-BaseLocation
-    BaseMap
-        WorldMap
-        TownMap
-        CaveMap
-        Map
-    Location
-        Town
-        Cave
-        Shop
-        Arena (might be a shop?)
+5. !Important! The location must have a kind of grid reference that fucks up
+my beautiful sibling code! Dam now I have to rebuild it.
+Maybe make siblings calculated? Populated from the hex grid surrounding
+this location?
 
-Display
-    MapDisplay
-    LocationDisplay
-    ...?
-
-BaseLocation
-    BaseMap?
-        WorldMap
-            LocationMap
-                Location
-                    Town?
+Location
+    Display
     
 Each object should have separate data and display properties.
 eg.
@@ -38,9 +22,9 @@ eg.
 Location
     id
     name
-    adjacent_locations = many to many relationship with self.
-    internal_locations = shops, arena
-    encompassing_location (a.k.a. world_map)
+    siblings = many to many relationship with self.
+    children = shops, arena
+    parent (a.k.a. world_map)
     url (/Town/Thornwall, e.g. /{type}/{name}.lower())
         or url = encompassing.url + /type/name
     type (e.g. town)
@@ -50,15 +34,13 @@ Location
         page_heading - specially formatted version of 'name'
         page_image - derived from 'name'
         paragraph - description of location
-        places_of_interest - replace with adjacent_locations?
-    
 """
-
+import warnings
 import pdb
 
-from sqlalchemy import Column, Integer, String, Table, Boolean
+from sqlalchemy import Column, Integer, String
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy import orm
 from sqlalchemy.ext.hybrid import hybrid_property
 # ###!IMPORTANT!####
@@ -66,14 +48,14 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 # Well ... ok, but for simplicity sake just pretend that that is true.
-from base_classes import Base, BaseListElement
+from base_classes import Base
 
 
 class Display(Base):
     """Stores data for location and map objects that is displayed in the game
     using html.
 
-    Note: When modifing attributes ...
+    Note: When modifying attributes ...
 
     places_of_interest is not implemented ... except during initialization.
     """
@@ -86,31 +68,78 @@ class Display(Base):
     page_image = Column(String)
     paragraph = Column(String)
 
+    # External relationships
+    # One location -> one display (bidirectional)
+    _location = relationship('Location', uselist=False,
+                             back_populates='display')
+
+    @hybrid_property
+    def obj(self):
+        """Returns the object that this is connected to.
+
+        Only one type of object may be connected at a time.
+        This is not enforced and should be.
+        """
+        return self._location or None
+
+    @hybrid_property
+    def places_of_interest(self):
+        places = []
+        for child in self.obj.children:
+            places.append(child.url, child.name)
+        places.append(self.obj.parent.url, self.obj.parent.name)
+        return places
+
     def __init__(self, obj, page_heading=None, paragraph=None):
         """Build display object based on objects attributes.
+
+        I think that I should add in a link to the correct HTML template
+        as well? Based on location type?
         """
 
         self.name = obj.name
-        self.page_heading = page_heading
+        self.page_heading = page_heading or "You are in {}".format(self.name)
 
         # eg. page_image = town if Town object is passed or cave if Cave
         # object is passed.
         self.page_image = obj.type.lower()
-        self.paragraph = paragraph
+        self.paragraph = paragraph or "There are many places to visit within" \
+                                      " the {}. Have a look!".format(obj.type)
 
-#     def __repr__(self):
-#         return """
-#     <{}(
-#         page_title = '{}',
-#         page_heading = '{}',
-#         page_image = '{}',
-#         paragraph = '{}'
-#     )>
-# """.format("Display", self.page_title,
-#            self.page_heading, self.page_image, self.paragraph)
+
+class AdjacentLocation(Base):
+    """Allow for locations to connect to other locations.
+
+    This is done through a out/in path architecture and
+    is horrifically complex. See:
+    http://docs.sqlalchemy.org/en/latest/orm/join_conditions.html#self-referential-many-to-many-relationship
+    """
+    __tablename__ = 'adjacent_location'
+    out_adjacent_id = Column(Integer, ForeignKey('location.id'),
+                             primary_key=True)
+    in_adjacent_id = Column(Integer, ForeignKey('location.id'),
+                            primary_key=True)
 
 
 class Location(Base):
+    """A place that the hero can travel to or interact with.
+
+    The main hierarchy is parent -> child, where to children with
+    the same parent are called 'siblings'
+    General order is:
+    map -> town -> blacksmith
+                -> marketplace
+                -> gate
+                -> arena
+        -> cave
+        -> explorable/generic location
+    """
+
+    ALL_TYPES = [
+        'town', 'map', 'explorable', 'cave', 'blacksmith',
+        'merchant', 'house'
+    ]
+
     __tablename__ = 'location'
     # http://docs.sqlalchemy.org/en/latest/orm/extensions/
     # declarative/table_config.html
@@ -118,83 +147,122 @@ class Location(Base):
     #     UniqueConstraint(
     #         'parent', 'children', 'siblings', name='non_circular')
     # )
+    # Need validators for children - child can't be parent or sibling
+    # Need validator for parent - parent can't be child or sibling
+    # Need validator for siblings - can't be parent or child, max of 6
+    # Think a hex grid
 
     id = Column(Integer, primary_key=True)
     parent_id = Column(Integer, ForeignKey('location.id'))
     name = Column(String)
     url = Column(String)
     type = Column(String)
-    children = relationship("Location", back_populates="parent")
+
+    children = relationship("Location", back_populates="parent",
+                            foreign_keys=[parent_id])
     parent = relationship("Location", remote_side=[id],
-                          back_populates="children")
+                          back_populates="children",
+                          foreign_keys=[parent_id])
+    locations = orm.synonym('children')
+    encompassing_location = orm.synonym('parent')
 
+    _out_adjacent = relationship(
+        "Location",
+        secondary="adjacent_location",
+        primaryjoin="Location.id==adjacent_location.c.out_adjacent_id",
+        secondaryjoin="Location.id==adjacent_location.c.in_adjacent_id",
+        backref="_in_adjacent",
+        foreign_keys='[AdjacentLocation.out_adjacent_id, '
+                     'AdjacentLocation.in_adjacent_id]')
+
+    # External relationships
+    # Many heroes -> one map/world. (bidirectional)
+    heroes = relationship("Hero", back_populates='current_world')
+    # One location -> one display (bi)
     display_id = Column(Integer, ForeignKey('display.id'))
-    display = relationship("Display")
+    display = relationship("Display", back_populates='_location')
 
-    # siblings = relationship("Location", join parent_id, sibling.parent_id)
+    # @orm.validates('adjacent')
+    # def build_adjacency(self, key, sibling):
+    #     if isinstance(sibling, int):
+    #         raise Exception("Use Database method add_sibling_by_id")
+    #     if sibling in self.parent.children:
+    #         return sibling
+    #     raise Exception("Not all of these are valid siblings.")
+
+    @hybrid_property
+    def adjacent(self):
+        return set(self._out_adjacent + self._in_adjacent)
+
+    @adjacent.setter
+    def adjacent(self, values):
+        self._out_adjacent = values
+        # for sibling in siblings:
+        #     if self not in sibling.adjacent:
+        #         sibling.adjacent.append(self)
+
+    # @orm.validates('parent', 'children')
+    # def update_siblings(self, key, value):
+    #     if key == 'children':
+    #         value.update_sibilings()
+    #     else:
+    #         self.update_siblings()
 
     @hybrid_property
     def siblings(self):
-        """Shortcut for parent.children.
-        """
-        if self.parent is not None:
-            return self.parent.children
+        siblings = []
+        if self.parent:
+            siblings = list(self.parent.children)
+            siblings.remove(self)
+        return siblings
+
+    def get_sibling_ids(self):
+        return [sibling.id for sibling in self.siblings]
+
+    @orm.validates('type')
+    def validate_type(self, key, value):
+        if value in Location.ALL_TYPES:
+            return value
         else:
-            return []
-
-    @siblings.setter
-    def siblings(self, siblings):
-        """Assign a normalized parent between siblings if possible.
-
-        If multiple parents exist ... complain.
-        If no parents exists ... complain.
-        """
-
-        if not siblings:
-            return
-
-        potential_parents = set() if self.parent is None else {self.parent}
-        for sibling in siblings:
-            parent = sibling.parent
-            if parent is not None:
-                potential_parents.add(parent)
-
-        if len(potential_parents) > 1:
             raise Exception(
-                "I can't find a _harmonized_ parent between these"
-                " siblings. Possible parents are {}".format(
-                    Base.pretty_list(potential_parents)
+                "Location type '{}' doesn't exist. "
+                "Valid types are: {}".format(
+                    value,
+                    Location.ALL_TYPES
                 )
             )
-        elif len(potential_parents) == 0:
-            raise Exception(
-                "I can't find _any_ parent between these siblings. Try setting"
-                " the 'parent' attribute for these objects instead."
-            )
-        else:
-            parent = potential_parents.pop()
-            self.parent = parent
-            for sibling in siblings:
-                sibling.parent = parent
 
-    # Need validators for children - child can't be parent or sibling
-    # Need validator for parent - parent can't be child or sibling
-    # Need validator for siblings - can't be parent or child, max of 6
-    # Think a hex grid
     def __init__(self, name, location_type, parent=None, children=[],
                  siblings=[]):
+        """Create a now location object that the hero can explore.
+
+        :param location_type: e.g. map, town, store
+        :param parent: the place this place is inside of
+        :param children: places inside this place
+        :param siblings: the places that share this places parent.
+
+        NOTE: if you set the parent attribute ... the siblings
+        attribute should be populated automatically or vice versa ...
+        so generally it isn't useful to set the parent and siblings
+        at the same time. Thought it can be in special cases.
+
+        NOTE2: the url is populated automatically from the parent url
+        and this location's type and name.
+
+        NOTE3: the Display is populated automatically as well but can have
+        extra information added to it.
+        """
         self.name = name
         self.type = location_type
         self.parent = parent
         self.children = children
-        self.siblings = siblings
         self.url = self.build_url()
         self.display = Display(self)
-        self.init_on_load()
+        # self.init_on_load()
 
-    @orm.reconstructor
-    def init_on_load(self):
-        self.siblings = self.siblings
+    # @orm.reconstructor
+    # def init_on_load(self):
+    #     self.siblings = self.update_siblings()
 
     def build_url(self):
         if self.parent is None:

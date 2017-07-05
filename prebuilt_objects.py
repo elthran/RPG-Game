@@ -1,27 +1,32 @@
-from locations import Location , Cave, Town, WorldMap, Display
+from locations import Location
 from abilities import Ability, Archetype_Ability, Class_Ability, Religious_Ability
 from game import User, Hero
 from quests import Quest, QuestPath
-from items import (One_Handed_Weapon, Shield, Two_Handed_Weapon, Leg_Armour, Chest_Armour,
-    Head_Armour, Feet_Armour, Arm_Armour, Hand_Armour, Ring, Consumable)
-import complex_relationships #MUST be imported last.
+from items import (
+    One_Handed_Weapon, Shield, Two_Handed_Weapon, Leg_Armour, Chest_Armour,
+    Head_Armour, Feet_Armour, Arm_Armour, Hand_Armour, Ring, Consumable
+)
+
+# MUST be imported last.
+import complex_relationships
 
 """
-Consider having this class preload all of its objects directly into the database or doing nothing
-if the objects already exists in the database. Then all access to these object would
-occur through the database interface directly.
+This module preloads all of its objects directly into the database or does
+nothing if the objects already exists in the database.
+
+All access to these objects occurs through the database interface directly.
+
+I am currently in the process of switching to a game editor approach
+which loads these object from a .csv file.
 """
 
-#------------------------------------
- #
- #  Initializing Game Worlds
- #  (To be moved to a common
- #   init function later)
- #
- #------------------------------------
-
-test_locations = []
-test_locations2 = []
+# ------------------------------------
+#
+#  Initializing Game Worlds
+#  (To be moved to a common
+#   init function later)
+#
+# ------------------------------------
 
 '''
  +Test Map Visual Representation:
@@ -43,98 +48,56 @@ test_locations2 = []
  +Thornwall at location 5
  +Creepy Cave at location 2
  +'''
- 
+world = Location(name="Htrae", location_type="map")
+world.display.page_heading = "You are wandering in the world"
+world.display.paragraph = "Be safe"
+
+node_grid = []
 for i in range(0, 12):
-    test_location = Location(name=("location " + str(i)),id=i)
-    test_locations2.append(test_location)
+    node_grid.append(
+        Location(name="Location{}".format(i),
+                 location_type='explorable'))
+world.children = node_grid
 
-test_locations2[5] = Town(name="Thornwall", id=5)
-town = test_locations2[5]
-test_locations2[2] = Cave(name="Creepy cave", id=2)
-cave = test_locations2[2]
+town = node_grid[5]
+town.name = "Thornwall"
+town.type = 'town'
 
-""" Define all connections
+"""
+town.display.places_of_interest=[
+("/store/greeting", "Blacksmith", "Shops"),
+("/barracks", "Barracks"),
+("/marketplace/greeting", "Marketplace"),
+("/tavern", "Tavern", "Other"),
+("/old_mans_hut", "Old Man's Hut"),
+("/leave_town", "Village Gate", "Outskirts"),
+("/WorldMap/{}/{}".format(town.location_world.name, town.id), "World Map")
+]
+"""
 
-#------------------------------------
-#
-#  Initializing Game Worlds
-#  (To be moved to a common
-#   init function later)
-#
-#------------------------------------
-TEST_WORLD_ID = 999 # ...
+cave = node_grid[2]
+cave.name = "Creepy cave"
+cave.type = 'cave'
+cave.display.page_heading = "You are in a cave called {}".format(cave.name)
+cave.display.paragraph = "There are many scary places to die within the " \
+                         "cave. Have a look!"
+"""
+cave.display.places_of_interest=[
+("/WorldMap/{}/{}".format(cave.location_world.name, cave.id), "World Map")])
+"""
 
-test_locations = []
-
-'''
-Test Map Visual Representation:
-
-0 ---- 1 ---- 2 (Creepy Cave)
-| \    |
-|  \   |
-|   \  |
-3    \ |
-|     5 ---- 6 ---- 7
-|    / \     |
-4   /   \    |
-   /     \   |
-  /       \  |
- /         \ |
-8           9
-
-
-Thornwall at location 5
-Creepy Cave at location 2
-'''
-
-for i in range(0,10):
-    test_location = Location("location " + str(i),i)
-    test_locations.append(test_location)
-
-test_locations[5] = Town("Thornwall", 5, "Test_World")
-test_locations[2] = Cave("Creepy cave", 2, "Test_World")
-
-# Define all connections
-test_locations[0].adjacent_locations = [1, 3, 5]
-test_locations[1].adjacent_locations = [0, 2, 5]
-test_locations[2].adjacent_locations = [1]
-test_locations[3].adjacent_locations = [0, 4]
-test_locations[4].adjacent_locations = [3]
-test_locations[5].adjacent_locations = [0, 1, 6, 8, 9]
-test_locations[6].adjacent_locations = [5, 7, 9]
-test_locations[7].adjacent_locations = [6]
-test_locations[8].adjacent_locations = [5]
-test_locations[9].adjacent_locations = [5, 6]"""
-
-test_locations2[1].adjacent_locations = [2, 3, 4]
-test_locations2[2].adjacent_locations = [1, 5]
-test_locations2[3].adjacent_locations = [1, 4]
-test_locations2[4].adjacent_locations = [1, 3, 5, 7]
-test_locations2[5].adjacent_locations = [2, 4, 6, 8]
-test_locations2[6].adjacent_locations = [5, 9, 10]
-test_locations2[7].adjacent_locations = [4, 8]
-test_locations2[8].adjacent_locations = [5, 7, 9]
-test_locations2[9].adjacent_locations = [6, 8]
-test_locations2[10].adjacent_locations = [6]
-
-world = WorldMap(name="Test_World2", all_map_locations=test_locations2)
-
-#Note: Displays must be added after all objects are defined. Or you get error that I was to lazy to fix.
-world.display = Display(world, page_heading="You are wandering in the world", paragraph="Be safe")
-
-town.display = Display(town, page_heading="You are in {}".format(town.name),
-    paragraph="There are many places to visit within the town. Have a look!",
-    places_of_interest=[("/store/greeting", "Blacksmith", "Shops"),
-        ("/barracks", "Barracks"),
-        ("/marketplace/greeting", "Marketplace"),
-        ("/tavern", "Tavern", "Other"),
-        ("/old_mans_hut", "Old Man's Hut"),
-        ("/leave_town", "Village Gate", "Outskirts"),
-        ("/WorldMap/{}/{}".format(town.location_world.name, town.id), "World Map")])
-        
-cave.display = Display(cave, page_heading="You are in a cave called {}".format(cave.name),
-    paragraph="There are many scary places to die within the cave. Have a look!",
-    places_of_interest=[("/WorldMap/{}/{}".format(cave.location_world.name, cave.id), "World Map")])
+node_grid[0].adjacent = [node_grid[1], node_grid[3], node_grid[5]]
+node_grid[1].adjacent = [node_grid[0], node_grid[2], node_grid[5]]
+node_grid[2].adjacent = [node_grid[1]]
+node_grid[3].adjacent = [node_grid[0], node_grid[4]]
+node_grid[4].adjacent = [node_grid[3]]
+node_grid[5].adjacent = [node_grid[0], node_grid[1], node_grid[6],
+                         node_grid[8], node_grid[9]]
+node_grid[6].adjacent = [node_grid[5], node_grid[7], node_grid[9]]
+node_grid[7].adjacent = [node_grid[6]]
+node_grid[8].adjacent = [node_grid[5]]
+node_grid[9].adjacent = [node_grid[5], node_grid[6]]
+node_grid[10].adjacent = []
 
 current_location = town
 game_worlds = [world] #Just chop this out and use world instead.

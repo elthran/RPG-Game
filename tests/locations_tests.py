@@ -4,11 +4,10 @@ import importlib
 
 from base_classes import Base
 from database import EZDB
-import locations
-from locations import Location  # , Cave, Town, WorldMap, Display
+from locations import Location
 from game import Hero
 import complex_relationships
-#import prebuilt_objects
+import prebuilt_objects
 
 
 """
@@ -27,11 +26,12 @@ class LocationTestCase(unittest.TestCase):
         """Set up the generic environment for each test function.
         
         NOTE: Bizar bug that is related to the fact that prebuilt_objects
-        can only be used once. Once used in one test function it no longer exists. And so I reimport it.
+        can only be used once. Once used in one test function it no longer
+        exists. And so I re-import it.
         """
         self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
         
-        #importlib.reload(prebuilt_objects)
+        importlib.reload(prebuilt_objects)
 
     def tearDown(self, delete=True):
         self.db.session.close()
@@ -39,6 +39,7 @@ class LocationTestCase(unittest.TestCase):
         if delete:
             self.db._delete_database()
 
+    @unittest.skip("Disable for Debugging.")
     def test_main(self):
         game_map = Location("Earth", "map")
         town = Location("Thornwall", "town", parent=game_map)
@@ -48,94 +49,133 @@ class LocationTestCase(unittest.TestCase):
                             siblings=[blacksmith])
 
         self.db.session.add_all([game_map, town, cave, blacksmith, merchant])
-        self.db.update()
-        print(game_map.pretty_str())
-        print(town.pretty_str())
-        print(cave.pretty_str())
-        print(blacksmith.pretty_str())
-        print(merchant.pretty_str())
-        print(Base.pretty_list(merchant.siblings))
-        print(merchant.display.pretty_str())
+        self.db.session.commit()
+        # print(game_map.pretty_str())
+        # print(town.pretty_str())
+        # print(cave.pretty_str())
+        # print(blacksmith.pretty_str())
+        # print(merchant.pretty_str())
+        # print(Base.pretty_list(merchant.siblings))
+        # print(merchant.display.pretty_str())
 
     @unittest.skip("Disabled for debugging.")
-    def test_adjacent_locations(self):
-        home = Location(name="Home")
-        self.db.session.add(home)
+    def test_siblings(self):
+        town = Location("Thornwall", "town")
+        home = Location("Home", 'house', parent=town)
+        blacksmith = Location("Hendrick's", 'blacksmith', parent=town)
+        merchant = Location("Mathers", 'merchant', parent=town)
+        self.db.session.add(town)
         self.db.session.commit()
-        adjacent_locations = str(home.adjacent_locations)
-        
+        sibling_str = Base.pretty_list(home.siblings, key='name')
+        print(sibling_str)
+
         self.tearDown(delete=False)
         self.setUp()
         
         home2 = self.db.session.query(Location).filter_by(name='Home').first()
-        home2.adjacent_locations = [2, 3, 4]
-        self.db.session.add(home2)
-        self.db.session.commit()
-        adjacent_locations2 = str(home2.adjacent_locations)
-        
-        self.tearDown(delete=False)
-        self.setUp()
-        home3 = self.db.session.query(Location).filter_by(name='Home').first()
-        self.assertEqual(adjacent_locations, '[]')
-        self.assertEqual(adjacent_locations2, '[2, 3, 4]')
-        self.assertEqual(home3.adjacent_locations, [2, 3, 4])
+        sibling_str2 = Base.pretty_list(home2.siblings, key='name')
+        print(sibling_str2)
+        self.assertEqual(sibling_str2, sibling_str)
 
     @unittest.skip("Disabled for debugging.")
-    def test_town(self):
-        town = Town(name="Thornwall")
-        self.db.session.add(town)
-        self.db.session.commit()
+    def test_grid(self):
+        world = Location(name="Htrae", location_type="map")
+        world.display.page_heading = "You are wandering in the world"
+        world.display.paragraph = "Be safe"
+
+        node_grid = []
+        for i in range(0, 12):
+            node_grid.append(
+                Location(name="Location{}".format(i),
+                         location_type='explorable'))
+        world.children = node_grid
+
+        town = node_grid[5]
+        town.name = "Thornwall"
+        town.type = 'town'
+        cave = node_grid[2]
+        cave.name = "Creepy cave"
+        cave.type = 'cave'
+
+        self.db.session.add(world)
+        self.db.update()
+
+        """
+        Test Map Visual Representation:
+        +
+        +0 ---- 1 ---- 2 (Creepy Cave)
+        +| \    |
+        +|  \   |
+        +|   \  |
+        +3    \ |
+        +|     5 ---- 6 ---- 7
+        +|    / \     |
+        +4   /   \    |
+        +   /     \   |
+        +  /       \  |
+        + /         \ |
+        +8           9
+        +
+        +
+        +Thornwall at location 5
+        +Creepy Cave at location 2
+        """
+        node_grid[0].adjacent = [node_grid[1], node_grid[3], node_grid[5]]
+        node_grid[1].adjacent = [node_grid[0], node_grid[2], node_grid[5]]
+        node_grid[2].adjacent = [node_grid[1]]
+        node_grid[3].adjacent = [node_grid[0], node_grid[4]]
+        node_grid[4].adjacent = [node_grid[3]]
+        node_grid[5].adjacent = [node_grid[0], node_grid[1], node_grid[6],
+                                 node_grid[8], node_grid[9]]
+        node_grid[6].adjacent = [node_grid[5], node_grid[7], node_grid[9]]
+        node_grid[7].adjacent = [node_grid[6]]
+        node_grid[8].adjacent = [node_grid[5]]
+        node_grid[9].adjacent = [node_grid[5], node_grid[6]]
+        node_grid[10].adjacent = []
+
+        self.db.update()
         str_town = str(town)
+        str_adjacent = Base.pretty_list(town.adjacent, key='name')
         
         self.tearDown(delete=False)
         self.setUp()
-        town2 = self.db.session.query(Town).filter_by(name="Thornwall").first()
+        town2 = self.db.session.query(
+            Location).filter_by(name="Thornwall").first()
+        str_adjacent2 = Base.pretty_list(town2.adjacent, key='name')
         self.assertEqual(str_town, str(town2))
+        self.assertEqual(str_adjacent, str_adjacent2)
 
     @unittest.skip("Disabled for debugging.")
-    def test_cave(self):
-        cave = Cave(name="Creepy Cave")
-        self.db.session.add(cave)
-        self.db.session.commit()
-        str_cave = str(cave)
-        
-        self.tearDown(delete=False)
-        self.setUp()
-        cave2 = self.db.session.query(
-            Cave).filter_by(name="Creepy Cave").first()
-        self.assertEqual(str_cave, str(cave2))
-
-    @unittest.skip("Disabled for debugging.")
-    def test_world_map(self):
-        game_map = WorldMap(name="Picatanin")
-        town = Town(name="Thornwall")
+    def test_map(self):
+        game_map = Location("Picatanin", 'map')
+        town = Location("Thornwall", 'town')
         game_map.locations.append(town)
         self.db.session.add(game_map)
         self.db.session.commit()
-        str_map = str(game_map)
-        
+        str_game_map = str(game_map)
+
         self.tearDown(delete=False)
         self.setUp()
-        map2 = self.db.session.query(
-            WorldMap).filter_by(name="Picatanin").first()
-        self.assertEqual(str(map2), str_map)
+        game_map2 = self.db.session.query(
+            Location).filter_by(name="Picatanin").first()
+        self.assertEqual(str(game_map2), str_game_map)
 
     @unittest.skip("Disabled for debugging.")
-    def test_add_world_map(self):
+    def test_add_map(self):
         hero = Hero(name="Haldon")
-        game_map = WorldMap(name="Picatanin")
+        game_map = Location("Picatanin", 'map')
         
         hero.current_world = game_map
         self.db.session.add(hero)
         self.db.session.commit()
         str_world = str(hero.current_world)
-        
+
         self.tearDown(delete=False)
         self.setUp()
         hero2 = self.db.session.query(Hero).filter_by(name="Haldon").first()
         self.assertEqual(str(hero2.current_world), str_world)
 
-    @unittest.skip("Disabled for debugging.")
+    # @unittest.skip("Disabled for debugging.")
     def test_prebuilt_objects_game_worlds(self):
         """Test the creation of some prebuilt objects.
         

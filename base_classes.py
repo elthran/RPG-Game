@@ -3,30 +3,29 @@ I have as of January 1st, 2017 come across a problem where I could not
 store python objects conveniently in my version of the database.
 
 To solve this I am rewriting the whole thing with SQLAlchemy ORM.
-Mainly using the tutorial at: http://docs.sqlalchemy.org/en/latest/orm/tutorial.html
+Mainly using the tutorial at:
+    http://docs.sqlalchemy.org/en/latest/orm/tutorial.html
 
-This class is imported first and can be used to add generic methods to all database objects.
-Like a __str__ function that I can actually read.
+This class is imported first and can be used to add generic methods to all
+database objects. Like a __str__ function that I can actually read.
 """
+import inspect
+import pdb
 
-try:
-    from sqlalchemy.ext.declarative import declarative_base
-    #Initialize SQLAlchemy base class.
-    Base = declarative_base()
-    #What this actually means or does I have no idea but it is neccessary. And I know how to use it.
-except ImportError as e:
-    exit("Open a command prompt and type: pip install sqlalchemy."), e
-    
-from sqlalchemy import Table, MetaData, Column, Integer, String, Float, Boolean
-
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import orm
 import sqlalchemy
 
-import inspect
-import pdb
+# Initialize SQLAlchemy base class.
+Base = declarative_base()
+# This used a class factory to build a class called base in the local
+# context. Why I can't just import Base I have no idea.
+# And I know how to use it.
+
 
 def get_all_atts(self):
     data = set(vars(self).keys()) | \
@@ -37,63 +36,73 @@ def get_all_atts(self):
         
     hierarchy_keys = set()
     # All non-base objects in inheritance path.
-    # Remove <class 'sqlalchemy.ext.declarative.api.Base'>, <class 'object'> as these are
-    # the last two objects in the MRO
+    # Remove <class 'sqlalchemy.ext.declarative.api.Base'>,
+    # <class 'object'> as these are the last two objects in the MRO
     try:
         hierarchy = type(self).__mro__[1:-2]
         
         for obj in hierarchy:
-            hierarchy_keys |= set(vars(obj).keys()) - set(obj.__mapper__.relationships.keys())
+            hierarchy_keys |= set(vars(obj).keys()) \
+                              - set(obj.__mapper__.relationships.keys())
         
-        #Remove private variables and id keys to prevent weird recursion and redundancy.
-        hierarchy_keys -= set([key for key in hierarchy_keys if key.startswith('_')]) #? or 'id' in key])
+        # Remove private variables and id keys to prevent weird recursion
+        # and redundancy.
+        hierarchy_keys -= set(
+            [key for key in hierarchy_keys if key.startswith('_')]
+        )  # ? or 'id' in key])
     except IndexError:
-        pass #This is the Base class and has no useful MRO.
+        pass  # This is the Base class and has no useful MRO.
         
     data |= hierarchy_keys
     
-    #Don't print the objects methods.
+    # Don't print the object's methods.
     data -= set([e for e in data if "method" in repr(type(getattr(self, e)))])
     
     return data
     
 Base.get_all_atts = get_all_atts
 
+
 def data_to_string(self, data):
     for key in sorted(data):
         value = getattr(self, key)
         # pdb.set_trace()
-        if value and (type(value) == orm.collections.InstrumentedList or \
-            type(value) == sqlalchemy.ext.orderinglist.OrderingList):
-            value = '[' + ', '.join(e.__class__.__name__ + '.id=' + str(e.id) for e in value) + ']'
+        if value and (type(value) == orm.collections.InstrumentedList or
+                      type(value) == sqlalchemy.ext.orderinglist.OrderingList):
+            value = '[' + ', '.join(
+                e.__class__.__name__ + '.id=' + str(e.id) for e in value) + ']'
         
-        #This if/try is a way to print ONE to ONE relationship objects without infinite recursion.
+        # This if/try is a way to print ONE to ONE relationship objects
+        # without infinite recursion.
         elif value:
             try:
-                value._sa_instance_state #Dummy call to test if value is a Database object.
-                value = "<{}(id={})>".format(value.__class__.__name__, value.id)
+                # Dummy call to test if value is a Database object.
+                # value._sa_instance_state  # temporarily removed.
+                value = "<{}(id={})>".format(
+                    value.__class__.__name__, value.id)
             except AttributeError:
-                pass #The object is not a databse object.
-                
+                pass  # The object is not a databse object.
         yield '{}={}'.format(key, repr(value))
         
 Base.data_to_string = data_to_string
     
 
-#I didn't call this method __str__ as it would then overide the module string function.
+# I didn't call this method __str__ as it would then overide the module
+# string function.
 def string_of(self): 
     """Return string data about a Database object.
     
     Note: prints lists as list of ids.
-    Note2: key.lstrip('_') accesses _attributes as attributes due to my convention of using 
-    _value, @hybrid_property of value, @value.setter.
+    Note2: key.lstrip('_') accesses _attributes as attributes due to my
+    convention of using _value, @hybrid_property of value, @value.setter.
     
-    I don't understand why I need all of these ... only that each one seems to hold
-    slightly different data than the others with some overlap.
+    I don't understand why I need all of these ... only that each one seems
+    to hold slightly different data than the others with some overlap.
     
-    Not3: super class variables like 'type' and 'name' don't exist in WorldMap until they are
-    referenced as they are declared in Map...? I called super to fix this ... but it may
-    only allow ONE level of superclassing. Multi-level superclasses will probably fail.
+    Not3: super class variables like 'type' and 'name' don't exist in WorldMap
+    until they are referenced as they are declared in Map...? I called super
+    to fix this ... but it may only allow ONE level of superclassing.
+    Multi-level superclasses will probably fail.
     """
 
     data = self.get_all_atts()
@@ -102,7 +111,7 @@ def string_of(self):
         
 Base.__str__ = string_of
 
-#For testing.
+
 def pprint(self):
     """Multi-line print of a database object -> good for object diff.
     
@@ -118,6 +127,7 @@ def pprint(self):
         
 Base.pprint = pprint
 
+
 def pretty_str(self):
     data = self.get_all_atts()
     
@@ -128,20 +138,35 @@ Base.pretty_str = pretty_str
 
 
 def pretty_list(obj_list, key='id'):
-    return '[' + ', '.join('{}.{}={}'.format(
+    """Build a human readable string version of a list of objects.
+
+    :param obj_list: The list of Base objects to print.
+    :param key: and attribute of the each object to print by.
+    :return: A nicely formatted string version of the list.
+
+    Mainly used for print 'InstrumentedList' that most hated of objects.
+    NOTE: the list is sorted! If the key can't be sorted then this will fail.
+    """
+    return '[' + ', '.join(
+        '{}.{}={}'.format(
         obj.__class__.__name__,
         key,
-        getattr(obj, key)
-    ) for obj in obj_list) + ']'
+        repr(getattr(obj, key))
+    ) for obj in sorted(
+        obj_list,
+        key=lambda x, k=key: getattr(x, k))
+    ) + ']'
 
 Base.pretty_list = pretty_list
+
 
 def is_equal(self, other):
     """Test if two database objects are equal.
     
     hero.is_equal(hero) vs. str(hero) == str(hero)
     is_equal is 0.3 seconds faster over 1000 iterations than str == str.
-    So is_equal is not that useful. I would like it if it was 5-10 times faster.
+    So is_equal is not that useful. I would like it if it was 5-10 times
+    faster.
     """
     data = self.get_all_atts()
     other_data = other.get_all_atts()
@@ -161,11 +186,14 @@ def is_equal(self, other):
     
 Base.is_equal = is_equal
     
+
 class BaseListElement(Base):
     """Stores list objects in database.
     
     To implement:
-    1. add line in this class: parent_table_name_id = Column(Integer, ForeignKey('parent_table_name.id'))
+    1. add line in this class:
+        parent_table_name_id = Column(Integer,
+            ForeignKey('parent_table_name.id'))
     2. add line in foreign class: _my_list = relationship("BaseListElement")
     3. add method to foreign class:
     @hybrid_property
@@ -197,7 +225,6 @@ class BaseListElement(Base):
         """
         self.value = value
     
-    
     @hybrid_property
     def value(self):
         """Return value of list element.
@@ -206,19 +233,19 @@ class BaseListElement(Base):
         """
         return self.int_value or self.str_value
 
-
     @value.setter
     def value(self, value):
         """Assign value to appropriate column.
         
         Currently implements the strings and integers.
         """
-        if type(value) is type(str()):
+        if isinstance(value, str):
             self.str_value = value
-        elif type(value) is type(int()):
+        elif isinstance(value, int):
             self.int_value = value
         else:
-            raise "TypeError: BaseListElement does not accept type '{}':".format(type(value))
+            raise "TypeError: BaseListElement does not accept " \
+                "type '{}':".format(type(value))
             
     def __str__(self):
         """Return pretty string version of data.

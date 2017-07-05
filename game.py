@@ -1,9 +1,9 @@
-# //////////////////////////////////////////////////////////////////////////////#
-#                                                                              #
-#  Author: Elthran B, Jimmy Zhang                                              #
-#  Email : jimmy.gnahz@gmail.com                                               #
-#                                                                              #
-# //////////////////////////////////////////////////////////////////////////////#
+# ////////////////////////////////////////////////////////////////////////////#
+#                                                                             #
+# Author: Elthran B, Jimmy Zhang                                              #
+# Email : jimmy.gnahz@gmail.com                                               #
+#                                                                             #
+# ////////////////////////////////////////////////////////////////////////////#
 
 """Objects used in the database and the game.
 
@@ -178,6 +178,17 @@ class Hero(Base):
 
     # Relationships: see complex_relationships.py
 
+    # Many heroes -> one map/world. (bidirectional)
+    map_id = Column(Integer, ForeignKey('location.id'))
+    current_world = relationship("Location", back_populates='heroes')
+
+    @orm.validates('current_world')
+    def validate_current_world(self, key, value):
+        if 'map' == value.type:
+            return value
+        raise Exception("'current_world' Location type must be 'map' not '{}'."
+                        "".format(value.type))
+
     def __init__(self, **kwargs):
         """Initialize the Hero object.
 
@@ -250,7 +261,7 @@ class Hero(Base):
             self.experience_percent = 0
         return max(current or 0, 0)
 
-    def not_yet_implemented():
+    def not_yet_implemented(self):
         self.kill_quests = BaseDict()
         self.chest_equipped = []
         self.errands = []
