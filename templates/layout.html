@@ -36,11 +36,7 @@
             <ul>
 				<li><a href=/home>Profile</a></li>
                 <li><a href=/inventory_page>Inventory</a></li>
-                {% if myHero.current_city %}
-                   <li><a href=/{{ myHero.current_city.location_type }}/{{ myHero.current_city.name }}>{{ myHero.current_city.name }}</a></li>
-                {% else %}
-                  <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_location.id }}>{{ myHero.current_world.location_type }}</a></li>
-                {% endif %}
+                <li><a href={{ myHero.current_location.url }}>{{ myHero.current_location.name }}</a></li>
                 <li><a href=/quest_log>Journal</a></li>
                 <!-- Not sure if there is a way to access the user from the hero data?-->
                 <!--Marlen: try hero.user :) @Elthran-->

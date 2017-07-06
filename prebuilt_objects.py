@@ -62,6 +62,7 @@ world.children = node_grid
 town = node_grid[5]
 town.name = "Thornwall"
 town.type = 'town'
+town.update()
 
 """
 town.display.places_of_interest=[
@@ -74,6 +75,15 @@ town.display.places_of_interest=[
 ("/WorldMap/{}/{}".format(town.location_world.name, town.id), "World Map")
 ]
 """
+blacksmith = Location('Blacksmith', 'store')
+blacksmith.children.append(Location('armoury', 'store'))
+blacksmith.children.append(Location('weaponry', 'store'))
+marketplace = Location('Marketplace', 'marketplace')
+marketplace.children.append(Location('general', 'marketplace'))
+town.children.append(blacksmith)
+town.children.append(Location('Barracks', 'barracks'))
+town.children.append(marketplace)
+# town.children.append(Location('weaponry', 'store'))
 
 cave = node_grid[2]
 cave.name = "Creepy cave"
@@ -81,6 +91,7 @@ cave.type = 'cave'
 cave.display.page_heading = "You are in a cave called {}".format(cave.name)
 cave.display.paragraph = "There are many scary places to die within the " \
                          "cave. Have a look!"
+cave.update()
 """
 cave.display.places_of_interest=[
 ("/WorldMap/{}/{}".format(cave.location_world.name, cave.id), "World Map")])

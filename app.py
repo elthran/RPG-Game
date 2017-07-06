@@ -590,96 +590,41 @@ def under_construction():
     page_title = "Under Construction"
     return render_template('layout.html', page_title=page_title)  # return a string
 
-### END OF PROFILE/DISPLAY FUNCTIONS
 
-
-
-### TOWN FUNCTIONS
-
-@app.route('/Town/<town_name>')
+@app.route('/map/<location_name>')
+@app.route('/town/<location_name>')
+@app.route('/cave/<location_name>')
+@app.route('/explorable/<location_name>')
 @login_required
 @uses_hero_and_update
 # @prevent_url_typing
-def town(town_name, hero=None):
-    #Marked for refactor as ineficient if easy to understand.
-    #These should just be part of the basic world_map function as they don't actually
-    #add anything yet.
-    for location in hero.current_world.all_map_locations:
-        if location.name == town_name:
-            hero.current_location = location
-            break
+def move(location_name, hero=None):
+    """Set up a directory for the hero to move to.
 
-    page_title = hero.current_city.display.page_title
-    places_of_interest = hero.current_city.display.places_of_interest
-    database.update()
-    return render_template('town.html', myHero=hero, page_title=page_title, places_of_interest=places_of_interest )  # return a string
-
-@app.route('/Cave/<cave_name>') # Test function while experimenting with locations
-@login_required
-@uses_hero_and_update
-# @prevent_url_typing
-def cave(cave_name, hero=None):
-    #Marked for refactor as ineficient if easy to understand.
-    #Maybe a search function?
-    #hero.current_city = hero.current_world.get_city(cave_name)?
-    for location in hero.current_world.all_map_locations:
-        if location.name == cave_name:
-            hero.current_location = location
-            break
-    page_title = hero.current_city.display.page_title
-    page_heading = hero.current_city.display.page_heading
-    page_image = hero.current_city.display.page_image
-    paragraph = hero.current_city.display.paragraph
-    places_of_interest = hero.current_city.display.places_of_interest
-    database.update()
-    return render_template('cave.html', myHero=hero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest)  # return a string
-
-@app.route('/WorldMap/<current_world>/<int:location_id>') # Test function while experimenting with locations
-@login_required
-@uses_hero_and_update
-# @prevent_url_typing
-def world_map(current_world, location_id, hero=None):
-    """Set up World Map web page. Return html string/web page.
-
-    I don't know where the arguments come from? Or why they are passed.
-    I will try and figure it out.
+    Arguments are in the form of a url and are sent by the data that can be
+    found with the 'view page source' command in the browser window.
     """
-    # pdb.set_trace()
-
-    # Very important as current_world is a string variable and should be the object itself.
-    current_world = hero.current_world
-
-    # Updates current id. May be redundant. Or it may allow page to be dynamic.
-    # May have originally compensated for the lack of a database.
-    current_location = current_world.find_location(location_id)
-
-    # Needs to be reimplemented/or removed
-    # hero.known_locations.append(current_world)
-    # hero.current_city = None #?
-
-    move_on_the_map = current_world.show_directions(current_location)
-    hero.current_location = current_location
+    location = database.get_object_by_name('Location', location_name)
+    if location.type == 'map':
+        hero.current_world = location
+    else:
+        hero.current_location = location
     database.update()
 
+    return render_template(
+        'move.html', myHero=hero,
+        page_title=location.display.page_title,
+        page_heading=location.display.page_heading,
+        page_image=location.display.page_image,
+        paragraph=location.display.paragraph,
+        places_of_interest=location.places_of_interest)
 
-    #Debug Me! Use current_world.display?
-    # Check render of places_of_interest
-    page_title = current_world.display.page_title
-    page_heading = current_world.display.page_heading
-    page_image = current_world.display.page_image
-    paragraph = current_world.display.paragraph
-    places_of_interest = current_world.display.places_of_interest
-
-    #Not implemented. Control user moves on map.
-    #Should be a list of urls ...
-    # session['valid_moves'] = move_on_the_map
-
-    return render_template('world_map.html', myHero=hero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest, move_on_the_map=move_on_the_map)
 
 @app.route('/barracks')
+@app.route('/barracks/<name>')
 @login_required
 @uses_hero_and_update
-def barracks(hero=None):
+def barracks(name='', hero=None):
     if hero.proficiencies.health.current <= 0:
         page_heading = "Your hero is currently dead."
         page_image = "dead"
@@ -811,6 +756,7 @@ def battle(hero=None):
     database.update()
     return render_template('battle.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log, myHero=hero, enemy=game.enemy, page_links=page_links)  # return a string
 
+
 #A.k.a "Blacksmith"
 @app.route('/store/<inventory>')
 @login_required
@@ -825,7 +771,7 @@ def store(inventory, hero=None):
         if path.active and path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 1:
             path.advance()
     items_for_sale = []
-    if inventory == "greeting":
+    if inventory == "Blacksmith":
         page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]
         return render_template('store.html', myHero=hero, page_title=page_title, page_links=page_links)  # return a string
     elif inventory == "armoury":
@@ -916,13 +862,14 @@ def tavern(hero=None):
 def marketplace(inventory, hero=None):
     page_title = "Marketplace"
     items_for_sale = []
-    if inventory == "greeting":
-        page_links = [("Take a look at our ", "/marketplace/general", "selection", "."), ("Return to ", "/Town/" + hero.current_city.name, "town", ".")]
+    if inventory == "Marketplace":
+        page_links = [("Take a look at our ", "/marketplace/general", "selection", "."), ("Return to ", hero.current_city.url, "town", ".")]
         return render_template('store.html', myHero=hero, page_title=page_title, page_links=page_links)  # return a string
     elif inventory == "general":
         page_links = [("Let me go back to the ", "/marketplace/greeting", "marketplace", " instead.")]
         items_for_sale = database.get_all_marketplace_items()
     return render_template('store.html', myHero=hero, items_for_sale=items_for_sale, page_title=page_title, page_links=page_links)  # return a string
+
 
 @app.route('/old_mans_hut')
 @login_required

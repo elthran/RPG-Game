@@ -134,7 +134,7 @@ def pretty_str(self):
     lines = (line for line in self.data_to_string(data))
     return "\n<{}(\n{}\n)>\n".format(self.__class__.__name__, '\n'.join(lines))
 
-Base.pretty_str = pretty_str
+Base.pretty = property(pretty_str)
 
 
 def pretty_list(obj_list, key='id'):

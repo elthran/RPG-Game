@@ -8,10 +8,10 @@ Author: Marlen Brunner and Elthran B.
 4. -potentially- The Display class could pre-render/or hold reference to
 a flask template so that it can be inserted into the main website directly.
 
-5. !Important! The location must have a kind of grid reference that fucks up
-my beautiful sibling code! Dam now I have to rebuild it.
-Maybe make siblings calculated? Populated from the hex grid surrounding
-this location?
+5. !Important! The location must have a list of adjacent locations. This
+should be a kind of 'directed graph' or a many to many relationship.
+If A is sibling to B, B should be sibling to A by default. Non bidirectional
+can be added later.
 
 Location
     Display
@@ -34,6 +34,8 @@ Location
         page_heading - specially formatted version of 'name'
         page_image - derived from 'name'
         paragraph - description of location
+        places_of_interest - generated list of urls that you can move to
+            from this location.
 """
 import warnings
 import pdb
@@ -52,12 +54,8 @@ from base_classes import Base
 
 
 class Display(Base):
-    """Stores data for location and map objects that is displayed in the game
+    """Stores data for Location objects that is displayed in the game
     using html.
-
-    Note: When modifying attributes ...
-
-    places_of_interest is not implemented ... except during initialization.
     """
     __tablename__ = "display"
 
@@ -68,7 +66,13 @@ class Display(Base):
     page_image = Column(String)
     paragraph = Column(String)
 
-    # External relationships
+    """
+    External relationships:
+    
+    This is set up so that each external relationship is one to one and can be
+    accessed through the generic 'self.obj' attribute using
+    a list of or statements ... only one should be set at a time.
+    """
     # One location -> one display (bidirectional)
     _location = relationship('Location', uselist=False,
                              back_populates='display')
@@ -82,35 +86,57 @@ class Display(Base):
         """
         return self._location or None
 
-    @hybrid_property
-    def places_of_interest(self):
-        places = []
-        for child in self.obj.children:
-            places.append(child.url, child.name)
-        places.append(self.obj.parent.url, self.obj.parent.name)
-        return places
-
     def __init__(self, obj, page_heading=None, paragraph=None):
         """Build display object based on objects attributes.
 
         I think that I should add in a link to the correct HTML template
-        as well? Based on location type?
+        as well? Based on object type?
+
+        Consider making all of these attributes property methods instead
+        so that I don't have to run an update function.
+
+        NOTE: update method overrides all attributes!
         """
 
         self.name = obj.name
-        self.page_heading = page_heading or "You are in {}".format(self.name)
+        self.page_heading = page_heading or self.default_heading()
 
         # eg. page_image = town if Town object is passed or cave if Cave
         # object is passed.
         self.page_image = obj.type.lower()
-        self.paragraph = paragraph or "There are many places to visit within" \
-                                      " the {}. Have a look!".format(obj.type)
+        self.paragraph = paragraph or self.default_paragraph()
+
+    def default_heading(self):
+        return "You are in {}".format(self.name)
+
+    def default_paragraph(self):
+        return "There are many places to visit within" \
+               " the {}. Have a look!".format(self.page_image)
+
+    def update(self):
+        """Update self to reflect changes in obj properties.
+
+        This is not automatic ... though maybe it should be.
+        Currently you need to define a validator on each object
+        that calls this function.
+
+        !IMPORTANT! this could overwrite custom attributes incorrectly.
+        """
+
+        if self.page_heading == self.default_heading():
+            self.page_heading = "You are in {}".format(self.obj.name)
+        if self.paragraph == self.default_paragraph():
+            self.paragraph = "There are many places to visit within " \
+                             "the {}. Have a look!".format(self.obj.type)
+
+        self.name = self.obj.name
+        self.page_image = self.obj.type.lower()
 
 
 class AdjacentLocation(Base):
     """Allow for locations to connect to other locations.
 
-    This is done through a out/in path architecture and
+    This is done through a in/out path architecture and
     is horrifically complex. See:
     http://docs.sqlalchemy.org/en/latest/orm/join_conditions.html#self-referential-many-to-many-relationship
     """
@@ -124,7 +150,7 @@ class AdjacentLocation(Base):
 class Location(Base):
     """A place that the hero can travel to or interact with.
 
-    The main hierarchy is parent -> child, where to children with
+    The main hierarchy is parent -> child, where children with
     the same parent are called 'siblings'
     General order is:
     map -> town -> blacksmith
@@ -137,7 +163,7 @@ class Location(Base):
 
     ALL_TYPES = [
         'town', 'map', 'explorable', 'cave', 'blacksmith',
-        'merchant', 'house'
+        'merchant', 'house', 'store', 'barracks', 'marketplace'
     ]
 
     __tablename__ = 'location'
@@ -149,12 +175,12 @@ class Location(Base):
     # )
     # Need validators for children - child can't be parent or sibling
     # Need validator for parent - parent can't be child or sibling
-    # Need validator for siblings - can't be parent or child, max of 6
+    # Need validator for siblings - can't be parent or child, max of 6?
     # Think a hex grid
 
     id = Column(Integer, primary_key=True)
     parent_id = Column(Integer, ForeignKey('location.id'))
-    name = Column(String)
+    name = Column(String, nullable=False, unique=True)
     url = Column(String)
     type = Column(String)
 
@@ -177,7 +203,18 @@ class Location(Base):
 
     # External relationships
     # Many heroes -> one map/world. (bidirectional)
-    heroes = relationship("Hero", back_populates='current_world')
+    heroes = relationship("Hero", back_populates='current_world',
+                          foreign_keys='[Hero.map_id]')
+    # Each current_location -> can be held by Many Heroes (bidirectional)
+    heroes_by_current_location = relationship(
+        "Hero", back_populates="current_location",
+        foreign_keys='[Hero.current_location_id]')
+    # Each current_city -> can be held by Many Heroes (bidirectional)
+    # Current_city may be: (town, cave)
+    heroes_by_city = relationship(
+        "Hero", back_populates="current_city",
+        foreign_keys='[Hero.city_id]')
+
     # One location -> one display (bi)
     display_id = Column(Integer, ForeignKey('display.id'))
     display = relationship("Display", back_populates='_location')
@@ -192,14 +229,29 @@ class Location(Base):
 
     @hybrid_property
     def adjacent(self):
+        """A list of siblings that can be traveled to.
+
+        This is bidirectional by default but can be changed without
+        too much trouble .. I think.
+        """
         return set(self._out_adjacent + self._in_adjacent)
 
     @adjacent.setter
     def adjacent(self, values):
-        self._out_adjacent = values
-        # for sibling in siblings:
-        #     if self not in sibling.adjacent:
-        #         sibling.adjacent.append(self)
+        """Build a path between sibling locations.
+
+        Raise and error if the potential adjacent locations are not siblings
+        of this location.
+        """
+        for value in values:
+            if value in self.siblings:
+                self._out_adjacent = values
+            else:
+                raise Exception(
+                    "Location.name='{}' is not a valid sibling of this "
+                    "location. Try checking the parents of both objects."
+                    "".format(value.name)
+                )
 
     # @orm.validates('parent', 'children')
     # def update_siblings(self, key, value):
@@ -210,6 +262,11 @@ class Location(Base):
 
     @hybrid_property
     def siblings(self):
+        """The children of the parent of this location, less this location.
+
+        NOTE: this object is not returned.
+        Definition: A sibling is an object with the same parent.
+        """
         siblings = []
         if self.parent:
             siblings = list(self.parent.children)
@@ -217,10 +274,19 @@ class Location(Base):
         return siblings
 
     def get_sibling_ids(self):
+        """A list of all ids of the siblings of this object.
+
+        """
         return [sibling.id for sibling in self.siblings]
 
+    # @update_after_validate
     @orm.validates('type')
+    # @update_after_validate
     def validate_type(self, key, value):
+        """Make sure that the programmer doesn't create arbitrary types.
+
+        If you need a new type, add it to Location attribute ALL_TYPES
+        """
         if value in Location.ALL_TYPES:
             return value
         else:
@@ -232,44 +298,78 @@ class Location(Base):
                 )
             )
 
-    def __init__(self, name, location_type, parent=None, children=[],
-                 siblings=[]):
-        """Create a now location object that the hero can explore.
+    def __init__(self, name, location_type, parent=None, children=[]):
+        """Create a new location object that the hero can explore.
 
         :param location_type: e.g. map, town, store
         :param parent: the place this place is inside of
         :param children: places inside this place
-        :param siblings: the places that share this places parent.
 
         NOTE: if you set the parent attribute ... the siblings
-        attribute should be populated automatically or vice versa ...
-        so generally it isn't useful to set the parent and siblings
-        at the same time. Thought it can be in special cases.
+        attribute should be populated automatically.
 
         NOTE2: the url is populated automatically from the parent url
         and this location's type and name.
 
         NOTE3: the Display is populated automatically as well but can have
         extra information added to it.
+
+        NOTE4: Currently you can't set siblings!
+
+        NOTE5: You need to run 'update' after changing name or type!
         """
         self.name = name
         self.type = location_type
         self.parent = parent
         self.children = children
-        self.url = self.build_url()
-        self.display = Display(self)
-        # self.init_on_load()
+        self.update()
 
-    # @orm.reconstructor
-    # def init_on_load(self):
-    #     self.siblings = self.update_siblings()
+    @orm.reconstructor
+    def update(self):
+        """Update the derived attributes to reflect changes to the main ones.
+
+        !IMPORTANT! This could overwrite custom attribute values incorrectly.
+        """
+        self.url = self.build_url()
+        if self.display is None:
+            self.display = Display(self)
+        else:
+            self.display.update()
 
     def build_url(self):
-        if self.parent is None:
-            return "/{}/{}".format(self.type, self.name)
-        else:
-            return self.parent.url + "/{}/{}".format(
-                self.type, self.name)
+        """Create a url for this object with its type and name.
+
+        Old: Create a url for this location based on the parent's url.
+        """
+
+        return "/{}/{}".format(self.type, self.name)
+        # if self.parent is None:
+        #     return "/{}/{}".format(self.type, self.name)
+        # else:
+        #     return self.parent.url + "/{}/{}".format(
+        #         self.type, self.name)
+
+    @hybrid_property
+    def places_of_interest(self):
+        """The places that are directly connected to this place.
+
+        This is a dictionary of objects lists.
+        The children are those places enclosed by this place.
+        The parent is the place this place encloses.
+        The adjacent is the locations that you can travel to from here.
+            They are on the same relative level as this place.
+        """
+        places = {'children': [],
+                  'adjacent': [],
+                  'parent': None}
+        children = sorted(self.children, key=lambda x: x.name)
+        places['children'] = sorted(children, key=lambda x: x.type)
+
+        places['adjacent'] = sorted(self.adjacent, key=lambda x: x.name)
+
+        if self.parent:
+            places['parent'] = self.parent
+        return places
 
 
 # # Marked for refactor

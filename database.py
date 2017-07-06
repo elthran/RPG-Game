@@ -33,7 +33,7 @@ from items import ItemTemplate, Item
 from quests import Quest
 from proficiencies import Proficiency
 import complex_relationships
-#import prebuilt_objects
+import prebuilt_objects
 
 
 # Constants#
@@ -100,7 +100,8 @@ class EZDB:
                         obj.timestamp = EZDB.now()
                     self.session.add(obj)
                     self.session.commit()
-                except sqlalchemy.exc.IntegrityError:
+                except sqlalchemy.exc.IntegrityError as ex:
+                    # print(ex)
                     self.session.rollback()
                     
     def delete_item(self, item_id):
@@ -126,6 +127,15 @@ class EZDB:
                 "Object name: '{}' is not an "
                 "object, or has not been imported into "
                 "'database' module yet.".format(obj_name))
+
+    def get_object_by_name(self, obj_class_name, obj_name):
+        """Retrieve an object from the database by name.
+
+        And error will occur if the object name is not unique.
+        Or if you specify an object that doesn't exist in the database.
+        """
+        obj = globals()[obj_class_name]
+        return self.session.query(obj).filter_by(name=obj_name).one()
         
     def get_proficiency_by_id(self, prof_id):
         """Return a proficiency object by id."""

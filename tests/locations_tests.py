@@ -175,7 +175,7 @@ class LocationTestCase(unittest.TestCase):
         hero2 = self.db.session.query(Hero).filter_by(name="Haldon").first()
         self.assertEqual(str(hero2.current_world), str_world)
 
-    # @unittest.skip("Disabled for debugging.")
+    @unittest.skip("Disabled for debugging.")
     def test_prebuilt_objects_game_worlds(self):
         """Test the creation of some prebuilt objects.
         
@@ -194,38 +194,37 @@ class LocationTestCase(unittest.TestCase):
         world = prebuilt_objects.game_worlds[0]
         self.db.session.add(world)
         self.db.session.commit()
-
-        str_world = str(world)
+        str_world = world.pretty
 
         self.tearDown(delete=False)
         self.setUp()
         world2 = self.db.session.query(
-            WorldMap).filter_by(name="Test_World2").first()
-        self.maxDiff = None
-        
-        self.assertEqual(str(world2), str_world)
+            Location).filter_by(name="Htrae").first()
 
-    @unittest.skip("Disabled for debugging.")
-    def test_show_directions(self):
-        """Test the show directions function of the WorldMap object.
-        
-        NOTE: during self.setUp() prebuilt_objects is re-imported as it is
-        erased each time it is used.
-        I don't know why.
-        """
-        game_map = prebuilt_objects.world
-        self.db.session.add(game_map)
-        self.db.session.commit()
+        self.maxDiff = None
+        self.assertEqual(world2.pretty, str_world)
+
+    # @unittest.skip("Disabled for debugging.")
+    # def test_show_directions(self):
+    #     """Test the show directions function of the WorldMap object.
+    #
+    #     NOTE: during self.setUp() prebuilt_objects is re-imported as it is
+    #     erased each time it is used.
+    #     I don't know why.
+    #     """
+    #     game_map = prebuilt_objects.world
+    #     self.db.session.add(game_map)
+    #     self.db.session.commit()
  
         # directions = game_map.show_directions(
         # prebuilt_objects.current_location)
         # This only works if prebuilt_objects.current_location
         # is a Town or Cave.
         # Which it currently is.
-        self.assertEqual(game_map.map_cities,
-                         [prebuilt_objects.current_location])
+        # self.assertEqual(game_map.map_cities,
+        #                  [prebuilt_objects.current_location])
 
-    @unittest.skip("Disabled for debugging.")
+    # @unittest.skip("Disabled for debugging.")
     def test_places_of_interest(self):
         game_map = prebuilt_objects.world
         self.db.session.add(game_map)

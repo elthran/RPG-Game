@@ -180,7 +180,21 @@ class Hero(Base):
 
     # Many heroes -> one map/world. (bidirectional)
     map_id = Column(Integer, ForeignKey('location.id'))
-    current_world = relationship("Location", back_populates='heroes')
+    current_world = relationship("Location", back_populates='heroes',
+                                 foreign_keys='[Hero.map_id]')
+    # Each current_location -> can be held by Many Heroes (bidirectional)
+    current_location_id = Column(Integer, ForeignKey('location.id'))
+    current_location = relationship(
+        "Location", back_populates='heroes_by_current_location',
+        foreign_keys='[Hero.current_location_id]')
+
+    # Each current_city -> can be held by Many Heroes (bidirectional) (Town or Cave)
+    # Maybe I should have a City object that extends Location that is the Ancestor for Town and Cave?
+    # Location -> City -> (Town, Cave)
+    city_id = Column(Integer, ForeignKey('location.id'))
+    current_city = relationship(
+        "Location", back_populates='heroes_by_city',
+        foreign_keys='[Hero.city_id]')
 
     @orm.validates('current_world')
     def validate_current_world(self, key, value):
@@ -346,7 +360,7 @@ class Hero(Base):
         If current_location is a city ... set value of current_city as well.
         If not remove the value of current_city.
         """
-        if location.type in ("Cave", "Town"):
+        if location.type in ("cave", "town"):
             self.current_city = location
         else:
             self.current_city = None

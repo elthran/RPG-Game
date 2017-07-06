@@ -90,27 +90,6 @@ inventory.Inventory.unequipped = relationship("Item", order_by="Item.unequipped_
 game.Hero.user_id = Column(Integer, ForeignKey('user.id'))
 game.User.heroes = relationship("Hero", order_by='Hero.character_name', backref='user')
 
-#Many Heroes -> one WorldMap (bidirectional)
-# game.Hero.world_map_id = Column(Integer, ForeignKey('world_map.id'))
-# locations.WorldMap.heroes = relationship("Hero", backref="current_world")
-
-#Each current_city -> can be held by Many Heroes (bidirectional) (Town or Cave)
-#Maybe I should have a City object that extends Location that is the Ancestor for Town and Cave?
-#Location -> City -> (Town, Cave)
-# game.Hero.city_id = Column(Integer, ForeignKey('location.id'))
-# game.Hero.current_city = relationship("Location", foreign_keys='[Hero.city_id]',
-#     back_populates='heroes_by_city')
-# locations.Location.heroes_by_city = relationship("Hero", foreign_keys='[Hero.city_id]',
-#     back_populates="current_city")
-
-#Each current_location -> can be held by Many Heroes (bidirectional)
-# game.Hero.current_location_id = Column(Integer, ForeignKey('location.id'))
-# game.Hero.current_location = relationship("Location", foreign_keys='[Hero.current_location_id]',
-#     back_populates='heroes_by_current_location')
-# locations.Location.heroes_by_current_location = relationship("Hero",
-#     foreign_keys='[Hero.current_location_id]', back_populates="current_location")
-
-
 ######NOT TESTED!
 #Many Heroes -> many known Maps? (unidirectional)?
 #Maybe this should be a One Hero -> Many Maps ...
