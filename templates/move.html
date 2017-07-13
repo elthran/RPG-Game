@@ -12,8 +12,10 @@
      	<h2><a href="{{ place.url }}">{{ place.name }}</a>: {{ place.type }}</h2>
     {% endfor %}
     <h3>Explore a higher level :P (needs better wording)</h3>
-    <h2><a href="{{ places_of_interest['parent'].url }}"
+    {% if places_of_interest['parent'] %}
+        <h2><a href="{{ places_of_interest['parent'].url }}"
         >{{ places_of_interest['parent'].name }}</a
         >: {{ places_of_interest['parent'].type }}</h2>
+    {% endif %}
 {% endblock %}
 

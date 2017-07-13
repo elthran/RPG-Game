@@ -1,0 +1,14 @@
+<!-- This shows the admin page -->
+
+{% extends "layout.html" %}
+{% block block1 %}
+    <h1>{{ page_heading }}</h1>
+    <img src="static/images/{{ page_image }}" alt="{{ page_image }}">
+    <p>{{ paragraph }}</p>
+    {% if location.parent %}
+        <p>Return to <a href="{{ location.parent.url }}">
+            {{ location.parent.name }}</a>
+        </p>
+    {% endif %}
+{% endblock %}
+

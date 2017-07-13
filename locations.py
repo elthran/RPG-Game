@@ -36,6 +36,11 @@ Location
         paragraph - description of location
         places_of_interest - generated list of urls that you can move to
             from this location.
+
+Ideas:
+    Maybe a long and short url?
+    long: /map/Map_Name/town/Town_Name/store/Store_Name
+    short: /store/Store_name (basically the last part)
 """
 import warnings
 import pdb
@@ -103,7 +108,7 @@ class Display(Base):
 
         # eg. page_image = town if Town object is passed or cave if Cave
         # object is passed.
-        self.page_image = obj.type.lower()
+        self.page_image = obj.type.lower() + '.jpg'
         self.paragraph = paragraph or self.default_paragraph()
 
     def default_heading(self):
@@ -130,7 +135,7 @@ class Display(Base):
                              "the {}. Have a look!".format(self.obj.type)
 
         self.name = self.obj.name
-        self.page_image = self.obj.type.lower()
+        self.page_image = self.obj.type.lower() + '.jpg'
 
 
 class AdjacentLocation(Base):
@@ -163,7 +168,8 @@ class Location(Base):
 
     ALL_TYPES = [
         'town', 'map', 'explorable', 'cave', 'blacksmith',
-        'merchant', 'house', 'store', 'barracks', 'marketplace'
+        'merchant', 'house', 'store', 'barracks', 'marketplace',
+        'tavern', 'gate'
     ]
 
     __tablename__ = 'location'

@@ -80,10 +80,21 @@ blacksmith.children.append(Location('armoury', 'store'))
 blacksmith.children.append(Location('weaponry', 'store'))
 marketplace = Location('Marketplace', 'marketplace')
 marketplace.children.append(Location('general', 'marketplace'))
+tavern = Location("Red Dragon Inn", 'tavern')
 town.children.append(blacksmith)
 town.children.append(Location('Barracks', 'barracks'))
 town.children.append(marketplace)
-# town.children.append(Location('weaponry', 'store'))
+town.children.append(tavern)
+
+old_mans_hut = Location("Old Man's Hut", 'house')
+old_mans_hut.display.page_heading = "Old Man's Hut"
+old_mans_hut.display.page_image = 'hut.jpeg'
+old_mans_hut.display.paragraph = "Nice to see you again kid. What do you need?"
+old_mans_hut.update()
+town.children.append(old_mans_hut)
+
+gate = Location('Village Gate', 'gate')
+town.children.append(gate)
 
 cave = node_grid[2]
 cave.name = "Creepy cave"
@@ -111,13 +122,13 @@ node_grid[9].adjacent = [node_grid[5], node_grid[6]]
 node_grid[10].adjacent = []
 
 current_location = town
-game_worlds = [world] #Just chop this out and use world instead.
+game_worlds = [world]  # Just chop this out and use world instead.
 
 
-#game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
-#game_worlds = [World_Map("Test_World", TEST_WORLD_ID, test_locations)]
+# game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
+# game_worlds = [World_Map("Test_World", TEST_WORLD_ID, test_locations)]
 
-#game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
+# game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
 
 ##########
 #Abilities
