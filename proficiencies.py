@@ -11,45 +11,70 @@ from base_classes import Base
 
 from math import sin, floor
 
-# Name, Description, Attribute_Type, Type, [(Values Name, Value type, (Modifiers of value))]
-# Linear: Level multiplier, Base Value
-# Curvy: (larger "0" means it reaches the cap quicker) (smaller "1" means it reaxhes the cap quicker) ("2" is the cap or maximum possible value) ("3" is the negative amount)
-# Sensitive: Like curvy but has decimals (larger "0" means it reaches the cap quicker) (smaller "1" means it reaxhes the cap quicker) ("2" is the cap or maximum possible value) ("3" is the negative amount)
-# Modifier: (larger "a" means greater amplitude), (larger "b" means greater steepness andfaster increase), (greater "c" means greater frequency of waves)
+# Name, Description, Attribute_Type, Type, [(Values Name, Value type, (Modifiers of value), Decimal Places)]
+# Linear: (Level multiplier), (Starting Value)
+# Root: Not finished. Looks like square root function. Used for diminishing returns and things that get better the larger they are. (Starting value) [Currently approaches 100]
+
+# Curvy: (larger "0" means it reaches the cap quicker) (smaller [1] means it reaxhes the cap quicker) ([2] is the cap or maximum possible value) ([3] is the negative amount)
+# Sensitive: Like curvy but has decimals (larger [0] means it reaches the cap quicker) (smaller [1] means it reaches the cap quicker) ([2] is the cap or maximum possible value) ([3] is the negative amount)
+# Modifier: (larger [0] means greater amplitude), (larger [1] means greater steepness andfaster increase), (greater [2]  means greater frequency of waves)
+# Percent: ???
 # Empty: Sets this value to take on the value of "maximum". Must be placed after "Maximum" in the list of variables
 PROFICIENCY_INFORMATION = [
-    ("Health", "How much you can take before you die", "Vitality", "Offense", [("Maximum", "linear", (5, 0)), ("Current", "empty")]),
-    ("Sanctity", "Casting points", "Divinity", "Offense", [("Maximum", "linear", (1.5, -1)), ("Current", "empty")]),
-    ("Storage", "Carrying capacity", "Strength", "Offense", [("Maximum", "linear", (2.5, 8)), ("Current", "empty")]),
-    ("Endurance", "Actions performed each day", "Fortitude", "Offense", [("Maximum", "linear", (0.25, 5)), ("Current", "empty")]),
-    ("Attack damage", "How hard you hit", "Strength", "Offense", [("Minimum", "curvy", (0.5, 0.1, 0.1, 0)), ("Maximum",  "curvy", (0.5, 0.2, 0.1, 1))]),
-    ("Attack speed", "How fast you attack", "Agility", "Offense", [("Speed", "sensitive", (0.1, 0.1, 0.7, 1))]),
-    ("Attack accuracy", "Chance to hit", "Agility", "Offense", [("Accuracy", "percent", (2, 10, 5, 5))]),
-    ("First strike", "Chance to strike first", "Agility", "Offense", [("Chance", "percent", (0.5, 5, 50, -30))]),
-    ("Critical hit", "Ability to hit your enemy's weakspots", "Perception", "Offense", [("Chance", "percent", (0.3, 5, 50, -22)), ("Modifier", "percent", (0.5, 1, 0.5, 0))]),
-    ("Defence", "Damage reduction", "Fortitude", "Defence", [("Modifier", "percent", (0.1, 7, 35, 0))]),
-    ("Evade", "Chance to dodge", "Reflexes", "Defence", [("Chance", "percent", (0.1, 10, 15, 0))]),
-    ("Parry", "Chance to parry", "Reflexes", "Defence", [("Chance", "percent", (0.2, 15, 15, 0))]),
-    ("Riposte", "Chance to riposte", "Agility", "Defence", [("Chance", "percent", (0.3, 20, 15, 0))]),
-    ("Fatigue", "How quickly you tire in combat", "Fortitude", "Defence", [("Maximum", "linear", (2, -1)), ("Current", "empty")]),
-    ("Block", "Ability to block if a shield is equipped", "Strength", "Defence", [("Chance", "percent", (0.25, 25, 60, 0)), ("Modifier", "percent", (1.5, 20, 100, 0))]),
-    ("Stealth", "Chance to avoid detection", "Perception", "Stealth", [("Chance", "percent", (0.5, 20, 65, 0))]),
-    ("Pickpocketing", "Chance to steal", "Agility", "Stealth", [("Chance", "percent", (0.6, 15, 70, 0))]),
-    ("Faith", "Ability to cast spells", "Divinity", "Holiness", [("Modifier", "percent", (2, 10, 5, 0))]),
-    ("Bartering", "Chance to negotiate prices", "Charisma", "Diplomacy", [("Chance", "percent", (0.5, 20, 60, 0))]),
-    ("Oration", "Ability to speak", "Strength", "Wisdom", [("Modifier", "percent", (0.75, 15, 60, 0))]),
-    ("Knowledge", "Ability to understand", "Wisdom", "Diplomacy", [("Modifier", "percent", (0.1, 5, 50, 0))]),
-    ("Literacy", "Ability to read", "Wisdom", "Diplomacy", [("Modifier", "percent", (0.25, 10, 75, 0))]),
-    ("Luck", "Chance to have things turn your way against all odds", "Fortuity", "Diplomacy", [("Chance", "percent", (0.2, 5, 10, 0))]),
-    ("Resist frost", "Ability to resist frost damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))]),
-    ("Resist flame", "Ability to resist flame damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))]),
-    ("Resist shadow", "Ability to resist shadow damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))]),
-    ("Resist holy", "Ability to resist holy damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))]),
-    ("Resist poison", "Ability to resist poison damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))]),
-    ("Resist blunt", "Ability to resist blunt damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))]),
-    ("Resist slashing", "Ability to resist slashing damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))]),
-    ("Resist piercing", "Ability to resist piercing damage", "Resilience", "Resistance", [("Modifier", "percent", (1, 50, 100, -15))])
+    ("Health", "How much you can take before you die", "Vitality", [("Maximum", "linear", (2, 5, 0)), ("Current", "empty")]),
+    ("Regeneration", "How quickly your wounds heal", "Vitality", [("Speed", "root", (1, 2))]),
+    ("Recovery", "How quickly you recover from poisons and negative effects", "Vitality",[("Efficiency", "root", (0, 0))]),
+    ("Climbing", "Your ability to climb obstacles", "Agility", [("Ability", "linear", (0.5, 0.5, 1))]),
+    ("Storage", "Your carrying capacity", "Brawn", [("Maximum", "linear", (2, 10, 0)), ("Current", "empty")]),
+    ("Encumbrance", "How much your are slowed down in combat by your equipment", "Brawn", [("Amount", "root", (0, 0))]),
+    ("Endurance", "Actions performed each day", "Resilience", [("Maximum", "linear", (1, 3, 0)), ("Current", "empty")]),
+    ("Damage", "How much damage you do on each hit", "Brawn", [("Minimum", "linear", (1, 0, 0)), ("Maximum", "linear", (1, 1, 0)), ("Modifier", "linear", (.1, 1, 1))]),
+    ("Speed", "How fast you attack", "Quickness", [("Speed", "linear", (0.03, 1, 2))]),
+    ("Accuracy", "The chance of your attacks hitting their target.", "Agility", [("Accuracy", "root", (35, 0))]),
+    ("First strike", "Chance to strike first", "Quickness", [("Chance", "root", (0, 0))]),
+    ("Killshot", "Ability to hit enemies in their weak spot", "Agility", [("Chance", "root", (0, 0)), ("Modifier", "linear", (0.1, 1, 1))]),
+    ("Defence", "Damage reduction", "Resilience", [("Modifier", "root", (0, 0))]),
+    ("Evade", "Chance to dodge", "Quickness", [("Chance", "root", (5, 0))]),
+    ("Parry", "Chance to parry", "Quickness", [("Chance", "root", (2, 0))]),
+    ("Flee", "Chance to run from a battle", "Quickness", [("Chance", "root", (7, 0))]),
+    ("Riposte", "Chance to riposte an enrmy attack", "Agility", [("Chance", "root", (0, 0))]),
+    ("Fatigue", "How quickly you tire in combat", "Resilience", [("Maximum", "linear", (1, 5, 0)), ("Current", "empty")]),
+    ("Block", "Ability to block if a shield is equipped", "Resilience", [("Chance", "root", (0, 0)), ("Modifier", "root", (0, 0))]),
+    ("Stealth", "Chance to avoid detection", "Agility", [("Chance", "root", (3, 0))]),
+    ("Pickpocketing", "Skill at stealing from others", "Agility", [("Chance", "root", (1, 0))]),
+    ("Faith", "Strength of spells you cast", "Divinity", [("Modifier", "linear", (0.1, 1, 0))]),
+    ("Sanctity", "Amount of sanctity you can have", "Divinity", [("Maximum", "linear", (3, 0, 0)), ("Current", "empty")]),
+    ("Resist holy", "Ability to resist holy damage", "Divinity", [("Modifier", "root", (0, 0))]),
+    ("Bartering", "Discount from negotiating prices", "Charisma", [("Modifier", "linear", (-0.05, 1, 0))]),
+    ("Oration", "Proficiency in speaking to others", "Charisma", [("Modifier", "root", (11, 0))]),
+    ("Charm", "How quickly other people will like you", "Charisma", [("Modifier", "root", (3, 0))]),
+    ("Trustworthiness", "How much other players trust you", "Charisma", [("Modifier", "root", (0, 0))]),
+    ("Renown", "How much your actions affect your reputation", "Charisma", [("Modifier", "linear", (0.1, 1, 0))]),
+    ("Knowledge", "Ability to understand", "Intellect", [("Modifier", "root", (6, 0))]),
+    ("Literacy", "Ability to read", "Intellect", [("Modifier", "root", (0, 0))]),
+    ("Understanding", "How quickly you level up", "Intellect", [("Modifier", "linear", (0.05, 1, 0))]),
+    ("Luckiness", "Chance to have things turn your way against all odds", "Fortuity", [("Chance", "linear", (0.01, 0, 0))]),
+    ("Adventuring", "Chance to discover treasure", "Fortuity", [("Chance", "root", (0, 0))]),
+    ("Logistics",  "How far you can move on the map", "Pathfinding", [("Modifier", "linear", (0.2, 1, 0))]),
+    ("Mountaineering", "Modifier for mountain movement", "Pathfinding", [("Modifier", "linear", (0.5, 1, 0))]),
+    ("Woodsman", "Modifier for forest movement", "Pathfinding", [("Modifier", "linear", (.5, 1, 0))]),
+    ("Navigator", "Modifier for water movement", "Pathfinding", [("Modifier", "linear", (.5, 1, 0))]),
+    ("Detection", "Chance to discover enemy stealth and traps", "Survivalism", [("Chance", "root", (0, 0))]),
+    ("Caution",  "See information about a new grid before going there", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
+    ("Explorer", "Additional options on the map, such as foraging", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
+    ("Huntsman", "Learn additional information about enemies", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
+    ("Survivalist", "Create bandages, tents, and other useful objects", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
+    ("Resist frost", "Ability to resist frost damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    ("Resist flame", "Ability to resist flame damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    ("Resist shadow", "Ability to resist shadow damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    ("Resist poison", "Ability to resist poison damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    ("Resist blunt", "Ability to resist blunt damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    ("Resist slashing", "Ability to resist slashing damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    ("Resist piercing", "Ability to resist piercing damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    ("Courage", "Your ability to overcome fears", "Willpower", [("Skill", "linear", (1, 0, 0))]),
+    ("Sanity", "Your ability to resist mind altering affects", "Willpower", [("Skill", "linear", (1, 0, 0))]),
     ]
+
 
 
 ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_") for attrib in PROFICIENCY_INFORMATION]
@@ -62,28 +87,36 @@ class Proficiencies(Base):
     #Relationships
     health_id = Column(Integer, ForeignKey('proficiency.id'))
     health = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.health_id]")
-    sanctity_id = Column(Integer, ForeignKey('proficiency.id'))
-    sanctity = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.sanctity_id]")
+    regeneration_id = Column(Integer, ForeignKey('proficiency.id'))
+    regeneration = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.regeneration_id]")
+    recovery_id = Column(Integer, ForeignKey('proficiency.id'))
+    recovery = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.recovery_id]")
+    climbing_id = Column(Integer, ForeignKey('proficiency.id'))
+    climbing = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.climbing_id]")
     storage_id = Column(Integer, ForeignKey('proficiency.id'))
     storage = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.storage_id]")
+    encumbrance_id = Column(Integer, ForeignKey('proficiency.id'))
+    encumbrance = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.encumbrance_id]")
     endurance_id = Column(Integer, ForeignKey('proficiency.id'))
     endurance = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.endurance_id]")
-    attack_damage_id = Column(Integer, ForeignKey('proficiency.id'))
-    attack_damage = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.attack_damage_id]")
-    attack_speed_id = Column(Integer, ForeignKey('proficiency.id'))
-    attack_speed = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.attack_speed_id]")
-    attack_accuracy_id = Column(Integer, ForeignKey('proficiency.id'))
-    attack_accuracy = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.attack_accuracy_id]")
+    damage_id = Column(Integer, ForeignKey('proficiency.id'))
+    damage = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.damage_id]")
+    speed_id = Column(Integer, ForeignKey('proficiency.id'))
+    speed = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.speed_id]")
+    accuracy_id = Column(Integer, ForeignKey('proficiency.id'))
+    accuracy = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.accuracy_id]")
     first_strike_id = Column(Integer, ForeignKey('proficiency.id'))
     first_strike = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.first_strike_id]")
-    critical_hit_id = Column(Integer, ForeignKey('proficiency.id'))
-    critical_hit = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.critical_hit_id]")
+    killshot_id = Column(Integer, ForeignKey('proficiency.id'))
+    killshot = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.killshot_id]")
     defence_id = Column(Integer, ForeignKey('proficiency.id'))
     defence = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.defence_id]")
     evade_id = Column(Integer, ForeignKey('proficiency.id'))
     evade = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.evade_id]")
     parry_id = Column(Integer, ForeignKey('proficiency.id'))
     parry = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.parry_id]")
+    flee_id = Column(Integer, ForeignKey('proficiency.id'))
+    flee = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.flee_id]")
     riposte_id = Column(Integer, ForeignKey('proficiency.id'))
     riposte = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.riposte_id]")
     fatigue_id = Column(Integer, ForeignKey('proficiency.id'))
@@ -96,24 +129,54 @@ class Proficiencies(Base):
     pickpocketing = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.pickpocketing_id]")
     faith_id = Column(Integer, ForeignKey('proficiency.id'))
     faith = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.faith_id]")
+    sanctity_id = Column(Integer, ForeignKey('proficiency.id'))
+    sanctity = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.sanctity_id]")
+    resist_holy_id = Column(Integer, ForeignKey('proficiency.id'))
+    resist_holy = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_holy_id]")
     bartering_id = Column(Integer, ForeignKey('proficiency.id'))
     bartering = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.bartering_id]")
     oration_id = Column(Integer, ForeignKey('proficiency.id'))
     oration = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.oration_id]")
+    charm_id = Column(Integer, ForeignKey('proficiency.id'))
+    charm = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.charm_id]")
+    trustworthiness_id = Column(Integer, ForeignKey('proficiency.id'))
+    trustworthiness = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.trustworthiness_id]")
+    renown_id = Column(Integer, ForeignKey('proficiency.id'))
+    renown = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.renown_id]")
     knowledge_id = Column(Integer, ForeignKey('proficiency.id'))
     knowledge = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.knowledge_id]")
     literacy_id = Column(Integer, ForeignKey('proficiency.id'))
     literacy = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.literacy_id]")
-    luck_id = Column(Integer, ForeignKey('proficiency.id'))
-    luck = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.luck_id]")
+    understanding_id = Column(Integer, ForeignKey('proficiency.id'))
+    understanding = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.understanding_id]")
+    luckiness_id = Column(Integer, ForeignKey('proficiency.id'))
+    luckiness = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.luckiness_id]")
+    adventuring_id = Column(Integer, ForeignKey('proficiency.id'))
+    adventuring = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.adventuring_id]")
+    logistics_id = Column(Integer, ForeignKey('proficiency.id'))
+    logistics = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.logistics_id]")
+    mountaineering_id = Column(Integer, ForeignKey('proficiency.id'))
+    mountaineering = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.mountaineering_id]")
+    woodsman_id = Column(Integer, ForeignKey('proficiency.id'))
+    woodsman = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.woodsman_id]")
+    navigator_id = Column(Integer, ForeignKey('proficiency.id'))
+    navigator = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.navigator_id]")
+    detection_id = Column(Integer, ForeignKey('proficiency.id'))
+    detection = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.detection_id]")
+    caution_id = Column(Integer, ForeignKey('proficiency.id'))
+    caution = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.caution_id]")
+    explorer_id = Column(Integer, ForeignKey('proficiency.id'))
+    explorer = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.explorer_id]")
+    huntsman_id = Column(Integer, ForeignKey('proficiency.id'))
+    huntsman = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.huntsman_id]")
+    survivalist_id = Column(Integer, ForeignKey('proficiency.id'))
+    survivalist = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.survivalist_id]")
     resist_frost_id = Column(Integer, ForeignKey('proficiency.id'))
     resist_frost = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_frost_id]")
     resist_flame_id = Column(Integer, ForeignKey('proficiency.id'))
     resist_flame = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_flame_id]")
     resist_shadow_id = Column(Integer, ForeignKey('proficiency.id'))
     resist_shadow = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_shadow_id]")
-    resist_holy_id = Column(Integer, ForeignKey('proficiency.id'))
-    resist_holy = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_holy_id]")
     resist_poison_id = Column(Integer, ForeignKey('proficiency.id'))
     resist_poison = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_poison_id]")
     resist_blunt_id = Column(Integer, ForeignKey('proficiency.id'))
@@ -122,40 +185,65 @@ class Proficiencies(Base):
     resist_slashing = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_slashing_id]")
     resist_piercing_id = Column(Integer, ForeignKey('proficiency.id'))
     resist_piercing = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_piercing_id]")
+    courage_id = Column(Integer, ForeignKey('proficiency.id'))
+    courage = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.courage_id]")
+    sanity_id = Column(Integer, ForeignKey('proficiency.id'))
+    sanity = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.sanity_id]")
     
     def __init__(self):
         
-        self.health = Health("Health", "How much you can take before you die", "Vitality", "Offense")
-        self.sanctity = Sanctity("Sanctity", "Casting points", "Divinity", "Offense")
-        self.storage = Storage("Storage", "Carrying capacity", "Strength", "Offense")
-        self.endurance = Endurance("Endurance", "Actions performed each day", "Fortitude", "Offense")
-        self.attack_damage = AttackDamage("Attack damage", "How hard you hit", "Strength", "Offense")
-        self.attack_speed = AttackSpeed("Attack speed", "How fast you attack", "Agility", "Offense")
-        self.attack_accuracy = AttackAccuracy("Attack accuracy", "Chance to hit", "Agility", "Offense")
-        self.first_strike = FirstStrike("First strike", "Chance to strike first", "Agility", "Offense")
-        self.critical_hit = CriticalHit("Critical hit", "Ability to hit your enemy's weakspots", "Perception", "Offense")
-        self.defence = Defence("Defence", "Damage reduction", "Fortitude", "Defence")
-        self.evade = Evade("Evade", "Chance to dodge", "Reflexes", "Defence")
-        self.parry = Parry("Parry", "Chance to parry", "Reflexes", "Defence")
-        self.riposte = Riposte("Riposte", "Chance to riposte", "Agility", "Defence")
-        self.fatigue = Fatigue("Fatigue", "How quickly you tire in combat", "Fortitude", "Defence")
-        self.block = Block("Block", "Ability to block if a shield is equipped", "Strength", "Defence")
-        self.stealth = Stealth("Stealth", "Chance to avoid detection", "Perception", "Stealth")
-        self.pickpocketing = Pickpocketing("Pickpocketing", "Chance to steal", "Agility", "Stealth")
-        self.faith = Faith("Faith", "Ability to cast spells", "Divinity", "Holiness")
-        self.bartering = Bartering("Bartering", "Chance to negotiate prices", "Charisma", "Diplomacy")
-        self.oration = Oration("Oration", "Ability to speak", "Strength", "Wisdom")
-        self.knowledge = Knowledge("Knowledge", "Ability to understand", "Wisdom", "Diplomacy")
-        self.literacy = Literacy("Literacy", "Ability to read", "Wisdom", "Diplomacy")
-        self.luck = Luck("Luck", "Chance to have things turn your way against all odds", "Fortuity", "Diplomacy")
-        self.resist_frost = ResistFrost("Resist frost", "Ability to resist frost damage", "Resilience", "Resistance")
-        self.resist_flame = ResistFlame("Resist flame", "Ability to resist flame damage", "Resilience", "Resistance")
-        self.resist_shadow = ResistShadow("Resist shadow", "Ability to resist shadow damage", "Resilience", "Resistance")
-        self.resist_holy = ResistHoly("Resist holy", "Ability to resist holy damage", "Resilience", "Resistance")
-        self.resist_poison = ResistPoison("Resist poison", "Ability to resist poison damage", "Resilience", "Resistance")
-        self.resist_blunt = ResistBlunt("Resist blunt", "Ability to resist blunt damage", "Resilience", "Resistance")
-        self.resist_slashing = ResistSlashing("Resist slashing", "Ability to resist slashing damage", "Resilience", "Resistance")
-        self.resist_piercing = ResistPiercing("Resist piercing", "Ability to resist piercing damage", "Resilience", "Resistance")
+        self.health = Health("Health", "How much you can take before you die", "Vitality")
+        self.regeneration = Regeneration("Regeneration", "How quickly your wounds heal", "Vitality")
+        self.recovery = Recovery("Recovery", "How quickly you recover from poisons and negative effects", "Vitality")
+        self.climbing = Climbing("Climbing", "Your ability to climb obstacles", "Agility")
+        self.storage = Storage("Storage", "Your carrying capacity", "Brawn")
+        self.encumbrance = Encumbrance("Encumbrance", "How much your are slowed down in combat by your equipment", "Brawn")
+        self.endurance = Endurance("Endurance", "Actions performed each day", "Resilience")
+        self.damage = Damage("Damage", "How much damage you do on each hit", "Brawn")
+        self.speed = Speed("Speed", "How fast you attack", "Quickness")
+        self.accuracy = Accuracy("Accuracy", "The chance of your attacks hitting their target.", "Agility")
+        self.first_strike = FirstStrike("First strike", "Chance to strike first", "Quickness")
+        self.killshot = Killshot("Killshot", "Ability to hit enemies in their weak spot", "Agility")
+        self.defence = Defence("Defence", "Damage reduction", "Resilience")
+        self.evade = Evade("Evade", "Chance to dodge", "Quickness")
+        self.parry = Parry("Parry", "Chance to parry", "Quickness")
+        self.flee = Flee("Flee", "Chance to run from a battle", "Quickness")
+        self.riposte = Riposte("Riposte", "Chance to riposte an enrmy attack", "Agility")
+        self.fatigue = Fatigue("Fatigue", "How quickly you tire in combat", "Resilience")
+        self.block = Block("Block", "Ability to block if a shield is equipped", "Resilience")
+        self.stealth = Stealth("Stealth", "Chance to avoid detection", "Agility")
+        self.pickpocketing = Pickpocketing("Pickpocketing", "Skill at stealing from others", "Agility")
+        self.faith = Faith("Faith", "Strength of spells you cast", "Divinity")
+        self.sanctity = Sanctity("Sanctity", "Amount of sanctity you can have", "Divinity")
+        self.resist_holy = ResistHoly("Resist holy", "Ability to resist holy damage", "Divinity")
+        self.bartering = Bartering("Bartering", "Discount from negotiating prices", "Charisma")
+        self.oration = Oration("Oration", "Proficiency in speaking to others", "Charisma")
+        self.charm = Charm("Charm", "How quickly other people will like you", "Charisma")
+        self.trustworthiness = Trustworthiness("Trustworthiness", "How much other players trust you", "Charisma")
+        self.renown = Renown("Renown", "How much your actions affect your reputation", "Charisma")
+        self.knowledge = Knowledge("Knowledge", "Ability to understand", "Intellect")
+        self.literacy = Literacy("Literacy", "Ability to read", "Intellect")
+        self.understanding = Understanding("Understanding", "How quickly you level up", "Intellect")
+        self.luckiness = Luckiness("Luckiness", "Chance to have things turn your way against all odds", "Fortuity")
+        self.adventuring = Adventuring("Adventuring", "Chance to discover treasure", "Fortuity")
+        self.logistics = Logistics("Logistics", "How far you can move on the map", "Pathfinding")
+        self.mountaineering = Mountaineering("Mountaineering", "Modifier for mountain movement", "Pathfinding")
+        self.woodsman = Woodsman("Woodsman", "Modifier for forest movement", "Pathfinding")
+        self.navigator = Navigator("Navigator", "Modifier for water movement", "Pathfinding")
+        self.detection = Detection("Detection", "Chance to discover enemy stealth and traps", "Survivalism")
+        self.caution = Caution("Caution", "See information about a new grid before going there", "Survivalism")
+        self.explorer = Explorer("Explorer", "Additional options on the map, such as foraging", "Survivalism")
+        self.huntsman = Huntsman("Huntsman", "Learn additional information about enemies", "Survivalism")
+        self.survivalist = Survivalist("Survivalist", "Create bandages, tents, and other useful objects", "Survivalism")
+        self.resist_frost = ResistFrost("Resist frost", "Ability to resist frost damage", "Resilience")
+        self.resist_flame = ResistFlame("Resist flame", "Ability to resist flame damage", "Resilience")
+        self.resist_shadow = ResistShadow("Resist shadow", "Ability to resist shadow damage", "Resilience")
+        self.resist_poison = ResistPoison("Resist poison", "Ability to resist poison damage", "Resilience")
+        self.resist_blunt = ResistBlunt("Resist blunt", "Ability to resist blunt damage", "Resilience")
+        self.resist_slashing = ResistSlashing("Resist slashing", "Ability to resist slashing damage", "Resilience")
+        self.resist_piercing = ResistPiercing("Resist piercing", "Ability to resist piercing damage", "Resilience")
+        self.courage = Courage("Courage", "Your ability to overcome fears", "Willpower")
+        self.sanity = Sanity("Sanity", "Your ability to resist mind altering affects", "Willpower")
         
 
     def items(self):
@@ -181,7 +269,6 @@ class Proficiency(Base):
     description = Column(String)
     tooltip = Column(String)
     attribute_type = Column(String)
-    type = Column(String)
     level = Column(Integer)
     next_value = Column(Integer)
     is_not_max_level = Column(Boolean)
@@ -192,14 +279,13 @@ class Proficiency(Base):
         'polymorphic_on':_class
     }
 
-    def __init__(self, name, description, attribute_type, type):
+    def __init__(self, name, description, attribute_type):
         self.name = name
         self.description = description
         self.attribute_type = attribute_type
-        self.type = type
         self.tooltip = ""
         
-        self.level = 1
+        self.level = 0
         self.is_not_max_level = False
         
     def is_max_level(self, hero):
@@ -248,7 +334,7 @@ class Health(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = floor(5*self.level + 0)
+        self.maximum = round(2 * self.level + 5, 0)
         # This creates a tooltip for each variable
         tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
@@ -265,52 +351,118 @@ class Health(Proficiency):
         return max(current or 0, 0)
     
 
-class Sanctity(Proficiency):
-    __tablename__ = "sanctity"
+class Regeneration(Proficiency):
+    __tablename__ = "regeneration"
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    maximum = Column(Integer)
-    current = Column(Integer)
+    speed = Column(Integer)
     
-    percent = Column(Integer)
+    
     error = Column(String)
     formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Sanctity",
+        'polymorphic_identity':"Regeneration",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.maximum = 0
-        self.current = 0
-        self.percent = 0
-        self.error = "You do not have enough divinity"
-        self.formatted_name = "sanctity" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        self.speed = 0
+        
+        self.error = "You do not have enough vitality"
+        self.formatted_name = "regeneration" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        """Update Sanctity's attributes and tooltip variable.
+        """Update Regeneration's attributes and tooltip variable.
         """
         tooltips = []
-        if self.level < myHero.attributes.divinity.level // 2:
+        if self.level < myHero.attributes.vitality.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = floor(1.5*self.level + -1)
+        self.speed = round((100 * self.level)**0.5 - (self.level / 4) + 1, 2)
         # This creates a tooltip for each variable
-        tooltips.append("Maximum: " + str(self.maximum)) 
-        self.current = self.maximum
+        tooltips.append("Speed: " + str(self.speed)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
-    @validates('current')
-    def validate_sanctity(self, key_name, current):
-        #Update sanctity percent on health change.
-        try:
-            self.percent = round(current / self.maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.percent = 0
-        return max(current or 0, 0)
+    
+    
+
+class Recovery(Proficiency):
+    __tablename__ = "recovery"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    efficiency = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Recovery",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.efficiency = 0
+        
+        self.error = "You do not have enough vitality"
+        self.formatted_name = "recovery" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Recovery's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.vitality.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.efficiency = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Efficiency: " + str(self.efficiency)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Climbing(Proficiency):
+    __tablename__ = "climbing"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    ability = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Climbing",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ability = 0
+        
+        self.error = "You do not have enough agility"
+        self.formatted_name = "climbing" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Climbing's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.agility.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.ability = round(0.5 * self.level + 0.5, 1)
+        # This creates a tooltip for each variable
+        tooltips.append("Ability: " + str(self.ability)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
     
 
 class Storage(Proficiency):
@@ -333,18 +485,18 @@ class Storage(Proficiency):
         self.maximum = 0
         self.current = 0
         self.percent = 0
-        self.error = "You do not have enough strength"
+        self.error = "You do not have enough brawn"
         self.formatted_name = "storage" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
         """Update Storage's attributes and tooltip variable.
         """
         tooltips = []
-        if self.level < myHero.attributes.strength.level // 2:
+        if self.level < myHero.attributes.brawn.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = floor(2.5*self.level + 8)
+        self.maximum = round(2 * self.level + 10, 0)
         # This creates a tooltip for each variable
         tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
@@ -359,6 +511,44 @@ class Storage(Proficiency):
         except (TypeError, ZeroDivisionError):
             self.percent = 0
         return max(current or 0, 0)
+    
+
+class Encumbrance(Proficiency):
+    __tablename__ = "encumbrance"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    amount = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Encumbrance",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.amount = 0
+        
+        self.error = "You do not have enough brawn"
+        self.formatted_name = "encumbrance" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Encumbrance's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.brawn.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.amount = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Amount: " + str(self.amount)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
     
 
 class Endurance(Proficiency):
@@ -381,18 +571,18 @@ class Endurance(Proficiency):
         self.maximum = 0
         self.current = 0
         self.percent = 0
-        self.error = "You do not have enough fortitude"
+        self.error = "You do not have enough resilience"
         self.formatted_name = "endurance" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
         """Update Endurance's attributes and tooltip variable.
         """
         tooltips = []
-        if self.level < myHero.attributes.fortitude.level // 2:
+        if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = floor(0.25*self.level + 5)
+        self.maximum = round(1 * self.level + 3, 0)
         # This creates a tooltip for each variable
         tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
@@ -409,51 +599,56 @@ class Endurance(Proficiency):
         return max(current or 0, 0)
     
 
-class AttackDamage(Proficiency):
-    __tablename__ = "attack_damage"
+class Damage(Proficiency):
+    __tablename__ = "damage"
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
     minimum = Column(Integer)
     maximum = Column(Integer)
+    modifier = Column(Integer)
     
     
     error = Column(String)
     formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"AttackDamage",
+        'polymorphic_identity':"Damage",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.minimum = 0
         self.maximum = 0
+        self.modifier = 0
         
-        self.error = "You do not have enough strength"
-        self.formatted_name = "attack_damage" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        self.error = "You do not have enough brawn"
+        self.formatted_name = "damage" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        """Update AttackDamage's attributes and tooltip variable.
+        """Update Damage's attributes and tooltip variable.
         """
         tooltips = []
-        if self.level < myHero.attributes.strength.level // 2:
+        if self.level < myHero.attributes.brawn.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.minimum = floor(floor(3 * (0.5*sin(0.1*self.level) + 0.1*self.level)) + 0)
+        self.minimum = round(1 * self.level + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Minimum: " + str(self.minimum)) 
-        self.maximum = floor(floor(3 * (0.5*sin(0.1*self.level) + 0.2*self.level)) + 1)
+        self.maximum = round(1 * self.level + 1, 0)
         # This creates a tooltip for each variable
         tooltips.append("Maximum: " + str(self.maximum)) 
+        self.modifier = round(0.1 * self.level + 1, 1)
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
     
 
-class AttackSpeed(Proficiency):
-    __tablename__ = "attack_speed"
+class Speed(Proficiency):
+    __tablename__ = "speed"
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
@@ -463,25 +658,25 @@ class AttackSpeed(Proficiency):
     error = Column(String)
     formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"AttackSpeed",
+        'polymorphic_identity':"Speed",
 }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.speed = 0
         
-        self.error = "You do not have enough agility"
-        self.formatted_name = "attack_speed" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        self.error = "You do not have enough quickness"
+        self.formatted_name = "speed" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        """Update AttackSpeed's attributes and tooltip variable.
+        """Update Speed's attributes and tooltip variable.
         """
         tooltips = []
-        if self.level < myHero.attributes.agility.level // 2:
+        if self.level < myHero.attributes.quickness.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.speed = round((3 * (0.1*sin(0.7*self.level) + 0.1*self.level)) + 1, 2)
+        self.speed = round(0.03 * self.level + 1, 2)
         # This creates a tooltip for each variable
         tooltips.append("Speed: " + str(self.speed)) 
         #This updates the main tooltip string variable.
@@ -490,8 +685,8 @@ class AttackSpeed(Proficiency):
     
     
 
-class AttackAccuracy(Proficiency):
-    __tablename__ = "attack_accuracy"
+class Accuracy(Proficiency):
+    __tablename__ = "accuracy"
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
@@ -501,7 +696,7 @@ class AttackAccuracy(Proficiency):
     error = Column(String)
     formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"AttackAccuracy",
+        'polymorphic_identity':"Accuracy",
 }
 
     def __init__(self, *args, **kwargs):
@@ -509,17 +704,17 @@ class AttackAccuracy(Proficiency):
         self.accuracy = 0
         
         self.error = "You do not have enough agility"
-        self.formatted_name = "attack_accuracy" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        self.formatted_name = "accuracy" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        """Update AttackAccuracy's attributes and tooltip variable.
+        """Update Accuracy's attributes and tooltip variable.
         """
         tooltips = []
         if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.accuracy = floor((- (10*5)/((2 * self.level) + 10) + 5) * 7.9 + 5)
+        self.accuracy = round((100 * self.level)**0.5 - (self.level / 4) + 35, 0)
         # This creates a tooltip for each variable
         tooltips.append("Accuracy: " + str(self.accuracy)) 
         #This updates the main tooltip string variable.
@@ -546,18 +741,18 @@ class FirstStrike(Proficiency):
         super().__init__(*args, **kwargs)
         self.chance = 0
         
-        self.error = "You do not have enough agility"
+        self.error = "You do not have enough quickness"
         self.formatted_name = "first_strike" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
         """Update FirstStrike's attributes and tooltip variable.
         """
         tooltips = []
-        if self.level < myHero.attributes.agility.level // 2:
+        if self.level < myHero.attributes.quickness.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (5*50)/((0.5 * self.level) + 5) + 50) * 7.9 + -30)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -566,8 +761,8 @@ class FirstStrike(Proficiency):
     
     
 
-class CriticalHit(Proficiency):
-    __tablename__ = "critical_hit"
+class Killshot(Proficiency):
+    __tablename__ = "killshot"
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
@@ -578,7 +773,7 @@ class CriticalHit(Proficiency):
     error = Column(String)
     formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"CriticalHit",
+        'polymorphic_identity':"Killshot",
 }
 
     def __init__(self, *args, **kwargs):
@@ -586,21 +781,21 @@ class CriticalHit(Proficiency):
         self.chance = 0
         self.modifier = 0
         
-        self.error = "You do not have enough perception"
-        self.formatted_name = "critical_hit" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        self.error = "You do not have enough agility"
+        self.formatted_name = "killshot" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        """Update CriticalHit's attributes and tooltip variable.
+        """Update Killshot's attributes and tooltip variable.
         """
         tooltips = []
-        if self.level < myHero.attributes.perception.level // 2:
+        if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (5*50)/((0.3 * self.level) + 5) + 50) * 7.9 + -22)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
-        self.modifier = floor((- (1*0.5)/((0.5 * self.level) + 1) + 0.5) * 7.9 + 0)
+        self.modifier = round(0.1 * self.level + 1, 1)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -627,18 +822,18 @@ class Defence(Proficiency):
         super().__init__(*args, **kwargs)
         self.modifier = 0
         
-        self.error = "You do not have enough fortitude"
+        self.error = "You do not have enough resilience"
         self.formatted_name = "defence" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
         """Update Defence's attributes and tooltip variable.
         """
         tooltips = []
-        if self.level < myHero.attributes.fortitude.level // 2:
+        if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (7*35)/((0.1 * self.level) + 7) + 35) * 7.9 + 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -665,18 +860,18 @@ class Evade(Proficiency):
         super().__init__(*args, **kwargs)
         self.chance = 0
         
-        self.error = "You do not have enough reflexes"
+        self.error = "You do not have enough quickness"
         self.formatted_name = "evade" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
         """Update Evade's attributes and tooltip variable.
         """
         tooltips = []
-        if self.level < myHero.attributes.reflexes.level // 2:
+        if self.level < myHero.attributes.quickness.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (10*15)/((0.1 * self.level) + 10) + 15) * 7.9 + 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 5, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -703,18 +898,56 @@ class Parry(Proficiency):
         super().__init__(*args, **kwargs)
         self.chance = 0
         
-        self.error = "You do not have enough reflexes"
+        self.error = "You do not have enough quickness"
         self.formatted_name = "parry" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
         """Update Parry's attributes and tooltip variable.
         """
         tooltips = []
-        if self.level < myHero.attributes.reflexes.level // 2:
+        if self.level < myHero.attributes.quickness.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (15*15)/((0.2 * self.level) + 15) + 15) * 7.9 + 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 2, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Chance: " + str(self.chance)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Flee(Proficiency):
+    __tablename__ = "flee"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    chance = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Flee",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chance = 0
+        
+        self.error = "You do not have enough quickness"
+        self.formatted_name = "flee" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Flee's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.quickness.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 7, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -752,7 +985,7 @@ class Riposte(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (20*15)/((0.3 * self.level) + 20) + 15) * 7.9 + 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -781,18 +1014,18 @@ class Fatigue(Proficiency):
         self.maximum = 0
         self.current = 0
         self.percent = 0
-        self.error = "You do not have enough fortitude"
+        self.error = "You do not have enough resilience"
         self.formatted_name = "fatigue" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
         """Update Fatigue's attributes and tooltip variable.
         """
         tooltips = []
-        if self.level < myHero.attributes.fortitude.level // 2:
+        if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.maximum = floor(2*self.level + -1)
+        self.maximum = round(1 * self.level + 5, 0)
         # This creates a tooltip for each variable
         tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
@@ -829,21 +1062,21 @@ class Block(Proficiency):
         self.chance = 0
         self.modifier = 0
         
-        self.error = "You do not have enough strength"
+        self.error = "You do not have enough resilience"
         self.formatted_name = "block" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
         """Update Block's attributes and tooltip variable.
         """
         tooltips = []
-        if self.level < myHero.attributes.strength.level // 2:
+        if self.level < myHero.attributes.resilience.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (25*60)/((0.25 * self.level) + 25) + 60) * 7.9 + 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
-        self.modifier = floor((- (20*100)/((1.5 * self.level) + 20) + 100) * 7.9 + 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -870,18 +1103,18 @@ class Stealth(Proficiency):
         super().__init__(*args, **kwargs)
         self.chance = 0
         
-        self.error = "You do not have enough perception"
+        self.error = "You do not have enough agility"
         self.formatted_name = "stealth" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
         """Update Stealth's attributes and tooltip variable.
         """
         tooltips = []
-        if self.level < myHero.attributes.perception.level // 2:
+        if self.level < myHero.attributes.agility.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (20*65)/((0.5 * self.level) + 20) + 65) * 7.9 + 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -919,7 +1152,7 @@ class Pickpocketing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (15*70)/((0.6 * self.level) + 15) + 70) * 7.9 + 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 1, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         #This updates the main tooltip string variable.
@@ -957,7 +1190,93 @@ class Faith(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (10*5)/((2 * self.level) + 10) + 5) * 7.9 + 0)
+        self.modifier = round(0.1 * self.level + 1, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Sanctity(Proficiency):
+    __tablename__ = "sanctity"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    maximum = Column(Integer)
+    current = Column(Integer)
+    
+    percent = Column(Integer)
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Sanctity",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.maximum = 0
+        self.current = 0
+        self.percent = 0
+        self.error = "You do not have enough divinity"
+        self.formatted_name = "sanctity" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Sanctity's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.divinity.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.maximum = round(3 * self.level + 0, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Maximum: " + str(self.maximum)) 
+        self.current = self.maximum
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    @validates('current')
+    def validate_sanctity(self, key_name, current):
+        #Update sanctity percent on health change.
+        try:
+            self.percent = round(current / self.maximum, 2) * 100
+        except (TypeError, ZeroDivisionError):
+            self.percent = 0
+        return max(current or 0, 0)
+    
+
+class ResistHoly(Proficiency):
+    __tablename__ = "resist_holy"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"ResistHoly",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        
+        self.error = "You do not have enough divinity"
+        self.formatted_name = "resist_holy" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update ResistHoly's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.divinity.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -971,7 +1290,7 @@ class Bartering(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    chance = Column(Integer)
+    modifier = Column(Integer)
     
     
     error = Column(String)
@@ -982,7 +1301,7 @@ class Bartering(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chance = 0
+        self.modifier = 0
         
         self.error = "You do not have enough charisma"
         self.formatted_name = "bartering" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
@@ -995,9 +1314,9 @@ class Bartering(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (20*60)/((0.5 * self.level) + 20) + 60) * 7.9 + 0)
+        self.modifier = round(-0.05 * self.level + 1, 0)
         # This creates a tooltip for each variable
-        tooltips.append("Chance: " + str(self.chance)) 
+        tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1022,18 +1341,132 @@ class Oration(Proficiency):
         super().__init__(*args, **kwargs)
         self.modifier = 0
         
-        self.error = "You do not have enough strength"
+        self.error = "You do not have enough charisma"
         self.formatted_name = "oration" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
         """Update Oration's attributes and tooltip variable.
         """
         tooltips = []
-        if self.level < myHero.attributes.strength.level // 2:
+        if self.level < myHero.attributes.charisma.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (15*60)/((0.75 * self.level) + 15) + 60) * 7.9 + 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 11, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Charm(Proficiency):
+    __tablename__ = "charm"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Charm",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        
+        self.error = "You do not have enough charisma"
+        self.formatted_name = "charm" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Charm's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.charisma.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Trustworthiness(Proficiency):
+    __tablename__ = "trustworthiness"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Trustworthiness",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        
+        self.error = "You do not have enough charisma"
+        self.formatted_name = "trustworthiness" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Trustworthiness's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.charisma.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Renown(Proficiency):
+    __tablename__ = "renown"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Renown",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        
+        self.error = "You do not have enough charisma"
+        self.formatted_name = "renown" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Renown's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.charisma.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.modifier = round(0.1 * self.level + 1, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1060,18 +1493,18 @@ class Knowledge(Proficiency):
         super().__init__(*args, **kwargs)
         self.modifier = 0
         
-        self.error = "You do not have enough wisdom"
+        self.error = "You do not have enough intellect"
         self.formatted_name = "knowledge" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
         """Update Knowledge's attributes and tooltip variable.
         """
         tooltips = []
-        if self.level < myHero.attributes.wisdom.level // 2:
+        if self.level < myHero.attributes.intellect.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (5*50)/((0.1 * self.level) + 5) + 50) * 7.9 + 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 6, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1098,18 +1531,18 @@ class Literacy(Proficiency):
         super().__init__(*args, **kwargs)
         self.modifier = 0
         
-        self.error = "You do not have enough wisdom"
+        self.error = "You do not have enough intellect"
         self.formatted_name = "literacy" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
         """Update Literacy's attributes and tooltip variable.
         """
         tooltips = []
-        if self.level < myHero.attributes.wisdom.level // 2:
+        if self.level < myHero.attributes.intellect.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (10*75)/((0.25 * self.level) + 10) + 75) * 7.9 + 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1118,8 +1551,46 @@ class Literacy(Proficiency):
     
     
 
-class Luck(Proficiency):
-    __tablename__ = "luck"
+class Understanding(Proficiency):
+    __tablename__ = "understanding"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Understanding",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        
+        self.error = "You do not have enough intellect"
+        self.formatted_name = "understanding" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Understanding's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.intellect.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.modifier = round(0.05 * self.level + 1, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Luckiness(Proficiency):
+    __tablename__ = "luckiness"
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
@@ -1129,7 +1600,7 @@ class Luck(Proficiency):
     error = Column(String)
     formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Luck",
+        'polymorphic_identity':"Luckiness",
 }
 
     def __init__(self, *args, **kwargs):
@@ -1137,19 +1608,399 @@ class Luck(Proficiency):
         self.chance = 0
         
         self.error = "You do not have enough fortuity"
-        self.formatted_name = "luck" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        self.formatted_name = "luckiness" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        """Update Luck's attributes and tooltip variable.
+        """Update Luckiness's attributes and tooltip variable.
         """
         tooltips = []
         if self.level < myHero.attributes.fortuity.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = floor((- (5*10)/((0.2 * self.level) + 5) + 10) * 7.9 + 0)
+        self.chance = round(0.01 * self.level + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Adventuring(Proficiency):
+    __tablename__ = "adventuring"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    chance = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Adventuring",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chance = 0
+        
+        self.error = "You do not have enough fortuity"
+        self.formatted_name = "adventuring" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Adventuring's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.fortuity.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Chance: " + str(self.chance)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Logistics(Proficiency):
+    __tablename__ = "logistics"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Logistics",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        
+        self.error = "You do not have enough pathfinding"
+        self.formatted_name = "logistics" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Logistics's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.pathfinding.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.modifier = round(0.2 * self.level + 1, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Mountaineering(Proficiency):
+    __tablename__ = "mountaineering"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Mountaineering",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        
+        self.error = "You do not have enough pathfinding"
+        self.formatted_name = "mountaineering" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Mountaineering's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.pathfinding.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.modifier = round(0.5 * self.level + 1, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Woodsman(Proficiency):
+    __tablename__ = "woodsman"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Woodsman",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        
+        self.error = "You do not have enough pathfinding"
+        self.formatted_name = "woodsman" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Woodsman's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.pathfinding.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.modifier = round(0.5 * self.level + 1, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Navigator(Proficiency):
+    __tablename__ = "navigator"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    modifier = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Navigator",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.modifier = 0
+        
+        self.error = "You do not have enough pathfinding"
+        self.formatted_name = "navigator" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Navigator's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.pathfinding.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.modifier = round(0.5 * self.level + 1, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Detection(Proficiency):
+    __tablename__ = "detection"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    chance = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Detection",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chance = 0
+        
+        self.error = "You do not have enough survivalism"
+        self.formatted_name = "detection" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Detection's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.survivalism.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Chance: " + str(self.chance)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Caution(Proficiency):
+    __tablename__ = "caution"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    ability = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Caution",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ability = 0
+        
+        self.error = "You do not have enough survivalism"
+        self.formatted_name = "caution" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Caution's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.survivalism.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.ability = round(0.5 * self.level + 0.5, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Ability: " + str(self.ability)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Explorer(Proficiency):
+    __tablename__ = "explorer"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    ability = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Explorer",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ability = 0
+        
+        self.error = "You do not have enough survivalism"
+        self.formatted_name = "explorer" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Explorer's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.survivalism.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.ability = round(0.5 * self.level + 0.5, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Ability: " + str(self.ability)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Huntsman(Proficiency):
+    __tablename__ = "huntsman"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    ability = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Huntsman",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ability = 0
+        
+        self.error = "You do not have enough survivalism"
+        self.formatted_name = "huntsman" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Huntsman's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.survivalism.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.ability = round(0.5 * self.level + 0.5, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Ability: " + str(self.ability)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Survivalist(Proficiency):
+    __tablename__ = "survivalist"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    ability = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Survivalist",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ability = 0
+        
+        self.error = "You do not have enough survivalism"
+        self.formatted_name = "survivalist" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Survivalist's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.survivalism.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.ability = round(0.5 * self.level + 0.5, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Ability: " + str(self.ability)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1185,7 +2036,7 @@ class ResistFrost(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1223,7 +2074,7 @@ class ResistFlame(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1261,45 +2112,7 @@ class ResistShadow(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
-        # This creates a tooltip for each variable
-        tooltips.append("Modifier: " + str(self.modifier)) 
-        #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
-
-class ResistHoly(Proficiency):
-    __tablename__ = "resist_holy"
-
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
-    __mapper_args__ = {
-        'polymorphic_identity':"ResistHoly",
-}
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.modifier = 0
-        
-        self.error = "You do not have enough resilience"
-        self.formatted_name = "resist_holy" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-        
-    def update(self, myHero):
-        """Update ResistHoly's attributes and tooltip variable.
-        """
-        tooltips = []
-        if self.level < myHero.attributes.resilience.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1337,7 +2150,7 @@ class ResistPoison(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1375,7 +2188,7 @@ class ResistBlunt(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1413,7 +2226,7 @@ class ResistSlashing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
         #This updates the main tooltip string variable.
@@ -1451,9 +2264,85 @@ class ResistPiercing(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.modifier = floor((- (50*100)/((1 * self.level) + 50) + 100) * 7.9 + -15)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Courage(Proficiency):
+    __tablename__ = "courage"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    skill = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Courage",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.skill = 0
+        
+        self.error = "You do not have enough willpower"
+        self.formatted_name = "courage" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Courage's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.willpower.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.skill = round(1 * self.level + 0, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Skill: " + str(self.skill)) 
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    
+    
+
+class Sanity(Proficiency):
+    __tablename__ = "sanity"
+
+    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
+
+    skill = Column(Integer)
+    
+    
+    error = Column(String)
+    formatted_name = Column(String)
+    __mapper_args__ = {
+        'polymorphic_identity':"Sanity",
+}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.skill = 0
+        
+        self.error = "You do not have enough willpower"
+        self.formatted_name = "sanity" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
+        
+    def update(self, myHero):
+        """Update Sanity's attributes and tooltip variable.
+        """
+        tooltips = []
+        if self.level < myHero.attributes.willpower.level // 2:
+            self.is_not_max_level = True
+        else:
+            self.is_not_max_level = False
+        self.skill = round(1 * self.level + 0, 0)
+        # This creates a tooltip for each variable
+        tooltips.append("Skill: " + str(self.skill)) 
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 

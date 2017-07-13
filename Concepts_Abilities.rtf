@@ -1,0 +1,16 @@
+Abilities are separated into Three types:
+   Passive:
+        - some simply modify proficiencies (i.e. Marksman: +critical hit chance 1% * marksman.level)
+        - some modify other, non proficiency, things (i.e. Scholar: experience gain * (scholar.level * 0.1 + 1))
+   Activated:
+        - some have requirements (time to wait between activations, mana cost, inventory items needed)
+        -  (I.e.  Craft arrow: creates an arrow but removes feathers and wood from inventory)
+        - (I.e.  Bandage: heal 5 health and remove cloth from inventory)
+        - (I.e.  Cast regeneration: heal 1 health every hour for 10 hours, uses 5 mana)
+   Toggled:
+         Mix between the two
+         - (i.e.  Stealth: turns on stealth but makes movements take double endurance. stays on until turned off)
+   Combat:
+        *Same as passive?*
+         - (i.e. berserker: 1*5 times damage modifier per level when below 10% max health)
+         - (i.e. poisonous: successful hits cause an addition 1 poison damage per round for poisonous.level rounds)

@@ -71,7 +71,7 @@ class EZDB:
     def add_prebuilt_objects(self):
         """Add all the predefined object into the database.
         
-        If one is already there then igore and continue.
+        If one is already there then ignore and continue.
         Note: each prebuilt_object must be a list.
         NOTE2: users must come first as it somehow gets built before it gets
         built if it doesn't?
@@ -163,7 +163,7 @@ class EZDB:
         """
 
         return self.session.query(Ability).order_by(Ability.name).all()
-        
+
     def get_all_store_items(self):
         """Return all items in the database ordered by name.
         """
@@ -177,7 +177,7 @@ class EZDB:
         """
         return self.session.query(
             ItemTemplate).filter_by(type="Consumable").all()
-        
+
     def get_default_world(self):
         """Get the default world for starting heroes.
         """
@@ -257,7 +257,34 @@ class EZDB:
         
     def fetch_hero_by_id(self, hero_id):
         return self.session.query(Hero).get(hero_id)
-    
+
+    def fetch_sorted_heroes(self, attribute):
+        """Return a list of all heroes sorted by attribute.
+
+        :param attribute: an attribute of the Hero object.
+        :return: list sorted by attribute.
+
+        NOTE: this code is not very flexible. If you tried to access
+        hero.inventory.id it would not work.
+
+        A more generic function might do:
+        extended_attr, attr = attribute.split('.')
+        join_attr = getattr(Hero, extended_attr)?
+        self.session.query(Hero).join(join_attr).order_by(attr).all()
+
+        NOTE: to order by descending:
+        order_by(attribute + " desc")
+        https://stackoverflow.com/questions/4186062/sqlalchemy-order-by-descending
+        """
+        if '.' not in attribute:
+            return self.session.query(Hero).order_by(attribute).all()
+        elif attribute.startswith('user'):
+            _, attribute = attribute.split('.')
+            return self.session.query(
+                Hero).join(Hero.user).order_by(attribute).all()
+        else:
+            raise Exception("Trying to access an attribute that this code"
+                            " does not accommodate.")
     def update(self):
         """Commit current session.
         

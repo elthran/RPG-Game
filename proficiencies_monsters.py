@@ -3,11 +3,11 @@ from random import randint
 
 MONSTER_PROFICIENCY_INFORMATION = [
     "Health",
-    "Attack damage",
-    "Attack speed",
-    "Attack accuracy",
-    "First strike",
-    "Critical hit",
+    "Damage",
+    "Speed",
+    "Accuracy",
+    "Killshot",
+    "First Strike",
     "Defence",
     "Evade",
     "Parry",
@@ -19,18 +19,18 @@ MONSTER_ALL_PROFICIENCIES = [attrib.lower().replace(" ", "_") for attrib in MONS
 
 class MonsterProficiencies():
     def __init__(self, monster_attributes):
-        self.health = MonsterHealth("Health maximum", monster_attributes.vitality.level)
-        self.attack_damage = MonsterAttackDamage("Attack damage", monster_attributes.strength.level)
-        self.attack_speed = MonsterAttackSpeed("Attack speed", monster_attributes.agility.level)
-        self.attack_accuracy = MonsterAttackAccuracy("Attack accuracy", monster_attributes.reflexes.level)
-        self.first_strike = MonsterFirstStrike("First strike", monster_attributes.reflexes.level)
-        self.critical_hit = MonsterCriticalHit("Critical hit", monster_attributes.agility.level)
-        self.defence = MonsterDefence("Defence", monster_attributes.fortitude.level)
-        self.evade = MonsterEvade("Evade", monster_attributes.reflexes.level)
-        self.parry = MonsterParry("Parry", monster_attributes.reflexes.level)
-        self.riposte = MonsterRiposte("Riposte", monster_attributes.reflexes.level)
-        self.fatigue = MonsterFatigue("Fatigue", monster_attributes.fortitude.level)
-        self.block = MonsterBlock("Block", monster_attributes.fortitude.level)
+        self.health = MonsterHealth("Health", monster_attributes.vitality.level)
+        self.damage = MonsterDamage("Damage", monster_attributes.brawn.level)
+        self.speed = MonsterSpeed("Speed", monster_attributes.agility.level)
+        self.accuracy = MonsterAccuracy("Accuracy", monster_attributes.quickness.level)
+        self.killshot = MonsterKillshot("Killshot", monster_attributes.quickness.level)
+        self.first_strike = MonsterFirstStrike("First strike", monster_attributes.agility.level)
+        self.defence = MonsterDefence("Defence", monster_attributes.resilience.level)
+        self.evade = MonsterEvade("Evade", monster_attributes.quickness.level)
+        self.parry = MonsterParry("Parry", monster_attributes.quickness.level)
+        self.riposte = MonsterRiposte("Riposte", monster_attributes.quickness.level)
+        self.fatigue = MonsterFatigue("Fatigue", monster_attributes.resilience.level)
+        self.block = MonsterBlock("Block", monster_attributes.resilience.level)
 
     def items(self):
         """Returns a list of 2-tuples
@@ -53,32 +53,32 @@ class MonsterHealth(MonsterProficiency):
         self.maximum = floor(modifier*randint(275,325)*0.01)
         self.current = self.maximum
         
-class MonsterAttackDamage(MonsterProficiency):
+class MonsterDamage(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
         self.minimum = floor(3 * (0.5*sin(0.1*modifier) + 0.1*modifier))
         self.maximum = floor(3 * (0.5*sin(0.1*modifier) + 0.2*modifier)) + 1
 
-class MonsterAttackSpeed(MonsterProficiency):
+class MonsterSpeed(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
         self.speed = round((2.5 * (0.05*sin(0.3*modifier) + 0.08*modifier)) + 1, 2)
 
-class MonsterAttackAccuracy(MonsterProficiency):
+class MonsterAccuracy(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
         self.accuracy = floor((- (50*5)/((2 * modifier) + 50) + 5))
 
-class MonsterFirstStrike(MonsterProficiency):
+class MonsterKillshot(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
         self.chance = floor((- (5*50)/((0.5 * modifier) + 5) + 50))
+        self.modifier = floor((- (1*0.5)/((0.5 * modifier) + 1) + 0.5))
 
-class MonsterCriticalHit(MonsterProficiency):
+class MonsterFirstStrike(MonsterProficiency):
     def __init__(self, name, modifier):
         super().__init__(name)
         self.chance = floor((- (5*50)/((0.3 * modifier) + 5) + 50))
-        self.modifier = floor((- (1*0.5)/((0.5 * modifier) + 1) + 0.5))
 
 class MonsterDefence(MonsterProficiency):
     def __init__(self, name, modifier):

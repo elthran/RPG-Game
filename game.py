@@ -40,7 +40,7 @@ class Game(object):
     def __init__(self, hero=None):
         self.hero = hero
         self.has_enemy = False
-        self.global_chat = ["Elthran: Hello", "Haldon: You are awesome"]
+        self.global_chat = [] # I am not sure if this should goin database? Just very temporary chat log that all users can see
 
     def set_enemy(self, enemy):
         self.enemy = enemy
@@ -63,8 +63,9 @@ class User(Base):
     email = Column(String)
     timestamp = Column(DateTime)
     is_admin = Column(Boolean)
+    inbox_alert = Column(Boolean)
 
-    def __init__(self, username, password, email='', timestamp=None, is_admin=False):
+    def __init__(self, username, password, email='', timestamp=None, is_admin=False, inbox_alert=False):
         """Create a new user object.
         
         The user gets special privileges if it is an admin.
@@ -77,6 +78,7 @@ class User(Base):
         self.email = email
         self.timestamp = timestamp
         self.is_admin = is_admin
+        self.inbox_alert = inbox_alert
 
 
 class Inbox(Base):
@@ -142,6 +144,8 @@ class Message(Base):
         self.sender = sender
         self.receiver = receiver
         self.content = content
+        self.unread = True
+        #self.timestamp = timestamp
 
 
 class Hero(Base):
@@ -175,6 +179,8 @@ class Hero(Base):
 
     # Time code of when the (account?) was created
     timestamp = Column(DateTime)
+    #Date of last login
+    last_login = Column(String)
 
     # Relationships: see complex_relationships.py
 
@@ -246,6 +252,7 @@ class Hero(Base):
 
         # Time code
         self.timestamp = datetime.datetime.utcnow()
+        self.last_login = ""
 
         for key in kwargs:
             setattr(self, key, kwargs[key])
@@ -259,11 +266,7 @@ class Hero(Base):
         # I don't even know if this is supposed to be rebuilt? (Marlen)
         self.refresh_proficiencies()
 
-        # Hidden attributes // Maybe they should be a special type of proficiency?
-        self.experience_gain_modifier = 1  # This is the percentage of exp you gain
-        self.gold_gain_modifier = 1  # This is the percentage of gold you gain
-
-        # resets experience_percent
+        #resets experience_percent
         self.experience = self.experience
 
     @validates('experience')
@@ -305,11 +308,12 @@ class Hero(Base):
             self.proficiencies.sanctity.current = self.proficiencies.sanctity.maximum
             self.proficiencies.endurance.current = self.proficiencies.endurance.maximum
 
+    # I dont think this is needed if the valifators are working? I don't think I ever call this funvtion and the bar seems to be updating properly
     def update_experience_bar(self):
         self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100
 
-        # updates field variables when hero levels up
 
+    # updates field variables when hero levels up
     def level_up(self):
         if self.experience >= self.experience_maximum:
             self.experience -= self.experience_maximum
@@ -321,13 +325,21 @@ class Hero(Base):
             return True
         return False
 
+    def gain_experience(self, amount):
+        new_amount = amount * self.proficiencies.understanding.modifier
+        new_amount = int(new_amount) + (random.random() < new_amount - int(new_amount)) # This will round the number weighted by its decimal (so 1.2 has 20% chance of rounding up)
+        self.experience += new_amount
+        level_up = self.level_up()
+        return new_amount, level_up # Return a variable in case you want to know how much experience you just gained or if you leveled up
+
     def equipped_items(self):
         return [item for item in self.inventory if item.is_equipped()] or [None]
 
     def non_equipped_items(self):
         return self.inventory.unequipped or [None]
 
-    def page_refresh_character(self):  # Can we renamed this? I don't really get what it is from the name
+    def page_refresh_character(self):   # Can we renamed this? I don't really get what it is from the name
+        # (elthran) It's just temporary code while I amtesting notifications. It will be scrapped soon.
         self.quest_notification = None
 
     def consume_item(self, item_name):

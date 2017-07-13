@@ -133,14 +133,15 @@ ul {
 /* Sidebar used for all pages */
 
 #sidebar {
-	width:14%;
+    font-size: 12px;
+	width:12%;
 	position: fixed;
 	overflow: auto;
 	height:100%;
 	background-color: Gray;
 }
 
-#sidebartop {
+#sidebartop {           /* The top pictures */
 	overflow: hidden;
 }
 
@@ -149,7 +150,7 @@ ul {
 	float: left;
 }
 
-#sidebarmiddle li {
+#sidebarmiddle li {     /* The 4 color progress bars */
 	line-height: 30px;
 }
 
@@ -162,16 +163,16 @@ ul {
 
 #sidebar li{
 	list-style-type: none;
-	padding-bottom: 10px;
+	padding-bottom: 3px;
 }
 
-#sidebarbottom ul {
+#sidebarbottom ul {     /* The menu list */
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
 	background-color: Gray;
 	text-align: center;
-	line-height: 20px;
+	line-height: 15px;
 	padding-bottom: 0px;
 }
 
@@ -261,6 +262,37 @@ ul {
 
 .topbarDropdownOuter:hover .topbarDropdownInner {
 	display: block;
+}
+
+/* Topbar used in inbox */
+
+.inboxTopbar {
+	float: left;
+	width: auto;
+}
+
+.inboxTopbar ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background: Black;
+}
+
+.inboxTopbar li {
+	float: left;
+}
+
+.inboxTopbar li a {
+	display: block;
+	color: white;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+}
+
+.inboxTopbar li a:hover:not(.active) {
+	background-color: Green;
 }
 
 /* Attribute Page */
@@ -365,7 +397,7 @@ input.abilityButtonMinus {
 
 .proficiencyPageInner {
 	width: 350px;
-	height: 99%;
+	height: auto;
 	border: 5px Double Black;
 	margin: 0;
 	padding: 0;
@@ -425,7 +457,7 @@ input.abilityButtonMinus {
 
 .progressBar { 
 	height: 10px; 
-	width: 100px;
+	width: 70px;
 	position: relative;
 	background: #555;
 	-moz-border-radius: 25px;

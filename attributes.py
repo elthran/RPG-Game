@@ -10,18 +10,18 @@ from sqlalchemy.orm import relationship
 from base_classes import Base
 
 ATTRIBUTE_INFORMATION = [
-    ("Agility", "A measure of how agile a character is. Dexterity controls attack and movement speed and accuracy, as well as evading an opponent's attack ."),
-    ("Charisma", "A measure of a character's social skills, and sometimes their physical appearance."),
-    ("Divinity", "A measure of a character's common sense and/or spirituality."),
-    ("Fortitude", "A measure of how resilient a character is."),
-    ("Fortuity", "A measure of a character's luck. "),
-    ("Perception", "A measure of a character's openness to their surroundings."),
-    ("Reflexes", "A measure of how agile a character is. "),
-    ("Resilience", "A measure of how resilient a character is. "),
-    ("Strength", "A measure of how physically strong a character is. "),
-    ("Survivalism", "A measure of a character's openness to their surroundings. "),
-    ("Vitality", "A measure of how sturdy a character is."),
-    ("Wisdom", "A measure of a character's problem-solving ability.")
+    ("Agility", "A measure of how skilfully you can move."),
+    ("Brawn", "A measure of how strong you are."),
+    ("Charisma", "A measure of how well you interact with other people"),
+    ("Divinity", "A measure of your connection with the spirit world."),
+    ("Fortuity", "A measure of your luck."),
+    ("Intellect", "A measure of your mental prowess and knowledge."),
+    ("Pathfinding", "A measure of your ability to traverse the world."),
+    ("Quickness", "A measure of how fast you can move."),
+    ("Resilience", "A measure of how tough you are."),
+    ("Survivalism", "A measure of how well you can adapt to your surroundings."),
+    ("Vitality", "A measure of how healthy you are."),
+    ("Willpower", "A measure of how disciplined you are.")
 ]
 
 ALL_ATTRIBUTES = [attrib[0].lower() for attrib in ATTRIBUTE_INFORMATION]
@@ -34,43 +34,43 @@ class Attributes(Base):
     #Relationships
     agility_id = Column(Integer, ForeignKey('attribute.id'))
     agility = relationship("Attribute", uselist=False, foreign_keys="[Attributes.agility_id]")
+    brawn_id = Column(Integer, ForeignKey('attribute.id'))
+    brawn = relationship("Attribute", uselist=False, foreign_keys="[Attributes.brawn_id]")
     charisma_id = Column(Integer, ForeignKey('attribute.id'))
     charisma = relationship("Attribute", uselist=False, foreign_keys="[Attributes.charisma_id]")
     divinity_id = Column(Integer, ForeignKey('attribute.id'))
     divinity = relationship("Attribute", uselist=False, foreign_keys="[Attributes.divinity_id]")
-    fortitude_id = Column(Integer, ForeignKey('attribute.id'))
-    fortitude = relationship("Attribute", uselist=False, foreign_keys="[Attributes.fortitude_id]")
     fortuity_id = Column(Integer, ForeignKey('attribute.id'))
     fortuity = relationship("Attribute", uselist=False, foreign_keys="[Attributes.fortuity_id]")
-    perception_id = Column(Integer, ForeignKey('attribute.id'))
-    perception = relationship("Attribute", uselist=False, foreign_keys="[Attributes.perception_id]")
-    reflexes_id = Column(Integer, ForeignKey('attribute.id'))
-    reflexes = relationship("Attribute", uselist=False, foreign_keys="[Attributes.reflexes_id]")
+    intellect_id = Column(Integer, ForeignKey('attribute.id'))
+    intellect = relationship("Attribute", uselist=False, foreign_keys="[Attributes.intellect_id]")
+    pathfinding_id = Column(Integer, ForeignKey('attribute.id'))
+    pathfinding = relationship("Attribute", uselist=False, foreign_keys="[Attributes.pathfinding_id]")
+    quickness_id = Column(Integer, ForeignKey('attribute.id'))
+    quickness = relationship("Attribute", uselist=False, foreign_keys="[Attributes.quickness_id]")
     resilience_id = Column(Integer, ForeignKey('attribute.id'))
     resilience = relationship("Attribute", uselist=False, foreign_keys="[Attributes.resilience_id]")
-    strength_id = Column(Integer, ForeignKey('attribute.id'))
-    strength = relationship("Attribute", uselist=False, foreign_keys="[Attributes.strength_id]")
     survivalism_id = Column(Integer, ForeignKey('attribute.id'))
     survivalism = relationship("Attribute", uselist=False, foreign_keys="[Attributes.survivalism_id]")
     vitality_id = Column(Integer, ForeignKey('attribute.id'))
     vitality = relationship("Attribute", uselist=False, foreign_keys="[Attributes.vitality_id]")
-    wisdom_id = Column(Integer, ForeignKey('attribute.id'))
-    wisdom = relationship("Attribute", uselist=False, foreign_keys="[Attributes.wisdom_id]")
+    willpower_id = Column(Integer, ForeignKey('attribute.id'))
+    willpower = relationship("Attribute", uselist=False, foreign_keys="[Attributes.willpower_id]")
     
     def __init__(self):
         
-        self.agility = Attribute("Agility", "A measure of how agile a character is. Dexterity controls attack and movement speed and accuracy, as well as evading an opponent's attack .")
-        self.charisma = Attribute("Charisma", "A measure of a character's social skills, and sometimes their physical appearance.")
-        self.divinity = Attribute("Divinity", "A measure of a character's common sense and/or spirituality.")
-        self.fortitude = Attribute("Fortitude", "A measure of how resilient a character is.")
-        self.fortuity = Attribute("Fortuity", "A measure of a character's luck. ")
-        self.perception = Attribute("Perception", "A measure of a character's openness to their surroundings.")
-        self.reflexes = Attribute("Reflexes", "A measure of how agile a character is. ")
-        self.resilience = Attribute("Resilience", "A measure of how resilient a character is. ")
-        self.strength = Attribute("Strength", "A measure of how physically strong a character is. ")
-        self.survivalism = Attribute("Survivalism", "A measure of a character's openness to their surroundings. ")
-        self.vitality = Attribute("Vitality", "A measure of how sturdy a character is.")
-        self.wisdom = Attribute("Wisdom", "A measure of a character's problem-solving ability.")
+        self.agility = Attribute("Agility", "A measure of how skilfully you can move.")
+        self.brawn = Attribute("Brawn", "A measure of how strong you are.")
+        self.charisma = Attribute("Charisma", "A measure of how well you interact with other people")
+        self.divinity = Attribute("Divinity", "A measure of your connection with the spirit world.")
+        self.fortuity = Attribute("Fortuity", "A measure of your luck.")
+        self.intellect = Attribute("Intellect", "A measure of your mental prowess and knowledge.")
+        self.pathfinding = Attribute("Pathfinding", "A measure of your ability to traverse the world.")
+        self.quickness = Attribute("Quickness", "A measure of how fast you can move.")
+        self.resilience = Attribute("Resilience", "A measure of how tough you are.")
+        self.survivalism = Attribute("Survivalism", "A measure of how well you can adapt to your surroundings.")
+        self.vitality = Attribute("Vitality", "A measure of how healthy you are.")
+        self.willpower = Attribute("Willpower", "A measure of how disciplined you are.")
         
 
     def items(self):
