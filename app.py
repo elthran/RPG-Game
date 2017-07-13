@@ -83,9 +83,9 @@ def prevent_url_typing(f):
             return f(*args, **kwargs)
 
         # pprint(app.url_map)
-        pprint(args)
-        pprint(kwargs)
-        pprint(session)
+        # pprint(args)
+        # pprint(kwargs)
+        # pprint(session)
         # print(dir(session))
         # f(*args, **kwargs)
         # print('after app.route')
@@ -95,7 +95,7 @@ def prevent_url_typing(f):
         # print("arguments", request.url_rule.arguments)
         # pprint(request)
         # print(dir(request))
-        print("Path requested: ", request.path)
+        # print("Path requested: ", request.path)
 
         # Build requested move from rule and arguemts.
         valid_urls = ALWAYS_VALID_URLS
@@ -104,8 +104,11 @@ def prevent_url_typing(f):
         if hero.user.is_admin:
             valid_urls.append('/admin')
 
-        print("Hero current location url: ", hero.current_location.url)
+        # print("Hero current location url: ", hero.current_location.url)
         valid_urls.append(hero.current_location.url)
+        valid_urls.append(hero.current_location.parent.url)
+        for location in hero.current_location.adjacent:
+            valid_urls.append(location.url)
         # Add this in later? Unless I can find out how
         # to do it another way.
         # local_places = hero.current_location.display.places_of_interest
@@ -118,16 +121,13 @@ def prevent_url_typing(f):
         requested_move = request.path
         # pdb.set_trace()
         if requested_move in valid_urls:
-            print("url is valid")
+            # print("url is valid")
             session['last_url'] = request.path
             return f(*args, **kwargs)
         else:
             flash("You can't access '{}' from there.".format(requested_move))
             return redirect(session['last_url'])
     return wrap_url
-
-# app.route = prevent_url_typing(app.route)
-
 
 @app.route('/favicon.ico')
 def favicon():
@@ -136,7 +136,6 @@ def favicon():
         'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
-# @prevent_url_typing
 def login_required(f):
     """Set certain pages as requiring a login to visit.
 
@@ -432,7 +431,6 @@ def inbox(hero=None):
 @app.route('/home')
 @login_required
 @uses_hero_and_update
-# @prevent_url_typing
 def home(hero=None):
     """Build the home page and return it as a string of HTML.
     
@@ -652,7 +650,7 @@ def under_construction(hero=None):
 @app.route('/explorable/<location_name>')
 @login_required
 @uses_hero_and_update
-# @prevent_url_typing
+@prevent_url_typing
 def move(location_name, hero=None):
     """Set up a directory for the hero to move to.
 
