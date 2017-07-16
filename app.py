@@ -384,6 +384,7 @@ def display_user_page(page_type, page_detail, hero=None):
 @app.route('/global_chat', methods=['GET', 'POST'])
 @uses_hero_and_update
 def global_chat(hero=None):
+    users_in_chat = [hero]
     if request.method == 'POST':
         message = request.form["message"]
         # MUST BE A BETTER WAY TO FORMAT THE TIME
@@ -403,8 +404,8 @@ def global_chat(hero=None):
                                  message))  # Currently it just appends tuples to the chat list, containing the hero's name and the message
         if len(game.global_chat) > 25:  # After it reaches 5 messages, more messages will delete theoldest ones
             game.global_chat = game.global_chat[1:]
-        return render_template('global_chat.html', myHero=hero, chat=game.global_chat)
-    return render_template('global_chat.html', page_title="Chat", myHero=hero, chat=game.global_chat)
+        return render_template('global_chat.html', myHero=hero, chat=game.global_chat, users_in_chat=users_in_chat)
+    return render_template('global_chat.html', page_title="Chat", myHero=hero, chat=game.global_chat, users_in_chat=users_in_chat)
 
 @app.route('/inbox/<outbox>', methods=['GET', 'POST'])
 @uses_hero_and_update

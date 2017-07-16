@@ -11,6 +11,7 @@
         <th><a href=/display_users/display/name>Character Name:</a></th>
         <th><a href=/display_users/display/age>Age:</a></th>
         <th><a href=/display_users/display/archetype>Archetype:</a></th>
+        <th><a href=/display_users/display/last_login>Last Login:</a></th>
     </tr>
     {% for hero in all_heroes %} <!-- Works great for now unless some fields are None. So needs to be addressed later. -->
     <tr>
@@ -19,9 +20,11 @@
         <td>{{ hero.character_name }}</td>
         <td>{{ hero.age }}</td>
         <td>{{ hero.archetype }}</td>
+        <td>{{ hero.last_login }}</td>
     </tr>
     {% else %}
     <tr>
+        <td>None</td>
         <td>None</td>
         <td>None</td>
         <td>None</td>
