@@ -1,15 +1,35 @@
 <!-- This shows the admin page -->
 
 {% extends "layout.html" %}
+{%- set location = hero.current_location %}
+{%- if page_title is not defined %}
+    {%- set page_title = location.display.page_title %}
+{% endif %}
+{%- if places_of_interest is not defined %}
+    {%- set places_of_interest = location.places_of_interest %}
+{% endif %}
 {% block block1 %}
-{{ page_heading }}<br>
-<img src="/static/images/barracks.jpg" alt="Sample" width="300" height="400"><br>
-{% for text,link in page_links.items() %}
-    {% if link %}
-        <a href="{{ link }}">{{ text }}</a><br><br>
-    {% else %}
-        {{ text }}
+    <h1>I am at {{ location.name }}</h1>
+    <h1>{{ location.display.page_heading }}</h1>
+    <img src="static/images/{{ location.display.page_image }}" alt="{{ location.display.page_image }}">
+    <p>{{ location.display.paragraph }}</p>
+    {% if places_of_interest['children'] %}
+    <h3>Explore this location</h3>
+    {% for place in places_of_interest['children'] %}
+     	<h2><a href="{{ place.url }}">{{ place.name }}</a>: {{ place.display.paragraph }}</h2>
+    {% endfor %}
     {% endif %}
-{% endfor %}
+    {% if places_of_interest['siblings'] %}
+    <h3>Explore nearby locations</h3>
+    {% for place in places_of_interest['siblings'] %}
+     	<h2><a href="{{ place.url }}">{{ place.name }}</a>: {{ place.display.paragraph }}</h2>
+    {% endfor %}
+    {% endif %}
+    {% if location.parent %}
+        <p>Return to <a href="{{ location.parent.url }}">
+            {{ location.parent.name }}</a>:
+            {{ location.parent.display.paragraph }}
+        </p>
+    {% endif %}
 {% endblock %}
 

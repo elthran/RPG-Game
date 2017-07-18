@@ -1,65 +1,41 @@
-#//////////////////////////////////////////////////////////////////////////////#
-#                                                                              #
-#  Author: Elthran B, Jimmy Zhang                                              #
-#  Email : jimmy.gnahz@gmail.com                                               #
-#                                                                              #
-#//////////////////////////////////////////////////////////////////////////////#
+# ////////////////////////////////////////////////////////////////////////////#
+#                                                                             #
+# Author: Elthran B, Jimmy Zhang                                              #
+# Email : jimmy.gnahz@gmail.com                                               #
+#                                                                             #
+# ////////////////////////////////////////////////////////////////////////////#
 
 """Objects used in the database and the game.
 
 Suggestion: change name to game_objects.py
 """
+import math
+import random
+import datetime
+import pdb
 
-try:
-    from sqlalchemy import Table, Column, Integer, String, DateTime, Boolean
-
-    from sqlalchemy import ForeignKey
-    from sqlalchemy.orm import relationship
-
-    from sqlalchemy import orm
-    from sqlalchemy.orm.collections import attribute_mapped_collection
-    from sqlalchemy.orm import validates
-except ImportError as e:
-    exit("Open a command prompt and type: pip install sqlalchemy."), e
+from sqlalchemy import Table, Column, Integer, String, DateTime, Boolean
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+from sqlalchemy import orm
+from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.orm import validates
 
 from base_classes import Base, BaseDict
-
-import math, random
-from flask import request
 from attributes import Attributes
 from proficiencies import Proficiencies
 from inventory import Inventory
 
-import datetime
-import pdb
 
 # function used in '/level_up'
-#Fix ME! Or put me in a class as a method or something.
-def convert_input(x):
+# Fix ME! Or put me in a class as a method or something.
+def convert_input(x: int):
     try:
         x = int(x)
     except:
         x = 0
     return x
 
-#Custom constants for primary_attributes list.
-AGILITY = 0
-CHARISMA = 1
-DIVINITY = 2
-FORTITUDE = 3
-FORTUITY = 4
-PERCEPTION = 5
-REFLEXES = 6
-RESILIENCE = 7
-STRENGTH = 8
-SURVIVALISM = 10
-VITALITY = 11
-WISDOM = 11
-
-"""
-USE: primary_attributes[AGILITY] == value of agility stored in list at position 0
-primary_attributes[FORTITUDE] == value of fortitude stored in list at position 4
-"""
 
 class Game(object):
     def __init__(self, hero=None):
@@ -70,7 +46,7 @@ class Game(object):
     def set_enemy(self, enemy):
         self.enemy = enemy
         self.has_enemy = True
-    
+
     def set_hero(self, hero):
         self.hero = hero
 
@@ -89,15 +65,15 @@ class User(Base):
     timestamp = Column(DateTime)
     is_admin = Column(Boolean)
     inbox_alert = Column(Boolean)
-    
+
     def __init__(self, username, password, email='', timestamp=None, is_admin=False, inbox_alert=False):
         """Create a new user object.
         
         The user gets special privileges if it is an admin.
         """
-    
+
         self.inbox = Inbox()
-        
+
         self.username = username
         self.password = password
         self.email = email
@@ -113,8 +89,7 @@ class Inbox(Base):
 
     def __init__(self):
         pass
-        
-        
+
     def get_sent_messages(self):
         """Return a list of all sent messages.
         
@@ -125,7 +100,7 @@ class Inbox(Base):
             user.inbox.sent_messages
         """
         return self.sent_messages
-        
+
     def get_received_messages(self):
         """Return a list of all received messages.
         
@@ -152,12 +127,12 @@ class Inbox(Base):
         user.inbox.send_message(other_user, content)
         database.update()
         """
-        Message(self, receiver.inbox, content)        
+        Message(self, receiver.inbox, content)
 
-        
+
 class Message(Base):
     __tablename__ = "message"
-    
+
     id = Column(Integer, primary_key=True)
     content = Column(String)
 
@@ -181,7 +156,7 @@ class Hero(Base):
     __tablename__ = 'hero'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String) #Was nullable=False now it isn't. I hope that is a good idea.
+    name = Column(String)  # Was nullable=False now it isn't. I hope that is a good idea.
     character_name = orm.synonym('name')
 
     age = Column(Integer)
@@ -191,8 +166,8 @@ class Hero(Base):
     house = Column(String)
     experience = Column(Integer)
     experience_maximum = Column(Integer)
-    renown = Column(Integer)    # How famous you are
-    virtue = Column(Integer)    # How good/evil you are
+    renown = Column(Integer)  # How famous you are
+    virtue = Column(Integer)  # How good/evil you are
     devotion = Column(Integer)  # How religious you are
     gold = Column(Integer)
 
@@ -203,12 +178,37 @@ class Hero(Base):
     attribute_points = Column(Integer)
     proficiency_points = Column(Integer)
 
-    #Time code of when the (account?) was created
+    # Time code of when the (account?) was created
     timestamp = Column(DateTime)
     #Date of last login
     last_login = Column(String)
 
-    #Relationships: see complex_relationships.py
+    # Relationships: see complex_relationships.py
+
+    # Many heroes -> one map/world. (bidirectional)
+    map_id = Column(Integer, ForeignKey('location.id'))
+    current_world = relationship("Location", back_populates='heroes',
+                                 foreign_keys='[Hero.map_id]')
+    # Each current_location -> can be held by Many Heroes (bidirectional)
+    current_location_id = Column(Integer, ForeignKey('location.id'))
+    current_location = relationship(
+        "Location", back_populates='heroes_by_current_location',
+        foreign_keys='[Hero.current_location_id]')
+
+    # Each current_city -> can be held by Many Heroes (bidirectional) (Town or Cave)
+    # Maybe I should have a City object that extends Location that is the Ancestor for Town and Cave?
+    # Location -> City -> (Town, Cave)
+    city_id = Column(Integer, ForeignKey('location.id'))
+    current_city = relationship(
+        "Location", back_populates='heroes_by_city',
+        foreign_keys='[Hero.city_id]')
+
+    @orm.validates('current_world')
+    def validate_current_world(self, key, value):
+        if 'map' == value.type:
+            return value
+        raise Exception("'current_world' Location type must be 'map' not '{}'."
+                        "".format(value.type))
 
     def __init__(self, **kwargs):
         """Initialize the Hero object.
@@ -223,12 +223,12 @@ class Hero(Base):
         exp_percent is now updated by current_exp using a validator.
         max_exp should be assigned a value before current_exp.
         """
-        
+
         self.attributes = Attributes()
         self.proficiencies = Proficiencies()
         self.inventory = Inventory()
 
-        #Defaults will remain unchanged if no arguments are passed.
+        # Defaults will remain unchanged if no arguments are passed.
         self.age = 7
         self.archetype = None
         self.specialization = None
@@ -247,39 +247,39 @@ class Hero(Base):
         self.archetypic_ability_points = 0
         self.specialized_ability_points = 0
         self.pantheonic_ability_points = 0
-    
+
         self.attribute_points = 10
         self.proficiency_points = 10
 
-        #Time code
+        # Time code
         self.timestamp = datetime.datetime.utcnow()
         self.last_login = ""
 
         for key in kwargs:
             setattr(self, key, kwargs[key])
-        
+
         self.init_on_load()
 
     @orm.reconstructor
     def init_on_load(self):
         """Runs when the database is reload and at the end of __init__.
         """
-        #I don't even know if this is supposed to be rebuilt? (Marlen)
+        # I don't even know if this is supposed to be rebuilt? (Marlen)
         self.refresh_proficiencies()
-        
+
         #resets experience_percent
         self.experience = self.experience
 
     @validates('experience')
     def validate_experience(self, key_name, current):
-        #Update experience percent on experience change.
+        # Update experience percent on experience change.
         try:
             self.experience_percent = round(current / self.experience_maximum, 2) * 100
         except (TypeError, ZeroDivisionError):
             self.experience_percent = 0
         return max(current or 0, 0)
 
-    def not_yet_implemented():
+    def not_yet_implemented(self):
         self.kill_quests = BaseDict()
         self.chest_equipped = []
         self.errands = []
@@ -303,7 +303,7 @@ class Hero(Base):
     def refresh_character(self, full=True):
         self.refresh_proficiencies()
         self.refresh_abilities()
-        #self.refresh_items()   #Broken: waiting for Marlen to fix or delete if he has replaced
+        # self.refresh_items()   #Broken: waiting for Marlen to fix or delete if he has replaced
         if full:
             self.proficiencies.health.current = self.proficiencies.health.maximum
             self.proficiencies.sanctity.current = self.proficiencies.sanctity.maximum
@@ -311,7 +311,8 @@ class Hero(Base):
 
     # I dont think this is needed if the valifators are working? I don't think I ever call this funvtion and the bar seems to be updating properly
     def update_experience_bar(self):
-        self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100 
+        self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100
+
 
     # updates field variables when hero levels up
     def level_up(self):
@@ -331,10 +332,10 @@ class Hero(Base):
         self.experience += new_amount
         level_up = self.level_up()
         return new_amount, level_up # Return a variable in case you want to know how much experience you just gained or if you leveled up
-            
+
     def equipped_items(self):
         return [item for item in self.inventory if item.is_equipped()] or [None]
-        
+
     def non_equipped_items(self):
         return self.inventory.unequipped or [None]
 
@@ -372,7 +373,7 @@ class Hero(Base):
         If current_location is a city ... set value of current_city as well.
         If not remove the value of current_city.
         """
-        if location.type in ("Cave", "Town"):
+        if location.type in ("cave", "town"):
             self.current_city = location
         else:
             self.current_city = None

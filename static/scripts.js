@@ -86,7 +86,8 @@ document.addEventListener("DOMContentLoaded", function () {
             // innerHTML for a button is the button's "label" (the part you see).
             xhttp.open(
                 "GET",
-                "/" + action + "?location=" + window.location.pathname + "&&data=" + clickedButton.getAttribute("data"),
+                "/command/" + action + "?location=" + window.location.pathname
+                        + "&&data=" + clickedButton.getAttribute("data"),
                 true
             );
             // and then we send it off

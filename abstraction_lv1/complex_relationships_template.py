@@ -65,35 +65,14 @@ inventory.Inventory.{{ name }} = relationship("Item", order_by="Item.{{ name }}_
 game.Hero.user_id = Column(Integer, ForeignKey('user.id'))
 game.User.heroes = relationship("Hero", order_by='Hero.character_name', backref='user')
 
-#Many Heroes -> one WorldMap (bidirectional)
-game.Hero.world_map_id = Column(Integer, ForeignKey('world_map.id'))
-locations.WorldMap.heroes = relationship("Hero", backref="current_world")
-
-#Each current_city -> can be held by Many Heroes (bidirectional) (Town or Cave)
-#Maybe I should have a City object that extends Location that is the Ancestor for Town and Cave?
-#Location -> City -> (Town, Cave)
-game.Hero.city_id = Column(Integer, ForeignKey('location.id'))
-game.Hero.current_city = relationship("Location", foreign_keys='[Hero.city_id]', 
-    back_populates='heroes_by_city')
-locations.Location.heroes_by_city = relationship("Hero", foreign_keys='[Hero.city_id]',
-    back_populates="current_city")
-
-#Each current_location -> can be held by Many Heroes (bidirectional)
-game.Hero.current_location_id = Column(Integer, ForeignKey('location.id'))
-game.Hero.current_location = relationship("Location", foreign_keys='[Hero.current_location_id]',
-    back_populates='heroes_by_current_location')
-locations.Location.heroes_by_current_location = relationship("Hero", 
-    foreign_keys='[Hero.current_location_id]', back_populates="current_location")
-
-
 ######NOT TESTED!
 #Many Heroes -> many known Maps? (unidirectional)?
 #Maybe this should be a One Hero -> Many Maps ...
-known_locations_association_table = Table('known_locations_association', Base.metadata,
-    Column('hero_id', Integer, ForeignKey('hero.id')),
-    Column('map_id', Integer, ForeignKey('map.id'))
-)
-game.Hero.known_locations = relationship("Map", secondary=known_locations_association_table)
+# known_locations_association_table = Table('known_locations_association', Base.metadata,
+#     Column('hero_id', Integer, ForeignKey('hero.id')),
+#     Column('map_id', Integer, ForeignKey('map.id'))
+# )
+# game.Hero.known_locations = relationship("Map", secondary=known_locations_association_table)
 ###########
 
 abilities_association_table = Table('abilities_association', Base.metadata,
@@ -150,20 +129,20 @@ quests.Quest.quest_paths = relationship("QuestPath", backref='quest')
 #Location relationships
 #############
 #Locations -> base_classes
-base_classes.BaseListElement.location_id = Column(Integer, ForeignKey('location.id'))
+# base_classes.BaseListElement.location_id = Column(Integer, ForeignKey('location.id'))
 #relationships
     # display = etc. one to one.
     # location_world one to one with WorldMap? but each WorldMap can have many locations ...?
     #   so maybe to one it is!
     # adjacent_locations = one to many relationship with self.
-locations.Location._adjacent_locations = relationship("BaseListElement")
+# locations.Location._adjacent_locations = relationship("BaseListElement")
 
 ############
 #Map relationships
 ############
 #One Map -> Many adjacent_locations (BaseListElements)
-base_classes.BaseListElement.map_id = Column(Integer, ForeignKey('map.id'))
-locations.Map._adjacent_locations = relationship("BaseListElement")
+# base_classes.BaseListElement.map_id = Column(Integer, ForeignKey('map.id'))
+# locations.Map._adjacent_locations = relationship("BaseListElement")
 
 
 if __name__ == "__main__":

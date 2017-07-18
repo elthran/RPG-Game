@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 {%- if hero %}
-{%- set myHero = hero %}
+    {%- set myHero = hero %}
 {%- elif myHero %}
-{%- set hero = myHero %}
+    {%- set hero = myHero %}
 {%- endif %}
 <html lang="en">
 
@@ -10,6 +10,7 @@
     <title>{{ page_title }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
 </head>
 
@@ -45,13 +46,7 @@
         <ul>
             <li><a href=/home>Profile</a></li>
             <li><a href=/inventory_page>Inventory</a></li>
-            {% if myHero.current_city %}
-            <li><a href=/{{ myHero.current_city.location_type }}/{{ myHero.current_city.name }}>{{
-                myHero.current_city.name }}</a></li>
-            {% else %}
-            <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{
-                myHero.current_location.id }}>{{ myHero.current_world.location_type }}</a></li>
-            {% endif %}
+            <li><a href={{ myHero.current_location.url }}>{{ myHero.current_location.name }}</a></li>
             <li><a href=/quest_log>Journal</a></li>
             {% if hero.user.is_admin %}
             <li><a href=/admin>Admin</a></li>
@@ -67,7 +62,7 @@
             <li><a href=/logout>Logout</a></li>
         </ul>
     </div>
-</div>
+    </div>
 
 <!-- This is where you want to add HTML that will not be contained within the main body of the page -->
 <!-- Here you can add a navigation bar at the top of the page -->

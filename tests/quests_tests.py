@@ -1,15 +1,17 @@
+import unittest
+import pdb
+
 from database import EZDB
 from game import Hero
 from quests import Quest, QuestPath
 import complex_relationships
 
-import unittest
-import pdb
 
 class QuestsTestCase(unittest.TestCase):
     def setUp(self):
         self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
-        self.quest = Quest("Get Acquainted with the Blacksmith", "Go talk to the blacksmith.")
+        self.quest = Quest("Get Acquainted with the Blacksmith",
+                           "Go talk to the blacksmith.")
     
     def tearDown(self, delete=True):
         self.db.session.close()
@@ -29,9 +31,10 @@ class QuestsTestCase(unittest.TestCase):
         self.setUp()
 
     def test_Quest_init(self):
-        """Check if object is created, storeable and retrievable.
+        """Check if object is created, storable and retrievable.
         """
-        quest = Quest("Get Acquainted with the Blacksmith", "Go talk to the blacksmith.")
+        quest = Quest("Get Acquainted with the Blacksmith",
+                      "Go talk to the blacksmith.")
         self.db.session.add(quest)
         self.db.session.commit()
         str_quest = str(quest)
@@ -40,24 +43,26 @@ class QuestsTestCase(unittest.TestCase):
         quest2 = self.db.session.query(Quest).filter_by(id=1).first()
         self.assertEqual(str_quest, str(quest2))
 
-        
     def test_if_relationship_is_a_set(self):
-        """Proves that even if you add an item to a relationship twice only one copy will exist.
+        """Test if relationship can contain duplicates.
         
-        NOTE: You must do a commit after adding each element or you will get an error
-        of "added the same object twice." With the commit in between it seems to work.
+        NOTE: You must do a commit after adding each element or you will
+        get an error of "added the same object twice." With the commit
+        in between it seems to work.
         """
-        quest = Quest("Get Acquainted with the Blacksmith", "Go talk to the blacksmith.")
-        quest2 = Quest("Get Acquainted with the Blacksmith", "Buy your first item.", reward_xp=7)
+        quest = Quest("Get Acquainted with the Blacksmith",
+                      "Go talk to the blacksmith.")
+        quest2 = Quest("Get Acquainted with the Blacksmith",
+                       "Buy your first item.", reward_experience=7)
         self.db.session.add(quest)
         self.db.session.add(quest2)
         
-        #Append first time.
+        # Append first time.
         quest.next_quests.append(quest2)
         self.db.session.commit()
         str_quest = str(quest)
         
-        #Add again while already there.
+        # Add again while already there.
         quest.next_quests.append(quest2)
         self.db.session.commit()
         
@@ -74,7 +79,7 @@ class QuestsTestCase(unittest.TestCase):
         quest = self.quest
         
         # self.quest.quest_paths.append(QuestPath(self.quest, hero))
-        #same as:
+        # same as:
         # QuestPath(quest, hero)
         quest.add_hero(hero)
         
@@ -86,8 +91,7 @@ class QuestsTestCase(unittest.TestCase):
         quest2 = self.db.session.query(Quest).filter_by(id=1).first()
         
         self.assertEqual(str_quest, str(quest2))
-        
-        
+
     def test_active_heroes(self):
         hero = Hero(name="Haldon")
         hero2 = Hero(name="Elthran")
@@ -99,17 +103,20 @@ class QuestsTestCase(unittest.TestCase):
         
         self.db.session.add(quest)
         self.db.session.commit()
-        str_active_heroes = str(['hero.name={}'.format(hero.name)
+        str_active_heroes = str([
+            'hero.name={}'.format(hero.name)
             for hero in QuestPath.active_heroes(quest)])
          
         self.rebuild_instance()
         quest2 = self.db.session.query(Quest).filter_by(id=1).first()
         
-        str_active_heroes2 = str(['hero.name={}'.format(hero.name)
+        str_active_heroes2 = str([
+            'hero.name={}'.format(hero.name)
             for hero in QuestPath.active_heroes(quest2)])
         
         self.assertEqual(str_active_heroes, str_active_heroes2)
-        self.assertEqual(str_active_heroes, "['hero.name=Haldon', 'hero.name=Elthran']")
+        self.assertEqual(str_active_heroes,
+                         "['hero.name=Haldon', 'hero.name=Elthran']")
         
     def test_completed_heroes(self):
         hero = Hero(name="Haldon")
@@ -160,11 +167,11 @@ class QuestsTestCase(unittest.TestCase):
         self.assertTrue(completed_state2)
         self.assertFalse(active_state2)
         self.assertFalse(completed_state)
-        
+
+    @unittest.skip("Not built.")
     def test_path_advance(self):
         self.assertEqual('Not built', '')
-                
-        
+
     # def test_heroes_relationship(self):
         # """Test if hero/quest backref is set up properly.
         # """
