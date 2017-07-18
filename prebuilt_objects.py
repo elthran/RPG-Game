@@ -81,8 +81,15 @@ blacksmith.children.append(Location('weaponry', 'store'))
 marketplace = Location('Marketplace', 'marketplace')
 marketplace.children.append(Location('general', 'marketplace'))
 tavern = Location("Red Dragon Inn", 'tavern')
+
+barracks = Location('Barracks', 'barracks')
+spar = Location('Spar', 'spar')
+spar.display.page_title = "Sparring Room"
+barracks.children.append(spar)
+barracks.children.append(Location('Arena', 'arena'))
+
 town.children.append(blacksmith)
-town.children.append(Location('Barracks', 'barracks'))
+town.children.append(barracks)
 town.children.append(marketplace)
 town.children.append(tavern)
 

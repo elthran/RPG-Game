@@ -10,6 +10,7 @@
 Suggestion: change name to game_objects.py
 """
 import math
+import random
 import datetime
 import pdb
 

@@ -157,13 +157,13 @@ def login_required(f):
 
 # Untested (Marlen)
 def uses_hero_and_update(f):
-    """Preloads hero object and saves it afterwards.
+    """Preload hero object and save it afterwards.
     
     If this function returns an error ... please document.
 
     Especially if the error is KeyError on "hero_id". I had a
-    bug with this but it disapeared and I don't know why it
-    occured.
+    bug with this but it disappeared and I don't know why it
+    occurred.
     """
 
     @wraps(f)
@@ -173,6 +173,32 @@ def uses_hero_and_update(f):
         return f(*args, hero=hero, **kwargs)
 
     return wrap_hero_and_update
+
+
+def update_current_location(f):
+    """Load the location object and set it to hero.current_location.
+
+    NOTE: this must come after "@uses_hero_and_update"
+    Adds a keyword argument 'location' to argument list.
+
+    Example usage:
+    @app.route('/barracks/<name>')
+    @login_required
+    @uses_hero_and_update
+    @update_current_location
+    def barracks(name='', hero=None, location=None):
+        if hero.proficiencies.health.current <= 0:
+            location.display.page_heading = "Your hero is currently dead."
+    """
+
+    @wraps(f)
+    def wrap_current_location(*args, **kwargs):
+        database.update()
+        location = database.get_object_by_name('Location', kwargs['name'])
+        kwargs['hero'].current_location = location
+        return f(*args, location=location, **kwargs)
+
+    return wrap_current_location
 
 
 # use decorators to link the function to a url
@@ -730,57 +756,77 @@ def move(location_name, hero=None):
         places_of_interest=location.places_of_interest)
 
 
-@app.route('/barracks')
 @app.route('/barracks/<name>')
 @login_required
 @uses_hero_and_update
-def barracks(name='', hero=None):
+@update_current_location
+def barracks(name='', hero=None, location=None):
     if hero.proficiencies.health.current <= 0:
-        page_heading = "Your hero is currently dead."
-        page_image = "dead"
-        page_links = {
-            "You have no health.": None
-        }
+        location.display.page_heading = "Your hero is currently dead."
+        location.display.page_image = "dead.jpg"
+
+        location.children = None
+        location.display.paragraph = "You have no health."
     else:
-        page_heading = "Welcome to the arena " + hero.name + "!"
-        page_image = "arena"
-        page_links = {
-            "Compete in the arena.": "/arena",
-            "Spar with the trainer.": "/spar",
-            "Battle another player.": None
-        }
-    return render_template('generic.html', page_title="Barracks", page_heading=page_heading,
-                           page_image=page_image, myHero=hero, game=game, page_links=page_links)  # return a string
+        location.display.page_heading = "Welcome to the barracks {}!".format(
+            hero.name)
+        location.display.page_image = "barracks.jpg"
+        location.display.paragraph = "Battle another player."
+
+        arena = database.get_object_by_name('Location', 'Arena')
+        arena.display.paragraph = "Compete in the arena."
+
+        spar = database.get_object_by_name('Location', 'Spar')
+        spar.display.paragraph = "Spar with the trainer."
+        location.children = [arena, spar]
+
+    return render_template('generic.html', hero=hero)
+
 
 # From /barracks
-@app.route('/spar')
+@app.route('/spar/<name>')
 @login_required
 @uses_hero_and_update
-def spar(hero=None):
+@update_current_location
+def spar(name='', hero=None, location=None):
     spar_cost = 50
     spar_benefit = 5
     if hero.gold < spar_cost:
-        page_heading = "You do not have enough gold to spar."
+        location.display.page_heading = "You do not have enough gold to spar."
     else:
         hero.gold -= spar_cost
-        modified_spar_benefit,level_up = hero.gain_experience(spar_benefit) # This gives you experience and also returns how much experience you gained
+
+        # This gives you experience and also returns how much
+        # experience you gained
+        modified_spar_benefit, level_up = hero.gain_experience(spar_benefit)
         hero.proficiencies.endurance.current -= 1
-        page_heading = str("You spend some time sparring with the trainer at the barracks. You spend " + str(spar_cost) + " gold and gain " + str(modified_spar_benefit) + " experience.")
+        location.display.page_heading = \
+            "You spend some time sparring with the trainer at the barracks." \
+            " You spend {} gold and gain {} experience.".format(
+                spar_cost, modified_spar_benefit)
         if level_up:
-            page_heading += " You level up!"
-    page_links = {
-        "Compete in the arena.": "/arena",
-        "Spar with the trainer.": "/spar",
-        "Battle another player.": None
-    }
-    return render_template('generic.html', page_title="Sparring Room", page_heading=page_heading, myHero=hero, game=game, page_links=page_links)  # return a string
+            location.display.page_heading += " You level up!"
+    # page_links = {
+    #     "Compete in the arena.": "/arena",
+    #     "Spar with the trainer.": "/spar",
+    #     "Battle another player.": None
+    # }
+    return render_template('generic.html', hero=hero, game=game)  # return a string
+
 
 # From /barracks
-@app.route('/arena')
+@app.route('/arena/<name>')
 @login_required
 @uses_hero_and_update
-def arena(hero=None):
-    if not game.has_enemy:  # If I try to check if the enemy has 0 health and there is no enemy, I randomly get an error
+@update_current_location
+def arena(name='', hero=None, location=None):
+    """Set up a battle between the player and a random monster.
+
+    NOTE: partially uses new location/display code.
+    """
+    # If I try to check if the enemy has 0 health and there is no enemy,
+    # I randomly get an error
+    if not game.has_enemy:
         enemy = monster_generator(hero.age - 6)
         if enemy.name == "Wolf":
             enemy.items_rewarded.append((Quest_Item("Wolf Pelt", hero, 50)))
@@ -789,8 +835,9 @@ def arena(hero=None):
         if enemy.name == "Spider":
             enemy.items_rewarded.append((Quest_Item("Spider Leg", hero, 50)))
         game.set_enemy(enemy)
-    page_heading = "Welcome to the arena " + hero.name + "!"
-    page_image = str(game.enemy.name)
+    location.display.page_title = "War Room"
+    location.display.page_heading = "Welcome to the arena " + hero.name + "!"
+    location.display.page_image = str(game.enemy.name) + '.jpg'
     conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
                     ("Level: ", str(game.enemy.level), "Combat Details"),
                     ("Health: ", str(game.enemy.proficiencies.health.current) + " / " + str(
@@ -809,10 +856,13 @@ def arena(hero=None):
                     ("Block Chance: ", str(game.enemy.proficiencies.block.chance) + "%"),
                     ("Block Reduction: ", str(game.enemy.proficiencies.block.modifier) + "%")]
     page_links = [("Challenge the enemy to a ", "/battle/monster", "fight", "."),
-                  ("Go back to the ", "/barracks", "barracks", ".")]
-    return render_template('building_default.html', page_title="War Room", page_heading=page_heading,
-                           page_image=page_image, myHero=hero, game=game, page_links=page_links,
-                           enemy_info=conversation, enemy=game.enemy)  # return a string
+                  ("Go back to the ", "/barracks/Barracks", "Barracks", ".")]
+    return render_template(
+        'building_default.html', page_title=location.display.page_title,
+        page_heading=location.display.page_heading,
+        page_image=location.display.page_image, myHero=hero, game=game,
+        page_links=page_links, enemy_info=conversation, enemy=game.enemy)
+
 
 # this gets called if you fight in the arena
 @app.route('/battle/<this_user>')
@@ -1018,7 +1068,6 @@ def marketplace(inventory, hero=None):
                            page_links=page_links)  # return a string
 
 
-
 @app.route('/house/<name>')
 @login_required
 @uses_hero_and_update
@@ -1028,11 +1077,7 @@ def house(name='', hero=None):
     Returns a rendered html page.
     """
     location = database.get_object_by_name('Location', name)
-    return render_template(
-        'generic.html', hero=hero, page_title=location.display.page_title,
-        page_heading=location.display.page_heading,
-        page_image=location.display.page_image,
-        paragraph=location.display.paragraph, location=location)
+    return render_template('generic.html', hero=hero)
 
 
 @app.route('/gate/<name>')

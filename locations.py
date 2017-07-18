@@ -169,7 +169,7 @@ class Location(Base):
     ALL_TYPES = [
         'town', 'map', 'explorable', 'cave', 'blacksmith',
         'merchant', 'house', 'store', 'barracks', 'marketplace',
-        'tavern', 'gate'
+        'tavern', 'gate', 'combat', 'spar', 'arena'
     ]
 
     __tablename__ = 'location'
@@ -367,11 +367,12 @@ class Location(Base):
         """
         places = {'children': [],
                   'adjacent': [],
+                  'siblings': [],
                   'parent': None}
         children = sorted(self.children, key=lambda x: x.name)
         places['children'] = sorted(children, key=lambda x: x.type)
-
         places['adjacent'] = sorted(self.adjacent, key=lambda x: x.name)
+        places['siblings'] = sorted(self.siblings, key=lambda x: x.name)
 
         if self.parent:
             places['parent'] = self.parent
