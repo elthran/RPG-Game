@@ -964,7 +964,7 @@ def store(inventory, hero=None):
     elif inventory == "armoury":
         page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
         for item in database.get_all_store_items():
-            if item.garment or item.jewelry:
+            if item.garment or item.jewelry or item.shield:
                 items_for_sale.append(item)
     elif inventory == "weaponry":
         page_links = [("I think I'd rather look at your ", "/store/armoury", "armour", " selection.")]

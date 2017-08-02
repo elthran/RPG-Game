@@ -211,7 +211,9 @@ all_store_items = [One_Handed_Weapon("Small Dagger", buy_price=5, min_damage=30,
     Feet_Armour("Light Boots", 3, 3),
     Arm_Armour("Light Sleeves", 4, 5),
     Hand_Armour("Light Gloves", 5, 7),
-    Ring("Silver Ring", 8)]
+    Ring("Silver Ring", 8),
+    Shield("Wooden Buckler", buy_price=5)
+                   ]
 
 all_marketplace_items = [
     Consumable("Minor Health Potion", 3, healing_amount=10),

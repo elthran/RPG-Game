@@ -1073,7 +1073,10 @@ class Block(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
+            self.chance = 0
+        else:
+            self.chance = round((100 * self.level) ** 0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
