@@ -147,8 +147,8 @@ class QuestPath(Base):
         Sometimes this galaxy will break apart and spawn new galaxies.
         """
         
-        #Sort of like a failsafe. Active paths should not be advanced.
-        #Maybe this should be an assert?
+        # Sort of like a failsafe. Active paths should not be advanced.
+        # Maybe this should be an assert?
         if self.completed:
             return
             
@@ -173,7 +173,7 @@ class QuestPath(Base):
                 self.remove()
         return True
     
-    #Needs further testing.
+    # Needs further testing.
     def remove(self):
         """Break/erase current path.
         
@@ -201,9 +201,7 @@ class QuestPath(Base):
         else:
             hero.experience += quest.reward_experience
             hero.quest_notification = (quest.description, quest.reward_experience)
-        
-        
-        
+
     @validates('active')
     def validate_active(self, key, flag):
         """Prevent quest being both active and completed at the same time.
@@ -212,7 +210,6 @@ class QuestPath(Base):
         if self.completed:
             return False
         return flag
-        
 
     @validates('completed')
     def validate_completed(self, key, flag):
@@ -221,7 +218,6 @@ class QuestPath(Base):
         if flag:
             self.active = False
         return flag
-        
         
     def active_heroes(quest):
         """Return all heroes that exist in quest.quest_paths and are active.
@@ -234,8 +230,8 @@ class QuestPath(Base):
         """
      
         return [path.hero for path in quest.quest_paths if path.active]
-        
-        
+
+    @staticmethod
     def completed_heroes(quest):
         """Return all heroes that exist in quest.quest_paths and are completed.
         
@@ -245,8 +241,8 @@ class QuestPath(Base):
         """
      
         return [path.hero for path in quest.quest_paths if path.completed]
-        
-    
+
+    @staticmethod
     def all_heroes(quest):
         """Return all heroes that exist in quest.quest_paths.
         
@@ -255,8 +251,8 @@ class QuestPath(Base):
         """
      
         return [path.hero for path in quest.quest_paths if path.completed]
-        
-        
+
+    @staticmethod
     def find(quest, hero):
         """Return the path connecting quest to hero -> if it exists.
         
@@ -271,6 +267,7 @@ quest_to_quest = Table("quest_to_quest", Base.metadata,
     Column("past_quest_id", Integer, ForeignKey("quest.id"), primary_key=True),
     Column("next_quest_id", Integer, ForeignKey("quest.id"), primary_key=True)
 )
+
 
 class Quest(Base):
     """A class to describe quest objects that can be stored in a database.
@@ -348,7 +345,6 @@ class Quest(Base):
         if not quest_path.active:
             quest_path.active = True
         
-            
     def add_hero(self, hero):
         """Build a new quest path connecting this quest and hero -> return QuestPath
         
