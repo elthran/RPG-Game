@@ -25,7 +25,7 @@ Old Format:
     -Where Consume is the buttons command identifier (the command function to run).
     -Where data-function is the name of a function that can be sent data from the python
         code. This function runs after the python code returns a response. onClick
-        does not. It runs first/or independantly?
+        does not. It runs first/or independently?
     -Where onClick is a local function to run. "this" is the button object itself.
         
 This should be used to create and event object such that:
@@ -58,7 +58,7 @@ A Trigger can have multiple actions. A Quest can have multiple Triggers. Only on
 to cause the Quest to advance? 
 """
 
-#Response spec
+# Response spec
 """
 A response object could be:
 respose type: do nothing
@@ -66,10 +66,110 @@ respose type: update, plus a list of id tags to update and their new values.
 This might need to be written in JS.
 """
 
+"""
+Who, what, when, where, why, how?
+
+who did what to whom,
+when,
+why?
+how?
+
+example:
+quest completed:
+    Hero (id=1, name=Marlen) completed quest (id=1, name=Blacksmith)
+    at 15:50 (time=now())
+    why?
+    how - by going to talk to the Blacksmith (location id=14, name=Blacksmith)
+    
+    "How" is the "Trigger".
+    
+This would be triggered by event:
+    Hero (id=0) talking/visiting location Blacksmith (id=14)
+    at 15:50 (time=now()
+    why?? - move/talk (event type) what == event type?
+    how - hero.current_location.id == database.get_object_by_name('Location', 'Blacksmith').id
+    
+    Now how to I use truth value testing using conditions? Like WTF. I mean via strings?
+    So like do I use compile/eval? or just compare ids always?
+    or maybe store a type + id so that I compare attribute + type + id for all events?
+    Assuming all events rely on Objects?
+    
+    And how do I know what events to test? I need some way to have a "Type" of event.
+    Maybe that is the why? Or what kind of?
+    Why == event type?
+    why = 'move' would trigger all trigger = 'move' events
+    trigger is now description!
+"""
+import datetime
+
+from sqlalchemy import (
+    Column, Integer, String, DateTime, LargeBinary, ForeignKey
+)
+from sqlalchemy import orm
+from sqlalchemy.orm import relationship
+
+from base_classes import Base
+
+
 class Event:
-    def __init__(self, arg_dict):
-        self.action = arg_dict['action']
-        self.location = arg_dict['location']
-        self.person = arg_dict['person']
-        self.thing = arg_dict['thing']
-        
+    """Allow extra functions to occur when a specific state is reached.
+
+    E.g. when the hero moves to the Blacksmith shop complete the Visit
+    the Blacksmith quest.
+    """
+    def __init__(self, type, namespace, description=None):
+        self.type = event_type
+        self.namespace = namespace
+        self.description = description
+        self.when = datetime.datetime.utcnow()
+
+    def add_namespace(self, namespace):
+        self.namespace = namespace
+
+    @classmethod
+    def from_js(cls, arg_dict):
+        who = arg_dict.get('who', None, type=int)
+        what = arg_dict.get('what', None, type=str)
+        to_whom = arg_dict.get('to_whom', None, type=int)
+        description = arg_dict.get('description', None, type=str)
+        return cls(who, what, to_whom, description)
+
+        # arg_dict.get('location', None, type=str)
+
+
+class Handler:
+    def __init__(self, event, **kwargs):
+        """Save a compiled trigger object.
+
+        :param conditions: A complex python statement that must evaluate to
+         True or False!
+        Example:
+        ?Trigger("hero.current_location.name == 'Blacksmith'")
+        """
+        # self.condition = conditions
+        # self.code = compile(conditions, '<string>', 'exec')
+
+        self.event = event
+
+    def run(self, namespace={}):
+        if exec(self.code, namespace):
+            return event
+
+    def activate_if_true(self, event):
+        pass
+
+
+# I need a handler factory and then an actual handler function.
+def move_event_handler(self, hero, location):
+    if hero.current_location.name == location.name:
+        return True
+
+
+class Condition:
+    """A function that takes a python string and evaluates to boolean.
+
+    Factory?
+
+    hero.current_location.name == location.name
+    """
+    pass

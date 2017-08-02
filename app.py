@@ -275,6 +275,11 @@ def login():
 
             flash(hero.login_alerts)
             hero.login_alerts = ""
+
+            # Refresh admin accounts on login.
+            if user.is_admin:
+                hero.refresh_character()
+
             # If it's a new character, send them to cerate_character url
             if hero.character_name is None:
                 return redirect(url_for('create_character'))
@@ -494,7 +499,7 @@ def display_user_page(page_type, page_detail, hero=None):
         hero.clicked_user_attribute = page_detail
 
     if page_type == "display":
-        sorted_heroes = database.fetch_sorted_heroes(page_detail,descending)
+        sorted_heroes = database.fetch_sorted_heroes(page_detail, descending)
         return render_template(
             'users.html', page_title="Users", myHero=hero,
             page_detail=page_detail, all_heroes=sorted_heroes)
@@ -991,8 +996,8 @@ def battle(this_user=None, hero=None):
 @uses_hero_and_update
 @update_current_location
 def store(name, hero=None, location=None):
-    # pdb.set_trace()
-    # Engine.spawn('move_event', hero)
+    pdb.set_trace()
+    Engine.spawn('move_event', hero)
     page_title = "Store"
 
     # path = database.get_path_if_exists_and_active(quest_name, hero)
