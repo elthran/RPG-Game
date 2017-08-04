@@ -75,7 +75,7 @@
 	<div class="profileColumn">
 		<h2>Defence</h2>
 		<ul>
-			<li>Block Chance: {{ myHero.proficiencies.block.chance }}% (Modifier: {{ myHero.proficiencies.block.modifier }}%)</li>
+			<li>Block Chance: {% if myHero.proficiencies.block.chance %}{{ myHero.proficiencies.block.chance }}% {% else %}{{ myHero.proficiencies.block.reason_for_zero }}{% endif %}</li>
 			<li>Fatigue: {{ myHero.proficiencies.fatigue.current }}</li>
 			<li>Resist Frost: {{ myHero.proficiencies.resist_frost.modifier }}%</li>
 			<li>Resist Flame: {{ myHero.proficiencies.resist_flame.modifier }}%</li>

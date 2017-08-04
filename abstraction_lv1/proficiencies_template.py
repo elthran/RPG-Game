@@ -57,6 +57,7 @@ class Proficiency(Base):
     level = Column(Integer)
     next_value = Column(Integer)
     is_not_max_level = Column(Boolean)
+    reason_for_zero = Column(String)
     
     _class = Column(String)
     __mapper_args__ = {
@@ -69,6 +70,7 @@ class Proficiency(Base):
         self.description = description
         self.attribute_type = attribute_type
         self.tooltip = ""
+        self.reason_for_zero = ""
         
         self.level = 0
         self.is_not_max_level = False
@@ -139,6 +141,14 @@ class {{ prof_class }}(Proficiency):
         tooltips.append("{{ value[0].title() }}: " + str(self.{{ value[0].lower() }})) 
         {% endif -%}
         {% endfor -%}
+
+        {% if prof[0] == "Block" %}
+        if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
+            self.chance = 0
+            self.reason_for_zero = "You must have a shield equipped"
+        else:
+            self.reason_for_zero = ""
+        {% endif %}
         
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 

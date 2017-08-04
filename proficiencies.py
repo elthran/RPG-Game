@@ -272,6 +272,7 @@ class Proficiency(Base):
     level = Column(Integer)
     next_value = Column(Integer)
     is_not_max_level = Column(Boolean)
+    reason_for_zero = Column(String)
     
     _class = Column(String)
     __mapper_args__ = {
@@ -284,6 +285,7 @@ class Proficiency(Base):
         self.description = description
         self.attribute_type = attribute_type
         self.tooltip = ""
+        self.reason_for_zero = ""
         
         self.level = 0
         self.is_not_max_level = False
@@ -338,6 +340,8 @@ class Health(Proficiency):
         # This creates a tooltip for each variable
         tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -383,6 +387,8 @@ class Regeneration(Proficiency):
         self.speed = round((100 * self.level)**0.5 - (self.level / 4) + 1, 2)
         # This creates a tooltip for each variable
         tooltips.append("Speed: " + str(self.speed)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -421,6 +427,8 @@ class Recovery(Proficiency):
         self.efficiency = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Efficiency: " + str(self.efficiency)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -459,6 +467,8 @@ class Climbing(Proficiency):
         self.ability = round(0.5 * self.level + 0.5, 1)
         # This creates a tooltip for each variable
         tooltips.append("Ability: " + str(self.ability)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -500,6 +510,8 @@ class Storage(Proficiency):
         # This creates a tooltip for each variable
         tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -545,6 +557,8 @@ class Encumbrance(Proficiency):
         self.amount = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Amount: " + str(self.amount)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -586,6 +600,8 @@ class Endurance(Proficiency):
         # This creates a tooltip for each variable
         tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -641,6 +657,8 @@ class Damage(Proficiency):
         self.modifier = round(0.1 * self.level + 1, 1)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -679,6 +697,8 @@ class Speed(Proficiency):
         self.speed = round(0.03 * self.level + 1, 2)
         # This creates a tooltip for each variable
         tooltips.append("Speed: " + str(self.speed)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -717,6 +737,8 @@ class Accuracy(Proficiency):
         self.accuracy = round((100 * self.level)**0.5 - (self.level / 4) + 35, 0)
         # This creates a tooltip for each variable
         tooltips.append("Accuracy: " + str(self.accuracy)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -755,6 +777,8 @@ class FirstStrike(Proficiency):
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -798,6 +822,8 @@ class Killshot(Proficiency):
         self.modifier = round(0.1 * self.level + 1, 1)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -836,6 +862,8 @@ class Defence(Proficiency):
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -874,6 +902,8 @@ class Evade(Proficiency):
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 5, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -912,6 +942,8 @@ class Parry(Proficiency):
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 2, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -950,6 +982,8 @@ class Flee(Proficiency):
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 7, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -988,6 +1022,8 @@ class Riposte(Proficiency):
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1029,6 +1065,8 @@ class Fatigue(Proficiency):
         # This creates a tooltip for each variable
         tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1073,15 +1111,20 @@ class Block(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-            self.chance = 0
-        else:
-            self.chance = round((100 * self.level) ** 0.5 - (self.level / 4) + 0, 0)
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
+            self.chance = 0
+            self.reason_for_zero = "You must have a shield equipped"
+        else:
+            self.reason_for_zero = ""
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1120,6 +1163,8 @@ class Stealth(Proficiency):
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1158,6 +1203,8 @@ class Pickpocketing(Proficiency):
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 1, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1196,6 +1243,8 @@ class Faith(Proficiency):
         self.modifier = round(0.1 * self.level + 1, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1237,6 +1286,8 @@ class Sanctity(Proficiency):
         # This creates a tooltip for each variable
         tooltips.append("Maximum: " + str(self.maximum)) 
         self.current = self.maximum
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1282,6 +1333,8 @@ class ResistHoly(Proficiency):
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1320,6 +1373,8 @@ class Bartering(Proficiency):
         self.modifier = round(-0.05 * self.level + 1, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1358,6 +1413,8 @@ class Oration(Proficiency):
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 11, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1396,6 +1453,8 @@ class Charm(Proficiency):
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1434,6 +1493,8 @@ class Trustworthiness(Proficiency):
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1472,6 +1533,8 @@ class Renown(Proficiency):
         self.modifier = round(0.1 * self.level + 1, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1510,6 +1573,8 @@ class Knowledge(Proficiency):
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 6, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1548,6 +1613,8 @@ class Literacy(Proficiency):
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1586,6 +1653,8 @@ class Understanding(Proficiency):
         self.modifier = round(0.05 * self.level + 1, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1624,6 +1693,8 @@ class Luckiness(Proficiency):
         self.chance = round(0.01 * self.level + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1662,6 +1733,8 @@ class Adventuring(Proficiency):
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1700,6 +1773,8 @@ class Logistics(Proficiency):
         self.modifier = round(0.2 * self.level + 1, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1738,6 +1813,8 @@ class Mountaineering(Proficiency):
         self.modifier = round(0.5 * self.level + 1, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1776,6 +1853,8 @@ class Woodsman(Proficiency):
         self.modifier = round(0.5 * self.level + 1, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1814,6 +1893,8 @@ class Navigator(Proficiency):
         self.modifier = round(0.5 * self.level + 1, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1852,6 +1933,8 @@ class Detection(Proficiency):
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Chance: " + str(self.chance)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1890,6 +1973,8 @@ class Caution(Proficiency):
         self.ability = round(0.5 * self.level + 0.5, 0)
         # This creates a tooltip for each variable
         tooltips.append("Ability: " + str(self.ability)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1928,6 +2013,8 @@ class Explorer(Proficiency):
         self.ability = round(0.5 * self.level + 0.5, 0)
         # This creates a tooltip for each variable
         tooltips.append("Ability: " + str(self.ability)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -1966,6 +2053,8 @@ class Huntsman(Proficiency):
         self.ability = round(0.5 * self.level + 0.5, 0)
         # This creates a tooltip for each variable
         tooltips.append("Ability: " + str(self.ability)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -2004,6 +2093,8 @@ class Survivalist(Proficiency):
         self.ability = round(0.5 * self.level + 0.5, 0)
         # This creates a tooltip for each variable
         tooltips.append("Ability: " + str(self.ability)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -2042,6 +2133,8 @@ class ResistFrost(Proficiency):
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -2080,6 +2173,8 @@ class ResistFlame(Proficiency):
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -2118,6 +2213,8 @@ class ResistShadow(Proficiency):
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -2156,6 +2253,8 @@ class ResistPoison(Proficiency):
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -2194,6 +2293,8 @@ class ResistBlunt(Proficiency):
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -2232,6 +2333,8 @@ class ResistSlashing(Proficiency):
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -2270,6 +2373,8 @@ class ResistPiercing(Proficiency):
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -2308,6 +2413,8 @@ class Courage(Proficiency):
         self.skill = round(1 * self.level + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Skill: " + str(self.skill)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
@@ -2346,6 +2453,8 @@ class Sanity(Proficiency):
         self.skill = round(1 * self.level + 0, 0)
         # This creates a tooltip for each variable
         tooltips.append("Skill: " + str(self.skill)) 
+        
+        
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
