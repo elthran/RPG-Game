@@ -297,13 +297,13 @@ class Hero(Base):
             ability.update_stats(self)
 
     def refresh_items(self):
-        for item in self.equipped_items:
+        for item in self.equipped_items():
             item.update_stats(self)
 
     def refresh_character(self, full=True):
         self.refresh_proficiencies()
         self.refresh_abilities()
-        # self.refresh_items()   #Broken: waiting for Marlen to fix or delete if he has replaced
+        self.refresh_items() # Should go after proficiencies
         if full:
             self.proficiencies.health.current = self.proficiencies.health.maximum
             self.proficiencies.sanctity.current = self.proficiencies.sanctity.maximum
@@ -334,10 +334,10 @@ class Hero(Base):
         return new_amount, level_up # Return a variable in case you want to know how much experience you just gained or if you leveled up
 
     def equipped_items(self):
-        return [item for item in self.inventory if item.is_equipped()] or [None]
+        return [item for item in self.inventory if item.is_equipped()] or []
 
     def non_equipped_items(self):
-        return self.inventory.unequipped or [None]
+        return self.inventory.unequipped or []
 
     def page_refresh_character(self):   # Can we renamed this? I don't really get what it is from the name
         # (elthran) It's just temporary code while I amtesting notifications. It will be scrapped soon.

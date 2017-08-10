@@ -231,9 +231,14 @@ class Weapon(Wearable):
         self.two_handed_weapon = False
     
     def update_stats(self, hero):
-        hero.minimum_damage += self.min_damage
-        hero.maximum_damage += self.max_damage
-        hero.attack_speed += self.attack_speed
+        """
+        hero.proficiencies.damage.minimum += self.min_damage
+        hero.proficiencies.damage.maximum += self.max_damage
+        hero.proficiencies.speed.speed += self.attack_speed
+        """
+        hero.proficiencies.damage.update(hero)
+
+
 		
 class One_Handed_Weapon(Weapon):
     __tablename__ = 'one_handed_weapon'

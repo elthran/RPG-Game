@@ -31,7 +31,7 @@ function toggleReplyText(button) {
 <ul>
     {% for message in hero.user.inbox.sent_messages %}
     <li>
-        <h3>To: <a href=/display_users/{{ message.receiver.user.username }}>{{ message.receiver.user.username }}</a>
+        <h3>To: <a href=/display_users/see_user/{{ message.receiver.user.username }}>{{ message.receiver.user.username }}</a>
         </h3>
         <p>{{ message.content }}</p>
         <button onclick="toggleReplyText(this)" id="out-{{ message.receiver.user.id }}">Message</button>

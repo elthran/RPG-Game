@@ -1143,6 +1143,7 @@ def command(cmd=None, hero=None):
         print("Warning: Using old code for command: '{}'".format(cmd))
         # Look in the not yet refactored list of if statemens ...
 
+
     if cmd == "woodsman":
         hero.archetype = "Woodsman"
         return "success", 200, {'Content-Type': 'text/plain'}  # //

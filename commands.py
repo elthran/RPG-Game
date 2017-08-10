@@ -103,12 +103,16 @@ class Command:
         item_id = arg_dict.get('data', None, type=int)
         item = database.get_item_by_id(item_id)
         ids_to_unequip = hero.inventory.equip(item)
+
+        hero.refresh_character()
         
         return item.type + "&&" + str(ids_to_unequip)
         
     def unequip(hero, database, arg_dict):
         item_id = arg_dict.get('data', None, type=int)
         item = database.get_item_by_id(item_id)
+
+        hero.refresh_character()
         
         hero.inventory.unequip(item)
         return item.type
@@ -158,3 +162,4 @@ class Command:
         Getattr wrapper ...
         """
         return getattr(Command, name)
+

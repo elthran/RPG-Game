@@ -656,7 +656,15 @@ class Damage(Proficiency):
         tooltips.append("Maximum: " + str(self.maximum)) 
         self.modifier = round(0.1 * self.level + 1, 1)
         # This creates a tooltip for each variable
-        tooltips.append("Modifier: " + str(self.modifier)) 
+        tooltips.append("Modifier: " + str(self.modifier))
+
+
+        # Check for item modifiers
+        for item in myHero.equipped_items():
+            if item.min_damage:
+                self.minimum += item.min_damage
+            if item.max_damage:
+                self.maximum += item.max_damage
         
         
         #This updates the main tooltip string variable.
