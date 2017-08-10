@@ -4,8 +4,12 @@
 <!-- This is the Home page -->	
 <img class="profileImage" src="/static/images/character_background.jpg" alt="Sample">
 <div style="clear: both;"></div>
-<div class="profileContainer">{% for message in get_flashed_messages() %}
-	<p>{{ message }}{% endfor %}
+<div class="profileContainer">
+	{% for message in get_flashed_messages() %}
+		<p>
+			{{ message }}
+		</p>
+	{% endfor %}
 <h1>General Statistics</h1>
 	<div class="profileColumn">
 		<h2>Basic</h2>

@@ -66,7 +66,7 @@ class User(Base):
     is_admin = Column(Boolean)
     inbox_alert = Column(Boolean)
 
-    def __init__(self, username, password, email='', timestamp=None, is_admin=False, inbox_alert=False):
+    def __init__(self, username, password, email='', timestamp=None, is_admin=False):
         """Create a new user object.
         
         The user gets special privileges if it is an admin.
@@ -79,7 +79,7 @@ class User(Base):
         self.email = email
         self.timestamp = timestamp
         self.is_admin = is_admin
-        self.inbox_alert = inbox_alert
+        self.inbox_alert = False
 
 
 class Inbox(Base):
@@ -183,6 +183,8 @@ class Hero(Base):
     #Date of last login
     last_login = Column(String)
 
+    login_alerts = Column(String) # Testing messages when you are attacked or get a new message
+
     # Relationships: see complex_relationships.py
 
     # Many heroes -> one map/world. (bidirectional)
@@ -254,6 +256,7 @@ class Hero(Base):
         # Time code
         self.timestamp = datetime.datetime.utcnow()
         self.last_login = ""
+        self.login_alerts = "testing"
 
         for key in kwargs:
             setattr(self, key, kwargs[key])

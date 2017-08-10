@@ -228,6 +228,7 @@ def login():
             # user wants to play with. Or a page redirect whatever ...
             # Choose hero dialogue ... not implemented.
             hero = user.heroes[0]
+            flash(hero.login_alerts)
             # Below is code for daily login reward. It's temporary as I am just trying to play with and learn about timestamps and whatnot.
             time_now = str(EZDB.now())
             time_now = time_now.split(" ")
@@ -250,10 +251,6 @@ def login():
             # (Marlen)
             game.set_hero(hero)
             game.set_enemy(monster_generator(hero.age))
-
-            # Refresh admin accounts on login.
-            if user.is_admin:
-                hero.refresh_character()
 
             # If it's a new character, send them to cerate_character url
             if hero.character_name is None:
@@ -884,6 +881,7 @@ def battle(this_user=None, hero=None):
         pass
     else:
         enemy = database.fetch_hero_by_username(this_user)
+        enemy.login_alerts += "You have been attacked!-"
         game.set_enemy(enemy)
         game.enemy.experience_rewarded = 5
         game.enemy.items_rewarded = []

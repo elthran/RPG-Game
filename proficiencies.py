@@ -343,7 +343,12 @@ class Health(Proficiency):
         
         
         #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
+        self.tooltip = ';'.join(tooltips)
+
+        # Check for item modifiers
+        for item in myHero.equipped_items():
+            if item.health_modifier:
+                self.maximum += item.health_modifier
 
     @validates('current')
     def validate_health(self, key_name, current):
@@ -708,7 +713,12 @@ class Speed(Proficiency):
         
         
         #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
+        self.tooltip = ';'.join(tooltips)
+
+        # Check for item modifiers
+        for item in myHero.equipped_items():
+            if item.speed:
+                self.speed += item.speed
 
     
     

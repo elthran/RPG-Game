@@ -237,7 +237,7 @@ class Weapon(Wearable):
         hero.proficiencies.speed.speed += self.attack_speed
         """
         hero.proficiencies.damage.update(hero)
-
+        hero.proficiencies.speed.update(hero)
 
 		
 class One_Handed_Weapon(Weapon):
@@ -298,7 +298,8 @@ class Garment(Wearable):
         self.garment = True
 
     def update_stats(self, hero):
-        hero.health_maximum += self.health_modifier
+        #hero.health_maximum += self.health_modifier
+        hero.proficiencies.health.update(hero)
 
 class Chest_Armour(Garment):
     __tablename__ = 'chest_armour'
