@@ -194,15 +194,11 @@ users = [marlen, admin]
 ##########
 #Items
 ##########
-all_store_items = [One_Handed_Weapon("Small Dagger", buy_price=5, min_damage=30,
-        max_damage=60, attack_speed=1),
-    One_Handed_Weapon("Big Dagger", buy_price=10, min_damage=300, max_damage=600,
-        attack_speed=2),
-    Shield("Small Shield", buy_price=10),
-    Two_Handed_Weapon("Small Polearm", buy_price=5, min_damage=30, max_damage=60,
-        attack_speed=1),
-    Two_Handed_Weapon("Medium Polearm", buy_price=5, min_damage=30, max_damage=60,
-        attack_speed=1),
+all_store_items = [One_Handed_Weapon("Crude Dagger", buy_price=5, min_damage=2,
+        max_damage=3, attack_speed=1),
+    Shield("Ice Buckler", buy_price=100, block_chance=15, block_modifier=15, resist_frost=20),
+    Two_Handed_Weapon("Simple Staff", buy_price=10, min_damage=1, max_damage=10,
+        attack_speed=0.5),
     Leg_Armour("Medium Pants", 7, 25),
     Chest_Armour("Medium Tunic", 2, 25),
     Chest_Armour("Strong Tunic", 5, 250),
@@ -211,8 +207,7 @@ all_store_items = [One_Handed_Weapon("Small Dagger", buy_price=5, min_damage=30,
     Feet_Armour("Light Boots", 3, 3),
     Arm_Armour("Light Sleeves", 4, 5),
     Hand_Armour("Light Gloves", 5, 7),
-    Ring("Silver Ring", 8),
-    Shield("Wooden Buckler", buy_price=5)
+    Ring("Silver Ring", 8)
                    ]
 
 all_marketplace_items = [

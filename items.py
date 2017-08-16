@@ -168,7 +168,7 @@ class ItemTemplate(Base):
         self.consumable = False
         
     def update_stats(self, hero):
-        pass
+        hero.refresh_proficiencies()
         
 
 # Subclass of ItemTemplate
@@ -207,6 +207,10 @@ class Weapon(Wearable):
     min_damage = Column(Integer)
     max_damage = Column(Integer)
     attack_speed = Column(Integer)
+    block_chance = Column(Integer)
+    block_modifier = Column(Integer)
+
+    resist_frost = Column(Integer)
     
     one_handed_weapon = Column(Boolean)
     shield = Column(Boolean)
@@ -215,11 +219,15 @@ class Weapon(Wearable):
     __mapper_args__ = {
         'polymorphic_identity':"Weapon",
     }
-    def __init__(self, name, buy_price, min_damage=0, max_damage=0, attack_speed=0):
+    def __init__(self, name, buy_price, min_damage=0, max_damage=0, attack_speed=0, block_chance=0, block_modifier=0, resist_frost=5):
         super().__init__(name, buy_price)
         self.min_damage = min_damage
         self.max_damage = max_damage
         self.attack_speed = attack_speed
+        self.block_chance = block_chance
+        self.block_modifier = block_modifier
+
+        self.resist_frost = resist_frost
         
         #Marked for restructure
         #If self.type == "Weapon" should do the same thing.
@@ -229,15 +237,7 @@ class Weapon(Wearable):
         self.one_handed_weapon = False
         self.shield = False
         self.two_handed_weapon = False
-    
-    def update_stats(self, hero):
-        """
-        hero.proficiencies.damage.minimum += self.min_damage
-        hero.proficiencies.damage.maximum += self.max_damage
-        hero.proficiencies.speed.speed += self.attack_speed
-        """
-        hero.proficiencies.damage.update(hero)
-        hero.proficiencies.speed.update(hero)
+
 
 		
 class One_Handed_Weapon(Weapon):
@@ -262,8 +262,8 @@ class Shield(Weapon):
         'polymorphic_identity':"Shield",
     }
     
-    def __init__(self, name, buy_price):
-        super().__init__(name, buy_price)
+    def __init__(self, name, buy_price, block_chance, block_modifier, resist_frost):
+        super().__init__(name, buy_price, block_chance, block_modifier, resist_frost)
         self.shield = True
         self.weapon = False
 
@@ -297,9 +297,6 @@ class Garment(Wearable):
         self.health_modifier = health_modifier
         self.garment = True
 
-    def update_stats(self, hero):
-        #hero.health_maximum += self.health_modifier
-        hero.proficiencies.health.update(hero)
 
 class Chest_Armour(Garment):
     __tablename__ = 'chest_armour'

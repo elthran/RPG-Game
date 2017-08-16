@@ -347,7 +347,7 @@ class Health(Proficiency):
 
         # Check for item modifiers
         for item in myHero.equipped_items():
-            if item.health_modifier:
+            if item.garment:
                 self.maximum += item.health_modifier
 
     @validates('current')
@@ -663,12 +663,10 @@ class Damage(Proficiency):
         # This creates a tooltip for each variable
         tooltips.append("Modifier: " + str(self.modifier))
 
-
         # Check for item modifiers
         for item in myHero.equipped_items():
-            if item.min_damage:
+            if item.weapon:
                 self.minimum += item.min_damage
-            if item.max_damage:
                 self.maximum += item.max_damage
         
         
@@ -717,8 +715,8 @@ class Speed(Proficiency):
 
         # Check for item modifiers
         for item in myHero.equipped_items():
-            if item.speed:
-                self.speed += item.speed
+            if item.weapon:
+                self.speed += item.attack_speed
 
     
     
@@ -1129,25 +1127,30 @@ class Block(Proficiency):
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
+        # Check for item modifiers
+        self.chance = 0
+        self.modifier = 0
+        for item in myHero.equipped_items():
+            print ("item is:" + str(item.name))
+            try:
+                self.chance += item.block_chance
+                self.modifier += item.block_modifier
+            except:
+                pass
+
+        if self.chance > 0:
+            self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+            self.modifier = round((100 * self.level) ** 0.5 - (self.level / 4) + 0, 0)
         # This creates a tooltip for each variable
-        tooltips.append("Chance: " + str(self.chance)) 
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        tooltips.append("Chance: " + str(self.chance))
         # This creates a tooltip for each variable
-        tooltips.append("Modifier: " + str(self.modifier)) 
-        
-        if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-            self.chance = 0
-            self.reason_for_zero = "You must have a shield equipped"
-        else:
-            self.reason_for_zero = ""
+        tooltips.append("Modifier: " + str(self.modifier))
         
         
         #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
+        self.tooltip = ';'.join(tooltips)
 
-    
-    
 
 class Stealth(Proficiency):
     __tablename__ = "stealth"
@@ -2154,7 +2157,18 @@ class ResistFrost(Proficiency):
         
         
         #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
+        self.tooltip = ';'.join(tooltips)
+
+        # Check for item modifiers
+        for item in myHero.equipped_items():
+            try:
+                print("resist frost success. old resist:" + str(self.modifier) + ". adding:" + str(item.resist_frost))
+                self.modifier += item.resist_frost
+                print("new resist:" + str(self.modifier))
+            except:
+                print ("reist frost: failure.....................")
+
+
 
     
     

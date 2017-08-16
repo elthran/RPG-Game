@@ -228,19 +228,16 @@ def login():
             # user wants to play with. Or a page redirect whatever ...
             # Choose hero dialogue ... not implemented.
             hero = user.heroes[0]
-            flash(hero.login_alerts)
             # Below is code for daily login reward. It's temporary as I am just trying to play with and learn about timestamps and whatnot.
             time_now = str(EZDB.now())
             time_now = time_now.split(" ")
             time_now = time_now[0]
             if hero.last_login == "":
-                print ("First time logging in!")
+                hero.login_alerts += "First time logging in!"
                 hero.last_login = time_now
-            elif hero.last_login == time_now:
-                print("You already logged in today")
-            else:
+            elif hero.last_login != time_now:
                 reward = 3
-                print("Thanks for logging in today! You earn " + str(reward) + " experience.")
+                hero.login_alerts += "Thanks for logging in today! You earn " + str(reward) + " experience."
                 hero.experience += reward
                 hero.level_up()
                 hero.last_login = time_now
@@ -252,6 +249,8 @@ def login():
             game.set_hero(hero)
             game.set_enemy(monster_generator(hero.age))
 
+            flash(hero.login_alerts)
+            hero.login_alerts = ""
             # If it's a new character, send them to cerate_character url
             if hero.character_name is None:
                 return redirect(url_for('create_character'))
