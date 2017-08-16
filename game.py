@@ -204,6 +204,9 @@ class Hero(Base):
     current_city = relationship(
         "Location", back_populates='heroes_by_city',
         foreign_keys='[Hero.city_id]')
+    
+    # variable used for keeping track of clicked attributes on the user table 	
+    clicked_user_attribute = ""
 
     @orm.validates('current_world')
     def validate_current_world(self, key, value):

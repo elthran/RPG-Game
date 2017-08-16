@@ -17,6 +17,7 @@ import pdb
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import sqlalchemy.exc
+from sqlalchemy import desc
 
 # Base is the initialize SQLAlchemy base class. It is used to set up the
 # table metadata.
@@ -258,10 +259,11 @@ class EZDB:
     def fetch_hero_by_id(self, hero_id):
         return self.session.query(Hero).get(hero_id)
 
-    def fetch_sorted_heroes(self, attribute):
+    def fetch_sorted_heroes(self, attribute, descending = False):
         """Return a list of all heroes sorted by attribute.
 
         :param attribute: an attribute of the Hero object.
+        :param descending: the desired direction for the sorted list ascending/descending
         :return: list sorted by attribute.
 
         NOTE: this code is not very flexible. If you tried to access
@@ -273,18 +275,29 @@ class EZDB:
         self.session.query(Hero).join(join_attr).order_by(attr).all()
 
         NOTE: to order by descending:
-        order_by(attribute + " desc")
+        order_by(attribute + " desc") 
+		or 
+		order_by(desc(attribute))
+		
+		Former does not work for numbers
+		
         https://stackoverflow.com/questions/4186062/sqlalchemy-order-by-descending
         """
         if '.' not in attribute:
-            return self.session.query(Hero).order_by(attribute).all()
+            if descending:
+                return self.session.query(Hero).order_by(desc(attribute)).all()
+            else:
+                return self.session.query(Hero).order_by(attribute).all()
         elif attribute.startswith('user'):
             _, attribute = attribute.split('.')
-            return self.session.query(
-                Hero).join(Hero.user).order_by(attribute).all()
+            if descending:
+                return self.session.query(Hero).join(Hero.user).order_by(desc(attribute)).all()
+            else:
+                return self.session.query(Hero).join(Hero.user).order_by(attribute).all()
         else:
             raise Exception("Trying to access an attribute that this code"
                             " does not accommodate.")
+							
     def update(self):
         """Commit current session.
         

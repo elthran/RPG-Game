@@ -462,8 +462,15 @@ def admin(hero=None):
 @app.route('/display_users/<page_type>/<page_detail>', methods=['GET', 'POST'])
 @uses_hero_and_update
 def display_user_page(page_type, page_detail, hero=None):
+    descending = False
+    if page_detail == hero.clicked_user_attribute:
+        hero.clicked_user_attribute = ""
+        descending = True
+    else:
+        hero.clicked_user_attribute = page_detail
+
     if page_type == "display":
-        sorted_heroes = database.fetch_sorted_heroes(page_detail)
+        sorted_heroes = database.fetch_sorted_heroes(page_detail,descending)
         return render_template(
             'users.html', page_title="Users", myHero=hero,
             page_detail=page_detail, all_heroes=sorted_heroes)
