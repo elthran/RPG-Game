@@ -142,13 +142,20 @@ class {{ prof_class }}(Proficiency):
         {% endif -%}
         {% endfor -%}
 
-        {% if prof[0] == "Block" %}
+"""
+        { % if prof[0] == "Block" %}
         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
             self.chance = 0
             self.reason_for_zero = "You must have a shield equipped"
         else:
             self.reason_for_zero = ""
-        {% endif %}
+        { % endif %}
+"""
+
+        for item in myHero.equipped_items():
+            {% for value in prof[3] -%}
+            self.{{value[0].lower()}} += item.{{ prof_tablename }}_{{value[0].lower()}}
+            {% endfor -%}
         
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 

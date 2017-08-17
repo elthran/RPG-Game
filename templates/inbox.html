@@ -55,7 +55,7 @@ function toggleReplyText(button) {
         {% else %}
         <center>OLD MESSAGE</center>
         {% endif %}
-        <h3>From: <a href=/display_users/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></h3>
+        <h3>From: <a href=/display_users/see_user/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></h3>
         <p>{{ message.content }}</p>
         <button onclick="toggleReplyText(this)" id="in-{{ message.sender.user.id }}">Reply</button>
         <div id="replyText-in-{{ message.sender.user.id }}" style="display: none">

@@ -41,7 +41,7 @@ class Game(object):
     def __init__(self, hero=None):
         self.hero = hero
         self.has_enemy = False
-        self.global_chat = [] # I am not sure if this should goin database? Just very temporary chat log that all users can see
+        self.global_chat = []  # I am not sure if this should goin database? Just very temporary chat log that all users can see
 
     def set_enemy(self, enemy):
         self.enemy = enemy
@@ -68,7 +68,7 @@ class User(Base):
 
     def __init__(self, username, password, email='', timestamp=None, is_admin=False):
         """Create a new user object.
-        
+
         The user gets special privileges if it is an admin.
         """
 
@@ -92,10 +92,10 @@ class Inbox(Base):
 
     def get_sent_messages(self):
         """Return a list of all sent messages.
-        
+
         These methods can be used for additional functionality
         such as sorting. NotImplemented!
-        
+
         You can just use:
             user.inbox.sent_messages
         """
@@ -103,10 +103,10 @@ class Inbox(Base):
 
     def get_received_messages(self):
         """Return a list of all received messages.
-        
+
         These methods can be used for additional functionality
         such as sorting. NotImplemented!
-        
+
         You can just use:
             user.inbox.received_messages
         """
@@ -114,15 +114,15 @@ class Inbox(Base):
 
     def send_message(self, receiver, content):
         """Create a message between the inbox's user and another user.
-        
+
         A database commit must take place after this method or the
         message won't stay in existance?
-        
+
         Basically ... the user is in a current session so when
         you add create a message (with bidirectional relationships)
         The Message is automatically added to both users inboxes.
-        To save you need to commit. 
-        
+        To save you need to commit.
+
         So in app.py you will call:
         user.inbox.send_message(other_user, content)
         database.update()
@@ -138,7 +138,7 @@ class Message(Base):
 
     def __init__(self, sender, receiver, content):
         """A message between two users with some content.
-        
+
         Both the sender and receiver are User objects.
         The content is a (formated?) string of text.
         """
@@ -146,7 +146,7 @@ class Message(Base):
         self.receiver = receiver
         self.content = content
         self.unread = True
-        #self.timestamp = timestamp
+        # self.timestamp = timestamp
 
 
 class Hero(Base):
@@ -180,10 +180,10 @@ class Hero(Base):
 
     # Time code of when the (account?) was created
     timestamp = Column(DateTime)
-    #Date of last login
+    # Date of last login
     last_login = Column(String)
 
-    login_alerts = Column(String) # Testing messages when you are attacked or get a new message
+    login_alerts = Column(String)  # Testing messages when you are attacked or get a new message
 
     # Relationships: see complex_relationships.py
 
@@ -204,8 +204,8 @@ class Hero(Base):
     current_city = relationship(
         "Location", back_populates='heroes_by_city',
         foreign_keys='[Hero.city_id]')
-    
-    # variable used for keeping track of clicked attributes on the user table 	
+
+    # variable used for keeping track of clicked attributes on the user table
     clicked_user_attribute = ""
 
     @orm.validates('current_world')
@@ -273,7 +273,7 @@ class Hero(Base):
         # I don't even know if this is supposed to be rebuilt? (Marlen)
         self.refresh_proficiencies()
 
-        #resets experience_percent
+        # resets experience_percent
         self.experience = self.experience
 
     @validates('experience')
@@ -309,7 +309,7 @@ class Hero(Base):
     def refresh_character(self, full=True):
         self.refresh_proficiencies()
         self.refresh_abilities()
-        self.refresh_items() # Should go after proficiencies
+        self.refresh_items()  # Should go after proficiencies
         if full:
             self.proficiencies.health.current = self.proficiencies.health.maximum
             self.proficiencies.sanctity.current = self.proficiencies.sanctity.maximum
@@ -318,7 +318,6 @@ class Hero(Base):
     # I dont think this is needed if the valifators are working? I don't think I ever call this funvtion and the bar seems to be updating properly
     def update_experience_bar(self):
         self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100
-
 
     # updates field variables when hero levels up
     def level_up(self):
@@ -334,10 +333,11 @@ class Hero(Base):
 
     def gain_experience(self, amount):
         new_amount = amount * self.proficiencies.understanding.modifier
-        new_amount = int(new_amount) + (random.random() < new_amount - int(new_amount)) # This will round the number weighted by its decimal (so 1.2 has 20% chance of rounding up)
+        new_amount = int(new_amount) + (random.random() < new_amount - int(
+            new_amount))  # This will round the number weighted by its decimal (so 1.2 has 20% chance of rounding up)
         self.experience += new_amount
         level_up = self.level_up()
-        return new_amount, level_up # Return a variable in case you want to know how much experience you just gained or if you leveled up
+        return new_amount, level_up  # Return a variable in case you want to know how much experience you just gained or if you leveled up
 
     def equipped_items(self):
         return [item for item in self.inventory if item.is_equipped()] or []
@@ -345,7 +345,7 @@ class Hero(Base):
     def non_equipped_items(self):
         return self.inventory.unequipped or []
 
-    def page_refresh_character(self):   # Can we renamed this? I don't really get what it is from the name
+    def page_refresh_character(self):  # Can we renamed this? I don't really get what it is from the name
         # (elthran) It's just temporary code while I amtesting notifications. It will be scrapped soon.
         self.quest_notification = None
 
@@ -358,19 +358,18 @@ class Hero(Base):
                     self.inventory.remove(my_item)
                 break
 
-    # @validates('current_city')
-    # def validate_current_city(self, key, location):
-        # """Assert that current_city is in fact a city.
+                # @validates('current_city')
+                # def validate_current_city(self, key, location):
+                # """Assert that current_city is in fact a city.
 
-        # Also allow current_city to be None.
-        # """
-        # try:
-            # assert location.type in ("Cave", "Town")
-            # return location
-        # except AttributeError:
-            # assert location is None
-            # return None
-
+                # Also allow current_city to be None.
+                # """
+                # try:
+                # assert location.type in ("Cave", "Town")
+                # return location
+                # except AttributeError:
+                # assert location is None
+                # return None
 
     @validates('current_location')
     def validate_current_location(self, key, location):
