@@ -183,12 +183,12 @@ class EZDB:
         """Get the default world for starting heroes.
         """
         return self.session.query(
-            WorldMap).filter_by(name="Test_World2").first()
+            Location).filter_by(name="Htrae", type="map").first()
     
     def get_default_location(self):
         """Get the default location for starting heroes.
         """
-        return self.session.query(Town).filter_by(name="Thornwall").first()
+        return self.session.query(Location).filter_by(name="Thornwall", type="town").first()
         
     def get_default_quests(self):
         """Get the default quests for starting heroes.

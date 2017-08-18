@@ -113,7 +113,7 @@ class Command:
         item = database.get_item_by_id(item_id)
 
         hero.refresh_character()
-        
+
         hero.inventory.unequip(item)
         return item.type
 
