@@ -48,6 +48,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     // Execute a secondary function stored on the button.
                     // Replicates <button onClick=fn(this)> but where the secondary
                     // function occurs AFTER the response (and only on valid responses).
+
+                    // e.g. from Python 'equip' -> return item.type + "&&" + str(ids_to_unequip)
+                    // Sends a list of ids to be toggled.
+                    // in JS -> toggleEquip(button, itemType, idsArrayStr)
+                    // Accepts 'button' as default arg ... plus the item.type and
+                    // list of ids.
                     if (xhttp.responseText === "success") {
                         dataFunction(clickedButton);
                     } else if (xhttp.responseText.substring(0, 5) === "error") {
@@ -69,21 +75,25 @@ document.addEventListener("DOMContentLoaded", function () {
             // See https://www.w3schools.com/xml/ajax_xmlhttprequest_send.asp
             // "&&" acts like the "," in pythonic {key:value, key2:value2}
 
-            // "innerHTML was quick and simple and didn't account for having complex buttons
-            // and now I will need to switch over to using the "name" attribute.
-            // use of "innerHTML" will cause conflict in the future but it is here now.
-            var action = clickedButton.innerHTML.toLowerCase();
-            if (action === "") {
+            // I now have, from most specific to least, 'data-name', 'name' or
+            // 'innerHTML' which can all be used as the name of the Python
+            // function to be called. Use of 'data-name' is the most flexible
+            // and future proof as it can be used in other things than
+            // <button> tags :)
+            var action = clickedButton.getAttribute("data-name");
+            // console.log("action_data-name:", action)
+            if (action === null) {
                 action = clickedButton.getAttribute("name");
-            } else if (action === "") {
-                action = clickedButton.getAttribute("data-name");
+                // console.log("action_name:", action)
             }
-            //console.log("action if name: " + action);
+            if (action === null) {
+                action = clickedButton.innerHTML.toLowerCase();
+                // console.log("action_innerHTML:", action)
+            }
 
-            //get buttons class and save it as the .
+            // console.log("action_final:", action)
             console.log("Button clicked was:", clickedButton);
-
-            // innerHTML for a button is the button's "label" (the part you see).
+            // Send this to the Python app.py 'url.route(/command/<cmd>)'
             xhttp.open(
                 "GET",
                 "/command/" + action + "?location=" + window.location.pathname

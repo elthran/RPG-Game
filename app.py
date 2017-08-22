@@ -28,6 +28,7 @@ from commands import Command
 # _before_ any of them are used.
 import complex_relationships
 from database import EZDB
+from events import Event
 
 
 # INIT AND LOGIN FUNCTIONS
@@ -50,20 +51,43 @@ ALWAYS_VALID_URLS = [
 
 
 class Engine:
+
+    def __init__(self):
+        self.events = {}
+        self.handlers = {}
+
+        move_event = Event('move_event', locals(), "The Hero visits a store.")
+        self.add_event(move_event)
+
+    def add_event(self, event):
+        self.events[event.name] = event
+
+    def add_handler(self, handler):
+        self.handlers[handler.name] = handler
+
     @staticmethod
-    def get_valid_redirect(request_path):
-        """Return a valid redirect given a request.path
-
-        This function must parse a path to extract the variables
-        from it.
-        I am sure there is a better way.
-
-        Found it :P since I already have a valid url I just need to
-        redirect(request.path) instead of
-        redirect(url_for(path))
+    def spawn(event):
         """
 
-        return redirect(url_for(request_path, {}))
+        Example:
+        Event(hero.id, 'move_event', location.id, "The Hero visits a store.")
+        ?Trigger("hero.current_location.name == 'Blacksmith'"
+        """
+        # event
+        # database
+        """Now that I have an move event (for getting to the blacksmith) I
+        want it to check to see if it triggers any other events.
+        It should trigger a "visit the blacksmith quest completion event"
+        And complete this quest.
+        """
+
+        triggers = database.get_all_triggers_by(
+            event.type, event.who, event.what)
+        for trigger in triggers:
+            trigger.activate_if_true(event)
+
+    def on_move(self, handler, location):
+        pass
 
 
 # Work in progress.
@@ -630,6 +654,10 @@ def ability_tree(spec, hero=None):
             else:
                 mastered_abilities.append(ability)
 
+    # TODO abilities are not connected to hero properly!
+    # They need to relate to a specific hero only!
+    # Maybe using the ItemTemplate concept but with and AbilityTemplate
+    # or a metaclass ...
     for ability in database.get_all_abilities():
         # Create a list of unlearned abilities
         # for the current page you are on (basic, archetype,
@@ -948,29 +976,34 @@ def battle(this_user=None, hero=None):
                            myHero=hero, enemy=game.enemy, page_links=page_links)  # return a string
 
 
-# A.k.a "Blacksmith"
-@app.route('/store/<inventory>')
+# a.k.a. "Blacksmith"
+@app.route('/store/<name>')
 @login_required
 @uses_hero_and_update
-def store(inventory, hero=None):
+@update_current_location
+def store(name, hero=None, location=None):
+    # pdb.set_trace()
+    # Engine.spawn('move_event', hero)
     page_title = "Store"
 
     # path = database.get_path_if_exists_and_active(quest_name, hero)
     # if path in hero.quest_paths:
     #     path.advance()
     for path in hero.quest_paths:
-        if path.active and path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 1:
+        if path.active \
+                and path.quest.name == "Get Acquainted with the Blacksmith" \
+                and path.stage == 1:
             path.advance()
     items_for_sale = []
-    if inventory == "Blacksmith":
+    if name == "Blacksmith":
         page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]
         return render_template('store.html', myHero=hero, page_title=page_title, page_links=page_links)  # return a string
-    elif inventory == "armoury":
+    elif name == "armoury":
         page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
         for item in database.get_all_store_items():
-            if item.garment or item.jewelry or item.shield:
+            if item.garment or item.jewelry:
                 items_for_sale.append(item)
-    elif inventory == "weaponry":
+    elif name == "weaponry":
         page_links = [("I think I'd rather look at your ", "/store/armoury", "armour", " selection.")]
         for item in database.get_all_store_items():
             if item.weapon:
@@ -1139,14 +1172,23 @@ def command(cmd=None, hero=None):
     # event.add["database"] = database
 
     try:
-        response = Command.cmd_functions(cmd)(hero, database=database, arg_dict=request.args)
-        database.update()
-        # pdb.set_trace()
-        return response
+        # command_function = getattr(Command, <cmd>)
+        # response = command_function(hero, database,
+        #   javascript_kwargs_from_html)
+        command_function = Command.cmd_functions(cmd)
+        try:
+            response = command_function(hero, database=database,
+                                        arg_dict=request.args)
+            database.update()
+            # pdb.set_trace()
+            return response
+        except Exception as ex:
+            raise ex
     except AttributeError:
         print("Warning: Using old code for command: '{}'".format(cmd))
-        # Look in the not yet refactored list of if statemens ...
-
+        print("You need to write a static function called '{}' in "
+              "commands.py in the Command class.".format(cmd))
+        # Look in the not yet refactored list of if statements ...
 
     if cmd == "woodsman":
         hero.archetype = "Woodsman"
