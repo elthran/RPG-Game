@@ -39,6 +39,7 @@ class Abilities(Base):
 
         # Relationships to a particular ability.
         ironhide = relationship("Ability", uselist=False)
+        walk_the_shadows = relationship("Ability", uselist=False)
 
         def __init__(self):
             self.ironhide = Ability("Ironhide", 5, "Gain 1000 health per level")
@@ -89,6 +90,9 @@ class Ability(Base):
     abilities_ironhide_id = Column(Integer, ForeignKey('abilities.id'))
     abilities_ironhide = relationship("Abilities", back_populates='ironhide',
                                       foreign_keys=abilities_ironhide_id)
+    walk_the_shadows_id = Column(Integer, ForeignKey('abilities.id'))
+    walk_the_shadows = relationship("Abilities", back_populates='walk_the_shadows',
+                                      foreign_keys=walk_the_shadows_id)
 
     #Requirements is a One to Many relationship to self.
     """
