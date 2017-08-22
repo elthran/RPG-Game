@@ -136,26 +136,6 @@ game_worlds = [world]  # Just chop this out and use world instead.
 
 # game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
 
-##########
-# Abilities
-##########
-all_abilities = [Ability("Determination", 5, "Increases Endurance by 3 for each level."),
-                 Ability("Salubrity", 5, "Increases Health by 4 for each level."),
-                 Ability("Gain Gold to Test", 5, "Gain 3 gold for each level, every time you actvate this ability.",
-                         castable=True, cost=2),
-                 Archetype_Ability("Survivalism", 10, "Increases survivalism by 1 for each level.",
-                                   archetype="Woodsman"),
-                 Archetype_Ability("Piety", 10, "Increases divinity by 1 for each level.", archetype="Priest"),
-                 Archetype_Ability("Sagacious", 10, "Increases experience gained by 5% for each level."),
-                 Class_Ability("Panther Aspect", 10, "Increases evade chance by 1% for each level.",
-                               specialization="Hunter"),
-                 Class_Ability("Camouflage", 10, "Increases stealth by 1% for each level.", specialization="Trapper"),
-                 Class_Ability("Luck", 10, "Increases luck by 2 for each level."),
-                 Religious_Ability("Iron Bark", 10, "Increases defence by 2% for each level.", religion="Dryarch"),
-                 Religious_Ability("Wreath of Flames", 10, "Increases fire damage by 3 for each level.",
-                                   religion="Forgoth"),
-                 Religious_Ability("Blessed", 10, "Increases devotion by 5 for each level.")]
-
 ###########
 # Quests
 ##########
@@ -196,7 +176,7 @@ users = [marlen, admin]
 # Items
 ##########
 all_store_items = [
-    One_Handed_Weapon("Poisoned Dagger", buy_price=5, max_durability=3, item_rating=10,
+    One_Handed_Weapon("Rusty Dagger", buy_price=15, max_durability=3, item_rating=10,
                       health_maximum=0, health_current=0,
                       regeneration_speed=0,
                       recovery_efficiency=0,
@@ -204,7 +184,7 @@ all_store_items = [
                       storage_maximum=0, storage_current=0,
                       encumbrance_amount=0,
                       endurance_maximum=0, endurance_current=0,
-                      damage_minimum=2, damage_maximum=10, damage_modifier=1,
+                      damage_minimum=3, damage_maximum=7, damage_modifier=1,
                       speed_speed=0,
                       accuracy_accuracy=0,
                       first_strike_chance=0,
@@ -249,7 +229,7 @@ all_store_items = [
                       resist_piercing_modifier=0,
                       courage_skill=0,
                       sanity_skill=0),
-    Shield("Ice Buckler", buy_price=100, max_durability=3, item_rating=10,
+    Shield("Ice Buckler", buy_price=35, max_durability=3, item_rating=10,
            health_maximum=0, health_current=0,
            regeneration_speed=0,
            recovery_efficiency=0,
@@ -257,7 +237,7 @@ all_store_items = [
            storage_maximum=0, storage_current=0,
            encumbrance_amount=0,
            endurance_maximum=0, endurance_current=0,
-           damage_minimum=2, damage_maximum=10, damage_modifier=1,
+           damage_minimum=0, damage_maximum=0, damage_modifier=0,
            speed_speed=0,
            accuracy_accuracy=0,
            first_strike_chance=0,
@@ -302,7 +282,7 @@ all_store_items = [
            resist_piercing_modifier=0,
            courage_skill=0,
            sanity_skill=0),
-    Two_Handed_Weapon("Simple Staff", buy_price=100, max_durability=3, item_rating=10,
+    Two_Handed_Weapon("Simple Staff", buy_price=40, max_durability=3, item_rating=10,
                       health_maximum=0, health_current=0,
                       regeneration_speed=0,
                       recovery_efficiency=0,

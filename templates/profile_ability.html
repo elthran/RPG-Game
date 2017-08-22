@@ -18,23 +18,9 @@
 	
 	
 	
-      <h2 style="text-align:left;">Unknown</h2>
-        {% for ability in unknown_abilities %}
-          <button class="command" name="upgrade_ability"
-                  data="{{ ability.id }}"
-                  title="{{ ability.name }} {{ ability.display_name }}: {{ ability.description }}">
-              {{ ability.name }}</button>
-                  <img src="/static/images/{{ ability.display_name }}.jpg" alt="?"
-                       style="width:25px;height:25px;"> {{ ability.description }}<br>
-        {% endfor %}
-      <h2 style="text-align:left;">Known</h2>
-        {% for ability in learnable_abilities %}
-          <button class="command command-{{ ability.name }}" value="{{ ability.name }}" title="{{ ability.name }} {{ ability.learn_name }}: {{ ability.description }}">{{ ability.name }}</button><img src="/static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;"> {{ ability.description }}<br>
-        {% endfor %}
-      <h2 style="text-align:left;">Mastered</h2>
-        {% for ability in mastered_abilities %}
-          <img src="/static/images/{{ ability.name }}.jpg"; height:70px; width:70px"><img src="/static/images/{{ ability.display_name }}.jpg" alt="?" style="width:25px;height:25px;"> {{ ability.description }}<br>
-        {% endfor %}
+    <h2 style="text-align:left;">Unknown</h2>
+        {{ myHero.abilities.ironhide.name }}
+            <button class="command" data={{ myHero.abilities.ironhide.id }}" data-function="learn_ability">{{ myHero.abilities.ironhide.name }}</button><br>
 
 {% endblock %}
 

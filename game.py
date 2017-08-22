@@ -23,6 +23,7 @@ from sqlalchemy.orm import validates
 
 from base_classes import Base, BaseDict
 from attributes import Attributes
+from abilities import Abilities
 from proficiencies import Proficiencies
 from inventory import Inventory
 
@@ -231,6 +232,7 @@ class Hero(Base):
 
         self.attributes = Attributes()
         self.proficiencies = Proficiencies()
+        self.abilities = Abilities()
         self.inventory = Inventory()
 
         # Defaults will remain unchanged if no arguments are passed.
@@ -253,8 +255,8 @@ class Hero(Base):
         self.specialized_ability_points = 0
         self.pantheonic_ability_points = 0
 
-        self.attribute_points = 10
-        self.proficiency_points = 10
+        self.attribute_points = 0
+        self.proficiency_points = 0
 
         # Time code
         self.timestamp = datetime.datetime.utcnow()
@@ -298,10 +300,6 @@ class Hero(Base):
         for proficiency in self.proficiencies:
             proficiency.update(self)
 
-    def refresh_abilities(self):
-        for ability in self.abilities:
-            ability.update_stats(self)
-
     def refresh_items(self):
         for item in self.equipped_items():
             item.update_stats(self)
@@ -344,6 +342,11 @@ class Hero(Base):
 
     def non_equipped_items(self):
         return self.inventory.unequipped or []
+
+    def learn_ability(self, ability):
+        self.ability.level += 1
+        print("Trying to learn it! " + ability.name)
+        return True
 
     def page_refresh_character(self):  # Can we renamed this? I don't really get what it is from the name
         # (elthran) It's just temporary code while I amtesting notifications. It will be scrapped soon.

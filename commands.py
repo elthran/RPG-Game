@@ -149,6 +149,13 @@ class Command:
         hero.inventory.unequip(item)
         return item.type
 
+    def learn_ability(hero, database, arg_dict):
+        ability_id = arg_dict.get('data', None, type=int)
+        ability = database.get_ability_by_id(ability_id)
+        hero.learn_ability(ability)
+        print("running learn_ability command:" + ability.name)
+        return "ability learned"
+
     @staticmethod
     def level_proficiency(hero, database, arg_dict):
         """Raise proficiency level, decrement proficiency_points.

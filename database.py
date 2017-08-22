@@ -158,12 +158,10 @@ class EZDB:
         """Return all Users order_by name.
         """
         return self.session.query(User).order_by(User.id).all()
-                    
-    def get_all_abilities(self):
-        """Return all abilities in the database ordered by name.
-        """
 
-        return self.session.query(Ability).order_by(Ability.name).all()
+    def get_ability_by_id(self, ability_id):
+        """Return an ability from its ID."""
+        return self.session.query(Ability).get(ability_id)
 
     def get_all_store_items(self):
         """Return all items in the database ordered by name.

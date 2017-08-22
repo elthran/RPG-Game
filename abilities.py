@@ -21,6 +21,33 @@ import pdb
 # TODO Abilities needs a Template class
 # because currently if I update an ability .. it updates it for all Heroes.
 # And I need a better way of implementing templating :P
+
+ALL_ABILITIES = [
+    "ironhide"
+]
+
+class Abilities(Base):
+        __tablename__ = 'abilities'
+
+        id = Column(Integer, primary_key=True)
+
+        # Relationships
+        ironhide_id = Column(Integer, ForeignKey('ability.id'))
+        ironhide = relationship("Ability", uselist=False, foreign_keys="[Abilities.ironhide_id]")
+
+        def __init__(self):
+            self.ironhide = Ability("Ironhide", 5, "Gain 1000 health per level")
+
+        def items(self):
+            #Returns a list of 2-tuples
+
+            #Basically a dict.items() clone that looks like ([(key, value), (key, value), ...])
+
+            return ((key, getattr(self, key)) for key in ALL_ABILITIES)
+
+        def __iter__(self):
+            return (getattr(self, key) for key in ALL_ABILITIES)
+
 class Ability(Base):
     """Ability object base class.
     
@@ -50,6 +77,7 @@ class Ability(Base):
     castable = Column(Boolean)
     activated = orm.synonym('castable')
     cost = Column(Integer)
+    known = Column(Boolean)
     
     #Requirements is a One to Many relationship to self.
     """
@@ -65,7 +93,7 @@ class Ability(Base):
         'polymorphic_on':type
     }
     
-    def __init__(self, name, max_level, description, hero=None, castable=False, cost=0):
+    def __init__(self, name, max_level, description, hero=None, castable=False, cost=0, known=False):
         """Build a basic ability object.
         
         Castable=True/False denotes whether the Ability is a spell or not.
@@ -89,6 +117,7 @@ class Ability(Base):
         self.type = "Basic"
         self.castable = castable
         self.cost = cost
+        self.known = known
         
         #Use internal method to properly add hero object to the
         #self.heroes relationship.
@@ -115,10 +144,8 @@ class Ability(Base):
             ability.update_stats(hero)
         """
         #Possibly use a dictionary + lambda function. Switch/Case
-        if self.name == "Determination":
-            hero.proficiencies.endurance.maximum += 3 * self.level
-        elif self.name == "Salubrity":
-            hero.proficiencies.health.maximum += 4 * self.level
+        if self.name == "Ironhide":
+            hero.proficiencies.health.maximum += 3 * self.level
 
     def activate(self, hero):
         return self.cast(hero)
@@ -146,7 +173,6 @@ class Ability(Base):
         if self.level < self.max_level:
             self.learn_name = self.adjective[self.level]
 
-    
     def update_owner(self, hero):
         print("Ability to Hero relationship is now Many to Many.")
         print("Instead of One Hero to Many Ablities.")

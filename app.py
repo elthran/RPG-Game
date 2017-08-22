@@ -362,7 +362,7 @@ pierces the air.""".replace('\n', ' ').replace('\r', '')
         hero.current_world = database.get_default_world()
         hero.current_location = database.get_default_location()
     if request.method == 'POST' and hero.name is None:
-        hero.name = request.form["name"]
+        hero.name = request.form["name"].title()
         page_image = "old_man"
         paragraph = None
         conversation = [("Stranger: ", "Where do you come from, child?")]
