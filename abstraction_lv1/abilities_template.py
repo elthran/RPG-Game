@@ -15,10 +15,7 @@ from sqlalchemy import orm
 from base_classes import Base
 import pdb
 
-ALL_ABILITIES = [
-    "ironhide",
-    "walk_the_shadows",
-]
+{% include "abilities_data.py" %}
 
 
 class Abilities(Base):
@@ -32,10 +29,10 @@ class Abilities(Base):
     hero = relationship("Hero", back_populates='abilities')
 
     # Relationships to a particular ability.
-    ironhide = relationship("Ability", uselist=False,
-                            back_populates="abilities_ironhide")
-    walk_the_shadows = relationship("Ability", uselist=False,
-                            back_populates="abilities_walk_the_shadows")
+    {%- for name in ALL_ABILITIES %}
+    {{ name }} = relationship("Ability", uselist=False,
+                            back_populates="abilities_{{ name }}")
+    {%- endfor %}
 
     def __init__(self):
         self.ironhide = Ability("Ironhide", 5, "Gain 1000 health per level")
@@ -84,12 +81,11 @@ class Ability(Base):
 
     # Relationships.
     # Ability to abilities. Abilities is a list of ability objects.
-    abilities_ironhide_id = Column(Integer, ForeignKey('abilities.id'))
-    abilities_ironhide = relationship("Abilities", back_populates='ironhide',
-                                      foreign_keys=abilities_ironhide_id)
-    abilities_walk_the_shadows_id = Column(Integer, ForeignKey('abilities.id'))
-    abilities_walk_the_shadows = relationship("Abilities", back_populates='walk_the_shadows',
-                                      foreign_keys=abilities_walk_the_shadows_id)
+    {%- for name in ALL_ABILITIES %}
+    abilities_{{ name }}_id = Column(Integer, ForeignKey('abilities.id'))
+    abilities_{{ name }} = relationship("Abilities", back_populates='{{ name }}',
+                                      foreign_keys=abilities_{{ name }}_id)
+    {%- endfor %}
     # Requirements is a One to Many relationship to self.
     """
     Use (pseudo-code):
@@ -274,3 +270,4 @@ class Religious_Ability(Ability):
         super().__init__(*args, **kwargs)
         self.type = 'Religious'
         self.religion = religion
+

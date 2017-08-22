@@ -1,7 +1,18 @@
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 import importlib
-import os, stat
+import os
+import stat
+
+
+# Not built!
+# Need to add a backup section.
+# And save the old file as *.bak
+# But don't overwrite old .bak files? Or just make *.bak2, *.bak3 etc.
+def backup(filename):
+    if '.bak' in filename:
+        pass
+    os.path.isfile(path)
 
 
 if __name__ == "__main__":
@@ -24,8 +35,9 @@ if __name__ == "__main__":
         autoescape=select_autoescape(default_for_string=False, default=False)
     )
     
-    #This should be an automatic function! Not manual.
-    names = ["attributes", "proficiencies", "complex_relationships"]
+    # This should be an automatic function! Not manual.
+    names = ["attributes", "proficiencies", "complex_relationships",
+             "abilities"]
     
     for name in names:
         filename = "../" + name + ".py"
@@ -37,21 +49,26 @@ if __name__ == "__main__":
 
         data = {key: getattr(data_module, key) for key in dir(data_module) if key[:2] != '__'}
         
-        #Set file to writeable if it exists.
+        # Set file to writeable if it exists.
         try:
             os.chmod(filename, stat.S_IWRITE)
         except FileNotFoundError:
             pass
 
-            
-        #Need to add a backup section.
-        #And save the old file as *.bak
-        #But don't overwrite old .bak files? Or just make *.bak2, *.bak3 etc.
+        # Need to add a backup section.
+        # And save the old file as *.bak
+        # But don't overwrite old .bak files? Or just make *.bak2, *.bak3 etc.
+        # try:
+        #     if os.path.isfile(path):
+        #         os.rename(filename, filename + '.bak')
+        # except FileNotFoundError:
+        #     pass
+
 
         
-        #Save the newly built code.
+        # Save the newly built code.
         with open(filename, 'w') as file:
             file.write(template.render(**data))
-        
-        #Set file to read only.
+        print("{} updated!".format(name + ".py"))
+        # Set file to read only.
         os.chmod(filename, stat.S_IREAD)
