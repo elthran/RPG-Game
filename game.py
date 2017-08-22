@@ -206,6 +206,9 @@ class Hero(Base):
         "Location", back_populates='heroes_by_city',
         foreign_keys='[Hero.city_id]')
 
+    # Each hero can have one set of Abilities. (bidirectional, One to One).
+    abilities = relationship("Abilities", uselist=False, back_populates='hero')
+
     # variable used for keeping track of clicked attributes on the user table
     clicked_user_attribute = ""
 

@@ -26,14 +26,19 @@ ALL_ABILITIES = [
     "ironhide"
 ]
 
+
 class Abilities(Base):
         __tablename__ = 'abilities'
 
         id = Column(Integer, primary_key=True)
 
         # Relationships
-        ironhide_id = Column(Integer, ForeignKey('ability.id'))
-        ironhide = relationship("Ability", uselist=False, foreign_keys="[Abilities.ironhide_id]")
+        # Each hero can have one list of abilities (bi, one to one)
+        hero_id = Column(Integer, ForeignKey('hero.id'))
+        hero = relationship("Hero", back_populates='abilities')
+
+        # Relationships to a particular ability.
+        ironhide = relationship("Ability", uselist=False)
 
         def __init__(self):
             self.ironhide = Ability("Ironhide", 5, "Gain 1000 health per level")
@@ -78,7 +83,13 @@ class Ability(Base):
     activated = orm.synonym('castable')
     cost = Column(Integer)
     known = Column(Boolean)
-    
+
+    # Relationships.
+    # Ability to abilities. Abilities is a list of ability objects.
+    abilities_ironhide_id = Column(Integer, ForeignKey('abilities.id'))
+    abilities_ironhide = relationship("Abilities", back_populates='ironhide',
+                                      foreign_keys=abilities_ironhide_id)
+
     #Requirements is a One to Many relationship to self.
     """
     Use (pseudo-code):
