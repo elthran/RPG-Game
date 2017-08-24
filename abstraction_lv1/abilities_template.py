@@ -31,7 +31,9 @@ class Abilities(Base):
     # Relationships to a particular ability.
     {%- for name in ALL_ABILITIES %}
     {{ name }} = relationship("Ability", uselist=False,
-                            back_populates="abilities_{{ name }}")
+                              back_populates="abilities_{{ name }}",
+                              foreign_keys = '[Ability.abilities_{{name}}_id]'
+    )
     {%- endfor %}
 
     def __init__(self):
@@ -84,7 +86,7 @@ class Ability(Base):
     {%- for name in ALL_ABILITIES %}
     abilities_{{ name }}_id = Column(Integer, ForeignKey('abilities.id'))
     abilities_{{ name }} = relationship("Abilities", back_populates='{{ name }}',
-                                      foreign_keys=abilities_{{ name }}_id)
+                                      foreign_keys=[abilities_{{ name }}_id])
     {%- endfor %}
     # Requirements is a One to Many relationship to self.
     """
