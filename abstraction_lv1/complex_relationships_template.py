@@ -75,13 +75,13 @@ game.User.heroes = relationship("Hero", order_by='Hero.character_name', backref=
 # game.Hero.known_locations = relationship("Map", secondary=known_locations_association_table)
 ###########
 
-abilities_association_table = Table('abilities_association', Base.metadata,
-    Column('hero_id', Integer, ForeignKey('hero.id')),
-    Column('ability_id', Integer, ForeignKey('ability.id'))
-)
-
-game.Hero.abilities = relationship("Ability", secondary=abilities_association_table, back_populates="heroes")
-abilities.Ability.heroes = relationship("Hero", secondary=abilities_association_table, back_populates="abilities")
+# abilities_association_table = Table('abilities_association', Base.metadata,
+#     Column('hero_id', Integer, ForeignKey('hero.id')),
+#     Column('ability_id', Integer, ForeignKey('ability.id'))
+# )
+#
+# game.Hero.abilities = relationship("Ability", secondary=abilities_association_table, back_populates="heroes")
+# abilities.Ability.heroes = relationship("Hero", secondary=abilities_association_table, back_populates="abilities")
 
 ##########
 #Heroes and Items (and inventory).
