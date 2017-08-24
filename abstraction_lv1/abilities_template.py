@@ -65,7 +65,7 @@ class Ability(Base):
     __tablename__ = "ability"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True)  # Maybe 'unique' is not necessary?
+    name = Column(String)  # Maybe 'unique' is not necessary?
     level = Column(Integer)
     max_level = Column(Integer)
     # Maybe description should be unique? use: unique=True as keyword.

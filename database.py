@@ -89,7 +89,7 @@ class EZDB:
         for obj_list in [
                 prebuilt_objects.users,
                 prebuilt_objects.game_worlds,
-                prebuilt_objects.all_abilities,
+                # prebuilt_objects.all_abilities,
                 prebuilt_objects.all_store_items,
                 prebuilt_objects.all_marketplace_items,
                 prebuilt_objects.all_quests]:
