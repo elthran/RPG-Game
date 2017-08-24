@@ -42,7 +42,8 @@ class Abilities(Base):
     )
 
     def __init__(self):
-        self.ironhide = Ability("Ironhide", 5, "Gain 1000 health per level")
+        self.ironhide = Ability('Ironhide', 5, "Gain 1000 health per level")
+        self.walk_the_shadows = Ability('Walk_the_shadows', 5, "Gain 1000 health per level")
 
     def items(self):
         # Returns a list of 2-tuples

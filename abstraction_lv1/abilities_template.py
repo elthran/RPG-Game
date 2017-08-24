@@ -37,7 +37,9 @@ class Abilities(Base):
     {%- endfor %}
 
     def __init__(self):
-        self.ironhide = Ability("Ironhide", 5, "Gain 1000 health per level")
+        {%- for name in ALL_ABILITIES %}
+        self.{{ name }} = Ability('{{ name | capitalize }}', 5, "Gain 1000 health per level")
+        {%- endfor %}
 
     def items(self):
         # Returns a list of 2-tuples

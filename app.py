@@ -646,6 +646,7 @@ def ability_tree(spec, hero=None):
     mastered_abilities = []
     # Create a list of learned abilities that match current spec.
     for ability in hero.abilities:
+        # pdb.set_trace()
         if ability.ability_type == spec:
             # Add abilities to learnable_abilities (known, but non-mastered)
             # or mastered abilities
