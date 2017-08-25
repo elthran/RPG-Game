@@ -58,11 +58,19 @@ class Proficiency(Base):
     next_value = Column(Integer)
     is_not_max_level = Column(Boolean)
     reason_for_zero = Column(String)
-    
-    _class = Column(String)
+
+    # Extra Ability columns
+    error = Column(String)
+    formatted_name = Column(String)
+    percent = Column(Integer)
+    {%- for column in ALL_PROFICIENCY_COLUMNS %}
+    {{ column }} = Column(Integer)
+    {%- endfor %}
+
+    type = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Proficiency",
-        'polymorphic_on':_class
+        'polymorphic_identity': "Proficiency",
+        'polymorphic_on': type
     }
 
     def __init__(self, name, description, attribute_type):
@@ -93,21 +101,10 @@ class Proficiency(Base):
 {% set prof_class = prof[0].title().replace(" ", '') -%}
 {% set prof_tablename = prof[0].lower().replace(" ", '_') -%}
 class {{ prof_class }}(Proficiency):
-    __tablename__ = "{{ prof_tablename }}"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    {% for column in prof[3] -%}
-    {{ column[0].lower() }} = Column(Integer)
-    {% endfor %}
-    {% if prof[3][0][0] == "Maximum" -%}
-    percent = Column(Integer)
-    {%- endif %}
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"{{ prof_class }}",
-}
+        'polymorphic_identity': "{{ prof_class }}",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

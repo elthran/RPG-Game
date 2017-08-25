@@ -11,15 +11,17 @@ from base_classes import Base
 
 from math import sin, floor
 
-# Name, Description, Attribute_Type, Type, [(Values Name, Value type, (Modifiers of value), Decimal Places)]
-# Linear: (Level multiplier), (Starting Value)
-# Root: Not finished. Looks like square root function. Used for diminishing returns and things that get better the larger they are. (Starting value) [Currently approaches 100]
+"""
+Name, Description, Attribute_Type, Type, [(Values Name, Value type, (Modifiers of value), Decimal Places)]
+Linear: (Level multiplier), (Starting Value)
+Root: Not finished. Looks like square root function. Used for diminishing returns and things that get better the larger they are. (Starting value) [Currently approaches 100]
 
-# Curvy: (larger "0" means it reaches the cap quicker) (smaller [1] means it reaxhes the cap quicker) ([2] is the cap or maximum possible value) ([3] is the negative amount)
-# Sensitive: Like curvy but has decimals (larger [0] means it reaches the cap quicker) (smaller [1] means it reaches the cap quicker) ([2] is the cap or maximum possible value) ([3] is the negative amount)
-# Modifier: (larger [0] means greater amplitude), (larger [1] means greater steepness andfaster increase), (greater [2]  means greater frequency of waves)
-# Percent: ???
-# Empty: Sets this value to take on the value of "maximum". Must be placed after "Maximum" in the list of variables
+Curvy: (larger "0" means it reaches the cap quicker) (smaller [1] means it reaxhes the cap quicker) ([2] is the cap or maximum possible value) ([3] is the negative amount)
+Sensitive: Like curvy but has decimals (larger [0] means it reaches the cap quicker) (smaller [1] means it reaches the cap quicker) ([2] is the cap or maximum possible value) ([3] is the negative amount)
+Modifier: (larger [0] means greater amplitude), (larger [1] means greater steepness andfaster increase), (greater [2]  means greater frequency of waves)
+Percent: ???
+Empty: Sets this value to take on the value of "maximum". Must be placed after "Maximum" in the list of variables
+"""
 PROFICIENCY_INFORMATION = [
     ("Health", "How much you can take before you die", "Vitality", [("Maximum", "linear", (2, 5, 0)), ("Current", "empty")]),
     ("Regeneration", "How quickly your wounds heal", "Vitality", [("Speed", "root", (1, 2))]),
@@ -75,9 +77,12 @@ PROFICIENCY_INFORMATION = [
     ("Sanity", "Your ability to resist mind altering affects", "Willpower", [("Skill", "linear", (1, 0, 0))]),
     ]
 
+ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_")
+                     for attrib in PROFICIENCY_INFORMATION]
 
-
-ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_") for attrib in PROFICIENCY_INFORMATION]
+ALL_PROFICIENCY_COLUMNS = {column[0].lower()
+                           for prof in PROFICIENCY_INFORMATION
+                           for column in prof[3]}
 
 class Proficiencies(Base):
     __tablename__ = 'proficiencies'
@@ -273,11 +278,27 @@ class Proficiency(Base):
     next_value = Column(Integer)
     is_not_max_level = Column(Boolean)
     reason_for_zero = Column(String)
-    
-    _class = Column(String)
+
+    # Extra Ability columns
+    error = Column(String)
+    formatted_name = Column(String)
+    percent = Column(Integer)
+    maximum = Column(Integer)
+    speed = Column(Integer)
+    ability = Column(Integer)
+    skill = Column(Integer)
+    accuracy = Column(Integer)
+    efficiency = Column(Integer)
+    chance = Column(Integer)
+    minimum = Column(Integer)
+    amount = Column(Integer)
+    modifier = Column(Integer)
+    current = Column(Integer)
+
+    type = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Proficiency",
-        'polymorphic_on':_class
+        'polymorphic_identity': "Proficiency",
+        'polymorphic_on': type
     }
 
     def __init__(self, name, description, attribute_type):
@@ -306,19 +327,10 @@ class Proficiency(Base):
 
 
 class Health(Proficiency):
-    __tablename__ = "health"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    maximum = Column(Integer)
-    current = Column(Integer)
-    
-    percent = Column(Integer)
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Health",
-}
+        'polymorphic_identity': "Health",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -367,18 +379,10 @@ class Health(Proficiency):
     
 
 class Regeneration(Proficiency):
-    __tablename__ = "regeneration"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    speed = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Regeneration",
-}
+        'polymorphic_identity': "Regeneration",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -417,18 +421,10 @@ class Regeneration(Proficiency):
     
 
 class Recovery(Proficiency):
-    __tablename__ = "recovery"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    efficiency = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Recovery",
-}
+        'polymorphic_identity': "Recovery",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -467,18 +463,10 @@ class Recovery(Proficiency):
     
 
 class Climbing(Proficiency):
-    __tablename__ = "climbing"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    ability = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Climbing",
-}
+        'polymorphic_identity': "Climbing",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -517,19 +505,10 @@ class Climbing(Proficiency):
     
 
 class Storage(Proficiency):
-    __tablename__ = "storage"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    maximum = Column(Integer)
-    current = Column(Integer)
-    
-    percent = Column(Integer)
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Storage",
-}
+        'polymorphic_identity': "Storage",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -578,18 +557,10 @@ class Storage(Proficiency):
     
 
 class Encumbrance(Proficiency):
-    __tablename__ = "encumbrance"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    amount = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Encumbrance",
-}
+        'polymorphic_identity': "Encumbrance",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -628,19 +599,10 @@ class Encumbrance(Proficiency):
     
 
 class Endurance(Proficiency):
-    __tablename__ = "endurance"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    maximum = Column(Integer)
-    current = Column(Integer)
-    
-    percent = Column(Integer)
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Endurance",
-}
+        'polymorphic_identity': "Endurance",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -689,20 +651,10 @@ class Endurance(Proficiency):
     
 
 class Damage(Proficiency):
-    __tablename__ = "damage"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    minimum = Column(Integer)
-    maximum = Column(Integer)
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Damage",
-}
+        'polymorphic_identity': "Damage",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -751,18 +703,10 @@ class Damage(Proficiency):
     
 
 class Speed(Proficiency):
-    __tablename__ = "speed"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    speed = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Speed",
-}
+        'polymorphic_identity': "Speed",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -801,18 +745,10 @@ class Speed(Proficiency):
     
 
 class Accuracy(Proficiency):
-    __tablename__ = "accuracy"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    accuracy = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Accuracy",
-}
+        'polymorphic_identity': "Accuracy",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -851,18 +787,10 @@ class Accuracy(Proficiency):
     
 
 class FirstStrike(Proficiency):
-    __tablename__ = "first_strike"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    chance = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"FirstStrike",
-}
+        'polymorphic_identity': "FirstStrike",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -901,19 +829,10 @@ class FirstStrike(Proficiency):
     
 
 class Killshot(Proficiency):
-    __tablename__ = "killshot"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    chance = Column(Integer)
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Killshot",
-}
+        'polymorphic_identity': "Killshot",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -957,18 +876,10 @@ class Killshot(Proficiency):
     
 
 class Defence(Proficiency):
-    __tablename__ = "defence"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Defence",
-}
+        'polymorphic_identity': "Defence",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1007,18 +918,10 @@ class Defence(Proficiency):
     
 
 class Evade(Proficiency):
-    __tablename__ = "evade"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    chance = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Evade",
-}
+        'polymorphic_identity': "Evade",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1057,18 +960,10 @@ class Evade(Proficiency):
     
 
 class Parry(Proficiency):
-    __tablename__ = "parry"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    chance = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Parry",
-}
+        'polymorphic_identity': "Parry",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1107,18 +1002,10 @@ class Parry(Proficiency):
     
 
 class Flee(Proficiency):
-    __tablename__ = "flee"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    chance = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Flee",
-}
+        'polymorphic_identity': "Flee",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1157,18 +1044,10 @@ class Flee(Proficiency):
     
 
 class Riposte(Proficiency):
-    __tablename__ = "riposte"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    chance = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Riposte",
-}
+        'polymorphic_identity': "Riposte",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1207,19 +1086,10 @@ class Riposte(Proficiency):
     
 
 class Fatigue(Proficiency):
-    __tablename__ = "fatigue"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    maximum = Column(Integer)
-    current = Column(Integer)
-    
-    percent = Column(Integer)
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Fatigue",
-}
+        'polymorphic_identity': "Fatigue",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1268,19 +1138,10 @@ class Fatigue(Proficiency):
     
 
 class Block(Proficiency):
-    __tablename__ = "block"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    chance = Column(Integer)
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Block",
-}
+        'polymorphic_identity': "Block",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1324,18 +1185,10 @@ class Block(Proficiency):
     
 
 class Stealth(Proficiency):
-    __tablename__ = "stealth"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    chance = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Stealth",
-}
+        'polymorphic_identity': "Stealth",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1374,18 +1227,10 @@ class Stealth(Proficiency):
     
 
 class Pickpocketing(Proficiency):
-    __tablename__ = "pickpocketing"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    chance = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Pickpocketing",
-}
+        'polymorphic_identity': "Pickpocketing",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1424,18 +1269,10 @@ class Pickpocketing(Proficiency):
     
 
 class Faith(Proficiency):
-    __tablename__ = "faith"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Faith",
-}
+        'polymorphic_identity': "Faith",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1474,19 +1311,10 @@ class Faith(Proficiency):
     
 
 class Sanctity(Proficiency):
-    __tablename__ = "sanctity"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    maximum = Column(Integer)
-    current = Column(Integer)
-    
-    percent = Column(Integer)
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Sanctity",
-}
+        'polymorphic_identity': "Sanctity",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1535,18 +1363,10 @@ class Sanctity(Proficiency):
     
 
 class ResistHoly(Proficiency):
-    __tablename__ = "resist_holy"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"ResistHoly",
-}
+        'polymorphic_identity': "ResistHoly",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1585,18 +1405,10 @@ class ResistHoly(Proficiency):
     
 
 class Bartering(Proficiency):
-    __tablename__ = "bartering"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Bartering",
-}
+        'polymorphic_identity': "Bartering",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1635,18 +1447,10 @@ class Bartering(Proficiency):
     
 
 class Oration(Proficiency):
-    __tablename__ = "oration"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Oration",
-}
+        'polymorphic_identity': "Oration",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1685,18 +1489,10 @@ class Oration(Proficiency):
     
 
 class Charm(Proficiency):
-    __tablename__ = "charm"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Charm",
-}
+        'polymorphic_identity': "Charm",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1735,18 +1531,10 @@ class Charm(Proficiency):
     
 
 class Trustworthiness(Proficiency):
-    __tablename__ = "trustworthiness"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Trustworthiness",
-}
+        'polymorphic_identity': "Trustworthiness",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1785,18 +1573,10 @@ class Trustworthiness(Proficiency):
     
 
 class Renown(Proficiency):
-    __tablename__ = "renown"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Renown",
-}
+        'polymorphic_identity': "Renown",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1835,18 +1615,10 @@ class Renown(Proficiency):
     
 
 class Knowledge(Proficiency):
-    __tablename__ = "knowledge"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Knowledge",
-}
+        'polymorphic_identity': "Knowledge",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1885,18 +1657,10 @@ class Knowledge(Proficiency):
     
 
 class Literacy(Proficiency):
-    __tablename__ = "literacy"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Literacy",
-}
+        'polymorphic_identity': "Literacy",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1935,18 +1699,10 @@ class Literacy(Proficiency):
     
 
 class Understanding(Proficiency):
-    __tablename__ = "understanding"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Understanding",
-}
+        'polymorphic_identity': "Understanding",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1985,18 +1741,10 @@ class Understanding(Proficiency):
     
 
 class Luckiness(Proficiency):
-    __tablename__ = "luckiness"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    chance = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Luckiness",
-}
+        'polymorphic_identity': "Luckiness",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2035,18 +1783,10 @@ class Luckiness(Proficiency):
     
 
 class Adventuring(Proficiency):
-    __tablename__ = "adventuring"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    chance = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Adventuring",
-}
+        'polymorphic_identity': "Adventuring",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2085,18 +1825,10 @@ class Adventuring(Proficiency):
     
 
 class Logistics(Proficiency):
-    __tablename__ = "logistics"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Logistics",
-}
+        'polymorphic_identity': "Logistics",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2135,18 +1867,10 @@ class Logistics(Proficiency):
     
 
 class Mountaineering(Proficiency):
-    __tablename__ = "mountaineering"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Mountaineering",
-}
+        'polymorphic_identity': "Mountaineering",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2185,18 +1909,10 @@ class Mountaineering(Proficiency):
     
 
 class Woodsman(Proficiency):
-    __tablename__ = "woodsman"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Woodsman",
-}
+        'polymorphic_identity': "Woodsman",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2235,18 +1951,10 @@ class Woodsman(Proficiency):
     
 
 class Navigator(Proficiency):
-    __tablename__ = "navigator"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Navigator",
-}
+        'polymorphic_identity': "Navigator",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2285,18 +1993,10 @@ class Navigator(Proficiency):
     
 
 class Detection(Proficiency):
-    __tablename__ = "detection"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    chance = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Detection",
-}
+        'polymorphic_identity': "Detection",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2335,18 +2035,10 @@ class Detection(Proficiency):
     
 
 class Caution(Proficiency):
-    __tablename__ = "caution"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    ability = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Caution",
-}
+        'polymorphic_identity': "Caution",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2385,18 +2077,10 @@ class Caution(Proficiency):
     
 
 class Explorer(Proficiency):
-    __tablename__ = "explorer"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    ability = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Explorer",
-}
+        'polymorphic_identity': "Explorer",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2435,18 +2119,10 @@ class Explorer(Proficiency):
     
 
 class Huntsman(Proficiency):
-    __tablename__ = "huntsman"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    ability = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Huntsman",
-}
+        'polymorphic_identity': "Huntsman",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2485,18 +2161,10 @@ class Huntsman(Proficiency):
     
 
 class Survivalist(Proficiency):
-    __tablename__ = "survivalist"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    ability = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Survivalist",
-}
+        'polymorphic_identity': "Survivalist",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2535,18 +2203,10 @@ class Survivalist(Proficiency):
     
 
 class ResistFrost(Proficiency):
-    __tablename__ = "resist_frost"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"ResistFrost",
-}
+        'polymorphic_identity': "ResistFrost",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2585,18 +2245,10 @@ class ResistFrost(Proficiency):
     
 
 class ResistFlame(Proficiency):
-    __tablename__ = "resist_flame"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"ResistFlame",
-}
+        'polymorphic_identity': "ResistFlame",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2635,18 +2287,10 @@ class ResistFlame(Proficiency):
     
 
 class ResistShadow(Proficiency):
-    __tablename__ = "resist_shadow"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"ResistShadow",
-}
+        'polymorphic_identity': "ResistShadow",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2685,18 +2329,10 @@ class ResistShadow(Proficiency):
     
 
 class ResistPoison(Proficiency):
-    __tablename__ = "resist_poison"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"ResistPoison",
-}
+        'polymorphic_identity': "ResistPoison",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2735,18 +2371,10 @@ class ResistPoison(Proficiency):
     
 
 class ResistBlunt(Proficiency):
-    __tablename__ = "resist_blunt"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"ResistBlunt",
-}
+        'polymorphic_identity': "ResistBlunt",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2785,18 +2413,10 @@ class ResistBlunt(Proficiency):
     
 
 class ResistSlashing(Proficiency):
-    __tablename__ = "resist_slashing"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"ResistSlashing",
-}
+        'polymorphic_identity': "ResistSlashing",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2835,18 +2455,10 @@ class ResistSlashing(Proficiency):
     
 
 class ResistPiercing(Proficiency):
-    __tablename__ = "resist_piercing"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    modifier = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"ResistPiercing",
-}
+        'polymorphic_identity': "ResistPiercing",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2885,18 +2497,10 @@ class ResistPiercing(Proficiency):
     
 
 class Courage(Proficiency):
-    __tablename__ = "courage"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    skill = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Courage",
-}
+        'polymorphic_identity': "Courage",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -2935,18 +2539,10 @@ class Courage(Proficiency):
     
 
 class Sanity(Proficiency):
-    __tablename__ = "sanity"
 
-    id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
-
-    skill = Column(Integer)
-    
-    
-    error = Column(String)
-    formatted_name = Column(String)
     __mapper_args__ = {
-        'polymorphic_identity':"Sanity",
-}
+        'polymorphic_identity': "Sanity",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
