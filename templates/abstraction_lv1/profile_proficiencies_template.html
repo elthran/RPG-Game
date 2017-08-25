@@ -2,39 +2,42 @@
 {% block block1 %}{% set hero = myHero %}
 <!-- Basic Skill Page -->
 <div class="profilePage">
-    Points Remaining: <div style="display: inline" id="points_remaining">{{ myHero.proficiency_points }}</div>
+    Points Remaining:
+    <div style="display: inline" id="points_remaining">{{ myHero.proficiency_points }}</div>
 </div>
 <div style="clear: both;"></div>{% endraw %}
-    <div class="proficiencyPage">{% for type in PROFICIENCY_INFORMATION %}{% if loop.index is odd %}
-		<div class="proficiencyPageInner">{% endif %}
-			<h1>{{ type }}{%if type == "Resistance" %}s{% endif %}</h1>
-			<ul>{% raw %}
-            {%- for proficiency in myHero.proficiencies %}
-				{%- if proficiency.type == "{% endraw %}{{ type }}"{% raw %} %}
-                <li>{% endraw %}
-                    <div class="tooltip{% if loop.index is greaterthan 4 %} tooltipLeft{% endif %}">{% raw %}
-                        {{ proficiency.name}}: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
-                        <span id="tooltipPopup-{{ proficiency.id }}">
-                            {{ proficiency.description }}:
-                            {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
-                            {%- for tooltip in proficiency_tooltip %}
-                            <br>&bull; {{ tooltip }}
-                            {%- endfor %}
-                            <div style="display:
-                            {%- if proficiency.is_max_level(hero) %} inline{% else %} none
-                            {%- endif %}"><br>{{ proficiency.error }}</div>
-                        </span>
-                        <button class="command" name="level_proficiency" data="{{ proficiency.id }}"
-                            id="proficiencyButton" data-function="updateProf" 
-                            {%- if myHero.proficiency_points <= 0 or proficiency.is_max_level(hero) %}
-                            style="display: none"{% endif %}></button>
-                    </div>							
-                </li>
-                {%- endif %}
-            {%- endfor %}{% endraw %}
-			</ul>{% if loop.index is even %}
-		</div>{% endif %}{% endfor %}
-    </div>	
+<div class="proficiencyPage">{% for n in range(1, 4) %}
+    <div class="proficiencyPageInner">{% raw %}
+        {% for attribute in profs{% endraw %}{{ n }}{% raw %} %}
+        <h1>
+            <center>{{ attribute.name }}: {{attribute.level }}</center>
+        </h1>
+        {%- for proficiency in myHero.proficiencies %}
+        {%- if proficiency.attribute_type == attribute.name %}
+        <div class="tooltip">
+            <ul>
+                {{ proficiency.name}}:
+                <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
+                <span id="tooltipPopup-{{ proficiency.id }}">
+                                    {{ proficiency.description }}:
+                                    {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
+                                    {%- for tooltip in proficiency_tooltip %}
+                                        <br>&bull; {{ tooltip }}
+                                    {%- endfor %}
+                                    <div style="display:
+                                    {%- if proficiency.is_max_level(hero) %} inline{% else %} none
+                                    {%- endif %}"><br>{{ proficiency.error }}</div>
+                                </span>
+                <button class="command" name="level_proficiency" data="{{ proficiency.id }}" id="proficiencyButton"
+                        data-function="updateProf" {%- if myHero.proficiency_points
+                <= 0 or proficiency.is_max_level(hero) %} style="display: none"{% endif %}></button>
+            </ul>
+        </div>
+        {%- endif %}
+        {%- endfor %}
+        {% endfor %}{% endraw %}
+    </div>{% endfor %}
+</div>
 <div style="clear: both;"></div>
 {% raw %}{% endblock %}
 {% endraw %}
