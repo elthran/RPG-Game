@@ -123,7 +123,7 @@ class Ability(Base):
         Toggleable Class that various Ablities could inherit from.
         """
         self.name = name
-        self.level = 1
+        self.level = 0
         self.max_level = max_level
         self.description = description
         self.type = "Basic"
@@ -145,7 +145,7 @@ class Ability(Base):
         self.display_name = self.adjective[self.level - 1]
         self.learn_name = self.adjective[self.level]
 
-    def update_stats(self, hero):
+    def update(self, hero):
         """Update a hero's stats to reflect them possessing this ability.
 
         Use:

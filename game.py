@@ -269,6 +269,7 @@ class Hero(Base):
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
+        self.refresh_character(full=True)
         self.init_on_load()
 
     @orm.reconstructor

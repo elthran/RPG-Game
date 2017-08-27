@@ -82,6 +82,16 @@ class Proficiency(Base):
         
         self.level = 0
         self.is_not_max_level = False
+
+    @validates('current')
+    def validate_current(self, key_name, current):
+        # Update storage percent on health change.
+        # pdb.set_trace()
+        try:
+            self.percent = round(current / self.maximum, 2) * 100
+        except (TypeError, ZeroDivisionError):
+            self.percent = 0
+        return max(current or 0, 0)
         
     def is_max_level(self, hero):
         """Return whether proficiency is max level.
@@ -155,19 +165,7 @@ class {{ prof_class }}(Proficiency):
             {% endfor -%}
         
         #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    {% if prof[3][0][0] == "Maximum" -%}
-    @validates('current')
-    def validate_{{ prof[0].lower() }}(self, key_name, current):
-        #Update {{ prof[0].lower() }} percent on health change.
-        try:
-            self.percent = round(current / self.maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.percent = 0
-        return max(current or 0, 0)
-    {%- endif %}
-    
+        self.tooltip = ';'.join(tooltips)
 {% endfor %}
 
 

@@ -12,15 +12,25 @@ from base_classes import Base
 from math import sin, floor
 
 """
-Name, Description, Attribute_Type, Type, [(Values Name, Value type, (Modifiers of value), Decimal Places)]
+Name, Description, Attribute_Type, Type, [(Values Name, Value type,
+    (Modifiers of value), Decimal Places)]
 Linear: (Level multiplier), (Starting Value)
-Root: Not finished. Looks like square root function. Used for diminishing returns and things that get better the larger they are. (Starting value) [Currently approaches 100]
+Root: Not finished. Looks like square root function. Used for diminishing
+    returns and things that get better the larger they are. (Starting value)
+    [Currently approaches 100]
 
-Curvy: (larger "0" means it reaches the cap quicker) (smaller [1] means it reaxhes the cap quicker) ([2] is the cap or maximum possible value) ([3] is the negative amount)
-Sensitive: Like curvy but has decimals (larger [0] means it reaches the cap quicker) (smaller [1] means it reaches the cap quicker) ([2] is the cap or maximum possible value) ([3] is the negative amount)
-Modifier: (larger [0] means greater amplitude), (larger [1] means greater steepness andfaster increase), (greater [2]  means greater frequency of waves)
+Curvy: (larger "0" means it reaches the cap quicker) (smaller [1] means it
+    reaxhes the cap quicker) ([2] is the cap or maximum possible value)
+    ([3] is the negative amount)
+Sensitive: Like curvy but has decimals (larger [0] means it reaches the cap
+    quicker) (smaller [1] means it reaches the cap quicker) ([2] is the cap
+    or maximum possible value) ([3] is the negative amount)
+Modifier: (larger [0] means greater amplitude), (larger [1] means greater
+    steepness andfaster increase), (greater [2]  means greater frequency of
+    waves)
 Percent: ???
-Empty: Sets this value to take on the value of "maximum". Must be placed after "Maximum" in the list of variables
+Empty: Sets this value to take on the value of "maximum". Must be placed after
+    "Maximum" in the list of variables
 """
 PROFICIENCY_INFORMATION = [
     ("Health", "How much you can take before you die", "Vitality", [("Maximum", "linear", (2, 5, 0)), ("Current", "empty")]),
@@ -283,17 +293,17 @@ class Proficiency(Base):
     error = Column(String)
     formatted_name = Column(String)
     percent = Column(Integer)
-    maximum = Column(Integer)
-    speed = Column(Integer)
-    ability = Column(Integer)
-    skill = Column(Integer)
-    accuracy = Column(Integer)
-    efficiency = Column(Integer)
-    chance = Column(Integer)
-    minimum = Column(Integer)
     amount = Column(Integer)
     modifier = Column(Integer)
+    maximum = Column(Integer)
+    speed = Column(Integer)
+    efficiency = Column(Integer)
+    ability = Column(Integer)
+    minimum = Column(Integer)
+    accuracy = Column(Integer)
+    skill = Column(Integer)
     current = Column(Integer)
+    chance = Column(Integer)
 
     type = Column(String)
     __mapper_args__ = {
@@ -310,6 +320,16 @@ class Proficiency(Base):
         
         self.level = 0
         self.is_not_max_level = False
+
+    @validates('current')
+    def validate_current(self, key_name, current):
+        # Update storage percent on health change.
+        # pdb.set_trace()
+        try:
+            self.percent = round(current / self.maximum, 2) * 100
+        except (TypeError, ZeroDivisionError):
+            self.percent = 0
+        return max(current or 0, 0)
         
     def is_max_level(self, hero):
         """Return whether proficiency is max level.
@@ -366,17 +386,7 @@ class Health(Proficiency):
             self.maximum += item.health_maximum
             self.current += item.health_current
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    @validates('current')
-    def validate_health(self, key_name, current):
-        #Update health percent on health change.
-        try:
-            self.percent = round(current / self.maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.percent = 0
-        return max(current or 0, 0)
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Regeneration(Proficiency):
 
@@ -415,10 +425,7 @@ class Regeneration(Proficiency):
         for item in myHero.equipped_items():
             self.speed += item.regeneration_speed
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Recovery(Proficiency):
 
@@ -457,10 +464,7 @@ class Recovery(Proficiency):
         for item in myHero.equipped_items():
             self.efficiency += item.recovery_efficiency
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Climbing(Proficiency):
 
@@ -499,10 +503,7 @@ class Climbing(Proficiency):
         for item in myHero.equipped_items():
             self.ability += item.climbing_ability
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Storage(Proficiency):
 
@@ -544,17 +545,7 @@ class Storage(Proficiency):
             self.maximum += item.storage_maximum
             self.current += item.storage_current
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    @validates('current')
-    def validate_storage(self, key_name, current):
-        #Update storage percent on health change.
-        try:
-            self.percent = round(current / self.maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.percent = 0
-        return max(current or 0, 0)
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Encumbrance(Proficiency):
 
@@ -593,10 +584,7 @@ class Encumbrance(Proficiency):
         for item in myHero.equipped_items():
             self.amount += item.encumbrance_amount
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Endurance(Proficiency):
 
@@ -638,17 +626,7 @@ class Endurance(Proficiency):
             self.maximum += item.endurance_maximum
             self.current += item.endurance_current
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    @validates('current')
-    def validate_endurance(self, key_name, current):
-        #Update endurance percent on health change.
-        try:
-            self.percent = round(current / self.maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.percent = 0
-        return max(current or 0, 0)
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Damage(Proficiency):
 
@@ -697,10 +675,7 @@ class Damage(Proficiency):
             self.maximum += item.damage_maximum
             self.modifier += item.damage_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Speed(Proficiency):
 
@@ -739,10 +714,7 @@ class Speed(Proficiency):
         for item in myHero.equipped_items():
             self.speed += item.speed_speed
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Accuracy(Proficiency):
 
@@ -781,10 +753,7 @@ class Accuracy(Proficiency):
         for item in myHero.equipped_items():
             self.accuracy += item.accuracy_accuracy
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class FirstStrike(Proficiency):
 
@@ -823,10 +792,7 @@ class FirstStrike(Proficiency):
         for item in myHero.equipped_items():
             self.chance += item.first_strike_chance
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Killshot(Proficiency):
 
@@ -870,10 +836,7 @@ class Killshot(Proficiency):
             self.chance += item.killshot_chance
             self.modifier += item.killshot_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Defence(Proficiency):
 
@@ -912,10 +875,7 @@ class Defence(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.defence_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Evade(Proficiency):
 
@@ -954,10 +914,7 @@ class Evade(Proficiency):
         for item in myHero.equipped_items():
             self.chance += item.evade_chance
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Parry(Proficiency):
 
@@ -996,10 +953,7 @@ class Parry(Proficiency):
         for item in myHero.equipped_items():
             self.chance += item.parry_chance
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Flee(Proficiency):
 
@@ -1038,10 +992,7 @@ class Flee(Proficiency):
         for item in myHero.equipped_items():
             self.chance += item.flee_chance
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Riposte(Proficiency):
 
@@ -1080,10 +1031,7 @@ class Riposte(Proficiency):
         for item in myHero.equipped_items():
             self.chance += item.riposte_chance
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Fatigue(Proficiency):
 
@@ -1125,17 +1073,7 @@ class Fatigue(Proficiency):
             self.maximum += item.fatigue_maximum
             self.current += item.fatigue_current
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    @validates('current')
-    def validate_fatigue(self, key_name, current):
-        #Update fatigue percent on health change.
-        try:
-            self.percent = round(current / self.maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.percent = 0
-        return max(current or 0, 0)
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Block(Proficiency):
 
@@ -1179,10 +1117,7 @@ class Block(Proficiency):
             self.chance += item.block_chance
             self.modifier += item.block_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Stealth(Proficiency):
 
@@ -1221,10 +1156,7 @@ class Stealth(Proficiency):
         for item in myHero.equipped_items():
             self.chance += item.stealth_chance
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Pickpocketing(Proficiency):
 
@@ -1263,10 +1195,7 @@ class Pickpocketing(Proficiency):
         for item in myHero.equipped_items():
             self.chance += item.pickpocketing_chance
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Faith(Proficiency):
 
@@ -1305,10 +1234,7 @@ class Faith(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.faith_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Sanctity(Proficiency):
 
@@ -1350,17 +1276,7 @@ class Sanctity(Proficiency):
             self.maximum += item.sanctity_maximum
             self.current += item.sanctity_current
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    @validates('current')
-    def validate_sanctity(self, key_name, current):
-        #Update sanctity percent on health change.
-        try:
-            self.percent = round(current / self.maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.percent = 0
-        return max(current or 0, 0)
-    
+        self.tooltip = ';'.join(tooltips)
 
 class ResistHoly(Proficiency):
 
@@ -1399,10 +1315,7 @@ class ResistHoly(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.resist_holy_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Bartering(Proficiency):
 
@@ -1441,10 +1354,7 @@ class Bartering(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.bartering_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Oration(Proficiency):
 
@@ -1483,10 +1393,7 @@ class Oration(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.oration_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Charm(Proficiency):
 
@@ -1525,10 +1432,7 @@ class Charm(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.charm_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Trustworthiness(Proficiency):
 
@@ -1567,10 +1471,7 @@ class Trustworthiness(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.trustworthiness_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Renown(Proficiency):
 
@@ -1609,10 +1510,7 @@ class Renown(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.renown_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Knowledge(Proficiency):
 
@@ -1651,10 +1549,7 @@ class Knowledge(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.knowledge_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Literacy(Proficiency):
 
@@ -1693,10 +1588,7 @@ class Literacy(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.literacy_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Understanding(Proficiency):
 
@@ -1735,10 +1627,7 @@ class Understanding(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.understanding_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Luckiness(Proficiency):
 
@@ -1777,10 +1666,7 @@ class Luckiness(Proficiency):
         for item in myHero.equipped_items():
             self.chance += item.luckiness_chance
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Adventuring(Proficiency):
 
@@ -1819,10 +1705,7 @@ class Adventuring(Proficiency):
         for item in myHero.equipped_items():
             self.chance += item.adventuring_chance
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Logistics(Proficiency):
 
@@ -1861,10 +1744,7 @@ class Logistics(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.logistics_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Mountaineering(Proficiency):
 
@@ -1903,10 +1783,7 @@ class Mountaineering(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.mountaineering_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Woodsman(Proficiency):
 
@@ -1945,10 +1822,7 @@ class Woodsman(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.woodsman_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Navigator(Proficiency):
 
@@ -1987,10 +1861,7 @@ class Navigator(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.navigator_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Detection(Proficiency):
 
@@ -2029,10 +1900,7 @@ class Detection(Proficiency):
         for item in myHero.equipped_items():
             self.chance += item.detection_chance
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Caution(Proficiency):
 
@@ -2071,10 +1939,7 @@ class Caution(Proficiency):
         for item in myHero.equipped_items():
             self.ability += item.caution_ability
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Explorer(Proficiency):
 
@@ -2113,10 +1978,7 @@ class Explorer(Proficiency):
         for item in myHero.equipped_items():
             self.ability += item.explorer_ability
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Huntsman(Proficiency):
 
@@ -2155,10 +2017,7 @@ class Huntsman(Proficiency):
         for item in myHero.equipped_items():
             self.ability += item.huntsman_ability
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Survivalist(Proficiency):
 
@@ -2197,10 +2056,7 @@ class Survivalist(Proficiency):
         for item in myHero.equipped_items():
             self.ability += item.survivalist_ability
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class ResistFrost(Proficiency):
 
@@ -2239,10 +2095,7 @@ class ResistFrost(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.resist_frost_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class ResistFlame(Proficiency):
 
@@ -2281,10 +2134,7 @@ class ResistFlame(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.resist_flame_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class ResistShadow(Proficiency):
 
@@ -2323,10 +2173,7 @@ class ResistShadow(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.resist_shadow_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class ResistPoison(Proficiency):
 
@@ -2365,10 +2212,7 @@ class ResistPoison(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.resist_poison_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class ResistBlunt(Proficiency):
 
@@ -2407,10 +2251,7 @@ class ResistBlunt(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.resist_blunt_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class ResistSlashing(Proficiency):
 
@@ -2449,10 +2290,7 @@ class ResistSlashing(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.resist_slashing_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class ResistPiercing(Proficiency):
 
@@ -2491,10 +2329,7 @@ class ResistPiercing(Proficiency):
         for item in myHero.equipped_items():
             self.modifier += item.resist_piercing_modifier
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Courage(Proficiency):
 
@@ -2533,10 +2368,7 @@ class Courage(Proficiency):
         for item in myHero.equipped_items():
             self.skill += item.courage_skill
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 class Sanity(Proficiency):
 
@@ -2575,10 +2407,7 @@ class Sanity(Proficiency):
         for item in myHero.equipped_items():
             self.skill += item.sanity_skill
             #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips) 
-
-    
-    
+        self.tooltip = ';'.join(tooltips)
 
 
 
