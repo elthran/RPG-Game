@@ -659,6 +659,7 @@ def ability_tree(spec, hero=None):
     # They need to relate to a specific hero only!
     # Maybe using the ItemTemplate concept but with and AbilityTemplate
     # or a metaclass ...
+    """ Commented out for now
     for ability in database.get_all_abilities():
         # Create a list of unlearned abilities
         # for the current page you are on (basic, archetype,
@@ -675,6 +676,7 @@ def ability_tree(spec, hero=None):
                     unknown_abilities.append(ability)
             else:
                 unknown_abilities.append(ability)
+    """
     return render_template(
         'profile_ability.html', myHero=hero, ability_tree=spec,
         unknown_abilities=unknown_abilities,

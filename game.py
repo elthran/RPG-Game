@@ -303,6 +303,11 @@ class Hero(Base):
         for proficiency in self.proficiencies:
             proficiency.update(self)
 
+    def refresh_abilities(self):
+        for ability in self.abilities:
+            if ability.level > 0:
+                ability.update(self)
+
     def refresh_items(self):
         for item in self.equipped_items():
             item.update_stats(self)
