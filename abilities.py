@@ -32,17 +32,21 @@ class Abilities(Base):
     hero = relationship("Hero", back_populates='abilities')
 
     # Relationships to a particular ability.
-    ironhide = relationship("Ability", uselist=False,
-                              back_populates="abilities_ironhide",
-                              foreign_keys = '[Ability.abilities_ironhide_id]'
-    )
-    walk_the_shadows = relationship("Ability", uselist=False,
-                              back_populates="abilities_walk_the_shadows",
-                              foreign_keys = '[Ability.abilities_walk_the_shadows_id]'
-    )
+    ironhide_id = Column(Integer, ForeignKey('ability.id'))
+    ironhide = relationship(
+        "Ability", uselist=False, back_populates="abilities",
+        primaryjoin="and_(Abilities.id==foreign(Ability.abilities_id), " 
+                         "Ability.id==Abilities.ironhide_id)")
+
+    walk_the_shadows_id = Column(Integer, ForeignKey('ability.id'))
+    walk_the_shadows = relationship(
+        "Ability", uselist=False, back_populates="abilities",
+        primaryjoin="and_(Abilities.id==foreign(Ability.abilities_id), "
+                          "Ability.id==Abilities.walk_the_shadows_id)")
 
     def __init__(self):
-        self.ironhide = Ability('Ironhide', 5, "Gain 1000 health per level")
+        self.ironhide = Ability('Ironhide', 5, "Gain 1000 health per level",
+                                learnable=True)
         self.walk_the_shadows = Ability('Walk_the_shadows', 5, "Gain 1000 health per level")
 
     def items(self):
@@ -85,24 +89,22 @@ class Ability(Base):
     castable = Column(Boolean)
     activated = orm.synonym('castable')
     cost = Column(Integer)
-    known = Column(Boolean)
+    learnable = Column(Boolean)
 
     # Relationships.
     # Ability to abilities. Abilities is a list of ability objects.
-    abilities_ironhide_id = Column(Integer, ForeignKey('abilities.id'))
-    abilities_ironhide = relationship("Abilities", back_populates='ironhide',
-                                      foreign_keys=[abilities_ironhide_id])
-    abilities_walk_the_shadows_id = Column(Integer, ForeignKey('abilities.id'))
-    abilities_walk_the_shadows = relationship("Abilities", back_populates='walk_the_shadows',
-                                      foreign_keys=[abilities_walk_the_shadows_id])
+    abilities_id = Column(Integer, ForeignKey('abilities.id'))
+    abilities = relationship("Abilities",
+        primaryjoin="Abilities.id==Ability.abilities_id")
+
     # Requirements is a One to Many relationship to self.
     """
     Use (pseudo-code):
     hero.can_learn(ability)
     if all hero.abilities are in ability.requirements.
     """
-    ability_id = Column(Integer, ForeignKey('ability.id'))
-    requirements = relationship("Ability")
+    # ability_id = Column(Integer, ForeignKey('ability.id'))
+    # requirements = relationship("Ability")
 
     __mapper_args__ = {
         'polymorphic_identity': 'Basic',
@@ -110,7 +112,7 @@ class Ability(Base):
     }
 
     def __init__(self, name, max_level, description, hero=None, castable=False,
-                 cost=0, known=False):
+                 cost=0, learnable=False):
         """Build a basic ability object.
 
         Castable=True/False denotes whether the Ability is a spell or not.
@@ -134,7 +136,7 @@ class Ability(Base):
         self.type = "Basic"
         self.castable = castable
         self.cost = cost
-        self.known = known
+        self.learnable = learnable
 
         # Use internal method to properly add hero object to the
         # self.heroes relationship.
@@ -149,6 +151,10 @@ class Ability(Base):
         self.adjective = ["I", "II", "III", "IV", "V", "VI"]
         self.display_name = self.adjective[self.level - 1]
         self.learn_name = self.adjective[self.level]
+
+    def is_max_level(self):
+        """Return True if level is at max_level."""
+        return self.level >= self.max_level
 
     def update(self, hero):
         """Update a hero's stats to reflect them possessing this ability.

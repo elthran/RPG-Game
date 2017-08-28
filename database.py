@@ -129,6 +129,18 @@ class EZDB:
                 "object, or has not been imported into "
                 "'database' module yet.".format(obj_name))
 
+    def get_abilities_by_hero_id(self, hero, learnable=False):
+        """Get all abilities of a given hero with keywords.
+
+        E.g. get all 'learnable'=True
+        """
+        if learnable:
+            return self.session.query(Ability).filter_by(
+                abilities_id=hero.abilities.id, learnable=learnable).all()
+        else:
+            return self.session.query(Ability).filter_by(
+                abilities_id=hero.abilities.id).all()
+
     def get_object_by_name(self, obj_class_name, obj_name):
         """Retrieve an object from the database by name.
 
@@ -274,11 +286,11 @@ class EZDB:
 
         NOTE: to order by descending:
         order_by(attribute + " desc") 
-		or 
-		order_by(desc(attribute))
-		
-		Former does not work for numbers
-		
+        or
+        order_by(desc(attribute))
+
+        Former does not work for numbers
+
         https://stackoverflow.com/questions/4186062/sqlalchemy-order-by-descending
         """
         if '.' not in attribute:
@@ -295,7 +307,7 @@ class EZDB:
         else:
             raise Exception("Trying to access an attribute that this code"
                             " does not accommodate.")
-							
+
     def update(self):
         """Commit current session.
         
