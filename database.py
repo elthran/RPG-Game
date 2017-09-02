@@ -28,7 +28,7 @@ from sqlalchemy import desc
 import base_classes
 # Internal game modules
 from game import User, Hero, Inbox
-from abilities import Ability
+from abilities import Abilities, Ability
 from locations import Location  # , WorldMap, Town, Cave
 from items import ItemTemplate, Item
 from quests import Quest
@@ -129,17 +129,11 @@ class EZDB:
                 "object, or has not been imported into "
                 "'database' module yet.".format(obj_name))
 
-    def get_abilities_by_hero_id(self, hero, learnable=False):
-        """Get all abilities of a given hero with keywords.
-
-        E.g. get all 'learnable'=True
-        """
-        if learnable:
-            return self.session.query(Ability).filter_by(
-                abilities_id=hero.abilities.id, learnable=learnable).all()
-        else:
-            return self.session.query(Ability).filter_by(
-                abilities_id=hero.abilities.id).all()
+    def get_learnable_abilities(self, hero):
+        """Get all learnable abilities of a given hero."""
+        return self.session.query(Ability).\
+            filter_by(abilities_id=hero.abilities.id).\
+            filter_by(learnable=True).all()
 
     def get_object_by_name(self, obj_class_name, obj_name):
         """Retrieve an object from the database by name.

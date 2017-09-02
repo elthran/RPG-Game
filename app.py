@@ -642,8 +642,13 @@ def ability_tree(spec, hero=None):
     page_title = "Abilities"
 
     unknown_abilities = []
-    learnable_abilities = database.get_abilities_by_hero_id(hero,
-                                                            learnable=True)
+    learnable_abilities = database.get_learnable_abilities(hero)
+
+    # For testing
+    for ability in learnable_abilities:
+        print("Learnable:", str(ability))
+    # End for testing
+
     mastered_abilities = []
     # Create a list of learned abilities that match current spec.
     for ability in hero.abilities:

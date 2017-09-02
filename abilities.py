@@ -1,9 +1,9 @@
-# //////////////////////////////////////////////////////////////////////////////#
-#                                                                              #
-#  Author: Elthran B, Jimmy Zhang                                              #
-#  Email : jimmy.gnahz@gmail.com                                               #
-#                                                                              #
-# //////////////////////////////////////////////////////////////////////////////#
+# ////////////////////////////////////////////////////////////////////////////#
+#                                                                             #
+#  Author: Elthran B, Jimmy Zhang                                             #
+#  Email : jimmy.gnahz@gmail.com                                              #
+#                                                                             #
+# ////////////////////////////////////////////////////////////////////////////#
 
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
@@ -20,6 +20,8 @@ ALL_ABILITIES = [
     "walk_the_shadows",
 ]
 
+# "determination", 5, "Increases Endurance by 3 for each level."
+
 
 class Abilities(Base):
     __tablename__ = 'abilities'
@@ -32,31 +34,47 @@ class Abilities(Base):
     hero = relationship("Hero", back_populates='abilities')
 
     # Relationships to a particular ability.
-    ironhide_id = Column(Integer, ForeignKey('ability.id'))
     ironhide = relationship(
-        "Ability", uselist=False, back_populates="abilities",
-        primaryjoin="and_(Abilities.id==foreign(Ability.abilities_id), " 
-                         "Ability.id==Abilities.ironhide_id)")
-
-    walk_the_shadows_id = Column(Integer, ForeignKey('ability.id'))
+        "Ability",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='ironhide')",
+        back_populates="abilities", uselist=False)
     walk_the_shadows = relationship(
-        "Ability", uselist=False, back_populates="abilities",
-        primaryjoin="and_(Abilities.id==foreign(Ability.abilities_id), "
-                          "Ability.id==Abilities.walk_the_shadows_id)")
+        "Ability",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='walk_the_shadows')",
+        back_populates="abilities", uselist=False)
 
     def __init__(self):
-        self.ironhide = Ability('Ironhide', 5, "Gain 1000 health per level",
+        self.ironhide = Ability('ironhide', 5, "Gain 1000 health per level",
                                 learnable=True)
-        self.walk_the_shadows = Ability('Walk_the_shadows', 5, "Gain 1000 health per level")
+        # print(self.ironhide)
+        # exit("Debugging init.")
+        self.walk_the_shadows = Ability('Walk_the_shadows', 5,
+                                        "Gain 1000 health per level")
 
     def items(self):
-        # Returns a list of 2-tuples
+        """Return each Ability and its name.
 
-        # Basically a dict.items() clone that looks like ([(key, value), (key, value), ...])
+        Returns a list of 2-tuples
+        Basically a dict.items() clone that looks like ([(key, value),
+            (key, value), ...])
+
+        Usage:
+        for name, ability in abilities.items():
+            name -- the name of the attribute
+            ability -- the object that corresponds to the named attribute.
+        """
 
         return ((key, getattr(self, key)) for key in ALL_ABILITIES)
 
     def __iter__(self):
+        """Allow this object to be used in a for call.
+
+        for ability in abilities:
+            ability -- where the ability is each of the attribute objects of
+                the abilities class.
+        """
         return (getattr(self, key) for key in ALL_ABILITIES)
 
 
@@ -82,7 +100,8 @@ class Ability(Base):
     description = Column(String)
 
     # Note: Original code used default of "Unknown"
-    # I chopped the BasicAbility class as redundant. Now I am going to have to add the fucker back in.
+    # I chopped the BasicAbility class as redundant. Now I am going to
+    # have to add the fucker back in.
     type = Column(String)
     ability_type = orm.synonym('type')
 
@@ -94,8 +113,7 @@ class Ability(Base):
     # Relationships.
     # Ability to abilities. Abilities is a list of ability objects.
     abilities_id = Column(Integer, ForeignKey('abilities.id'))
-    abilities = relationship("Abilities",
-        primaryjoin="Abilities.id==Ability.abilities_id")
+    abilities = relationship("Abilities")
 
     # Requirements is a One to Many relationship to self.
     """
@@ -117,17 +135,18 @@ class Ability(Base):
 
         Castable=True/False denotes whether the Ability is a spell or not.
 
-        Note: arguments (name, hero, max_level, etc.) that require input are the same as setting
-        nullable=False as a Column property.
+        Note: arguments (name, hero, max_level, etc.) that require input are
+        the same as setting nullable=False as a Column property.
         Note2: can't currently set 'level' attribute.
         Note3: Ability to Hero relationship is Many to Many. This will require
         some major restructuring.
 
         Future:
-        add in 'toggleable'=True/False for abilities that can be turned on and off
-        add in active=True/False for wether the ability is turned on or off right now.
+        add in 'toggleable'=True/False for abilities that can be turned on and
+        off add in active=True/False for whether the ability is turned on or
+        off right now.
         Or possibly extend the Ability class into a Spell Class and make a
-        Toggleable Class that various Ablities could inherit from.
+        Toggleable Class that various Abilities could inherit from.
         """
         self.name = name
         self.level = 0
@@ -151,6 +170,10 @@ class Ability(Base):
         self.adjective = ["I", "II", "III", "IV", "V", "VI"]
         self.display_name = self.adjective[self.level - 1]
         self.learn_name = self.adjective[self.level]
+
+    # @property
+    # def display_name(self):
+    #     return self.name.capitalize()
 
     def is_max_level(self):
         """Return True if level is at max_level."""

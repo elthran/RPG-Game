@@ -1,9 +1,9 @@
-# //////////////////////////////////////////////////////////////////////////////#
-#                                                                              #
-#  Author: Elthran B, Jimmy Zhang                                              #
-#  Email : jimmy.gnahz@gmail.com                                               #
-#                                                                              #
-# //////////////////////////////////////////////////////////////////////////////#
+# ////////////////////////////////////////////////////////////////////////////#
+#                                                                             #
+#  Author: Elthran B, Jimmy Zhang                                             #
+#  Email : jimmy.gnahz@gmail.com                                              #
+#                                                                             #
+# ////////////////////////////////////////////////////////////////////////////#
 
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
@@ -16,6 +16,8 @@ from base_classes import Base
 import pdb
 
 {% include "abilities_data.py" %}
+
+# "determination", 5, "Increases Endurance by 3 for each level."
 
 
 class Abilities(Base):
@@ -30,10 +32,11 @@ class Abilities(Base):
 
     # Relationships to a particular ability.
     {%- for name in ALL_ABILITIES %}
-    {{ name }} = relationship("Ability", uselist=False,
-                              back_populates="abilities_{{ name }}",
-                              foreign_keys = '[Ability.abilities_{{name}}_id]'
-    )
+    {{ name }} = relationship(
+        "Ability",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='{{ name }}')",
+        back_populates="abilities", uselist=False)
     {%- endfor %}
 
     def __init__(self):
@@ -42,13 +45,27 @@ class Abilities(Base):
         {%- endfor %}
 
     def items(self):
-        # Returns a list of 2-tuples
+        """Return each Ability and its name.
 
-        # Basically a dict.items() clone that looks like ([(key, value), (key, value), ...])
+        Returns a list of 2-tuples
+        Basically a dict.items() clone that looks like ([(key, value),
+            (key, value), ...])
+
+        Usage:
+        for name, ability in abilities.items():
+            name -- the name of the attribute
+            ability -- the object that corresponds to the named attribute.
+        """
 
         return ((key, getattr(self, key)) for key in ALL_ABILITIES)
 
     def __iter__(self):
+        """Allow this object to be used in a for call.
+
+        for ability in abilities:
+            ability -- where the ability is each of the attribute objects of
+                the abilities class.
+        """
         return (getattr(self, key) for key in ALL_ABILITIES)
 
 
@@ -74,30 +91,29 @@ class Ability(Base):
     description = Column(String)
 
     # Note: Original code used default of "Unknown"
-    # I chopped the BasicAbility class as redundant. Now I am going to have to add the fucker back in.
+    # I chopped the BasicAbility class as redundant. Now I am going to
+    # have to add the fucker back in.
     type = Column(String)
     ability_type = orm.synonym('type')
 
     castable = Column(Boolean)
     activated = orm.synonym('castable')
     cost = Column(Integer)
-    known = Column(Boolean)
+    learnable = Column(Boolean)
 
     # Relationships.
     # Ability to abilities. Abilities is a list of ability objects.
-    {%- for name in ALL_ABILITIES %}
-    abilities_{{ name }}_id = Column(Integer, ForeignKey('abilities.id'))
-    abilities_{{ name }} = relationship("Abilities", back_populates='{{ name }}',
-                                      foreign_keys=[abilities_{{ name }}_id])
-    {%- endfor %}
+    abilities_id = Column(Integer, ForeignKey('abilities.id'))
+    abilities = relationship("Abilities")
+
     # Requirements is a One to Many relationship to self.
     """
     Use (pseudo-code):
     hero.can_learn(ability)
     if all hero.abilities are in ability.requirements.
     """
-    ability_id = Column(Integer, ForeignKey('ability.id'))
-    requirements = relationship("Ability")
+    # ability_id = Column(Integer, ForeignKey('ability.id'))
+    # requirements = relationship("Ability")
 
     __mapper_args__ = {
         'polymorphic_identity': 'Basic',
@@ -105,22 +121,23 @@ class Ability(Base):
     }
 
     def __init__(self, name, max_level, description, hero=None, castable=False,
-                 cost=0, known=False):
+                 cost=0, learnable=False):
         """Build a basic ability object.
 
         Castable=True/False denotes whether the Ability is a spell or not.
 
-        Note: arguments (name, hero, max_level, etc.) that require input are the same as setting
-        nullable=False as a Column property.
+        Note: arguments (name, hero, max_level, etc.) that require input are
+        the same as setting nullable=False as a Column property.
         Note2: can't currently set 'level' attribute.
         Note3: Ability to Hero relationship is Many to Many. This will require
         some major restructuring.
 
         Future:
-        add in 'toggleable'=True/False for abilities that can be turned on and off
-        add in active=True/False for wether the ability is turned on or off right now.
+        add in 'toggleable'=True/False for abilities that can be turned on and
+        off add in active=True/False for whether the ability is turned on or
+        off right now.
         Or possibly extend the Ability class into a Spell Class and make a
-        Toggleable Class that various Ablities could inherit from.
+        Toggleable Class that various Abilities could inherit from.
         """
         self.name = name
         self.level = 0
@@ -129,7 +146,7 @@ class Ability(Base):
         self.type = "Basic"
         self.castable = castable
         self.cost = cost
-        self.known = known
+        self.learnable = learnable
 
         # Use internal method to properly add hero object to the
         # self.heroes relationship.
@@ -144,6 +161,14 @@ class Ability(Base):
         self.adjective = ["I", "II", "III", "IV", "V", "VI"]
         self.display_name = self.adjective[self.level - 1]
         self.learn_name = self.adjective[self.level]
+
+    # @property
+    # def display_name(self):
+    #     return self.name.capitalize()
+
+    def is_max_level(self):
+        """Return True if level is at max_level."""
+        return self.level >= self.max_level
 
     def update(self, hero):
         """Update a hero's stats to reflect them possessing this ability.
