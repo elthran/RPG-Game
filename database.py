@@ -312,6 +312,29 @@ class EZDB:
         """
         self.session.commit()
 
+    def add_object(self, obj):
+        """Add an object to the database.
+
+        Hides the session object. And the commit :P
+        """
+        self.session.add(obj)
+        self.session.commit()
+
+    def get_all_objects_with_completed_triggers(self, hero):
+        """Return all the objects with completed triggers.
+
+        This occurs when an event has happened that 'completed' a trigger
+        for a given event.
+        """
+
+        objects = self.session.query(
+            object).filter(
+            object.hero_id == hero.id).filter(
+            object.completion_trigger.completed is True)
+
+        from pprint import pprint
+        pprint(objects)
+
     @staticmethod
     def now():
         """Return current UTC time as datetime object in string form.

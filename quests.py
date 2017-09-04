@@ -136,6 +136,9 @@ class QuestPath(Base):
         self.stages = quest.get_stage_count()
         self.active = active
         self.completed = False
+
+        # Make Trigger available!
+        self.quest.completion_trigger.link(hero)
         
     def advance(self):
         """Advance this path to the next stage.
@@ -289,14 +292,23 @@ class Quest(Base):
     current_description = orm.synonym('description')
     
     reward_experience = Column(Integer)
-    
+
+    # Relationships
+    # Self ... Many to Many?
     next_quests = relationship("Quest",
         secondary=quest_to_quest,
         primaryjoin=id==quest_to_quest.c.past_quest_id,
         secondaryjoin=id==quest_to_quest.c.next_quest_id,
         backref="past_quests")
-    
-    def __init__(self, path_name, description, reward_experience=3, next_quests=[], past_quests=[]):
+
+    # Triggers Each Quest has a completion trigger. Each trigger can
+    # complete multiple quests?
+    # One to Many? (Later will be many to many).
+    trigger_id = Column(Integer, ForeignKey('trigger.id'))
+    completion_trigger = relationship("Trigger", back_poplulates='quests')
+
+    def __init__(self, path_name, description, reward_experience=3,
+                 next_quests=[], past_quests=[], completion_trigger=None):
         """Build a new Quest object.
         
         You can link this quest to other quests at initialization or afterwards.
@@ -308,6 +320,7 @@ class Quest(Base):
         self.reward_experience = reward_experience
         self.next_quests = next_quests
         self.past_quests = past_quests
+        self.completion_trigger = completion_trigger
         
     def get_stage_count(self):
         """Return a guestimate of how many stages are in this quest.

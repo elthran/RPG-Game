@@ -29,10 +29,12 @@ from commands import Command
 import complex_relationships
 from database import EZDB
 from events import Event
+from engine import Engine
 
 
 # INIT AND LOGIN FUNCTIONS
 database = EZDB('sqlite:///static/database.db', debug=False)
+engine = Engine(database)
 
 # Disable will need to be restructured (Marlen)
 # initialization
@@ -48,46 +50,6 @@ ALWAYS_VALID_URLS = [
     '/people_log/*', '/map_log', '/quest_log', '/display_users/*',
     '/inbox', '/logout',
 ]
-
-
-class Engine:
-
-    def __init__(self):
-        self.events = {}
-        self.handlers = {}
-
-        move_event = Event('move_event', locals(), "The Hero visits a store.")
-        self.add_event(move_event)
-
-    def add_event(self, event):
-        self.events[event.name] = event
-
-    def add_handler(self, handler):
-        self.handlers[handler.name] = handler
-
-    @staticmethod
-    def spawn(event):
-        """
-
-        Example:
-        Event(hero.id, 'move_event', location.id, "The Hero visits a store.")
-        ?Trigger("hero.current_location.name == 'Blacksmith'"
-        """
-        # event
-        # database
-        """Now that I have an move event (for getting to the blacksmith) I
-        want it to check to see if it triggers any other events.
-        It should trigger a "visit the blacksmith quest completion event"
-        And complete this quest.
-        """
-
-        triggers = database.get_all_triggers_by(
-            event.type, event.who, event.what)
-        for trigger in triggers:
-            trigger.activate_if_true(event)
-
-    def on_move(self, handler, location):
-        pass
 
 
 # Work in progress.
@@ -277,8 +239,8 @@ def login():
             hero.login_alerts = ""
 
             # Refresh admin accounts on login.
-            if user.is_admin:
-                hero.refresh_character()
+            # if user.is_admin:
+            #     hero.refresh_character()
 
             # If it's a new character, send them to cerate_character url
             if hero.character_name is None:
@@ -986,8 +948,12 @@ def battle(this_user=None, hero=None):
             page_links = [("Return to your ", "/home", "profile", " page and distribute your new attribute points.")]
 
     database.update()
-    return render_template('battle.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log,
-                           myHero=hero, enemy=game.enemy, page_links=page_links)  # return a string
+
+    # Return an html page built from a Jinja2 form and the passed data.
+    return render_template(
+        'battle.html', page_title=page_title, page_heading=page_heading,
+        battle_log=battle_log, myHero=hero, enemy=game.enemy,
+        page_links=page_links)
 
 
 # a.k.a. "Blacksmith"
@@ -995,9 +961,10 @@ def battle(this_user=None, hero=None):
 @login_required
 @uses_hero_and_update
 @update_current_location
+# @spawns_event
 def store(name, hero=None, location=None):
     pdb.set_trace()
-    Engine.spawn('move_event', hero)
+    engine.spawn('move_event', hero, description="The Hero visits a store.")
     page_title = "Store"
 
     # path = database.get_path_if_exists_and_active(quest_name, hero)

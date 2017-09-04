@@ -103,7 +103,7 @@ This would be triggered by event:
 import datetime
 
 from sqlalchemy import (
-    Column, Integer, String, DateTime, LargeBinary, ForeignKey
+    Column, Integer, String, DateTime, Boolean, ForeignKey
 )
 from sqlalchemy import orm
 from sqlalchemy.orm import relationship
@@ -111,14 +111,24 @@ from sqlalchemy.orm import relationship
 from base_classes import Base
 
 
-class Event:
+class Event(Base):
     """Allow extra functions to occur when a specific state is reached.
 
     E.g. when the hero moves to the Blacksmith shop complete the Visit
     the Blacksmith quest.
     """
-    def __init__(self, type, namespace, description=None):
+    __tablename__ = 'event'
+
+    id = Column(Integer, primary_key=True)
+    type = Column(String)
+    description = Column(String)
+    when = Column(DateTime)
+    hero_id = Column(Integer)
+
+    def __init__(self, event_type, hero_id=None, namespace=None,
+                 description=None):
         self.type = event_type
+        self.hero_id = hero_id
         self.namespace = namespace
         self.description = description
         self.when = datetime.datetime.utcnow()
@@ -126,13 +136,13 @@ class Event:
     def add_namespace(self, namespace):
         self.namespace = namespace
 
-    @classmethod
-    def from_js(cls, arg_dict):
-        who = arg_dict.get('who', None, type=int)
-        what = arg_dict.get('what', None, type=str)
-        to_whom = arg_dict.get('to_whom', None, type=int)
-        description = arg_dict.get('description', None, type=str)
-        return cls(who, what, to_whom, description)
+    # @classmethod
+    # def from_js(cls, arg_dict):
+    #     who = arg_dict.get('who', None, type=int)
+    #     what = arg_dict.get('what', None, type=str)
+    #     to_whom = arg_dict.get('to_whom', None, type=int)
+    #     description = arg_dict.get('description', None, type=str)
+    #     return cls(who, what, to_whom, description)
 
         # arg_dict.get('location', None, type=str)
 
@@ -163,6 +173,40 @@ class Handler:
 def move_event_handler(self, hero, location):
     if hero.current_location.name == location.name:
         return True
+
+
+class Trigger(Base):
+    __tablename__ = 'trigger'
+
+    id = Column(Integer, primary_key=True)
+    even_name = Column(String)
+    hero_id = Column(Integer)
+    completed = Column(Boolean)
+
+    # relationships
+    # Many to one with quests.
+    quests = relationship("Quest", back_populates='completion_trigger')
+
+    def __init__(self, event_name, condition, hero_id=None):
+        self.even_name = event_name
+        self.condition = condition
+        self.hero_id = hero_id
+
+    def link(self, hero):
+        """Make this trigger accessible to the game engine for this hero.
+
+        A trigger is considered active if it has a 'hero_id'.
+        Set 'hero_id=None' to _link_.
+        """
+
+        self.hero_id = hero.id
+
+    def evaluate(self, namespace={}):
+        if exec(self.code, namespace):
+            self.completed = True
+            return self.completed
+        return False
+
 
 
 class Condition:

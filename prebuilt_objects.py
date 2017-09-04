@@ -6,6 +6,7 @@ from items import (
     One_Handed_Weapon, Shield, Two_Handed_Weapon, Leg_Armour, Chest_Armour,
     Head_Armour, Feet_Armour, Arm_Armour, Hand_Armour, Ring, Consumable
 )
+from events import Trigger
 
 # MUST be imported last.
 import complex_relationships
@@ -136,10 +137,25 @@ game_worlds = [world]  # Just chop this out and use world instead.
 
 # game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
 
+#########
+# Conditions
+#########
+
+
+
+##########
+# Triggers
+##########
+blacksmith_trigger = Trigger(
+    'move_event', condition="hero.current_location.id == blacksmith.id")
+
+
 ###########
 # Quests
 ##########
-blacksmith_quest = Quest("Get Acquainted with the Blacksmith", "Go talk to the blacksmith.")
+blacksmith_quest = Quest("Get Acquainted with the Blacksmith",
+                         "Go talk to the blacksmith.",
+                         completion_trigger=blacksmith_trigger)
 blacksmith_quest.next_quests.append(
     Quest("Get Acquainted with the Blacksmith", "Buy your first item.", reward_experience=7))
 
