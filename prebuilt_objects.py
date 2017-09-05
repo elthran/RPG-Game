@@ -6,7 +6,7 @@ from items import (
     One_Handed_Weapon, Shield, Two_Handed_Weapon, Leg_Armour, Chest_Armour,
     Head_Armour, Feet_Armour, Arm_Armour, Hand_Armour, Ring, Consumable
 )
-from events import Trigger
+from events import Trigger, Condition
 
 # MUST be imported last.
 import complex_relationships
@@ -140,14 +140,17 @@ game_worlds = [world]  # Just chop this out and use world instead.
 #########
 # Conditions
 #########
-
+blacksmith_condition = Condition('current_location', '==', blacksmith)
 
 
 ##########
 # Triggers
 ##########
-blacksmith_trigger = Trigger(
-    'move_event', condition="hero.current_location.id == blacksmith.id")
+visit_blacksmith_trigger = Trigger(
+    'move_event', conditions=[blacksmith_condition],
+    extra_info_for_humans='Should activate when '
+                          'the hero.current_location.id == the id of the '
+                          'blacksmith object.')
 
 
 ###########
@@ -155,9 +158,10 @@ blacksmith_trigger = Trigger(
 ##########
 blacksmith_quest = Quest("Get Acquainted with the Blacksmith",
                          "Go talk to the blacksmith.",
-                         completion_trigger=blacksmith_trigger)
+                         completion_trigger=visit_blacksmith_trigger)
 blacksmith_quest.next_quests.append(
-    Quest("Get Acquainted with the Blacksmith", "Buy your first item.", reward_experience=7))
+    Quest("Get Acquainted with the Blacksmith", "Buy your first item.",
+          reward_experience=7))
 
 equipment_quest = Quest("Equipping/Unequipping", "Equip any item.")
 equipment_quest.next_quests.append(Quest("Equipping/Unequipping", "Unequip any item."))

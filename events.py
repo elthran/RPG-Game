@@ -125,16 +125,11 @@ class Event(Base):
     when = Column(DateTime)
     hero_id = Column(Integer)
 
-    def __init__(self, event_type, hero_id=None, namespace=None,
-                 description=None):
+    def __init__(self, event_type, hero_id=None, description=None):
         self.type = event_type
         self.hero_id = hero_id
-        self.namespace = namespace
         self.description = description
         self.when = datetime.datetime.utcnow()
-
-    def add_namespace(self, namespace):
-        self.namespace = namespace
 
     # @classmethod
     # def from_js(cls, arg_dict):
@@ -147,73 +142,115 @@ class Event(Base):
         # arg_dict.get('location', None, type=str)
 
 
-class Handler:
-    def __init__(self, event, **kwargs):
-        """Save a compiled trigger object.
-
-        :param conditions: A complex python statement that must evaluate to
-         True or False!
-        Example:
-        ?Trigger("hero.current_location.name == 'Blacksmith'")
-        """
-        # self.condition = conditions
-        # self.code = compile(conditions, '<string>', 'exec')
-
-        self.event = event
-
-    def run(self, namespace={}):
-        if exec(self.code, namespace):
-            return event
-
-    def activate_if_true(self, event):
-        pass
-
-
-# I need a handler factory and then an actual handler function.
-def move_event_handler(self, hero, location):
-    if hero.current_location.name == location.name:
-        return True
+# class Handler:
+#     def __init__(self, event, **kwargs):
+#         """Save a compiled trigger object.
+#
+#         :param conditions: A complex python statement that must evaluate to
+#          True or False!
+#         Example:
+#         ?Trigger("hero.current_location.name == 'Blacksmith'")
+#         """
+#         # self.condition = conditions
+#         # self.code = compile(conditions, '<string>', 'exec')
+#
+#         self.event = event
+#
+#     def run(self, namespace={}):
+#         if exec(self.code, namespace):
+#             return event
+#
+#     def activate_if_true(self, event):
+#         pass
+#
+#
+# # I need a handler factory and then an actual handler function.
+# def move_event_handler(self, hero, location):
+#     if hero.current_location.name == location.name:
+#         return True
 
 
 class Trigger(Base):
     __tablename__ = 'trigger'
 
     id = Column(Integer, primary_key=True)
-    even_name = Column(String)
-    hero_id = Column(Integer)
+    event_name = Column(String)
+    extra_info_for_humans = Column(String)
     completed = Column(Boolean)
 
     # relationships
     # Many to one with quests.
     quests = relationship("Quest", back_populates='completion_trigger')
 
-    def __init__(self, event_name, condition, hero_id=None):
-        self.even_name = event_name
-        self.condition = condition
+    # One to Many with Heroes?
+    hero_id = Column(Integer, ForeignKey('hero.id'))
+    hero = relationship('Hero', back_populates='triggers')
+
+    # One to many with Conditions. Each trigger might have many conditions.
+    conditions = relationship('Condition', back_populates='trigger')
+
+    def __init__(self, event_name, conditions, hero_id=None,
+                 extra_info_for_humans=None):
+        self.event_name = event_name
+        self.conditions = conditions
         self.hero_id = hero_id
+        self.extra_info_for_humans = extra_info_for_humans
 
     def link(self, hero):
         """Make this trigger accessible to the game engine for this hero.
 
-        A trigger is considered active if it has a 'hero_id'.
-        Set 'hero_id=None' to _link_.
+        A trigger is considered active if it has a linked hero.
         """
 
-        self.hero_id = hero.id
+        self.hero = hero
 
-    def evaluate(self, namespace={}):
-        if exec(self.code, namespace):
-            self.completed = True
-            return self.completed
-        return False
+    def evaluate(self):
+        """Return true if all conditions are true.
+
+        And set the completed flag.
+
+        If they are set completed and return true.
+        If not return false.
+        """
+        for condition in self.conditions:
+            if not eval(condition.code, {'self': condition}):
+                return False
+        self.completed = True
+        return self.completed
 
 
-
-class Condition:
+class Condition(Base):
     """A function that takes a python string and evaluates to boolean.
 
     Factory?
 
     hero.current_location.name == location.name
     """
-    pass
+    __tablename__ = 'condition'
+    id = Column(Integer, primary_key=True)
+    code = Column(String)
+
+    # Relationships
+    # Each trigger might have many conditions
+    trigger_id = Column(Integer, ForeignKey('trigger.id'))
+    trigger = relationship('Trigger', back_populates='conditions')
+
+    # Each condition might be connected to a location. One to One.
+    location_id = Column(Integer, ForeignKey('location.id'))
+    location = relationship('Location')
+
+    def __init__(self, hero_attribute, comparison, object_of_comparison):
+        """Build a condition object.
+
+        The default initial comparison is:
+        self.trigger.hero._some_passed_attribute_name_
+        """
+        condition_attribute = object_of_comparison.__table__.name
+
+        self.code = 'self.trigger.hero.{}.id {} self.{}.id'.format(
+            hero_attribute, comparison, condition_attribute)
+
+        # Should for example do:
+        # self.location = the location I passed.
+        setattr(self, condition_attribute, object_of_comparison)
+

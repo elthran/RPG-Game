@@ -33,6 +33,7 @@ from locations import Location  # , WorldMap, Town, Cave
 from items import ItemTemplate, Item
 from quests import Quest
 from proficiencies import Proficiency
+from events import Trigger
 import complex_relationships
 import prebuilt_objects
 
@@ -334,6 +335,12 @@ class EZDB:
 
         from pprint import pprint
         pprint(objects)
+
+    def get_all_triggers_by(self, event_name, hero_id):
+        """Return all triggers for this hero that fit a given event."""
+
+        return self.session.query(Trigger).filter_by(event_name=event_name,
+                                              hero_id=hero_id).all()
 
     @staticmethod
     def now():

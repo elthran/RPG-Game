@@ -209,6 +209,9 @@ class Hero(Base):
     # Each hero can have one set of Abilities. (bidirectional, One to One).
     abilities = relationship("Abilities", uselist=False, back_populates='hero')
 
+    # Many to one with Triggers, Each hero has many triggers.
+    triggers = relationship('Trigger', back_populates='hero')
+
     # variable used for keeping track of clicked attributes on the user table
     clicked_user_attribute = ""
 

@@ -138,7 +138,12 @@ class QuestPath(Base):
         self.completed = False
 
         # Make Trigger available!
-        self.quest.completion_trigger.link(hero)
+        try:
+            self.quest.completion_trigger.link(hero)
+        except AttributeError as ex:
+            print("Warning: The quest with the description '{}' has no "
+                  "completion trigger set up.".format(quest.description))
+            print('See error "{}"'.format(ex))
         
     def advance(self):
         """Advance this path to the next stage.
@@ -305,7 +310,7 @@ class Quest(Base):
     # complete multiple quests?
     # One to Many? (Later will be many to many).
     trigger_id = Column(Integer, ForeignKey('trigger.id'))
-    completion_trigger = relationship("Trigger", back_poplulates='quests')
+    completion_trigger = relationship("Trigger", back_populates='quests')
 
     def __init__(self, path_name, description, reward_experience=3,
                  next_quests=[], past_quests=[], completion_trigger=None):

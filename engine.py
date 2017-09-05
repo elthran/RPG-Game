@@ -41,13 +41,16 @@ class Engine:
         And complete this quest.
         """
         pprint(locals())
-        event = Event(event_name, hero_id=hero.id, namespace=locals(),
-                      description=description)
+        event = Event(event_name, hero_id=hero.id, description=description)
         self.db.add_object(event)
         triggers = self.db.get_all_triggers_by(event_name, hero.id)
         for trigger in triggers:
-            trigger.evaluate(event.namespace)
+            trigger.evaluate()
 
+        # TODO ... what objects? and what this piece of code is supposed to do.
+        # I mean really? What am I trying to accomplish here?
+        # I need to respec this and then it will work ...?
+        # In this case should return and quest_path?
         objects = self.db.get_all_objects_with_completed_triggers(hero)
         # return the "Blacksmith" quest object ...
         # Since its completion trigger is completed ...
