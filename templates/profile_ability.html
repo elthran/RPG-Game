@@ -15,12 +15,14 @@
 	{% else %}
 		Ability Points: {{ myHero.basic_ability_points }}<br><br>
 	{% endif %}
-	
-	
-	
+
+
+
     <h2 style="text-align:left;">Unknown</h2>
 {% for ability in myHero.abilities %}
-Ability: {{ ability.name }} (Level: {{ ability.level }})  <button class="command" data={{ myHero.abilities.ironhide.id }}" data-function="learn_ability">{{ myHero.abilities.ironhide.name }}</button><br>
+Ability: {{ ability.name }} Level: <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>
+<button class="command" data={{ ability.id }}" data-function="updateAbility">{{ ability.name }}</button><br>
 {% endfor %}
 {% endblock %}
+
 

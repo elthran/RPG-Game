@@ -182,7 +182,7 @@ def login_required(f):
 # Untested (Marlen)
 def uses_hero_and_update(f):
     """Preload hero object and save it afterwards.
-    
+
     If this function returns an error ... please document.
 
     Especially if the error is KeyError on "hero_id". I had a
@@ -570,7 +570,7 @@ def inbox(outbox, hero=None):
 @uses_hero_and_update
 def home(hero=None):
     """Build the home page and return it as a string of HTML.
-    
+
     render_template uses Jinja2 markup.
     """
 
@@ -1211,12 +1211,16 @@ def command(cmd=None, hero=None):
     # UPGRADE ABILITIES
     learnable_known_abilities = [ability for ability in hero.abilities if ability.level < ability.max_level]
     for ability in learnable_known_abilities:
-        if cmd == ability.name and hero.ability_points > 0:
-            for i in range(0, len(hero.abilities)):
-                if hero.abilities[i].name == ability.name:
-                    hero.abilities[i].level += 1
-                    hero.abilities[i].update_display()
-                    hero.ability_points -= 1
+        all_abilities = []
+        for ability in hero.abilities:
+            all_abilities.append(ability)
+
+        if cmd == ability.name: #and hero.ability_points > 0:
+            for i in range(0, len(all_abilities)):
+                if all_abilities[i].name == ability.name:
+                    all_abilities[i].level += 1
+                    all_abilities[i].update_display()
+                    #hero.ability_points -= 1
             hero.refresh_proficiencies()
             database.update()
             return "success", 200, {'Content-Type': 'text/plain'}  # //
