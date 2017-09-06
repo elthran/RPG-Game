@@ -19,8 +19,8 @@
 	
 	
     <h2 style="text-align:left;">Unknown</h2>
-        {{ myHero.abilities.ironhide.name }}
-            <button class="command" data={{ myHero.abilities.ironhide.id }}" data-function="learn_ability">{{ myHero.abilities.ironhide.name }}</button><br>
-
+{% for ability in myHero.abilities %}
+Ability: {{ ability.name }} (Level: {{ ability.level }})  <button class="command" data={{ myHero.abilities.ironhide.id }}" data-function="learn_ability">{{ myHero.abilities.ironhide.name }}</button><br>
+{% endfor %}
 {% endblock %}
 

@@ -16,8 +16,7 @@ from base_classes import Base
 import pdb
 
 ALL_ABILITIES = [
-    "ironhide",
-    "walk_the_shadows",
+    "ironhide"
 ]
 
 # "determination", 5, "Increases Endurance by 3 for each level."
@@ -39,19 +38,12 @@ class Abilities(Base):
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='ironhide')",
         back_populates="abilities", uselist=False)
-    walk_the_shadows = relationship(
-        "Ability",
-        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
-                    "Ability.name=='walk_the_shadows')",
-        back_populates="abilities", uselist=False)
 
     def __init__(self):
         self.ironhide = Ability('ironhide', 5, "Gain 1000 health per level",
                                 learnable=True)
         # print(self.ironhide)
         # exit("Debugging init.")
-        self.walk_the_shadows = Ability('Walk_the_shadows', 5,
-                                        "Gain 1000 health per level")
 
     def items(self):
         """Return each Ability and its name.
