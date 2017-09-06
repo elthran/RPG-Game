@@ -18,10 +18,20 @@
 
 
 
-    <h2 style="text-align:left;">Unknown</h2>
+    <h2 style="text-align:left;">New Abilities</h2>
 {% for ability in myHero.abilities %}
-Ability: {{ ability.name }} Level: <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>
+{% if not ability.level %}
+Ability: {{ ability.name.title() }} (Level: <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>)
 <button class="command" data={{ ability.id }}" data-function="updateAbility">{{ ability.name }}</button><br>
+{% endif %}
+{% endfor %}
+
+    <h2 style="text-align:left;">Other Abilities</h2>
+{% for ability in myHero.abilities %}
+{% if ability.level %}
+Ability: {{ ability.name.title() }} (Level: <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>)
+<button class="command" data={{ ability.id }}" data-function="updateAbility">{{ ability.name }}</button><br>
+{% endif %}
 {% endfor %}
 {% endblock %}
 

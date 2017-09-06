@@ -1215,10 +1215,10 @@ def command(cmd=None, hero=None):
         all_abilities.append(ability)
         if cmd == ability.name: #and hero.ability_points > 0:
             for i in range(0, len(all_abilities)):
-                if all_abilities[i].name == ability.name:
+                if all_abilities[i].name == ability.name and hero.basic_ability_points > 0:
                     all_abilities[i].level += 1
                     all_abilities[i].update_display()
-                    #hero.ability_points -= 1
+                    hero.basic_ability_points -= 1
             hero.refresh_proficiencies()
             database.update()
             return "success", 200, {'Content-Type': 'text/plain'}  # //

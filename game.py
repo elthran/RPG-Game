@@ -253,7 +253,7 @@ class Hero(Base):
         self.devotion = 0
         self.gold = 50
 
-        self.basic_ability_points = 0
+        self.basic_ability_points = 5
         self.archetypic_ability_points = 0
         self.specialized_ability_points = 0
         self.pantheonic_ability_points = 0
