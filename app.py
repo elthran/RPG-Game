@@ -1209,12 +1209,10 @@ def command(cmd=None, hero=None):
             # return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # UPGRADE ABILITIES
-    learnable_known_abilities = [ability for ability in hero.abilities if ability.level < ability.max_level]
-    for ability in learnable_known_abilities:
-        all_abilities = []
-        for ability in hero.abilities:
-            all_abilities.append(ability)
 
+    all_abilities = []
+    for ability in hero.abilities:
+        all_abilities.append(ability)
         if cmd == ability.name: #and hero.ability_points > 0:
             for i in range(0, len(all_abilities)):
                 if all_abilities[i].name == ability.name:
