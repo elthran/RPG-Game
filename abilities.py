@@ -16,7 +16,8 @@ from base_classes import Base
 import pdb
 
 ALL_ABILITIES = [
-    "ironhide"
+    "ironhide",
+    "ironfist"
 ]
 
 # "determination", 5, "Increases Endurance by 3 for each level."
@@ -38,10 +39,17 @@ class Abilities(Base):
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='ironhide')",
         back_populates="abilities", uselist=False)
+    ironfist = relationship(
+        "Ability",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='ironfist')",
+        back_populates="abilities", uselist=False)
 
     def __init__(self):
         self.ironhide = Ability('ironhide', 5, "Gain 1000 health per level",
-                                learnable=True)
+                                learnable=True, health_maximum=1000)
+        self.ironfist = Ability('ironfist', 3, "Gain 300 health per level",
+                                learnable=True, health_maximum=300)
         # print(self.ironhide)
         # exit("Debugging init.")
 
@@ -102,6 +110,8 @@ class Ability(Base):
     cost = Column(Integer)
     learnable = Column(Boolean)
 
+    health_maximum = Column(Integer)
+
     # Relationships.
     # Ability to abilities. Abilities is a list of ability objects.
     abilities_id = Column(Integer, ForeignKey('abilities.id'))
@@ -122,7 +132,7 @@ class Ability(Base):
     }
 
     def __init__(self, name, max_level, description, hero=None, castable=False,
-                 cost=0, learnable=False):
+                 cost=0, learnable=False, health_maximum=0):
         """Build a basic ability object.
 
         Castable=True/False denotes whether the Ability is a spell or not.
@@ -149,6 +159,8 @@ class Ability(Base):
         self.cost = cost
         self.learnable = learnable
 
+        self.health_maximum = health_maximum
+
         # Use internal method to properly add hero object to the
         # self.heroes relationship.
         self.add_hero(hero)
@@ -171,20 +183,8 @@ class Ability(Base):
         """Return True if level is at max_level."""
         return self.level >= self.max_level
 
-    def update(self, hero):
-        """Update a hero's stats to reflect them possessing this ability.
-
-        Use:
-        To update hero from inside hero class:
-        for ability in self.abilities:
-            ability.update_stats(self)
-        from outside hero class:
-        for ability in hero.abilities:
-            ability.update_stats(hero)
-        """
-        # Possibly use a dictionary + lambda function. Switch/Case
-        if self.name == "Ironhide":
-            hero.proficiencies.health.maximum += 3 * self.level
+    def update_stats(self, hero):
+        hero.refresh_proficiencies()
 
     def activate(self, hero):
         return self.cast(hero)

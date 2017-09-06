@@ -304,18 +304,12 @@ class Hero(Base):
         for proficiency in self.proficiencies:
             proficiency.update(self)
 
-    def refresh_abilities(self):
-        for ability in self.abilities:
-            if ability.level > 0:
-                ability.update(self)
-
     def refresh_items(self):
         for item in self.equipped_items():
             item.update_stats(self)
 
     def refresh_character(self, full=True):
         self.refresh_proficiencies()
-        self.refresh_abilities()
         self.refresh_items()  # Should go after proficiencies
         if full:
             self.proficiencies.health.current = self.proficiencies.health.maximum

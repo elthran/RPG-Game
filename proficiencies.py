@@ -384,8 +384,11 @@ class Health(Proficiency):
 
         for item in myHero.equipped_items():
             self.maximum += item.health_maximum
-            self.current += item.health_current
             #This updates the main tooltip string variable.
+
+        for ability in myHero.abilities:
+            self.maximum += ability.health_maximum * ability.level
+
         self.tooltip = ';'.join(tooltips)
 
 class Regeneration(Proficiency):
@@ -543,7 +546,6 @@ class Storage(Proficiency):
 
         for item in myHero.equipped_items():
             self.maximum += item.storage_maximum
-            self.current += item.storage_current
             #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips)
 
@@ -624,7 +626,6 @@ class Endurance(Proficiency):
 
         for item in myHero.equipped_items():
             self.maximum += item.endurance_maximum
-            self.current += item.endurance_current
             #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips)
 
@@ -1071,7 +1072,6 @@ class Fatigue(Proficiency):
 
         for item in myHero.equipped_items():
             self.maximum += item.fatigue_maximum
-            self.current += item.fatigue_current
             #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips)
 
@@ -1274,7 +1274,6 @@ class Sanctity(Proficiency):
 
         for item in myHero.equipped_items():
             self.maximum += item.sanctity_maximum
-            self.current += item.sanctity_current
             #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips)
 
