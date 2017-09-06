@@ -641,25 +641,12 @@ def proficiencies(hero=None):
 def ability_tree(spec, hero=None):
     page_title = "Abilities"
 
-    unknown_abilities = []
     learnable_abilities = database.get_learnable_abilities(hero)
 
     # For testing
     for ability in learnable_abilities:
         print("Learnable:", str(ability))
     # End for testing
-
-    mastered_abilities = []
-    # Create a list of learned abilities that match current spec.
-    for ability in hero.abilities:
-        # pdb.set_trace()
-        if ability.ability_type == spec:
-            # Add abilities to learnable_abilities (known, but non-mastered)
-            # or mastered abilities
-            if ability.level < ability.max_level:
-                learnable_abilities.append(ability)
-            else:
-                mastered_abilities.append(ability)
 
     # TODO abilities are not connected to hero properly!
     # They need to relate to a specific hero only!
@@ -685,9 +672,8 @@ def ability_tree(spec, hero=None):
     """
     return render_template(
         'profile_ability.html', myHero=hero, ability_tree=spec,
-        unknown_abilities=unknown_abilities,
         learnable_abilities=learnable_abilities,
-        mastered_abilities=mastered_abilities, page_title=page_title)
+        page_title=page_title)
 
 
 @app.route('/inventory_page')
