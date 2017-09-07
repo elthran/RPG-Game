@@ -40,40 +40,56 @@ function {{ attribute }}Modifier(modifier) {
     document.getElementById("pointsRemaining").value = remainingPoints;
 }
 {% endfor %}
+
 </script>
 
 <form method="post">
     <div class="profilePage">
-        Points Remaining: <output type="text" name="total" id="pointsRemaining" value="{{ myHero.attribute_points }}"/>{{ myHero.attribute_points }}</output>
+        Points Remaining:
+        <output type="text" name="total" id="pointsRemaining" value="{{ myHero.attribute_points }}"/>
+        {{ myHero.attribute_points }}</output>
     </div>
     {% if myHero.attribute_points %}
-        <input class="btn btn-default submitButton" type="submit" value="Save" id="level_button">
+    <input class="btn btn-default submitButton" type="submit" value="Save" id="level_button">
     {% endif %}
     <div style="clear: both;"></div>
     <div class="profilePage">
         <div class="profilePageAttributes">
             <ul>
                 {% for attribute in attribute_information %}
-                    <li><button type="button" class="profileText" onclick="changeAttributeBox('{{ attribute[0] }}', '{{ attribute[1] | safe }}')">{{ attribute[0] }}:</button></li>
+                <li>
+                    <button type="button" class="profileText"
+                            onclick="changeAttributeBox('{{ attribute[0] }}', '{{ attribute[1] | safe }}')">{{
+                        attribute[0] }}:
+                    </button>
+                </li>
                 {% endfor %}
             </ul>
         </div>
         <div class="profilePageValues">
             <ul>
                 {% for attribute, value in myHero.attributes.items() %}
-                    <li>
-                        <input type="button" onclick="{{ attribute }}Modifier('decrease')" class="abilityButton abilityButtonMinus">
-                        <input id="{{ attribute }}Value" type="hidden" name="{{ attribute }}Input" value="{{ value.level }}">
-                        <output name="{{ attribute }}Output" id="new{{ attribute.capitalize() }}Value">{{ value.level }}</output>
-                        <input type="button" onclick="{{ attribute }}Modifier('increase')" class="abilityButton abilityButtonPlus">
-                    </li>
+                <li>
+                    <input type="button" onclick="{{ attribute }}Modifier('decrease')"
+                           class="abilityButton abilityButtonMinus">
+                    <input id="{{ attribute }}Value" type="hidden" name="{{ attribute }}Input"
+                           value="{{ value.level }}">
+                    <output name="{{ attribute }}Output" id="new{{ attribute.capitalize() }}Value">{{ value.level }}
+                    </output>
+                    <input type="button" onclick="{{ attribute }}Modifier('increase')"
+                           class="abilityButton abilityButtonPlus">
+                </li>
                 {% endfor %}
             </ul>
         </div>
     </div>
     <div class="profilePage profilePageInfo">
-        <h1><div id="attributeName">Attribute</div></h1>
-        <p><div id="attributeText">Description.</div></p>
+        <h1>
+            <div id="attributeName">Attribute</div>
+        </h1>
+        <p>
+        <div id="attributeText">Description.</div>
+        </p>
     </div>
 </form>
 

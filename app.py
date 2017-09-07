@@ -1,40 +1,40 @@
-#//////////////////////////////////////////////////////////////////////////////#
-#                                                                              #
-#  Author: Elthran B, Jimmy Zhang                                              #
-#  Email : jimmy.gnahz@gmail.com                                               #
-#                                                                              #
-#//////////////////////////////////////////////////////////////////////////////#
+# ///////////////////////////////////////////////////////////////////////////#
+#                                                                            #
+#  Author: Elthran B, Jimmy Zhang                                            #
+#  Email : jimmy.gnahz@gmail.com                                             #
+#                                                                            #
+# ///////////////////////////////////////////////////////////////////////////#
 
-# from game import * #Must go before login method???
-from game import Game
-# import the Flask class from the flask module
-from flask import Flask, render_template, redirect, url_for, request, session, flash
+
+import pdb  # For testing!
+from pprint import pprint  # For testing!
 from functools import wraps
+import os
+
+from flask import (
+    Flask, render_template, redirect, url_for, request, session,
+    flash, send_from_directory)
+
+from game import Game, Hero
 import combat_simulator
+from attributes import \
+    ATTRIBUTE_INFORMATION  # Since attribute information was hand typed out in both modules, it was causing bugs. Seems cleaner to import it and then only edit it in one place
+# Marked for restructure! Avoid use of import * in production code.
 from bestiary import *
-#import database
 from items import Quest_Item
 from commands import Command
+# from events import Event
+# MUST be imported _after_ all other game objects but
+# _before_ any of them are used.
+import complex_relationships
+from database import EZDB
 from events import Event
 
-#MUST be imported after all other game objects but before any of them are used.
-import complex_relationships
-
-#Last module to be imported (of our custom ones)
-
-#Marked for restructure: probably should only be used in Hero object (in game.py) directly.
-#If it is needed elsewhere the method should be moved to the Hero object.
-import sqlite3
-import hashlib
-
-#For testing!
-import pdb
 
 # INIT AND LOGIN FUNCTIONS
-from database import EZDB
 database = EZDB('sqlite:///static/database.db', debug=False)
 
-#Disable will need to be restructured (Marlen)
+# Disable will need to be restructured (Marlen)
 # initialization
 game = Game()
 
@@ -42,10 +42,132 @@ game = Game()
 app = Flask(__name__)
 app.secret_key = 'starcraft'
 
+ALWAYS_VALID_URLS = [
+    '/login', '/home', '/about', '/inventory_page', '/quest_log',
+    '/attributes', '/proficiencies', '/ability_tree/*', '/bestiary/*',
+    '/people_log/*', '/map_log', '/quest_log', '/display_users/*',
+    '/inbox', '/logout',
+]
+
+
+class Engine:
+
+    def __init__(self):
+        self.events = {}
+        self.handlers = {}
+
+        move_event = Event('move_event', locals(), "The Hero visits a store.")
+        self.add_event(move_event)
+
+    def add_event(self, event):
+        self.events[event.name] = event
+
+    def add_handler(self, handler):
+        self.handlers[handler.name] = handler
+
+    @staticmethod
+    def spawn(event):
+        """
+
+        Example:
+        Event(hero.id, 'move_event', location.id, "The Hero visits a store.")
+        ?Trigger("hero.current_location.name == 'Blacksmith'"
+        """
+        # event
+        # database
+        """Now that I have an move event (for getting to the blacksmith) I
+        want it to check to see if it triggers any other events.
+        It should trigger a "visit the blacksmith quest completion event"
+        And complete this quest.
+        """
+
+        triggers = database.get_all_triggers_by(
+            event.type, event.who, event.what)
+        for trigger in triggers:
+            trigger.activate_if_true(event)
+
+    def on_move(self, handler, location):
+        pass
+
+
+# Work in progress.
+# Control user moves on map.
+def prevent_url_typing(f):
+    """Redirects to last page if hero can't travel here.
+
+    I need to update the location.py code to deal more with urls.
+    """
+
+    @wraps(f)
+    def wrap_url(*args, **kwargs):
+        # Break immediately if server is just being set up.
+        # Everything after this will run just before the function
+        # runs but not during function setup.
+        # There is probably cleaner way?
+        try:
+            session['logged_in']
+        except RuntimeError:
+            return f(*args, **kwargs)
+
+        # pprint(app.url_map)
+        # pprint(args)
+        # pprint(kwargs)
+        # pprint(session)
+        # print(dir(session))
+        # f(*args, **kwargs)
+        # print('after app.route')
+        # print(dir(request.url_rule))
+        # print("url rule", request.url_rule)
+        # print("rule", request.url_rule.rule)
+        # print("arguments", request.url_rule.arguments)
+        # pprint(request)
+        # print(dir(request))
+        # print("Path requested: ", request.path)
+
+        # Build requested move from rule and arguemts.
+        valid_urls = ALWAYS_VALID_URLS
+
+        hero = kwargs['hero']
+        if hero.user.is_admin:
+            valid_urls.append('/admin')
+
+        # print("Hero current location url: ", hero.current_location.url)
+        valid_urls.append(hero.current_location.url)
+        valid_urls.append(hero.current_location.parent.url)
+        for location in hero.current_location.adjacent:
+            valid_urls.append(location.url)
+        # Add this in later? Unless I can find out how
+        # to do it another way.
+        # local_places = hero.current_location.display.places_of_interest
+        # print(hero.current_location)
+        # pprint(hero.current_location.display.places_of_interest)
+        # valid_urls += [] #all places of places_of_interest
+
+        # This may work ... it will need more testing.
+        # It may need additional parsing.
+        requested_move = request.path
+        # pdb.set_trace()
+        if requested_move in valid_urls:
+            # print("url is valid")
+            session['last_url'] = request.path
+            return f(*args, **kwargs)
+        else:
+            flash("You can't access '{}' from there.".format(requested_move))
+            return redirect(session['last_url'])
+    return wrap_url
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(
+        os.path.join(app.root_path, 'static'),
+        'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+
 def login_required(f):
     """Set certain pages as requiring a login to visit.
 
     This should redirect you to the login page."""
+
     @wraps(f)
     def wrap_login(*args, **kwargs):
         if 'logged_in' in session:
@@ -53,49 +175,55 @@ def login_required(f):
         else:
             flash('You need to login first.')
             return redirect(url_for('login'))
+
     return wrap_login
 
-#Not implemented, and untested (Marlen)
+
+# Untested (Marlen)
 def uses_hero_and_update(f):
-    """Preloads hero object and saves it afterwards.
+    """Preload hero object and save it afterwards.
     
-    gets hero before, updates database after.
+    If this function returns an error ... please document.
+
+    Especially if the error is KeyError on "hero_id". I had a
+    bug with this but it disappeared and I don't know why it
+    occurred.
     """
+
     @wraps(f)
     def wrap_hero_and_update(*args, **kwargs):
         database.update()
         hero = database.get_object_by_id("Hero", session["hero_id"])
         return f(*args, hero=hero, **kwargs)
+
     return wrap_hero_and_update
 
-#Not implemented. Broken. Control user moves on map. (Marlen)
-def prevent_url_typing(f):
-    """Set certain pages as requiring a login to visit.
 
-    This should redirect you to the login page.
-    This needs a lot more work. It should be dealing with actual URLs ...
+def update_current_location(f):
+    """Load the location object and set it to hero.current_location.
+
+    NOTE: this must come after "@uses_hero_and_update"
+    Adds a keyword argument 'location' to argument list.
+
+    Example usage:
+    @app.route('/barracks/<name>')
+    @login_required
+    @uses_hero_and_update
+    @update_current_location
+    def barracks(name='', hero=None, location=None):
+        if hero.proficiencies.health.current <= 0:
+            location.display.page_heading = "Your hero is currently dead."
     """
+
     @wraps(f)
-    def wrap_url(*args, **kwargs):
-        try:
-            requested_move = set([kwargs['location_id']])
-        except KeyError:
-            pass
-        try:
-            requested_move = set([kwargs['cave_name']])
-        except KeyError:
-            pass
-        try:
-            requested_move = set([kwargs['town_name']])
-        except KeyError:
-            pass
-        pdb.set_trace()
-        if 'valid_moves' in session and any(move in session['valid_moves'] for move in requested_move):
-            return f(*args, **kwargs)
-        else:
-            flash("You can't access that location from here.")
-            return redirect(url_for(f))
-    return wrap_url
+    def wrap_current_location(*args, **kwargs):
+        database.update()
+        location = database.get_object_by_name('Location', kwargs['name'])
+        kwargs['hero'].current_location = location
+        return f(*args, location=location, **kwargs)
+
+    return wrap_current_location
+
 
 # use decorators to link the function to a url
 # route for handling the login page logic
@@ -105,10 +233,11 @@ def login():
 
     Access data from the static/user.db using the EasyDatabase class.
     """
-    #Testing:
-    #Should prevent contamination between logging in with 2 different accounts.
+    # Testing:
+    # Should prevent contamination between logging in with 2 different
+    # accounts.
     session.clear()
-    
+
     error = None
     if request.method == 'POST':
         username = request.form['username']
@@ -118,50 +247,68 @@ def login():
             flash("LOG IN SUCCESSFUL")
             user = database.get_user_by_username(username)
             session['id'] = user.id
-            
-            #I recommend a dialogue here to select the specific hero that the
+
+            # I recommend a dialogue here to select the specific hero that the
             # user wants to play with. Or a page redirect whatever ...
             # Choose hero dialogue ... not implemented.
             hero = user.heroes[0]
+            # Below is code for daily login reward. It's temporary as I am just trying to play with and learn about timestamps and whatnot.
+            time_now = str(EZDB.now())
+            time_now = time_now.split(" ")
+            time_now = time_now[0]
+            if hero.last_login == "":
+                hero.login_alerts += "First time logging in!"
+                hero.last_login = time_now
+            elif hero.last_login != time_now:
+                reward = 3
+                hero.login_alerts += "Thanks for logging in today! You earn " + str(reward) + " experience."
+                hero.experience += reward
+                hero.level_up()
+                hero.last_login = time_now
+            # End of daily login reward code (Elthran)
             session['hero_id'] = hero.id
-            
-            #Now I need to work out how to make game not global *sigh* (Marlen)
+
+            # Now I need to work out how to make game not global *sigh*
+            # (Marlen)
             game.set_hero(hero)
             game.set_enemy(monster_generator(hero.age))
-            
-            #Refresh admin accounts on login.
-            if user.is_admin:
-                hero.refresh_character()
-                
+
+            flash(hero.login_alerts)
+            hero.login_alerts = ""
             # If it's a new character, send them to cerate_character url
-            if hero.character_name == None:
+            if hero.character_name is None:
                 return redirect(url_for('create_character'))
-            #If the character already exist go straight the main home page!
+            # If the character already exist go straight the main home page!
             return redirect(url_for('home'))
-        #Marked for upgrade, consider checking if user exists and redirect to account creation page.
+        # Marked for upgrade, consider checking if user exists
+        # and redirect to account creation page.
         else:
             error = 'Invalid Credentials. Please try again.'
 
     return render_template('index.html', error=error, login=True)
 
+
 # route for handling the account creation page logic
-@app.route('/password_recovery', methods=['GET', 'POST'])
-def password_recovery():
-    error = "Password Not Found"
+# @app.route('/password_recovery', methods=['GET', 'POST'])
+# def password_recovery():
+#     error = "Password Not Found"
+#
+#     if request.method == 'POST':
+#         username = request.form['username']
+#
+#         con = sqlite3.connect('static/user.db')
+#         with con:
+#             cur = con.cursor()
+#             cur.execute("SELECT * FROM Users")
+#             rows = cur.fetchall()
+#             for row in rows:
+#                 if row[0] == username:
+#                     error = "We found your password, but it was hashed into"
+#                         "this: " + row[1] + ". We are unable to decode the"
+#                         " jargon. Sorry, please restart the game!"
+#         con.close()
+#     return render_template('index.html', error=error, password_recovery=True)
 
-    if request.method == 'POST':
-        username = request.form['username']
-
-        con = sqlite3.connect('static/user.db')
-        with con:
-            cur = con.cursor()
-            cur.execute("SELECT * FROM Users")
-            rows = cur.fetchall()
-            for row in rows:
-                if row[0] == username:
-                    error = "We found your password, but it was hashed into this: " + row[1] + ". We are unable to decode the jargon. Sorry, please restart the game!"
-        con.close()
-    return render_template('index.html', error=error, password_recovery=True)
 
 # route for handling the account creation page logic
 @app.route('/create_account', methods=['GET', 'POST'])
@@ -179,16 +326,18 @@ def create_account():
             return redirect(url_for('login'))
     return render_template('index.html', error=error, create_account=True)
 
+
 # this gets called if you press "logout"
 @app.route('/logout')
 @login_required
 @uses_hero_and_update
 def logout(hero=None):
     hero.refresh_character()
-    database.update() ######### MODIFY HERE TO ADD MORE THINGS TO STORE INTO DATABASE #########
+    database.update()
     session.pop('logged_in', None)
     flash("Thank you for playing! Your have successfully logged out.")
     return redirect(url_for('login'))
+
 
 # this gets called if you are logged in and there is no character info stored
 @app.route('/create_character', methods=['GET', 'POST'])
@@ -200,27 +349,30 @@ def create_character(hero=None):
     page_title = "Create Character"
     page_heading = "A New Beginning"
     page_image = "beached"
-    paragraph = "You awake to great pain and confusion as you hear footsteps approaching in the sand. Unsure of where you are, you quickly look around for something to defend yourself. A firm and inquisitive voice pierces the air."
+    paragraph = """You awake to great pain and confusion as you hear footsteps
+approaching in the sand. Unsure of where you are, you quickly look
+around for something to defend yourself. A firm and inquisitive voice
+pierces the air.""".replace('\n', ' ').replace('\r', '')
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
     if len(hero.quest_paths) == 0:
-        #pdb.set_trace()
+        # pdb.set_trace()
         for quest in database.get_default_quests():
             quest.add_hero(hero)
-    if hero.current_world == None:
+    if hero.current_world is None:
         hero.current_world = database.get_default_world()
         hero.current_location = database.get_default_location()
-    if request.method == 'POST' and hero.name == None:
+    if request.method == 'POST' and hero.name is None:
         hero.name = request.form["name"]
         page_image = "old_man"
         paragraph = None
         conversation = [("Stranger: ", "Where do you come from, child?")]
         display = False
-    elif request.method == 'POST' and fathers_job == None:
+    elif request.method == 'POST' and fathers_job is None:
         fathers_job = request.form["archetype"]
         if fathers_job == "Brute":
-            hero.attributes.strength.level += 3
+            hero.attributes.brawn.level += 3
         elif fathers_job == "Scholar":
-            hero.attributes.wisdom.level += 3
+            hero.attributes.intellect.level += 3
         elif fathers_job == "Hunter":
             hero.attributes.survivalism.level += 3
         elif fathers_job == "Merchant":
@@ -228,27 +380,62 @@ def create_character(hero=None):
             hero.gold += 50
         elif fathers_job == "Priest":
             hero.attributes.divinity.level += 3
-    if hero.character_name != None and fathers_job != None:
+    if hero.character_name is not None and fathers_job is not None:
         hero.archetype = fathers_job
         hero.refresh_character()
         database.update()
         return redirect(url_for('home'))
     else:
         database.update()
-        return render_template('create_character.html', page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, conversation=conversation, display=display)  # render a template
+        # Builds a web page from a list of variables and a template file.
+        return render_template(
+            'create_character.html', page_title=page_title,
+            page_heading=page_heading, page_image=page_image,
+            paragraph=paragraph, conversation=conversation, display=display)
 
-# this is a temp button that can call this to erase your chracter information
-# and redirect you to the create character page
-# Current not in use? (Marlen)
-@app.route('/reset_character')
+
+# An admin button that lets you reset your character. Currently doesnt reset attributes/proficiencies, nor inventory and other stuff. Should be rewritten as something
+# like deleting the current hero and rebuilding the admin hero. I commented out the beginning of that but I cant get it to work
+@app.route('/reset_character/<stat_type>')
 @login_required
-def reset_character():
-    myHero = create_random_hero()
-    game = Game(myHero)
+@uses_hero_and_update
+def reset_character(stat_type, hero=None):
+    """
+    this_user = hero.user
+    new_hero = Hero(name=hero.name, fathers_job="Hunter", gold = 50)
+    new_hero.current_world = hero.current_world
+    new_hero.current_location = hero.current_location
+    if stat_type == "tough":
+        new_hero.attributes.brawn = 50
+    elif stat_type == "rich":
+        new_hero.gold = 5000
+    elif stat_type == "custom":
+        new_hero.attribute_points = 50
+        new_hero.proficiency_points = 50
+    this_user.heroes[0] = new_hero
+    hero = new_hero
+    game.set_hero(hero)
+    hero.refresh_character()
+    database.update()
+    """
+    hero.age = 7
+    hero.experience = 0
+    hero.experience_maximum = 10
+    hero.renown = 0
+    hero.virtue = 0
+    hero.devotion = 0
+    hero.gold = 5000
+    hero.basic_ability_points = 0
+    hero.archetype_ability_points = 0
+    hero.specialization_ability_points = 0
+    hero.pantheonic_ability_points = 0
+    hero.attribute_points = 10
+    hero.proficiency_points = 10
     return redirect(url_for('home'))  # return a string
 
+
 # this is a temporary page that lets you modify any attributes for testing
-@app.route('/admin',methods=['GET', 'POST'])
+@app.route('/admin', methods=['GET', 'POST'])
 @login_required
 @uses_hero_and_update
 def admin(hero=None):
@@ -262,15 +449,19 @@ def admin(hero=None):
         hero.devotion = int(request.form["Devotion"])
         hero.gold = int(request.form["Gold"])
         hero.basic_ability_points = int(request.form["Basic_ability_points"])
-        hero.archetype_ability_points = int(request.form["Archetypic_ability_points"])
-        hero.specialization_ability_points = int(request.form["Specialized_ability_points"])
-        hero.pantheonic_ability_points = int(request.form["Pantheonic_ability_points"])
+        hero.archetype_ability_points \
+            = int(request.form["Archetypic_ability_points"])
+        hero.specialization_ability_points \
+            = int(request.form["Specialized_ability_points"])
+        hero.pantheonic_ability_points \
+            = int(request.form["Pantheonic_ability_points"])
         hero.attribute_points = int(request.form["Attribute_points"])
         hero.proficiency_points = int(request.form['Proficiency_Points'])
         hero.refresh_character()
         return redirect(url_for('home'))
 
-    admin = [("Age", hero.age),
+    admin = [
+        ("Age", hero.age),
         ("Experience", hero.experience),
         ("Experience_maximum", hero.experience_maximum),
         ("Renown", hero.renown),
@@ -283,119 +474,166 @@ def admin(hero=None):
         ("Pantheonic_ability_points", hero.pantheonic_ability_points),
         ("Attribute_points", hero.attribute_points),
         ("Proficiency_Points", hero.proficiency_points)]
-    return render_template('admin.html', page_title=page_title, hero=hero, admin=admin)  # return a string
+    return render_template('admin.html', page_title=page_title, hero=hero,
+                           admin=admin)  # return a string
 
-# The if statement works and displays the user page as normal. Now if you click on a user it should run the else statement and pass in the user's username (which is unique).
-# Now, I am having trouble sending the user to HTML. I can't seem to understand how to store the user information as a variable.
 
-@app.route('/display_users/<users_username>', methods=['GET', 'POST'])
+# The if statement works and displays the user page as normal. Now if you
+# click on a user it should run the else statement and pass in the user's
+# username (which is unique).
+# Now, I am having trouble sending the user to HTML. I can't seem to
+# understand how to store the user information as a variable.
+@app.route('/display_users/<page_type>/<page_detail>', methods=['GET', 'POST'])
 @uses_hero_and_update
-def display_user_page(users_username, hero=None):
-    users = database.get_all_users()
-    if users_username == "all":
-        return render_template('users.html', myHero=hero, users=users)
+def display_user_page(page_type, page_detail, hero=None):
+    descending = False
+    if page_detail == hero.clicked_user_attribute:
+        hero.clicked_user_attribute = ""
+        descending = True
     else:
-        elthran_test = database.get_user_id(users_username)
-        this_user = database.fetch_hero_by_id(elthran_test)
-        # Below code is just messing with inbox
-        if request.method == "POST":
-            message = request.form['message']
-            for user in users:
-                if user.heroes[0] == this_user:
-                    user.inbox += "From " + hero.name + ": " + message
-        # Above this is inbox nonsense
-        return render_template('user_page.html', myHero=hero, user=this_user)
+        hero.clicked_user_attribute = page_detail
 
-@app.route('/global_chat')
+    if page_type == "display":
+        sorted_heroes = database.fetch_sorted_heroes(page_detail,descending)
+        return render_template(
+            'users.html', page_title="Users", myHero=hero,
+            page_detail=page_detail, all_heroes=sorted_heroes)
+    elif page_type == "see_user":
+        this_user = database.get_user_by_username(page_detail)
+        this_hero = database.fetch_hero_by_username(page_detail)
+        # Below code is just messing with inbox
+        if request.method == 'POST':
+            this_message = request.form['message']
+            if len(this_message) > 1:
+                hero.user.inbox.send_message(this_user, this_message)
+                confirmation_message = "Message sent!"
+            else:
+                confirmation_message = "Please type your message"
+            return render_template('user_page.html', myHero=hero, page_title=str(this_user.username),
+                                   enemy_hero=this_hero, confirmation=confirmation_message)
+        # Above this is inbox nonsense
+        return render_template(
+            'user_page.html', myHero=hero, page_title=str(this_user.username),
+            enemy_hero=this_hero)
+
+
+@app.route('/global_chat', methods=['GET', 'POST'])
 @uses_hero_and_update
 def global_chat(hero=None):
-    chat = game.global_chat
-    return render_template('user_page.html', myHero=hero, chat=chat)
+    users_in_chat = [hero]
+    if request.method == 'POST':
+        message = request.form["message"]
+        # MUST BE A BETTER WAY TO FORMAT THE TIME
+        itsnow = EZDB.now()
+        the_hour = str((itsnow.hour + 17) % 24)
+        the_minute = str(itsnow.minute)
+        the_second = str(itsnow.second)
+        if len(the_hour) < 2:
+            the_hour = "0" + the_hour
+        if len(the_minute) < 2:
+            the_minute = "0" + the_minute
+        if len(the_second) < 2:
+            the_second = "0" + the_second
+        printnow = the_hour + ":" + the_minute + ":" + the_second
+        # END OF SHITTY TIME FORMAT. TOOK 11 LINES OF CODE TO TURN IT INTO A DECENT PICTURE
+        game.global_chat.append((printnow, hero.name,
+                                 message))  # Currently it just appends tuples to the chat list, containing the hero's name and the message
+        if len(game.global_chat) > 25:  # After it reaches 5 messages, more messages will delete theoldest ones
+            game.global_chat = game.global_chat[1:]
+        return render_template('global_chat.html', myHero=hero, chat=game.global_chat, users_in_chat=users_in_chat)
+    return render_template('global_chat.html', page_title="Chat", myHero=hero, chat=game.global_chat, users_in_chat=users_in_chat)
 
-@app.route('/inbox')
+
+@app.route('/inbox/<outbox>', methods=['GET', 'POST'])
 @uses_hero_and_update
-def inbox(hero=None):
-    users = database.get_all_users()
-    for user in users:
-        if user.heroes[0] == hero:
-            inbox = user.inbox
-            return render_template('inbox.html', myHero=hero, inbox=inbox)
-    return render_template('inbox.html', myHero=hero, inbox="empty")
+def inbox(outbox, hero=None):
+    hero.user.inbox_alert = False
+    if outbox == "outbox":
+        outbox = True
+    else:
+        outbox = False
+    if request.method == 'POST':
+        username_of_receiver = request.form["receiver"]
+        content = request.form["message"]
+        receiver = database.get_user_by_username(username_of_receiver)
+        hero.user.inbox.send_message(receiver, content)
+        receiver.inbox_alert = True
+        database.update()  # IMPORTANT!
+        return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)
+    return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)
 
 
-### PROFILE PAGES (Basically the home page of the game with your character display and stats)
-
+# PROFILE PAGES (Basically the home page of the game with your character
+# display and stats)
 @app.route('/home')
 @login_required
 @uses_hero_and_update
 def home(hero=None):
     """Build the home page and return it as a string of HTML.
     
-    render_template uses Jinj2 markup.
+    render_template uses Jinja2 markup.
     """
-    #Is this supposed to update the time of all hero objects?
+
+    # Is this supposed to update the time of all hero objects?
     database.update_time(hero)
 
-    #Not implemented. Control user moves on map.
-    #Sets up initial valid moves on the map.
+    # Not implemented. Control user moves on map.
+    # Sets up initial valid moves on the map.
     # Should be a list of urls ...
-    # session['valid_moves'] = myHero.current_world.show_directions(myHero.current_location)
+    # session['valid_moves'] \
+    #  = myHero.current_world.show_directions(myHero.current_location)
     # session['valid_moves'].append(myHero.current_location.id)
 
-    return render_template('profile_home.html', page_title="Profile", myHero=hero, profile=True)
+    return render_template(
+        'profile_home.html', page_title="Profile", myHero=hero, profile=True)
+
 
 # This gets called anytime you have  attribute points to spend
-# Currently I send "attributes=True" so that the html knows to highlight the bar and show that you are on this page
+# Currently I send "attributes=True" so that the html knows to highlight
+# the bar and show that you are on this page
 @app.route('/attributes', methods=['GET', 'POST'])
 @login_required
 @uses_hero_and_update
 def attributes(hero=None):
-    #Obviously this is a shitty way to do this, but I'm not sure where else to store this
-    #information for now. Probably as part of the hero class so it's easily sent to each html file.
-    #Or some global table that we send to each html file with the hero.
-
-    #Possibly update the PrimaryAttribute table and add in a "description"?
-    #Would require some restructuring.
-    attribute_information = [("Agility", "A measure of how agile a character is. Dexterity controls attack and movement speed and accuracy, as well as evading an opponent's attack ."),
-                             ("Charisma", "A measure of a character's social skills, and sometimes their physical appearance."),
-                             ("Divinity", "A measure of a character's common sense and/or spirituality."),
-                             ("Fortitude", "A measure of how resilient a character is."),
-                             ("Fortuity", "A measure of a character's luck. "),
-                             ("Perception", "A measure of a character's openness to their surroundings."),
-                             ("Reflexes", "A measure of how agile a character is. "),
-                             ("Resilience", "A measure of how resilient a character is. "),
-                             ("Strength", "A measure of how physically strong a character is. "),
-                             ("Survivalism", "A measure of a character's openness to their surroundings. "),
-                             ("Vitality", "A measure of how sturdy a character is."),
-                             ("Wisdom", "A measure of a character's problem-solving ability.")]
-
-    #Fix single quotes in string bug when converting from JS to HTML
-    #Python to Jinja to HTML to JS needs separate fix.
-    for index, data in enumerate(attribute_information):
+    # (Elthran) ATTRIBUTE_INFORMATION is currently being imported from attributes.py  This is because I was getting a hard to track down bug where I was modifying that file
+    # but you had hand typed the info here and that was causing my bug. Maybelater we can store it all in an html file or something?
+    # Fix single quotes in string bug when converting from JS to HTML
+    # Python to Jinja to HTML to JS needs separate fix.
+    for index, data in enumerate(ATTRIBUTE_INFORMATION):
         attribute, description = data
-        attribute_information[index] = attribute, description.replace("'", "\\'")
+        ATTRIBUTE_INFORMATION[index] = attribute, description.replace("'", "\\'")
 
     if request.method == 'POST':
         points_spent = 0
         for element in request.form:
             form_value = int(request.form[element])
-            attribute = getattr(hero.attributes, element[0:-5]) #Convert name e.g. agilityInput becomes agility.
+            attribute = getattr(hero.attributes, element[0:-5])  # Convert name e.g. agilityInput becomes agility.
             points_spent += form_value - attribute.level
             attribute.level = form_value
         hero.attribute_points -= points_spent
         hero.refresh_character(full=False)
         database.update()
-        return render_template('profile_attributes.html', page_title="Attributes", myHero=hero, attribute_information=attribute_information)
-    return render_template('profile_attributes.html', page_title="Attributes", myHero=hero, attribute_information=attribute_information)
+        return render_template('profile_attributes.html', page_title="Attributes", myHero=hero,
+                               attribute_information=ATTRIBUTE_INFORMATION)
+    return render_template('profile_attributes.html', page_title="Attributes", myHero=hero,
+                           attribute_information=ATTRIBUTE_INFORMATION)
 
 # This gets called anytime you have secondary attribute points to spend
-# Currently I send "proficiencies=True" so that the html knows to highlight the bar and show that you are on this page
+# Currently I send "proficiencies=True" so that the html knows to highlight
+# the bar and show that you are on this page
 @app.route('/proficiencies', methods=['GET', 'POST'])
 @login_required
 @uses_hero_and_update
 def proficiencies(hero=None):
-    #This page is literally just a html page with tooltips and proficiency level up buttons. No python code is needed. Python only tells html which page to load.
-    return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=hero)
+    profs1 = [hero.attributes.agility, hero.attributes.brawn, hero.attributes.charisma, hero.attributes.divinity]
+    profs2 = [hero.attributes.fortuity, hero.attributes.intellect, hero.attributes.pathfinding,
+              hero.attributes.quickness]
+    profs3 = [hero.attributes.resilience, hero.attributes.survivalism, hero.attributes.vitality,
+              hero.attributes.willpower]
+    # This page is literally just a html page with tooltips and proficiency level up buttons. No python code is needed. Python only tells html which page to load.
+    return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=hero, profs1=profs1,
+                           profs2=profs2, profs3=profs3)
+
 
 @app.route('/ability_tree/<spec>')
 @login_required
@@ -416,23 +654,32 @@ def ability_tree(spec, hero=None):
             else:
                 mastered_abilities.append(ability)
 
+    # TODO abilities are not connected to hero properly!
+    # They need to relate to a specific hero only!
+    # Maybe using the ItemTemplate concept but with and AbilityTemplate
+    # or a metaclass ...
     for ability in database.get_all_abilities():
         # Create a list of unlearned abilities
-        # for the current page you are on (basic, archetype, specialization, religion)
+        # for the current page you are on (basic, archetype,
+        #     specialization, religion)
         if ability not in hero.abilities and ability.type == spec:
-            if spec == "Archetype": # If you are on the archetype page, we further narrow it down to your archetype and "all"
+            if spec == "Archetype":  # If you are on the archetype page, we further narrow it down to your archetype and "all"
                 if ability.archetype == hero.archetype or ability.archetype == "All":
                     unknown_abilities.append(ability)
-            elif spec == "Class": # If you are on the specialization page, we further narrow it down to your specialization and "all"
-                if ability.specialization == hero.specialization or ability.specialization=="All":
+            elif spec == "Class":  # If you are on the specialization page, we further narrow it down to your specialization and "all"
+                if ability.specialization == hero.specialization or ability.specialization == "All":
                     unknown_abilities.append(ability)
-            elif spec == "Religious": # If you are on the religion page, we further narrow it down to your religion and "all"
+            elif spec == "Religious":  # If you are on the religion page, we further narrow it down to your religion and "all"
                 if ability.religion == hero.religion or ability.religion == "All":
                     unknown_abilities.append(ability)
             else:
                 unknown_abilities.append(ability)
-    return render_template('profile_ability.html', myHero=hero, ability_tree=spec, unknown_abilities=unknown_abilities,
-                               learnable_abilities=learnable_abilities, mastered_abilities=mastered_abilities, page_title=page_title)
+    return render_template(
+        'profile_ability.html', myHero=hero, ability_tree=spec,
+        unknown_abilities=unknown_abilities,
+        learnable_abilities=learnable_abilities,
+        mastered_abilities=mastered_abilities, page_title=page_title)
+
 
 @app.route('/inventory_page')
 @login_required
@@ -440,9 +687,11 @@ def ability_tree(spec, hero=None):
 def inventory_page(hero=None):
     page_title = "Inventory"
     # for item in hero.inventory:
-        # if item.wearable:
-            # item.check_if_improvement()
-    return render_template('inventory.html', hero=hero, page_title=page_title)  # return a string
+    #     if item.wearable:
+    #         item.check_if_improvement()
+    return render_template(
+        'inventory.html', hero=hero, page_title=page_title)
+
 
 @app.route('/quest_log')
 @login_required
@@ -450,7 +699,9 @@ def inventory_page(hero=None):
 def quest_log(hero=None):
     hero.page_refresh_character()
     page_title = "Quest Log"
-    return render_template('journal.html', myHero=hero, quest_log=True, page_title=page_title)  # return a string
+    return render_template(
+        'journal.html', myHero=hero, quest_log=True, page_title=page_title)
+
 
 @app.route('/bestiary/<current_monster_id>')
 @login_required
@@ -464,7 +715,10 @@ def bestiary(current_monster_id, hero=None):
                 current_monster = monster
                 break
     page_title = "Bestiary"
-    return render_template('journal.html', myHero=hero, bestiary=True, page_title=page_title, bestiary_data=bestiary_data, current_monster=current_monster)  # return a string
+    return render_template(
+        'journal.html', myHero=hero, bestiary=True, page_title=page_title,
+        bestiary_data=bestiary_data, current_monster=current_monster)
+
 
 @app.route('/people_log/<current_npc>')
 @login_required
@@ -478,7 +732,9 @@ def people_log(current_npc, hero=None):
                 current_npc = npc
                 break
     page_title = "People"
-    return render_template('journal.html', myHero=hero, people_log=True, page_title=page_title, npc_data=npc_data, current_npc=current_npc)  # return a string
+    return render_template('journal.html', myHero=hero, people_log=True, page_title=page_title, npc_data=npc_data,
+                           current_npc=current_npc)  # return a string
+
 
 @app.route('/map_log')
 @login_required
@@ -492,139 +748,118 @@ def map_log(hero=None):
 @uses_hero_and_update
 def achievement_log(hero=None):
     page_title = "Achievements"
-    return render_template('journal.html', myHero=hero, achievement_log=True, completed_achievements=hero.completed_achievements, page_title=page_title)  # return a string
+    return render_template('journal.html', myHero=hero, achievement_log=True,
+                           completed_achievements=hero.completed_achievements, page_title=page_title)  # return a string
 
 @app.route('/under_construction')
 @login_required
-def under_construction():
+@uses_hero_and_update
+def under_construction(hero=None):
     page_title = "Under Construction"
-    return render_template('layout.html', page_title=page_title)  # return a string
-
-### END OF PROFILE/DISPLAY FUNCTIONS
+    return render_template('layout.html', page_title=page_title, hero=hero)  # return a string
 
 
-
-### TOWN FUNCTIONS
-
-@app.route('/Town/<town_name>')
+@app.route('/map/<location_name>')
+@app.route('/town/<location_name>')
+@app.route('/cave/<location_name>')
+@app.route('/explorable/<location_name>')
 @login_required
-#Not implemented. Control user moves on map.
-# @prevent_url_typing
 @uses_hero_and_update
-def town(town_name, hero=None):
-    #Marked for refractor as ineficient if easy to understand.
-    #These should just be part of the basic world_map function as they don't actually
-    #add anything yet.
-    for location in hero.current_world.all_map_locations:
-        if location.name == town_name:
-            hero.current_location = location
-            break
+@prevent_url_typing
+def move(location_name, hero=None):
+    """Set up a directory for the hero to move to.
 
-    page_title = hero.current_city.display.page_title
-    places_of_interest = hero.current_city.display.places_of_interest
-    database.update()
-    return render_template('town.html', myHero=hero, page_title=page_title, places_of_interest=places_of_interest )  # return a string
-
-@app.route('/Cave/<cave_name>') # Test function while experimenting with locations
-@login_required
-#Not implemented. Control user moves on map.
-# @prevent_url_typing
-@uses_hero_and_update
-def cave(cave_name, hero=None):
-    #Marked for refractor as ineficient if easy to understand.
-    #Maybe a search function?
-    #hero.current_city = hero.current_world.get_city(cave_name)?
-    for location in hero.current_world.all_map_locations:
-        if location.name == cave_name:
-            hero.current_location = location
-            break
-    page_title = hero.current_city.display.page_title
-    page_heading = hero.current_city.display.page_heading
-    page_image = hero.current_city.display.page_image
-    paragraph = hero.current_city.display.paragraph
-    places_of_interest = hero.current_city.display.places_of_interest
-    database.update()
-    return render_template('cave.html', myHero=hero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest)  # return a string
-
-@app.route('/WorldMap/<current_world>/<int:location_id>') # Test function while experimenting with locations
-@login_required
-#Not implemented. Control user moves on map.
-# @prevent_url_typing
-@uses_hero_and_update
-def world_map(current_world, location_id, hero=None):
-    """Set up World Map web page. Return html string/web page.
-
-    I don't know where the arguments come from? Or why they are passed.
-    I will try and figure it out.
+    Arguments are in the form of a url and are sent by the data that can be
+    found with the 'view page source' command in the browser window.
     """
-    # pdb.set_trace()
-
-    #Very important as current_world is a string variable and should be the object itself.
-    current_world = hero.current_world
-
-    #Updates current id. May be redundant. Or it may allow page to be dynamic.
-    #May have originally compensated for the lack of a database.
-    current_location = current_world.find_location(location_id)
-
-    #Needs to be reimplemented/or removed
-    # hero.known_locations.append(current_world)
-    # hero.current_city = None #?
-
-    move_on_the_map = current_world.show_directions(current_location)
-    hero.current_location = current_location
+    location = database.get_object_by_name('Location', location_name)
+    if location.type == 'map':
+        hero.current_world = location
+    else:
+        hero.current_location = location
     database.update()
 
+    return render_template(
+        'move.html', myHero=hero,
+        page_title=location.display.page_title,
+        page_heading=location.display.page_heading,
+        page_image=location.display.page_image,
+        paragraph=location.display.paragraph,
+        places_of_interest=location.places_of_interest)
 
-    #Debug Me! Use current_world.display?
-    # Check render of places_of_interest
-    page_title = current_world.display.page_title
-    page_heading = current_world.display.page_heading
-    page_image = current_world.display.page_image
-    paragraph = current_world.display.paragraph
-    places_of_interest = current_world.display.places_of_interest
 
-    #Not implemented. Control user moves on map.
-    #Should be a list of urls ...
-    # session['valid_moves'] = move_on_the_map
-
-    return render_template('world_map.html', myHero=hero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, places_of_interest=places_of_interest, move_on_the_map=move_on_the_map)
-
-@app.route('/barracks')
+@app.route('/barracks/<name>')
 @login_required
 @uses_hero_and_update
-def barracks(hero=None):
+@update_current_location
+def barracks(name='', hero=None, location=None):
     if hero.proficiencies.health.current <= 0:
-        page_heading = "Your hero is currently dead."
-        page_image = "dead"
-        page_links = [("You have no health."),"","",""]
-    else:
-        page_heading = "Welcome to the arena " + hero.name + "!"
-        page_image = "arena"
-        page_links = [("Compete in the ", "/arena","arena", ".(temporary)"), ("Pay to ", "/spar", "spar", " against the trainer."), ("Battle another ", "/under_construction", "player",".")]
-    return render_template('building_default.html', page_title="Barracks", page_heading=page_heading, page_image=page_image, myHero=hero, game=game, page_links=page_links)  # return a string
+        location.display.page_heading = "Your hero is currently dead."
+        location.display.page_image = "dead.jpg"
 
-#From /barracks
-@app.route('/spar')
+        location.children = None
+        location.display.paragraph = "You have no health."
+    else:
+        location.display.page_heading = "Welcome to the barracks {}!".format(
+            hero.name)
+        location.display.page_image = "barracks.jpg"
+        location.display.paragraph = "Battle another player."
+
+        arena = database.get_object_by_name('Location', 'Arena')
+        arena.display.paragraph = "Compete in the arena."
+
+        spar = database.get_object_by_name('Location', 'Spar')
+        spar.display.paragraph = "Spar with the trainer."
+        location.children = [arena, spar]
+
+    return render_template('generic.html', hero=hero)
+
+
+# From /barracks
+@app.route('/spar/<name>')
 @login_required
 @uses_hero_and_update
-def spar(hero=None):
+@update_current_location
+def spar(name='', hero=None, location=None):
     spar_cost = 50
     spar_benefit = 5
     if hero.gold < spar_cost:
-        page_heading = "You do not have enough gold to spar."
+        location.display.page_heading = "You do not have enough gold to spar."
     else:
         hero.gold -= spar_cost
-        hero.experience += spar_benefit * hero.experience_gain_modifier
-        page_heading = str("You spend some time sparring with the trainer at the barracks. You spend " + str(spar_cost) + " gold and gain " + str(spar_benefit) + " experience.")
-    return render_template('building_default.html', page_title="Sparring Room", page_heading=page_heading, myHero=hero, game=game)  # return a string
 
-#From /barracks
-@app.route('/arena')
+        # This gives you experience and also returns how much
+        # experience you gained
+        modified_spar_benefit, level_up = hero.gain_experience(spar_benefit)
+        hero.proficiencies.endurance.current -= 1
+        location.display.page_heading = \
+            "You spend some time sparring with the trainer at the barracks." \
+            " You spend {} gold and gain {} experience.".format(
+                spar_cost, modified_spar_benefit)
+        if level_up:
+            location.display.page_heading += " You level up!"
+    # page_links = {
+    #     "Compete in the arena.": "/arena",
+    #     "Spar with the trainer.": "/spar",
+    #     "Battle another player.": None
+    # }
+    return render_template('generic.html', hero=hero, game=game)  # return a string
+
+
+# From /barracks
+@app.route('/arena/<name>')
 @login_required
 @uses_hero_and_update
-def arena(hero=None):
-    if not game.has_enemy: # If I try to check if the enemy has 0 health and there is no enemy, I randomly get an error
-        enemy = monster_generator(hero.age-6)
+@update_current_location
+def arena(name='', hero=None, location=None):
+    """Set up a battle between the player and a random monster.
+
+    NOTE: partially uses new location/display code.
+    """
+    # If I try to check if the enemy has 0 health and there is no enemy,
+    # I randomly get an error
+    if not game.has_enemy:
+        enemy = monster_generator(hero.age - 6)
         if enemy.name == "Wolf":
             enemy.items_rewarded.append((Quest_Item("Wolf Pelt", hero, 50)))
         if enemy.name == "Scout":
@@ -632,44 +867,59 @@ def arena(hero=None):
         if enemy.name == "Spider":
             enemy.items_rewarded.append((Quest_Item("Spider Leg", hero, 50)))
         game.set_enemy(enemy)
-    page_heading = "Welcome to the arena " + hero.name +"!"
-    page_image = str(game.enemy.name)
+    location.display.page_title = "War Room"
+    location.display.page_heading = "Welcome to the arena " + hero.name + "!"
+    location.display.page_image = str(game.enemy.name) + '.jpg'
     conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
                     ("Level: ", str(game.enemy.level), "Combat Details"),
-                    ("Health: ", str(game.enemy.proficiencies.health.current) + " / " + str(game.enemy.proficiencies.health.maximum)),
-                    ("Damage: ", str(game.enemy.proficiencies.attack_damage.minimum) + " - " + str(game.enemy.proficiencies.attack_damage.maximum)),
-                    ("Attack Speed: ", str(game.enemy.proficiencies.attack_speed.speed)),
-                    ("Accuracy: ", str(game.enemy.proficiencies.attack_accuracy.accuracy) + "%"),
+                    ("Health: ", str(game.enemy.proficiencies.health.current) + " / " + str(
+                        game.enemy.proficiencies.health.maximum)),
+                    ("Damage: ", str(game.enemy.proficiencies.damage.minimum) + " - " + str(
+                        game.enemy.proficiencies.damage.maximum)),
+                    ("Attack Speed: ", str(game.enemy.proficiencies.speed.speed)),
+                    ("Accuracy: ", str(game.enemy.proficiencies.accuracy.accuracy) + "%"),
                     ("First Strike: ", str(game.enemy.proficiencies.first_strike.chance) + "%"),
-                    ("Critical Hit Chance: ", str(game.enemy.proficiencies.critical_hit.chance) + "%"),
-                    ("Critical Hit Modifier: ", str(game.enemy.proficiencies.critical_hit.modifier)),
+                    ("Critical Hit Chance: ", str(game.enemy.proficiencies.killshot.chance) + "%"),
+                    ("Critical Hit Modifier: ", str(game.enemy.proficiencies.killshot.modifier)),
                     ("Defence: ", str(game.enemy.proficiencies.defence.modifier) + "%"),
                     ("Evade: ", str(game.enemy.proficiencies.evade.chance) + "%"),
                     ("Parry: ", str(game.enemy.proficiencies.parry.chance) + "%"),
                     ("Riposte: ", str(game.enemy.proficiencies.riposte.chance) + "%"),
                     ("Block Chance: ", str(game.enemy.proficiencies.block.chance) + "%"),
                     ("Block Reduction: ", str(game.enemy.proficiencies.block.modifier) + "%")]
-    page_links = [("Challenge the enemy to a ","/battle","fight","."), ("Go back to the ","/barracks","barracks",".")]
-    return render_template('building_default.html', page_title="War Room", page_heading=page_heading, page_image=page_image, myHero=hero, game=game, page_links=page_links, enemy_info=conversation, enemy=game.enemy)  # return a string
+    page_links = [("Challenge the enemy to a ", "/battle/monster", "fight", "."),
+                  ("Go back to the ", "/barracks/Barracks", "Barracks", ".")]
+    return render_template(
+        'building_default.html', page_title=location.display.page_title,
+        page_heading=location.display.page_heading,
+        page_image=location.display.page_image, myHero=hero, game=game,
+        page_links=page_links, enemy_info=conversation, enemy=game.enemy)
+
 
 # this gets called if you fight in the arena
-@app.route('/battle')
+@app.route('/battle/<this_user>')
 @login_required
 @uses_hero_and_update
-def battle(hero=None):
-    required_endurance = 1 # T
-
+def battle(this_user=None, hero=None):
+    required_endurance = 1  # T
     page_title = "Battle"
     page_heading = "Fighting"
     print("running function: battle2")
-
-    page_links = [("Return to your ","home","profile"," page.")]
+    page_links = [("Return to your ", "home", "profile", " page.")]
     if hero.proficiencies.endurance.current < required_endurance:
         page_title = "Battle"
         page_heading = "Not enough endurance, wait a bit!"
-        return render_template('layout.html', page_title=page_title, myHero=hero, page_heading=page_heading, page_links=page_links)
-    # This should return the full heros, not just their health
-    hero.proficiencies.health.current,game.enemy.proficiencies.health.current,battle_log = combat_simulator.battle_logic(hero,game.enemy)
+        return render_template('layout.html', page_title=page_title, myHero=hero, page_heading=page_heading,
+                               page_links=page_links)
+    if this_user == "monster":
+        pass
+    else:
+        enemy = database.fetch_hero_by_username(this_user)
+        enemy.login_alerts += "You have been attacked!-"
+        game.set_enemy(enemy)
+        game.enemy.experience_rewarded = 5
+        game.enemy.items_rewarded = []
+    hero.proficiencies.health.current, game.enemy.proficiencies.health.current, battle_log = combat_simulator.battle_logic(hero, game.enemy) # This should return the full heroes, not just their health
     hero.proficiencies.endurance.current -= required_endurance
     game.has_enemy = False
     if hero.proficiencies.health.current == 0:
@@ -695,7 +945,7 @@ def battle(hero=None):
                     hero.experience += 10
                 newMonster = False
                 break
-        if newMonster:
+        if newMonster is not None:
             #hero.kill_quests[game.enemy.species] = 1
             hero.completed_achievements.append(("Kill a " + game.enemy.species, "5"))
             for monster in bestiary_data:
@@ -703,8 +953,7 @@ def battle(hero=None):
                     hero.bestiary.append(monster)
             hero.experience += 5
         """
-        hero.experience += game.enemy.experience_rewarded # * hero.experience_gain_modifier  THIS IS CAUSING A WEIRD BUG? I don't know why
-        hero.update_experience_bar()
+        experience_gained,level_up = hero.gain_experience(game.enemy.experience_rewarded)  # * hero.experience_gain_modifier  THIS IS CAUSING A WEIRD BUG? I don't know why
         if len(game.enemy.items_rewarded) > 0:
             for item in game.enemy.items_rewarded:
                 if not any(items.name == item.name for items in hero.inventory):
@@ -714,50 +963,62 @@ def battle(hero=None):
                         if items.name == item.name:
                             items.amount_owned += 1
         page_title = "Victory!"
-        page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience!"
-        page_links = [("Compete in the ","/arena","arena","."), ("Go back to the ","/barracks","barracks","."), ("Return to your ","/home","profile"," page.")]
-        level_up = hero.level_up()
+        page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(
+            experience_gained) + " experience!"
+        page_links = [("Compete in the ", "/arena", "arena", "."), ("Go back to the ", "/barracks", "barracks", "."),
+                      ("Return to your ", "/home", "profile", " page.")]
         if level_up:
-            page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(game.enemy.experience_rewarded) + " experience. You have leveled up! You should return to your profile page to advance in skill."
-            page_links = [("Return to your ","/home","profile"," page and distribute your new attribute points.")]
+            page_heading += " You have leveled up! You should return to your profile page to advance in skill."
+            page_links = [("Return to your ", "/home", "profile", " page and distribute your new attribute points.")]
 
     database.update()
-    return render_template('battle.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log, myHero=hero, enemy=game.enemy, page_links=page_links)  # return a string
+    return render_template('battle.html', page_title=page_title, page_heading=page_heading, battle_log=battle_log,
+                           myHero=hero, enemy=game.enemy, page_links=page_links)  # return a string
 
-#A.k.a "Blacksmith"
-@app.route('/store/<inventory>')
+
+# a.k.a. "Blacksmith"
+@app.route('/store/<name>')
 @login_required
 @uses_hero_and_update
-def store(inventory, hero=None):
+@update_current_location
+def store(name, hero=None, location=None):
+    # pdb.set_trace()
+    # Engine.spawn('move_event', hero)
     page_title = "Store"
 
     # path = database.get_path_if_exists_and_active(quest_name, hero)
     # if path in hero.quest_paths:
-        # path.advance()
+    #     path.advance()
     for path in hero.quest_paths:
-        if path.active and path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 1:
+        if path.active \
+                and path.quest.name == "Get Acquainted with the Blacksmith" \
+                and path.stage == 1:
             path.advance()
     items_for_sale = []
-    if inventory == "greeting":
+    if name == "Blacksmith":
         page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]
         return render_template('store.html', myHero=hero, page_title=page_title, page_links=page_links)  # return a string
-    elif inventory == "armoury":
+    elif name == "armoury":
         page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
         for item in database.get_all_store_items():
             if item.garment or item.jewelry:
                 items_for_sale.append(item)
-    elif inventory == "weaponry":
+    elif name == "weaponry":
         page_links = [("I think I'd rather look at your ", "/store/armoury", "armour", " selection.")]
         for item in database.get_all_store_items():
             if item.weapon:
                 items_for_sale.append(item)
-    return render_template('store.html', myHero=hero, items_for_sale=items_for_sale, page_title=page_title, page_links=page_links)  # return a string
+    return render_template('store.html', myHero=hero, items_for_sale=items_for_sale, page_title=page_title,
+                           page_links=page_links)  # return a string
 
-@app.route('/tavern', methods=['GET', 'POST'])
+
+
+# @app.route('/tavern')
+@app.route('/tavern/<name>', methods=['GET', 'POST'])
 @login_required
 @uses_hero_and_update
-def tavern(hero=None):
-    tavern=True
+def tavern(name='', hero=None):
+    tavern = True
     page_title = "Tavern"
     page_heading = "You enter the Red Dragon Inn."
     page_image = "bartender"
@@ -765,7 +1026,7 @@ def tavern(hero=None):
         paragraph = "Welcome, my apprentice!"
     else:
         paragraph = "Greetings traveler! What can I get for you today?"
-    page_links = [("Return to ", "/tavern", "tavern", ".")] # I wish it looked like this
+    page_links = [("Return to ", "/tavern", "tavern", ".")]  # I wish it looked like this
     dialogue_options = {"Drink": "Buy a drink for 25 gold. (This fully heals you)"}
     if "Collect 2 Wolf Pelts for the Bartender" not in hero.errands and "Collect 2 Wolf Pelts for the Bartender" not in hero.completed_quests:
         dialogue_options["Jobs"] = "Ask if there are any jobs you can do."
@@ -788,7 +1049,7 @@ def tavern(hero=None):
         elif "Become an apprentice at the tavern." not in hero.completed_quests:
             dialogue_options["Jobs2"] = "Do you have any other jobs you need help with?"
     if request.method == 'POST':
-        tavern=False
+        tavern = False
         paragraph = ""
         dialogue_options = {}
         tavern_choice = request.form["tavern_choice"]
@@ -805,23 +1066,29 @@ def tavern(hero=None):
             page_image = ""
         elif tavern_choice == "HandInQuest":
             hero.gold += 5000
-            hero.errands = [(name, stage) for name, stage in hero.current_quests if name != "Collect 2 Wolf Pelts for the Bartender"]
+            hero.errands = [(name, stage) for name, stage in hero.current_quests if
+                            name != "Collect 2 Wolf Pelts for the Bartender"]
             hero.completed_quests.append(("Collect 2 Wolf Pelts for the Bartender"))
             page_heading = "You have given the bartender 2 wolf pelts and completed your quest! He has rewarded you with 5000 gold."
         elif tavern_choice == "QuestNotFinished":
             page_heading = "Don't take too long!"
         elif tavern_choice == "Jobs2":
             page_heading = "Actually, I could use a hand with something if you are interested in becoming my apprentice. First I will need 2 copper coins. Some of the goblins around the city are carrying them."
-            hero.current_quests.append(["Become an apprentice at the tavern.", "You need to find two copper coins and give them to the blacksmith", 1])
+            hero.current_quests.append(["Become an apprentice at the tavern.",
+                                        "You need to find two copper coins and give them to the blacksmith", 1])
         elif tavern_choice == "HandInQuest2":
             hero.current_quests[0][1] = "Now the bartender wants you to find a spider leg."
             hero.current_quests[0][2] += 1
             page_heading = "Fantastic! Now I just need a spider leg."
         elif tavern_choice == "HandInQuest3":
-            hero.current_quests = [quest for quest in hero.current_quests if quest[0] != "Become an apprentice at the tavern."]
+            hero.current_quests = [quest for quest in hero.current_quests if
+                                   quest[0] != "Become an apprentice at the tavern."]
             hero.completed_quests.append("Become an apprentice at the tavern.")
             page_heading = "You are now my apprentice!"
-    return render_template('tavern.html', myHero=hero, page_title=page_title, page_heading=page_heading, page_image=page_image, paragraph=paragraph, tavern=tavern, dialogue_options=dialogue_options)  # return a string
+    return render_template('tavern.html', myHero=hero, page_title=page_title, page_heading=page_heading,
+                           page_image=page_image, paragraph=paragraph, tavern=tavern,
+                           dialogue_options=dialogue_options)  # return a string
+
 
 @app.route('/marketplace/<inventory>')
 @login_required
@@ -829,38 +1096,48 @@ def tavern(hero=None):
 def marketplace(inventory, hero=None):
     page_title = "Marketplace"
     items_for_sale = []
-    if inventory == "greeting":
-        page_links = [("Take a look at our ", "/marketplace/general", "selection", "."), ("Return to ", "/Town/" + hero.current_city.name, "town", ".")]
+    if inventory == "Marketplace":
+        page_links = [("Take a look at our ", "/marketplace/general", "selection", "."), ("Return to ", hero.current_city.url, "town", ".")]
         return render_template('store.html', myHero=hero, page_title=page_title, page_links=page_links)  # return a string
     elif inventory == "general":
-        page_links = [("Let me go back to the ", "/marketplace/greeting", "marketplace", " instead.")]
+        page_links = [("Let me go back to the ", "/marketplace/Marketplace", "marketplace", " instead.")]
         items_for_sale = database.get_all_marketplace_items()
-    return render_template('store.html', myHero=hero, items_for_sale=items_for_sale, page_title=page_title, page_links=page_links)  # return a string
+    return render_template('store.html', myHero=hero, items_for_sale=items_for_sale, page_title=page_title,
+                           page_links=page_links)  # return a string
 
-@app.route('/old_mans_hut')
+
+@app.route('/house/<name>')
 @login_required
 @uses_hero_and_update
-def old_mans_hut(hero=None):
-    page_heading = "Old Man's Hut"
-    page_image = "hut"
-    paragraph = "Nice to see you again kid. What do you need?"
-    return render_template('layout.html', myHero=hero, page_title="Old Man's Hut", page_heading=page_heading, page_image=page_image, paragraph=paragraph)  # return a string
+def house(name='', hero=None):
+    """A web page for a house.
 
-@app.route('/leave_town')
+    Returns a rendered html page.
+    """
+    location = database.get_object_by_name('Location', name)
+    return render_template('generic.html', hero=hero)
+
+
+@app.route('/gate/<name>')
 @login_required
 @uses_hero_and_update
-def leave_town(hero=None):
-    page_heading = "Village Gate"
-    conversation = [("City Guard: ", "You are too young to be out on your own.")]
-    page_links = [("Return to the ", "/Town/" + hero.current_city.name, "city", ".")]
-    return render_template('gate.html', myHero=hero, page_heading=page_heading, conversation=conversation, page_links=page_links)  # return a string
+def leave_town(name='', hero=None):
+    location = database.get_object_by_name('Location', name)
+    conversation = [
+        ("City Guard: ", "You are too young to be out on your own.")]
+    page_links = [
+        ("Return to the ", "/Town/" + hero.current_city.name, "city", ".")]
+    return render_template('gate.html', myHero=hero,
+                           page_heading=location.display.page_heading,
+                           conversation=conversation,
+                           page_links=page_links)  # return a string
+# END OF STARTING TOWN FUNCTIONS
 
-### END OF STARTING TOWN FUNCTIONS
 
 # This gets called anytime a button gets clicked in html using
 # <button class="command", value="foo">. "foo" is what gets sent to this
 # Python code.
-@app.route('/<cmd>') # need to make sure this doesn't conflict with other routes
+@app.route('/command/<cmd>')  # need to make sure this doesn't conflict with other routes
 @uses_hero_and_update
 def command(cmd=None, hero=None):
     """Accept a string from HTML button code -> send back a response.
@@ -880,10 +1157,8 @@ def command(cmd=None, hero=None):
     and then parse it on this end based on the headers. But that is more complicated
     than I need right now.
     """
-    if cmd == 'favicon.ico':
-        return "success", 200, {'Content-Type': 'text/plain'}
 
-    testing = False # True
+    testing = False  # True
     if testing:
         print('request is:', repr(request))
         # print('request data:', repr(request.data))
@@ -897,82 +1172,59 @@ def command(cmd=None, hero=None):
     # event.add["database"] = database
 
     try:
-        response = Command.cmd_functions(cmd)(hero, database=database, arg_dict=request.args)
-        database.update()
-        # pdb.set_trace()
-        return response
+        # command_function = getattr(Command, <cmd>)
+        # response = command_function(hero, database,
+        #   javascript_kwargs_from_html)
+        command_function = Command.cmd_functions(cmd)
+        try:
+            response = command_function(hero, database=database,
+                                        arg_dict=request.args)
+            database.update()
+            # pdb.set_trace()
+            return response
+        except Exception as ex:
+            raise ex
     except AttributeError:
         print("Warning: Using old code for command: '{}'".format(cmd))
-        # Look in the not yet refractored list of if statemens ...
+        print("You need to write a static function called '{}' in "
+              "commands.py in the Command class.".format(cmd))
+        # Look in the not yet refactored list of if statements ...
 
     if cmd == "woodsman":
         hero.archetype = "Woodsman"
-        return "success", 200, {'Content-Type': 'text/plain'} #//
+        return "success", 200, {'Content-Type': 'text/plain'}  # //
     if cmd == "priest":
         hero.archetype = "Priest"
-        return "success", 200, {'Content-Type': 'text/plain'} #//
+        return "success", 200, {'Content-Type': 'text/plain'}  # //
     if cmd == "hunter":
         hero.specialization = "Hunter"
-        return "success", 200, {'Content-Type': 'text/plain'} #//
+        return "success", 200, {'Content-Type': 'text/plain'}  # //
     if cmd == "trapper":
         hero.specialization = "Trapper"
-        return "success", 200, {'Content-Type': 'text/plain'} #//
+        return "success", 200, {'Content-Type': 'text/plain'}  # //
     # END OF TEST CODE
 
-    for item in hero.inventory:
-        # print(item)
-        if cmd == item.name:
-            if item.wearable:            # EQUIP ITEMS
-                equipped_items_to_remove = []
-                for equipped_item in hero.equipped_items:
-                    if type(item) is Weapon:
-                        if item.two_handed_weapon and (equipped_item.shield or equipped_item.one_handed_weapon):
-                            equipped_items_to_remove.append(equipped_item)
-                            hero.inventory.append(equipped_item)
-                        if item.one_handed_weapon and equipped_item.two_handed_weapon:
-                            equipped_items_to_remove.append(equipped_item)
-                            hero.inventory.append(equipped_item)
-                        if item.shield and equipped_item.two_handed_weapon:
-                            equipped_items_to_remove.append(equipped_item)
-                            hero.inventory.append(equipped_item)
-                    if type(equipped_item) is type(item):
-                        equipped_items_to_remove.append(equipped_item)
-                        hero.inventory.append(equipped_item)
-                hero.equipped_items = [x for x in hero.equipped_items if x not in equipped_items_to_remove] # deletes the items in equipped_items_to_remove from hero.equipped_items
-                hero.equipped_items.append(item)
-                hero.inventory.remove(item)
-                hero.refresh_proficiencies()
-                for path in hero.quest_paths:
-                    if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 1:
-                        path.quest.advance_quest()
-                return "success", 200, {'Content-Type': 'text/plain'} #//
-            if item.consumable == True:                # CONSUME ITEMS
-                hero.consume_item(item.name)
-                return "success", 200, {'Content-Type': 'text/plain'} #//
 
-    # UNEQUIP ITEMS
-    for item in hero.equipped_items():
-        if cmd == item.name:
-            hero.inventory.append(item)
-            hero.equipped_items.remove(item)
-            hero.refresh_proficiencies()
-            for path in hero.quest_paths:
-                    if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 2:
-                        path.quest.advance_quest()
-            return "success", 200, {'Content-Type': 'text/plain'} #//
+    # for path in hero.quest_paths:
+        # if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 1:
+            # path.quest.advance_quest()
+    # for path in hero.quest_paths:
+            # if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 2:
+                # path.quest.advance_quest()
+            # return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # UPGRADE ABILITIES
     learnable_known_abilities = [ability for ability in hero.abilities if ability.level < ability.max_level]
     for ability in learnable_known_abilities:
-        if cmd == ability.name and  hero.ability_points > 0:
-            for i in range(0,len(hero.abilities)):
+        if cmd == ability.name and hero.ability_points > 0:
+            for i in range(0, len(hero.abilities)):
                 if hero.abilities[i].name == ability.name:
                     hero.abilities[i].level += 1
                     hero.abilities[i].update_display()
                     hero.ability_points -= 1
             hero.refresh_proficiencies()
             database.update()
-            return "success", 200, {'Content-Type': 'text/plain'} #//
+            return "success", 200, {'Content-Type': 'text/plain'}  # //
 
     # LEARN NEW ABILITIES
     unknown_abilities = []
@@ -985,39 +1237,24 @@ def command(cmd=None, hero=None):
             hero.refresh_proficiencies()
             hero.ability_points -= 1
             database.update()
-            return "success", 200, {'Content-Type': 'text/plain'} #//
+            return "success", 200, {'Content-Type': 'text/plain'}  # //
 
-    #USE ABILITIES (ACTIVATED ONES)
+    # USE ABILITIES (ACTIVATED ONES)
     for ability in hero.abilities:
         this_command = ability.name + "_use"
         if cmd == this_command:
             ability.cast(hero)
             database.update()
             return "success", 200, {'Content-Type': 'text/plain'} #//
+    return "No content", 204 #https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 
-
-    # BUY FROM MARKETPLACE
-    for item in database.get_all_marketplace_items():
-        if cmd == item.buy_name and hero.gold >= item.buy_price:
-            for my_item in hero.inventory:
-                if my_item.name == item.name:
-                    my_item.amount_owned += 1
-                    break
-            else:
-                newItem = item
-                newItem.update_owner(hero)
-                hero.inventory.append(newItem)
-                newItem.amount_owned = 1
-            hero.gold -= item.buy_price
-            return "success", 200, {'Content-Type': 'text/plain'} #//
-
-    return "failure", 200, {'Content-Type': 'text/plain'} #// these returns do nothing really, but you need them
 
 @app.route('/about')
 @uses_hero_and_update
 def about_page(hero=None):
     info = "The game is being created by Elthran and Haldon, with some help from Gnahz. Any inquiries can be made to elthranRPG@gmail.com"
-    return render_template('about.html', myHero=hero, gameVersion = "0.00.02", about_info=info)
+    return render_template('about.html', myHero=hero, page_title="About", gameVersion="0.00.02", about_info=info)
+
 
 ###testing by Marlen ####
 @app.route('/')
@@ -1028,26 +1265,25 @@ def main():
     """
     return redirect(url_for('login'))
 
+
 # start the server with the 'run()' method
 if __name__ == '__main__':
     # import os
 
-    #Set Current Working Directory (CWD) to the home of this file.
-    #This should make all other files import relative to this file fixing the Database doesn't exist problem.
+    # Set Current Working Directory (CWD) to the home of this file.
+    # This should make all other files import relative to this file fixing the Database doesn't exist problem.
 
     # os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
-    #Not implemented ... should be moved to prebuilt_objects.py and implemented in
-    #database.py as get_default_quests()
-    #Quest aren't actually implement yet but they will be soon!
+    # Not implemented ... should be moved to prebuilt_objects.py and implemented in
+    # database.py as get_default_quests()
+    # Quest aren't actually implement yet but they will be soon!
     # Super temporary while testing quests
     # hero.inventory.append(Quest_Item("Wolf Pelt", hero, 50))
     # hero.inventory.append(Quest_Item("Spider Leg", hero, 50))
     # hero.inventory.append(Quest_Item("Copper Coin", hero, 50))
     # for item in hero.inventory:
-        # item.amount_owned = 5
+    #     item.amount_owned = 5
 
     app.run(debug=True)
-
-

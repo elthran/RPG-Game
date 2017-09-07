@@ -3,9 +3,10 @@
 {% extends "layout.html" %}
 {% block block1 %}
 <!-- Display arena status -->
-    {% for line in enemy_info %}
-      <h2>{{ line[2] }}</h2><b>{{ line[0] }}</b> {{ line[1] }}
-    {% endfor %}
-	<img src="/static/images/{{ current_monster.monster_id }}_display_picture.jpg" alt="{{ current_monster.name }} Picture" style="width:125px;height:125px;">
+{% for line in enemy_info %}
+<h2>{{ line[2] }}</h2><b>{{ line[0] }}</b> {{ line[1] }}
+{% endfor %}
+<img src="/static/images/{{ current_monster.monster_id }}_display_picture.jpg" alt="{{ current_monster.name }} Picture"
+     style="width:125px;height:125px;">
 {% endblock %}
 

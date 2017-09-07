@@ -1,14 +1,16 @@
+import unittest
+import pdb
+
 from database import EZDB
 from game import Hero, Inventory
 from items import Item, One_Handed_Weapon
 import complex_relationships
 
-import unittest
-import pdb
 
 class ItemsTestCase(unittest.TestCase):
     def setUp(self):
-        self.template = One_Handed_Weapon("Small Dagger", buy_price=5, min_damage=30,
+        self.template = One_Handed_Weapon(
+            "Small Dagger", buy_price=5, min_damage=30,
             max_damage=60, attack_speed=1)
         self.item = Item(self.template)
         self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
@@ -39,9 +41,11 @@ class ItemsTestCase(unittest.TestCase):
         str_item = str(self.item)
 
         self.rebuild_instance()
-        item2 = self.db.session.query(Item).filter_by(name='Small Dagger').first()
+        item2 = self.db.session.query(
+            Item).filter_by(name='Small Dagger').first()
         self.assertEqual(str_item, str(item2))
-        
+
+    @unittest.skip("Not built.")
     def test_load_template(self):
         # str_item = str(item)
         
@@ -49,7 +53,6 @@ class ItemsTestCase(unittest.TestCase):
         # item2 = self.db.session.query(Item).filter_by(name='S').first()
         self.assertEqual("", "not built")
         
-    
-        
+
 if __name__ == '__main__':
     unittest.main()

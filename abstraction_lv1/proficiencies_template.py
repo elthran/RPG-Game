@@ -27,7 +27,7 @@ class Proficiencies(Base):
     def __init__(self):
         {% for prof in PROFICIENCY_INFORMATION %}
         {% set objectValue = prof[0].title().replace(" ", '') -%}
-        self.{{ prof[0].lower().replace(' ', '_') }} = {{ objectValue }}("{{ prof[0] }}", "{{ prof[1] }}", "{{ prof[2] }}", "{{ prof[3] }}")
+        self.{{ prof[0].lower().replace(' ', '_') }} = {{ objectValue }}("{{ prof[0] }}", "{{ prof[1] }}", "{{ prof[2] }}")
         {%- endfor %}
         
 
@@ -54,10 +54,10 @@ class Proficiency(Base):
     description = Column(String)
     tooltip = Column(String)
     attribute_type = Column(String)
-    type = Column(String)
     level = Column(Integer)
     next_value = Column(Integer)
     is_not_max_level = Column(Boolean)
+    reason_for_zero = Column(String)
     
     _class = Column(String)
     __mapper_args__ = {
@@ -65,14 +65,14 @@ class Proficiency(Base):
         'polymorphic_on':_class
     }
 
-    def __init__(self, name, description, attribute_type, type):
+    def __init__(self, name, description, attribute_type):
         self.name = name
         self.description = description
         self.attribute_type = attribute_type
-        self.type = type
         self.tooltip = ""
+        self.reason_for_zero = ""
         
-        self.level = 1
+        self.level = 0
         self.is_not_max_level = False
         
     def is_max_level(self, hero):
@@ -97,10 +97,10 @@ class {{ prof_class }}(Proficiency):
 
     id = Column(Integer, ForeignKey("proficiency.id"), primary_key=True)
 
-    {% for column in prof[4] -%}
+    {% for column in prof[3] -%}
     {{ column[0].lower() }} = Column(Integer)
     {% endfor %}
-    {% if prof[4][0][0] == "Maximum" -%}
+    {% if prof[3][0][0] == "Maximum" -%}
     percent = Column(Integer)
     {%- endif %}
     error = Column(String)
@@ -111,40 +111,56 @@ class {{ prof_class }}(Proficiency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        {% for value in prof[4] -%}
+        {% for value in prof[3] -%}
         self.{{ value[0].lower() }} = 0
         {% endfor -%}
-        {% if prof[4][0][0] == "Maximum" -%}
+        {% if prof[3][0][0] == "Maximum" -%}
         self.percent = 0
         {%- endif %}
         self.error = "You do not have enough {{ prof[2].lower() }}"
         self.formatted_name = "{{ prof_tablename }}" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
     def update(self, myHero):
-        self.tooltip = "" # This creates the tooltip variable. I think the way I have done it is very shitty.
+        """Update {{ prof_class }}'s attributes and tooltip variable.
+        """
+        tooltips = []
         if self.level < myHero.attributes.{{ prof[2].lower() }}.level // 2:
             self.is_not_max_level = True
         else:
             self.is_not_max_level = False
-        {% for value in prof[4] -%}
-        {% if value[1] == "percent" -%}
-        self.{{ value[0].lower() }} = floor((- ({{ value[2][1] }}*{{ value[2][2] }})/(({{ value[2][0] }} * self.level) + {{ value[2][1] }}) + {{ value[2][2] }}) * 7.9 + {{ value[2][3] }})
+        {% for value in prof[3] -%}
+        {% if value[1] == "root" -%}
+        self.{{ value[0].lower() }} = round((100 * self.level)**0.5 - (self.level / 4) + {{ value[2][0]}}, {{ value[2][1]}})
         {% elif value[1] == "linear" -%}
-        self.{{ value[0].lower() }} = floor({{ value[2][0] }}*self.level + {{ value[2][1] }})
-        {% elif value[1] == "curvy" -%}
-        self.{{ value[0].lower() }} = floor(floor(3 * ({{ value[2][0] }}*sin({{ value[2][2] }}*self.level) + {{ value[2][1] }}*self.level)) + {{ value[2][3] }})
-        {% elif value[1] == "sensitive" -%}
-        self.{{ value[0].lower() }} = round((3 * ({{ value[2][0] }}*sin({{ value[2][2] }}*self.level) + {{ value[2][1] }}*self.level)) + {{ value[2][3] }}, 2)
+        self.{{ value[0].lower() }} = round({{ value[2][0] }} * self.level + {{ value[2][1] }}, {{ value[2][2]}})
         {% elif value[1] == "empty" -%}
         self.{{ value[0].lower() }} = self.maximum
         {% endif -%}
         {% if value[1] != "empty" -%}
-        self.tooltip += "{{ value[0].title() }}: " + str(self.{{ value[0].lower() }}) + ";" # This adds a tooltip for each variable
+        # This creates a tooltip for each variable
+        tooltips.append("{{ value[0].title() }}: " + str(self.{{ value[0].lower() }})) 
         {% endif -%}
         {% endfor -%}
-        self.tooltip = self.tooltip[:-1] # This removes the separating character from the end of the final tooltip in the list. Please help me improve this code
 
-    {% if prof[4][0][0] == "Maximum" -%}
+"""
+        { % if prof[0] == "Block" %}
+        if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
+            self.chance = 0
+            self.reason_for_zero = "You must have a shield equipped"
+        else:
+            self.reason_for_zero = ""
+        { % endif %}
+"""
+
+        for item in myHero.equipped_items():
+            {% for value in prof[3] -%}
+            self.{{value[0].lower()}} += item.{{ prof_tablename }}_{{value[0].lower()}}
+            {% endfor -%}
+        
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips) 
+
+    {% if prof[3][0][0] == "Maximum" -%}
     @validates('current')
     def validate_{{ prof[0].lower() }}(self, key_name, current):
         #Update {{ prof[0].lower() }} percent on health change.

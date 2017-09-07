@@ -1,3 +1,43 @@
+/* Marlen's CSS, could be very bugged! 
+See Responsive web design https://www.w3schools.com/css/css_rwd_grid.asp
+*/
+
+/*In theory this means select all elements that have
+a parent of div with a class=row
+
+*/
+
+div.row > * {
+    box-sizing: border-box;
+}
+
+.col-1 {width: 8.33%;}
+.col-2 {width: 16.66%;}
+.col-3 {width: 25%;}
+.col-4 {width: 33.33%;}
+.col-5 {width: 41.66%;}
+.col-6 {width: 50%;}
+.col-7 {width: 58.33%;}
+.col-8 {width: 66.66%;}
+.col-9 {width: 75%;}
+.col-10 {width: 83.33%;}
+.col-11 {width: 91.66%;}
+.col-12 {width: 100%;}
+
+[class*="col-"] {
+    float: left;
+    padding: 15px;
+    border: 1px solid red;
+}
+
+.row::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+/* End Marlen's CSS */
+
 /* Body and Basics */
 
 body {
@@ -93,14 +133,15 @@ ul {
 /* Sidebar used for all pages */
 
 #sidebar {
-	width:14%;
+    font-size: 12px;
+	width:12%;
 	position: fixed;
 	overflow: auto;
 	height:100%;
 	background-color: Gray;
 }
 
-#sidebartop {
+#sidebartop {           /* The top pictures */
 	overflow: hidden;
 }
 
@@ -109,7 +150,7 @@ ul {
 	float: left;
 }
 
-#sidebarmiddle li {
+#sidebarmiddle li {     /* The 4 color progress bars */
 	line-height: 30px;
 }
 
@@ -122,16 +163,16 @@ ul {
 
 #sidebar li{
 	list-style-type: none;
-	padding-bottom: 10px;
+	padding-bottom: 3px;
 }
 
-#sidebarbottom ul {
+#sidebarbottom ul {     /* The menu list */
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
 	background-color: Gray;
 	text-align: center;
-	line-height: 20px;
+	line-height: 15px;
 	padding-bottom: 0px;
 }
 
@@ -221,6 +262,37 @@ ul {
 
 .topbarDropdownOuter:hover .topbarDropdownInner {
 	display: block;
+}
+
+/* Topbar used in inbox */
+
+.inboxTopbar {
+	float: left;
+	width: auto;
+}
+
+.inboxTopbar ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background: Black;
+}
+
+.inboxTopbar li {
+	float: left;
+}
+
+.inboxTopbar li a {
+	display: block;
+	color: white;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+}
+
+.inboxTopbar li a:hover:not(.active) {
+	background-color: Green;
 }
 
 /* Attribute Page */
@@ -325,7 +397,7 @@ input.abilityButtonMinus {
 
 .proficiencyPageInner {
 	width: 350px;
-	height: 99%;
+	height: auto;
 	border: 5px Double Black;
 	margin: 0;
 	padding: 0;
@@ -385,7 +457,7 @@ input.abilityButtonMinus {
 
 .progressBar { 
 	height: 10px; 
-	width: 100px;
+	width: 70px;
 	position: relative;
 	background: #555;
 	-moz-border-radius: 25px;

@@ -2,15 +2,29 @@
 {% block block1 %}
 
 <!-- Messing with inbox for fun stuff -->
+{% if enemy_hero.user != myHero.user %}
 <div>
-<h1>Message user</h1>
-<form method="post" action="" autocomplete="off">
-<input type="text" name="message" value="">
-<input type="submit" value="Send">
+	<h1>Message user</h1>
+	<form method="post" action="" autocomplete="off">
+		<input type="text" name="message" value="" autofocus tabindex=1 />
+		<input type="submit" value="Send" autofocus tabindex=2 />
+	</form>
+	{% if confirmation %}{{ confirmation }}{% endif %}
 </div>
+
+<!-- Messing with multiplayer battling -->
+<div>
+	<h1>Battle user</h1>
+	{% if enemy_hero.proficiencies.health.current == 0 %}
+	They are already dead.
+	{% else %}
+	<a href="/battle/{{ enemy_hero.user.username }}">Battle</a>
+	{% endif %}
+</div>
+{% endif %}
 <!-- End of funny code -->
 
-<!-- This is the User page -->	
+<!-- This is the enemy_hero page -->	
 <img class="profileImage" src="/static/images/character_background.jpg" alt="Sample">
 <div style="clear: both;"></div>
 
@@ -19,25 +33,25 @@
 	<div class="profileColumn">
 		<h2>Basic</h2>
 		<ul> 
-			<li>Name: {{ user.character_name}}</li>
-			<li>Age: {{ user.age }}</li>
-			{% if user.renown %}}
-				<li>Renown: {{ user.character_name}}</li>
+			<li>Name: {{ enemy_hero.character_name}}</li>
+			<li>Age: {{ enemy_hero.age }}</li>
+			{% if enemy_hero.renown %}}
+				<li>Renown: {{ enemy_hero.character_name}}</li>
 			{% endif %}
-			{% if user.devotion %}}
-				<li>Devotion: {{ user.age }}</li>
+			{% if enemy_hero.devotion %}}
+				<li>Devotion: {{ enemy_hero.age }}</li>
 			{% endif %}
-			{% if user.virtue %}}
-				<li>Virtue: {{ user.virtue }}</li>
+			{% if enemy_hero.virtue %}}
+				<li>Virtue: {{ enemy_hero.virtue }}</li>
 			{% endif %}			
-			<li>Experience: {{ user.experience }} / {{ user.experience_maximum }}</li>
-			<li>Health: {{ user.proficiencies.health.current }} / {{ user.proficiencies.health.maximum }}</li>
-			<li>Sanctity: {{ user.proficiencies.sanctity.current }} / {{ user.proficiencies.sanctity.maximum }}</li>
-			<li>Storage: {{ user.proficiencies.storage.current }} / {{ user.proficiencies.storage.maximum }}</li>
-			<li>Endurance: {{ user.proficiencies.endurance.current }} / {{ user.proficiencies.endurance.maximum }}</li>
+			<li>Experience: {{ enemy_hero.experience }} / {{ enemy_hero.experience_maximum }}</li>
+			<li>Health: {{ enemy_hero.proficiencies.health.current }} / {{ enemy_hero.proficiencies.health.maximum }}</li>
+			<li>Sanctity: {{ enemy_hero.proficiencies.sanctity.current }} / {{ enemy_hero.proficiencies.sanctity.maximum }}</li>
+			<li>Storage: {{ enemy_hero.proficiencies.storage.current }} / {{ enemy_hero.proficiencies.storage.maximum }}</li>
+			<li>Endurance: {{ enemy_hero.proficiencies.endurance.current }} / {{ enemy_hero.proficiencies.endurance.maximum }}</li>
 		</ul>
 	</div>
 </div>
 <div style="clear:both;"></div>
-<h1>Return to <a href=/display_users/all>Users</a> page.</h1>
+<h1>Return to <a href=/display_enemy_heros/all>user</a> page.</h1>
 {% endblock %}

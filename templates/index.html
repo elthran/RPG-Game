@@ -3,7 +3,8 @@
   <head>
     <title>Create a New Account</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="static/style.css" rel="stylesheet" media="screen">
+    <link href="static/style.css" rel="stylesheet" media="screen">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
   </head>
   <body>
 
@@ -13,10 +14,10 @@
       <br>
       <form action="" method="post">
         <input type="text" placeholder="Username" name="username" value="{{
-          request.form.username }}">
+          request.form.username }}" autofocus tabindex=1 />
          <input type="password" placeholder="Password" name="password" value="{{
-          request.form.password }}">
-        <input class="btn btn-default" type="submit" value="Create">
+          request.form.password }}" tabindex=2 />
+        <input class="btn btn-default" type="submit" value="Create" tabindex=3 />
       </form>
 <br><br><br>
 <li><a href=/login>Login</a></li>

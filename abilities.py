@@ -18,6 +18,9 @@ except ImportError as e:
 from base_classes import Base
 import pdb
 
+# TODO Abilities needs a Template class
+# because currently if I update an ability .. it updates it for all Heroes.
+# And I need a better way of implementing templating :P
 class Ability(Base):
     """Ability object base class.
     
@@ -28,19 +31,19 @@ class Ability(Base):
     How to use:
     name : Name of the Item, e.x. "power bracelet"
     hero : The Hero who owns the item
-	buy_price : Price to buy the item
-	level_req : level requirment
+    buy_price : Price to buy the item
+    level_req : level requirement
     """
     __tablename__ = "ability"
     
     id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True) #Maybe not neccessary?
+    name = Column(String, unique=True)  # Maybe 'unique' is not neccessary?
     level = Column(Integer)
     max_level = Column(Integer)
     description = Column(String) #Maybe description should be unique? use: unique=True as keyword.
     
-    #Note: Original code used default of "Unknown"
-    #I chopped the BasicAbility class as redundant. Now I am going to have to add the fucker back in.
+    # Note: Original code used default of "Unknown"
+    # I chopped the BasicAbility class as redundant. Now I am going to have to add the fucker back in.
     type = Column(String)
     ability_type = orm.synonym('type')
     
@@ -61,7 +64,6 @@ class Ability(Base):
         'polymorphic_identity':'Basic',
         'polymorphic_on':type
     }
-    
     
     def __init__(self, name, max_level, description, hero=None, castable=False, cost=0):
         """Build a basic ability object.
@@ -114,9 +116,9 @@ class Ability(Base):
         """
         #Possibly use a dictionary + lambda function. Switch/Case
         if self.name == "Determination":
-            hero.max_endurance += 3 * self.level
+            hero.proficiencies.endurance.maximum += 3 * self.level
         elif self.name == "Salubrity":
-            hero.max_health += 4 * self.level
+            hero.proficiencies.health.maximum += 4 * self.level
 
     def activate(self, hero):
         return self.cast(hero)
@@ -126,13 +128,13 @@ class Ability(Base):
         
         use:
         ability.activate(hero)
-        NOTE: returns False if spell is too expensive (cost > current_sanctity)
+        NOTE: returns False if spell is too expensive (cost > proficiencies.sanctity.current)
         If cast is succesful then return value is True.
         """
-        if hero.current_sanctity < self.cost:
+        if hero.proficiencies.sanctity.current < self.cost:
             return False
         else:
-            hero.current_sanctity -= self.cost
+            hero.proficiencies.sanctity.current -= self.cost
             if self.name == "Gain Gold to Test":
                 hero.gold += 3 * self.level
             elif self.name == 'foo':
@@ -200,8 +202,9 @@ class Class_Ability(Ability):
     specialization = Column(String)
 
     __mapper_args__ = {
-        'polymorphic_identity':'Class',
+        'polymorphic_identity': 'Class',
     }
+
     def __init__(self, *args, specialization="All", **kwargs):
         if len(args) > 3:
             raise TypeError("__init__() takes 3 positional arguments but {} were given.".format(len(args)))
@@ -216,11 +219,12 @@ class Religious_Ability(Ability):
     religion = Column(String)
 
     __mapper_args__ = {
-        'polymorphic_identity':'Religious',
+        'polymorphic_identity': 'Religious',
     }
     def __init__(self, *args, religion="All", **kwargs):
         if len(args) > 3:
-            raise TypeError("__init__() takes 3 positional arguments but {} were given.".format(len(args)))
+            raise TypeError("__init__() takes 3 positional arguments but {}"
+                            " were given.".format(len(args)))
         super().__init__(*args, **kwargs)
         self.type = 'Religious'
         self.religion = religion

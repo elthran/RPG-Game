@@ -1,0 +1,21 @@
+<!-- This shows the admin page -->
+
+{% extends "layout.html" %}
+{% block block1 %}
+    <h1>I am at {{ myHero.current_location.name }}</h1>
+    <h3>Explore this location</h3>
+    {% for place in places_of_interest['children'] %}
+     	<h2><a href="{{ place.url }}">{{ place.name }}</a>: {{ place.type }}</h2>
+    {% endfor %}
+    <h3>Explore nearby locations</h3>
+    {% for place in places_of_interest['adjacent'] %}
+     	<h2><a href="{{ place.url }}">{{ place.name }}</a>: {{ place.type }}</h2>
+    {% endfor %}
+    <h3>Explore a higher level :P (needs better wording)</h3>
+    {% if places_of_interest['parent'] %}
+        <h2><a href="{{ places_of_interest['parent'].url }}"
+        >{{ places_of_interest['parent'].name }}</a
+        >: {{ places_of_interest['parent'].type }}</h2>
+    {% endif %}
+{% endblock %}
+

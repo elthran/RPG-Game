@@ -1,14 +1,14 @@
+import unittest
+import pdb
+import re
+
 from database import EZDB
 from game import Hero, Inventory
 from items import Item, ItemTemplate
 import complex_relationships
 
-import unittest
-import pdb           
-import re
-
 ##########
-#Inventory: work in progress
+# Inventory: work in progress
 ##########
 
 class InventoryTestCase(unittest.TestCase):

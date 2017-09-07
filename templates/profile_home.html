@@ -5,6 +5,11 @@
 <img class="profileImage" src="/static/images/character_background.jpg" alt="Sample">
 <div style="clear: both;"></div>
 <div class="profileContainer">
+	{% for message in get_flashed_messages() %}
+		<p>
+			{{ message }}
+		</p>
+	{% endfor %}
 <h1>General Statistics</h1>
 	<div class="profileColumn">
 		<h2>Basic</h2>
@@ -32,7 +37,7 @@
 	<div class="profileColumn">
 	<h2>Skills</h2>	
 		<ul> 
-			{% if myHero.archetype %}}
+			{% if myHero.archetype %}
 				<li>Archetype: {{ myHero.archetype }}</li>
 			{% endif %}
 			{% if myHero.specialization %}}
@@ -50,7 +55,7 @@
 			<li>Bartering: {{ myHero.proficiencies.bartering.chance }}%</li>
 			<li>Oration: {{ myHero.proficiencies.oration.modifier }}%</li>
 			<li>Literacy: {{ myHero.proficiencies.literacy.modifier }}%</li>
-			<li>Luck: {{ myHero.proficiencies.luck.chance }}%</li>
+			<li>Luck: {{ myHero.proficiencies.luckiness.chance }}%</li>
 		</ul>
 	</div>
 </div>
@@ -60,11 +65,11 @@
 	<div class="profileColumn">
 		<h2>Offense</h2>
 		<ul> 
-			<li>Damage: {{ myHero.proficiencies.attack_damage.minimum }}-{{ myHero.proficiencies.attack_damage.maximum }}</li>
-			<li>Attack Speed: {{ myHero.proficiencies.attack_speed.speed }}</li>
-			<li>Accuracy: {{ myHero.proficiencies.attack_accuracy.accuracy }}%</li>
+			<li>Damage: {{ myHero.proficiencies.damage.minimum }}-{{ myHero.proficiencies.damage.maximum }}</li>
+			<li>Attack Speed: {{ myHero.proficiencies.speed.speed }}</li>
+			<li>Accuracy: {{ myHero.proficiencies.accuracy.accuracy }}%</li>
 			<li>First Strike: {{ myHero.proficiencies.first_strike.chance }}%</li>
-			<li>Critical Hit Chance: {{ myHero.proficiencies.critical_hit.chance }}% (Modifier: {{ myHero.proficiencies.critical_hit.modifier }}%)</li>
+			<li>Critical Hit Chance: {{ myHero.proficiencies.killshot.chance }}% (Modifier: {{ myHero.proficiencies.killshot.modifier }}%)</li>
 			<li>Defence: {{ myHero.proficiencies.defence.modifier }}%</li>
 			<li>Evade: {{ myHero.proficiencies.evade.chance }}%</li>
 			<li>Parry: {{ myHero.proficiencies.parry.chance }}%</li>
@@ -74,7 +79,8 @@
 	<div class="profileColumn">
 		<h2>Defence</h2>
 		<ul>
-			<li>Block Chance: {{ myHero.proficiencies.block.chance }}% (Modifier: {{ myHero.proficiencies.block.modifier }}%)</li>
+			<li>Block Chance: {% if myHero.proficiencies.block.chance %}{{ myHero.proficiencies.block.chance }}%{% else %}<font color="red">You need a shield</font>{% endif %}</li>
+			<li>Fatigue: {{ myHero.proficiencies.fatigue.current }}</li>
 			<li>Resist Frost: {{ myHero.proficiencies.resist_frost.modifier }}%</li>
 			<li>Resist Flame: {{ myHero.proficiencies.resist_flame.modifier }}%</li>
 			<li>Resist Shadow: {{ myHero.proficiencies.resist_shadow.modifier }}%</li>
