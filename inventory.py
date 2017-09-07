@@ -27,8 +27,8 @@ class Inventory(Base):
     # Maybe I don't even need this at all?
 
     slots_used_by_item_type = {
-        "Two_Handed_Weapon": {"primary": "both_hands", "secondary": ["left_hand", "right_hand"]},
-        "One_Handed_Weapon": {"primary": "right_hand", "secondary": ["both_hands"]},
+        "TwoHandedWeapon": {"primary": "both_hands", "secondary": ["left_hand", "right_hand"]},
+        "OneHandedWeapon": {"primary": "right_hand", "secondary": ["both_hands"]},
         "Shield": {"primary": "left_hand", "secondary": ["both_hands"]},
         "Chest_Armour": {"primary": "shirt", "secondary": []},
         "Head_Armour": {"primary": "helmet", "secondary": []},
@@ -74,7 +74,7 @@ class Inventory(Base):
         Unequip the item it the currently in the slot if one exists.
         NOTES:
             Max 10 rings are equipped at any given time
-            Some items take up multiple slots e.g. a Two_Handed_Weapon takes up 3 slots.
+            Some items take up multiple slots e.g. a TwoHandedWeapon takes up 3 slots.
 
         Do to problems in my implementation and understanding of SQLAlchemy
         I must:
