@@ -57,7 +57,7 @@ class Abilities(Base):
         self.ironfist = Ability('ironfist', 3, "Gain 2 minimum and 3 maximum damage",
                                 learnable=True, damage_minimum=2, damage_maximum=3)
         self.cure = Ability('cure', 3, "Recover 1 health",
-                                learnable=True, cost=1, castable=True)
+                                castable=True, cost=1, learnable=True)
         # print(self.ironhide)
         # exit("Debugging init.")
 

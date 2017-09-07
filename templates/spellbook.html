@@ -4,7 +4,7 @@
 {% block block1 %}
 {% for ability in myHero.abilities %}
 {% if ability.castable %}
-{{ ability.name }} <button>cast</button>
+{{ ability.name }} <button class="command" data={{ ability.id }} data-name = "cast_spell">cast</button><br>
 {% endif %}
 {% endfor %}
 
