@@ -36,12 +36,12 @@ class Abilities(Base):
 
     # Relationships to a particular ability.
     ironhide = relationship(
-        "Ability",
+        "Aura_Ability",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='ironhide')",
         back_populates="abilities", uselist=False)
     ironfist = relationship(
-        "Ability",
+        "Aura_Ability",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='ironfist')",
         back_populates="abilities", uselist=False)
@@ -52,10 +52,10 @@ class Abilities(Base):
         back_populates="abilities", uselist=False)
 
     def __init__(self):
-        self.ironhide = Ability('ironhide', 5, "Gain 1000 health per level",
-                                learnable=True, health_maximum=1000)
-        self.ironfist = Ability('ironfist', 3, "Gain 2 minimum and 3 maximum damage",
-                                learnable=True, damage_minimum=2, damage_maximum=3)
+        self.ironhide = Aura_Ability('ironhide', 5, "Gain 1000 health per level",
+                                learnable=True, health_maximum=1000, damage_minimum=0, damage_maximum=0)
+        self.ironfist = Aura_Ability('ironfist', 3, "Gain 2 minimum and 3 maximum damage",
+                                learnable=True, health_maximum=0, damage_minimum=2, damage_maximum=3)
         self.cure = Castable_Ability('cure', 3, "Recover 1 health", 1, learnable=True)
         # print(self.ironhide)
         # exit("Debugging init.")
@@ -115,10 +115,6 @@ class Ability(Base):
     activated = orm.synonym('castable')
     learnable = Column(Boolean)
 
-    health_maximum = Column(Integer)
-    damage_maximum = Column(Integer)
-    damage_minimum = Column(Integer)
-
     # Relationships.
     # Ability to abilities. Abilities is a list of ability objects.
     abilities_id = Column(Integer, ForeignKey('abilities.id'))
@@ -138,8 +134,7 @@ class Ability(Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, max_level, description, hero=None, learnable=False,
-                 health_maximum=0, damage_maximum=0, damage_minimum=0):
+    def __init__(self, name, max_level, description, hero=None, learnable=False):
         """Build a basic ability object.
 
         Note: arguments (name, hero, max_level, etc.) that require input are
@@ -163,13 +158,8 @@ class Ability(Base):
         self.castable = False
         self.learnable = learnable
 
-        self.health_maximum = health_maximum
-        self.damage_maximum = damage_maximum
-        self.damage_minimum = damage_minimum
-
         # Use internal method to properly add hero object to the
         # self.heroes relationship.
-        self.add_hero(hero)
 
         self.init_on_load()
 
@@ -206,25 +196,6 @@ class Ability(Base):
         exit("Removed in favor of add_hero and remove_hero")
         # self.heroes = [hero]
 
-    def add_hero(self, hero):
-        """Give a hero this ability.
-        """
-        if hero is None:
-            return
-        if hero not in self.heroes:
-            self.heroes.append(hero)
-        else:
-            raise Exception("ValueError: Hero already has this ability.")
-
-    def remove_hero(self, hero):
-        """Remove this ability from a hero.
-        """
-        try:
-            self.heroes.remove(hero)
-        except ValueError:
-            raise Exception("ValueError: Hero doesn't have this ability")
-
-
 class Castable_Ability(Ability):
 
     __mapper_args__ = {
@@ -255,3 +226,26 @@ class Castable_Ability(Ability):
             hero.proficiencies.sanctity.current -= self.cost
             hero.experience += 1
             return True
+
+class Aura_Ability(Ability):
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'Castable_Ability',
+    }
+
+    health_maximum = Column(Integer)
+    damage_maximum = Column(Integer)
+    damage_minimum = Column(Integer)
+
+    def __init__(self, *args, **kwargs):
+        """Build a new Archetype_Ability object.
+
+        Note: self.type must be set in __init__ to polymorphic_identity.
+        If no __init__ method then type gets set automagically.
+        If type not set then call to 'super' overwrites type.
+        """
+        super().__init__(*args, **kwargs)
+
+        self.health_maximum = health_maximum
+        self.damage_maximum = damage_maximum
+        self.damage_minimum = damage_minimum
