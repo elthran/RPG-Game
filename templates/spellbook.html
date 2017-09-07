@@ -1,0 +1,13 @@
+<!-- This shows the admin page -->
+
+{% extends "layout.html" %}
+{% block block1 %}
+{% for ability in myHero.abilities %}
+{% if ability.castable %}
+{{ ability.name }} <button>cast</button>
+{% endif %}
+{% endfor %}
+
+
+{%- endblock -%}
+

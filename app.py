@@ -562,6 +562,12 @@ def inbox(outbox, hero=None):
         return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)
     return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)
 
+@app.route('/spellbook')
+@uses_hero_and_update
+def spellbook(hero=None):
+    return render_template('spellbook.html', page_title="Spellbook", myHero=hero)
+
+
 
 # PROFILE PAGES (Basically the home page of the game with your character
 # display and stats)

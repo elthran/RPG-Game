@@ -675,6 +675,11 @@ class Damage(Proficiency):
             self.minimum += item.damage_minimum
             self.maximum += item.damage_maximum
             self.modifier += item.damage_modifier
+
+        for ability in myHero.abilities:
+            self.maximum += ability.damage_maximum * ability.level
+            self.minimum += ability.damage_minimum * ability.level
+
             #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips)
 
