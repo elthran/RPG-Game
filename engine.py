@@ -2,6 +2,7 @@
 This file will become very important. I would like to switch to handling
 events here. And everything else that the User doesn't need to know about.
 """
+import pdb
 
 from events import Event
 from pprint import pprint
@@ -40,18 +41,14 @@ class Engine:
         It should trigger a "visit the blacksmith quest completion event"
         And complete this quest.
         """
-        pprint(locals())
         event = Event(event_name, hero_id=hero.id, description=description)
         self.db.add_object(event)
         triggers = self.db.get_all_triggers_by(event_name, hero.id)
         for trigger in triggers:
             trigger.evaluate()
 
-        # TODO ... what objects? and what this piece of code is supposed to do.
-        # I mean really? What am I trying to accomplish here?
-        # I need to respec this and then it will work ...?
-        # In this case should return and quest_path?
-        objects = self.db.get_all_objects_with_completed_triggers(hero)
+        # TODO ... make this for all objects with completed_triggers .. ?
+        objects = self.db.get_all_quest_paths_with_completed_triggers(hero)
         # return the "Blacksmith" quest object ...
         # Since its completion trigger is completed ...
         # It is now completed. Run the method that you run when trigger
@@ -59,5 +56,7 @@ class Engine:
         for obj in objects:
             obj.run_if_trigger_completed()
 
-    def on_move(self, handler, location):
-        pass
+        self.db.update()
+
+    # def on_move(self, handler, location):
+    #     pass

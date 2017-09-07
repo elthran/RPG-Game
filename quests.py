@@ -82,6 +82,7 @@ from sqlalchemy import orm
 from base_classes import Base
 import pdb
 
+
 class QuestPath(Base):
     """Allow storage of quest stage for a given hero and a given quest.
     
@@ -93,7 +94,7 @@ class QuestPath(Base):
     
     To check what quests a hero has active use:
     for path in hero.quest_paths:
-        if path.acitve:
+        if path.active:
             return path.quest.name
     To check what quests a hero has completed use:
     for path in hero.quest_paths:
@@ -269,6 +270,25 @@ class QuestPath(Base):
         for path in quest.quest_paths:
             if path.hero.id == hero.id:
                 return path
+
+    def run_if_trigger_completed(self):
+        """Deactivate trigger and run activation code.
+
+        In this case ... unlink the trigger from the given quest
+        and the advance the quest to the next stage.
+
+        In theory ... this would bring the new trigger in to play
+        through activation of a new quest? Or have I not set that up right?
+        """
+        self.quest.completion_trigger.unlink()
+        self.advance()
+        # Make Trigger available!
+        try:
+            self.quest.completion_trigger.link(self.hero)
+        except AttributeError as ex:
+            print("Warning: The quest with the description '{}' has no "
+                  "completion trigger set up.".format(self.quest.description))
+            print('See error "{}"'.format(ex))
 
                 
 quest_to_quest = Table("quest_to_quest", Base.metadata,

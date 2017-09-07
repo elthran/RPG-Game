@@ -963,18 +963,18 @@ def battle(this_user=None, hero=None):
 @update_current_location
 # @spawns_event
 def store(name, hero=None, location=None):
-    pdb.set_trace()
+    # pdb.set_trace()
     engine.spawn('move_event', hero, description="The Hero visits a store.")
     page_title = "Store"
 
     # path = database.get_path_if_exists_and_active(quest_name, hero)
     # if path in hero.quest_paths:
     #     path.advance()
-    for path in hero.quest_paths:
-        if path.active \
-                and path.quest.name == "Get Acquainted with the Blacksmith" \
-                and path.stage == 1:
-            path.advance()
+    # for path in hero.quest_paths:
+    #     if path.active \
+    #             and path.quest.name == "Get Acquainted with the Blacksmith" \
+    #             and path.stage == 1:
+    #         path.advance()
     items_for_sale = []
     if name == "Blacksmith":
         page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]

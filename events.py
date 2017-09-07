@@ -204,6 +204,9 @@ class Trigger(Base):
 
         self.hero = hero
 
+    def unlink(self):
+        self.hero = None
+
     def evaluate(self):
         """Return true if all conditions are true.
 
