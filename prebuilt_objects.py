@@ -1,5 +1,5 @@
 from locations import Location
-from abilities import Ability, Archetype_Ability, Class_Ability, Religious_Ability
+from abilities import Ability
 from game import User, Hero
 from quests import Quest, QuestPath
 from items import (
