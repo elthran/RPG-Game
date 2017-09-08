@@ -1185,10 +1185,14 @@ def command(cmd=None, hero=None):
             return response
         except Exception as ex:
             raise ex
-    except AttributeError:
-        print("Warning: Using old code for command: '{}'".format(cmd))
-        print("You need to write a static function called '{}' in "
-              "commands.py in the Command class.".format(cmd))
+    except AttributeError as ex:
+        if str(ex) == "type object 'Command' has no attribute '{}'".format(
+                cmd):
+            print("Warning: Using old code for command: '{}'".format(cmd))
+            print("You need to write a static function called '{}' in "
+                  "commands.py in the Command class.".format(cmd))
+        else:
+            raise ex
         # Look in the not yet refactored list of if statements ...
 
     if cmd == "woodsman":
