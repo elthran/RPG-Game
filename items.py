@@ -132,8 +132,8 @@ class ItemTemplate(Base):
     How to use:
     name : Name of the Item, e.x. "power bracelet"
     hero : The Hero who owns the item
-	buy_price : Price to buy the item
-	level_req : level requirment
+    buy_price : Price to buy the item
+    level_req : level requirement
     """
     __tablename__ = "item_template"
 
@@ -141,11 +141,11 @@ class ItemTemplate(Base):
     name = Column(String, unique=True)
 
     # Marked for restructure/removal.
-    # I believe that this should be part of a Display class or be built into the HTML code.
+    # I believe that this should be part of a Display class or be built into
+    # the HTML code.
     buy_name = Column(String)
 
     buy_price = Column(Integer)
-
     wearable = Column(Boolean)
     consumable = Column(Boolean)
 
@@ -168,10 +168,6 @@ class ItemTemplate(Base):
 
 # Subclass of ItemTemplate
 class Wearable(ItemTemplate):
-    __tablename__ = 'wearable'
-
-    id = Column(Integer, ForeignKey("item_template.id"), primary_key=True)
-
     max_durability = Column(Integer)
     item_rating = Column(Integer)
     garment = Column(Boolean)
@@ -184,7 +180,6 @@ class Wearable(ItemTemplate):
     recovery_efficiency = Column(Integer)
     climbing_ability = Column(Integer)
     storage_maximum = Column(Integer)
-    storage_current = Column(Integer)
     encumbrance_amount = Column(Integer)
     endurance_maximum = Column(Integer)
     damage_minimum = Column(Integer)
@@ -201,14 +196,12 @@ class Wearable(ItemTemplate):
     flee_chance = Column(Integer)
     riposte_chance = Column(Integer)
     fatigue_maximum = Column(Integer)
-    fatigue_current = Column(Integer)
     block_chance = Column(Integer)
     block_modifier = Column(Integer)
     stealth_chance = Column(Integer)
     pickpocketing_chance = Column(Integer)
     faith_modifier = Column(Integer)
     sanctity_maximum = Column(Integer)
-    sanctity_current = Column(Integer)
     resist_holy_modifier = Column(Integer)
     bartering_modifier = Column(Integer)
     oration_modifier = Column(Integer)
@@ -243,7 +236,7 @@ class Wearable(ItemTemplate):
         'polymorphic_identity': "Wearable",
     }
 
-    def __init__(self, name, buy_price, max_durability=3, item_rating=10,
+    def __init__(self, *args, max_durability=3, item_rating=10,
                  health_maximum=0,
                  regeneration_speed=0,
                  recovery_efficiency=0,
@@ -251,7 +244,7 @@ class Wearable(ItemTemplate):
                  storage_maximum=0,
                  encumbrance_amount=0,
                  endurance_maximum=0,
-                 damage_minimum=0 , damage_maximum=0, damage_modifier=0,
+                 damage_minimum=0, damage_maximum=0, damage_modifier=0,
                  speed_speed=0,
                  accuracy_accuracy=0,
                  first_strike_chance=0,
@@ -295,10 +288,14 @@ class Wearable(ItemTemplate):
                  resist_slashing_modifier=0,
                  resist_piercing_modifier=0,
                  courage_skill=0,
-                 sanity_skill=0):
-        super().__init__(name, buy_price)
+                 sanity_skill=0, **kwargs):
+        super().__init__(*args, **kwargs)
         self.wearable = True
         self.broken = False
+        self.garment = False
+        self.weapon = False
+        self.jewelry = False
+
         self.max_durability = max_durability
         self.item_rating = item_rating
 
@@ -360,17 +357,9 @@ class Wearable(ItemTemplate):
         self.courage_skill = courage_skill
         self.sanity_skill = sanity_skill
 
-        garment = False
-        weapon = False
-        jewelry = False
-
 
 # Subclass of ItemTemplate
 class Weapon(Wearable):
-    __tablename__ = 'weapon'
-
-    id = Column(Integer, ForeignKey("wearable.id"), primary_key=True)
-
     one_handed_weapon = Column(Boolean)
     shield = Column(Boolean)
     two_handed_weapon = Column(Boolean)
@@ -379,1555 +368,152 @@ class Weapon(Wearable):
         'polymorphic_identity': "Weapon",
     }
 
-    def __init__(self, name, buy_price, max_durability, item_rating,
-                 health_maximum,
-                 regeneration_speed,
-                 recovery_efficiency,
-                 climbing_ability,
-                 storage_maximum,
-                 encumbrance_amount,
-                 endurance_maximum,
-                 damage_minimum, damage_maximum, damage_modifier,
-                 speed_speed,
-                 accuracy_accuracy,
-                 first_strike_chance,
-                 killshot_chance, killshot_modifier,
-                 defence_modifier,
-                 evade_chance,
-                 parry_chance,
-                 flee_chance,
-                 riposte_chance,
-                 fatigue_maximum,
-                 block_chance, block_modifier,
-                 stealth_chance,
-                 pickpocketing_chance,
-                 faith_modifier,
-                 sanctity_maximum,
-                 resist_holy_modifier,
-                 bartering_modifier,
-                 oration_modifier,
-                 charm_modifier,
-                 trustworthiness_modifier,
-                 renown_modifier,
-                 knowledge_modifier,
-                 literacy_modifier,
-                 understanding_modifier,
-                 luckiness_chance,
-                 adventuring_chance,
-                 logistics_modifier,
-                 mountaineering_modifier,
-                 woodsman_modifier,
-                 navigator_modifier,
-                 detection_chance,
-                 caution_ability,
-                 explorer_ability,
-                 huntsman_ability,
-                 survivalist_ability,
-                 resist_frost_modifier,
-                 resist_flame_modifier,
-                 resist_shadow_modifier,
-                 resist_poison_modifier,
-                 resist_blunt_modifier,
-                 resist_slashing_modifier,
-                 resist_piercing_modifier,
-                 courage_skill,
-                 sanity_skill):
-        super().__init__(name, buy_price, max_durability, item_rating,
-                         health_maximum,
-                         regeneration_speed,
-                         recovery_efficiency,
-                         climbing_ability,
-                         storage_maximum,
-                         encumbrance_amount,
-                         endurance_maximum,
-                         damage_minimum, damage_maximum, damage_modifier,
-                         speed_speed,
-                         accuracy_accuracy,
-                         first_strike_chance,
-                         killshot_chance, killshot_modifier,
-                         defence_modifier,
-                         evade_chance,
-                         parry_chance,
-                         flee_chance,
-                         riposte_chance,
-                         fatigue_maximum,
-                         block_chance, block_modifier,
-                         stealth_chance,
-                         pickpocketing_chance,
-                         faith_modifier,
-                         sanctity_maximum,
-                         resist_holy_modifier,
-                         bartering_modifier,
-                         oration_modifier,
-                         charm_modifier,
-                         trustworthiness_modifier,
-                         renown_modifier,
-                         knowledge_modifier,
-                         literacy_modifier,
-                         understanding_modifier,
-                         luckiness_chance,
-                         adventuring_chance,
-                         logistics_modifier,
-                         mountaineering_modifier,
-                         woodsman_modifier,
-                         navigator_modifier,
-                         detection_chance,
-                         caution_ability,
-                         explorer_ability,
-                         huntsman_ability,
-                         survivalist_ability,
-                         resist_frost_modifier,
-                         resist_flame_modifier,
-                         resist_shadow_modifier,
-                         resist_poison_modifier,
-                         resist_blunt_modifier,
-                         resist_slashing_modifier,
-                         resist_piercing_modifier,
-                         courage_skill,
-                         sanity_skill)
-
-        # Marked for restructure
-        # If self.type == "Weapon" should do the same thing.
-        # In fact all of these should be taken care of inside of the relavant
-        # subclass. i.e. if self.type == one_handed_weapon etc.
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.weapon = True
         self.one_handed_weapon = False
         self.shield = False
         self.two_handed_weapon = False
 
 
-class One_Handed_Weapon(Weapon):
-    __tablename__ = 'one_handed_weapon'
-
-    id = Column(Integer, ForeignKey("weapon.id"), primary_key=True)
-
+class OneHandedWeapon(Weapon):
     __mapper_args__ = {
-        'polymorphic_identity': "One_Handed_Weapon",
+        'polymorphic_identity': "OneHandedWeapon",
     }
 
-    def __init__(self, name, buy_price, max_durability, item_rating,
-                 health_maximum,
-                 regeneration_speed,
-                 recovery_efficiency,
-                 climbing_ability,
-                 storage_maximum,
-                 encumbrance_amount,
-                 endurance_maximum,
-                 damage_minimum, damage_maximum, damage_modifier,
-                 speed_speed,
-                 accuracy_accuracy,
-                 first_strike_chance,
-                 killshot_chance, killshot_modifier,
-                 defence_modifier,
-                 evade_chance,
-                 parry_chance,
-                 flee_chance,
-                 riposte_chance,
-                 fatigue_maximum,
-                 block_chance, block_modifier,
-                 stealth_chance,
-                 pickpocketing_chance,
-                 faith_modifier,
-                 sanctity_maximum,
-                 resist_holy_modifier,
-                 bartering_modifier,
-                 oration_modifier,
-                 charm_modifier,
-                 trustworthiness_modifier,
-                 renown_modifier,
-                 knowledge_modifier,
-                 literacy_modifier,
-                 understanding_modifier,
-                 luckiness_chance,
-                 adventuring_chance,
-                 logistics_modifier,
-                 mountaineering_modifier,
-                 woodsman_modifier,
-                 navigator_modifier,
-                 detection_chance,
-                 caution_ability,
-                 explorer_ability,
-                 huntsman_ability,
-                 survivalist_ability,
-                 resist_frost_modifier,
-                 resist_flame_modifier,
-                 resist_shadow_modifier,
-                 resist_poison_modifier,
-                 resist_blunt_modifier,
-                 resist_slashing_modifier,
-                 resist_piercing_modifier,
-                 courage_skill,
-                 sanity_skill):
-        super().__init__(name, buy_price, max_durability, item_rating,
-                         health_maximum,
-                         regeneration_speed,
-                         recovery_efficiency,
-                         climbing_ability,
-                         storage_maximum,
-                         encumbrance_amount,
-                         endurance_maximum,
-                         damage_minimum, damage_maximum, damage_modifier,
-                         speed_speed,
-                         accuracy_accuracy,
-                         first_strike_chance,
-                         killshot_chance, killshot_modifier,
-                         defence_modifier,
-                         evade_chance,
-                         parry_chance,
-                         flee_chance,
-                         riposte_chance,
-                         fatigue_maximum,
-                         block_chance, block_modifier,
-                         stealth_chance,
-                         pickpocketing_chance,
-                         faith_modifier,
-                         sanctity_maximum,
-                         resist_holy_modifier,
-                         bartering_modifier,
-                         oration_modifier,
-                         charm_modifier,
-                         trustworthiness_modifier,
-                         renown_modifier,
-                         knowledge_modifier,
-                         literacy_modifier,
-                         understanding_modifier,
-                         luckiness_chance,
-                         adventuring_chance,
-                         logistics_modifier,
-                         mountaineering_modifier,
-                         woodsman_modifier,
-                         navigator_modifier,
-                         detection_chance,
-                         caution_ability,
-                         explorer_ability,
-                         huntsman_ability,
-                         survivalist_ability,
-                         resist_frost_modifier,
-                         resist_flame_modifier,
-                         resist_shadow_modifier,
-                         resist_poison_modifier,
-                         resist_blunt_modifier,
-                         resist_slashing_modifier,
-                         resist_piercing_modifier,
-                         courage_skill,
-                         sanity_skill)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.one_handed_weapon = True
 
 
 class Shield(Weapon):
-    __tablename__ = 'shield'
-
-    id = Column(Integer, ForeignKey("weapon.id"), primary_key=True)
-
     __mapper_args__ = {
         'polymorphic_identity': "Shield",
     }
 
-    def __init__(self, name, buy_price, max_durability, item_rating,
-                 health_maximum,
-                 regeneration_speed,
-                 recovery_efficiency,
-                 climbing_ability,
-                 storage_maximum,
-                 encumbrance_amount,
-                 endurance_maximum,
-                 damage_minimum, damage_maximum, damage_modifier,
-                 speed_speed,
-                 accuracy_accuracy,
-                 first_strike_chance,
-                 killshot_chance, killshot_modifier,
-                 defence_modifier,
-                 evade_chance,
-                 parry_chance,
-                 flee_chance,
-                 riposte_chance,
-                 fatigue_maximum,
-                 block_chance, block_modifier,
-                 stealth_chance,
-                 pickpocketing_chance,
-                 faith_modifier,
-                 sanctity_maximum,
-                 resist_holy_modifier,
-                 bartering_modifier,
-                 oration_modifier,
-                 charm_modifier,
-                 trustworthiness_modifier,
-                 renown_modifier,
-                 knowledge_modifier,
-                 literacy_modifier,
-                 understanding_modifier,
-                 luckiness_chance,
-                 adventuring_chance,
-                 logistics_modifier,
-                 mountaineering_modifier,
-                 woodsman_modifier,
-                 navigator_modifier,
-                 detection_chance,
-                 caution_ability,
-                 explorer_ability,
-                 huntsman_ability,
-                 survivalist_ability,
-                 resist_frost_modifier,
-                 resist_flame_modifier,
-                 resist_shadow_modifier,
-                 resist_poison_modifier,
-                 resist_blunt_modifier,
-                 resist_slashing_modifier,
-                 resist_piercing_modifier,
-                 courage_skill,
-                 sanity_skill):
-        super().__init__(name, buy_price, max_durability, item_rating,
-                         health_maximum,
-                         regeneration_speed,
-                         recovery_efficiency,
-                         climbing_ability,
-                         storage_maximum,
-                         encumbrance_amount,
-                         endurance_maximum,
-                         damage_minimum, damage_maximum, damage_modifier,
-                         speed_speed,
-                         accuracy_accuracy,
-                         first_strike_chance,
-                         killshot_chance, killshot_modifier,
-                         defence_modifier,
-                         evade_chance,
-                         parry_chance,
-                         flee_chance,
-                         riposte_chance,
-                         fatigue_maximum,
-                         block_chance, block_modifier,
-                         stealth_chance,
-                         pickpocketing_chance,
-                         faith_modifier,
-                         sanctity_maximum,
-                         resist_holy_modifier,
-                         bartering_modifier,
-                         oration_modifier,
-                         charm_modifier,
-                         trustworthiness_modifier,
-                         renown_modifier,
-                         knowledge_modifier,
-                         literacy_modifier,
-                         understanding_modifier,
-                         luckiness_chance,
-                         adventuring_chance,
-                         logistics_modifier,
-                         mountaineering_modifier,
-                         woodsman_modifier,
-                         navigator_modifier,
-                         detection_chance,
-                         caution_ability,
-                         explorer_ability,
-                         huntsman_ability,
-                         survivalist_ability,
-                         resist_frost_modifier,
-                         resist_flame_modifier,
-                         resist_shadow_modifier,
-                         resist_poison_modifier,
-                         resist_blunt_modifier,
-                         resist_slashing_modifier,
-                         resist_piercing_modifier,
-                         courage_skill,
-                         sanity_skill)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.shield = True
         self.weapon = False
 
 
-class Two_Handed_Weapon(Weapon):
-    __tablename__ = 'two_handed_weapon'
-
-    id = Column(Integer, ForeignKey("weapon.id"), primary_key=True)
-
+class TwoHandedWeapon(Weapon):
     __mapper_args__ = {
-        'polymorphic_identity': "Two_Handed_Weapon",
+        'polymorphic_identity': "TwoHandedWeapon",
     }
 
-    def __init__(self, name, buy_price, max_durability, item_rating,
-                 health_maximum,
-                 regeneration_speed,
-                 recovery_efficiency,
-                 climbing_ability,
-                 storage_maximum,
-                 encumbrance_amount,
-                 endurance_maximum,
-                 damage_minimum, damage_maximum, damage_modifier,
-                 speed_speed,
-                 accuracy_accuracy,
-                 first_strike_chance,
-                 killshot_chance, killshot_modifier,
-                 defence_modifier,
-                 evade_chance,
-                 parry_chance,
-                 flee_chance,
-                 riposte_chance,
-                 fatigue_maximum,
-                 block_chance, block_modifier,
-                 stealth_chance,
-                 pickpocketing_chance,
-                 faith_modifier,
-                 sanctity_maximum,
-                 resist_holy_modifier,
-                 bartering_modifier,
-                 oration_modifier,
-                 charm_modifier,
-                 trustworthiness_modifier,
-                 renown_modifier,
-                 knowledge_modifier,
-                 literacy_modifier,
-                 understanding_modifier,
-                 luckiness_chance,
-                 adventuring_chance,
-                 logistics_modifier,
-                 mountaineering_modifier,
-                 woodsman_modifier,
-                 navigator_modifier,
-                 detection_chance,
-                 caution_ability,
-                 explorer_ability,
-                 huntsman_ability,
-                 survivalist_ability,
-                 resist_frost_modifier,
-                 resist_flame_modifier,
-                 resist_shadow_modifier,
-                 resist_poison_modifier,
-                 resist_blunt_modifier,
-                 resist_slashing_modifier,
-                 resist_piercing_modifier,
-                 courage_skill,
-                 sanity_skill):
-        super().__init__(name, buy_price, max_durability, item_rating,
-                         health_maximum,
-                         regeneration_speed,
-                         recovery_efficiency,
-                         climbing_ability,
-                         storage_maximum,
-                         encumbrance_amount,
-                         endurance_maximum,
-                         damage_minimum, damage_maximum, damage_modifier,
-                         speed_speed,
-                         accuracy_accuracy,
-                         first_strike_chance,
-                         killshot_chance, killshot_modifier,
-                         defence_modifier,
-                         evade_chance,
-                         parry_chance,
-                         flee_chance,
-                         riposte_chance,
-                         fatigue_maximum,
-                         block_chance, block_modifier,
-                         stealth_chance,
-                         pickpocketing_chance,
-                         faith_modifier,
-                         sanctity_maximum,
-                         resist_holy_modifier,
-                         bartering_modifier,
-                         oration_modifier,
-                         charm_modifier,
-                         trustworthiness_modifier,
-                         renown_modifier,
-                         knowledge_modifier,
-                         literacy_modifier,
-                         understanding_modifier,
-                         luckiness_chance,
-                         adventuring_chance,
-                         logistics_modifier,
-                         mountaineering_modifier,
-                         woodsman_modifier,
-                         navigator_modifier,
-                         detection_chance,
-                         caution_ability,
-                         explorer_ability,
-                         huntsman_ability,
-                         survivalist_ability,
-                         resist_frost_modifier,
-                         resist_flame_modifier,
-                         resist_shadow_modifier,
-                         resist_poison_modifier,
-                         resist_blunt_modifier,
-                         resist_slashing_modifier,
-                         resist_piercing_modifier,
-                         courage_skill,
-                         sanity_skill)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.two_handed_weapon = True
 
 
 # New Class
 class Garment(Wearable):
-    __tablename__ = 'garment'
-
-    id = Column(Integer, ForeignKey("wearable.id"), primary_key=True)
-
-    health_modifier = Column(Integer)
+    armour_value = Column(Integer)
 
     __mapper_args__ = {
         'polymorphic_identity': "Garment",
     }
 
-    def __init__(self, name, buy_price, max_durability, item_rating,
-                 health_maximum,
-                 regeneration_speed,
-                 recovery_efficiency,
-                 climbing_ability,
-                 storage_maximum,
-                 encumbrance_amount,
-                 endurance_maximum,
-                 damage_minimum, damage_maximum, damage_modifier,
-                 speed_speed,
-                 accuracy_accuracy,
-                 first_strike_chance,
-                 killshot_chance, killshot_modifier,
-                 defence_modifier,
-                 evade_chance,
-                 parry_chance,
-                 flee_chance,
-                 riposte_chance,
-                 fatigue_maximum,
-                 block_chance, block_modifier,
-                 stealth_chance,
-                 pickpocketing_chance,
-                 faith_modifier,
-                 sanctity_maximum,
-                 resist_holy_modifier,
-                 bartering_modifier,
-                 oration_modifier,
-                 charm_modifier,
-                 trustworthiness_modifier,
-                 renown_modifier,
-                 knowledge_modifier,
-                 literacy_modifier,
-                 understanding_modifier,
-                 luckiness_chance,
-                 adventuring_chance,
-                 logistics_modifier,
-                 mountaineering_modifier,
-                 woodsman_modifier,
-                 navigator_modifier,
-                 detection_chance,
-                 caution_ability,
-                 explorer_ability,
-                 huntsman_ability,
-                 survivalist_ability,
-                 resist_frost_modifier,
-                 resist_flame_modifier,
-                 resist_shadow_modifier,
-                 resist_poison_modifier,
-                 resist_blunt_modifier,
-                 resist_slashing_modifier,
-                 resist_piercing_modifier,
-                 courage_skill,
-                 sanity_skill):
-        super().__init__(name, buy_price, max_durability, item_rating,
-                         health_maximum,
-                         regeneration_speed,
-                         recovery_efficiency,
-                         climbing_ability,
-                         storage_maximum,
-                         encumbrance_amount,
-                         endurance_maximum,
-                         damage_minimum, damage_maximum, damage_modifier,
-                         speed_speed,
-                         accuracy_accuracy,
-                         first_strike_chance,
-                         killshot_chance, killshot_modifier,
-                         defence_modifier,
-                         evade_chance,
-                         parry_chance,
-                         flee_chance,
-                         riposte_chance,
-                         fatigue_maximum,
-                         block_chance, block_modifier,
-                         stealth_chance,
-                         pickpocketing_chance,
-                         faith_modifier,
-                         sanctity_maximum,
-                         resist_holy_modifier,
-                         bartering_modifier,
-                         oration_modifier,
-                         charm_modifier,
-                         trustworthiness_modifier,
-                         renown_modifier,
-                         knowledge_modifier,
-                         literacy_modifier,
-                         understanding_modifier,
-                         luckiness_chance,
-                         adventuring_chance,
-                         logistics_modifier,
-                         mountaineering_modifier,
-                         woodsman_modifier,
-                         navigator_modifier,
-                         detection_chance,
-                         caution_ability,
-                         explorer_ability,
-                         huntsman_ability,
-                         survivalist_ability,
-                         resist_frost_modifier,
-                         resist_flame_modifier,
-                         resist_shadow_modifier,
-                         resist_poison_modifier,
-                         resist_blunt_modifier,
-                         resist_slashing_modifier,
-                         resist_piercing_modifier,
-                         courage_skill,
-                         sanity_skill)
+    def __init__(self, *args, armour_value=1, **kwargs):
+        super().__init__(*args, **kwargs)
         self.garment = True
 
+        self.armour_value = armour_value
 
-class Chest_Armour(Garment):
-    __tablename__ = 'chest_armour'
 
-    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
-
+class ChestArmour(Garment):
     chest_armour = Column(Boolean)
 
     __mapper_args__ = {
-        'polymorphic_identity': "Chest_Armour",
+        'polymorphic_identity': "ChestArmour",
     }
 
-    def __init__(self, name, buy_price, max_durability, item_rating,
-                 health_maximum,
-                 regeneration_speed,
-                 recovery_efficiency,
-                 climbing_ability,
-                 storage_maximum,
-                 encumbrance_amount,
-                 endurance_maximum,
-                 damage_minimum, damage_maximum, damage_modifier,
-                 speed_speed,
-                 accuracy_accuracy,
-                 first_strike_chance,
-                 killshot_chance, killshot_modifier,
-                 defence_modifier,
-                 evade_chance,
-                 parry_chance,
-                 flee_chance,
-                 riposte_chance,
-                 fatigue_maximum,
-                 block_chance, block_modifier,
-                 stealth_chance,
-                 pickpocketing_chance,
-                 faith_modifier,
-                 sanctity_maximum,
-                 resist_holy_modifier,
-                 bartering_modifier,
-                 oration_modifier,
-                 charm_modifier,
-                 trustworthiness_modifier,
-                 renown_modifier,
-                 knowledge_modifier,
-                 literacy_modifier,
-                 understanding_modifier,
-                 luckiness_chance,
-                 adventuring_chance,
-                 logistics_modifier,
-                 mountaineering_modifier,
-                 woodsman_modifier,
-                 navigator_modifier,
-                 detection_chance,
-                 caution_ability,
-                 explorer_ability,
-                 huntsman_ability,
-                 survivalist_ability,
-                 resist_frost_modifier,
-                 resist_flame_modifier,
-                 resist_shadow_modifier,
-                 resist_poison_modifier,
-                 resist_blunt_modifier,
-                 resist_slashing_modifier,
-                 resist_piercing_modifier,
-                 courage_skill,
-                 sanity_skill):
-        super().__init__(name, buy_price, max_durability, item_rating,
-                         health_maximum,
-                         regeneration_speed,
-                         recovery_efficiency,
-                         climbing_ability,
-                         storage_maximum,
-                         encumbrance_amount,
-                         endurance_maximum,
-                         damage_minimum, damage_maximum, damage_modifier,
-                         speed_speed,
-                         accuracy_accuracy,
-                         first_strike_chance,
-                         killshot_chance, killshot_modifier,
-                         defence_modifier,
-                         evade_chance,
-                         parry_chance,
-                         flee_chance,
-                         riposte_chance,
-                         fatigue_maximum,
-                         block_chance, block_modifier,
-                         stealth_chance,
-                         pickpocketing_chance,
-                         faith_modifier,
-                         sanctity_maximum,
-                         resist_holy_modifier,
-                         bartering_modifier,
-                         oration_modifier,
-                         charm_modifier,
-                         trustworthiness_modifier,
-                         renown_modifier,
-                         knowledge_modifier,
-                         literacy_modifier,
-                         understanding_modifier,
-                         luckiness_chance,
-                         adventuring_chance,
-                         logistics_modifier,
-                         mountaineering_modifier,
-                         woodsman_modifier,
-                         navigator_modifier,
-                         detection_chance,
-                         caution_ability,
-                         explorer_ability,
-                         huntsman_ability,
-                         survivalist_ability,
-                         resist_frost_modifier,
-                         resist_flame_modifier,
-                         resist_shadow_modifier,
-                         resist_poison_modifier,
-                         resist_blunt_modifier,
-                         resist_slashing_modifier,
-                         resist_piercing_modifier,
-                         courage_skill,
-                         sanity_skill)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.chest_armour = True
 
 
-class Head_Armour(Garment):
-    __tablename__ = 'head_armour'
-
-    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
-
+class HeadArmour(Garment):
     head_armour = Column(Boolean)
 
     __mapper_args__ = {
-        'polymorphic_identity': "Head_Armour",
+        'polymorphic_identity': "HeadArmour",
     }
 
-    def __init__(self, name, buy_price, max_durability, item_rating,
-                 health_maximum,
-                 regeneration_speed,
-                 recovery_efficiency,
-                 climbing_ability,
-                 storage_maximum,
-                 encumbrance_amount,
-                 endurance_maximum,
-                 damage_minimum, damage_maximum, damage_modifier,
-                 speed_speed,
-                 accuracy_accuracy,
-                 first_strike_chance,
-                 killshot_chance, killshot_modifier,
-                 defence_modifier,
-                 evade_chance,
-                 parry_chance,
-                 flee_chance,
-                 riposte_chance,
-                 fatigue_maximum,
-                 block_chance, block_modifier,
-                 stealth_chance,
-                 pickpocketing_chance,
-                 faith_modifier,
-                 sanctity_maximum,
-                 resist_holy_modifier,
-                 bartering_modifier,
-                 oration_modifier,
-                 charm_modifier,
-                 trustworthiness_modifier,
-                 renown_modifier,
-                 knowledge_modifier,
-                 literacy_modifier,
-                 understanding_modifier,
-                 luckiness_chance,
-                 adventuring_chance,
-                 logistics_modifier,
-                 mountaineering_modifier,
-                 woodsman_modifier,
-                 navigator_modifier,
-                 detection_chance,
-                 caution_ability,
-                 explorer_ability,
-                 huntsman_ability,
-                 survivalist_ability,
-                 resist_frost_modifier,
-                 resist_flame_modifier,
-                 resist_shadow_modifier,
-                 resist_poison_modifier,
-                 resist_blunt_modifier,
-                 resist_slashing_modifier,
-                 resist_piercing_modifier,
-                 courage_skill,
-                 sanity_skill):
-        super().__init__(name, buy_price, max_durability, item_rating,
-                         health_maximum,
-                         regeneration_speed,
-                         recovery_efficiency,
-                         climbing_ability,
-                         storage_maximum,
-                         encumbrance_amount,
-                         endurance_maximum,
-                         damage_minimum, damage_maximum, damage_modifier,
-                         speed_speed,
-                         accuracy_accuracy,
-                         first_strike_chance,
-                         killshot_chance, killshot_modifier,
-                         defence_modifier,
-                         evade_chance,
-                         parry_chance,
-                         flee_chance,
-                         riposte_chance,
-                         fatigue_maximum,
-                         block_chance, block_modifier,
-                         stealth_chance,
-                         pickpocketing_chance,
-                         faith_modifier,
-                         sanctity_maximum,
-                         resist_holy_modifier,
-                         bartering_modifier,
-                         oration_modifier,
-                         charm_modifier,
-                         trustworthiness_modifier,
-                         renown_modifier,
-                         knowledge_modifier,
-                         literacy_modifier,
-                         understanding_modifier,
-                         luckiness_chance,
-                         adventuring_chance,
-                         logistics_modifier,
-                         mountaineering_modifier,
-                         woodsman_modifier,
-                         navigator_modifier,
-                         detection_chance,
-                         caution_ability,
-                         explorer_ability,
-                         huntsman_ability,
-                         survivalist_ability,
-                         resist_frost_modifier,
-                         resist_flame_modifier,
-                         resist_shadow_modifier,
-                         resist_poison_modifier,
-                         resist_blunt_modifier,
-                         resist_slashing_modifier,
-                         resist_piercing_modifier,
-                         courage_skill,
-                         sanity_skill)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.head_armour = True
 
 
-class Leg_Armour(Garment):
-    __tablename__ = 'leg_armour'
-
-    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
-
+class LegArmour(Garment):
     leg_armour = Column(Boolean)
 
     __mapper_args__ = {
-        'polymorphic_identity': "Leg_Armour",
+        'polymorphic_identity': "LegArmour",
     }
 
-    def __init__(self, name, buy_price, max_durability, item_rating,
-                 health_maximum,
-                 regeneration_speed,
-                 recovery_efficiency,
-                 climbing_ability,
-                 storage_maximum,
-                 encumbrance_amount,
-                 endurance_maximum,
-                 damage_minimum, damage_maximum, damage_modifier,
-                 speed_speed,
-                 accuracy_accuracy,
-                 first_strike_chance,
-                 killshot_chance, killshot_modifier,
-                 defence_modifier,
-                 evade_chance,
-                 parry_chance,
-                 flee_chance,
-                 riposte_chance,
-                 fatigue_maximum,
-                 block_chance, block_modifier,
-                 stealth_chance,
-                 pickpocketing_chance,
-                 faith_modifier,
-                 sanctity_maximum,
-                 resist_holy_modifier,
-                 bartering_modifier,
-                 oration_modifier,
-                 charm_modifier,
-                 trustworthiness_modifier,
-                 renown_modifier,
-                 knowledge_modifier,
-                 literacy_modifier,
-                 understanding_modifier,
-                 luckiness_chance,
-                 adventuring_chance,
-                 logistics_modifier,
-                 mountaineering_modifier,
-                 woodsman_modifier,
-                 navigator_modifier,
-                 detection_chance,
-                 caution_ability,
-                 explorer_ability,
-                 huntsman_ability,
-                 survivalist_ability,
-                 resist_frost_modifier,
-                 resist_flame_modifier,
-                 resist_shadow_modifier,
-                 resist_poison_modifier,
-                 resist_blunt_modifier,
-                 resist_slashing_modifier,
-                 resist_piercing_modifier,
-                 courage_skill,
-                 sanity_skill):
-        super().__init__(name, buy_price, max_durability, item_rating,
-                         health_maximum,
-                         regeneration_speed,
-                         recovery_efficiency,
-                         climbing_ability,
-                         storage_maximum,
-                         encumbrance_amount,
-                         endurance_maximum,
-                         damage_minimum, damage_maximum, damage_modifier,
-                         speed_speed,
-                         accuracy_accuracy,
-                         first_strike_chance,
-                         killshot_chance, killshot_modifier,
-                         defence_modifier,
-                         evade_chance,
-                         parry_chance,
-                         flee_chance,
-                         riposte_chance,
-                         fatigue_maximum,
-                         block_chance, block_modifier,
-                         stealth_chance,
-                         pickpocketing_chance,
-                         faith_modifier,
-                         sanctity_maximum,
-                         resist_holy_modifier,
-                         bartering_modifier,
-                         oration_modifier,
-                         charm_modifier,
-                         trustworthiness_modifier,
-                         renown_modifier,
-                         knowledge_modifier,
-                         literacy_modifier,
-                         understanding_modifier,
-                         luckiness_chance,
-                         adventuring_chance,
-                         logistics_modifier,
-                         mountaineering_modifier,
-                         woodsman_modifier,
-                         navigator_modifier,
-                         detection_chance,
-                         caution_ability,
-                         explorer_ability,
-                         huntsman_ability,
-                         survivalist_ability,
-                         resist_frost_modifier,
-                         resist_flame_modifier,
-                         resist_shadow_modifier,
-                         resist_poison_modifier,
-                         resist_blunt_modifier,
-                         resist_slashing_modifier,
-                         resist_piercing_modifier,
-                         courage_skill,
-                         sanity_skill )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.leg_armour = True
 
 
-class Feet_Armour(Garment):
-    __tablename__ = 'feet_armour'
-
-    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
-
+class FeetArmour(Garment):
     feet_armour = Column(Boolean)
 
     __mapper_args__ = {
-        'polymorphic_identity': "Feet_Armour",
+        'polymorphic_identity': "FeetArmour",
     }
 
-    def __init__(self, name, buy_price, max_durability, item_rating,
-                 health_maximum,
-                 regeneration_speed,
-                 recovery_efficiency,
-                 climbing_ability,
-                 storage_maximum,
-                 encumbrance_amount,
-                 endurance_maximum,
-                 damage_minimum, damage_maximum, damage_modifier,
-                 speed_speed,
-                 accuracy_accuracy,
-                 first_strike_chance,
-                 killshot_chance, killshot_modifier,
-                 defence_modifier,
-                 evade_chance,
-                 parry_chance,
-                 flee_chance,
-                 riposte_chance,
-                 fatigue_maximum,
-                 block_chance, block_modifier,
-                 stealth_chance,
-                 pickpocketing_chance,
-                 faith_modifier,
-                 sanctity_maximum,
-                 resist_holy_modifier,
-                 bartering_modifier,
-                 oration_modifier,
-                 charm_modifier,
-                 trustworthiness_modifier,
-                 renown_modifier,
-                 knowledge_modifier,
-                 literacy_modifier,
-                 understanding_modifier,
-                 luckiness_chance,
-                 adventuring_chance,
-                 logistics_modifier,
-                 mountaineering_modifier,
-                 woodsman_modifier,
-                 navigator_modifier,
-                 detection_chance,
-                 caution_ability,
-                 explorer_ability,
-                 huntsman_ability,
-                 survivalist_ability,
-                 resist_frost_modifier,
-                 resist_flame_modifier,
-                 resist_shadow_modifier,
-                 resist_poison_modifier,
-                 resist_blunt_modifier,
-                 resist_slashing_modifier,
-                 resist_piercing_modifier,
-                 courage_skill,
-                 sanity_skill):
-        super().__init__(name, buy_price, max_durability, item_rating,
-                         health_maximum,
-                         regeneration_speed,
-                         recovery_efficiency,
-                         climbing_ability,
-                         storage_maximum,
-                         encumbrance_amount,
-                         endurance_maximum,
-                         damage_minimum, damage_maximum, damage_modifier,
-                         speed_speed,
-                         accuracy_accuracy,
-                         first_strike_chance,
-                         killshot_chance, killshot_modifier,
-                         defence_modifier,
-                         evade_chance,
-                         parry_chance,
-                         flee_chance,
-                         riposte_chance,
-                         fatigue_maximum,
-                         block_chance, block_modifier,
-                         stealth_chance,
-                         pickpocketing_chance,
-                         faith_modifier,
-                         sanctity_maximum,
-                         resist_holy_modifier,
-                         bartering_modifier,
-                         oration_modifier,
-                         charm_modifier,
-                         trustworthiness_modifier,
-                         renown_modifier,
-                         knowledge_modifier,
-                         literacy_modifier,
-                         understanding_modifier,
-                         luckiness_chance,
-                         adventuring_chance,
-                         logistics_modifier,
-                         mountaineering_modifier,
-                         woodsman_modifier,
-                         navigator_modifier,
-                         detection_chance,
-                         caution_ability,
-                         explorer_ability,
-                         huntsman_ability,
-                         survivalist_ability,
-                         resist_frost_modifier,
-                         resist_flame_modifier,
-                         resist_shadow_modifier,
-                         resist_poison_modifier,
-                         resist_blunt_modifier,
-                         resist_slashing_modifier,
-                         resist_piercing_modifier,
-                         courage_skill,
-                         sanity_skill)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.feet_armour = True
 
 
-class Arm_Armour(Garment):
-    __tablename__ = 'arm_armour'
-
-    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
-
+class ArmArmour(Garment):
     arm_armour = Column(Boolean)
 
     __mapper_args__ = {
-        'polymorphic_identity': "Arm_Armour",
+        'polymorphic_identity': "ArmArmour",
     }
 
-    def __init__(self, name, buy_price, max_durability, item_rating,
-                 health_maximum,
-                 regeneration_speed,
-                 recovery_efficiency,
-                 climbing_ability,
-                 storage_maximum,
-                 encumbrance_amount,
-                 endurance_maximum,
-                 damage_minimum, damage_maximum, damage_modifier,
-                 speed_speed,
-                 accuracy_accuracy,
-                 first_strike_chance,
-                 killshot_chance, killshot_modifier,
-                 defence_modifier,
-                 evade_chance,
-                 parry_chance,
-                 flee_chance,
-                 riposte_chance,
-                 fatigue_maximum,
-                 block_chance, block_modifier,
-                 stealth_chance,
-                 pickpocketing_chance,
-                 faith_modifier,
-                 sanctity_maximum,
-                 resist_holy_modifier,
-                 bartering_modifier,
-                 oration_modifier,
-                 charm_modifier,
-                 trustworthiness_modifier,
-                 renown_modifier,
-                 knowledge_modifier,
-                 literacy_modifier,
-                 understanding_modifier,
-                 luckiness_chance,
-                 adventuring_chance,
-                 logistics_modifier,
-                 mountaineering_modifier,
-                 woodsman_modifier,
-                 navigator_modifier,
-                 detection_chance,
-                 caution_ability,
-                 explorer_ability,
-                 huntsman_ability,
-                 survivalist_ability,
-                 resist_frost_modifier,
-                 resist_flame_modifier,
-                 resist_shadow_modifier,
-                 resist_poison_modifier,
-                 resist_blunt_modifier,
-                 resist_slashing_modifier,
-                 resist_piercing_modifier,
-                 courage_skill,
-                 sanity_skill):
-        super().__init__(name, buy_price, max_durability, item_rating,
-                         health_maximum,
-                         regeneration_speed,
-                         recovery_efficiency,
-                         climbing_ability,
-                         storage_maximum,
-                         encumbrance_amount,
-                         endurance_maximum,
-                         damage_minimum, damage_maximum, damage_modifier,
-                         speed_speed,
-                         accuracy_accuracy,
-                         first_strike_chance,
-                         killshot_chance, killshot_modifier,
-                         defence_modifier,
-                         evade_chance,
-                         parry_chance,
-                         flee_chance,
-                         riposte_chance,
-                         fatigue_maximum,
-                         block_chance, block_modifier,
-                         stealth_chance,
-                         pickpocketing_chance,
-                         faith_modifier,
-                         sanctity_maximum,
-                         resist_holy_modifier,
-                         bartering_modifier,
-                         oration_modifier,
-                         charm_modifier,
-                         trustworthiness_modifier,
-                         renown_modifier,
-                         knowledge_modifier,
-                         literacy_modifier,
-                         understanding_modifier,
-                         luckiness_chance,
-                         adventuring_chance,
-                         logistics_modifier,
-                         mountaineering_modifier,
-                         woodsman_modifier,
-                         navigator_modifier,
-                         detection_chance,
-                         caution_ability,
-                         explorer_ability,
-                         huntsman_ability,
-                         survivalist_ability,
-                         resist_frost_modifier,
-                         resist_flame_modifier,
-                         resist_shadow_modifier,
-                         resist_poison_modifier,
-                         resist_blunt_modifier,
-                         resist_slashing_modifier,
-                         resist_piercing_modifier,
-                         courage_skill,
-                         sanity_skill)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.arm_armour = True
 
 
-class Hand_Armour(Garment):
-    __tablename__ = 'hand_armour'
-
-    id = Column(Integer, ForeignKey("garment.id"), primary_key=True)
-
+class HandArmour(Garment):
     hand_armour = Column(Boolean)
 
     __mapper_args__ = {
-        'polymorphic_identity': "Hand_Armour",
+        'polymorphic_identity': "HandArmour",
     }
 
-    def __init__(self, name, buy_price, max_durability, item_rating,
-                 health_maximum,
-                 regeneration_speed,
-                 recovery_efficiency,
-                 climbing_ability,
-                 storage_maximum,
-                 encumbrance_amount,
-                 endurance_maximum,
-                 damage_minimum, damage_maximum, damage_modifier,
-                 speed_speed,
-                 accuracy_accuracy,
-                 first_strike_chance,
-                 killshot_chance, killshot_modifier,
-                 defence_modifier,
-                 evade_chance,
-                 parry_chance,
-                 flee_chance,
-                 riposte_chance,
-                 fatigue_maximum,
-                 block_chance, block_modifier,
-                 stealth_chance,
-                 pickpocketing_chance,
-                 faith_modifier,
-                 sanctity_maximum,
-                 resist_holy_modifier,
-                 bartering_modifier,
-                 oration_modifier,
-                 charm_modifier,
-                 trustworthiness_modifier,
-                 renown_modifier,
-                 knowledge_modifier,
-                 literacy_modifier,
-                 understanding_modifier,
-                 luckiness_chance,
-                 adventuring_chance,
-                 logistics_modifier,
-                 mountaineering_modifier,
-                 woodsman_modifier,
-                 navigator_modifier,
-                 detection_chance,
-                 caution_ability,
-                 explorer_ability,
-                 huntsman_ability,
-                 survivalist_ability,
-                 resist_frost_modifier,
-                 resist_flame_modifier,
-                 resist_shadow_modifier,
-                 resist_poison_modifier,
-                 resist_blunt_modifier,
-                 resist_slashing_modifier,
-                 resist_piercing_modifier,
-                 courage_skill,
-                 sanity_skill):
-        super().__init__(name, buy_price, max_durability, item_rating,
-                         health_maximum,
-                         regeneration_speed,
-                         recovery_efficiency,
-                         climbing_ability,
-                         storage_maximum,
-                         encumbrance_amount,
-                         endurance_maximum,
-                         damage_minimum, damage_maximum, damage_modifier,
-                         speed_speed,
-                         accuracy_accuracy,
-                         first_strike_chance,
-                         killshot_chance, killshot_modifier,
-                         defence_modifier,
-                         evade_chance,
-                         parry_chance,
-                         flee_chance,
-                         riposte_chance,
-                         fatigue_maximum,
-                         block_chance, block_modifier,
-                         stealth_chance,
-                         pickpocketing_chance,
-                         faith_modifier,
-                         sanctity_maximum,
-                         resist_holy_modifier,
-                         bartering_modifier,
-                         oration_modifier,
-                         charm_modifier,
-                         trustworthiness_modifier,
-                         renown_modifier,
-                         knowledge_modifier,
-                         literacy_modifier,
-                         understanding_modifier,
-                         luckiness_chance,
-                         adventuring_chance,
-                         logistics_modifier,
-                         mountaineering_modifier,
-                         woodsman_modifier,
-                         navigator_modifier,
-                         detection_chance,
-                         caution_ability,
-                         explorer_ability,
-                         huntsman_ability,
-                         survivalist_ability,
-                         resist_frost_modifier,
-                         resist_flame_modifier,
-                         resist_shadow_modifier,
-                         resist_poison_modifier,
-                         resist_blunt_modifier,
-                         resist_slashing_modifier,
-                         resist_piercing_modifier,
-                         courage_skill,
-                         sanity_skill)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.hand_armour = True
 
 
 # New Class
 class Jewelry(Wearable):
-    __tablename__ = 'jewelry'
-
-    id = Column(Integer, ForeignKey("wearable.id"), primary_key=True)
-
     __mapper_args__ = {
         'polymorphic_identity': "Jewelry",
     }
 
-    def __init__(self, name, buy_price, max_durability, item_rating,
-                 health_maximum,
-                 regeneration_speed,
-                 recovery_efficiency,
-                 climbing_ability,
-                 storage_maximum,
-                 encumbrance_amount,
-                 endurance_maximum,
-                 damage_minimum, damage_maximum, damage_modifier,
-                 speed_speed,
-                 accuracy_accuracy,
-                 first_strike_chance,
-                 killshot_chance, killshot_modifier,
-                 defence_modifier,
-                 evade_chance,
-                 parry_chance,
-                 flee_chance,
-                 riposte_chance,
-                 fatigue_maximum,
-                 block_chance, block_modifier,
-                 stealth_chance,
-                 pickpocketing_chance,
-                 faith_modifier,
-                 sanctity_maximum,
-                 resist_holy_modifier,
-                 bartering_modifier,
-                 oration_modifier,
-                 charm_modifier,
-                 trustworthiness_modifier,
-                 renown_modifier,
-                 knowledge_modifier,
-                 literacy_modifier,
-                 understanding_modifier,
-                 luckiness_chance,
-                 adventuring_chance,
-                 logistics_modifier,
-                 mountaineering_modifier,
-                 woodsman_modifier,
-                 navigator_modifier,
-                 detection_chance,
-                 caution_ability,
-                 explorer_ability,
-                 huntsman_ability,
-                 survivalist_ability,
-                 resist_frost_modifier,
-                 resist_flame_modifier,
-                 resist_shadow_modifier,
-                 resist_poison_modifier,
-                 resist_blunt_modifier,
-                 resist_slashing_modifier,
-                 resist_piercing_modifier,
-                 courage_skill,
-                 sanity_skill):
-        super().__init__(name, buy_price, max_durability, item_rating,
-                         health_maximum,
-                         regeneration_speed,
-                         recovery_efficiency,
-                         climbing_ability,
-                         storage_maximum,
-                         encumbrance_amount,
-                         endurance_maximum,
-                         damage_minimum, damage_maximum, damage_modifier,
-                         speed_speed,
-                         accuracy_accuracy,
-                         first_strike_chance,
-                         killshot_chance, killshot_modifier,
-                         defence_modifier,
-                         evade_chance,
-                         parry_chance,
-                         flee_chance,
-                         riposte_chance,
-                         fatigue_maximum,
-                         block_chance, block_modifier,
-                         stealth_chance,
-                         pickpocketing_chance,
-                         faith_modifier,
-                         sanctity_maximum,
-                         resist_holy_modifier,
-                         bartering_modifier,
-                         oration_modifier,
-                         charm_modifier,
-                         trustworthiness_modifier,
-                         renown_modifier,
-                         knowledge_modifier,
-                         literacy_modifier,
-                         understanding_modifier,
-                         luckiness_chance,
-                         adventuring_chance,
-                         logistics_modifier,
-                         mountaineering_modifier,
-                         woodsman_modifier,
-                         navigator_modifier,
-                         detection_chance,
-                         caution_ability,
-                         explorer_ability,
-                         huntsman_ability,
-                         survivalist_ability,
-                         resist_frost_modifier,
-                         resist_flame_modifier,
-                         resist_shadow_modifier,
-                         resist_poison_modifier,
-                         resist_blunt_modifier,
-                         resist_slashing_modifier,
-                         resist_piercing_modifier,
-                         courage_skill,
-                         sanity_skill)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.jewelry = True
 
 
 class Ring(Jewelry):
-    __tablename__ = 'ring'
-
-    id = Column(Integer, ForeignKey("jewelry.id"), primary_key=True)
-
     ring = Column(Boolean)
 
     __mapper_args__ = {
         'polymorphic_identity': "Ring",
     }
 
-    def __init__(self, name, buy_price, max_durability, item_rating,
-                 health_maximum,
-                 regeneration_speed,
-                 recovery_efficiency,
-                 climbing_ability,
-                 storage_maximum,
-                 encumbrance_amount,
-                 endurance_maximum,
-                 damage_minimum, damage_maximum, damage_modifier,
-                 speed_speed,
-                 accuracy_accuracy,
-                 first_strike_chance,
-                 killshot_chance, killshot_modifier,
-                 defence_modifier,
-                 evade_chance,
-                 parry_chance,
-                 flee_chance,
-                 riposte_chance,
-                 fatigue_maximum,
-                 block_chance, block_modifier,
-                 stealth_chance,
-                 pickpocketing_chance,
-                 faith_modifier,
-                 sanctity_maximum,
-                 resist_holy_modifier,
-                 bartering_modifier,
-                 oration_modifier,
-                 charm_modifier,
-                 trustworthiness_modifier,
-                 renown_modifier,
-                 knowledge_modifier,
-                 literacy_modifier,
-                 understanding_modifier,
-                 luckiness_chance,
-                 adventuring_chance,
-                 logistics_modifier,
-                 mountaineering_modifier,
-                 woodsman_modifier,
-                 navigator_modifier,
-                 detection_chance,
-                 caution_ability,
-                 explorer_ability,
-                 huntsman_ability,
-                 survivalist_ability,
-                 resist_frost_modifier,
-                 resist_flame_modifier,
-                 resist_shadow_modifier,
-                 resist_poison_modifier,
-                 resist_blunt_modifier,
-                 resist_slashing_modifier,
-                 resist_piercing_modifier,
-                 courage_skill,
-                 sanity_skill):
-        super().__init__(name, buy_price, max_durability, item_rating,
-                         health_maximum,
-                         regeneration_speed,
-                         recovery_efficiency,
-                         climbing_ability,
-                         storage_maximum,
-                         encumbrance_amount,
-                         endurance_maximum,
-                         damage_minimum, damage_maximum, damage_modifier,
-                         speed_speed,
-                         accuracy_accuracy,
-                         first_strike_chance,
-                         killshot_chance, killshot_modifier,
-                         defence_modifier,
-                         evade_chance,
-                         parry_chance,
-                         flee_chance,
-                         riposte_chance,
-                         fatigue_maximum,
-                         block_chance, block_modifier,
-                         stealth_chance,
-                         pickpocketing_chance,
-                         faith_modifier,
-                         sanctity_maximum,
-                         resist_holy_modifier,
-                         bartering_modifier,
-                         oration_modifier,
-                         charm_modifier,
-                         trustworthiness_modifier,
-                         renown_modifier,
-                         knowledge_modifier,
-                         literacy_modifier,
-                         understanding_modifier,
-                         luckiness_chance,
-                         adventuring_chance,
-                         logistics_modifier,
-                         mountaineering_modifier,
-                         woodsman_modifier,
-                         navigator_modifier,
-                         detection_chance,
-                         caution_ability,
-                         explorer_ability,
-                         huntsman_ability,
-                         survivalist_ability,
-                         resist_frost_modifier,
-                         resist_flame_modifier,
-                         resist_shadow_modifier,
-                         resist_poison_modifier,
-                         resist_blunt_modifier,
-                         resist_slashing_modifier,
-                         resist_piercing_modifier,
-                         courage_skill,
-                         sanity_skill)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.ring = True
 
     def update_stats(self, hero):
@@ -1936,10 +522,6 @@ class Ring(Jewelry):
 
 # Subclass of ItemTemplate
 class Consumable(ItemTemplate):
-    __tablename__ = 'consumable'
-
-    id = Column(Integer, ForeignKey("item_template.id"), primary_key=True)
-
     healing_amount = Column(Integer)
     sanctity_amount = Column(Integer)
 
@@ -1964,14 +546,12 @@ class Consumable(ItemTemplate):
 
 
 # New Class
-class Quest_Item(ItemTemplate):
-    __tablename__ = 'quest_item'
-
-    id = Column(Integer, ForeignKey("item_template.id"), primary_key=True)
-
+class QuestItem(ItemTemplate):
+    quest_item = Column(Boolean)
     __mapper_args__ = {
-        'polymorphic_identity': "Quest_Item",
+        'polymorphic_identity': "QuestItem",
     }
 
-    def __init__(self, name, buy_price):
-        super().__init__(name, buy_price)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.quest_item = True

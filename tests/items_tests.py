@@ -3,13 +3,13 @@ import pdb
 
 from database import EZDB
 from game import Hero, Inventory
-from items import Item, One_Handed_Weapon
+from items import Item, OneHandedWeapon
 import complex_relationships
 
 
 class ItemsTestCase(unittest.TestCase):
     def setUp(self):
-        self.template = One_Handed_Weapon(
+        self.template = OneHandedWeapon(
             "Small Dagger", buy_price=5, min_damage=30,
             max_damage=60, attack_speed=1)
         self.item = Item(self.template)

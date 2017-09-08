@@ -21,7 +21,7 @@ from attributes import \
     ATTRIBUTE_INFORMATION  # Since attribute information was hand typed out in both modules, it was causing bugs. Seems cleaner to import it and then only edit it in one place
 # Marked for restructure! Avoid use of import * in production code.
 from bestiary import *
-from items import Quest_Item
+from items import QuestItem
 from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
@@ -691,7 +691,8 @@ def inventory_page(hero=None):
     #     if item.wearable:
     #         item.check_if_improvement()
     return render_template(
-        'inventory.html', hero=hero, page_title=page_title)
+        'inventory.html', hero=hero, page_title=page_title,
+        isinstance=isinstance)
 
 
 @app.route('/quest_log')
@@ -862,11 +863,11 @@ def arena(name='', hero=None, location=None):
     if not game.has_enemy:
         enemy = monster_generator(hero.age - 6)
         if enemy.name == "Wolf":
-            enemy.items_rewarded.append((Quest_Item("Wolf Pelt", hero, 50)))
+            enemy.items_rewarded.append((QuestItem("Wolf Pelt", hero, 50)))
         if enemy.name == "Scout":
-            enemy.items_rewarded.append((Quest_Item("Copper Coin", hero, 50)))
+            enemy.items_rewarded.append((QuestItem("Copper Coin", hero, 50)))
         if enemy.name == "Spider":
-            enemy.items_rewarded.append((Quest_Item("Spider Leg", hero, 50)))
+            enemy.items_rewarded.append((QuestItem("Spider Leg", hero, 50)))
         game.set_enemy(enemy)
     location.display.page_title = "War Room"
     location.display.page_heading = "Welcome to the arena " + hero.name + "!"
@@ -1185,10 +1186,14 @@ def command(cmd=None, hero=None):
             return response
         except Exception as ex:
             raise ex
-    except AttributeError:
-        print("Warning: Using old code for command: '{}'".format(cmd))
-        print("You need to write a static function called '{}' in "
-              "commands.py in the Command class.".format(cmd))
+    except AttributeError as ex:
+        if str(ex) == "type object 'Command' has no attribute '{}'".format(
+                cmd):
+            print("Warning: Using old code for command: '{}'".format(cmd))
+            print("You need to write a static function called '{}' in "
+                  "commands.py in the Command class.".format(cmd))
+        else:
+            raise ex
         # Look in the not yet refactored list of if statements ...
 
     if cmd == "woodsman":
@@ -1283,9 +1288,9 @@ if __name__ == '__main__':
     # database.py as get_default_quests()
     # Quest aren't actually implement yet but they will be soon!
     # Super temporary while testing quests
-    # hero.inventory.append(Quest_Item("Wolf Pelt", hero, 50))
-    # hero.inventory.append(Quest_Item("Spider Leg", hero, 50))
-    # hero.inventory.append(Quest_Item("Copper Coin", hero, 50))
+    # hero.inventory.append(QuestItem("Wolf Pelt", hero, 50))
+    # hero.inventory.append(QuestItem("Spider Leg", hero, 50))
+    # hero.inventory.append(QuestItem("Copper Coin", hero, 50))
     # for item in hero.inventory:
     #     item.amount_owned = 5
 
