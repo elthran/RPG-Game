@@ -409,13 +409,17 @@ class TwoHandedWeapon(Weapon):
 
 # New Class
 class Garment(Wearable):
+    armour_value = Column(Integer)
+
     __mapper_args__ = {
         'polymorphic_identity': "Garment",
     }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, armour_value=1, **kwargs):
         super().__init__(*args, **kwargs)
         self.garment = True
+
+        self.armour_value = armour_value
 
 
 class ChestArmour(Garment):
