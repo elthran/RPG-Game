@@ -67,6 +67,11 @@ class User(Base):
     is_admin = Column(Boolean)
     inbox_alert = Column(Boolean)
 
+    # Relationships
+    # Each user can have one inbox. One to One (bidirectional).
+    inbox_id = Column(Integer, ForeignKey('inbox.id'))
+    inbox = relationship("Inbox", back_populates="user")
+
     def __init__(self, username, password, email='', timestamp=None, is_admin=False):
         """Create a new user object.
 
@@ -88,8 +93,15 @@ class Inbox(Base):
 
     id = Column(Integer, primary_key=True)
 
-    def __init__(self):
-        pass
+    # Relationships
+    # Each inbox has a single user. One to One (bidirectional).
+    user = relationship("User", uselist=False, back_populates='inbox')
+
+    # Each inbox can have many sent messages One to Many
+    sent_messages = relationship("Message", back_populates='sender',
+                                 foreign_keys="[Message.sender_id]")
+    received_messages = relationship("Message", back_populates='receiver',
+                                     foreign_keys="[Message.receiver_id]")
 
     def get_sent_messages(self):
         """Return a list of all sent messages.
@@ -136,6 +148,15 @@ class Message(Base):
 
     id = Column(Integer, primary_key=True)
     content = Column(String)
+
+    # Relationships
+    # Each user can send or receive multiple messages. One to Many (bi).
+    sender_id = Column(Integer, ForeignKey('inbox.id'))
+    sender = relationship("Inbox", back_populates="sent_messages",
+                          foreign_keys="[Message.sender_id]")
+    receiver_id = Column(Integer, ForeignKey('inbox.id'))
+    receiver = relationship("Inbox", back_populates="received_messages",
+                                         foreign_keys="[Message.receiver_id]")
 
     def __init__(self, sender, receiver, content):
         """A message between two users with some content.

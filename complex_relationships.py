@@ -16,26 +16,6 @@ import attributes
 import inventory
 
 import pdb
-
-###########
-#User relationships
-###########
-#Each user can have one inbox. One to One (bidirectional).
-game.User.inbox_id = Column(Integer, ForeignKey('inbox.id'))
-game.User.inbox = relationship("Inbox", backref=backref("user", uselist=False))
-
-
-###########
-#Message relationships
-###########
-#Each user can send or receive multiple messages. One to Many (bi).
-game.Message.sender_id = Column(Integer, ForeignKey('inbox.id'))
-game.Message.sender = relationship("Inbox", backref="sent_messages",
-    foreign_keys="[Message.sender_id]")
-game.Message.receiver_id = Column(Integer, ForeignKey('inbox.id'))
-game.Message.receiver = relationship("Inbox", backref="received_messages",
-    foreign_keys="[Message.receiver_id]")
-
     
 ###########
 #Inventory relationships
@@ -90,24 +70,6 @@ inventory.Inventory.unequipped = relationship("Item", order_by="Item.unequipped_
 game.Hero.user_id = Column(Integer, ForeignKey('user.id'))
 game.User.heroes = relationship("Hero", order_by='Hero.character_name', backref='user')
 
-######NOT TESTED!
-#Many Heroes -> many known Maps? (unidirectional)?
-#Maybe this should be a One Hero -> Many Maps ...
-# known_locations_association_table = Table('known_locations_association', Base.metadata,
-#     Column('hero_id', Integer, ForeignKey('hero.id')),
-#     Column('map_id', Integer, ForeignKey('map.id'))
-# )
-# game.Hero.known_locations = relationship("Map", secondary=known_locations_association_table)
-###########
-
-# abilities_association_table = Table('abilities_association', Base.metadata,
-#     Column('hero_id', Integer, ForeignKey('hero.id')),
-#     Column('ability_id', Integer, ForeignKey('ability.id'))
-# )
-#
-# game.Hero.abilities = relationship("Ability", secondary=abilities_association_table, back_populates="heroes")
-# abilities.Ability.heroes = relationship("Hero", secondary=abilities_association_table, back_populates="abilities")
-
 ##########
 #Heroes and Items (and inventory).
 ##########
@@ -128,16 +90,6 @@ game.Hero.attributes = relationship("Attributes", uselist=False)
 game.Hero.proficiencies_id = Column(Integer, ForeignKey('proficiencies.id'))
 game.Hero.proficiencies = relationship("Proficiencies", uselist=False)
 
-#Marked for restructure. Remove in favor of quest object.
-#Maybe make a special "KillQuest" quest type?
-#One Hero -> one quest list?
-#Quest list is not quests? So like it should really be Many to Many? Each Hero can have Many Quests
-#and each Quest can be held by Many Heroes.
-# base_classes.BaseDict.hero_id_kill_quests = Column(Integer, ForeignKey('hero.id'))
-# base_classes.BaseDict.kill_quests_hero = relationship("Hero", 
-    # backref=backref("kill_quests", uselist=False), foreign_keys="[BaseDict.hero_id_kill_quests]")
-    
-    
 #Heroes to Quests.
 #Hero object relates to quests via the QuestPath object.
 #This path may be either active or completed, but not both. 
@@ -148,26 +100,6 @@ quests.QuestPath.quest_id = Column(Integer, ForeignKey('quest.id'))
 
 game.Hero.quest_paths = relationship("QuestPath", backref='hero')
 quests.Quest.quest_paths = relationship("QuestPath", backref='quest')
-
-
-#############
-#Location relationships
-#############
-#Locations -> base_classes
-# base_classes.BaseListElement.location_id = Column(Integer, ForeignKey('location.id'))
-#relationships
-    # display = etc. one to one.
-    # location_world one to one with WorldMap? but each WorldMap can have many locations ...?
-    #   so maybe to one it is!
-    # adjacent_locations = one to many relationship with self.
-# locations.Location._adjacent_locations = relationship("BaseListElement")
-
-############
-#Map relationships
-############
-#One Map -> Many adjacent_locations (BaseListElements)
-# base_classes.BaseListElement.map_id = Column(Integer, ForeignKey('map.id'))
-# locations.Map._adjacent_locations = relationship("BaseListElement")
 
 
 if __name__ == "__main__":
