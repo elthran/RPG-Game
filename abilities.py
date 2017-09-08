@@ -18,7 +18,8 @@ import pdb
 ALL_ABILITIES = [
     "ironhide",
     "ironfist",
-    "cure"
+    "cure",
+    "testgold"
 ]
 
 # "determination", 5, "Increases Endurance by 3 for each level."
@@ -50,13 +51,22 @@ class Abilities(Base):
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='cure')",
         back_populates="abilities", uselist=False)
+    testgold = relationship(
+        "CastableAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='testgold')",
+        back_populates="abilities", uselist=False)
+
 
     def __init__(self):
-        self.ironhide = AuraAbility('ironhide', 5, "Gain 1000 health per level",
-                                    learnable=True, health_maximum=1000)
-        self.ironfist = AuraAbility('ironfist', 3, "Gain 2 minimum and 3 maximum damage",
-                                    learnable=True, damage_minimum=2, damage_maximum=3)
-        self.cure = CastableAbility('cure', 3, "Recover 1 health", learnable=True)
+        self.ironhide = AuraAbility('ironhide', 5, "Gain 1000 health per level", learnable=True,
+                                    health_maximum=1000)
+        self.ironfist = AuraAbility('ironfist', 3, "Gain 2 minimum and 3 maximum damage", learnable=True,
+                                    damage_minimum=2, damage_maximum=3)
+        self.cure = CastableAbility('cure', 3, "Recover 3 health", learnable=True,
+                                    cost=1, heal_amount=3)
+        self.testgold = CastableAbility('testgold', 3, "Gain 3 gold", learnable=True,
+                                    gold_amount=3)
         # print(self.ironhide)
         # exit("Debugging init.")
 
@@ -197,12 +207,15 @@ class Ability(Base):
 
 class CastableAbility(Ability):
     castable = Column(Boolean)
+    cost = Column(Integer)
+    heal_amount = Column(Integer)
+    gold_amount = Column(Integer)
 
     __mapper_args__ = {
         'polymorphic_identity': 'CastableAbility',
     }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, cost=0, heal_amount=0, gold_amount=0, **kwargs):
         """Build a new ArchetypeAbility object.
 
         Note: self.type must be set in __init__ to polymorphic_identity.
@@ -211,6 +224,9 @@ class CastableAbility(Ability):
         """
         super().__init__(*args, **kwargs)
         self.castable = True
+        self.cost = cost
+        self.heal_amount = heal_amount
+        self.gold_amount = gold_amount
 
     def cast(self, hero):
         """Use the ability. Like casting a spell.
@@ -224,7 +240,8 @@ class CastableAbility(Ability):
             return False
         else:
             hero.proficiencies.sanctity.current -= self.cost
-            hero.experience += 1
+            hero.proficiencies.health.current += self.heal_amount
+            hero.gold += self.gold_amount
             return True
 
 
