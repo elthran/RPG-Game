@@ -8,7 +8,7 @@
 {%- set inventory = hero.inventory %}
 <h1>Equipped:</h1>
 <table id="equipped_items">
-    <tr id="Head_Armour">
+    <tr id="HeadArmour">
         <td><h2>Helmet:</h2></td>
     </tr>
     {% if inventory.helmet %}{%set item = inventory.helmet %}
@@ -21,7 +21,7 @@
         </td>
     </tr>
     {% endif %}
-    <tr id="Chest_Armour">
+    <tr id="ChestArmour">
         <td><h2>Shirt:</h2></td>
     </tr>
     {% if inventory.shirt %}{%set item = inventory.shirt %}
@@ -73,7 +73,7 @@
         </td>
     </tr>
     {% endif %}
-    <tr id="Arm_Armour">
+    <tr id="ArmArmour">
         <td><h2>Sleeves:</h2></td>
     </tr>
     {% if inventory.sleeves %}{%set item = inventory.sleeves %}
@@ -86,7 +86,7 @@
         </td>
     </tr>
     {% endif %}
-    <tr id="Hand_Armour">
+    <tr id="HandArmour">
         <td><h2>Gloves:</h2></td>
     </tr>
     {% if inventory.gloves %}{%set item = inventory.gloves %}
@@ -112,7 +112,7 @@
         </td>
     </tr>
     {% endfor %}{% endif %}
-    <tr id="Leg_Armour">
+    <tr id="LegArmour">
         <td><h2>Pants:</h2></td>
     </tr>
     {% if inventory.legs %}{%set item = inventory.legs %}
@@ -125,7 +125,7 @@
         </td>
     </tr>
     {% endif %}
-    <tr id="Feet_Armour">
+    <tr id="FeetArmour">
         <td><h2>Shoes:</h2></td>
     </tr>
     {% if inventory.feet %}{%set item = inventory.feet %}

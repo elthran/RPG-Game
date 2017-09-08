@@ -30,12 +30,12 @@ class Inventory(Base):
         "TwoHandedWeapon": {"primary": "both_hands", "secondary": ["left_hand", "right_hand"]},
         "OneHandedWeapon": {"primary": "right_hand", "secondary": ["both_hands"]},
         "Shield": {"primary": "left_hand", "secondary": ["both_hands"]},
-        "Chest_Armour": {"primary": "shirt", "secondary": []},
-        "Head_Armour": {"primary": "helmet", "secondary": []},
-        "Leg_Armour": {"primary": "legs", "secondary": []},
-        "Feet_Armour": {"primary": "feet", "secondary": []},
-        "Arm_Armour": {"primary": "sleeves", "secondary": []},
-        "Hand_Armour": {"primary": "gloves", "secondary": []},
+        "ChestArmour": {"primary": "shirt", "secondary": []},
+        "HeadArmour": {"primary": "helmet", "secondary": []},
+        "LegArmour": {"primary": "legs", "secondary": []},
+        "FeetArmour": {"primary": "feet", "secondary": []},
+        "ArmArmour": {"primary": "sleeves", "secondary": []},
+        "HandArmour": {"primary": "gloves", "secondary": []},
         "Ring": {"primary": "rings", "secondary": []},
 
     }

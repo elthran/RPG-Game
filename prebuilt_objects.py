@@ -3,8 +3,8 @@ from abilities import Ability, Archetype_Ability, Class_Ability, Religious_Abili
 from game import User, Hero
 from quests import Quest, QuestPath
 from items import (
-    OneHandedWeapon, Shield, TwoHandedWeapon, Leg_Armour, Chest_Armour,
-    Head_Armour, Feet_Armour, Arm_Armour, Hand_Armour, Ring, Consumable
+    OneHandedWeapon, Shield, TwoHandedWeapon, LegArmour, ChestArmour,
+    HeadArmour, FeetArmour, ArmArmour, HandArmour, Ring, Consumable
 )
 
 # MUST be imported last.
@@ -204,14 +204,14 @@ users = [marlen, admin]
 #         attack_speed=1),
 #     TwoHandedWeapon("Medium Polearm", buy_price=5, min_damage=30, max_damage=60,
 #         attack_speed=1),
-#     Leg_Armour("Medium Pants", 7, 25),
-#     Chest_Armour("Medium Tunic", 2, 25),
-#     Chest_Armour("Strong Tunic", 5, 250),
-#     Head_Armour("Weak Helmet", 2, 1),
-#     Head_Armour("Medium Helmet", 4, 3),
-#     Feet_Armour("Light Boots", 3, 3),
-#     Arm_Armour("Light Sleeves", 4, 5),
-#     Hand_Armour("Light Gloves", 5, 7),
+#     LegArmour("Medium Pants", 7, 25),
+#     ChestArmour("Medium Tunic", 2, 25),
+#     ChestArmour("Strong Tunic", 5, 250),
+#     HeadArmour("Weak Helmet", 2, 1),
+#     HeadArmour("Medium Helmet", 4, 3),
+#     FeetArmour("Light Boots", 3, 3),
+#     ArmArmour("Light Sleeves", 4, 5),
+#     HandArmour("Light Gloves", 5, 7),
 #     Ring("Silver Ring", 8)]
 
 all_store_items = [
