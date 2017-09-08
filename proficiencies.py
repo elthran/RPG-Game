@@ -351,9 +351,15 @@ class Health(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.maximum += item.health_maximum
-            self.current += item.health_current
-            #This updates the main tooltip string variable.
+            try:
+                self.maximum += item.health_maximum
+                self.current += item.health_current
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     @validates('current')
@@ -409,8 +415,14 @@ class Regeneration(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.speed += item.regeneration_speed
-            #This updates the main tooltip string variable.
+            try:
+                self.speed += item.regeneration_speed
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -459,8 +471,14 @@ class Recovery(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.efficiency += item.recovery_efficiency
-            #This updates the main tooltip string variable.
+            try:
+                self.efficiency += item.recovery_efficiency
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -509,8 +527,14 @@ class Climbing(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.ability += item.climbing_ability
-            #This updates the main tooltip string variable.
+            try:
+                self.ability += item.climbing_ability
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -562,9 +586,15 @@ class Storage(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.maximum += item.storage_maximum
-            self.current += item.storage_current
-            #This updates the main tooltip string variable.
+            try:
+                self.maximum += item.storage_maximum
+                self.current += item.storage_current
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     @validates('current')
@@ -620,8 +650,14 @@ class Encumbrance(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.amount += item.encumbrance_amount
-            #This updates the main tooltip string variable.
+            try:
+                self.amount += item.encumbrance_amount
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -673,9 +709,15 @@ class Endurance(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.maximum += item.endurance_maximum
-            self.current += item.endurance_current
-            #This updates the main tooltip string variable.
+            try:
+                self.maximum += item.endurance_maximum
+                self.current += item.endurance_current
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     @validates('current')
@@ -741,10 +783,16 @@ class Damage(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.minimum += item.damage_minimum
-            self.maximum += item.damage_maximum
-            self.modifier += item.damage_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.minimum += item.damage_minimum
+                self.maximum += item.damage_maximum
+                self.modifier += item.damage_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -793,8 +841,14 @@ class Speed(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.speed += item.speed_speed
-            #This updates the main tooltip string variable.
+            try:
+                self.speed += item.speed_speed
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -843,8 +897,14 @@ class Accuracy(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.accuracy += item.accuracy_accuracy
-            #This updates the main tooltip string variable.
+            try:
+                self.accuracy += item.accuracy_accuracy
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -893,8 +953,14 @@ class FirstStrike(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.chance += item.first_strike_chance
-            #This updates the main tooltip string variable.
+            try:
+                self.chance += item.first_strike_chance
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -948,9 +1014,15 @@ class Killshot(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.chance += item.killshot_chance
-            self.modifier += item.killshot_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.chance += item.killshot_chance
+                self.modifier += item.killshot_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -999,8 +1071,14 @@ class Defence(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.defence_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.defence_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -1049,8 +1127,14 @@ class Evade(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.chance += item.evade_chance
-            #This updates the main tooltip string variable.
+            try:
+                self.chance += item.evade_chance
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -1099,8 +1183,14 @@ class Parry(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.chance += item.parry_chance
-            #This updates the main tooltip string variable.
+            try:
+                self.chance += item.parry_chance
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -1149,8 +1239,14 @@ class Flee(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.chance += item.flee_chance
-            #This updates the main tooltip string variable.
+            try:
+                self.chance += item.flee_chance
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -1199,8 +1295,14 @@ class Riposte(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.chance += item.riposte_chance
-            #This updates the main tooltip string variable.
+            try:
+                self.chance += item.riposte_chance
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -1252,9 +1354,15 @@ class Fatigue(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.maximum += item.fatigue_maximum
-            self.current += item.fatigue_current
-            #This updates the main tooltip string variable.
+            try:
+                self.maximum += item.fatigue_maximum
+                self.current += item.fatigue_current
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     @validates('current')
@@ -1315,9 +1423,15 @@ class Block(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.chance += item.block_chance
-            self.modifier += item.block_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.chance += item.block_chance
+                self.modifier += item.block_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -1366,8 +1480,14 @@ class Stealth(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.chance += item.stealth_chance
-            #This updates the main tooltip string variable.
+            try:
+                self.chance += item.stealth_chance
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -1416,8 +1536,14 @@ class Pickpocketing(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.chance += item.pickpocketing_chance
-            #This updates the main tooltip string variable.
+            try:
+                self.chance += item.pickpocketing_chance
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -1466,8 +1592,14 @@ class Faith(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.faith_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.faith_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -1519,9 +1651,15 @@ class Sanctity(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.maximum += item.sanctity_maximum
-            self.current += item.sanctity_current
-            #This updates the main tooltip string variable.
+            try:
+                self.maximum += item.sanctity_maximum
+                self.current += item.sanctity_current
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     @validates('current')
@@ -1577,8 +1715,14 @@ class ResistHoly(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.resist_holy_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.resist_holy_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -1627,8 +1771,14 @@ class Bartering(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.bartering_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.bartering_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -1677,8 +1827,14 @@ class Oration(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.oration_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.oration_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -1727,8 +1883,14 @@ class Charm(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.charm_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.charm_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -1777,8 +1939,14 @@ class Trustworthiness(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.trustworthiness_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.trustworthiness_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -1827,8 +1995,14 @@ class Renown(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.renown_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.renown_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -1877,8 +2051,14 @@ class Knowledge(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.knowledge_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.knowledge_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -1927,8 +2107,14 @@ class Literacy(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.literacy_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.literacy_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -1977,8 +2163,14 @@ class Understanding(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.understanding_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.understanding_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2027,8 +2219,14 @@ class Luckiness(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.chance += item.luckiness_chance
-            #This updates the main tooltip string variable.
+            try:
+                self.chance += item.luckiness_chance
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2077,8 +2275,14 @@ class Adventuring(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.chance += item.adventuring_chance
-            #This updates the main tooltip string variable.
+            try:
+                self.chance += item.adventuring_chance
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2127,8 +2331,14 @@ class Logistics(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.logistics_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.logistics_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2177,8 +2387,14 @@ class Mountaineering(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.mountaineering_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.mountaineering_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2227,8 +2443,14 @@ class Woodsman(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.woodsman_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.woodsman_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2277,8 +2499,14 @@ class Navigator(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.navigator_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.navigator_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2327,8 +2555,14 @@ class Detection(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.chance += item.detection_chance
-            #This updates the main tooltip string variable.
+            try:
+                self.chance += item.detection_chance
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2377,8 +2611,14 @@ class Caution(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.ability += item.caution_ability
-            #This updates the main tooltip string variable.
+            try:
+                self.ability += item.caution_ability
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2427,8 +2667,14 @@ class Explorer(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.ability += item.explorer_ability
-            #This updates the main tooltip string variable.
+            try:
+                self.ability += item.explorer_ability
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2477,8 +2723,14 @@ class Huntsman(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.ability += item.huntsman_ability
-            #This updates the main tooltip string variable.
+            try:
+                self.ability += item.huntsman_ability
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2527,8 +2779,14 @@ class Survivalist(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.ability += item.survivalist_ability
-            #This updates the main tooltip string variable.
+            try:
+                self.ability += item.survivalist_ability
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2577,8 +2835,14 @@ class ResistFrost(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.resist_frost_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.resist_frost_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2627,8 +2891,14 @@ class ResistFlame(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.resist_flame_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.resist_flame_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2677,8 +2947,14 @@ class ResistShadow(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.resist_shadow_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.resist_shadow_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2727,8 +3003,14 @@ class ResistPoison(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.resist_poison_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.resist_poison_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2777,8 +3059,14 @@ class ResistBlunt(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.resist_blunt_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.resist_blunt_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2827,8 +3115,14 @@ class ResistSlashing(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.resist_slashing_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.resist_slashing_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2877,8 +3171,14 @@ class ResistPiercing(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.modifier += item.resist_piercing_modifier
-            #This updates the main tooltip string variable.
+            try:
+                self.modifier += item.resist_piercing_modifier
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2927,8 +3227,14 @@ class Courage(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.skill += item.courage_skill
-            #This updates the main tooltip string variable.
+            try:
+                self.skill += item.courage_skill
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
@@ -2977,8 +3283,14 @@ class Sanity(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            self.skill += item.sanity_skill
-            #This updates the main tooltip string variable.
+            try:
+                self.skill += item.sanity_skill
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+        
+        #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips) 
 
     
