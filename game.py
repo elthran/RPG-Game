@@ -23,6 +23,7 @@ from sqlalchemy.orm import validates
 
 from base_classes import Base, BaseDict
 from attributes import Attributes
+from abilities import Abilities
 from proficiencies import Proficiencies
 from inventory import Inventory
 
@@ -205,6 +206,9 @@ class Hero(Base):
         "Location", back_populates='heroes_by_city',
         foreign_keys='[Hero.city_id]')
 
+    # Each hero can have one set of Abilities. (bidirectional, One to One).
+    abilities = relationship("Abilities", uselist=False, back_populates='hero')
+
     # variable used for keeping track of clicked attributes on the user table
     clicked_user_attribute = ""
 
@@ -231,6 +235,7 @@ class Hero(Base):
 
         self.attributes = Attributes()
         self.proficiencies = Proficiencies()
+        self.abilities = Abilities()
         self.inventory = Inventory()
 
         # Defaults will remain unchanged if no arguments are passed.
@@ -248,13 +253,13 @@ class Hero(Base):
         self.devotion = 0
         self.gold = 50
 
-        self.basic_ability_points = 0
+        self.basic_ability_points = 5
         self.archetypic_ability_points = 0
         self.specialized_ability_points = 0
         self.pantheonic_ability_points = 0
 
-        self.attribute_points = 10
-        self.proficiency_points = 10
+        self.attribute_points = 0
+        self.proficiency_points = 0
 
         # Time code
         self.timestamp = datetime.datetime.utcnow()
@@ -264,6 +269,7 @@ class Hero(Base):
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
+        self.refresh_character(full=True)
         self.init_on_load()
 
     @orm.reconstructor
@@ -298,17 +304,12 @@ class Hero(Base):
         for proficiency in self.proficiencies:
             proficiency.update(self)
 
-    def refresh_abilities(self):
-        for ability in self.abilities:
-            ability.update_stats(self)
-
     def refresh_items(self):
         for item in self.equipped_items():
             item.update_stats(self)
 
     def refresh_character(self, full=True):
         self.refresh_proficiencies()
-        self.refresh_abilities()
         self.refresh_items()  # Should go after proficiencies
         if full:
             self.proficiencies.health.current = self.proficiencies.health.maximum
@@ -344,6 +345,11 @@ class Hero(Base):
 
     def non_equipped_items(self):
         return self.inventory.unequipped or []
+
+    def learn_ability(self, ability):
+        self.ability.level += 1
+        print("Trying to learn it! " + ability.name)
+        return True
 
     def page_refresh_character(self):  # Can we renamed this? I don't really get what it is from the name
         # (elthran) It's just temporary code while I amtesting notifications. It will be scrapped soon.

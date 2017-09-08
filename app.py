@@ -182,7 +182,7 @@ def login_required(f):
 # Untested (Marlen)
 def uses_hero_and_update(f):
     """Preload hero object and save it afterwards.
-    
+
     If this function returns an error ... please document.
 
     Especially if the error is KeyError on "hero_id". I had a
@@ -362,7 +362,7 @@ pierces the air.""".replace('\n', ' ').replace('\r', '')
         hero.current_world = database.get_default_world()
         hero.current_location = database.get_default_location()
     if request.method == 'POST' and hero.name is None:
-        hero.name = request.form["name"]
+        hero.name = request.form["name"].title()
         page_image = "old_man"
         paragraph = None
         conversation = [("Stranger: ", "Where do you come from, child?")]
@@ -562,6 +562,12 @@ def inbox(outbox, hero=None):
         return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)
     return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)
 
+@app.route('/spellbook')
+@uses_hero_and_update
+def spellbook(hero=None):
+    return render_template('spellbook.html', page_title="Spellbook", myHero=hero)
+
+
 
 # PROFILE PAGES (Basically the home page of the game with your character
 # display and stats)
@@ -570,7 +576,7 @@ def inbox(outbox, hero=None):
 @uses_hero_and_update
 def home(hero=None):
     """Build the home page and return it as a string of HTML.
-    
+
     render_template uses Jinja2 markup.
     """
 
@@ -641,23 +647,18 @@ def proficiencies(hero=None):
 def ability_tree(spec, hero=None):
     page_title = "Abilities"
 
-    unknown_abilities = []
-    learnable_abilities = []
-    mastered_abilities = []
-    # Create a list of learned abilities that match current spec.
-    for ability in hero.abilities:
-        if ability.ability_type == spec:
-            # Add abilities to learnable_abilities (known, but non-mastered)
-            # or mastered abilities
-            if ability.level < ability.max_level:
-                learnable_abilities.append(ability)
-            else:
-                mastered_abilities.append(ability)
+    learnable_abilities = database.get_learnable_abilities(hero)
+
+    # For testing
+    for ability in learnable_abilities:
+        print("Learnable:", str(ability))
+    # End for testing
 
     # TODO abilities are not connected to hero properly!
     # They need to relate to a specific hero only!
     # Maybe using the ItemTemplate concept but with and AbilityTemplate
     # or a metaclass ...
+    """ Commented out for now
     for ability in database.get_all_abilities():
         # Create a list of unlearned abilities
         # for the current page you are on (basic, archetype,
@@ -674,11 +675,11 @@ def ability_tree(spec, hero=None):
                     unknown_abilities.append(ability)
             else:
                 unknown_abilities.append(ability)
+    """
     return render_template(
         'profile_ability.html', myHero=hero, ability_tree=spec,
-        unknown_abilities=unknown_abilities,
         learnable_abilities=learnable_abilities,
-        mastered_abilities=mastered_abilities, page_title=page_title)
+        page_title=page_title)
 
 
 @app.route('/inventory_page')
@@ -1219,14 +1220,16 @@ def command(cmd=None, hero=None):
             # return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # UPGRADE ABILITIES
-    learnable_known_abilities = [ability for ability in hero.abilities if ability.level < ability.max_level]
-    for ability in learnable_known_abilities:
-        if cmd == ability.name and hero.ability_points > 0:
-            for i in range(0, len(hero.abilities)):
-                if hero.abilities[i].name == ability.name:
-                    hero.abilities[i].level += 1
-                    hero.abilities[i].update_display()
-                    hero.ability_points -= 1
+
+    all_abilities = []
+    for ability in hero.abilities:
+        all_abilities.append(ability)
+        if cmd == ability.name: #and hero.ability_points > 0:
+            for i in range(0, len(all_abilities)):
+                if all_abilities[i].name == ability.name and hero.basic_ability_points > 0:
+                    all_abilities[i].level += 1
+                    all_abilities[i].update_display()
+                    hero.basic_ability_points -= 1
             hero.refresh_proficiencies()
             database.update()
             return "success", 200, {'Content-Type': 'text/plain'}  # //

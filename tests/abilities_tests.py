@@ -4,7 +4,8 @@ import pdb
 from database import EZDB
 from game import Hero
 from abilities import (
-    Ability, Archetype_Ability, Class_Ability, Religious_Ability)
+    Abilities, Ability, Archetype_Ability, Class_Ability, Religious_Ability
+)
 # I don't know why it says this is unused ... maybe we can make it
 # obsolete? I mean you did say it made so of the variables hard to understand.
 # It is _very_ important. And must always go last.
@@ -32,20 +33,21 @@ class AbilitiesTestCase(unittest.TestCase):
         self.tearDown(delete=False)
         self.setUp()
 
-    def test_Ability_init(self):
+    def test_Abilities_init(self):
         """Check if object is created, storeable and retrievable.
         """
-        ability = Ability("Determination", 5,
-                          "Increases Endurance by 3 for each level.")
-        self.db.session.add(ability)
+
+        abilities = Abilities()
+        self.db.session.add(abilities)
         self.db.session.commit()
-        str_ability = str(ability)
-        
+        str_abilities = abilities.pretty
+
         self.rebuild_instance()
-        ability2 = self.db.session.query(
-            Ability).filter_by(name='Determination').first()
-        self.assertEqual(str_ability, str(ability2))
-        
+        abilities2 = self.db.session.query(
+            Abilities).filter_by(id=1).first()
+        self.assertEqual(str_abilities, abilities2.pretty)
+
+    @unittest.skip("Not built")
     def test_add_hero(self):
         ability = Ability("Determination", 5,
                           "Increases Endurance by 3 for each level.")
@@ -59,7 +61,8 @@ class AbilitiesTestCase(unittest.TestCase):
         ability2 = self.db.session.query(
             Ability).filter_by(name='Determination').first()
         self.assertEqual(str_ability, str(ability2))
-        
+
+    @unittest.skip("Not built")
     def test_requirements(self):
         """Test if abilities can have a relationship with other abilities.
         
@@ -82,7 +85,8 @@ class AbilitiesTestCase(unittest.TestCase):
         ability4 = self.db.session.query(
             Ability).filter_by(name='Determination').first()
         self.assertEqual(str_ability, str(ability4))
-        
+
+    @unittest.skip("Not built")
     def test_update_stats(self):
         """Test if update_stats works.
         
@@ -104,7 +108,8 @@ class AbilitiesTestCase(unittest.TestCase):
         hero2 = self.db.session.query(Hero).filter_by(name='Haldon').first()
         self.assertEqual(endurance + 3, hero2.proficiencies.endurance.maximum)
         self.assertEqual(endurance2, hero.proficiencies.endurance.maximum)
-        
+
+    @unittest.skip("Not built")
     def test_cast_gain_gold(self):
         """Test hero spell casting.
         

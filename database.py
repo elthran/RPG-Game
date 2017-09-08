@@ -28,7 +28,7 @@ from sqlalchemy import desc
 import base_classes
 # Internal game modules
 from game import User, Hero, Inbox
-from abilities import Ability
+from abilities import Abilities, Ability
 from locations import Location  # , WorldMap, Town, Cave
 from items import ItemTemplate, Item
 from quests import Quest
@@ -89,7 +89,7 @@ class EZDB:
         for obj_list in [
                 prebuilt_objects.users,
                 prebuilt_objects.game_worlds,
-                prebuilt_objects.all_abilities,
+                # prebuilt_objects.all_abilities,
                 prebuilt_objects.all_store_items,
                 prebuilt_objects.all_marketplace_items,
                 prebuilt_objects.all_quests]:
@@ -129,6 +129,12 @@ class EZDB:
                 "object, or has not been imported into "
                 "'database' module yet.".format(obj_name))
 
+    def get_learnable_abilities(self, hero):
+        """Get all learnable abilities of a given hero."""
+        return self.session.query(Ability).\
+            filter_by(abilities_id=hero.abilities.id).\
+            filter_by(learnable=True).all()
+
     def get_object_by_name(self, obj_class_name, obj_name):
         """Retrieve an object from the database by name.
 
@@ -158,12 +164,10 @@ class EZDB:
         """Return all Users order_by name.
         """
         return self.session.query(User).order_by(User.id).all()
-                    
-    def get_all_abilities(self):
-        """Return all abilities in the database ordered by name.
-        """
 
-        return self.session.query(Ability).order_by(Ability.name).all()
+    def get_ability_by_id(self, ability_id):
+        """Return an ability from its ID."""
+        return self.session.query(Ability).get(ability_id)
 
     def get_all_store_items(self):
         """Return all items in the database ordered by name.
@@ -276,11 +280,11 @@ class EZDB:
 
         NOTE: to order by descending:
         order_by(attribute + " desc") 
-		or 
-		order_by(desc(attribute))
-		
-		Former does not work for numbers
-		
+        or
+        order_by(desc(attribute))
+
+        Former does not work for numbers
+
         https://stackoverflow.com/questions/4186062/sqlalchemy-order-by-descending
         """
         if '.' not in attribute:
@@ -297,7 +301,7 @@ class EZDB:
         else:
             raise Exception("Trying to access an attribute that this code"
                             " does not accommodate.")
-							
+
     def update(self):
         """Commit current session.
         

@@ -1,12 +1,24 @@
-# Name, Description, Attribute_Type, Type, [(Values Name, Value type, (Modifiers of value), Decimal Places)]
-# Linear: (Level multiplier), (Starting Value)
-# Root: Not finished. Looks like square root function. Used for diminishing returns and things that get better the larger they are. (Starting value) [Currently approaches 100]
+"""
+Name, Description, Attribute_Type, Type, [(Values Name, Value type,
+    (Modifiers of value), Decimal Places)]
+Linear: (Level multiplier), (Starting Value)
+Root: Not finished. Looks like square root function. Used for diminishing
+    returns and things that get better the larger they are. (Starting value)
+    [Currently approaches 100]
 
-# Curvy: (larger "0" means it reaches the cap quicker) (smaller [1] means it reaxhes the cap quicker) ([2] is the cap or maximum possible value) ([3] is the negative amount)
-# Sensitive: Like curvy but has decimals (larger [0] means it reaches the cap quicker) (smaller [1] means it reaches the cap quicker) ([2] is the cap or maximum possible value) ([3] is the negative amount)
-# Modifier: (larger [0] means greater amplitude), (larger [1] means greater steepness andfaster increase), (greater [2]  means greater frequency of waves)
-# Percent: ???
-# Empty: Sets this value to take on the value of "maximum". Must be placed after "Maximum" in the list of variables
+Curvy: (larger "0" means it reaches the cap quicker) (smaller [1] means it
+    reaxhes the cap quicker) ([2] is the cap or maximum possible value)
+    ([3] is the negative amount)
+Sensitive: Like curvy but has decimals (larger [0] means it reaches the cap
+    quicker) (smaller [1] means it reaches the cap quicker) ([2] is the cap
+    or maximum possible value) ([3] is the negative amount)
+Modifier: (larger [0] means greater amplitude), (larger [1] means greater
+    steepness andfaster increase), (greater [2]  means greater frequency of
+    waves)
+Percent: ???
+Empty: Sets this value to take on the value of "maximum". Must be placed after
+    "Maximum" in the list of variables
+"""
 PROFICIENCY_INFORMATION = [
     ("Health", "How much you can take before you die", "Vitality", [("Maximum", "linear", (2, 5, 0)), ("Current", "empty")]),
     ("Regeneration", "How quickly your wounds heal", "Vitality", [("Speed", "root", (1, 2))]),
@@ -62,6 +74,9 @@ PROFICIENCY_INFORMATION = [
     ("Sanity", "Your ability to resist mind altering affects", "Willpower", [("Skill", "linear", (1, 0, 0))]),
     ]
 
+ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_")
+                     for attrib in PROFICIENCY_INFORMATION]
 
-
-ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_") for attrib in PROFICIENCY_INFORMATION]
+ALL_PROFICIENCY_COLUMNS = {column[0].lower()
+                           for prof in PROFICIENCY_INFORMATION
+                           for column in prof[3]}
