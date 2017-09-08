@@ -387,7 +387,12 @@ class Health(Proficiency):
             #This updates the main tooltip string variable.
 
         for ability in myHero.abilities:
-            self.maximum += ability.health_maximum * ability.level
+            try:
+                self.maximum += ability.health_maximum * ability.level
+            except AttributeError:
+                # The ability doesn't have this attribute so don't worry about
+                # it.
+                pass
 
         self.tooltip = ';'.join(tooltips)
 
@@ -677,8 +682,12 @@ class Damage(Proficiency):
             self.modifier += item.damage_modifier
 
         for ability in myHero.abilities:
-            self.maximum += ability.damage_maximum * ability.level
-            self.minimum += ability.damage_minimum * ability.level
+            try:
+                self.maximum += ability.damage_maximum * ability.level
+                self.minimum += ability.damage_minimum * ability.level
+            except AttributeError:
+                # Just don't worry if this ability doesn't have these vars.
+                pass
 
             #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips)

@@ -36,27 +36,27 @@ class Abilities(Base):
 
     # Relationships to a particular ability.
     ironhide = relationship(
-        "Aura_Ability",
+        "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='ironhide')",
         back_populates="abilities", uselist=False)
     ironfist = relationship(
-        "Aura_Ability",
+        "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='ironfist')",
         back_populates="abilities", uselist=False)
     cure = relationship(
-        "Castable_Ability",
+        "CastableAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='cure')",
         back_populates="abilities", uselist=False)
 
     def __init__(self):
-        self.ironhide = Aura_Ability('ironhide', 5, "Gain 1000 health per level",
-                                learnable=True, health_maximum=1000, damage_minimum=0, damage_maximum=0)
-        self.ironfist = Aura_Ability('ironfist', 3, "Gain 2 minimum and 3 maximum damage",
-                                learnable=True, health_maximum=0, damage_minimum=2, damage_maximum=3)
-        self.cure = Castable_Ability('cure', 3, "Recover 1 health", 1, learnable=True)
+        self.ironhide = AuraAbility('ironhide', 5, "Gain 1000 health per level",
+                                    learnable=True, health_maximum=1000)
+        self.ironfist = AuraAbility('ironfist', 3, "Gain 2 minimum and 3 maximum damage",
+                                    learnable=True, damage_minimum=2, damage_maximum=3)
+        self.cure = CastableAbility('cure', 3, "Recover 1 health", learnable=True)
         # print(self.ironhide)
         # exit("Debugging init.")
 
@@ -112,7 +112,6 @@ class Ability(Base):
     type = Column(String)
     ability_type = orm.synonym('type')
 
-    activated = orm.synonym('castable')
     learnable = Column(Boolean)
 
     # Relationships.
@@ -154,8 +153,7 @@ class Ability(Base):
         self.level = 0
         self.max_level = max_level
         self.description = description
-        self.type = "Basic"
-        self.castable = False
+        # print(self.type, self.name, self.damage_minimun)
         self.learnable = learnable
 
         # Use internal method to properly add hero object to the
@@ -196,14 +194,16 @@ class Ability(Base):
         exit("Removed in favor of add_hero and remove_hero")
         # self.heroes = [hero]
 
-class Castable_Ability(Ability):
+
+class CastableAbility(Ability):
+    castable = Column(Boolean)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'Castable_Ability',
+        'polymorphic_identity': 'CastableAbility',
     }
 
     def __init__(self, *args, **kwargs):
-        """Build a new Archetype_Ability object.
+        """Build a new ArchetypeAbility object.
 
         Note: self.type must be set in __init__ to polymorphic_identity.
         If no __init__ method then type gets set automagically.
@@ -227,20 +227,21 @@ class Castable_Ability(Ability):
             hero.experience += 1
             return True
 
-class Aura_Ability(Ability):
 
+class AuraAbility(Ability):
     __mapper_args__ = {
-        'polymorphic_identity': 'Castable_Ability',
+        'polymorphic_identity': 'AuraAbility',
     }
 
     health_maximum = Column(Integer)
     damage_maximum = Column(Integer)
     damage_minimum = Column(Integer)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, health_maximum=0, damage_maximum=0,
+                 damage_minimum=0, **kwargs):
         """Build a new Archetype_Ability object.
 
-        Note: self.type must be set in __init__ to polymorphic_identity.
+        Note: self.type must be set in __init__ to polymorphic identity.
         If no __init__ method then type gets set automagically.
         If type not set then call to 'super' overwrites type.
         """
