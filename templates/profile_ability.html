@@ -18,16 +18,16 @@
 
 
 
-    <h2 style="text-align:left;">New Abilities</h2>
-{% for ability in myHero.abilities if not ability.level %}
+    <h2 style="text-align:left;">Basic Abilities</h2>
+{% for ability in myHero.abilities if ability.basic %}
 Ability: {{ ability.name.title() }} (Level: <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>) [{{ ability.description }}]
 <button class="command" data={{ ability.id }}" data-function="updateAbility">{{ ability.name }}</button><br>
 {% else %}
 No new Abilities
 {% endfor %}
 
-    <h2 style="text-align:left;">Other Abilities</h2>
-{% for ability in myHero.abilities if ability.level %}
+    <h2 style="text-align:left;">Archetype Abilities</h2>
+{% for ability in myHero.abilities if ability.archetype %}
 Ability: {{ ability.name.title() }} (Level: <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>) [{{ ability.description }}]
 <button class="command" data={{ ability.id }}" data-function="updateAbility">{{ ability.name }}</button><br>
 {% else %}

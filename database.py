@@ -133,7 +133,7 @@ class EZDB:
         """Get all learnable abilities of a given hero."""
         return self.session.query(Ability).\
             filter_by(abilities_id=hero.abilities.id).\
-            filter_by(learnable=True).all()
+            filter_by(locked=False).all()
 
     def get_object_by_name(self, obj_class_name, obj_name):
         """Retrieve an object from the database by name.

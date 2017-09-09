@@ -16,10 +16,14 @@ from base_classes import Base
 import pdb
 
 ALL_ABILITIES = [
-    "ironhide",
-    "ironfist",
-    "cure",
-    "testgold"
+    ("scholar", "AuraAbility",
+     "AuraAbility('scholar', 5, 'Gain +1% experience gain per level', locked=False, understanding_modifier=1)"),
+    ("reflexes", "AuraAbility",
+     "AuraAbility('reflexes', 3, 'Gain +2% dodge chance per level', locked=False, evade_chance=2)"),
+    ("cure", "CastableAbility",
+    "CastableAbility('cure', 3, 'Recover 3 health', sanctity_cost=1, heal_amount=3)"),
+    ("testgold", "CastableAbility",
+     "CastableAbility('testgold', 3, 'Gain 3 gold', locked=False, endurance_cost=1, gold_amount=3)")
 ]
 
 # "determination", 5, "Increases Endurance by 3 for each level."
@@ -36,15 +40,15 @@ class Abilities(Base):
     hero = relationship("Hero", back_populates='abilities')
 
     # Relationships to a particular ability.
-    ironhide = relationship(
+    scholar = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
-                    "Ability.name=='ironhide')",
+                    "Ability.name=='scholar')",
         back_populates="abilities", uselist=False)
-    ironfist = relationship(
+    reflexes = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
-                    "Ability.name=='ironfist')",
+                    "Ability.name=='reflexes')",
         back_populates="abilities", uselist=False)
     cure = relationship(
         "CastableAbility",
@@ -57,18 +61,11 @@ class Abilities(Base):
                     "Ability.name=='testgold')",
         back_populates="abilities", uselist=False)
 
-
     def __init__(self):
-        self.ironhide = AuraAbility('ironhide', 5, "Gain 1000 health per level", learnable=True,
-                                    health_maximum=1000)
-        self.ironfist = AuraAbility('ironfist', 3, "Gain 2 minimum and 3 maximum damage", learnable=True,
-                                    damage_minimum=2, damage_maximum=3)
-        self.cure = CastableAbility('cure', 3, "Recover 3 health", learnable=True,
-                                    cost=1, heal_amount=3)
-        self.testgold = CastableAbility('testgold', 3, "Gain 3 gold", learnable=True,
-                                    gold_amount=3)
-        # print(self.ironhide)
-        # exit("Debugging init.")
+        self.scholar = AuraAbility('scholar', 5, 'Gain +1% experience gain per level', locked=False, understanding_modifier=1)
+        self.reflexes = AuraAbility('reflexes', 3, 'Gain +2% dodge chance per level', locked=False, evade_chance=2)
+        self.cure = CastableAbility('cure', 3, 'Recover 3 health', sanctity_cost=1, heal_amount=3)
+        self.testgold = CastableAbility('testgold', 3, 'Gain 3 gold', locked=False, endurance_cost=1, gold_amount=3)
 
     def items(self):
         """Return each Ability and its name.
@@ -83,7 +80,7 @@ class Abilities(Base):
             ability -- the object that corresponds to the named attribute.
         """
 
-        return ((key, getattr(self, key)) for key in ALL_ABILITIES)
+        return ((key[0], getattr(self, key[0])) for key in ALL_ABILITIES)
 
     def __iter__(self):
         """Allow this object to be used in a for call.
@@ -92,7 +89,7 @@ class Abilities(Base):
             ability -- where the ability is each of the attribute objects of
                 the abilities class.
         """
-        return (getattr(self, key) for key in ALL_ABILITIES)
+        return (getattr(self, key[0]) for key in ALL_ABILITIES)
 
 
 class Ability(Base):
@@ -122,7 +119,15 @@ class Ability(Base):
     type = Column(String)
     ability_type = orm.synonym('type')
 
-    learnable = Column(Boolean)
+    # This determines if the ability is locked and can not be learned
+    locked = Column(Boolean)
+
+    # This decides which of the 4 types of abilities it is (default is basic)
+
+    basic = Column(Boolean)
+    archetype = Column(String)
+    specialization = Column(String)
+    religion = Column(String)
 
     # Relationships.
     # Ability to abilities. Abilities is a list of ability objects.
@@ -143,7 +148,7 @@ class Ability(Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, max_level, description, hero=None, learnable=False):
+    def __init__(self, name, max_level, description, hero=None, locked=True, basic=True, archetype="", specialization="", religion=""):
         """Build a basic ability object.
 
         Note: arguments (name, hero, max_level, etc.) that require input are
@@ -163,11 +168,12 @@ class Ability(Base):
         self.level = 0
         self.max_level = max_level
         self.description = description
-        # print(self.type, self.name, self.damage_minimun)
-        self.learnable = learnable
+        self.locked = locked
 
-        # Use internal method to properly add hero object to the
-        # self.heroes relationship.
+        self.basic = basic
+        self.archetype = archetype
+        self.specialization = specialization
+        self.religion = religion
 
         self.init_on_load()
 
@@ -207,7 +213,8 @@ class Ability(Base):
 
 class CastableAbility(Ability):
     castable = Column(Boolean)
-    cost = Column(Integer)
+    sanctity_cost = Column(Integer)
+    endurance_cost = Column(Integer)
     heal_amount = Column(Integer)
     gold_amount = Column(Integer)
 
@@ -215,7 +222,7 @@ class CastableAbility(Ability):
         'polymorphic_identity': 'CastableAbility',
     }
 
-    def __init__(self, *args, cost=0, heal_amount=0, gold_amount=0, **kwargs):
+    def __init__(self, *args, sanctity_cost=0, endurance_cost=0, heal_amount=0, gold_amount=0, **kwargs):
         """Build a new ArchetypeAbility object.
 
         Note: self.type must be set in __init__ to polymorphic_identity.
@@ -224,7 +231,8 @@ class CastableAbility(Ability):
         """
         super().__init__(*args, **kwargs)
         self.castable = True
-        self.cost = cost
+        self.sanctity_cost = sanctity_cost
+        self.endurance_cost = endurance_cost
         self.heal_amount = heal_amount
         self.gold_amount = gold_amount
 
@@ -236,10 +244,11 @@ class CastableAbility(Ability):
         NOTE: returns False if spell is too expensive (cost > proficiencies.sanctity.current)
         If cast is succesful then return value is True.
         """
-        if hero.proficiencies.sanctity.current < self.cost:
+        if hero.proficiencies.sanctity.current < self.sanctity_cost or hero.proficiencies.endurance.current < self.endurance_cost:
             return False
         else:
-            hero.proficiencies.sanctity.current -= self.cost
+            hero.proficiencies.sanctity.current -= self.sanctity_cost
+            hero.proficiencies.endurance.current -= self.endurance_cost
             hero.proficiencies.health.current += self.heal_amount
             hero.gold += self.gold_amount
             return True
@@ -253,9 +262,10 @@ class AuraAbility(Ability):
     health_maximum = Column(Integer)
     damage_maximum = Column(Integer)
     damage_minimum = Column(Integer)
+    understanding_modifier = Column(Integer)
+    evade_chance = Column(Integer)
 
-    def __init__(self, *args, health_maximum=0, damage_maximum=0,
-                 damage_minimum=0, **kwargs):
+    def __init__(self, *args, health_maximum=0, damage_maximum=0, damage_minimum=0, understanding_modifier=0, evade_chance=0, **kwargs):
         """Build a new Archetype_Ability object.
 
         Note: self.type must be set in __init__ to polymorphic identity.
@@ -267,3 +277,5 @@ class AuraAbility(Ability):
         self.health_maximum = health_maximum
         self.damage_maximum = damage_maximum
         self.damage_minimum = damage_minimum
+        self.understanding_modifier = understanding_modifier
+        self.evade_chance = evade_chance

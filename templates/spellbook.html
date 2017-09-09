@@ -2,8 +2,13 @@
 
 {% extends "layout.html" %}
 {% block block1 %}
+<center>Spellbook</center>
 {% for ability in myHero.abilities if ability.castable and ability.level > 0 %}
-{{ ability.name.title() }} (Mana Cost: {{ ability.cost }}) <button class="command" data={{ ability.id }} data-name = "cast_spell">cast</button> [{{ ability.description }}]<br>
+{{ ability.name.title() }}
+    {% if ability.sanctity_cost %}(Sanctity Cost: {{ ability.sanctity_cost }})
+    {% elif ability.endurance_cost %}(Endurance Cost: {{ ability.endurance_cost }})
+    {% endif %}
+<button class="command" data={{ ability.id }} data-name = "cast_spell">cast</button> [{{ ability.description }}]<br>
 {% else %}
 You have no spells
 {% endfor %}
