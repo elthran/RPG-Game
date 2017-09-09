@@ -17,48 +17,7 @@ import inventory
 
 import pdb
     
-###########
-#Inventory relationships
-###########
-#One to One
-inventory.Inventory.helmet_item_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.helmet = relationship("Item", backref=backref("inventory_helmet",
-    uselist=False), foreign_keys="[Inventory.helmet_item_id]")
-inventory.Inventory.shirt_item_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.shirt = relationship("Item", backref=backref("inventory_shirt",
-    uselist=False), foreign_keys="[Inventory.shirt_item_id]")
-inventory.Inventory.left_hand_item_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.left_hand = relationship("Item", backref=backref("inventory_left_hand",
-    uselist=False), foreign_keys="[Inventory.left_hand_item_id]")
-inventory.Inventory.right_hand_item_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.right_hand = relationship("Item", backref=backref("inventory_right_hand",
-    uselist=False), foreign_keys="[Inventory.right_hand_item_id]")
-inventory.Inventory.both_hands_item_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.both_hands = relationship("Item", backref=backref("inventory_both_hands",
-    uselist=False), foreign_keys="[Inventory.both_hands_item_id]")
-inventory.Inventory.sleeves_item_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.sleeves = relationship("Item", backref=backref("inventory_sleeves",
-    uselist=False), foreign_keys="[Inventory.sleeves_item_id]")
-inventory.Inventory.gloves_item_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.gloves = relationship("Item", backref=backref("inventory_gloves",
-    uselist=False), foreign_keys="[Inventory.gloves_item_id]")
-inventory.Inventory.legs_item_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.legs = relationship("Item", backref=backref("inventory_legs",
-    uselist=False), foreign_keys="[Inventory.legs_item_id]")
-inventory.Inventory.feet_item_id = Column(Integer, ForeignKey('item.id'))
-inventory.Inventory.feet = relationship("Item", backref=backref("inventory_feet",
-    uselist=False), foreign_keys="[Inventory.feet_item_id]")
-#One to Many
-items.Item.rings_inventory_id = Column(Integer, ForeignKey('inventory.id'))
-items.Item.rings_position = Column(Integer)
-inventory.Inventory.rings = relationship("Item", order_by="Item.rings_position",
-    collection_class=ordering_list("rings_position"),
-    backref=backref("inventory_rings"), foreign_keys="[Item.rings_inventory_id]")
-items.Item.unequipped_inventory_id = Column(Integer, ForeignKey('inventory.id'))
-items.Item.unequipped_position = Column(Integer)
-inventory.Inventory.unequipped = relationship("Item", order_by="Item.unequipped_position",
-    collection_class=ordering_list("unequipped_position"),
-    backref=backref("inventory_unequipped"), foreign_keys="[Item.unequipped_inventory_id]")
+
 
 ###########
 #Hero relationships
