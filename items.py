@@ -1,10 +1,7 @@
-try:
-    from sqlalchemy import Column, Integer, String, Boolean
-    from sqlalchemy import ForeignKey
-    from sqlalchemy.orm import relationship
-    from sqlalchemy import orm
-except ImportError:
-    exit("Open a command prompt and type: pip install sqlalchemy.")
+from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+from sqlalchemy import orm
 
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 # Well ... ok, but for simplicity sake just pretend that that is true.
@@ -50,12 +47,18 @@ class Item(Base):
     name = Column(String)
 
     # Relationships
+    # Inventory
     # One to Many
     rings_inventory_id = Column(Integer, ForeignKey('inventory.id'))
     rings_position = Column(Integer)
 
     unequipped_inventory_id = Column(Integer, ForeignKey('inventory.id'))
     unequipped_position = Column(Integer)
+
+    # ItemTemplate
+    # Each ItemTemplate can have many regular Items.
+    item_template_id = Column(Integer, ForeignKey('item_template.id'))
+    template = relationship("ItemTemplate", back_populates='items')
 
     def __init__(self, template):
         """Build a new item from a given template.
@@ -158,6 +161,11 @@ class ItemTemplate(Base):
     consumable = Column(Boolean)
 
     type = Column(String)
+
+    # Relationships
+    # Each ItemTemplate can have many regular Items.
+    items = relationship("Item", back_populates='template')
+
     __mapper_args__ = {
         'polymorphic_identity': "ItemTemplate",
         'polymorphic_on': type

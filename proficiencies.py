@@ -99,7 +99,12 @@ class Proficiencies(Base):
     
     id = Column(Integer, primary_key=True)
 
-    #Relationships
+    # Relationships
+    # Hero class
+    # One Hero -> one Proficiencies object
+    hero = relationship("Hero", back_populates='proficiencies', uselist=False)
+
+    # Proficiency Class
     health_id = Column(Integer, ForeignKey('proficiency.id'))
     health = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.health_id]")
     regeneration_id = Column(Integer, ForeignKey('proficiency.id'))

@@ -4,7 +4,6 @@ import pdb
 from database import EZDB
 from game import Hero, Inventory
 from items import Item, OneHandedWeapon
-import complex_relationships
 
 
 class ItemsTestCase(unittest.TestCase):

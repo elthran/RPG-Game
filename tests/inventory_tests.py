@@ -5,7 +5,6 @@ import re
 from database import EZDB
 from game import Hero, Inventory
 from items import Item, ItemTemplate
-import complex_relationships
 
 ##########
 # Inventory: work in progress

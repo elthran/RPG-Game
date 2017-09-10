@@ -127,7 +127,19 @@ class QuestPath(Base):
     
     active = Column(Boolean)
     completed = Column(Boolean)
-    
+
+    # Relationships
+    # Heroes to Quests.
+    # Hero object relates to quests via the QuestPath object.
+    # This path may be either active or completed, but not both.
+    # Which establishes a manay to many relationship between quests and heroes.
+    # QuestPath provides many special methods.
+    hero_id = Column(Integer, ForeignKey('hero.id'))
+    hero = relationship("Hero", back_popluates='quest_paths')
+
+    quest_id = Column(Integer, ForeignKey('quest.id'))
+    quest = relationship("Quest", back_populates='quest_paths')
+
     def __init__(self, quest, hero, active=True, stage=1):
         self.quest = quest
         self.hero = hero
@@ -272,6 +284,7 @@ quest_to_quest = Table("quest_to_quest", Base.metadata,
     Column("next_quest_id", Integer, ForeignKey("quest.id"), primary_key=True)
 )
 
+
 class Quest(Base):
     """A class to describe quest objects that can be stored in a database.
     
@@ -292,13 +305,19 @@ class Quest(Base):
     current_description = orm.synonym('description')
     
     reward_experience = Column(Integer)
-    
+
+    # Relationships
+    # Self ... forward and back Many to Many?
+    # A.k.a. each quest can have many future quests and maybe many past quests?
     next_quests = relationship("Quest",
         secondary=quest_to_quest,
         primaryjoin=id==quest_to_quest.c.past_quest_id,
         secondaryjoin=id==quest_to_quest.c.next_quest_id,
         backref="past_quests")
-    
+
+    # QuestPath
+    quest_paths = relationship("QuestPath", back_populates='quest')
+
     def __init__(self, path_name, description, reward_experience=3, next_quests=[], past_quests=[]):
         """Build a new Quest object.
         

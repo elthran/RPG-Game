@@ -14,7 +14,6 @@ from base_classes import Base, BaseDict
 from database import EZDB
 from game import Hero
 from attributes import Attributes
-import complex_relationships
 import prebuilt_objects
 
 

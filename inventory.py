@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import backref
-from sqlalchemy import orm
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.orm import relationship
 from sqlalchemy import ForeignKey
@@ -31,9 +30,11 @@ class Inventory(Base):
     # Maybe I don't even need this at all?
 
     # Relationships
-    ###########
-    # Inventory relationships
-    ###########
+    # Each Hero has One inventory. (One to One -> bidirectional)
+    # inventory is list of character's items.
+    hero = relationship("Hero", back_populates='inventory', uselist=False)
+
+    # Item relationships
     # One to One
     helmet_item_id = Column(Integer, ForeignKey('item.id'))
     helmet = relationship("Item", foreign_keys="[Inventory.helmet_item_id]")

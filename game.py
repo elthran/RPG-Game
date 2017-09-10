@@ -14,11 +14,10 @@ import random
 import datetime
 import pdb
 
-from sqlalchemy import Table, Column, Integer, String, DateTime, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
-from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm import validates
 
 from base_classes import Base, BaseDict
@@ -28,8 +27,7 @@ from proficiencies import Proficiencies
 from inventory import Inventory
 
 
-# function used in '/level_up'
-# Fix ME! Or put me in a class as a method or something.
+# TODO put this somewhere else, in a class, or just delete.
 def convert_input(x: int):
     try:
         x = int(x)
@@ -71,6 +69,15 @@ class User(Base):
     # Each user can have one inbox. One to One (bidirectional).
     inbox_id = Column(Integer, ForeignKey('inbox.id'))
     inbox = relationship("Inbox", back_populates="user")
+
+    # Many heroes -> one user
+    heroes = relationship("Hero", order_by='Hero.character_name',
+                          back_populates='user')
+
+    # Each Hero has One inventory. (One to One -> bidirectional)
+    # inventory is list of character's items.
+    inventory_id = Column(Integer, ForeignKey('inventory.id'))
+    inventory = relationship("Inventory", back_populates="hero")
 
     def __init__(self, username, password, email='', timestamp=None, is_admin=False):
         """Create a new user object.
@@ -208,7 +215,6 @@ class Hero(Base):
     login_alerts = Column(String)  # Testing messages when you are attacked or get a new message
 
     # Relationships: see complex_relationships.py
-
     # Many heroes -> one map/world. (bidirectional)
     map_id = Column(Integer, ForeignKey('location.id'))
     current_world = relationship("Location", back_populates='heroes',
@@ -230,6 +236,27 @@ class Hero(Base):
     # Each hero can have one set of Abilities. (bidirectional, One to One).
     abilities = relationship("Abilities", uselist=False, back_populates='hero')
 
+    # User to Hero. One to many. Ordered!
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship("User", back_populates='heroes')
+
+    # Attributes One to One despite the name
+    attributes_id = Column(Integer, ForeignKey('attributes.id'))
+    attributes = relationship("Attributes", back_populates='hero')
+
+    # Proficiencies One to One despite the name
+    proficiencies_id = Column(Integer, ForeignKey('proficiencies.id'))
+    proficiencies = relationship("Proficiencies", back_populates='hero')
+
+    # Heroes to Quests.
+    # Hero object relates to quests via the QuestPath object.
+    # This path may be either active or completed, but not both.
+    # Which establishes a manay to many relationship between quests and heroes.
+    # QuestPath provides many special methods.
+    quest_paths = relationship("QuestPath", back_populates='hero')
+
+    # @eltran ... this probably won't work as the var will disappear on
+    # database relaod.
     # variable used for keeping track of clicked attributes on the user table
     clicked_user_attribute = ""
 

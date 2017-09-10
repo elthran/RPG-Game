@@ -5,7 +5,6 @@ from pprint import pformat
 from database import EZDB
 from game import User
 import locations
-import complex_relationships
 
 """
 This program runs as a test suite for the EasyDatabase class when it is

@@ -9,7 +9,6 @@ from abilities import (
 # I don't know why it says this is unused ... maybe we can make it
 # obsolete? I mean you did say it made so of the variables hard to understand.
 # It is _very_ important. And must always go last.
-import complex_relationships
 
 
 class AbilitiesTestCase(unittest.TestCase):
