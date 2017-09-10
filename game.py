@@ -437,6 +437,4 @@ class Hero(Base):
         """
         if location.type in ("cave", "town"):
             self.current_city = location
-        else:
-            self.current_city = None
         return location
