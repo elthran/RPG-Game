@@ -49,15 +49,7 @@ class Item(Base):
     consumed = Column(Boolean)
     name = Column(String)
 
-    slot = Column(String)
-
     # Relationships
-    # Each item can be in only one inventory.
-    # And each inventory can have many items. One to many.
-    inventory_id = Column(Integer, ForeignKey('inventory.id'))
-    inventory = relationship("Inventory",
-                             foreign_keys="[Item.inventory_id]")
-
     # One to Many
     rings_inventory_id = Column(Integer, ForeignKey('inventory.id'))
     rings_position = Column(Integer)

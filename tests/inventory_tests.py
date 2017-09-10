@@ -43,7 +43,7 @@ class InventoryTestCase(unittest.TestCase):
         self.hero = self.db.session.query(Hero).filter_by(id=1).first()
         self.inv = self.hero.inventory
     
-    @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
+    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_inventory_init(self):
         """Check if object is created, storeable and retrievable.
         """
@@ -52,7 +52,7 @@ class InventoryTestCase(unittest.TestCase):
         self.rebuild_instance()
         self.assertEqual(str_inventory, self.inv.pretty)
     
-    @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
+    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_add_item(self):
         template = self.db.session.query(ItemTemplate).filter_by(name="Medium Helmet").first()
         item = self.db.create_item(template.id)
@@ -67,12 +67,12 @@ class InventoryTestCase(unittest.TestCase):
     def test_equip_helmet(self):
         template = self.db.session.query(ItemTemplate).filter_by(name="Medium Helmet").first()
         item = self.db.create_item(template.id)
-        self.inv.items.append(item)
+        self.inv.add_item(item)
         
         inv_str = self.inv.pretty
         item_str = item.pretty
 
-        ids_to_unequip = self.inv.equip2(item)
+        ids_to_unequip = self.inv.equip(item)
         self.rebuild_instance()
         
         inv_str2 = self.inv.pretty
@@ -82,13 +82,13 @@ class InventoryTestCase(unittest.TestCase):
             inv_str,
             inv_str2.replace("helmet='<Item(id=1)>'", "helmet=None"
             ).replace("helmet_item_id=1", "helmet_item_id=None"
-            ))
+            ).replace("unequipped=[]", "unequipped='[Item.id=1]'"))
         self.assertEqual(item_str, 
             item_str2.replace("inventory_helmet='<Inventory(id=2)>'", "inventory_helmet=None"
             ).replace("inventory_unequipped=None", "inventory_unequipped='<Inventory(id=2)>'"
             ).replace("unequipped_inventory_id=None", "unequipped_inventory_id=2"))
            
-    @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
+    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_equip_both_hands(self):
         template = self.db.session.query(ItemTemplate).filter_by(name="Medium Polearm").first()
         item = self.db.create_item(template.id)
@@ -113,7 +113,7 @@ class InventoryTestCase(unittest.TestCase):
             ).replace("inventory_unequipped=None", "inventory_unequipped='<Inventory(id=2)>'"
             ).replace("unequipped_inventory_id=None", "unequipped_inventory_id=2"))
             
-    @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
+    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_equip_ring(self):
         template = self.db.session.query(ItemTemplate).filter_by(name="Silver Ring").first()
         item = self.db.create_item(template.id)
@@ -140,7 +140,7 @@ class InventoryTestCase(unittest.TestCase):
             ).replace("unequipped_inventory_id=None", "unequipped_inventory_id=2"
             ).replace("rings_position=0", "rings_position=None"))
     
-    @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
+    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_replace_helmet(self):
         template = self.db.session.query(ItemTemplate).filter_by(name="Medium Helmet").first()
         item = self.db.create_item(template.id)
@@ -168,7 +168,7 @@ class InventoryTestCase(unittest.TestCase):
             ).replace("unequipped_position=0", "unequipped_position=1"))
         self.assertEqual(ids_to_unequip, [1])
         
-    @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
+    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_replace_both_hands(self):
         polearm_template = self.db.session.query(ItemTemplate).filter_by(name="Medium Polearm").first()
         shield_template = self.db.session.query(ItemTemplate).filter_by(name="Small Shield").first()
@@ -202,7 +202,7 @@ class InventoryTestCase(unittest.TestCase):
             ).replace("unequipped='[Item.id=1, Item.id=2]'", "unequipped='[Item.id=3]'"))
         self.assertEqual(ids_to_unequip, [1, 2])
         
-    @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
+    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_equip_lots_of_rings(self):
         template = self.db.session.query(ItemTemplate).filter_by(name="Silver Ring").first()
         
@@ -231,7 +231,7 @@ class InventoryTestCase(unittest.TestCase):
             ).replace("unequipped='[Item.id=11, Item.id=5]'", "unequipped='[Item.id=11, Item.id=12]'"))
         self.assertEqual(ids_to_unequip, [5])
         
-    @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
+    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_unequip_legs(self):
         pants_template = self.db.session.query(ItemTemplate).filter_by(name="Medium Pants").first()
         
@@ -258,8 +258,7 @@ class InventoryTestCase(unittest.TestCase):
             ).replace("inventory_unequipped='<Inventory(id=2)>'", "inventory_unequipped=None"
             ).replace("unequipped_inventory_id=2", "unequipped_inventory_id=None"))
 
-    @unittest.skip("Temporarily disabled for speed of development ->"
-                   " re-enable before you trust :)")
+    # @unittest.skip("Temporarily disabled for speed of development -> re-enable before you trust :)")
     def test_unequip_ring(self):
         template = self.db.session.query(ItemTemplate).filter_by(name="Silver Ring").first()
         

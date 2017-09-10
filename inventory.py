@@ -35,62 +35,46 @@ class Inventory(Base):
     # Inventory relationships
     ###########
     # One to One
-    # ironhide = relationship(
-    #     "AuraAbility",
-    #     primaryjoin="and_(Abilities.id==Ability.abilities_id, "
-    #                 "Ability.name=='ironhide')",
-    #     back_populates="abilities", uselist=False)
-    items = relationship("Item", back_populates='inventory',
-                         foreign_keys="[Item.inventory_id]")
-
-    # Are slots an internal inventory relationship? yes I think so.
-    # Maybe not ...
-
-    helmet = relationship(
-        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
-                            "Item.slot=='helmet')",
-        back_populates='inventory', uselist=False)
+    helmet_item_id = Column(Integer, ForeignKey('item.id'))
+    helmet = relationship("Item", foreign_keys="[Inventory.helmet_item_id]")
 
     shirt_item_id = Column(Integer, ForeignKey('item.id'))
     shirt = relationship("Item",
                          backref=backref("inventory_shirt",
                                          uselist=False),
                          foreign_keys="[Inventory.shirt_item_id]")
-    left_hand_item_id = Column(Integer,
-                                                   ForeignKey('item.id'))
+    left_hand_item_id = Column(Integer, ForeignKey('item.id'))
     left_hand = relationship("Item", backref=backref(
         "inventory_left_hand",
         uselist=False), foreign_keys="[Inventory.left_hand_item_id]")
-    right_hand_item_id = Column(Integer,
-                                                    ForeignKey('item.id'))
+    right_hand_item_id = Column(Integer, ForeignKey('item.id'))
     right_hand = relationship("Item", backref=backref(
         "inventory_right_hand",
         uselist=False), foreign_keys="[Inventory.right_hand_item_id]")
-    both_hands_item_id = Column(Integer,
-                                                    ForeignKey('item.id'))
+    both_hands_item_id = Column(Integer, ForeignKey('item.id'))
     both_hands = relationship("Item", backref=backref(
         "inventory_both_hands",
         uselist=False), foreign_keys="[Inventory.both_hands_item_id]")
-    sleeves_item_id = Column(Integer,
-                                                 ForeignKey('item.id'))
-    sleeves = relationship("Item", backref=backref(
-        "inventory_sleeves",
-        uselist=False), foreign_keys="[Inventory.sleeves_item_id]")
+    sleeves_item_id = Column(Integer, ForeignKey('item.id'))
+    sleeves = relationship("Item",
+                           backref=backref("inventory_sleeves",
+                                           uselist=False),
+                           foreign_keys="[Inventory.sleeves_item_id]")
     gloves_item_id = Column(Integer, ForeignKey('item.id'))
     gloves = relationship("Item", backref=backref(
         "inventory_gloves",
         uselist=False), foreign_keys="[Inventory.gloves_item_id]")
     legs_item_id = Column(Integer, ForeignKey('item.id'))
     legs = relationship("Item",
-                                            backref=backref("inventory_legs",
-                                                            uselist=False),
-                                            foreign_keys="[Inventory.legs_item_id]")
+                        backref=backref("inventory_legs",
+                                        uselist=False),
+                        foreign_keys="[Inventory.legs_item_id]")
     feet_item_id = Column(Integer, ForeignKey('item.id'))
     feet = relationship("Item",
                         backref=backref("inventory_feet",
                                         uselist=False),
                         foreign_keys="[Inventory.feet_item_id]")
-    #One to many
+    # One to many
     rings = relationship("Item",
                          order_by="Item.rings_position",
                          collection_class=ordering_list(
@@ -147,12 +131,6 @@ class Inventory(Base):
         """
         for item in equipped_items:
             self.equip(item)
-
-    def equip2(self, item, index=0):
-        """New version of equip item."""
-
-        slots_used = Inventory.slots_used_by_item_type[item.type]
-        item.slot = slots_used["primary"]
 
     def equip(self, item, index=0):
         """Equip the an item in the correct slot -> Return ids of items manipulated.
