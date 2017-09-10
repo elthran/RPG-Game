@@ -210,8 +210,6 @@ class Command:
         Maybe this also needs to be able to "add" an Ability to the Hero object?
         if the Ability is at level 0? Or would the Hero have all Abilities
         but not display them if they are level 0?
-
-        NOTE: hero/ability table is defined in complex_relationships.py
         """
         ability_id = arg_dict.get('data', None, type=int)
         ability = database.get_object_by_id("Ability", ability_id)

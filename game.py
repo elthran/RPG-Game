@@ -209,7 +209,7 @@ class Hero(Base):
 
     login_alerts = Column(String)  # Testing messages when you are attacked or get a new message
 
-    # Relationships: see complex_relationships.py
+    # Relationships
     # Many heroes -> one map/world. (bidirectional)
     map_id = Column(Integer, ForeignKey('location.id'))
     current_world = relationship("Location", back_populates='heroes',
@@ -272,10 +272,6 @@ class Hero(Base):
 
         Currently only accepts keywords. Consider changing this.
         Consider having some Non-null values?
-
-        NOTE: relationships must be assignment in complex_relationships.py
-        and then imported after game.py. But before an object is created.
-        Otherwise the relationships will be overwritten.
 
         exp_percent is now updated by current_exp using a validator.
         max_exp should be assigned a value before current_exp.
