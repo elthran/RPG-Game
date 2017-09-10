@@ -135,7 +135,7 @@ class QuestPath(Base):
     # Which establishes a manay to many relationship between quests and heroes.
     # QuestPath provides many special methods.
     hero_id = Column(Integer, ForeignKey('hero.id'))
-    hero = relationship("Hero", back_popluates='quest_paths')
+    hero = relationship("Hero", back_populates='quest_paths')
 
     quest_id = Column(Integer, ForeignKey('quest.id'))
     quest = relationship("Quest", back_populates='quest_paths')

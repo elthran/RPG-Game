@@ -74,11 +74,6 @@ class User(Base):
     heroes = relationship("Hero", order_by='Hero.character_name',
                           back_populates='user')
 
-    # Each Hero has One inventory. (One to One -> bidirectional)
-    # inventory is list of character's items.
-    inventory_id = Column(Integer, ForeignKey('inventory.id'))
-    inventory = relationship("Inventory", back_populates="hero")
-
     def __init__(self, username, password, email='', timestamp=None, is_admin=False):
         """Create a new user object.
 
@@ -239,6 +234,11 @@ class Hero(Base):
     # User to Hero. One to many. Ordered!
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship("User", back_populates='heroes')
+
+    # Each Hero has One inventory. (One to One -> bidirectional)
+    # inventory is list of character's items.
+    inventory_id = Column(Integer, ForeignKey('inventory.id'))
+    inventory = relationship("Inventory", back_populates="hero")
 
     # Attributes One to One despite the name
     attributes_id = Column(Integer, ForeignKey('attributes.id'))
