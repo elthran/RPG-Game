@@ -6,7 +6,6 @@ from base_classes import Base
 from database import EZDB
 from locations import Location
 from game import Hero
-import complex_relationships
 import prebuilt_objects
 
 
@@ -25,7 +24,7 @@ class LocationTestCase(unittest.TestCase):
     def setUp(self):
         """Set up the generic environment for each test function.
         
-        NOTE: Bizar bug that is related to the fact that prebuilt_objects
+        NOTE: Bizarre bug that is related to the fact that prebuilt_objects
         can only be used once. Once used in one test function it no longer
         exists. And so I re-import it.
         """
@@ -178,18 +177,7 @@ class LocationTestCase(unittest.TestCase):
     @unittest.skip("Disabled for debugging.")
     def test_prebuilt_objects_game_worlds(self):
         """Test the creation of some prebuilt objects.
-        
-        !IMPORTANT! complex_relationships.py must be imported before
-        location.py objects are used.
-        
-        Do: import locations; import complex_relationships
-        DON'T Do: 
-            import locations
-            [FAIL TO: import complex_relationships]
-            worldmap = locations.WorldMap(all_map_locations=[etc.])
-            session.add(worldmap)
-        This will fail because all_map_locations will be a list object
-        instead of a "relationship" object.
+
         """
         world = prebuilt_objects.game_worlds[0]
         self.db.session.add(world)

@@ -13,7 +13,6 @@ from base_classes import Base, BaseDict
 from database import EZDB
 from base_classes import BaseItem, BaseDict
 import base_classes
-import complex_relationships
 
 import pdb
 

@@ -128,7 +128,19 @@ class QuestPath(Base):
     
     active = Column(Boolean)
     completed = Column(Boolean)
-    
+
+    # Relationships
+    # Heroes to Quests.
+    # Hero object relates to quests via the QuestPath object.
+    # This path may be either active or completed, but not both.
+    # Which establishes a manay to many relationship between quests and heroes.
+    # QuestPath provides many special methods.
+    hero_id = Column(Integer, ForeignKey('hero.id'))
+    hero = relationship("Hero", back_populates='quest_paths')
+
+    quest_id = Column(Integer, ForeignKey('quest.id'))
+    quest = relationship("Quest", back_populates='quest_paths')
+
     def __init__(self, quest, hero, active=True, stage=1):
         self.quest = quest
         self.hero = hero
@@ -145,7 +157,7 @@ class QuestPath(Base):
             print("Warning: The quest with the description '{}' has no "
                   "completion trigger set up.".format(quest.description))
             print('See error "{}"'.format(ex))
-        
+
     def advance(self):
         """Advance this path to the next stage.
         
@@ -227,7 +239,7 @@ class QuestPath(Base):
         if flag:
             self.active = False
         return flag
-        
+
     def active_heroes(quest):
         """Return all heroes that exist in quest.quest_paths and are active.
         
@@ -290,7 +302,7 @@ class QuestPath(Base):
                   "completion trigger set up.".format(self.quest.description))
             print('See error "{}"'.format(ex))
 
-                
+
 quest_to_quest = Table("quest_to_quest", Base.metadata,
     Column("past_quest_id", Integer, ForeignKey("quest.id"), primary_key=True),
     Column("next_quest_id", Integer, ForeignKey("quest.id"), primary_key=True)
@@ -319,12 +331,16 @@ class Quest(Base):
     reward_experience = Column(Integer)
 
     # Relationships
-    # Self ... Many to Many?
+    # Self ... forward and back Many to Many?
+    # A.k.a. each quest can have many future quests and maybe many past quests?
     next_quests = relationship("Quest",
         secondary=quest_to_quest,
         primaryjoin=id==quest_to_quest.c.past_quest_id,
         secondaryjoin=id==quest_to_quest.c.next_quest_id,
         backref="past_quests")
+
+    # QuestPath
+    quest_paths = relationship("QuestPath", back_populates='quest')
 
     # Triggers Each Quest has a completion trigger. Each trigger can
     # complete multiple quests?
@@ -346,7 +362,7 @@ class Quest(Base):
         self.next_quests = next_quests
         self.past_quests = past_quests
         self.completion_trigger = completion_trigger
-        
+
     def get_stage_count(self):
         """Return a guestimate of how many stages are in this quest.
         
@@ -382,7 +398,7 @@ class Quest(Base):
         
         if not quest_path.active:
             quest_path.active = True
-        
+
     def add_hero(self, hero):
         """Build a new quest path connecting this quest and hero -> return QuestPath
         

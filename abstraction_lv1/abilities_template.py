@@ -31,17 +31,17 @@ class Abilities(Base):
     hero = relationship("Hero", back_populates='abilities')
 
     # Relationships to a particular ability.
-    {%- for name in ALL_ABILITIES %}
-    {{ name }} = relationship(
-        "Ability",
+    {%- for value in ALL_ABILITIES %}
+    {{ value[0] }} = relationship(
+        "{{ value[1] }}",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
-                    "Ability.name=='{{ name }}')",
+                    "Ability.name=='{{ value[0] }}')",
         back_populates="abilities", uselist=False)
     {%- endfor %}
 
     def __init__(self):
-        {%- for name in ALL_ABILITIES %}
-        self.{{ name }} = Ability('{{ name | capitalize }}', 5, "Gain 1000 health per level")
+        {%- for value in ALL_ABILITIES %}
+        self.{{ value[0] }} = {{ value[2] }}
         {%- endfor %}
 
     def items(self):
@@ -96,10 +96,15 @@ class Ability(Base):
     type = Column(String)
     ability_type = orm.synonym('type')
 
-    castable = Column(Boolean)
-    activated = orm.synonym('castable')
-    cost = Column(Integer)
-    learnable = Column(Boolean)
+    # This determines if the ability is locked and can not be learned
+    locked = Column(Boolean)
+
+    # This decides which of the 4 types of abilities it is (default is basic)
+
+    basic = Column(Boolean)
+    archetype = Column(String)
+    specialization = Column(String)
+    religion = Column(String)
 
     # Relationships.
     # Ability to abilities. Abilities is a list of ability objects.
@@ -120,11 +125,8 @@ class Ability(Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, max_level, description, hero=None, castable=False,
-                 cost=0, learnable=False):
+    def __init__(self, name, max_level, description, hero=None, locked=True, basic=True, archetype="", specialization="", religion=""):
         """Build a basic ability object.
-
-        Castable=True/False denotes whether the Ability is a spell or not.
 
         Note: arguments (name, hero, max_level, etc.) that require input are
         the same as setting nullable=False as a Column property.
@@ -143,14 +145,12 @@ class Ability(Base):
         self.level = 0
         self.max_level = max_level
         self.description = description
-        self.type = "Basic"
-        self.castable = castable
-        self.cost = cost
-        self.learnable = learnable
+        self.locked = locked
 
-        # Use internal method to properly add hero object to the
-        # self.heroes relationship.
-        self.add_hero(hero)
+        self.basic = basic
+        self.archetype = archetype
+        self.specialization = specialization
+        self.religion = religion
 
         self.init_on_load()
 
@@ -170,41 +170,11 @@ class Ability(Base):
         """Return True if level is at max_level."""
         return self.level >= self.max_level
 
-    def update(self, hero):
-        """Update a hero's stats to reflect them possessing this ability.
-
-        Use:
-        To update hero from inside hero class:
-        for ability in self.abilities:
-            ability.update_stats(self)
-        from outside hero class:
-        for ability in hero.abilities:
-            ability.update_stats(hero)
-        """
-        # Possibly use a dictionary + lambda function. Switch/Case
-        if self.name == "Ironhide":
-            hero.proficiencies.health.maximum += 3 * self.level
+    def update_stats(self, hero):
+        hero.refresh_proficiencies()
 
     def activate(self, hero):
         return self.cast(hero)
-
-    def cast(self, hero):
-        """Use the ability. Like casting a spell.
-
-        use:
-        ability.activate(hero)
-        NOTE: returns False if spell is too expensive (cost > proficiencies.sanctity.current)
-        If cast is succesful then return value is True.
-        """
-        if hero.proficiencies.sanctity.current < self.cost:
-            return False
-        else:
-            hero.proficiencies.sanctity.current -= self.cost
-            if self.name == "Gain Gold to Test":
-                hero.gold += 3 * self.level
-            elif self.name == 'foo':
-                pass  # Do some stuff.
-            return True
 
     def update_display(self):
         self.display_name = self.adjective[self.level - 1]
@@ -217,86 +187,72 @@ class Ability(Base):
         exit("Removed in favor of add_hero and remove_hero")
         # self.heroes = [hero]
 
-    def add_hero(self, hero):
-        """Give a hero this ability.
-        """
-        if hero is None:
-            return
-        if hero not in self.heroes:
-            self.heroes.append(hero)
-        else:
-            raise Exception("ValueError: Hero already has this ability.")
 
-    def remove_hero(self, hero):
-        """Remove this ability from a hero.
-        """
-        try:
-            self.heroes.remove(hero)
-        except ValueError:
-            raise Exception("ValueError: Hero doesn't have this ability")
-
-
-class Archetype_Ability(Ability):
-    __tablename__ = "archetype_ability"
-
-    id = Column(Integer, ForeignKey('ability.id'), primary_key=True)
-    archetype = Column(String)
+class CastableAbility(Ability):
+    castable = Column(Boolean)
+    sanctity_cost = Column(Integer)
+    endurance_cost = Column(Integer)
+    heal_amount = Column(Integer)
+    gold_amount = Column(Integer)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'Archetype',
+        'polymorphic_identity': 'CastableAbility',
     }
 
-    def __init__(self, *args, archetype="All", **kwargs):
-        """Build a new Archetype_Ability object.
+    def __init__(self, *args, sanctity_cost=0, endurance_cost=0, heal_amount=0, gold_amount=0, **kwargs):
+        """Build a new ArchetypeAbility object.
 
         Note: self.type must be set in __init__ to polymorphic_identity.
         If no __init__ method then type gets set automagically.
         If type not set then call to 'super' overwrites type.
         """
-        if len(args) > 3:
-            raise TypeError(
-                "__init__() takes 3 positional arguments but {} were given.".format(
-                    len(args)))
         super().__init__(*args, **kwargs)
-        self.type = 'Archetype'
-        self.archetype = archetype
+        self.castable = True
+        self.sanctity_cost = sanctity_cost
+        self.endurance_cost = endurance_cost
+        self.heal_amount = heal_amount
+        self.gold_amount = gold_amount
+
+    def cast(self, hero):
+        """Use the ability. Like casting a spell.
+
+        use:
+        ability.activate(hero)
+        NOTE: returns False if spell is too expensive (cost > proficiencies.sanctity.current)
+        If cast is succesful then return value is True.
+        """
+        if hero.proficiencies.sanctity.current < self.sanctity_cost or hero.proficiencies.endurance.current < self.endurance_cost:
+            return False
+        else:
+            hero.proficiencies.sanctity.current -= self.sanctity_cost
+            hero.proficiencies.endurance.current -= self.endurance_cost
+            hero.proficiencies.health.current += self.heal_amount
+            hero.gold += self.gold_amount
+            return True
 
 
-class Class_Ability(Ability):
-    __tablename__ = "class_ability"
-
-    id = Column(Integer, ForeignKey('ability.id'), primary_key=True)
-    specialization = Column(String)
-
+class AuraAbility(Ability):
     __mapper_args__ = {
-        'polymorphic_identity': 'Class',
+        'polymorphic_identity': 'AuraAbility',
     }
 
-    def __init__(self, *args, specialization="All", **kwargs):
-        if len(args) > 3:
-            raise TypeError(
-                "__init__() takes 3 positional arguments but {} were given.".format(
-                    len(args)))
+    health_maximum = Column(Integer)
+    damage_maximum = Column(Integer)
+    damage_minimum = Column(Integer)
+    understanding_modifier = Column(Integer)
+    evade_chance = Column(Integer)
+
+    def __init__(self, *args, health_maximum=0, damage_maximum=0, damage_minimum=0, understanding_modifier=0, evade_chance=0, **kwargs):
+        """Build a new Archetype_Ability object.
+
+        Note: self.type must be set in __init__ to polymorphic identity.
+        If no __init__ method then type gets set automagically.
+        If type not set then call to 'super' overwrites type.
+        """
         super().__init__(*args, **kwargs)
-        self.type = 'Class'
-        self.specialization = specialization
 
-
-class Religious_Ability(Ability):
-    __tablename__ = "religious_ability"
-
-    id = Column(Integer, ForeignKey('ability.id'), primary_key=True)
-    religion = Column(String)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'Religious',
-    }
-
-    def __init__(self, *args, religion="All", **kwargs):
-        if len(args) > 3:
-            raise TypeError("__init__() takes 3 positional arguments but {}"
-                            " were given.".format(len(args)))
-        super().__init__(*args, **kwargs)
-        self.type = 'Religious'
-        self.religion = religion
-
+        self.health_maximum = health_maximum
+        self.damage_maximum = damage_maximum
+        self.damage_minimum = damage_minimum
+        self.understanding_modifier = understanding_modifier
+        self.evade_chance = evade_chance

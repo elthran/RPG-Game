@@ -21,12 +21,11 @@ from attributes import \
     ATTRIBUTE_INFORMATION  # Since attribute information was hand typed out in both modules, it was causing bugs. Seems cleaner to import it and then only edit it in one place
 # Marked for restructure! Avoid use of import * in production code.
 from bestiary import *
-from items import Quest_Item
+from items import QuestItem
 from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
 # _before_ any of them are used.
-import complex_relationships
 from database import EZDB
 from events import Event
 from engine import Engine
@@ -144,7 +143,7 @@ def login_required(f):
 # Untested (Marlen)
 def uses_hero_and_update(f):
     """Preload hero object and save it afterwards.
-    
+
     If this function returns an error ... please document.
 
     Especially if the error is KeyError on "hero_id". I had a
@@ -529,6 +528,12 @@ def inbox(outbox, hero=None):
         return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)
     return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)
 
+@app.route('/spellbook')
+@uses_hero_and_update
+def spellbook(hero=None):
+    return render_template('spellbook.html', page_title="Spellbook", myHero=hero)
+
+
 
 # PROFILE PAGES (Basically the home page of the game with your character
 # display and stats)
@@ -537,7 +542,7 @@ def inbox(outbox, hero=None):
 @uses_hero_and_update
 def home(hero=None):
     """Build the home page and return it as a string of HTML.
-    
+
     render_template uses Jinja2 markup.
     """
 
@@ -608,25 +613,12 @@ def proficiencies(hero=None):
 def ability_tree(spec, hero=None):
     page_title = "Abilities"
 
-    unknown_abilities = []
     learnable_abilities = database.get_learnable_abilities(hero)
 
     # For testing
     for ability in learnable_abilities:
         print("Learnable:", str(ability))
     # End for testing
-
-    mastered_abilities = []
-    # Create a list of learned abilities that match current spec.
-    for ability in hero.abilities:
-        # pdb.set_trace()
-        if ability.ability_type == spec:
-            # Add abilities to learnable_abilities (known, but non-mastered)
-            # or mastered abilities
-            if ability.level < ability.max_level:
-                learnable_abilities.append(ability)
-            else:
-                mastered_abilities.append(ability)
 
     # TODO abilities are not connected to hero properly!
     # They need to relate to a specific hero only!
@@ -652,9 +644,8 @@ def ability_tree(spec, hero=None):
     """
     return render_template(
         'profile_ability.html', myHero=hero, ability_tree=spec,
-        unknown_abilities=unknown_abilities,
         learnable_abilities=learnable_abilities,
-        mastered_abilities=mastered_abilities, page_title=page_title)
+        page_title=page_title)
 
 
 @app.route('/inventory_page')
@@ -666,7 +657,8 @@ def inventory_page(hero=None):
     #     if item.wearable:
     #         item.check_if_improvement()
     return render_template(
-        'inventory.html', hero=hero, page_title=page_title)
+        'inventory.html', hero=hero, page_title=page_title,
+        isinstance=isinstance)
 
 
 @app.route('/quest_log')
@@ -837,11 +829,11 @@ def arena(name='', hero=None, location=None):
     if not game.has_enemy:
         enemy = monster_generator(hero.age - 6)
         if enemy.name == "Wolf":
-            enemy.items_rewarded.append((Quest_Item("Wolf Pelt", hero, 50)))
+            enemy.items_rewarded.append((QuestItem("Wolf Pelt", hero, 50)))
         if enemy.name == "Scout":
-            enemy.items_rewarded.append((Quest_Item("Copper Coin", hero, 50)))
+            enemy.items_rewarded.append((QuestItem("Copper Coin", hero, 50)))
         if enemy.name == "Spider":
-            enemy.items_rewarded.append((Quest_Item("Spider Leg", hero, 50)))
+            enemy.items_rewarded.append((QuestItem("Spider Leg", hero, 50)))
         game.set_enemy(enemy)
     location.display.page_title = "War Room"
     location.display.page_heading = "Welcome to the arena " + hero.name + "!"
@@ -1165,10 +1157,14 @@ def command(cmd=None, hero=None):
             return response
         except Exception as ex:
             raise ex
-    except AttributeError:
-        print("Warning: Using old code for command: '{}'".format(cmd))
-        print("You need to write a static function called '{}' in "
-              "commands.py in the Command class.".format(cmd))
+    except AttributeError as ex:
+        if str(ex) == "type object 'Command' has no attribute '{}'".format(
+                cmd):
+            print("Warning: Using old code for command: '{}'".format(cmd))
+            print("You need to write a static function called '{}' in "
+                  "commands.py in the Command class.".format(cmd))
+        else:
+            raise ex
         # Look in the not yet refactored list of if statements ...
 
     if cmd == "woodsman":
@@ -1195,14 +1191,16 @@ def command(cmd=None, hero=None):
             # return "success", 200, {'Content-Type': 'text/plain'} #//
 
     # UPGRADE ABILITIES
-    learnable_known_abilities = [ability for ability in hero.abilities if ability.level < ability.max_level]
-    for ability in learnable_known_abilities:
-        if cmd == ability.name and hero.ability_points > 0:
-            for i in range(0, len(hero.abilities)):
-                if hero.abilities[i].name == ability.name:
-                    hero.abilities[i].level += 1
-                    hero.abilities[i].update_display()
-                    hero.ability_points -= 1
+
+    all_abilities = []
+    for ability in hero.abilities:
+        all_abilities.append(ability)
+        if cmd == ability.name: #and hero.ability_points > 0:
+            for i in range(0, len(all_abilities)):
+                if all_abilities[i].name == ability.name and hero.basic_ability_points > 0:
+                    all_abilities[i].level += 1
+                    all_abilities[i].update_display()
+                    hero.basic_ability_points -= 1
             hero.refresh_proficiencies()
             database.update()
             return "success", 200, {'Content-Type': 'text/plain'}  # //
@@ -1261,9 +1259,9 @@ if __name__ == '__main__':
     # database.py as get_default_quests()
     # Quest aren't actually implement yet but they will be soon!
     # Super temporary while testing quests
-    # hero.inventory.append(Quest_Item("Wolf Pelt", hero, 50))
-    # hero.inventory.append(Quest_Item("Spider Leg", hero, 50))
-    # hero.inventory.append(Quest_Item("Copper Coin", hero, 50))
+    # hero.inventory.append(QuestItem("Wolf Pelt", hero, 50))
+    # hero.inventory.append(QuestItem("Spider Leg", hero, 50))
+    # hero.inventory.append(QuestItem("Copper Coin", hero, 50))
     # for item in hero.inventory:
     #     item.amount_owned = 5
 

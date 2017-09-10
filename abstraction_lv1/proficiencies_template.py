@@ -160,9 +160,24 @@ class {{ prof_class }}(Proficiency):
 """
 
         for item in myHero.equipped_items():
-            {% for value in prof[3] -%}
-            self.{{value[0].lower()}} += item.{{ prof_tablename }}_{{value[0].lower()}}
-            {% endfor -%}
+            try:
+                {%- for value in prof[3] if value[0].lower() != "current" %}
+                self.{{value[0].lower()}} += item.{{ prof_tablename }}_{{value[0].lower()}}
+                {%- endfor %}
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+
+        for ability in myHero.abilities:
+            try:
+                {%- for value in prof[3] if value[0].lower() != "current" %}
+                self.{{value[0].lower()}} += ability.{{prof_tablename}}_{{value[0].lower()}} * ability.level
+                {%- endfor %}
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
         
         #This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips)

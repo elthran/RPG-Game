@@ -219,5 +219,31 @@ function updateProf(button, status, newTooltip) {
         }
     }
 }
+
+function updateAbility(button, status, newTooltip) {
+    "use strict";
+
+    var id = 0;
+    var i = 0;
+    var abilityCurrentLvDiv = {};
+
+    id = button.getAttribute("data");
+    abilityCurrentLvDiv = document.getElementById("ability-" + id);
+    abilityCurrentLvDiv.innerHTML = parseInt(abilityCurrentLvDiv.innerHTML) + 1;
+
+    //hide this button
+    if (status === "hide_this") {
+        button.style.display = "none";
+    //hide all buttons
+    //show all errors
+    } else if (status === "hide_all") {
+        buttonsNodeList = document.querySelectorAll("button[id=proficiencyButton]");
+        errorDivNodeList = document.querySelectorAll("div[id^=error-]");
+        for (i = 0; i < buttonsNodeList.length; i += 1) {
+            buttonsNodeList[i].style.display = "none";
+            errorDivNodeList[i].style.display = "inline";
+        }
+    }
+}
 //NOTE: <div style="display: inline"> should be replaced by a span tag
 // once I figure out how make them visible again.

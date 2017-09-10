@@ -15,12 +15,25 @@
 	{% else %}
 		Ability Points: {{ myHero.basic_ability_points }}<br><br>
 	{% endif %}
-	
-	
-	
-    <h2 style="text-align:left;">Unknown</h2>
-        {{ myHero.abilities.ironhide.name }}
-            <button class="command" data={{ myHero.abilities.ironhide.id }}" data-function="learn_ability">{{ myHero.abilities.ironhide.name }}</button><br>
+
+
+
+    <h2 style="text-align:left;">Basic Abilities</h2>
+{% for ability in myHero.abilities if ability.basic %}
+Ability: {{ ability.name.title() }} (Level: <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>) [{{ ability.description }}]
+<button class="command" data={{ ability.id }}" data-function="updateAbility">{{ ability.name }}</button><br>
+{% else %}
+No new Abilities
+{% endfor %}
+
+    <h2 style="text-align:left;">Archetype Abilities</h2>
+{% for ability in myHero.abilities if ability.archetype %}
+Ability: {{ ability.name.title() }} (Level: <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>) [{{ ability.description }}]
+<button class="command" data={{ ability.id }}" data-function="updateAbility">{{ ability.name }}</button><br>
+{% else %}
+No other abilities
+{% endfor %}
 
 {% endblock %}
+
 

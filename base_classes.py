@@ -27,6 +27,29 @@ Base = declarative_base()
 # And I know how to use it.
 
 
+def get_mro_keys(self):
+    """Return all attributes of objects in MRO
+
+    All non-base objects in inheritance path.
+    Remove <class 'sqlalchemy.ext.declarative.api.Base'>,
+    <class 'object'> as these are the last two objects in the MRO
+    """
+    hierarchy_keys = set()
+    hierarchy = type(self).__mro__[1:-2]
+
+    for obj in hierarchy:
+        hierarchy_keys |= set(vars(obj).keys()) \
+                          - set(obj.__mapper__.relationships.keys())
+
+    # Remove private variables and id keys to prevent weird recursion
+    # and redundancy.
+    hierarchy_keys -= set(
+        [key for key in hierarchy_keys if key.startswith('_')]
+    )  # ? or 'id' in key])
+
+    return hierarchy_keys
+
+
 def get_all_atts(self):
     data = set(vars(self).keys()) | \
         set(self.__table__.columns.keys()) | \
@@ -35,26 +58,24 @@ def get_all_atts(self):
     data.discard('_sa_instance_state')    
         
     hierarchy_keys = set()
-    # All non-base objects in inheritance path.
-    # Remove <class 'sqlalchemy.ext.declarative.api.Base'>,
-    # <class 'object'> as these are the last two objects in the MRO
     try:
-        hierarchy = type(self).__mro__[1:-2]
-        
-        for obj in hierarchy:
-            hierarchy_keys |= set(vars(obj).keys()) \
-                              - set(obj.__mapper__.relationships.keys())
-        
-        # Remove private variables and id keys to prevent weird recursion
-        # and redundancy.
-        hierarchy_keys -= set(
-            [key for key in hierarchy_keys if key.startswith('_')]
-        )  # ? or 'id' in key])
+        hierarchy_keys = get_mro_keys(self)
     except IndexError:
         pass  # This is the Base class and has no useful MRO.
         
     data |= hierarchy_keys
-    
+
+    # Remove weird SQLAlchemy var available to higher class but no lower ones.
+    keys_to_remove = set()
+    for key in data:
+        try:
+            getattr(self, key)
+        except AttributeError:
+            # Because of single table inheritance ... invalid attributes can
+            # end up inside of the object hierarchy list.
+            keys_to_remove.add(key)
+    data -= keys_to_remove
+
     # Don't print the object's methods.
     data -= set([e for e in data if "method" in repr(type(getattr(self, e)))])
     

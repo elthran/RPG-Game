@@ -14,11 +14,10 @@ import random
 import datetime
 import pdb
 
-from sqlalchemy import Table, Column, Integer, String, DateTime, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
-from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm import validates
 
 from base_classes import Base, BaseDict
@@ -28,8 +27,7 @@ from proficiencies import Proficiencies
 from inventory import Inventory
 
 
-# function used in '/level_up'
-# Fix ME! Or put me in a class as a method or something.
+# TODO put this somewhere else, in a class, or just delete.
 def convert_input(x: int):
     try:
         x = int(x)
@@ -67,6 +65,15 @@ class User(Base):
     is_admin = Column(Boolean)
     inbox_alert = Column(Boolean)
 
+    # Relationships
+    # Each user can have one inbox. One to One (bidirectional).
+    inbox_id = Column(Integer, ForeignKey('inbox.id'))
+    inbox = relationship("Inbox", back_populates="user")
+
+    # Many heroes -> one user
+    heroes = relationship("Hero", order_by='Hero.character_name',
+                          back_populates='user')
+
     def __init__(self, username, password, email='', timestamp=None, is_admin=False):
         """Create a new user object.
 
@@ -88,8 +95,15 @@ class Inbox(Base):
 
     id = Column(Integer, primary_key=True)
 
-    def __init__(self):
-        pass
+    # Relationships
+    # Each inbox has a single user. One to One (bidirectional).
+    user = relationship("User", uselist=False, back_populates='inbox')
+
+    # Each inbox can have many sent messages One to Many
+    sent_messages = relationship("Message", back_populates='sender',
+                                 foreign_keys="[Message.sender_id]")
+    received_messages = relationship("Message", back_populates='receiver',
+                                     foreign_keys="[Message.receiver_id]")
 
     def get_sent_messages(self):
         """Return a list of all sent messages.
@@ -136,6 +150,15 @@ class Message(Base):
 
     id = Column(Integer, primary_key=True)
     content = Column(String)
+
+    # Relationships
+    # Each user can send or receive multiple messages. One to Many (bi).
+    sender_id = Column(Integer, ForeignKey('inbox.id'))
+    sender = relationship("Inbox", back_populates="sent_messages",
+                          foreign_keys="[Message.sender_id]")
+    receiver_id = Column(Integer, ForeignKey('inbox.id'))
+    receiver = relationship("Inbox", back_populates="received_messages",
+                                         foreign_keys="[Message.receiver_id]")
 
     def __init__(self, sender, receiver, content):
         """A message between two users with some content.
@@ -187,7 +210,6 @@ class Hero(Base):
     login_alerts = Column(String)  # Testing messages when you are attacked or get a new message
 
     # Relationships: see complex_relationships.py
-
     # Many heroes -> one map/world. (bidirectional)
     map_id = Column(Integer, ForeignKey('location.id'))
     current_world = relationship("Location", back_populates='heroes',
@@ -209,9 +231,35 @@ class Hero(Base):
     # Each hero can have one set of Abilities. (bidirectional, One to One).
     abilities = relationship("Abilities", uselist=False, back_populates='hero')
 
+    # User to Hero. One to many. Ordered!
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship("User", back_populates='heroes')
+
+    # Each Hero has One inventory. (One to One -> bidirectional)
+    # inventory is list of character's items.
+    inventory_id = Column(Integer, ForeignKey('inventory.id'))
+    inventory = relationship("Inventory", back_populates="hero")
+
+    # Attributes One to One despite the name
+    attributes_id = Column(Integer, ForeignKey('attributes.id'))
+    attributes = relationship("Attributes", back_populates='hero')
+
+    # Proficiencies One to One despite the name
+    proficiencies_id = Column(Integer, ForeignKey('proficiencies.id'))
+    proficiencies = relationship("Proficiencies", back_populates='hero')
+
+    # Heroes to Quests.
+    # Hero object relates to quests via the QuestPath object.
+    # This path may be either active or completed, but not both.
+    # Which establishes a manay to many relationship between quests and heroes.
+    # QuestPath provides many special methods.
+    quest_paths = relationship("QuestPath", back_populates='hero')
+
     # Many to one with Triggers, Each hero has many triggers.
     triggers = relationship('Trigger', back_populates='hero')
 
+    # @eltran ... this probably won't work as the var will disappear on
+    # database relaod.
     # variable used for keeping track of clicked attributes on the user table
     clicked_user_attribute = ""
 
@@ -256,7 +304,7 @@ class Hero(Base):
         self.devotion = 0
         self.gold = 50
 
-        self.basic_ability_points = 0
+        self.basic_ability_points = 5
         self.archetypic_ability_points = 0
         self.specialized_ability_points = 0
         self.pantheonic_ability_points = 0
@@ -307,18 +355,12 @@ class Hero(Base):
         for proficiency in self.proficiencies:
             proficiency.update(self)
 
-    def refresh_abilities(self):
-        for ability in self.abilities:
-            if ability.level > 0:
-                ability.update(self)
-
     def refresh_items(self):
         for item in self.equipped_items():
             item.update_stats(self)
 
     def refresh_character(self, full=True):
         self.refresh_proficiencies()
-        self.refresh_abilities()
         self.refresh_items()  # Should go after proficiencies
         if full:
             self.proficiencies.health.current = self.proficiencies.health.maximum

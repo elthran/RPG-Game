@@ -4,7 +4,6 @@ import pdb
 from database import EZDB
 from game import Hero
 from quests import Quest, QuestPath
-import complex_relationships
 
 
 class QuestsTestCase(unittest.TestCase):
