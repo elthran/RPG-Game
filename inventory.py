@@ -1,5 +1,8 @@
 from sqlalchemy import Column, Integer, String
-from sqlalchemy import orm
+from sqlalchemy.orm import backref
+from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey
 from base_classes import Base
 
 import pdb
@@ -23,8 +26,70 @@ class Inventory(Base):
     # Marked for restructuring as causes conflics with multiple heroes?
     # As in if hero1 has 4 of an item then hero2 will as well?
     # Move to Inventory?
-    ##amount_owned = Column(Integer)
+    # amount_owned = Column(Integer)
     # Maybe I don't even need this at all?
+
+    # Relationships
+    # Each Hero has One inventory. (One to One -> bidirectional)
+    # inventory is list of character's items.
+    hero = relationship("Hero", back_populates='inventory', uselist=False)
+
+    # Item relationships
+    # One to One
+    helmet_item_id = Column(Integer, ForeignKey('item.id'))
+    helmet = relationship("Item", foreign_keys="[Inventory.helmet_item_id]")
+
+    shirt_item_id = Column(Integer, ForeignKey('item.id'))
+    shirt = relationship("Item",
+                         backref=backref("inventory_shirt",
+                                         uselist=False),
+                         foreign_keys="[Inventory.shirt_item_id]")
+    left_hand_item_id = Column(Integer, ForeignKey('item.id'))
+    left_hand = relationship("Item", backref=backref(
+        "inventory_left_hand",
+        uselist=False), foreign_keys="[Inventory.left_hand_item_id]")
+    right_hand_item_id = Column(Integer, ForeignKey('item.id'))
+    right_hand = relationship("Item", backref=backref(
+        "inventory_right_hand",
+        uselist=False), foreign_keys="[Inventory.right_hand_item_id]")
+    both_hands_item_id = Column(Integer, ForeignKey('item.id'))
+    both_hands = relationship("Item", backref=backref(
+        "inventory_both_hands",
+        uselist=False), foreign_keys="[Inventory.both_hands_item_id]")
+    sleeves_item_id = Column(Integer, ForeignKey('item.id'))
+    sleeves = relationship("Item",
+                           backref=backref("inventory_sleeves",
+                                           uselist=False),
+                           foreign_keys="[Inventory.sleeves_item_id]")
+    gloves_item_id = Column(Integer, ForeignKey('item.id'))
+    gloves = relationship("Item", backref=backref(
+        "inventory_gloves",
+        uselist=False), foreign_keys="[Inventory.gloves_item_id]")
+    legs_item_id = Column(Integer, ForeignKey('item.id'))
+    legs = relationship("Item",
+                        backref=backref("inventory_legs",
+                                        uselist=False),
+                        foreign_keys="[Inventory.legs_item_id]")
+    feet_item_id = Column(Integer, ForeignKey('item.id'))
+    feet = relationship("Item",
+                        backref=backref("inventory_feet",
+                                        uselist=False),
+                        foreign_keys="[Inventory.feet_item_id]")
+    # One to many
+    rings = relationship("Item",
+                         order_by="Item.rings_position",
+                         collection_class=ordering_list(
+                             "rings_position"),
+                         backref=backref(
+                             "inventory_rings"),
+                         foreign_keys="[Item.rings_inventory_id]")
+    unequipped = relationship("Item",
+                              order_by="Item.unequipped_position",
+                              collection_class=ordering_list(
+                                  "unequipped_position"),
+                              backref=backref(
+                                  "inventory_unequipped"),
+                              foreign_keys="[Item.unequipped_inventory_id]")
 
     slots_used_by_item_type = {
         "TwoHandedWeapon": {"primary": "both_hands", "secondary": ["left_hand", "right_hand"]},

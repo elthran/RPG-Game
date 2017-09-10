@@ -26,12 +26,14 @@ ATTRIBUTE_INFORMATION = [
 
 ALL_ATTRIBUTES = [attrib[0].lower() for attrib in ATTRIBUTE_INFORMATION]
 
+
 class Attributes(Base):
     __tablename__ = 'attributes'
     
     id = Column(Integer, primary_key=True)
     
-    #Relationships
+    # Relationships
+    # Attribute class
     agility_id = Column(Integer, ForeignKey('attribute.id'))
     agility = relationship("Attribute", uselist=False, foreign_keys="[Attributes.agility_id]")
     brawn_id = Column(Integer, ForeignKey('attribute.id'))
@@ -56,9 +58,12 @@ class Attributes(Base):
     vitality = relationship("Attribute", uselist=False, foreign_keys="[Attributes.vitality_id]")
     willpower_id = Column(Integer, ForeignKey('attribute.id'))
     willpower = relationship("Attribute", uselist=False, foreign_keys="[Attributes.willpower_id]")
-    
+
+    # Hero class
+    # One Hero -> one Attributes object
+    hero = relationship("Hero", back_populates='attributes', uselist=False)
+
     def __init__(self):
-        
         self.agility = Attribute("Agility", "A measure of how skilfully you can move.")
         self.brawn = Attribute("Brawn", "A measure of how strong you are.")
         self.charisma = Attribute("Charisma", "A measure of how well you interact with other people")

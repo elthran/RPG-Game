@@ -33,7 +33,6 @@ from locations import Location  # , WorldMap, Town, Cave
 from items import ItemTemplate, Item
 from quests import Quest
 from proficiencies import Proficiency
-import complex_relationships
 import prebuilt_objects
 
 

@@ -7,9 +7,6 @@ from items import (
     HeadArmour, FeetArmour, ArmArmour, HandArmour, Ring, Consumable
 )
 
-# MUST be imported last.
-import complex_relationships
-
 """
 This module preloads all of its objects directly into the database or does
 nothing if the objects already exists in the database.

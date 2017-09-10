@@ -26,7 +26,6 @@ from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
 # _before_ any of them are used.
-import complex_relationships
 from database import EZDB
 from events import Event
 
