@@ -220,30 +220,25 @@ function updateProf(button, status, newTooltip) {
     }
 }
 
-function updateAbility(button, status, newTooltip) {
+function updateAbility(button, ability_level, points_remaining, ability_status) {
     "use strict";
 
     var id = 0;
-    var i = 0;
-    var abilityCurrentLvDiv = {};
+    var heroAbilityCurrentLvDiv = {};
+    var heroBasicPointsDiv = {};
 
     id = button.getAttribute("data");
-    abilityCurrentLvDiv = document.getElementById("ability-" + id);
-    abilityCurrentLvDiv.innerHTML = parseInt(abilityCurrentLvDiv.innerHTML) + 1;
+    heroAbilityCurrentLvDiv = document.getElementById("ability-" + id);
+    heroBasicPointsDiv = document.getElementById("basic_points_remaining");
 
-    //hide this button
-    if (status === "hide_this") {
-        button.style.display = "none";
-    //hide all buttons
-    //show all errors
-    } else if (status === "hide_all") {
-        buttonsNodeList = document.querySelectorAll("button[id=proficiencyButton]");
-        errorDivNodeList = document.querySelectorAll("div[id^=error-]");
-        for (i = 0; i < buttonsNodeList.length; i += 1) {
-            buttonsNodeList[i].style.display = "none";
-            errorDivNodeList[i].style.display = "inline";
-        }
+    heroAbilityCurrentLvDiv.innerHTML = parseInt(heroAbilityCurrentLvDiv.innerHTML) + 1;
+    heroBasicPointsDiv.innerHTML = parseInt(heroBasicPointsDiv.innerHTML) - 1;
+
+    if (status === "no ability points") {
+    // make all buttons grayed out
     }
 }
+
+
 //NOTE: <div style="display: inline"> should be replaced by a span tag
 // once I figure out how make them visible again.

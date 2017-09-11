@@ -57,7 +57,7 @@ class Abilities(Base):
             ability -- the object that corresponds to the named attribute.
         """
 
-        return ((key, getattr(self, key)) for key in ALL_ABILITIES)
+        return ((key[0], getattr(self, key[0])) for key in ALL_ABILITIES)
 
     def __iter__(self):
         """Allow this object to be used in a for call.
@@ -66,7 +66,7 @@ class Abilities(Base):
             ability -- where the ability is each of the attribute objects of
                 the abilities class.
         """
-        return (getattr(self, key) for key in ALL_ABILITIES)
+        return (getattr(self, key[0]) for key in ALL_ABILITIES)
 
 
 class Ability(Base):
@@ -125,7 +125,7 @@ class Ability(Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, max_level, description, hero=None, locked=True, basic=True, archetype="", specialization="", religion=""):
+    def __init__(self, name, max_level, description, hero=None, locked=True, archetype="", specialization="", religion=""):
         """Build a basic ability object.
 
         Note: arguments (name, hero, max_level, etc.) that require input are
@@ -147,7 +147,10 @@ class Ability(Base):
         self.description = description
         self.locked = locked
 
-        self.basic = basic
+        if archetype != "" or specialization != "" or religion != "":
+            self.basic = False
+        else:
+            self.basic = True
         self.archetype = archetype
         self.specialization = specialization
         self.religion = religion

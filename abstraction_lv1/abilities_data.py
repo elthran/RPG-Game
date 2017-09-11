@@ -6,5 +6,7 @@ ALL_ABILITIES = [
     ("cure", "CastableAbility",
     "CastableAbility('cure', 3, 'Recover 3 health', sanctity_cost=1, heal_amount=3)"),
     ("testgold", "CastableAbility",
-     "CastableAbility('testgold', 3, 'Gain 3 gold', locked=False, endurance_cost=1, gold_amount=3)")
+     "CastableAbility('testgold', 3, 'Gain 3 gold', locked=False, endurance_cost=1, gold_amount=3)"),
+    ("gainexp", "CastableAbility",
+     "CastableAbility('gainexp', 3, 'Gain 3 gold', locked=False, archetype='priest', endurance_cost=1, gold_amount=73)")
 ]

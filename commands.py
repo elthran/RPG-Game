@@ -149,12 +149,20 @@ class Command:
         hero.inventory.unequip(item)
         return item.type
 
-    def learn_ability(hero, database, arg_dict):
+    def update_ability(hero, database, arg_dict):
+        if hero.basic_ability_points == 0:
+            return "error: not enough points, should have been grayed out"
         ability_id = arg_dict.get('data', None, type=int)
         ability = database.get_ability_by_id(ability_id)
-        hero.learn_ability(ability)
+        if ability.is_max_level():
+            return "error: this ability should have been grayed out as it's at max level"
         print("running learn_ability command:" + ability.name)
-        return "ability learned"
+        ability.level += 1
+        hero.basic_ability_points -= 1
+        status = ""
+        if ability.is_max_level():
+            status = "max level"
+        return "{}&&{}&&{}".format(ability.level, hero.basic_ability_points, status)
 
     def cast_spell(hero, database, arg_dict):
         ability_id = arg_dict.get('data', None, type=int)

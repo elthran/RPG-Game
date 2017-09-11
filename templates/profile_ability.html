@@ -13,7 +13,8 @@
 		Choose Religion (Currently <span id="hero_religion">{{ myHero.religion }}</span>): <button class="command command-forgoth" value="choose_religion?">Forgoth</button><button class="command command-dryarch" value="choose_religion?">Dryarch</button>
 		<br> You are a follower of <b><span id="hero_religion">{{ myHero.religion }}</span></b>
 	{% else %}
-		Ability Points: {{ myHero.basic_ability_points }}<br><br>
+Ability Points:
+<div style="display: inline" id="basic_points_remaining">{{ myHero.basic_ability_points }}</div>
 	{% endif %}
 
 
@@ -21,7 +22,7 @@
     <h2 style="text-align:left;">Basic Abilities</h2>
 {% for ability in myHero.abilities if ability.basic %}
 Ability: {{ ability.name.title() }} (Level: <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>) [{{ ability.description }}]
-<button class="command" data={{ ability.id }}" data-function="updateAbility">{{ ability.name }}</button><br>
+<button class="command" data="{{ ability.id }}" data-function="updateAbility" data-name="update_ability">{{ ability.name }}</button><br>
 {% else %}
 No new Abilities
 {% endfor %}
@@ -29,9 +30,9 @@ No new Abilities
     <h2 style="text-align:left;">Archetype Abilities</h2>
 {% for ability in myHero.abilities if ability.archetype %}
 Ability: {{ ability.name.title() }} (Level: <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>) [{{ ability.description }}]
-<button class="command" data={{ ability.id }}" data-function="updateAbility">{{ ability.name }}</button><br>
+<button class="command" data="{{ ability.id }}" data-function="updateAbility" data-name="update_ability">{{ ability.name }}</button><br>
 {% else %}
-No other abilities
+No new Abilities
 {% endfor %}
 
 {% endblock %}

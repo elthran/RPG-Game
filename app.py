@@ -399,24 +399,6 @@ pierces the air.""".replace('\n', ' ').replace('\r', '')
 @login_required
 @uses_hero_and_update
 def reset_character(stat_type, hero=None):
-    """
-    this_user = hero.user
-    new_hero = Hero(name=hero.name, fathers_job="Hunter", gold = 50)
-    new_hero.current_world = hero.current_world
-    new_hero.current_location = hero.current_location
-    if stat_type == "tough":
-        new_hero.attributes.brawn = 50
-    elif stat_type == "rich":
-        new_hero.gold = 5000
-    elif stat_type == "custom":
-        new_hero.attribute_points = 50
-        new_hero.proficiency_points = 50
-    this_user.heroes[0] = new_hero
-    hero = new_hero
-    game.set_hero(hero)
-    hero.refresh_character()
-    database.update()
-    """
     hero.age = 7
     hero.experience = 0
     hero.experience_maximum = 10
@@ -424,10 +406,10 @@ def reset_character(stat_type, hero=None):
     hero.virtue = 0
     hero.devotion = 0
     hero.gold = 5000
-    hero.basic_ability_points = 0
-    hero.archetype_ability_points = 0
-    hero.specialization_ability_points = 0
-    hero.pantheonic_ability_points = 0
+    hero.basic_ability_points = 5
+    hero.archetype_ability_points = 5
+    hero.specialization_ability_points = 5
+    hero.pantheonic_ability_points = 5
     hero.attribute_points = 10
     hero.proficiency_points = 10
     return redirect(url_for('home'))  # return a string
@@ -1191,70 +1173,10 @@ def command(cmd=None, hero=None):
             print("Warning: Using old code for command: '{}'".format(cmd))
             print("You need to write a static function called '{}' in "
                   "commands.py in the Command class.".format(cmd))
+            raise ex
         else:
             raise ex
         # Look in the not yet refactored list of if statements ...
-
-    if cmd == "woodsman":
-        hero.archetype = "Woodsman"
-        return "success", 200, {'Content-Type': 'text/plain'}  # //
-    if cmd == "priest":
-        hero.archetype = "Priest"
-        return "success", 200, {'Content-Type': 'text/plain'}  # //
-    if cmd == "hunter":
-        hero.specialization = "Hunter"
-        return "success", 200, {'Content-Type': 'text/plain'}  # //
-    if cmd == "trapper":
-        hero.specialization = "Trapper"
-        return "success", 200, {'Content-Type': 'text/plain'}  # //
-    # END OF TEST CODE
-
-
-    # for path in hero.quest_paths:
-        # if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 1:
-            # path.quest.advance_quest()
-    # for path in hero.quest_paths:
-            # if path.active and path.quest.name == "Equipping/Unequipping" and path.stage == 2:
-                # path.quest.advance_quest()
-            # return "success", 200, {'Content-Type': 'text/plain'} #//
-
-    # UPGRADE ABILITIES
-
-    all_abilities = []
-    for ability in hero.abilities:
-        all_abilities.append(ability)
-        if cmd == ability.name: #and hero.ability_points > 0:
-            for i in range(0, len(all_abilities)):
-                if all_abilities[i].name == ability.name and hero.basic_ability_points > 0:
-                    all_abilities[i].level += 1
-                    all_abilities[i].update_display()
-                    hero.basic_ability_points -= 1
-            hero.refresh_proficiencies()
-            database.update()
-            return "success", 200, {'Content-Type': 'text/plain'}  # //
-
-    # LEARN NEW ABILITIES
-    unknown_abilities = []
-    for ability in database.get_all_abilities():
-        if ability not in hero.abilities:
-            unknown_abilities.append(ability)
-    for ability in unknown_abilities:
-        if cmd == ability.name and hero.ability_points > 0:
-            hero.abilities.append(ability)
-            hero.refresh_proficiencies()
-            hero.ability_points -= 1
-            database.update()
-            return "success", 200, {'Content-Type': 'text/plain'}  # //
-
-    # USE ABILITIES (ACTIVATED ONES)
-    for ability in hero.abilities:
-        this_command = ability.name + "_use"
-        if cmd == this_command:
-            ability.cast(hero)
-            database.update()
-            return "success", 200, {'Content-Type': 'text/plain'} #//
-    return "No content", 204 #https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
-
 
 @app.route('/about')
 @uses_hero_and_update

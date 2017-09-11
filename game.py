@@ -389,12 +389,7 @@ class Hero(Base):
 
     def non_equipped_items(self):
         return self.inventory.unequipped or []
-
-    def learn_ability(self, ability):
-        self.ability.level += 1
-        print("Trying to learn it! " + ability.name)
-        return True
-
+        
     def page_refresh_character(self):  # Can we renamed this? I don't really get what it is from the name
         # (elthran) It's just temporary code while I amtesting notifications. It will be scrapped soon.
         self.quest_notification = None

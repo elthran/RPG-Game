@@ -23,7 +23,9 @@ ALL_ABILITIES = [
     ("cure", "CastableAbility",
     "CastableAbility('cure', 3, 'Recover 3 health', sanctity_cost=1, heal_amount=3)"),
     ("testgold", "CastableAbility",
-     "CastableAbility('testgold', 3, 'Gain 3 gold', locked=False, endurance_cost=1, gold_amount=3)")
+     "CastableAbility('testgold', 3, 'Gain 3 gold', locked=False, endurance_cost=1, gold_amount=3)"),
+    ("gainexp", "CastableAbility",
+     "CastableAbility('gainexp', 3, 'Gain 3 gold', locked=False, archetype='priest', endurance_cost=1, gold_amount=73)")
 ]
 
 # "determination", 5, "Increases Endurance by 3 for each level."
@@ -60,12 +62,18 @@ class Abilities(Base):
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='testgold')",
         back_populates="abilities", uselist=False)
+    gainexp = relationship(
+        "CastableAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='gainexp')",
+        back_populates="abilities", uselist=False)
 
     def __init__(self):
         self.scholar = AuraAbility('scholar', 5, 'Gain +1% experience gain per level', locked=False, understanding_modifier=1)
         self.reflexes = AuraAbility('reflexes', 3, 'Gain +2% dodge chance per level', locked=False, evade_chance=2)
         self.cure = CastableAbility('cure', 3, 'Recover 3 health', sanctity_cost=1, heal_amount=3)
         self.testgold = CastableAbility('testgold', 3, 'Gain 3 gold', locked=False, endurance_cost=1, gold_amount=3)
+        self.gainexp = CastableAbility('gainexp', 3, 'Gain 3 gold', locked=False, archetype='priest', endurance_cost=1, gold_amount=73)
 
     def items(self):
         """Return each Ability and its name.
@@ -148,7 +156,7 @@ class Ability(Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, max_level, description, hero=None, locked=True, basic=True, archetype="", specialization="", religion=""):
+    def __init__(self, name, max_level, description, hero=None, locked=True, archetype="", specialization="", religion=""):
         """Build a basic ability object.
 
         Note: arguments (name, hero, max_level, etc.) that require input are
@@ -170,7 +178,10 @@ class Ability(Base):
         self.description = description
         self.locked = locked
 
-        self.basic = basic
+        if archetype != "" or specialization != "" or religion != "":
+            self.basic = False
+        else:
+            self.basic = True
         self.archetype = archetype
         self.specialization = specialization
         self.religion = religion

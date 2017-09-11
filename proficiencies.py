@@ -99,12 +99,7 @@ class Proficiencies(Base):
     
     id = Column(Integer, primary_key=True)
 
-    # Relationships
-    # Hero class
-    # One Hero -> one Proficiencies object
-    hero = relationship("Hero", back_populates='proficiencies', uselist=False)
-
-    # Proficiency Class
+    #Relationships
     health_id = Column(Integer, ForeignKey('proficiency.id'))
     health = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.health_id]")
     regeneration_id = Column(Integer, ForeignKey('proficiency.id'))
@@ -298,17 +293,17 @@ class Proficiency(Base):
     error = Column(String)
     formatted_name = Column(String)
     percent = Column(Integer)
-    chance = Column(Integer)
-    accuracy = Column(Integer)
-    current = Column(Integer)
-    minimum = Column(Integer)
-    efficiency = Column(Integer)
-    ability = Column(Integer)
-    speed = Column(Integer)
-    maximum = Column(Integer)
-    amount = Column(Integer)
-    skill = Column(Integer)
     modifier = Column(Integer)
+    minimum = Column(Integer)
+    accuracy = Column(Integer)
+    chance = Column(Integer)
+    maximum = Column(Integer)
+    skill = Column(Integer)
+    ability = Column(Integer)
+    amount = Column(Integer)
+    current = Column(Integer)
+    speed = Column(Integer)
+    efficiency = Column(Integer)
 
     type = Column(String)
     __mapper_args__ = {
