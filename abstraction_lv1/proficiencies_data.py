@@ -77,6 +77,6 @@ PROFICIENCY_INFORMATION = [
 ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_")
                      for attrib in PROFICIENCY_INFORMATION]
 
-ALL_PROFICIENCY_COLUMNS = {column[0].lower()
+ALL_PROFICIENCY_COLUMNS = sorted({column[0].lower()
                            for prof in PROFICIENCY_INFORMATION
-                           for column in prof[3]}
+                           for column in prof[3]})

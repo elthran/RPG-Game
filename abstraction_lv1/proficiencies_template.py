@@ -18,7 +18,12 @@ class Proficiencies(Base):
     
     id = Column(Integer, primary_key=True)
 
-    #Relationships     
+    # Relationships
+    # Hero class
+    # One Hero -> one Proficiencies object
+    hero = relationship("Hero", back_populates='proficiencies', uselist=False)
+
+    # Proficiency Class
     {%- for name in ALL_PROFICIENCIES %}
     {{ name }}_id = Column(Integer, ForeignKey('proficiency.id'))
     {{ name }} = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.{{ name }}_id]")

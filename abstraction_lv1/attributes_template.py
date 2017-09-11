@@ -11,17 +11,23 @@ from base_classes import Base
 
 {% include "attributes_data.py" %}
 
+
 class Attributes(Base):
     __tablename__ = 'attributes'
     
     id = Column(Integer, primary_key=True)
-    
-    #Relationships     
+
+    # Relationships
+    # Attribute class
     {%- for name in ALL_ATTRIBUTES %}
     {{ name }}_id = Column(Integer, ForeignKey('attribute.id'))
     {{ name }} = relationship("Attribute", uselist=False, foreign_keys="[Attributes.{{ name }}_id]")
     {%- endfor %}
-    
+
+    # Hero class
+    # One Hero -> one Attributes object
+    hero = relationship("Hero", back_populates='attributes', uselist=False)
+
     def __init__(self):
         {% for attrib in ATTRIBUTE_INFORMATION %}
         self.{{ attrib[0].lower() }} = Attribute("{{ attrib[0] }}", "{{ attrib[1] }}")

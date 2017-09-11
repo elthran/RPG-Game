@@ -630,15 +630,6 @@ def ability_tree(spec, hero=None):
 
     learnable_abilities = database.get_learnable_abilities(hero)
 
-    # For testing
-    for ability in learnable_abilities:
-        print("Learnable:", str(ability))
-    # End for testing
-
-    # TODO abilities are not connected to hero properly!
-    # They need to relate to a specific hero only!
-    # Maybe using the ItemTemplate concept but with and AbilityTemplate
-    # or a metaclass ...
     """ Commented out for now
     for ability in database.get_all_abilities():
         # Create a list of unlearned abilities
