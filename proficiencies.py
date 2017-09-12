@@ -90,9 +90,9 @@ PROFICIENCY_INFORMATION = [
 ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_")
                      for attrib in PROFICIENCY_INFORMATION]
 
-ALL_PROFICIENCY_COLUMNS = {column[0].lower()
+ALL_PROFICIENCY_COLUMNS = sorted({column[0].lower()
                            for prof in PROFICIENCY_INFORMATION
-                           for column in prof[3]}
+                           for column in prof[3]})
 
 class Proficiencies(Base):
     __tablename__ = 'proficiencies'
@@ -298,17 +298,17 @@ class Proficiency(Base):
     error = Column(String)
     formatted_name = Column(String)
     percent = Column(Integer)
-    chance = Column(Integer)
-    accuracy = Column(Integer)
-    current = Column(Integer)
-    minimum = Column(Integer)
-    efficiency = Column(Integer)
     ability = Column(Integer)
-    speed = Column(Integer)
-    maximum = Column(Integer)
+    accuracy = Column(Integer)
     amount = Column(Integer)
-    skill = Column(Integer)
+    chance = Column(Integer)
+    current = Column(Integer)
+    efficiency = Column(Integer)
+    maximum = Column(Integer)
+    minimum = Column(Integer)
     modifier = Column(Integer)
+    skill = Column(Integer)
+    speed = Column(Integer)
 
     type = Column(String)
     __mapper_args__ = {

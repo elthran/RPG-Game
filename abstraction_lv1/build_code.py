@@ -10,6 +10,5 @@ sys.path.pop(0)
 
 if __name__ == "__main__":
     # This should be an automatic function! Not manual.
-    names = ["attributes", "proficiencies", "complex_relationships",
-             "abilities"]
+    names = ["attributes", "proficiencies", "abilities"]
     build_code.build_templates(names, '.py')
