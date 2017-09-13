@@ -33,7 +33,7 @@ from locations import Location  # , WorldMap, Town, Cave
 from items import ItemTemplate, Item
 from quests import Quest, QuestPath
 from proficiencies import Proficiency
-from events import Trigger
+from events import Trigger, Handler
 import prebuilt_objects
 
 
@@ -320,23 +320,23 @@ class EZDB:
         self.session.add(obj)
         self.session.commit()
 
-    def get_all_quest_paths_with_completed_triggers(self, hero):
-        """Return all the quest_path objects with completed triggers.
+    def get_all_handlers_with_completed_triggers(self, hero):
+        """Return all the handler objects with completed triggers.
 
         This occurs when an event has happened that 'completed' a trigger
         for a given event.
         """
 
-        quest_paths = self.session.query(QuestPath).filter_by(
-            hero_id=hero.id).all()
+        handlers = self.session.query(Handler).filter_by(
+            trigger_is_completed=True, hero_id=hero.id).all()
 
         # A hack. this should be replaced by some kind of real query
         # or a table join?
-        quest_paths = [quest_path
-                       for quest_path in quest_paths
-                       if quest_path.quest.completion_trigger
-                       if quest_path.quest.completion_trigger.completed]
-        return quest_paths
+        # quest_paths = [quest_path
+        #                for quest_path in quest_paths
+        #                if quest_path.quest.completion_trigger
+        #                if quest_path.quest.completion_trigger.completed]
+        return handlers
 
     def get_all_triggers_by(self, event_name, hero_id):
         """Return all triggers for this hero that fit a given event."""

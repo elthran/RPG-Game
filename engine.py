@@ -48,15 +48,12 @@ class Engine:
             trigger.evaluate()
 
         # TODO ... make this for all objects with completed_triggers .. ?
-        objects = self.db.get_all_quest_paths_with_completed_triggers(hero)
+        handlers = self.db.get_all_handlers_with_completed_triggers(hero)
         # return the "Blacksmith" quest object ...
         # Since its completion trigger is completed ...
         # It is now completed. Run the method that you run when trigger
         # completes.
-        for obj in objects:
-            obj.run_if_trigger_completed()
+        for handler in handlers:
+            handler.run_handler()
 
         self.db.update()
-
-    # def on_move(self, handler, location):
-    #     pass

@@ -80,10 +80,11 @@ from sqlalchemy.orm import validates
 from sqlalchemy import orm
 
 from base_classes import Base
+from events import Handler
 import pdb
 
 
-class QuestPath(Base):
+class QuestPath(Handler, Base):
     """Allow storage of quest stage for a given hero and a given quest.
     
     This means that each hero can be in a different stage of the same quest.
@@ -118,7 +119,7 @@ class QuestPath(Base):
     """
     __tablename__ = 'quest_path'
     
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, ForeignKey('handler.id'), primary_key=True)
     
     stage = Column(Integer)
     stage_count = orm.synonym('stage')
@@ -141,7 +142,15 @@ class QuestPath(Base):
     quest_id = Column(Integer, ForeignKey('quest.id'))
     quest = relationship("Quest", back_populates='quest_paths')
 
+    __mapper_args__ = {
+        'polymorphic_identity': 'quest_path',
+    }
+
     def __init__(self, quest, hero, active=True, stage=1):
+
+        #Might work??
+        super().__init__(self, completion_trigger=quest.completion_trigger,
+                         hero=hero)
         self.quest = quest
         self.hero = hero
         
@@ -284,23 +293,11 @@ class QuestPath(Base):
                 return path
 
     def run_if_trigger_completed(self):
-        """Deactivate trigger and run activation code.
+        """Special handler method over ride.
 
-        In this case ... unlink the trigger from the given quest
-        and the advance the quest to the next stage.
-
-        In theory ... this would bring the new trigger in to play
-        through activation of a new quest? Or have I not set that up right?
+        In this case run the local 'advance()' method.
         """
-        self.quest.completion_trigger.unlink()
         self.advance()
-        # Make Trigger available!
-        try:
-            self.quest.completion_trigger.link(self.hero)
-        except AttributeError as ex:
-            print("Warning: The quest with the description '{}' has no "
-                  "completion trigger set up.".format(self.quest.description))
-            print('See error "{}"'.format(ex))
 
 
 quest_to_quest = Table("quest_to_quest", Base.metadata,
@@ -346,7 +343,7 @@ class Quest(Base):
     # complete multiple quests?
     # One to Many? (Later will be many to many).
     trigger_id = Column(Integer, ForeignKey('trigger.id'))
-    completion_trigger = relationship("Trigger", back_populates='quests')
+    completion_trigger = relationship("Trigger")
 
     def __init__(self, path_name, description, reward_experience=3,
                  next_quests=[], past_quests=[], completion_trigger=None):
