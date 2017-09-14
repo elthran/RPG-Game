@@ -3,7 +3,9 @@ import datetime
 from sqlalchemy import (
     Column, Integer, String, DateTime, Boolean, ForeignKey
 )
+from sqlalchemy import func
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from base_classes import Base
 
@@ -147,7 +149,12 @@ class Handler(Base):
     # Add relationship to cls spec.
     trigger_id = Column(Integer, ForeignKey('trigger.id'))
     completion_trigger = relationship("Trigger")
+    trigger_is_completed = relationship(
+        "Trigger",
+        primaryjoin="and_(Handler.trigger_id==Trigger.id, "
+                    "Trigger.completed==True)")
 
+    # This might be redundant.
     hero_id = Column(Integer, ForeignKey('hero.id'))
     hero = relationship("Hero")
 
@@ -162,9 +169,18 @@ class Handler(Base):
         self.completion_trigger = completion_trigger
         self.hero = hero
 
-    @property
-    def trigger_is_completed(self):
-        return self.completion_trigger.completed
+        self.add_hero_to_trigger(hero)
+
+    # @hybrid_property
+    # def trigger_is_completed(self):
+    #     try:
+    #         return self.completion_trigger.completed
+    #     except AttributeError:
+    #         return False
+    #
+    # @trigger_is_completed.expression
+    # def trigger_is_completed(cls):
+    #     return func(cls.completion_trigger.completed)
 
     def add_hero_to_trigger(self, hero):
         """Add a hero object to be handled.
@@ -178,7 +194,7 @@ class Handler(Base):
         except AttributeError as ex:
             print(ex)
 
-    def run_handler(self, hero, next_trigger):
+    def run_handler(self, hero=None, next_trigger=None):
         """Deactivate trigger and run activation code.
 
         In this case ... unlink the trigger from the given quest
@@ -190,12 +206,15 @@ class Handler(Base):
         NOTE: must have overwritten the run_if_trigger_completed() method
         for this to work.
         """
+        if hero:
+            self.hero = hero
         self.completion_trigger.unlink()
 
         self.run_if_trigger_completed()
 
-        self.completion_trigger = next_trigger
-        self.add_hero(hero)
+        if next_trigger:
+            self.completion_trigger = next_trigger
+            self.add_hero_to_trigger(self.hero)
 
     def run_if_trigger_completed(self):
         """A method that needs to be over ridden in the inherited class."""

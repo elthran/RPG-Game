@@ -75,8 +75,7 @@ Considering:
 
 from sqlalchemy import Table, Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import relationship, validates, column_property
 from sqlalchemy import orm
 
 from base_classes import Base
@@ -84,7 +83,7 @@ from events import Handler
 import pdb
 
 
-class QuestPath(Handler, Base):
+class QuestPath(Handler):
     """Allow storage of quest stage for a given hero and a given quest.
     
     This means that each hero can be in a different stage of the same quest.
@@ -136,7 +135,8 @@ class QuestPath(Handler, Base):
     # This path may be either active or completed, but not both.
     # Which establishes a manay to many relationship between quests and heroes.
     # QuestPath provides many special methods.
-    hero_id = Column(Integer, ForeignKey('hero.id'))
+    hero_id = column_property(Column(Integer, ForeignKey('hero.id')),
+                              Handler.hero_id)
     hero = relationship("Hero", back_populates='quest_paths')
 
     quest_id = Column(Integer, ForeignKey('quest.id'))
@@ -149,7 +149,8 @@ class QuestPath(Handler, Base):
     def __init__(self, quest, hero, active=True, stage=1):
 
         #Might work??
-        super().__init__(self, completion_trigger=quest.completion_trigger,
+        # pdb.set_trace()
+        super().__init__(completion_trigger=quest.completion_trigger,
                          hero=hero)
         self.quest = quest
         self.hero = hero
@@ -159,13 +160,13 @@ class QuestPath(Handler, Base):
         self.active = active
         self.completed = False
 
-        # Make Trigger available!
-        try:
-            self.quest.completion_trigger.link(hero)
-        except AttributeError as ex:
-            print("Warning: The quest with the description '{}' has no "
-                  "completion trigger set up.".format(quest.description))
-            print('See error "{}"'.format(ex))
+        # # Make Trigger available!
+        # try:
+        #     self.quest.completion_trigger.link(hero)
+        # except AttributeError as ex:
+        #     print("Warning: The quest with the description '{}' has no "
+        #           "completion trigger set up.".format(quest.description))
+        #     print('See error "{}"'.format(ex))
 
     def advance(self):
         """Advance this path to the next stage.

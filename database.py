@@ -326,9 +326,10 @@ class EZDB:
         This occurs when an event has happened that 'completed' a trigger
         for a given event.
         """
-
-        handlers = self.session.query(Handler).filter_by(
-            trigger_is_completed=True, hero_id=hero.id).all()
+        pdb.set_trace()
+        handlers = self.session.query(Handler).\
+            filter(Handler.trigger_is_completed).\
+            filter(Handler.hero_id == hero.id).all()
 
         # A hack. this should be replaced by some kind of real query
         # or a table join?
