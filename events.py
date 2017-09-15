@@ -333,22 +333,9 @@ def handler_decorator(cls):
             continue
         setattr(cls, attr, value)
 
-    # Overload __init__
-    # print("Cls __init__ dir:", dir(cls.__init__))
-    # print("Cls __init__ __dict__:", cls.__init__.__dict__)
-    # print("Wrapper __init__:", HandlerWrapper.__init__)
+    # Add additional __init__
+    cls._init_handler = HandlerWrapper.__init__
     # exit("Testing init overload!")
-    @wraps(cls.__init__)
-    def wrap_init(self, *args, **kwargs):
-        if 'hero' not in kwargs:
-            kwargs['hero'] = None
-        if 'completion_trigger' not in kwargs:
-            kwargs['completion_trigger'] = None
-        HandlerWrapper.__init__(self, **kwargs)
-        cls(self, *args, **kwargs)
-
-    cls.__init__ = wrap_init
-
     # print("Cls __table__ after append:", repr(cls.__table__))
     # print("Cls dir after append:", dir(cls))
     # print("Cls __dict__ after append:", cls.__dict__)
@@ -367,6 +354,7 @@ if __name__ == "__main__":
         id = Column(Integer, primary_key=True)
 
         def __init__(self, kvar=None):
+            self._init_handler()
             self.kvar = kvar
             print("My class that now uses triggers.")
 
