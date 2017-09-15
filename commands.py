@@ -150,19 +150,33 @@ class Command:
         return item.type
 
     def update_ability(hero, database, arg_dict):
-        if hero.basic_ability_points == 0:
-            return "error: not enough points, should have been grayed out"
-        ability_id = arg_dict.get('data', None, type=int)
+        # data = "{{ ability.id }}, {{ ability.tree }}"
+        data = arg_dict.get('data', "").split(", ")
+        if data:
+            ability_id = int(data[0])
+            ability_tree = data[1]
+        else:
+            ability_id = None
+            ability_tree = None
+            return "error: button came back with an empty string for data"
+        print (ability_tree)
+        if ability_tree == "basic":
+            if hero.basic_ability_points == 0:
+                return "error: not enough points, should have been grayed out"
+            hero.basic_ability_points -= 1
+        elif ability_tree == "archetype":
+            if hero.archetypic_ability_points == 0:
+                return "error: not enough points, should have been grayed out"
+            hero.archetypic_ability_points -= 1
         ability = database.get_ability_by_id(ability_id)
         if ability.is_max_level():
             return "error: this ability should have been grayed out as it's at max level"
         print("running learn_ability command:" + ability.name)
         ability.level += 1
-        hero.basic_ability_points -= 1
         status = ""
         if ability.is_max_level():
             status = "max level"
-        return "{}&&{}&&{}".format(ability.level, hero.basic_ability_points, status)
+        return "{}&&{}&&{}&&{}".format(ability_id, ability.level, status, ability_tree)
 
     def cast_spell(hero, database, arg_dict):
         ability_id = arg_dict.get('data', None, type=int)
@@ -189,6 +203,7 @@ class Command:
 
         id = arg_dict.get('data', None, type=int)
         proficiency = database.get_proficiency_by_id(id)
+
 
         # Defensive coding: command buttons should be hidden by JavaScript
         # when no longer valid due to the return values of this function.

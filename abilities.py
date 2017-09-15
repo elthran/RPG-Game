@@ -25,7 +25,7 @@ ALL_ABILITIES = [
     ("testgold", "CastableAbility",
      "CastableAbility('testgold', 3, 'Gain 3 gold', locked=False, endurance_cost=1, gold_amount=3)"),
     ("gainexp", "CastableAbility",
-     "CastableAbility('gainexp', 3, 'Gain 3 gold', locked=False, archetype='priest', endurance_cost=1, gold_amount=73)")
+     "CastableAbility('gainexp', 3, 'Gain 3 gold', locked=False, tree='archetype', endurance_cost=1, gold_amount=73)")
 ]
 
 # "determination", 5, "Increases Endurance by 3 for each level."
@@ -73,7 +73,7 @@ class Abilities(Base):
         self.reflexes = AuraAbility('reflexes', 3, 'Gain +2% dodge chance per level', locked=False, evade_chance=2)
         self.cure = CastableAbility('cure', 3, 'Recover 3 health', sanctity_cost=1, heal_amount=3)
         self.testgold = CastableAbility('testgold', 3, 'Gain 3 gold', locked=False, endurance_cost=1, gold_amount=3)
-        self.gainexp = CastableAbility('gainexp', 3, 'Gain 3 gold', locked=False, archetype='priest', endurance_cost=1, gold_amount=73)
+        self.gainexp = CastableAbility('gainexp', 3, 'Gain 3 gold', locked=False, tree='archetype', endurance_cost=1, gold_amount=73)
 
     def items(self):
         """Return each Ability and its name.
@@ -132,10 +132,7 @@ class Ability(Base):
 
     # This decides which of the 4 types of abilities it is (default is basic)
 
-    basic = Column(Boolean)
-    archetype = Column(String)
-    specialization = Column(String)
-    religion = Column(String)
+    tree = Column(String)
 
     # Relationships.
     # Ability to abilities. Abilities is a list of ability objects.
@@ -156,7 +153,7 @@ class Ability(Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, max_level, description, hero=None, locked=True, archetype="", specialization="", religion=""):
+    def __init__(self, name, max_level, description, hero=None, locked=True, tree="basic"):
         """Build a basic ability object.
 
         Note: arguments (name, hero, max_level, etc.) that require input are
@@ -178,13 +175,7 @@ class Ability(Base):
         self.description = description
         self.locked = locked
 
-        if archetype != "" or specialization != "" or religion != "":
-            self.basic = False
-        else:
-            self.basic = True
-        self.archetype = archetype
-        self.specialization = specialization
-        self.religion = religion
+        self.tree = tree
 
         self.init_on_load()
 
