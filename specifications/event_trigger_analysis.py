@@ -66,6 +66,7 @@ class QuestPath(Handler):
         In this case run the local 'advance()' method.
         '''
         self.advance()
+        return None if self.completed else self.quest.completion_trigger
 """
 
 
