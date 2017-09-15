@@ -8,6 +8,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from base_classes import Base
+import pdb
 
 
 class Event(Base):
@@ -122,7 +123,8 @@ class Condition(Base):
         """Build a condition object.
 
         The default initial comparison is:
-        self.trigger.hero._some_passed_attribute_name_
+        self.trigger.hero._some_passed_attribute_name_.id
+        NOTE: id is applied automatically this will need to be re-specced.
         """
         condition_attribute = object_of_comparison.__table__.name
 
@@ -134,14 +136,13 @@ class Condition(Base):
         setattr(self, condition_attribute, object_of_comparison)
 
 
-"""
-Possible generic class to extend for objects with triggers.
-Maybe use .. Foo(Handler) for all objects that respond to triggered events.
-I could put the relationship here?
-"""
-
-# TODO make this work as generic handler to extend from.
+# TODO make this a decorator class?
 class Handler(Base):
+    """
+    Possible generic class to extend for objects with triggers.
+    Maybe use .. Foo(Handler) for all objects that respond to triggered events.
+    I could put the relationship here?
+    """
     __tablename__ = 'handler'
 
     id = Column(Integer, primary_key=True)
@@ -194,7 +195,7 @@ class Handler(Base):
         except AttributeError as ex:
             print(ex)
 
-    def run_handler(self, hero=None, next_trigger=None):
+    def run_handler(self):
         """Deactivate trigger and run activation code.
 
         In this case ... unlink the trigger from the given quest
@@ -206,19 +207,17 @@ class Handler(Base):
         NOTE: must have overwritten the run_if_trigger_completed() method
         for this to work.
         """
-        if hero:
-            self.hero = hero
         self.completion_trigger.unlink()
+        next_trigger = self.run_if_trigger_completed()
 
-        self.run_if_trigger_completed()
-
-        if next_trigger:
-            self.completion_trigger = next_trigger
+        self.completion_trigger = next_trigger
+        if next_trigger is not None:
             self.add_hero_to_trigger(self.hero)
 
     def run_if_trigger_completed(self):
         """A method that needs to be over ridden in the inherited class."""
         print("You were supposed to have over ridden this method.")
         print("(in class Handler -> run_if_trigger_completed)")
+        print("Returns the next trigger to be hooked up.")
         raise Exception("Read the above message and maybe as me for help.")
 

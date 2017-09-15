@@ -1139,13 +1139,15 @@ def command(cmd=None, hero=None):
             raise ex
         else:
             raise ex
-        # Look in the not yet refactored list of if statements ...
+
 
 @app.route('/about')
 @uses_hero_and_update
 def about_page(hero=None):
-    info = "The game is being created by Elthran and Haldon, with some help from Gnahz. Any inquiries can be made to elthranRPG@gmail.com"
-    return render_template('about.html', myHero=hero, page_title="About", gameVersion="0.00.02", about_info=info)
+    info = "The game is being created by Elthran and Haldon, with some help " \
+           "from Gnahz. Any inquiries can be made to elthranRPG@gmail.com"
+    return render_template('about.html', myHero=hero, page_title="About",
+                           gameVersion="0.00.02", about_info=info)
 
 
 ###testing by Marlen ####

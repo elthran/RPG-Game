@@ -41,6 +41,7 @@ class Engine:
         It should trigger a "visit the blacksmith quest completion event"
         And complete this quest.
         """
+        # pdb.set_trace()
         event = Event(event_name, hero_id=hero.id, description=description)
         self.db.add_object(event)
         triggers = self.db.get_all_triggers_by(event_name, hero.id)
@@ -48,7 +49,7 @@ class Engine:
         for trigger in triggers:
             trigger.evaluate()
             print("Trigger '{}' is completed: {}".format(trigger.id,
-                                                       trigger.completed))
+                                                         trigger.completed))
         # self.db.update()
 
         # TODO ... make this for all objects with completed_triggers .. ?

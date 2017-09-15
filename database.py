@@ -326,17 +326,10 @@ class EZDB:
         This occurs when an event has happened that 'completed' a trigger
         for a given event.
         """
-        pdb.set_trace()
         handlers = self.session.query(Handler).\
             filter(Handler.trigger_is_completed).\
             filter(Handler.hero_id == hero.id).all()
 
-        # A hack. this should be replaced by some kind of real query
-        # or a table join?
-        # quest_paths = [quest_path
-        #                for quest_path in quest_paths
-        #                if quest_path.quest.completion_trigger
-        #                if quest_path.quest.completion_trigger.completed]
         return handlers
 
     def get_all_triggers_by(self, event_name, hero_id):

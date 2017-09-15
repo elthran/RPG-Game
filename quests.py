@@ -4,13 +4,15 @@ Quests must be created separately in the prebuilt_objects.py module.
 We will really need a quest editor. Some kind of 3D mind node thing :P
 
 #Currently:
-To connect a hero to a given quest (only connect to the first quest in the quest path).
+To connect a hero to a given quest (only connect to the first quest in the
+quest path).
 for quest in database.get_default_quests():
     quest.add_hero(myHero)
 
 To trigger a quest to advance to the next stage or complete.
 for path in myHero.quest_paths:
-    if path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 1:
+    if path.quest.name == "Get Acquainted with the Blacksmith" and
+            path.stage == 1:
         path.advance()
         
 
@@ -160,14 +162,6 @@ class QuestPath(Handler):
         self.active = active
         self.completed = False
 
-        # # Make Trigger available!
-        # try:
-        #     self.quest.completion_trigger.link(hero)
-        # except AttributeError as ex:
-        #     print("Warning: The quest with the description '{}' has no "
-        #           "completion trigger set up.".format(quest.description))
-        #     print('See error "{}"'.format(ex))
-
     def advance(self):
         """Advance this path to the next stage.
         
@@ -299,9 +293,12 @@ class QuestPath(Handler):
         In this case run the local 'advance()' method.
         """
         self.advance()
+        return None if self.completed else self.quest.completion_trigger
 
 
-quest_to_quest = Table("quest_to_quest", Base.metadata,
+quest_to_quest = Table(
+    "quest_to_quest",
+    Base.metadata,
     Column("past_quest_id", Integer, ForeignKey("quest.id"), primary_key=True),
     Column("next_quest_id", Integer, ForeignKey("quest.id"), primary_key=True)
 )
@@ -376,7 +373,6 @@ class Quest(Base):
         for next_quest in self.next_quests:
             return 1 + next_quest.get_stage_count()
     
-    
     def mark_completed(self, hero):
         """Set completed flag and deactivate quest.
         
@@ -384,7 +380,6 @@ class Quest(Base):
         """
         quest_path = QuestPath.find(self, hero)
         quest_path.completed = True
-            
             
     def activate(self, hero):
         """Use to activate the first quest in a series.
@@ -414,12 +409,3 @@ class Quest(Base):
 # class Primary_Quest(Quest):
     # def __init__(self, *args, **kwargs):
         # super().__init__(*args, **kwargs)
-
-if __name__ == "__main__":        
-    quest1 = Quest("Get Acquainted with the Blacksmith", "Go talk to the blacksmith.")
-    quest1.next_quests.append(Quest("Get Acquainted with the Blacksmith", "Buy your first item.", reward_experience=7))
-    quest2 = Quest("Equipping/Unequipping", "Equip any item.")
-    quest2.next_quests.append(Quest("Equipping/Unequipping", "Unequip any item."))
-            
-    testing_quests = [quest1, quest2] #Which is really 4 quests.
-    # pdb.set_trace()

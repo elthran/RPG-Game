@@ -138,6 +138,9 @@ game_worlds = [world]  # Just chop this out and use world instead.
 # Conditions
 #########
 blacksmith_condition = Condition('current_location', '==', blacksmith)
+blacksmith_parent_condition = Condition('current_location.parent', '==',
+                                        blacksmith)
+
 
 
 ##########
@@ -149,6 +152,12 @@ visit_blacksmith_trigger = Trigger(
                           'the hero.current_location.id == the id of the '
                           'blacksmith object.')
 
+buy_item_from_blacksmith_trigger = Trigger(
+    'buy_event', conditions=[blacksmith_parent_condition],
+    extra_info_for_humans='Should activate when buy code runs and '
+                          'hero.current_location.id == id of the blacksmith.'
+)
+
 
 ###########
 # Quests
@@ -158,7 +167,8 @@ blacksmith_quest = Quest("Get Acquainted with the Blacksmith",
                          completion_trigger=visit_blacksmith_trigger)
 blacksmith_quest.next_quests.append(
     Quest("Get Acquainted with the Blacksmith", "Buy your first item.",
-          reward_experience=7))
+          reward_experience=7,
+          completion_trigger=buy_item_from_blacksmith_trigger))
 
 equipment_quest = Quest("Equipping/Unequipping", "Equip any item.")
 equipment_quest.next_quests.append(Quest("Equipping/Unequipping", "Unequip any item."))

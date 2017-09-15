@@ -29,14 +29,13 @@ def spawn(self, event_name, hero, *args, description=None):
     # and run any code they have that is set to run if a trigger completes.
     # This needs some work.
     # HANDLE PHASE, PHASE IV
-    # TODO ... make this for all objects with completed_triggers .. ?
-    objects = self.db.get_all_quest_paths_with_completed_triggers(hero)
+    handlers = self.db.get_all_handlers_with_completed_triggers(hero)
     # return the "Blacksmith" quest object ...
     # Since its completion trigger is completed ...
     # It is now completed. Run the method that you run when trigger
     # completes.
-    for obj in objects:
-        obj.run_if_trigger_completed()
+    for handler in handlers:
+        handler.run_handler()
 
     # When all code has been run, save everything.
     # UPDATE PHASE, PHASE V
@@ -44,8 +43,36 @@ def spawn(self, event_name, hero, *args, description=None):
 
 
 """
+I am currently using a Handler parent class. To make this work you need
+6 steps:
+class QuestPath(Handler):
+    id = Column(Integer, ForeignKey('handler.id'), primary_key=True)
+    
+    # If there is a column override (most common with be hero_id)
+    hero_id = column_property(Column(Integer, ForeignKey('hero.id')),
+                              Handler.hero_id)
+                              
+    __mapper_args__ = {
+        'polymorphic_identity': 'quest_path',
+    }
+    
+    def __init__(self, etc.)
+        super().__init__(completion_trigger=quest.completion_trigger,
+                         hero=hero)
+    
+    def run_if_trigger_completed(self):
+        '''Special handler method over ride.
+
+        In this case run the local 'advance()' method.
+        '''
+        self.advance()
+"""
+
+
+
+"""
 #################
-uses Triggers decorator?
+uses Handler decorator?
 NOTE: currently only a theory.
 I might need to combine decorators and meta-classing?
 Here I am trying to decorate a class with a class.
