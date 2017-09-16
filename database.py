@@ -33,7 +33,7 @@ from locations import Location  # , WorldMap, Town, Cave
 from items import ItemTemplate, Item
 from quests import Quest, QuestPath
 from proficiencies import Proficiency
-from events import Trigger, Handler
+from events import Trigger
 import prebuilt_objects
 
 
@@ -326,9 +326,12 @@ class EZDB:
         This occurs when an event has happened that 'completed' a trigger
         for a given event.
         """
-        handlers = self.session.query(Handler).\
-            filter(Handler.trigger_is_completed).\
-            filter(Handler.hero_id == hero.id).all()
+        objs = [QuestPath]
+        handlers = []
+        for obj in objs:
+            handlers += self.session.query(obj).\
+                filter(obj.trigger_is_completed).\
+                filter(obj.hero_id == hero.id).all()
 
         return handlers
 

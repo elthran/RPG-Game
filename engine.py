@@ -50,9 +50,8 @@ class Engine:
             trigger.evaluate()
             print("Trigger '{}' is completed: {}".format(trigger.id,
                                                          trigger.completed))
-        # self.db.update()
+        self.db.update()
 
-        # TODO ... make this for all objects with completed_triggers .. ?
         handlers = self.db.get_all_handlers_with_completed_triggers(hero)
         # return the "Blacksmith" quest object ...
         # Since its completion trigger is completed ...
