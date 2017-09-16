@@ -4,13 +4,15 @@ Quests must be created separately in the prebuilt_objects.py module.
 We will really need a quest editor. Some kind of 3D mind node thing :P
 
 #Currently:
-To connect a hero to a given quest (only connect to the first quest in the quest path).
+To connect a hero to a given quest (only connect to the first quest in the
+quest path).
 for quest in database.get_default_quests():
     quest.add_hero(myHero)
 
 To trigger a quest to advance to the next stage or complete.
 for path in myHero.quest_paths:
-    if path.quest.name == "Get Acquainted with the Blacksmith" and path.stage == 1:
+    if path.quest.name == "Get Acquainted with the Blacksmith" and
+            path.stage == 1:
         path.advance()
         
 
@@ -75,14 +77,16 @@ Considering:
 
 from sqlalchemy import Table, Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import relationship, validates, column_property
 from sqlalchemy import orm
 
 from base_classes import Base
+from events import HandlerMixin
 import pdb
+from pprint import pprint
 
-class QuestPath(Base):
+
+class QuestPath(HandlerMixin, Base):
     """Allow storage of quest stage for a given hero and a given quest.
     
     This means that each hero can be in a different stage of the same quest.
@@ -93,7 +97,7 @@ class QuestPath(Base):
     
     To check what quests a hero has active use:
     for path in hero.quest_paths:
-        if path.acitve:
+        if path.active:
             return path.quest.name
     To check what quests a hero has completed use:
     for path in hero.quest_paths:
@@ -135,12 +139,16 @@ class QuestPath(Base):
     # Which establishes a manay to many relationship between quests and heroes.
     # QuestPath provides many special methods.
     hero_id = Column(Integer, ForeignKey('hero.id'))
-    hero = relationship("Hero", back_populates='quest_paths')
+    hero = relationship("Hero", back_populates='quest_paths',
+                        foreign_keys='[QuestPath.hero_id]')
 
     quest_id = Column(Integer, ForeignKey('quest.id'))
-    quest = relationship("Quest", back_populates='quest_paths')
+    quest = relationship("Quest", back_populates='quest_paths',
+                               foreign_keys='[QuestPath.quest_id]')
 
     def __init__(self, quest, hero, active=True, stage=1):
+        super().__init__(completion_trigger=quest.completion_trigger,
+                           hero=hero)
         self.quest = quest
         self.hero = hero
         
@@ -148,7 +156,7 @@ class QuestPath(Base):
         self.stages = quest.get_stage_count()
         self.active = active
         self.completed = False
-        
+
     def advance(self):
         """Advance this path to the next stage.
         
@@ -159,8 +167,8 @@ class QuestPath(Base):
         Sometimes this galaxy will break apart and spawn new galaxies.
         """
         
-        #Sort of like a failsafe. Active paths should not be advanced.
-        #Maybe this should be an assert?
+        # Sort of like a failsafe. Active paths should not be advanced.
+        # Maybe this should be an assert?
         if self.completed:
             return
             
@@ -185,7 +193,7 @@ class QuestPath(Base):
                 self.remove()
         return True
     
-    #Needs further testing.
+    # Needs further testing.
     def remove(self):
         """Break/erase current path.
         
@@ -213,9 +221,7 @@ class QuestPath(Base):
         else:
             hero.experience += quest.reward_experience
             hero.quest_notification = (quest.description, quest.reward_experience)
-        
-        
-        
+
     @validates('active')
     def validate_active(self, key, flag):
         """Prevent quest being both active and completed at the same time.
@@ -224,7 +230,6 @@ class QuestPath(Base):
         if self.completed:
             return False
         return flag
-        
 
     @validates('completed')
     def validate_completed(self, key, flag):
@@ -233,8 +238,7 @@ class QuestPath(Base):
         if flag:
             self.active = False
         return flag
-        
-        
+
     def active_heroes(quest):
         """Return all heroes that exist in quest.quest_paths and are active.
         
@@ -246,8 +250,8 @@ class QuestPath(Base):
         """
      
         return [path.hero for path in quest.quest_paths if path.active]
-        
-        
+
+    @staticmethod
     def completed_heroes(quest):
         """Return all heroes that exist in quest.quest_paths and are completed.
         
@@ -257,8 +261,8 @@ class QuestPath(Base):
         """
      
         return [path.hero for path in quest.quest_paths if path.completed]
-        
-    
+
+    @staticmethod
     def all_heroes(quest):
         """Return all heroes that exist in quest.quest_paths.
         
@@ -267,8 +271,8 @@ class QuestPath(Base):
         """
      
         return [path.hero for path in quest.quest_paths if path.completed]
-        
-        
+
+    @staticmethod
     def find(quest, hero):
         """Return the path connecting quest to hero -> if it exists.
         
@@ -278,8 +282,18 @@ class QuestPath(Base):
             if path.hero.id == hero.id:
                 return path
 
-                
-quest_to_quest = Table("quest_to_quest", Base.metadata,
+    def run_if_trigger_completed(self):
+        """Special handler method over ride.
+
+        In this case run the local 'advance()' method.
+        """
+        self.advance()
+        return None if self.completed else self.quest.completion_trigger
+
+
+quest_to_quest = Table(
+    "quest_to_quest",
+    Base.metadata,
     Column("past_quest_id", Integer, ForeignKey("quest.id"), primary_key=True),
     Column("next_quest_id", Integer, ForeignKey("quest.id"), primary_key=True)
 )
@@ -316,9 +330,17 @@ class Quest(Base):
         backref="past_quests")
 
     # QuestPath
-    quest_paths = relationship("QuestPath", back_populates='quest')
+    quest_paths = relationship("QuestPath", back_populates='quest',
+                               foreign_keys='[QuestPath.quest_id]')
 
-    def __init__(self, path_name, description, reward_experience=3, next_quests=[], past_quests=[]):
+    # Triggers Each Quest has a completion trigger. Each trigger can
+    # complete multiple quests?
+    # One to Many? (Later will be many to many).
+    trigger_id = Column(Integer, ForeignKey('trigger.id'))
+    completion_trigger = relationship("Trigger")
+
+    def __init__(self, path_name, description, reward_experience=3,
+                 next_quests=[], past_quests=[], completion_trigger=None):
         """Build a new Quest object.
         
         You can link this quest to other quests at initialization or afterwards.
@@ -330,7 +352,8 @@ class Quest(Base):
         self.reward_experience = reward_experience
         self.next_quests = next_quests
         self.past_quests = past_quests
-        
+        self.completion_trigger = completion_trigger
+
     def get_stage_count(self):
         """Return a guestimate of how many stages are in this quest.
         
@@ -346,7 +369,6 @@ class Quest(Base):
         for next_quest in self.next_quests:
             return 1 + next_quest.get_stage_count()
     
-    
     def mark_completed(self, hero):
         """Set completed flag and deactivate quest.
         
@@ -354,7 +376,6 @@ class Quest(Base):
         """
         quest_path = QuestPath.find(self, hero)
         quest_path.completed = True
-            
             
     def activate(self, hero):
         """Use to activate the first quest in a series.
@@ -366,8 +387,7 @@ class Quest(Base):
         
         if not quest_path.active:
             quest_path.active = True
-        
-            
+
     def add_hero(self, hero):
         """Build a new quest path connecting this quest and hero -> return QuestPath
         
@@ -385,12 +405,3 @@ class Quest(Base):
 # class Primary_Quest(Quest):
     # def __init__(self, *args, **kwargs):
         # super().__init__(*args, **kwargs)
-
-if __name__ == "__main__":        
-    quest1 = Quest("Get Acquainted with the Blacksmith", "Go talk to the blacksmith.")
-    quest1.next_quests.append(Quest("Get Acquainted with the Blacksmith", "Buy your first item.", reward_experience=7))
-    quest2 = Quest("Equipping/Unequipping", "Equip any item.")
-    quest2.next_quests.append(Quest("Equipping/Unequipping", "Unequip any item."))
-            
-    testing_quests = [quest1, quest2] #Which is really 4 quests.
-    # pdb.set_trace()

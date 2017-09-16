@@ -6,6 +6,7 @@ from items import (
     OneHandedWeapon, Shield, TwoHandedWeapon, LegArmour, ChestArmour,
     HeadArmour, FeetArmour, ArmArmour, HandArmour, Ring, Consumable
 )
+from events import Trigger, Condition
 
 """
 This module preloads all of its objects directly into the database or does
@@ -133,12 +134,41 @@ game_worlds = [world]  # Just chop this out and use world instead.
 
 # game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
 
+#########
+# Conditions
+#########
+blacksmith_condition = Condition('current_location', '==', blacksmith)
+blacksmith_parent_condition = Condition('current_location.parent', '==',
+                                        blacksmith)
+
+
+
+##########
+# Triggers
+##########
+visit_blacksmith_trigger = Trigger(
+    'move_event', conditions=[blacksmith_condition],
+    extra_info_for_humans='Should activate when '
+                          'the hero.current_location.id == the id of the '
+                          'blacksmith object.')
+
+buy_item_from_blacksmith_trigger = Trigger(
+    'buy_event', conditions=[blacksmith_parent_condition],
+    extra_info_for_humans='Should activate when buy code runs and '
+                          'hero.current_location.id == id of the blacksmith.'
+)
+
+
 ###########
 # Quests
 ##########
-blacksmith_quest = Quest("Get Acquainted with the Blacksmith", "Go talk to the blacksmith.")
+blacksmith_quest = Quest("Get Acquainted with the Blacksmith",
+                         "Go talk to the blacksmith.",
+                         completion_trigger=visit_blacksmith_trigger)
 blacksmith_quest.next_quests.append(
-    Quest("Get Acquainted with the Blacksmith", "Buy your first item.", reward_experience=7))
+    Quest("Get Acquainted with the Blacksmith", "Buy your first item.",
+          reward_experience=7,
+          completion_trigger=buy_item_from_blacksmith_trigger))
 
 equipment_quest = Quest("Equipping/Unequipping", "Equip any item.")
 equipment_quest.next_quests.append(Quest("Equipping/Unequipping", "Unequip any item."))

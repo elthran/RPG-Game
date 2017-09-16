@@ -28,8 +28,7 @@
     {% endfor %}
     <h1 class="indented">Completed Quests</h1>
     {% for path in myHero.quest_paths if path.completed %}
-        <h2>{{ path.quest.name }}</h2>
-        (Reward: {{ path.quest.reward_xp }} xp)
+        <b>{{ path.quest.name }}</b> (Reward: {{ path.quest.reward_experience }} xp)
     {% else %}
         No completed quests
     {% endfor %}
