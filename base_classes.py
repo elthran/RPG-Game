@@ -20,192 +20,179 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import orm
 import sqlalchemy
 
+
+class Base(object):
+    def get_mro_keys(self):
+        """Return all attributes of objects in MRO
+
+        All non-base objects in inheritance path.
+        Remove <class 'sqlalchemy.ext.declarative.api.Base'>,
+        <class 'object'> as these are the last two objects in the MRO
+        """
+        hierarchy_keys = set()
+        hierarchy = type(self).__mro__[1:-2]
+
+        for obj in hierarchy:
+            hierarchy_keys |= set(vars(obj).keys()) \
+                              - set(obj.__mapper__.relationships.keys())
+
+        # Remove private variables and id keys to prevent weird recursion
+        # and redundancy.
+        hierarchy_keys -= set(
+            [key for key in hierarchy_keys if key.startswith('_')]
+        )  # ? or 'id' in key])
+
+        return hierarchy_keys
+
+    def get_all_atts(self):
+        data = set(vars(self).keys()) | \
+            set(self.__table__.columns.keys()) | \
+            set(self.__mapper__.relationships.keys())
+
+        data.discard('_sa_instance_state')
+
+        hierarchy_keys = set()
+        try:
+            hierarchy_keys = self.get_mro_keys()
+        except IndexError:
+            pass  # This is the Base class and has no useful MRO.
+
+        data |= hierarchy_keys
+
+        # Remove weird SQLAlchemy var available to higher class but no
+        # lower ones.
+        keys_to_remove = set()
+        for key in data:
+            try:
+                getattr(self, key)
+            except AttributeError:
+                # Because of single table inheritance ... invalid attributes
+                # can end up inside of the object hierarchy list.
+                keys_to_remove.add(key)
+        data -= keys_to_remove
+
+        # Don't print the object's methods.
+        data -= set([e for e in data
+                     if "method" in repr(type(getattr(self, e)))])
+
+        return data
+
+    def data_to_string(self, data):
+        for key in sorted(data):
+            value = getattr(self, key)
+            # pdb.set_trace()
+            if value and (type(value) == orm.collections.InstrumentedList or
+                          type(value) ==
+                          sqlalchemy.ext.orderinglist.OrderingList):
+                value = '[' + ', '.join(
+                    e.__class__.__name__ + '.id=' + str(e.id)
+                    for e in value) + ']'
+
+            # This if/try is a way to print ONE to ONE relationship objects
+            # without infinite recursion.
+            elif value:
+                try:
+                    # Dummy call to test if value is a Database object.
+                    # value._sa_instance_state  # temporarily removed.
+                    value = "<{}(id={})>".format(
+                        value.__class__.__name__, value.id)
+                except AttributeError:
+                    pass  # The object is not a databse object.
+            yield '{}={}'.format(key, repr(value))
+
+    def __str__(self):
+        """Return string data about a Database object.
+
+        Note: prints lists as list of ids.
+        Note2: key.lstrip('_') accesses _attributes as attributes due to my
+        convention of using _value, @hybrid_property of value, @value.setter.
+
+        I don't understand why I need all of these ... only that each one seems
+        to hold slightly different data than the others with some overlap.
+
+        Not3: super class variables like 'type' and 'name' don't exist in
+        WorldMap until they are referenced as they are declared in Map...?
+        I called super to fix this ... but it may only allow ONE level of
+        superclassing. Multi-level superclasses will probably fail.
+        """
+
+        data = self.get_all_atts()
+        data_str_gen = self.data_to_string(data)
+        return "<{}({})>".format(
+            self.__class__.__name__, ', '.join(data_str_gen))
+
+    def pprint(self):
+        """Multi-line print of a database object -> good for object diff.
+
+        Basically a string_of clone but one variable per line.
+        """
+
+        data = self.get_all_atts()
+
+        print("\n\n<{}(".format(self.__class__.__name__))
+        for line in self.data_to_string(data):
+                print(line)
+        print(")>\n")
+
+    @property
+    def pretty(self):
+        data = self.get_all_atts()
+
+        lines = (line for line in self.data_to_string(data))
+        return "\n<{}(\n{}\n)>\n".format(
+            self.__class__.__name__, '\n'.join(lines))
+
+    def pretty_list(obj_list, key='id'):
+        """Build a human readable string version of a list of objects.
+
+        :param obj_list: The list of Base objects to print.
+        :param key: and attribute of the each object to print by.
+        :return: A nicely formatted string version of the list.
+
+        Mainly used for print 'InstrumentedList' that most hated of objects.
+        NOTE: the list is sorted! If the key can't be sorted then this will
+        fail.
+        """
+        return '[' + ', '.join(
+            '{}.{}={}'.format(
+                obj.__class__.__name__,
+                key,
+                repr(getattr(obj, key))
+            ) for obj in sorted(
+                obj_list,
+                key=lambda x, k=key: getattr(x, k))
+        ) + ']'
+
+    def is_equal(self, other):
+        """Test if two database objects are equal.
+
+        hero.is_equal(hero) vs. str(hero) == str(hero)
+        is_equal is 0.3 seconds faster over 1000 iterations than str == str.
+        So is_equal is not that useful. I would like it if it was 5-10 times
+        faster.
+        """
+        data = self.get_all_atts()
+        other_data = other.get_all_atts()
+
+        if data != other_data:
+            return False
+
+        if self.__class__.__name__ != other.__class__.__name__:
+            return False
+
+        for key in data:
+            value = getattr(self, key)
+            other_value = getattr(other, key)
+            if value != other_value:
+                return False
+        return True
+
+
 # Initialize SQLAlchemy base class.
-Base = declarative_base()
+Base = declarative_base(cls=Base)
 # This used a class factory to build a class called base in the local
 # context. Why I can't just import Base I have no idea.
 # And I know how to use it.
-
-
-def get_mro_keys(self):
-    """Return all attributes of objects in MRO
-
-    All non-base objects in inheritance path.
-    Remove <class 'sqlalchemy.ext.declarative.api.Base'>,
-    <class 'object'> as these are the last two objects in the MRO
-    """
-    hierarchy_keys = set()
-    hierarchy = type(self).__mro__[1:-2]
-
-    for obj in hierarchy:
-        hierarchy_keys |= set(vars(obj).keys()) \
-                          - set(obj.__mapper__.relationships.keys())
-
-    # Remove private variables and id keys to prevent weird recursion
-    # and redundancy.
-    hierarchy_keys -= set(
-        [key for key in hierarchy_keys if key.startswith('_')]
-    )  # ? or 'id' in key])
-
-    return hierarchy_keys
-
-
-def get_all_atts(self):
-    data = set(vars(self).keys()) | \
-        set(self.__table__.columns.keys()) | \
-        set(self.__mapper__.relationships.keys())
-    
-    data.discard('_sa_instance_state')    
-        
-    hierarchy_keys = set()
-    try:
-        hierarchy_keys = get_mro_keys(self)
-    except IndexError:
-        pass  # This is the Base class and has no useful MRO.
-        
-    data |= hierarchy_keys
-
-    # Remove weird SQLAlchemy var available to higher class but no lower ones.
-    keys_to_remove = set()
-    for key in data:
-        try:
-            getattr(self, key)
-        except AttributeError:
-            # Because of single table inheritance ... invalid attributes can
-            # end up inside of the object hierarchy list.
-            keys_to_remove.add(key)
-    data -= keys_to_remove
-
-    # Don't print the object's methods.
-    data -= set([e for e in data if "method" in repr(type(getattr(self, e)))])
-    
-    return data
-    
-Base.get_all_atts = get_all_atts
-
-
-def data_to_string(self, data):
-    for key in sorted(data):
-        value = getattr(self, key)
-        # pdb.set_trace()
-        if value and (type(value) == orm.collections.InstrumentedList or
-                      type(value) == sqlalchemy.ext.orderinglist.OrderingList):
-            value = '[' + ', '.join(
-                e.__class__.__name__ + '.id=' + str(e.id) for e in value) + ']'
-        
-        # This if/try is a way to print ONE to ONE relationship objects
-        # without infinite recursion.
-        elif value:
-            try:
-                # Dummy call to test if value is a Database object.
-                # value._sa_instance_state  # temporarily removed.
-                value = "<{}(id={})>".format(
-                    value.__class__.__name__, value.id)
-            except AttributeError:
-                pass  # The object is not a databse object.
-        yield '{}={}'.format(key, repr(value))
-        
-Base.data_to_string = data_to_string
-    
-
-# I didn't call this method __str__ as it would then overide the module
-# string function.
-def string_of(self): 
-    """Return string data about a Database object.
-    
-    Note: prints lists as list of ids.
-    Note2: key.lstrip('_') accesses _attributes as attributes due to my
-    convention of using _value, @hybrid_property of value, @value.setter.
-    
-    I don't understand why I need all of these ... only that each one seems
-    to hold slightly different data than the others with some overlap.
-    
-    Not3: super class variables like 'type' and 'name' don't exist in WorldMap
-    until they are referenced as they are declared in Map...? I called super
-    to fix this ... but it may only allow ONE level of superclassing.
-    Multi-level superclasses will probably fail.
-    """
-
-    data = self.get_all_atts()
-    data_str_gen = self.data_to_string(data)
-    return "<{}({})>".format(self.__class__.__name__, ', '.join(data_str_gen))
-        
-Base.__str__ = string_of
-
-
-def pprint(self):
-    """Multi-line print of a database object -> good for object diff.
-    
-    Basically a string_of clone but one variable per line.
-    """
-    
-    data = self.get_all_atts()
-    
-    print("\n\n<{}(".format(self.__class__.__name__))
-    for line in self.data_to_string(data):
-            print(line)
-    print(")>\n")
-        
-Base.pprint = pprint
-
-
-def pretty_str(self):
-    data = self.get_all_atts()
-    
-    lines = (line for line in self.data_to_string(data))
-    return "\n<{}(\n{}\n)>\n".format(self.__class__.__name__, '\n'.join(lines))
-
-Base.pretty = property(pretty_str)
-
-
-def pretty_list(obj_list, key='id'):
-    """Build a human readable string version of a list of objects.
-
-    :param obj_list: The list of Base objects to print.
-    :param key: and attribute of the each object to print by.
-    :return: A nicely formatted string version of the list.
-
-    Mainly used for print 'InstrumentedList' that most hated of objects.
-    NOTE: the list is sorted! If the key can't be sorted then this will fail.
-    """
-    return '[' + ', '.join(
-        '{}.{}={}'.format(
-        obj.__class__.__name__,
-        key,
-        repr(getattr(obj, key))
-    ) for obj in sorted(
-        obj_list,
-        key=lambda x, k=key: getattr(x, k))
-    ) + ']'
-
-Base.pretty_list = pretty_list
-
-
-def is_equal(self, other):
-    """Test if two database objects are equal.
-    
-    hero.is_equal(hero) vs. str(hero) == str(hero)
-    is_equal is 0.3 seconds faster over 1000 iterations than str == str.
-    So is_equal is not that useful. I would like it if it was 5-10 times
-    faster.
-    """
-    data = self.get_all_atts()
-    other_data = other.get_all_atts()
-    
-    if data != other_data:
-        return False   
-    
-    if self.__class__.__name__ != other.__class__.__name__:
-        return False
-        
-    for key in data:
-        value = getattr(self, key)
-        other_value = getattr(other, key)
-        if value != other_value:
-            return False
-    return True
-    
-Base.is_equal = is_equal
     
 
 class BaseListElement(Base):
