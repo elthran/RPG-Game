@@ -81,11 +81,13 @@ from sqlalchemy.orm import relationship, validates, column_property
 from sqlalchemy import orm
 
 from base_classes import Base
-from events import Handler
+from events import handler_decorator
 import pdb
+from pprint import pprint
 
 
-class QuestPath(Handler):
+@handler_decorator
+class QuestPath(Base):
     """Allow storage of quest stage for a given hero and a given quest.
     
     This means that each hero can be in a different stage of the same quest.
@@ -120,7 +122,7 @@ class QuestPath(Handler):
     """
     __tablename__ = 'quest_path'
     
-    id = Column(Integer, ForeignKey('handler.id'), primary_key=True)
+    id = Column(Integer, primary_key=True)
     
     stage = Column(Integer)
     stage_count = orm.synonym('stage')
@@ -137,23 +139,17 @@ class QuestPath(Handler):
     # This path may be either active or completed, but not both.
     # Which establishes a manay to many relationship between quests and heroes.
     # QuestPath provides many special methods.
-    hero_id = column_property(Column(Integer, ForeignKey('hero.id')),
-                              Handler.hero_id)
-    hero = relationship("Hero", back_populates='quest_paths')
+    hero_id = Column(Integer, ForeignKey('hero.id'))
+    hero = relationship("Hero", back_populates='quest_paths',
+                        foreign_keys='[QuestPath.hero_id]')
 
     quest_id = Column(Integer, ForeignKey('quest.id'))
-    quest = relationship("Quest", back_populates='quest_paths')
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'quest_path',
-    }
+    quest = relationship("Quest", back_populates='quest_paths',
+                               foreign_keys='[QuestPath.quest_id]')
 
     def __init__(self, quest, hero, active=True, stage=1):
-
-        #Might work??
-        # pdb.set_trace()
-        super().__init__(completion_trigger=quest.completion_trigger,
-                         hero=hero)
+        self._init_handler(completion_trigger=quest.completion_trigger,
+                           hero=hero)
         self.quest = quest
         self.hero = hero
         
@@ -161,6 +157,9 @@ class QuestPath(Handler):
         self.stages = quest.get_stage_count()
         self.active = active
         self.completed = False
+
+        print("Cls __dict__:")
+        pprint(cls.__dict__)
 
     def advance(self):
         """Advance this path to the next stage.
@@ -335,7 +334,8 @@ class Quest(Base):
         backref="past_quests")
 
     # QuestPath
-    quest_paths = relationship("QuestPath", back_populates='quest')
+    quest_paths = relationship("QuestPath", back_populates='quest',
+                               foreign_keys='[QuestPath.quest_id]')
 
     # Triggers Each Quest has a completion trigger. Each trigger can
     # complete multiple quests?

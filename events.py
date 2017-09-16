@@ -6,9 +6,11 @@ from sqlalchemy import (
 from sqlalchemy import func
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.ext.declarative import declared_attr
 
 from base_classes import Base
 import pdb
+from pprint import pprint
 
 
 class Event(Base):
@@ -251,104 +253,69 @@ from functools import wraps
 # from items import Item
 
 
-def handler_decorator(cls):
-    class HandlerWrapper(Base):
-        __tablename__ = 'decorated_handler'
+class TemplateHandler(object):
+    id = Column(Integer, primary_key=True)
 
-        id = Column(Integer, primary_key=True)
+    # Add relationship to cls spec.
+    @declared_attr
+    trigger_id = Column(Integer, ForeignKey('trigger.id'))
+    completion_trigger = relationship("Trigger")
+    trigger_is_completed = relationship(
+        "Trigger",
+        primaryjoin="and_(HandlerWrapper.trigger_id==Trigger.id, "
+                    "Trigger.completed==True)")
 
-        # Add relationship to cls spec.
-        trigger_id = Column(Integer, ForeignKey('trigger.id'))
-        completion_trigger = relationship("Trigger")
-        trigger_is_completed = relationship(
-            "Trigger",
-            primaryjoin="and_(Handler.trigger_id==Trigger.id, "
-                        "Trigger.completed==True)")
+    # This might be redundant.
+    hero_id = Column(Integer, ForeignKey('hero.id'))
+    hero = relationship("Hero")
 
-        # This might be redundant.
-        hero_id = Column(Integer, ForeignKey('hero.id'))
-        hero = relationship("Hero")
+    def __init__(self, completion_trigger=None, hero=None):
+        self.completion_trigger = completion_trigger
+        self.hero = hero
 
-        def __init__(self, completion_trigger=None, hero=None):
-            self.completion_trigger = completion_trigger
-            self.hero = hero
+        self.add_hero_to_trigger(hero)
 
-            self.add_hero_to_trigger(hero)
+    def add_hero_to_trigger(self, hero):
+        """Add a hero object to be handled.
 
-        def add_hero_to_trigger(self, hero):
-            """Add a hero object to be handled.
+        Make Trigger available!
+        Some kind of linkage between trigger and hero.
+        Instantiated triggers must relate to a specific hero.
+        """
+        try:
+            self.completion_trigger.link(hero)
+        except AttributeError as ex:
+            print(ex)
 
-            Make Trigger available!
-            Some kind of linkage between trigger and hero.
-            Instantiated triggers must relate to a specific hero.
-            """
-            try:
-                self.completion_trigger.link(hero)
-            except AttributeError as ex:
-                print(ex)
+    def run_handler(self):
+        """Deactivate trigger and run activation code.
 
-        def run_handler(self):
-            """Deactivate trigger and run activation code.
+        In this case ... unlink the trigger from the given quest
+        and the advance the quest to the next stage.
 
-            In this case ... unlink the trigger from the given quest
-            and the advance the quest to the next stage.
+        In theory ... this would bring the new trigger in to play
+        through activation of a new quest? Or have I not set that up right?
 
-            In theory ... this would bring the new trigger in to play
-            through activation of a new quest? Or have I not set that up right?
+        NOTE: must have overwritten the run_if_trigger_completed() method
+        for this to work.
+        """
+        self.completion_trigger.unlink()
+        next_trigger = self.run_if_trigger_completed()
 
-            NOTE: must have overwritten the run_if_trigger_completed() method
-            for this to work.
-            """
-            self.completion_trigger.unlink()
-            next_trigger = self.run_if_trigger_completed()
+        self.completion_trigger = next_trigger
+        if next_trigger is not None:
+            self.add_hero_to_trigger(self.hero)
 
-            self.completion_trigger = next_trigger
-            if next_trigger is not None:
-                self.add_hero_to_trigger(self.hero)
-
-        def run_if_trigger_completed(self):
-            """A method that needs to be over ridden in the inherited class."""
-            print("You were supposed to have over ridden this method.")
-            print("(in class Handler -> run_if_trigger_completed)")
-            print("Returns the next trigger to be hooked up.")
-            raise Exception(
-                "Read the above message and maybe as me for help.")
-
-    # print("Cls dir:", dir(cls))
-    # print("Cls __dict__:", cls.__dict__)
-    # print("Cls __table__", repr(cls.__table__))
-    # print("Wrapper table:", repr(HandlerWrapper.__table__))
-    # print("Wrapper dir:", dir(HandlerWrapper))
-    # print("Wrapper __dict__:", HandlerWrapper.__dict__)
-
-    # Overload columns
-    for column in HandlerWrapper.__table__.columns:
-        column.table = cls.__table__
-        if column.name not in cls.__table__.columns:
-            cls.__table__.append_column(column)
-
-    # Overload attributes (functions and relationships)
-    for attr, value in HandlerWrapper.__dict__.items():
-        if attr.startswith('__'):
-            continue
-        setattr(cls, attr, value)
-
-    # Add additional __init__
-    cls._init_handler = HandlerWrapper.__init__
-    # exit("Testing init overload!")
-    # print("Cls __table__ after append:", repr(cls.__table__))
-    # print("Cls dir after append:", dir(cls))
-    # print("Cls __dict__ after append:", cls.__dict__)
-    # for attr, value in HandlerWrapper.__dict__.items():
-    #     if attr not in cls.__dict__.items() and attr not in ['__dict__']:
-    #         setattr(cls, attr, value)
-    # print("Cls dir after:", dir(cls))
-    return cls
-
+    def run_if_trigger_completed(self):
+        """A method that needs to be over ridden in the inherited class."""
+        print("You were supposed to have over ridden this method.")
+        print("(in class Handler -> run_if_trigger_completed)")
+        print("Returns the next trigger to be hooked up.")
+        raise Exception(
+            "Read the above message and maybe as me for help.")
 
 if __name__ == "__main__":
-    @handler_decorator
-    class SomeClassThatUsesTriggers(Base):
+    class SomeClassThatUsesTriggers(TemplateHandler, Base):
         __tablename__ = "some_class_that_uses_triggers"
 
         id = Column(Integer, primary_key=True)
