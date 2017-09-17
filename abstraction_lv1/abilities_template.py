@@ -41,7 +41,7 @@ class Abilities(Base):
 
     def __init__(self):
         {%- for value in ALL_ABILITIES %}
-        self.{{ value[0] }} = {{ value[2] }}
+        self.{{ value[0] }} = {{ value[1] }}('{{ value[0] }}', {{ value[2] }})
         {%- endfor %}
 
     def items(self):
@@ -57,7 +57,7 @@ class Abilities(Base):
             ability -- the object that corresponds to the named attribute.
         """
 
-        return ((key[0], getattr(self, key[0])) for key in ALL_ABILITIES)
+        return ((key, getattr(self, key)) for key in ABILITY_NAMES)
 
     def __iter__(self):
         """Allow this object to be used in a for call.
@@ -66,7 +66,7 @@ class Abilities(Base):
             ability -- where the ability is each of the attribute objects of
                 the abilities class.
         """
-        return (getattr(self, key[0]) for key in ALL_ABILITIES)
+        return (getattr(self, key) for key in ABILITY_NAMES)
 
 
 class Ability(Base):

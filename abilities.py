@@ -15,16 +15,28 @@ from sqlalchemy import orm
 from base_classes import Base
 import pdb
 
+"""
+Abilities spec goes:
+
+name, class, class arguments (not including name as it is added later).
+"""
+
 ALL_ABILITIES = [
     ("scholar", "AuraAbility",
-     "AuraAbility('scholar', 5, 'Gain +1% experience gain per level', learnable=True, understanding_modifier=1)"),
+        "5, 'Gain +1% experience gain per level', learnable=True, "
+        "understanding_modifier=1"),
     ("reflexes", "AuraAbility",
-     "AuraAbility('reflexes', 3, 'Gain +2% dodge chance per level', learnable=True, evade_chance=2)"),
+     "3, 'Gain +2% dodge chance per level', learnable=True, evade_chance=2"),
     ("cure", "CastableAbility",
-    "CastableAbility('cure', 3, 'Recover 3 health', learnable=True, tree='archetype', tree_type='priest', sanctity_cost=1, heal_amount=3)"),
+        "3, 'Recover 3 health', learnable=True, tree='archetype', "
+        "tree_type='priest', sanctity_cost=1, heal_amount=3"),
     ("free_gold", "CastableAbility",
-     "CastableAbility('testgold', 3, 'Gain 3 gold', learnable=True, tree='archetype', tree_type='merchant', endurance_cost=1, gold_amount=3)")
+     "3, 'Gain 3 gold', learnable=True, tree='archetype', "
+     "tree_type='merchant', endurance_cost=1, gold_amount=3")
 ]
+
+
+ABILITY_NAMES = [key[0] for key in ALL_ABILITIES]
 
 # "determination", 5, "Increases Endurance by 3 for each level."
 
@@ -65,7 +77,7 @@ class Abilities(Base):
         self.scholar = AuraAbility('scholar', 5, 'Gain +1% experience gain per level', learnable=True, understanding_modifier=1)
         self.reflexes = AuraAbility('reflexes', 3, 'Gain +2% dodge chance per level', learnable=True, evade_chance=2)
         self.cure = CastableAbility('cure', 3, 'Recover 3 health', learnable=True, tree='archetype', tree_type='priest', sanctity_cost=1, heal_amount=3)
-        self.free_gold = CastableAbility('testgold', 3, 'Gain 3 gold', learnable=True, tree='archetype', tree_type='merchant', endurance_cost=1, gold_amount=3)
+        self.free_gold = CastableAbility('free_gold', 3, 'Gain 3 gold', learnable=True, tree='archetype', tree_type='merchant', endurance_cost=1, gold_amount=3)
 
     def items(self):
         """Return each Ability and its name.
@@ -80,7 +92,7 @@ class Abilities(Base):
             ability -- the object that corresponds to the named attribute.
         """
 
-        return ((key[0], getattr(self, key[0])) for key in ALL_ABILITIES)
+        return ((key, getattr(self, key)) for key in ABILITY_NAMES)
 
     def __iter__(self):
         """Allow this object to be used in a for call.
@@ -89,7 +101,7 @@ class Abilities(Base):
             ability -- where the ability is each of the attribute objects of
                 the abilities class.
         """
-        return (getattr(self, key[0]) for key in ALL_ABILITIES)
+        return (getattr(self, key) for key in ABILITY_NAMES)
 
 
 class Ability(Base):
