@@ -154,31 +154,6 @@ class Command:
             status = "max level"
         return "{}&&{}&&{}&&{}".format(ability_id, ability.level, status, ability_tree)
 
-    # This entire button is temporary and can be deleted safely. It's being used to quickly change hero classes for testing purposes.
-    def becomePriest(hero, database, arg_dict):
-        hero.archetype = "priest"
-        for ability in hero.abilities:
-            if ability.tree_type != "priest" and ability.tree != "basic":
-                ability.hidden = True
-            else:
-                ability.hidden = False
-        return "success"
-
-    # This entire button is temporary and can be deleted safely. It's being used to quickly change hero classes for testing purposes.
-    def becomeMerchant(hero, database, arg_dict):
-        hero.archetype = "merchant"
-        for ability in hero.abilities:
-            if ability.tree_type != "merchant" and ability.tree != "basic":
-                ability.hidden = True
-            else:
-                ability.hidden = False
-        return "success"
-
-    # This entire button is temporary and can be deleted safely. It's being used to quickly change hero classes for testing purposes.
-    def becomeReligious(hero, database, arg_dict):
-        hero.religion = "godguy"
-        return "success"
-
     def cast_spell(hero, database, arg_dict):
         ability_id = arg_dict.get('data', None, type=int)
         ability = database.get_ability_by_id(ability_id)

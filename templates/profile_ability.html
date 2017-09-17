@@ -24,11 +24,28 @@
         No Abilities Available
     {% endfor %}
 <h3>
-For testing purposes, do you want to choose a new archetype/specializations/religion<br>
-<button class="command" data-function="becomePriest" data-name="becomePriest">priest</button><br>
-    <button class="command" data-function="becomeMerchant" data-name="becomeMerchant">merchant</button><br>
-    <button class="command" data-function="becomeReligious" data-name="becomeGodguy">godguy</button><br>
-</h3>
+	<h1>*TESTING PURPOSES* Modify your character</h1>
+<form action="" method="post">
+	Archetype:
+    <select name="archetype" autofocus tabindex=1>
+	<option value="Brute" title="BE STRONG">Brute</option>
+	<option value="Woodsman">Woodsman</option>
+	<option value="Intellectual">Intellectual</option>
+	</select><br>
+    Specialization:
+    <select name="spec" autofocus tabindex=1>
+	<option value="Priest" title="BE STRONG">Priest</option>
+	<option value="Hunter">Hunter</option>
+	<option value="Merchant">Merchant</option>
+	</select><br>
+    Religion:
+    <select name="religion" autofocus tabindex=1>
+	<option value="firegod" title="BE STRONG">firegod</option>
+	<option value="icegod">icegod</option>
+	<option value="athiest">athiest</option>
+	</select>
+<input class="btn btn-default" type="submit" value="Next" tabindex=2 />
+      </form>
 
 
 {% endblock %}

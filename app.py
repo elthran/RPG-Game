@@ -586,12 +586,16 @@ def proficiencies(hero=None):
                            profs2=profs2, profs3=profs3)
 
 
-@app.route('/ability_tree/<spec>')
+@app.route('/ability_tree/<spec>', methods=['GET', 'POST'])
 @login_required
 @uses_hero_and_update
 def ability_tree(spec, hero=None):
     page_title = "Abilities"
-
+    if request.method == 'POST':
+        hero.archetype = request.form["archetype"]
+        hero.religion = request.form["religion"]
+        hero.specialization = request.form["spec"]
+        database.update()
     return render_template(
         'profile_ability.html', myHero=hero, ability_tree=spec, page_title=page_title)
 
