@@ -71,36 +71,13 @@ class Command:
             future for expansions.
     """
 
-
-    #Marked for update!
-    #Uses obsolete code.
-    @staticmethod
-    def choose_religion(hero, database, arg_dict):
-        # pdb.set_trace()
-        button_name = arg_dict.get('innerHTML', None, type=str)
-        #Update value in database.
-        #Swap value for religion between Forgoth and Dryarch.
-        hero.religion = "Dryarch" if button_name == "Dryarch" else "Forgoth"
-
-
-        #Return a string to be parsed by the xhttp code.
-        #Replace all occurrences of html with id equal to old value with new value.
-        #This updates the value and the id!
-        """
-        <span id="hero_religion">{{ myHero.religion }}</span>
-        This will update the value of myHero.religion if it is inside the above span tag.
-        """
-        return "{id}={value}".format(id='hero_religion', value=hero.religion)
-
     @staticmethod
     def buy(hero, database, arg_dict):
         """Allow the user to buy items from the Blacksmith.
-
         Returns an error if the character doesn't have enough gold.
         """
         item_id = arg_dict.get('data', None, type=int)
         location = arg_dict.get('location', None, type=str)
-
         item = database.create_item(item_id)
         if hero.gold >= item.buy_price:
             hero.inventory.add_item(item)
@@ -119,12 +96,10 @@ class Command:
     @staticmethod
     def consume(hero, database, arg_dict):
         """Apply the effect of a potion when the hero consumes it.
-
         NOTE: the item is then deleted from the hero's inventory and the database.
         """
         item_id = arg_dict.get('data', None, type=int)
         item = database.get_item_by_id(item_id)
-
         item.apply_effect(hero)
         database.delete_item(item_id)
         return "success"
@@ -134,7 +109,6 @@ class Command:
         item_id = arg_dict.get('data', None, type=int)
         item = database.get_item_by_id(item_id)
         ids_to_unequip = hero.inventory.equip(item)
-
         hero.refresh_character()
 
         return item.type + "&&" + str(ids_to_unequip)
@@ -143,14 +117,12 @@ class Command:
     def unequip(hero, database, arg_dict):
         item_id = arg_dict.get('data', None, type=int)
         item = database.get_item_by_id(item_id)
-
         hero.refresh_character()
-
         hero.inventory.unequip(item)
         return item.type
 
     def update_ability(hero, database, arg_dict):
-        # data = "{{ ability.id }}, {{ ability.tree }}"
+        # Format of data in html button is: data = "{{ ability.id }}, {{ ability.tree }}"
         data = arg_dict.get('data', "").split(", ")
         if data:
             ability_id = int(data[0])
@@ -177,6 +149,31 @@ class Command:
         if ability.is_max_level():
             status = "max level"
         return "{}&&{}&&{}&&{}".format(ability_id, ability.level, status, ability_tree)
+
+    # This entire button is temporary and can be deleted safely. It's being used to quickly change hero classes for testing purposes.
+    def becomePriest(hero, database, arg_dict):
+        hero.archetype = "priest"
+        for ability in hero.abilities:
+            if ability.tree_type != "priest":
+                ability.hidden = True
+            else:
+                ability.hidden = False
+        return "success"
+
+    # This entire button is temporary and can be deleted safely. It's being used to quickly change hero classes for testing purposes.
+    def becomeMerchant(hero, database, arg_dict):
+        hero.archetype = "merchant"
+        for ability in hero.abilities:
+            if ability.tree_type != "merchant":
+                ability.hidden = True
+            else:
+                ability.hidden = False
+        return "success"
+
+    # This entire button is temporary and can be deleted safely. It's being used to quickly change hero classes for testing purposes.
+    def becomeReligious(hero, database, arg_dict):
+        hero.religion = "godguy"
+        return "success"
 
     def cast_spell(hero, database, arg_dict):
         ability_id = arg_dict.get('data', None, type=int)
@@ -223,28 +220,6 @@ class Command:
         elif proficiency.is_max_level(hero):
             return "hide_this&&{}".format(tooltip)
         return "success&&{}".format(tooltip)
-
-    @staticmethod
-    def upgrade_ability(hero, database, arg_dict):
-        """Update the Ability object located at id.
-
-        This function returns the relevant display data to some JS code.
-
-        Maybe this also needs to be able to "add" an Ability to the Hero object?
-        if the Ability is at level 0? Or would the Hero have all Abilities
-        but not display them if they are level 0?
-        """
-        ability_id = arg_dict.get('data', None, type=int)
-        ability = database.get_object_by_id("Ability", ability_id)
-
-        # This is a dummy function that will update the abilities level
-        # and various display properties ... and the hero object it pertains
-        # to.
-        ability.update_level()
-
-        # The return is a dummy function ... it would need to send all
-        # the data to make the JS/HTML display correctly.
-        return "update_ability_display&&{}".format(ability.display_name)
 
     @staticmethod
     def cmd_functions(name):
