@@ -1,6 +1,7 @@
 import pdb
 
 from flask import render_template_string
+from engine import Engine
 
 
 class Command:
@@ -82,14 +83,17 @@ class Command:
         if hero.gold >= item.buy_price:
             hero.inventory.add_item(item)
             hero.gold -= item.buy_price
-            #return buy success event.
-            #Test event later against posible quest events conditions.
-            for path in hero.quest_paths:
-                if (path.active and
-                    path.quest.name == "Get Acquainted with the Blacksmith" and
-                    path.stage == 2 and
-                    location in ["/store/armoury", "/store/weaponry"]):
-                    path.advance()
+            # return buy success event.
+            # Test event later against posible quest events conditions.
+            # for path in hero.quest_paths:
+            #     if (path.active and
+            #         path.quest.name == "Get Acquainted with the Blacksmith" and
+            #         path.stage == 2 and
+            #         location in ["/store/armoury", "/store/weaponry"]):
+            #         path.advance()
+            engine = Engine(database)
+            engine.spawn('buy_event', hero, description="Hero buys an item.")
+
             return "{}: id={}&&{}".format(item.name, item.id, hero.gold)
         return "error: not enough gold!"
 

@@ -253,7 +253,11 @@ class Hero(Base):
     # This path may be either active or completed, but not both.
     # Which establishes a manay to many relationship between quests and heroes.
     # QuestPath provides many special methods.
-    quest_paths = relationship("QuestPath", back_populates='hero')
+    quest_paths = relationship("QuestPath", back_populates='hero',
+                               foreign_keys='[QuestPath.hero_id]')
+
+    # Many to one with Triggers, Each hero has many triggers.
+    triggers = relationship('Trigger', back_populates='hero')
 
     # @eltran ... this probably won't work as the var will disappear on
     # database relaod.
@@ -425,6 +429,4 @@ class Hero(Base):
         """
         if location.type in ("cave", "town"):
             self.current_city = location
-        else:
-            self.current_city = None
         return location

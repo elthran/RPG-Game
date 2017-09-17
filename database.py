@@ -31,8 +31,9 @@ from game import User, Hero, Inbox
 from abilities import Abilities, Ability
 from locations import Location  # , WorldMap, Town, Cave
 from items import ItemTemplate, Item
-from quests import Quest
+from quests import Quest, QuestPath
 from proficiencies import Proficiency
+from events import Trigger
 import prebuilt_objects
 
 
@@ -310,6 +311,35 @@ class EZDB:
         Using any of the other methods will push him to database.
         """
         self.session.commit()
+
+    def add_object(self, obj):
+        """Add an object to the database.
+
+        Hides the session object. And the commit :P
+        """
+        self.session.add(obj)
+        self.session.commit()
+
+    def get_all_handlers_with_completed_triggers(self, hero):
+        """Return all the handler objects with completed triggers.
+
+        This occurs when an event has happened that 'completed' a trigger
+        for a given event.
+        """
+        objs = [QuestPath]
+        handlers = []
+        for obj in objs:
+            handlers += self.session.query(obj).\
+                filter(obj.trigger_is_completed).\
+                filter(obj.hero_id == hero.id).all()
+
+        return handlers
+
+    def get_all_triggers_by(self, event_name, hero_id):
+        """Return all triggers for this hero that fit a given event."""
+
+        return self.session.query(Trigger).filter_by(event_name=event_name,
+                                              hero_id=hero_id).all()
 
     @staticmethod
     def now():
