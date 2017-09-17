@@ -158,7 +158,7 @@ class Command:
     def becomePriest(hero, database, arg_dict):
         hero.archetype = "priest"
         for ability in hero.abilities:
-            if ability.tree_type != "priest":
+            if ability.tree_type != "priest" and ability.tree != "basic":
                 ability.hidden = True
             else:
                 ability.hidden = False
@@ -168,7 +168,7 @@ class Command:
     def becomeMerchant(hero, database, arg_dict):
         hero.archetype = "merchant"
         for ability in hero.abilities:
-            if ability.tree_type != "merchant":
+            if ability.tree_type != "merchant" and ability.tree != "basic":
                 ability.hidden = True
             else:
                 ability.hidden = False
