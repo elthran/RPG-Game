@@ -3,14 +3,14 @@ import pytest
 from database import EZDB
 from game import Hero
 
-from proficiencies import Proficiencies, Health
+from proficiencies import Proficiencies, Health, Regeneration
 
 
 class TestProficiency:
     def setup(self):
         self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
 
-    def teardown(self, delete=True):
+    def teardown(self, delete=False):
         self.db.session.close()
         self.db.engine.dispose()
         if delete:
@@ -27,7 +27,7 @@ class TestProficiency:
         self.teardown(delete=False)
         self.setup()
 
-    def test_Health_init(self):
+    def test_health_init(self):
         """Check if object is created, storeable and retrievable.
         """
 
@@ -46,3 +46,24 @@ class TestProficiency:
         # print("health", str_health)
         # print(health2.pretty)
         assert str_health == health2.pretty != ''
+
+    def test_regeneration_init(self):
+        """Check if object is created, storeable and retrievable.
+        """
+
+        proficiencies = Proficiencies()
+        # proficiencies.pprint()
+        self.db.session.add(proficiencies)
+        self.db.session.commit()
+
+        id = proficiencies.id
+        regeneration = proficiencies.regeneration
+        str_regeneration = regeneration.pretty
+        # print("regeneration", str_regeneration)
+
+        self.rebuild_instance()
+        regeneration2 = self.db.session.query(
+            Regeneration).filter_by(name="Regeneration",
+                                    proficiencies_id=id).first()
+        # print(regeneration2.pretty)
+        assert str_regeneration == regeneration2.pretty != ''

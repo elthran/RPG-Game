@@ -41,7 +41,7 @@ Empty: Sets this value to take on the value of "maximum". Must be placed after
 """
 PROFICIENCY_INFORMATION = [
     ("Health", "How much you can take before you die", "Vitality", [("Maximum", "linear", (2, 5, 0)), ("Current", "empty")]),
-    # ("Regeneration", "How quickly your wounds heal", "Vitality", [("Speed", "root", (1, 2))]),
+    ("Regeneration", "How quickly your wounds heal", "Vitality", [("Speed", "root", (1, 2))]),
     # ("Recovery", "How quickly you recover from poisons and negative effects", "Vitality",[("Efficiency", "root", (0, 0))]),
     # ("Climbing", "Your ability to climb obstacles", "Agility", [("Ability", "linear", (0.5, 0.5, 1))]),
     ("Storage", "Your carrying capacity", "Brawn", [("Maximum", "linear", (2, 10, 0)), ("Current", "empty")]),
@@ -105,7 +105,8 @@ ALL_PROFICIENCY_NAMES = [attrib[0] for attrib in PROFICIENCY_INFORMATION]
 
 # class ProficiencyMixin(object):
 #     name = Column(String, default=cls.__name__)
-        
+
+
 class Proficiency(Base):
     """Proficiency class that stores data about a hero object.
     """
@@ -122,23 +123,20 @@ class Proficiency(Base):
     # is_not_max_level = Column(Boolean)
     # reason_for_zero = Column(String)
 
-    # Dynamic columns
-    current = Column(Integer)
-    maximum = Column(Integer)
-
     # Extra Ability columns
     error = Column(String)
     formatted_name = Column(String)
-    # ability = Column(Integer)
-    # accuracy = Column(Integer)
-    # amount = Column(Integer)
-    # chance = Column(Integer)
-    # efficiency = Column(Integer)
-    # maximum = Column(Integer)
-    # minimum = Column(Integer)
-    # modifier = Column(Integer)
-    # skill = Column(Integer)
-    # speed = Column(Integer)
+    ability = Column(Integer)
+    accuracy = Column(Integer)
+    amount = Column(Integer)
+    chance = Column(Integer)
+    current = Column(Integer)
+    efficiency = Column(Integer)
+    maximum = Column(Integer)
+    minimum = Column(Integer)
+    modifier = Column(Integer)
+    skill = Column(Integer)
+    speed = Column(Integer)
 
     # Relationships
     proficiencies_id = Column(Integer, ForeignKey('proficiencies.id'))
@@ -182,14 +180,14 @@ class Proficiency(Base):
 
 
 class DynamicMixin(object):
+    @declared_attr
+    def __mapper_args__(cls):
+        return {'polymorphic_identity': cls.__name__}
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.maximum = 0
         self.current = 0
-
-    @declared_attr
-    def __mapper_args__(cls):
-        return {'polymorphic_identity': cls.__name__}
 
     @property
     def percent(self):
@@ -298,7 +296,25 @@ class StaticMixin(object):
     def __mapper_args__(cls):
         return {'polymorphic_identity': cls.__name__}
 
-    def get_modifiable(self):
+    def __init__(self, *args, **kwargs):
+        """Generic init for static classes.
+
+        Main usage is to set init values to 0.
+        Example (the code does):
+            self.speed = 0
+        OR
+            self.skill = 0
+        """
+        super().__init__(*args, **kwargs)
+        for attrib in self.modifiable_on:
+            setattr(self, attrib, 0)
+
+    @property
+    def modifiable_on(self):
+        return ['ability', 'accuracy', 'amount', 'chance', 'efficiency',
+                'maximum', 'minimum', 'modifier', 'skill', 'speed']
+
+    def get_all_modifiable(self):
         """Return modifiable columns for this class.
 
         Possible options:
@@ -306,50 +322,77 @@ class StaticMixin(object):
         OR
             [getattr(self, key) for key in attrib_names]
         """
-        attrib_names =['ability', 'accuracy', 'amount', 'chance',
-                       'efficiency', 'maximum', 'minimum', 'modifier',
-                       'skill', 'speed']
-        return [getattr(self, key) for key in attrib_names]
+        return [getattr(self, key) for key in self.modifiable_on]
 
-class Regeneration(Proficiency):
+    def generic_update(self, hero):
+        """Generic update function.
 
-    __mapper_args__ = {
-        'polymorphic_identity': "Regeneration",
-    }
+        Requires that modifiable_on be declared in
+        subclass.
+
+        Usage does:
+            for item in myHero.equipped_items():
+                self.efficiency += item.recovery_efficiency
+            for ability in myHero.abilities:
+                self.efficiency += ability.recovery_efficiency * ability.level
+        OR
+            for item in myHero.equipped_items():
+                self.speed += item.regeneration_speed
+            for ability in myHero.abilities:
+                self.speed += ability.regeneration_speed * ability.level
+
+        Also sets the tooltip variable. Which will probably get moved to JS.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+            item_attrib = self.__class__.__name__.lower() + attrib
+            for item in hero.equipped_items():
+                new_value = 0
+                try:
+                     new_value = getattr(item, item_attrib)
+                except AttributeError:
+                    # If the item doesn't have this attribute, don't worry about
+                    # it.
+                    pass
+                new_value += getattr(self, attrib)
+                setattr(self, attrib, new_value)
+
+            for ability in hero.abilities:
+                new_value = 0
+                try:
+                    new_value = getattr(ability, item_attrib)
+                except AttributeError:
+                    # If the item doesn't have this attribute, don't worry about
+                    # it.
+                    pass
+                new_value *= ability.level
+                new_value += getattr(self, attrib)
+                setattr(self, attrib, new_value)
+
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+
+
+class Regeneration(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['speed']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.description = "How quickly your wounds heal"
         self.attribute_type = "Vitality"
-        self.speed = 0
 
-    def update(self, myHero):
+    def update(self, hero):
         """Update Regeneration's attributes and tooltip variable.
         """
-        tooltips = []
         self.speed = round((100 * self.level)**0.5 - (self.level / 4) + 1, 2)
-        # This creates a tooltip for each variable
-        tooltips.append("Speed: " + str(self.speed))
+        super().generic_update(hero)
 
-        for item in myHero.equipped_items():
-            try:
-                self.speed += item.regeneration_speed
-            except AttributeError:
-                # If the item doesn't have this attribute, don't worry about
-                # it.
-                pass
-
-        for ability in myHero.abilities:
-            try:
-                self.speed += ability.regeneration_speed * ability.level
-            except AttributeError:
-                # If the item doesn't have this attribute, don't worry about
-                # it.
-                pass
-
-        #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-#
 # class Recovery(Proficiency):
 #
 #     __mapper_args__ = {
@@ -384,21 +427,21 @@ class Regeneration(Proficiency):
 #         { % endif %}
 # """
 #
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.efficiency += item.recovery_efficiency
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.efficiency += ability.recovery_efficiency * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
+        for item in myHero.equipped_items():
+            try:
+                self.efficiency += item.recovery_efficiency
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+
+        for ability in myHero.abilities:
+            try:
+                self.efficiency += ability.recovery_efficiency * ability.level
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
 #
 #         #This updates the main tooltip string variable.
 #         self.tooltip = ';'.join(tooltips)
