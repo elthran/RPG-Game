@@ -27,7 +27,7 @@ Sensitive: Like curvy but has decimals (larger [0] means it reaches the cap
     quicker) (smaller [1] means it reaches the cap quicker) ([2] is the cap
     or maximum possible value) ([3] is the negative amount)
 Modifier: (larger [0] means greater amplitude), (larger [1] means greater
-    steepness andfaster increase), (greater [2]  means greater frequency of
+    steepness and faster increase), (greater [2]  means greater frequency of
     waves)
 Percent: ???
 Empty: Sets this value to take on the value of "maximum". Must be placed after
@@ -35,57 +35,57 @@ Empty: Sets this value to take on the value of "maximum". Must be placed after
 """
 PROFICIENCY_INFORMATION = [
     ("Health", "How much you can take before you die", "Vitality", [("Maximum", "linear", (2, 5, 0)), ("Current", "empty")]),
-    ("Regeneration", "How quickly your wounds heal", "Vitality", [("Speed", "root", (1, 2))]),
-    ("Recovery", "How quickly you recover from poisons and negative effects", "Vitality",[("Efficiency", "root", (0, 0))]),
-    ("Climbing", "Your ability to climb obstacles", "Agility", [("Ability", "linear", (0.5, 0.5, 1))]),
-    ("Storage", "Your carrying capacity", "Brawn", [("Maximum", "linear", (2, 10, 0)), ("Current", "empty")]),
-    ("Encumbrance", "How much your are slowed down in combat by your equipment", "Brawn", [("Amount", "root", (0, 0))]),
-    ("Endurance", "Actions performed each day", "Resilience", [("Maximum", "linear", (1, 3, 0)), ("Current", "empty")]),
-    ("Damage", "How much damage you do on each hit", "Brawn", [("Minimum", "linear", (1, 0, 0)), ("Maximum", "linear", (1, 1, 0)), ("Modifier", "linear", (.1, 1, 1))]),
-    ("Speed", "How fast you attack", "Quickness", [("Speed", "linear", (0.03, 1, 2))]),
-    ("Accuracy", "The chance of your attacks hitting their target.", "Agility", [("Accuracy", "root", (35, 0))]),
-    ("First strike", "Chance to strike first", "Quickness", [("Chance", "root", (0, 0))]),
-    ("Killshot", "Ability to hit enemies in their weak spot", "Agility", [("Chance", "root", (0, 0)), ("Modifier", "linear", (0.1, 1, 1))]),
-    ("Defence", "Damage reduction", "Resilience", [("Modifier", "root", (0, 0))]),
-    ("Evade", "Chance to dodge", "Quickness", [("Chance", "root", (5, 0))]),
-    ("Parry", "Chance to parry", "Quickness", [("Chance", "root", (2, 0))]),
-    ("Flee", "Chance to run from a battle", "Quickness", [("Chance", "root", (7, 0))]),
-    ("Riposte", "Chance to riposte an enrmy attack", "Agility", [("Chance", "root", (0, 0))]),
-    ("Fatigue", "How quickly you tire in combat", "Resilience", [("Maximum", "linear", (1, 5, 0)), ("Current", "empty")]),
-    ("Block", "Ability to block if a shield is equipped", "Resilience", [("Chance", "root", (0, 0)), ("Modifier", "root", (0, 0))]),
-    ("Stealth", "Chance to avoid detection", "Agility", [("Chance", "root", (3, 0))]),
-    ("Pickpocketing", "Skill at stealing from others", "Agility", [("Chance", "root", (1, 0))]),
-    ("Faith", "Strength of spells you cast", "Divinity", [("Modifier", "linear", (0.1, 1, 0))]),
-    ("Sanctity", "Amount of sanctity you can have", "Divinity", [("Maximum", "linear", (3, 0, 0)), ("Current", "empty")]),
-    ("Resist holy", "Ability to resist holy damage", "Divinity", [("Modifier", "root", (0, 0))]),
-    ("Bartering", "Discount from negotiating prices", "Charisma", [("Modifier", "linear", (-0.05, 1, 0))]),
-    ("Oration", "Proficiency in speaking to others", "Charisma", [("Modifier", "root", (11, 0))]),
-    ("Charm", "How quickly other people will like you", "Charisma", [("Modifier", "root", (3, 0))]),
-    ("Trustworthiness", "How much other players trust you", "Charisma", [("Modifier", "root", (0, 0))]),
-    ("Renown", "How much your actions affect your reputation", "Charisma", [("Modifier", "linear", (0.1, 1, 0))]),
-    ("Knowledge", "Ability to understand", "Intellect", [("Modifier", "root", (6, 0))]),
-    ("Literacy", "Ability to read", "Intellect", [("Modifier", "root", (0, 0))]),
-    ("Understanding", "How quickly you level up", "Intellect", [("Modifier", "linear", (0.05, 1, 0))]),
-    ("Luckiness", "Chance to have things turn your way against all odds", "Fortuity", [("Chance", "linear", (0.01, 0, 0))]),
-    ("Adventuring", "Chance to discover treasure", "Fortuity", [("Chance", "root", (0, 0))]),
-    ("Logistics",  "How far you can move on the map", "Pathfinding", [("Modifier", "linear", (0.2, 1, 0))]),
-    ("Mountaineering", "Modifier for mountain movement", "Pathfinding", [("Modifier", "linear", (0.5, 1, 0))]),
-    ("Woodsman", "Modifier for forest movement", "Pathfinding", [("Modifier", "linear", (.5, 1, 0))]),
-    ("Navigator", "Modifier for water movement", "Pathfinding", [("Modifier", "linear", (.5, 1, 0))]),
-    ("Detection", "Chance to discover enemy stealth and traps", "Survivalism", [("Chance", "root", (0, 0))]),
-    ("Caution",  "See information about a new grid before going there", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
-    ("Explorer", "Additional options on the map, such as foraging", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
-    ("Huntsman", "Learn additional information about enemies", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
-    ("Survivalist", "Create bandages, tents, and other useful objects", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
-    ("Resist frost", "Ability to resist frost damage", "Resilience", [("Modifier", "root", (0, 0))]),
-    ("Resist flame", "Ability to resist flame damage", "Resilience", [("Modifier", "root", (0, 0))]),
-    ("Resist shadow", "Ability to resist shadow damage", "Resilience", [("Modifier", "root", (0, 0))]),
-    ("Resist poison", "Ability to resist poison damage", "Resilience", [("Modifier", "root", (0, 0))]),
-    ("Resist blunt", "Ability to resist blunt damage", "Resilience", [("Modifier", "root", (0, 0))]),
-    ("Resist slashing", "Ability to resist slashing damage", "Resilience", [("Modifier", "root", (0, 0))]),
-    ("Resist piercing", "Ability to resist piercing damage", "Resilience", [("Modifier", "root", (0, 0))]),
-    ("Courage", "Your ability to overcome fears", "Willpower", [("Skill", "linear", (1, 0, 0))]),
-    ("Sanity", "Your ability to resist mind altering affects", "Willpower", [("Skill", "linear", (1, 0, 0))]),
+    # ("Regeneration", "How quickly your wounds heal", "Vitality", [("Speed", "root", (1, 2))]),
+    # ("Recovery", "How quickly you recover from poisons and negative effects", "Vitality",[("Efficiency", "root", (0, 0))]),
+    # ("Climbing", "Your ability to climb obstacles", "Agility", [("Ability", "linear", (0.5, 0.5, 1))]),
+    # ("Storage", "Your carrying capacity", "Brawn", [("Maximum", "linear", (2, 10, 0)), ("Current", "empty")]),
+    # ("Encumbrance", "How much your are slowed down in combat by your equipment", "Brawn", [("Amount", "root", (0, 0))]),
+    # ("Endurance", "Actions performed each day", "Resilience", [("Maximum", "linear", (1, 3, 0)), ("Current", "empty")]),
+    # ("Damage", "How much damage you do on each hit", "Brawn", [("Minimum", "linear", (1, 0, 0)), ("Maximum", "linear", (1, 1, 0)), ("Modifier", "linear", (.1, 1, 1))]),
+    # ("Speed", "How fast you attack", "Quickness", [("Speed", "linear", (0.03, 1, 2))]),
+    # ("Accuracy", "The chance of your attacks hitting their target.", "Agility", [("Accuracy", "root", (35, 0))]),
+    # ("First strike", "Chance to strike first", "Quickness", [("Chance", "root", (0, 0))]),
+    # ("Killshot", "Ability to hit enemies in their weak spot", "Agility", [("Chance", "root", (0, 0)), ("Modifier", "linear", (0.1, 1, 1))]),
+    # ("Defence", "Damage reduction", "Resilience", [("Modifier", "root", (0, 0))]),
+    # ("Evade", "Chance to dodge", "Quickness", [("Chance", "root", (5, 0))]),
+    # ("Parry", "Chance to parry", "Quickness", [("Chance", "root", (2, 0))]),
+    # ("Flee", "Chance to run from a battle", "Quickness", [("Chance", "root", (7, 0))]),
+    # ("Riposte", "Chance to riposte an enrmy attack", "Agility", [("Chance", "root", (0, 0))]),
+    # ("Fatigue", "How quickly you tire in combat", "Resilience", [("Maximum", "linear", (1, 5, 0)), ("Current", "empty")]),
+    # ("Block", "Ability to block if a shield is equipped", "Resilience", [("Chance", "root", (0, 0)), ("Modifier", "root", (0, 0))]),
+    # ("Stealth", "Chance to avoid detection", "Agility", [("Chance", "root", (3, 0))]),
+    # ("Pickpocketing", "Skill at stealing from others", "Agility", [("Chance", "root", (1, 0))]),
+    # ("Faith", "Strength of spells you cast", "Divinity", [("Modifier", "linear", (0.1, 1, 0))]),
+    # ("Sanctity", "Amount of sanctity you can have", "Divinity", [("Maximum", "linear", (3, 0, 0)), ("Current", "empty")]),
+    # ("Resist holy", "Ability to resist holy damage", "Divinity", [("Modifier", "root", (0, 0))]),
+    # ("Bartering", "Discount from negotiating prices", "Charisma", [("Modifier", "linear", (-0.05, 1, 0))]),
+    # ("Oration", "Proficiency in speaking to others", "Charisma", [("Modifier", "root", (11, 0))]),
+    # ("Charm", "How quickly other people will like you", "Charisma", [("Modifier", "root", (3, 0))]),
+    # ("Trustworthiness", "How much other players trust you", "Charisma", [("Modifier", "root", (0, 0))]),
+    # ("Renown", "How much your actions affect your reputation", "Charisma", [("Modifier", "linear", (0.1, 1, 0))]),
+    # ("Knowledge", "Ability to understand", "Intellect", [("Modifier", "root", (6, 0))]),
+    # ("Literacy", "Ability to read", "Intellect", [("Modifier", "root", (0, 0))]),
+    # ("Understanding", "How quickly you level up", "Intellect", [("Modifier", "linear", (0.05, 1, 0))]),
+    # ("Luckiness", "Chance to have things turn your way against all odds", "Fortuity", [("Chance", "linear", (0.01, 0, 0))]),
+    # ("Adventuring", "Chance to discover treasure", "Fortuity", [("Chance", "root", (0, 0))]),
+    # ("Logistics",  "How far you can move on the map", "Pathfinding", [("Modifier", "linear", (0.2, 1, 0))]),
+    # ("Mountaineering", "Modifier for mountain movement", "Pathfinding", [("Modifier", "linear", (0.5, 1, 0))]),
+    # ("Woodsman", "Modifier for forest movement", "Pathfinding", [("Modifier", "linear", (.5, 1, 0))]),
+    # ("Navigator", "Modifier for water movement", "Pathfinding", [("Modifier", "linear", (.5, 1, 0))]),
+    # ("Detection", "Chance to discover enemy stealth and traps", "Survivalism", [("Chance", "root", (0, 0))]),
+    # ("Caution",  "See information about a new grid before going there", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
+    # ("Explorer", "Additional options on the map, such as foraging", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
+    # ("Huntsman", "Learn additional information about enemies", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
+    # ("Survivalist", "Create bandages, tents, and other useful objects", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
+    # ("Resist frost", "Ability to resist frost damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    # ("Resist flame", "Ability to resist flame damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    # ("Resist shadow", "Ability to resist shadow damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    # ("Resist poison", "Ability to resist poison damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    # ("Resist blunt", "Ability to resist blunt damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    # ("Resist slashing", "Ability to resist slashing damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    # ("Resist piercing", "Ability to resist piercing damage", "Resilience", [("Modifier", "root", (0, 0))]),
+    # ("Courage", "Your ability to overcome fears", "Willpower", [("Skill", "linear", (1, 0, 0))]),
+    # ("Sanity", "Your ability to resist mind altering affects", "Willpower", [("Skill", "linear", (1, 0, 0))]),
     ]
 
 ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_")
@@ -107,165 +107,169 @@ class Proficiencies(Base):
     hero = relationship("Hero", back_populates='proficiencies', uselist=False)
 
     # Proficiency Class
-    health_id = Column(Integer, ForeignKey('proficiency.id'))
-    health = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.health_id]")
-    regeneration_id = Column(Integer, ForeignKey('proficiency.id'))
-    regeneration = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.regeneration_id]")
-    recovery_id = Column(Integer, ForeignKey('proficiency.id'))
-    recovery = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.recovery_id]")
-    climbing_id = Column(Integer, ForeignKey('proficiency.id'))
-    climbing = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.climbing_id]")
-    storage_id = Column(Integer, ForeignKey('proficiency.id'))
-    storage = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.storage_id]")
-    encumbrance_id = Column(Integer, ForeignKey('proficiency.id'))
-    encumbrance = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.encumbrance_id]")
-    endurance_id = Column(Integer, ForeignKey('proficiency.id'))
-    endurance = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.endurance_id]")
-    damage_id = Column(Integer, ForeignKey('proficiency.id'))
-    damage = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.damage_id]")
-    speed_id = Column(Integer, ForeignKey('proficiency.id'))
-    speed = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.speed_id]")
-    accuracy_id = Column(Integer, ForeignKey('proficiency.id'))
-    accuracy = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.accuracy_id]")
-    first_strike_id = Column(Integer, ForeignKey('proficiency.id'))
-    first_strike = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.first_strike_id]")
-    killshot_id = Column(Integer, ForeignKey('proficiency.id'))
-    killshot = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.killshot_id]")
-    defence_id = Column(Integer, ForeignKey('proficiency.id'))
-    defence = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.defence_id]")
-    evade_id = Column(Integer, ForeignKey('proficiency.id'))
-    evade = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.evade_id]")
-    parry_id = Column(Integer, ForeignKey('proficiency.id'))
-    parry = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.parry_id]")
-    flee_id = Column(Integer, ForeignKey('proficiency.id'))
-    flee = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.flee_id]")
-    riposte_id = Column(Integer, ForeignKey('proficiency.id'))
-    riposte = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.riposte_id]")
-    fatigue_id = Column(Integer, ForeignKey('proficiency.id'))
-    fatigue = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.fatigue_id]")
-    block_id = Column(Integer, ForeignKey('proficiency.id'))
-    block = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.block_id]")
-    stealth_id = Column(Integer, ForeignKey('proficiency.id'))
-    stealth = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.stealth_id]")
-    pickpocketing_id = Column(Integer, ForeignKey('proficiency.id'))
-    pickpocketing = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.pickpocketing_id]")
-    faith_id = Column(Integer, ForeignKey('proficiency.id'))
-    faith = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.faith_id]")
-    sanctity_id = Column(Integer, ForeignKey('proficiency.id'))
-    sanctity = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.sanctity_id]")
-    resist_holy_id = Column(Integer, ForeignKey('proficiency.id'))
-    resist_holy = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_holy_id]")
-    bartering_id = Column(Integer, ForeignKey('proficiency.id'))
-    bartering = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.bartering_id]")
-    oration_id = Column(Integer, ForeignKey('proficiency.id'))
-    oration = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.oration_id]")
-    charm_id = Column(Integer, ForeignKey('proficiency.id'))
-    charm = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.charm_id]")
-    trustworthiness_id = Column(Integer, ForeignKey('proficiency.id'))
-    trustworthiness = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.trustworthiness_id]")
-    renown_id = Column(Integer, ForeignKey('proficiency.id'))
-    renown = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.renown_id]")
-    knowledge_id = Column(Integer, ForeignKey('proficiency.id'))
-    knowledge = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.knowledge_id]")
-    literacy_id = Column(Integer, ForeignKey('proficiency.id'))
-    literacy = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.literacy_id]")
-    understanding_id = Column(Integer, ForeignKey('proficiency.id'))
-    understanding = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.understanding_id]")
-    luckiness_id = Column(Integer, ForeignKey('proficiency.id'))
-    luckiness = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.luckiness_id]")
-    adventuring_id = Column(Integer, ForeignKey('proficiency.id'))
-    adventuring = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.adventuring_id]")
-    logistics_id = Column(Integer, ForeignKey('proficiency.id'))
-    logistics = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.logistics_id]")
-    mountaineering_id = Column(Integer, ForeignKey('proficiency.id'))
-    mountaineering = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.mountaineering_id]")
-    woodsman_id = Column(Integer, ForeignKey('proficiency.id'))
-    woodsman = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.woodsman_id]")
-    navigator_id = Column(Integer, ForeignKey('proficiency.id'))
-    navigator = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.navigator_id]")
-    detection_id = Column(Integer, ForeignKey('proficiency.id'))
-    detection = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.detection_id]")
-    caution_id = Column(Integer, ForeignKey('proficiency.id'))
-    caution = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.caution_id]")
-    explorer_id = Column(Integer, ForeignKey('proficiency.id'))
-    explorer = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.explorer_id]")
-    huntsman_id = Column(Integer, ForeignKey('proficiency.id'))
-    huntsman = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.huntsman_id]")
-    survivalist_id = Column(Integer, ForeignKey('proficiency.id'))
-    survivalist = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.survivalist_id]")
-    resist_frost_id = Column(Integer, ForeignKey('proficiency.id'))
-    resist_frost = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_frost_id]")
-    resist_flame_id = Column(Integer, ForeignKey('proficiency.id'))
-    resist_flame = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_flame_id]")
-    resist_shadow_id = Column(Integer, ForeignKey('proficiency.id'))
-    resist_shadow = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_shadow_id]")
-    resist_poison_id = Column(Integer, ForeignKey('proficiency.id'))
-    resist_poison = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_poison_id]")
-    resist_blunt_id = Column(Integer, ForeignKey('proficiency.id'))
-    resist_blunt = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_blunt_id]")
-    resist_slashing_id = Column(Integer, ForeignKey('proficiency.id'))
-    resist_slashing = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_slashing_id]")
-    resist_piercing_id = Column(Integer, ForeignKey('proficiency.id'))
-    resist_piercing = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_piercing_id]")
-    courage_id = Column(Integer, ForeignKey('proficiency.id'))
-    courage = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.courage_id]")
-    sanity_id = Column(Integer, ForeignKey('proficiency.id'))
-    sanity = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.sanity_id]")
+    health = relationship(
+        "Health",
+        primaryjoin="and_(Proficiencies.id==Proficiency.proficiencies_id, "
+                    "Proficiency.name=='Health')",
+        back_populates="proficiencies", uselist=False)
+
+    # regeneration_id = Column(Integer, ForeignKey('proficiency.id'))
+    # regeneration = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.regeneration_id]")
+    # recovery_id = Column(Integer, ForeignKey('proficiency.id'))
+    # recovery = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.recovery_id]")
+    # climbing_id = Column(Integer, ForeignKey('proficiency.id'))
+    # climbing = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.climbing_id]")
+    # storage_id = Column(Integer, ForeignKey('proficiency.id'))
+    # storage = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.storage_id]")
+    # encumbrance_id = Column(Integer, ForeignKey('proficiency.id'))
+    # encumbrance = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.encumbrance_id]")
+    # endurance_id = Column(Integer, ForeignKey('proficiency.id'))
+    # endurance = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.endurance_id]")
+    # damage_id = Column(Integer, ForeignKey('proficiency.id'))
+    # damage = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.damage_id]")
+    # speed_id = Column(Integer, ForeignKey('proficiency.id'))
+    # speed = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.speed_id]")
+    # accuracy_id = Column(Integer, ForeignKey('proficiency.id'))
+    # accuracy = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.accuracy_id]")
+    # first_strike_id = Column(Integer, ForeignKey('proficiency.id'))
+    # first_strike = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.first_strike_id]")
+    # killshot_id = Column(Integer, ForeignKey('proficiency.id'))
+    # killshot = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.killshot_id]")
+    # defence_id = Column(Integer, ForeignKey('proficiency.id'))
+    # defence = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.defence_id]")
+    # evade_id = Column(Integer, ForeignKey('proficiency.id'))
+    # evade = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.evade_id]")
+    # parry_id = Column(Integer, ForeignKey('proficiency.id'))
+    # parry = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.parry_id]")
+    # flee_id = Column(Integer, ForeignKey('proficiency.id'))
+    # flee = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.flee_id]")
+    # riposte_id = Column(Integer, ForeignKey('proficiency.id'))
+    # riposte = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.riposte_id]")
+    # fatigue_id = Column(Integer, ForeignKey('proficiency.id'))
+    # fatigue = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.fatigue_id]")
+    # block_id = Column(Integer, ForeignKey('proficiency.id'))
+    # block = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.block_id]")
+    # stealth_id = Column(Integer, ForeignKey('proficiency.id'))
+    # stealth = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.stealth_id]")
+    # pickpocketing_id = Column(Integer, ForeignKey('proficiency.id'))
+    # pickpocketing = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.pickpocketing_id]")
+    # faith_id = Column(Integer, ForeignKey('proficiency.id'))
+    # faith = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.faith_id]")
+    # sanctity_id = Column(Integer, ForeignKey('proficiency.id'))
+    # sanctity = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.sanctity_id]")
+    # resist_holy_id = Column(Integer, ForeignKey('proficiency.id'))
+    # resist_holy = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_holy_id]")
+    # bartering_id = Column(Integer, ForeignKey('proficiency.id'))
+    # bartering = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.bartering_id]")
+    # oration_id = Column(Integer, ForeignKey('proficiency.id'))
+    # oration = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.oration_id]")
+    # charm_id = Column(Integer, ForeignKey('proficiency.id'))
+    # charm = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.charm_id]")
+    # trustworthiness_id = Column(Integer, ForeignKey('proficiency.id'))
+    # trustworthiness = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.trustworthiness_id]")
+    # renown_id = Column(Integer, ForeignKey('proficiency.id'))
+    # renown = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.renown_id]")
+    # knowledge_id = Column(Integer, ForeignKey('proficiency.id'))
+    # knowledge = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.knowledge_id]")
+    # literacy_id = Column(Integer, ForeignKey('proficiency.id'))
+    # literacy = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.literacy_id]")
+    # understanding_id = Column(Integer, ForeignKey('proficiency.id'))
+    # understanding = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.understanding_id]")
+    # luckiness_id = Column(Integer, ForeignKey('proficiency.id'))
+    # luckiness = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.luckiness_id]")
+    # adventuring_id = Column(Integer, ForeignKey('proficiency.id'))
+    # adventuring = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.adventuring_id]")
+    # logistics_id = Column(Integer, ForeignKey('proficiency.id'))
+    # logistics = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.logistics_id]")
+    # mountaineering_id = Column(Integer, ForeignKey('proficiency.id'))
+    # mountaineering = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.mountaineering_id]")
+    # woodsman_id = Column(Integer, ForeignKey('proficiency.id'))
+    # woodsman = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.woodsman_id]")
+    # navigator_id = Column(Integer, ForeignKey('proficiency.id'))
+    # navigator = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.navigator_id]")
+    # detection_id = Column(Integer, ForeignKey('proficiency.id'))
+    # detection = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.detection_id]")
+    # caution_id = Column(Integer, ForeignKey('proficiency.id'))
+    # caution = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.caution_id]")
+    # explorer_id = Column(Integer, ForeignKey('proficiency.id'))
+    # explorer = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.explorer_id]")
+    # huntsman_id = Column(Integer, ForeignKey('proficiency.id'))
+    # huntsman = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.huntsman_id]")
+    # survivalist_id = Column(Integer, ForeignKey('proficiency.id'))
+    # survivalist = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.survivalist_id]")
+    # resist_frost_id = Column(Integer, ForeignKey('proficiency.id'))
+    # resist_frost = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_frost_id]")
+    # resist_flame_id = Column(Integer, ForeignKey('proficiency.id'))
+    # resist_flame = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_flame_id]")
+    # resist_shadow_id = Column(Integer, ForeignKey('proficiency.id'))
+    # resist_shadow = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_shadow_id]")
+    # resist_poison_id = Column(Integer, ForeignKey('proficiency.id'))
+    # resist_poison = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_poison_id]")
+    # resist_blunt_id = Column(Integer, ForeignKey('proficiency.id'))
+    # resist_blunt = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_blunt_id]")
+    # resist_slashing_id = Column(Integer, ForeignKey('proficiency.id'))
+    # resist_slashing = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_slashing_id]")
+    # resist_piercing_id = Column(Integer, ForeignKey('proficiency.id'))
+    # resist_piercing = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.resist_piercing_id]")
+    # courage_id = Column(Integer, ForeignKey('proficiency.id'))
+    # courage = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.courage_id]")
+    # sanity_id = Column(Integer, ForeignKey('proficiency.id'))
+    # sanity = relationship("Proficiency", uselist=False, foreign_keys="[Proficiencies.sanity_id]")
     
     def __init__(self):
         
-        self.health = Health("Health", "How much you can take before you die", "Vitality")
-        self.regeneration = Regeneration("Regeneration", "How quickly your wounds heal", "Vitality")
-        self.recovery = Recovery("Recovery", "How quickly you recover from poisons and negative effects", "Vitality")
-        self.climbing = Climbing("Climbing", "Your ability to climb obstacles", "Agility")
-        self.storage = Storage("Storage", "Your carrying capacity", "Brawn")
-        self.encumbrance = Encumbrance("Encumbrance", "How much your are slowed down in combat by your equipment", "Brawn")
-        self.endurance = Endurance("Endurance", "Actions performed each day", "Resilience")
-        self.damage = Damage("Damage", "How much damage you do on each hit", "Brawn")
-        self.speed = Speed("Speed", "How fast you attack", "Quickness")
-        self.accuracy = Accuracy("Accuracy", "The chance of your attacks hitting their target.", "Agility")
-        self.first_strike = FirstStrike("First strike", "Chance to strike first", "Quickness")
-        self.killshot = Killshot("Killshot", "Ability to hit enemies in their weak spot", "Agility")
-        self.defence = Defence("Defence", "Damage reduction", "Resilience")
-        self.evade = Evade("Evade", "Chance to dodge", "Quickness")
-        self.parry = Parry("Parry", "Chance to parry", "Quickness")
-        self.flee = Flee("Flee", "Chance to run from a battle", "Quickness")
-        self.riposte = Riposte("Riposte", "Chance to riposte an enrmy attack", "Agility")
-        self.fatigue = Fatigue("Fatigue", "How quickly you tire in combat", "Resilience")
-        self.block = Block("Block", "Ability to block if a shield is equipped", "Resilience")
-        self.stealth = Stealth("Stealth", "Chance to avoid detection", "Agility")
-        self.pickpocketing = Pickpocketing("Pickpocketing", "Skill at stealing from others", "Agility")
-        self.faith = Faith("Faith", "Strength of spells you cast", "Divinity")
-        self.sanctity = Sanctity("Sanctity", "Amount of sanctity you can have", "Divinity")
-        self.resist_holy = ResistHoly("Resist holy", "Ability to resist holy damage", "Divinity")
-        self.bartering = Bartering("Bartering", "Discount from negotiating prices", "Charisma")
-        self.oration = Oration("Oration", "Proficiency in speaking to others", "Charisma")
-        self.charm = Charm("Charm", "How quickly other people will like you", "Charisma")
-        self.trustworthiness = Trustworthiness("Trustworthiness", "How much other players trust you", "Charisma")
-        self.renown = Renown("Renown", "How much your actions affect your reputation", "Charisma")
-        self.knowledge = Knowledge("Knowledge", "Ability to understand", "Intellect")
-        self.literacy = Literacy("Literacy", "Ability to read", "Intellect")
-        self.understanding = Understanding("Understanding", "How quickly you level up", "Intellect")
-        self.luckiness = Luckiness("Luckiness", "Chance to have things turn your way against all odds", "Fortuity")
-        self.adventuring = Adventuring("Adventuring", "Chance to discover treasure", "Fortuity")
-        self.logistics = Logistics("Logistics", "How far you can move on the map", "Pathfinding")
-        self.mountaineering = Mountaineering("Mountaineering", "Modifier for mountain movement", "Pathfinding")
-        self.woodsman = Woodsman("Woodsman", "Modifier for forest movement", "Pathfinding")
-        self.navigator = Navigator("Navigator", "Modifier for water movement", "Pathfinding")
-        self.detection = Detection("Detection", "Chance to discover enemy stealth and traps", "Survivalism")
-        self.caution = Caution("Caution", "See information about a new grid before going there", "Survivalism")
-        self.explorer = Explorer("Explorer", "Additional options on the map, such as foraging", "Survivalism")
-        self.huntsman = Huntsman("Huntsman", "Learn additional information about enemies", "Survivalism")
-        self.survivalist = Survivalist("Survivalist", "Create bandages, tents, and other useful objects", "Survivalism")
-        self.resist_frost = ResistFrost("Resist frost", "Ability to resist frost damage", "Resilience")
-        self.resist_flame = ResistFlame("Resist flame", "Ability to resist flame damage", "Resilience")
-        self.resist_shadow = ResistShadow("Resist shadow", "Ability to resist shadow damage", "Resilience")
-        self.resist_poison = ResistPoison("Resist poison", "Ability to resist poison damage", "Resilience")
-        self.resist_blunt = ResistBlunt("Resist blunt", "Ability to resist blunt damage", "Resilience")
-        self.resist_slashing = ResistSlashing("Resist slashing", "Ability to resist slashing damage", "Resilience")
-        self.resist_piercing = ResistPiercing("Resist piercing", "Ability to resist piercing damage", "Resilience")
-        self.courage = Courage("Courage", "Your ability to overcome fears", "Willpower")
-        self.sanity = Sanity("Sanity", "Your ability to resist mind altering affects", "Willpower")
+        self.health = Health()
+        # self.regeneration = Regeneration("Regeneration", "How quickly your wounds heal", "Vitality")
+        # self.recovery = Recovery("Recovery", "How quickly you recover from poisons and negative effects", "Vitality")
+        # self.climbing = Climbing("Climbing", "Your ability to climb obstacles", "Agility")
+        # self.storage = Storage("Storage", "Your carrying capacity", "Brawn")
+        # self.encumbrance = Encumbrance("Encumbrance", "How much your are slowed down in combat by your equipment", "Brawn")
+        # self.endurance = Endurance("Endurance", "Actions performed each day", "Resilience")
+        # self.damage = Damage("Damage", "How much damage you do on each hit", "Brawn")
+        # self.speed = Speed("Speed", "How fast you attack", "Quickness")
+        # self.accuracy = Accuracy("Accuracy", "The chance of your attacks hitting their target.", "Agility")
+        # self.first_strike = FirstStrike("First strike", "Chance to strike first", "Quickness")
+        # self.killshot = Killshot("Killshot", "Ability to hit enemies in their weak spot", "Agility")
+        # self.defence = Defence("Defence", "Damage reduction", "Resilience")
+        # self.evade = Evade("Evade", "Chance to dodge", "Quickness")
+        # self.parry = Parry("Parry", "Chance to parry", "Quickness")
+        # self.flee = Flee("Flee", "Chance to run from a battle", "Quickness")
+        # self.riposte = Riposte("Riposte", "Chance to riposte an enrmy attack", "Agility")
+        # self.fatigue = Fatigue("Fatigue", "How quickly you tire in combat", "Resilience")
+        # self.block = Block("Block", "Ability to block if a shield is equipped", "Resilience")
+        # self.stealth = Stealth("Stealth", "Chance to avoid detection", "Agility")
+        # self.pickpocketing = Pickpocketing("Pickpocketing", "Skill at stealing from others", "Agility")
+        # self.faith = Faith("Faith", "Strength of spells you cast", "Divinity")
+        # self.sanctity = Sanctity("Sanctity", "Amount of sanctity you can have", "Divinity")
+        # self.resist_holy = ResistHoly("Resist holy", "Ability to resist holy damage", "Divinity")
+        # self.bartering = Bartering("Bartering", "Discount from negotiating prices", "Charisma")
+        # self.oration = Oration("Oration", "Proficiency in speaking to others", "Charisma")
+        # self.charm = Charm("Charm", "How quickly other people will like you", "Charisma")
+        # self.trustworthiness = Trustworthiness("Trustworthiness", "How much other players trust you", "Charisma")
+        # self.renown = Renown("Renown", "How much your actions affect your reputation", "Charisma")
+        # self.knowledge = Knowledge("Knowledge", "Ability to understand", "Intellect")
+        # self.literacy = Literacy("Literacy", "Ability to read", "Intellect")
+        # self.understanding = Understanding("Understanding", "How quickly you level up", "Intellect")
+        # self.luckiness = Luckiness("Luckiness", "Chance to have things turn your way against all odds", "Fortuity")
+        # self.adventuring = Adventuring("Adventuring", "Chance to discover treasure", "Fortuity")
+        # self.logistics = Logistics("Logistics", "How far you can move on the map", "Pathfinding")
+        # self.mountaineering = Mountaineering("Mountaineering", "Modifier for mountain movement", "Pathfinding")
+        # self.woodsman = Woodsman("Woodsman", "Modifier for forest movement", "Pathfinding")
+        # self.navigator = Navigator("Navigator", "Modifier for water movement", "Pathfinding")
+        # self.detection = Detection("Detection", "Chance to discover enemy stealth and traps", "Survivalism")
+        # self.caution = Caution("Caution", "See information about a new grid before going there", "Survivalism")
+        # self.explorer = Explorer("Explorer", "Additional options on the map, such as foraging", "Survivalism")
+        # self.huntsman = Huntsman("Huntsman", "Learn additional information about enemies", "Survivalism")
+        # self.survivalist = Survivalist("Survivalist", "Create bandages, tents, and other useful objects", "Survivalism")
+        # self.resist_frost = ResistFrost("Resist frost", "Ability to resist frost damage", "Resilience")
+        # self.resist_flame = ResistFlame("Resist flame", "Ability to resist flame damage", "Resilience")
+        # self.resist_shadow = ResistShadow("Resist shadow", "Ability to resist shadow damage", "Resilience")
+        # self.resist_poison = ResistPoison("Resist poison", "Ability to resist poison damage", "Resilience")
+        # self.resist_blunt = ResistBlunt("Resist blunt", "Ability to resist blunt damage", "Resilience")
+        # self.resist_slashing = ResistSlashing("Resist slashing", "Ability to resist slashing damage", "Resilience")
+        # self.resist_piercing = ResistPiercing("Resist piercing", "Ability to resist piercing damage", "Resilience")
+        # self.courage = Courage("Courage", "Your ability to overcome fears", "Willpower")
+        # self.sanity = Sanity("Sanity", "Your ability to resist mind altering affects", "Willpower")
         
 
     def items(self):
@@ -312,6 +316,10 @@ class Proficiency(Base):
     # modifier = Column(Integer)
     # skill = Column(Integer)
     # speed = Column(Integer)
+
+    # Relationships
+    proficiencies_id = Column(Integer, ForeignKey('proficiencies.id'))
+    proficiencies = relationship("Proficiencies")
 
     __mapper_args__ = {
         'polymorphic_identity': "Proficiency",

@@ -8,6 +8,9 @@ from proficiencies import Health
 class TestProficiency:
     def setup(self):
         self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
+        self.hero = Hero(name="Haldon")
+        self.db.session.add(self.hero)
+        self.session.commit()
 
     def teardown(self, delete=True):
         self.db.session.close()
