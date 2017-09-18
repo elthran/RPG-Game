@@ -20,8 +20,9 @@ def named_relationship_mixin_factory(container_name, cls_name, names):
         back_populates="abilities", uselist=False)
     """
     dct = {}
-    for name in names:
-        attr_name = name.lower().replace(" ", "_")
+    for false_name in names:
+        attr_name = false_name.lower().replace(" ", "_")
+        name = false_name.title().replace(" ", '')
         dct[attr_name] = lambda cls, name=name: relationship(
                 name,
                 primaryjoin="and_({}.id=={}.{}_id, {}.name=='{}')".format(
@@ -62,8 +63,9 @@ def container_factory(cls_name, cls_name_singular, supers, names, namespace):
 
         This may not work.
         """
-        for name in names:
-            attrib_name = name.lower().replace(" ", "_")
+        for false_name in names:
+            attrib_name = false_name.lower().replace(" ", "_")
+            name = false_name.title().replace(" ", '')
             setattr(self, attrib_name, namespace[name]())
     dct['__init__'] = setup_init
 
