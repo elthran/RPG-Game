@@ -44,9 +44,9 @@ PROFICIENCY_INFORMATION = [
     # ("Regeneration", "How quickly your wounds heal", "Vitality", [("Speed", "root", (1, 2))]),
     # ("Recovery", "How quickly you recover from poisons and negative effects", "Vitality",[("Efficiency", "root", (0, 0))]),
     # ("Climbing", "Your ability to climb obstacles", "Agility", [("Ability", "linear", (0.5, 0.5, 1))]),
-    # ("Storage", "Your carrying capacity", "Brawn", [("Maximum", "linear", (2, 10, 0)), ("Current", "empty")]),
+    ("Storage", "Your carrying capacity", "Brawn", [("Maximum", "linear", (2, 10, 0)), ("Current", "empty")]),
     # ("Encumbrance", "How much your are slowed down in combat by your equipment", "Brawn", [("Amount", "root", (0, 0))]),
-    # ("Endurance", "Actions performed each day", "Resilience", [("Maximum", "linear", (1, 3, 0)), ("Current", "empty")]),
+    ("Endurance", "Actions performed each day", "Resilience", [("Maximum", "linear", (1, 3, 0)), ("Current", "empty")]),
     # ("Damage", "How much damage you do on each hit", "Brawn", [("Minimum", "linear", (1, 0, 0)), ("Maximum", "linear", (1, 1, 0)), ("Modifier", "linear", (.1, 1, 1))]),
     # ("Speed", "How fast you attack", "Quickness", [("Speed", "linear", (0.03, 1, 2))]),
     # ("Accuracy", "The chance of your attacks hitting their target.", "Agility", [("Accuracy", "root", (35, 0))]),
@@ -102,86 +102,6 @@ ALL_PROFICIENCY_COLUMNS = sorted({column[0].lower()
                            for column in prof[3]})
 
 ALL_PROFICIENCY_NAMES = [attrib[0] for attrib in PROFICIENCY_INFORMATION]
-
-# class Proficiencies(NamedRelationshipMixin, Base):
-#     __tablename__ = 'proficiencies'
-#
-#     id = Column(Integer, primary_key=True)
-#
-#     # Relationships
-#     # Hero class
-#     # One Hero -> one Proficiencies object
-#     hero = relationship("Hero", back_populates='proficiencies', uselist=False)
-#
-#     # Proficiency Class
-#
-#
-    # def __init__(self):
-    #     self.health = Health()
-    #     self.sanctity = Sanctity()
-        # self.regeneration = Regeneration("Regeneration", "How quickly your wounds heal", "Vitality")
-        # self.recovery = Recovery("Recovery", "How quickly you recover from poisons and negative effects", "Vitality")
-        # self.climbing = Climbing("Climbing", "Your ability to climb obstacles", "Agility")
-        # self.storage = Storage("Storage", "Your carrying capacity", "Brawn")
-        # self.encumbrance = Encumbrance("Encumbrance", "How much your are slowed down in combat by your equipment", "Brawn")
-        # self.endurance = Endurance("Endurance", "Actions performed each day", "Resilience")
-        # self.damage = Damage("Damage", "How much damage you do on each hit", "Brawn")
-        # self.speed = Speed("Speed", "How fast you attack", "Quickness")
-        # self.accuracy = Accuracy("Accuracy", "The chance of your attacks hitting their target.", "Agility")
-        # self.first_strike = FirstStrike("First strike", "Chance to strike first", "Quickness")
-        # self.killshot = Killshot("Killshot", "Ability to hit enemies in their weak spot", "Agility")
-        # self.defence = Defence("Defence", "Damage reduction", "Resilience")
-        # self.evade = Evade("Evade", "Chance to dodge", "Quickness")
-        # self.parry = Parry("Parry", "Chance to parry", "Quickness")
-        # self.flee = Flee("Flee", "Chance to run from a battle", "Quickness")
-        # self.riposte = Riposte("Riposte", "Chance to riposte an enrmy attack", "Agility")
-        # self.fatigue = Fatigue("Fatigue", "How quickly you tire in combat", "Resilience")
-        # self.block = Block("Block", "Ability to block if a shield is equipped", "Resilience")
-        # self.stealth = Stealth("Stealth", "Chance to avoid detection", "Agility")
-        # self.pickpocketing = Pickpocketing("Pickpocketing", "Skill at stealing from others", "Agility")
-        # self.faith = Faith("Faith", "Strength of spells you cast", "Divinity")
-        # self.resist_holy = ResistHoly("Resist holy", "Ability to resist holy damage", "Divinity")
-        # self.bartering = Bartering("Bartering", "Discount from negotiating prices", "Charisma")
-        # self.oration = Oration("Oration", "Proficiency in speaking to others", "Charisma")
-        # self.charm = Charm("Charm", "How quickly other people will like you", "Charisma")
-        # self.trustworthiness = Trustworthiness("Trustworthiness", "How much other players trust you", "Charisma")
-        # self.renown = Renown("Renown", "How much your actions affect your reputation", "Charisma")
-        # self.knowledge = Knowledge("Knowledge", "Ability to understand", "Intellect")
-        # self.literacy = Literacy("Literacy", "Ability to read", "Intellect")
-        # self.understanding = Understanding("Understanding", "How quickly you level up", "Intellect")
-        # self.luckiness = Luckiness("Luckiness", "Chance to have things turn your way against all odds", "Fortuity")
-        # self.adventuring = Adventuring("Adventuring", "Chance to discover treasure", "Fortuity")
-        # self.logistics = Logistics("Logistics", "How far you can move on the map", "Pathfinding")
-        # self.mountaineering = Mountaineering("Mountaineering", "Modifier for mountain movement", "Pathfinding")
-        # self.woodsman = Woodsman("Woodsman", "Modifier for forest movement", "Pathfinding")
-        # self.navigator = Navigator("Navigator", "Modifier for water movement", "Pathfinding")
-        # self.detection = Detection("Detection", "Chance to discover enemy stealth and traps", "Survivalism")
-        # self.caution = Caution("Caution", "See information about a new grid before going there", "Survivalism")
-        # self.explorer = Explorer("Explorer", "Additional options on the map, such as foraging", "Survivalism")
-        # self.huntsman = Huntsman("Huntsman", "Learn additional information about enemies", "Survivalism")
-        # self.survivalist = Survivalist("Survivalist", "Create bandages, tents, and other useful objects", "Survivalism")
-        # self.resist_frost = ResistFrost("Resist frost", "Ability to resist frost damage", "Resilience")
-        # self.resist_flame = ResistFlame("Resist flame", "Ability to resist flame damage", "Resilience")
-        # self.resist_shadow = ResistShadow("Resist shadow", "Ability to resist shadow damage", "Resilience")
-        # self.resist_poison = ResistPoison("Resist poison", "Ability to resist poison damage", "Resilience")
-        # self.resist_blunt = ResistBlunt("Resist blunt", "Ability to resist blunt damage", "Resilience")
-        # self.resist_slashing = ResistSlashing("Resist slashing", "Ability to resist slashing damage", "Resilience")
-        # self.resist_piercing = ResistPiercing("Resist piercing", "Ability to resist piercing damage", "Resilience")
-        # self.courage = Courage("Courage", "Your ability to overcome fears", "Willpower")
-        # self.sanity = Sanity("Sanity", "Your ability to resist mind altering affects", "Willpower")
-        
-
-    # def items(self):
-    #     """Returns a list of 2-tuples
-    #
-    #     Basically a dict.items() clone that looks like ([(key, value), (key, value), ...])
-    #     """
-    #     return ((key, getattr(self, key)) for key in ALL_PROFICIENCIES)
-    #
-    #
-    # def __iter__(self):
-    #     return (getattr(self, key) for key in ALL_PROFICIENCIES)
-
 
 # class ProficiencyMixin(object):
 #     name = Column(String, default=cls.__name__)
@@ -302,6 +222,17 @@ class DynamicMixin(object):
                 # it.
                 pass
 
+    def get_modifiable(self):
+        """Return modifiable columns for this class.
+
+        Possible options:
+            [(key, getattr(self, key)) for key in attrib_names]
+        OR
+            [getattr(self, key) for key in attrib_names]
+        """
+        attrib_names = ['maximum']
+        return [getattr(self, key) for key in attrib_names]
+
 
 class Health(DynamicMixin, Proficiency):
     def __init__(self, *args, **kwargs):
@@ -333,74 +264,91 @@ class Sanctity(DynamicMixin, Proficiency):
         super().generic_update(hero)
 
 
+class Endurance(DynamicMixin, Proficiency):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Actions performed each day"
+        self.attribute_type = "Resilience"
+
+    def update(self, hero):
+        """Update Endurance's attributes and tooltip variable.
+        """
+        self.maximum = round(1 * self.level + 3, 0)
+        self.current = self.maximum
+        super().generic_update(hero)
+
+
+class Storage(DynamicMixin, Proficiency):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Your carrying capacity"
+        self.attribute_type = "Brawn"
+
+    def update(self, hero):
+        """Update Storage's attributes and tooltip variable.
+        """
+
+        self.maximum = round(2 * self.level + 10, 0)
+        self.current = self.maximum
+        super().generic_update(hero)
+
+
 class StaticMixin(object):
-    ability = Column(Integer)
-    accuracy = Column(Integer)
-    amount = Column(Integer)
-    chance = Column(Integer)
-    efficiency = Column(Integer)
-    maximum = Column(Integer)
-    minimum = Column(Integer)
-    modifier = Column(Integer)
-    skill = Column(Integer)
-    speed = Column(Integer)
+    @declared_attr
+    def __mapper_args__(cls):
+        return {'polymorphic_identity': cls.__name__}
 
-    def __init__(self):
-        self.reason_for_zero = ""
-        self.is_not_max_level = False
+    def get_modifiable(self):
+        """Return modifiable columns for this class.
 
-# class Regeneration(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Regeneration",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.speed = 0
-#
-#         self.error = "You do not have enough vitality"
-#         self.formatted_name = "regeneration" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Regeneration's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.vitality.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.speed = round((100 * self.level)**0.5 - (self.level / 4) + 1, 2)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Speed: " + str(self.speed))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.speed += item.regeneration_speed
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.speed += ability.regeneration_speed * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
+        Possible options:
+            [(key, getattr(self, key)) for key in attrib_names]
+        OR
+            [getattr(self, key) for key in attrib_names]
+        """
+        attrib_names =['ability', 'accuracy', 'amount', 'chance',
+                       'efficiency', 'maximum', 'minimum', 'modifier',
+                       'skill', 'speed']
+        return [getattr(self, key) for key in attrib_names]
+
+class Regeneration(Proficiency):
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Regeneration",
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "How quickly your wounds heal"
+        self.attribute_type = "Vitality"
+        self.speed = 0
+
+    def update(self, myHero):
+        """Update Regeneration's attributes and tooltip variable.
+        """
+        tooltips = []
+        self.speed = round((100 * self.level)**0.5 - (self.level / 4) + 1, 2)
+        # This creates a tooltip for each variable
+        tooltips.append("Speed: " + str(self.speed))
+
+        for item in myHero.equipped_items():
+            try:
+                self.speed += item.regeneration_speed
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+
+        for ability in myHero.abilities:
+            try:
+                self.speed += ability.regeneration_speed * ability.level
+            except AttributeError:
+                # If the item doesn't have this attribute, don't worry about
+                # it.
+                pass
+
+        #This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
 #
 # class Recovery(Proficiency):
 #
@@ -508,60 +456,6 @@ class StaticMixin(object):
 #         #This updates the main tooltip string variable.
 #         self.tooltip = ';'.join(tooltips)
 #
-# class Storage(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Storage",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.maximum = 0
-#         self.current = 0
-#         self.percent = 0
-#         self.error = "You do not have enough brawn"
-#         self.formatted_name = "storage" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Storage's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.brawn.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.maximum = round(2 * self.level + 10, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Maximum: " + str(self.maximum))
-#         self.current = self.maximum
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.maximum += item.storage_maximum
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.maximum += ability.storage_maximum * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
 #
 # class Encumbrance(Proficiency):
 #
@@ -608,61 +502,6 @@ class StaticMixin(object):
 #         for ability in myHero.abilities:
 #             try:
 #                 self.amount += ability.encumbrance_amount * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Endurance(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Endurance",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.maximum = 0
-#         self.current = 0
-#         self.percent = 0
-#         self.error = "You do not have enough resilience"
-#         self.formatted_name = "endurance" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Endurance's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.resilience.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.maximum = round(1 * self.level + 3, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Maximum: " + str(self.maximum))
-#         self.current = self.maximum
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.maximum += item.endurance_maximum
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.maximum += ability.endurance_maximum * ability.level
 #             except AttributeError:
 #                 # If the item doesn't have this attribute, don't worry about
 #                 # it.
