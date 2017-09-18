@@ -81,13 +81,12 @@ from sqlalchemy.orm import relationship, validates, column_property
 from sqlalchemy import orm
 
 from base_classes import Base
-from events import handler_decorator
+from events import HandlerMixin
 import pdb
 from pprint import pprint
 
 
-@handler_decorator
-class QuestPath(Base):
+class QuestPath(HandlerMixin, Base):
     """Allow storage of quest stage for a given hero and a given quest.
     
     This means that each hero can be in a different stage of the same quest.
@@ -148,7 +147,7 @@ class QuestPath(Base):
                                foreign_keys='[QuestPath.quest_id]')
 
     def __init__(self, quest, hero, active=True, stage=1):
-        self._init_handler(completion_trigger=quest.completion_trigger,
+        super().__init__(completion_trigger=quest.completion_trigger,
                            hero=hero)
         self.quest = quest
         self.hero = hero
@@ -157,9 +156,6 @@ class QuestPath(Base):
         self.stages = quest.get_stage_count()
         self.active = active
         self.completed = False
-
-        print("Cls __dict__:")
-        pprint(cls.__dict__)
 
     def advance(self):
         """Advance this path to the next stage.

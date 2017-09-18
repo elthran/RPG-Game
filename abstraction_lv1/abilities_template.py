@@ -41,7 +41,7 @@ class Abilities(Base):
 
     def __init__(self):
         {%- for value in ALL_ABILITIES %}
-        self.{{ value[0] }} = {{ value[2] }}
+        self.{{ value[0] }} = {{ value[1] }}('{{ value[0] }}', {{ value[2] }})
         {%- endfor %}
 
     def items(self):
@@ -57,7 +57,7 @@ class Abilities(Base):
             ability -- the object that corresponds to the named attribute.
         """
 
-        return ((key[0], getattr(self, key[0])) for key in ALL_ABILITIES)
+        return ((key, getattr(self, key)) for key in ABILITY_NAMES)
 
     def __iter__(self):
         """Allow this object to be used in a for call.
@@ -66,7 +66,7 @@ class Abilities(Base):
             ability -- where the ability is each of the attribute objects of
                 the abilities class.
         """
-        return (getattr(self, key[0]) for key in ALL_ABILITIES)
+        return (getattr(self, key) for key in ABILITY_NAMES)
 
 
 class Ability(Base):
@@ -96,15 +96,14 @@ class Ability(Base):
     type = Column(String)
     ability_type = orm.synonym('type')
 
-    # This determines if the ability is locked and can not be learned
-    locked = Column(Boolean)
+    # This determines if the ability is hidden and can not be learned or seen by the player
+    hidden = Column(Boolean)
+    learnable = Column(Boolean)
 
     # This decides which of the 4 types of abilities it is (default is basic)
 
-    basic = Column(Boolean)
-    archetype = Column(String)
-    specialization = Column(String)
-    religion = Column(String)
+    tree = Column(String)
+    tree_type = Column(String)
 
     # Relationships.
     # Ability to abilities. Abilities is a list of ability objects.
@@ -125,7 +124,7 @@ class Ability(Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, max_level, description, hero=None, locked=True, archetype="", specialization="", religion=""):
+    def __init__(self, name, max_level, description, hero=None, hidden=True, learnable=False, tree="basic", tree_type=""):
         """Build a basic ability object.
 
         Note: arguments (name, hero, max_level, etc.) that require input are
@@ -143,17 +142,15 @@ class Ability(Base):
         """
         self.name = name
         self.level = 0
-        self.max_level = max_level
-        self.description = description
-        self.locked = locked
-
-        if archetype != "" or specialization != "" or religion != "":
-            self.basic = False
+        self.max_level = max_level  # Highest level that this ability can get to
+        self.description = description  # Describe what it does
+        if learnable == True:   # If the ability starts as a default of learnable, then it shouldn't start hidden to the player
+            self.hidden = False
         else:
-            self.basic = True
-        self.archetype = archetype
-        self.specialization = specialization
-        self.religion = religion
+            self.hidden = hidden    # If the player can see it
+        self.learnable = learnable  # If the player currently has the requirements to learn/upgrade it
+        self.tree = tree    # Which research tre it belongs to (basic, archetype, class, religious)
+        self.tree_type = tree_type  # Which specific tree (ie. if the tree is religious, then which religion is it)
 
         self.init_on_load()
 

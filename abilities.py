@@ -15,18 +15,28 @@ from sqlalchemy import orm
 from base_classes import Base
 import pdb
 
+"""
+Abilities spec goes:
+
+name, class, class arguments (not including name as it is added later).
+"""
+
 ALL_ABILITIES = [
     ("scholar", "AuraAbility",
-     "AuraAbility('scholar', 5, 'Gain +1% experience gain per level', locked=False, understanding_modifier=1)"),
+        "5, 'Gain +1% experience gain per level', learnable=True, "
+        "understanding_modifier=1"),
     ("reflexes", "AuraAbility",
-     "AuraAbility('reflexes', 3, 'Gain +2% dodge chance per level', locked=False, evade_chance=2)"),
+     "3, 'Gain +2% dodge chance per level', learnable=True, evade_chance=2"),
     ("cure", "CastableAbility",
-    "CastableAbility('cure', 3, 'Recover 3 health', sanctity_cost=1, heal_amount=3)"),
-    ("testgold", "CastableAbility",
-     "CastableAbility('testgold', 3, 'Gain 3 gold', locked=False, endurance_cost=1, gold_amount=3)"),
-    ("gainexp", "CastableAbility",
-     "CastableAbility('gainexp', 3, 'Gain 3 gold', locked=False, archetype='priest', endurance_cost=1, gold_amount=73)")
+        "3, 'Recover 3 health', learnable=True, tree='archetype', "
+        "tree_type='priest', sanctity_cost=1, heal_amount=3"),
+    ("free_gold", "CastableAbility",
+     "3, 'Gain 3 gold', learnable=True, tree='archetype', "
+     "tree_type='merchant', endurance_cost=1, gold_amount=3")
 ]
+
+
+ABILITY_NAMES = [key[0] for key in ALL_ABILITIES]
 
 # "determination", 5, "Increases Endurance by 3 for each level."
 
@@ -57,23 +67,17 @@ class Abilities(Base):
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='cure')",
         back_populates="abilities", uselist=False)
-    testgold = relationship(
+    free_gold = relationship(
         "CastableAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
-                    "Ability.name=='testgold')",
-        back_populates="abilities", uselist=False)
-    gainexp = relationship(
-        "CastableAbility",
-        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
-                    "Ability.name=='gainexp')",
+                    "Ability.name=='free_gold')",
         back_populates="abilities", uselist=False)
 
     def __init__(self):
-        self.scholar = AuraAbility('scholar', 5, 'Gain +1% experience gain per level', locked=False, understanding_modifier=1)
-        self.reflexes = AuraAbility('reflexes', 3, 'Gain +2% dodge chance per level', locked=False, evade_chance=2)
-        self.cure = CastableAbility('cure', 3, 'Recover 3 health', sanctity_cost=1, heal_amount=3)
-        self.testgold = CastableAbility('testgold', 3, 'Gain 3 gold', locked=False, endurance_cost=1, gold_amount=3)
-        self.gainexp = CastableAbility('gainexp', 3, 'Gain 3 gold', locked=False, archetype='priest', endurance_cost=1, gold_amount=73)
+        self.scholar = AuraAbility('scholar', 5, 'Gain +1% experience gain per level', learnable=True, understanding_modifier=1)
+        self.reflexes = AuraAbility('reflexes', 3, 'Gain +2% dodge chance per level', learnable=True, evade_chance=2)
+        self.cure = CastableAbility('cure', 3, 'Recover 3 health', learnable=True, tree='archetype', tree_type='priest', sanctity_cost=1, heal_amount=3)
+        self.free_gold = CastableAbility('free_gold', 3, 'Gain 3 gold', learnable=True, tree='archetype', tree_type='merchant', endurance_cost=1, gold_amount=3)
 
     def items(self):
         """Return each Ability and its name.
@@ -88,7 +92,7 @@ class Abilities(Base):
             ability -- the object that corresponds to the named attribute.
         """
 
-        return ((key[0], getattr(self, key[0])) for key in ALL_ABILITIES)
+        return ((key, getattr(self, key)) for key in ABILITY_NAMES)
 
     def __iter__(self):
         """Allow this object to be used in a for call.
@@ -97,7 +101,7 @@ class Abilities(Base):
             ability -- where the ability is each of the attribute objects of
                 the abilities class.
         """
-        return (getattr(self, key[0]) for key in ALL_ABILITIES)
+        return (getattr(self, key) for key in ABILITY_NAMES)
 
 
 class Ability(Base):
@@ -127,15 +131,14 @@ class Ability(Base):
     type = Column(String)
     ability_type = orm.synonym('type')
 
-    # This determines if the ability is locked and can not be learned
-    locked = Column(Boolean)
+    # This determines if the ability is hidden and can not be learned or seen by the player
+    hidden = Column(Boolean)
+    learnable = Column(Boolean)
 
     # This decides which of the 4 types of abilities it is (default is basic)
 
-    basic = Column(Boolean)
-    archetype = Column(String)
-    specialization = Column(String)
-    religion = Column(String)
+    tree = Column(String)
+    tree_type = Column(String)
 
     # Relationships.
     # Ability to abilities. Abilities is a list of ability objects.
@@ -156,7 +159,7 @@ class Ability(Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, max_level, description, hero=None, locked=True, archetype="", specialization="", religion=""):
+    def __init__(self, name, max_level, description, hero=None, hidden=True, learnable=False, tree="basic", tree_type=""):
         """Build a basic ability object.
 
         Note: arguments (name, hero, max_level, etc.) that require input are
@@ -174,17 +177,15 @@ class Ability(Base):
         """
         self.name = name
         self.level = 0
-        self.max_level = max_level
-        self.description = description
-        self.locked = locked
-
-        if archetype != "" or specialization != "" or religion != "":
-            self.basic = False
+        self.max_level = max_level  # Highest level that this ability can get to
+        self.description = description  # Describe what it does
+        if learnable == True:   # If the ability starts as a default of learnable, then it shouldn't start hidden to the player
+            self.hidden = False
         else:
-            self.basic = True
-        self.archetype = archetype
-        self.specialization = specialization
-        self.religion = religion
+            self.hidden = hidden    # If the player can see it
+        self.learnable = learnable  # If the player currently has the requirements to learn/upgrade it
+        self.tree = tree    # Which research tre it belongs to (basic, archetype, class, religious)
+        self.tree_type = tree_type  # Which specific tree (ie. if the tree is religious, then which religion is it)
 
         self.init_on_load()
 

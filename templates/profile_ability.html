@@ -1,39 +1,52 @@
 {% extends "profile_template.html" %}
 {% block block1 %}
 <!-- This is the ability page. It let's you learn/upgrade abilities -->
-     <h1 style="text-align:center;">Abilities</h1>
-    {% if ability_tree == "Archetype" %}
-		Archetype Points: {{ myHero.archetype_ability_points }}<br><br>
-		Choose Archetype (Currently {{ myHero.archetype }}): <button class="command command-woodsman" value="woodsman">Woodsman</button><button class="command command-priest" value="priest">Priest</button><br> You are a <b>{{ myHero.archetype }}</b>
-	{% elif ability_tree == "Class" %}
-		Class Points: {{ myHero.ability_points }}<br><br>
-		Choose Specialization (Currently {{ myHero.specialization }}): <button class="command command-hunter" value="hunter">Hunter</button><button class="command command-trapper" value="trapper">Trapper</button><br> Your class is <b>{{ myHero.specialization }}</b>
-	{% elif ability_tree == "Religion" %}
-		Religious Points: {{ myHero.pantheonic_ability_points }}<br><br>
-		Choose Religion (Currently <span id="hero_religion">{{ myHero.religion }}</span>): <button class="command command-forgoth" value="choose_religion?">Forgoth</button><button class="command command-dryarch" value="choose_religion?">Dryarch</button>
-		<br> You are a follower of <b><span id="hero_religion">{{ myHero.religion }}</span></b>
-	{% else %}
-Ability Points:
-<div style="display: inline" id="basic_points_remaining">{{ myHero.basic_ability_points }}</div>
-	{% endif %}
 
+<h1 style="text-align:center;">{{ ability_tree.title() }} Abilities</h1>
+{{ ability_tree.title() }} Ability Points:
+{% if ability_tree == "basic" %}
+    <div style="display: inline" id="basic_points_remaining">{{ myHero.basic_ability_points }}</div>
+{% elif ability_tree == "archetype" %}
+    <div style="display: inline" id="archetypic_points_remaining">{{ myHero.archetypic_ability_points }}</div>
+    <br>Current Archetype: {{ myHero.archetype }}
+{% elif ability_tree == "specialization" %}
+    <div style="display: inline" id="specialization_points_remaining">{{ myHero.specialization_ability_points }}</div>
+    <br>Current Specialization: {{ myHero.specialization }}
+{% elif ability_tree == "religious" %}
+    <div style="display: inline" id="religious_points_remaining">{{ myHero.religious_ability_points }}</div>
+    <br>Current Religion: {{ myHero.religion }}
+{% endif %}
+<h2 style="text-align:left;">{{ ability_tree.title() }} Abilities</h2>
+    {% for ability in myHero.abilities if ability.tree == ability_tree and ability.hidden == False  %}
+        Ability: {{ ability.name.title() }} <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>/{{ ability.max_level }} [{{ ability.description }}]
+        <button class="command" data="{{ ability.id }}, {{ ability.tree }}" data-function="updateAbility" data-name="update_ability">{{ ability.name }}</button><br>
+    {% else %}
+        No Abilities Available
+    {% endfor %}
+<h3>
+	<h1>*TESTING PURPOSES* Modify your character</h1>
+<form action="" method="post">
+	Archetype:
+    <select name="archetype" autofocus tabindex=1>
+	<option value="Brute" title="BE STRONG">Brute</option>
+	<option value="Woodsman">Woodsman</option>
+	<option value="Intellectual">Intellectual</option>
+	</select><br>
+    Specialization:
+    <select name="spec" autofocus tabindex=1>
+	<option value="Priest" title="BE STRONG">Priest</option>
+	<option value="Hunter">Hunter</option>
+	<option value="Merchant">Merchant</option>
+	</select><br>
+    Religion:
+    <select name="religion" autofocus tabindex=1>
+	<option value="firegod" title="BE STRONG">firegod</option>
+	<option value="icegod">icegod</option>
+	<option value="athiest">athiest</option>
+	</select>
+<input class="btn btn-default" type="submit" value="Next" tabindex=2 />
+      </form>
 
-
-    <h2 style="text-align:left;">Basic Abilities</h2>
-{% for ability in myHero.abilities if ability.basic %}
-Ability: {{ ability.name.title() }} (Level: <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>) [{{ ability.description }}]
-<button class="command" data="{{ ability.id }}" data-function="updateAbility" data-name="update_ability">{{ ability.name }}</button><br>
-{% else %}
-No new Abilities
-{% endfor %}
-
-    <h2 style="text-align:left;">Archetype Abilities</h2>
-{% for ability in myHero.abilities if ability.archetype %}
-Ability: {{ ability.name.title() }} (Level: <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>) [{{ ability.description }}]
-<button class="command" data="{{ ability.id }}" data-function="updateAbility" data-name="update_ability">{{ ability.name }}</button><br>
-{% else %}
-No new Abilities
-{% endfor %}
 
 {% endblock %}
 

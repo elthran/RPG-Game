@@ -3,9 +3,7 @@ import datetime
 from sqlalchemy import (
     Column, Integer, String, DateTime, Boolean, ForeignKey
 )
-from sqlalchemy import func
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.declarative import declared_attr
 
 from base_classes import Base
@@ -138,136 +136,44 @@ class Condition(Base):
         setattr(self, condition_attribute, object_of_comparison)
 
 
-# TODO make this a decorator class?
-class Handler(Base):
+class HandlerMixin(object):
+    """Handler mixin to add trigger functionality to a class.
+
+    The basic steps are:
+        1. add completion trigger to __init__
+        2. add link/try except.
+        3. add relationship to trigger (back_population my be unneeded)
+        4. add run_if_completed code.
+        4a. unlink old trigger
+        4b. do the thing that the whole party if for (e.g. quest.advance())
+        4c. link next trigger if available.
     """
-    Possible generic class to extend for objects with triggers.
-    Maybe use .. Foo(Handler) for all objects that respond to triggered events.
-    I could put the relationship here?
-    """
-    __tablename__ = 'handler'
-
-    id = Column(Integer, primary_key=True)
-
-    # Add relationship to cls spec.
-    trigger_id = Column(Integer, ForeignKey('trigger.id'))
-    completion_trigger = relationship("Trigger")
-    trigger_is_completed = relationship(
-        "Trigger",
-        primaryjoin="and_(Handler.trigger_id==Trigger.id, "
-                    "Trigger.completed==True)")
-
-    # This might be redundant.
-    hero_id = Column(Integer, ForeignKey('hero.id'))
-    hero = relationship("Hero")
-
-    type = Column(String(50))
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'handler',
-        'polymorphic_on': type
-    }
-
-    def __init__(self, completion_trigger=None, hero=None):
-        self.completion_trigger = completion_trigger
-        self.hero = hero
-
-        self.add_hero_to_trigger(hero)
-
-    # @hybrid_property
-    # def trigger_is_completed(self):
-    #     try:
-    #         return self.completion_trigger.completed
-    #     except AttributeError:
-    #         return False
-    #
-    # @trigger_is_completed.expression
-    # def trigger_is_completed(cls):
-    #     return func(cls.completion_trigger.completed)
-
-    def add_hero_to_trigger(self, hero):
-        """Add a hero object to be handled.
-
-        Make Trigger available!
-        Some kind of linkage between trigger and hero.
-        Instantiated triggers must relate to a specific hero.
-        """
-        try:
-            self.completion_trigger.link(hero)
-        except AttributeError as ex:
-            print(ex)
-
-    def run_handler(self):
-        """Deactivate trigger and run activation code.
-
-        In this case ... unlink the trigger from the given quest
-        and the advance the quest to the next stage.
-
-        In theory ... this would bring the new trigger in to play
-        through activation of a new quest? Or have I not set that up right?
-
-        NOTE: must have overwritten the run_if_trigger_completed() method
-        for this to work.
-        """
-        self.completion_trigger.unlink()
-        next_trigger = self.run_if_trigger_completed()
-
-        self.completion_trigger = next_trigger
-        if next_trigger is not None:
-            self.add_hero_to_trigger(self.hero)
-
-    def run_if_trigger_completed(self):
-        """A method that needs to be over ridden in the inherited class."""
-        print("You were supposed to have over ridden this method.")
-        print("(in class Handler -> run_if_trigger_completed)")
-        print("Returns the next trigger to be hooked up.")
-        raise Exception("Read the above message and maybe as me for help.")
-
-
-"""
-#################
-uses Handler decorator?
-NOTE: currently only a theory.
-I might need to combine decorators and meta-classing?
-Here I am trying to decorate a class with a class.
-The basic steps are:
-    1. add completion trigger to __init__
-    2. add link/try except.
-    3. add relationship to trigger (back_population my be unneeded)
-    4. add run_if_completed code.
-    4a. unlink old trigger
-    4b. do the thing that the whole party if for (e.g. quest.advance())
-    4c. link next trigger if available.
-################
-"""
-from functools import wraps
-
-# import sqlalchemy.exc
-#
-# from game import Hero
-# from locations import Location
-# try:
-#     from quests import QuestPath
-# except sqlalchemy.exc.InvalidRequestError:
-#     pass
-# from items import Item
-
-
-class TemplateHandler(object):
     id = Column(Integer, primary_key=True)
 
     # Add relationship to cls spec.
     @declared_attr
-    trigger_id = Column(Integer, ForeignKey('trigger.id'))
-    completion_trigger = relationship("Trigger")
-    trigger_is_completed = relationship(
-        "Trigger",
-        primaryjoin="and_(HandlerWrapper.trigger_id==Trigger.id, "
-                    "Trigger.completed==True)")
+    def trigger_id(cls):
+        return Column(Integer, ForeignKey('trigger.id'))
+
+    @declared_attr
+    def completion_trigger(cls):
+        return relationship("Trigger")
+
+    @declared_attr
+    def trigger_is_completed(cls):
+        return relationship(
+            "Trigger",
+            primaryjoin="and_({}.trigger_id==Trigger.id, "
+                        "Trigger.completed==True)".format(cls.__name__))
 
     # This might be redundant.
-    hero_id = Column(Integer, ForeignKey('hero.id'))
-    hero = relationship("Hero")
+    @declared_attr
+    def hero_id(cls):
+        return Column(Integer, ForeignKey('hero.id'))
+
+    @declared_attr
+    def hero(cls):
+        return relationship("Hero")
 
     def __init__(self, completion_trigger=None, hero=None):
         self.completion_trigger = completion_trigger
@@ -315,7 +221,7 @@ class TemplateHandler(object):
             "Read the above message and maybe as me for help.")
 
 if __name__ == "__main__":
-    class SomeClassThatUsesTriggers(TemplateHandler, Base):
+    class SomeClassThatUsesTriggers(HandlerMixin, Base):
         __tablename__ = "some_class_that_uses_triggers"
 
         id = Column(Integer, primary_key=True)

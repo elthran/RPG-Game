@@ -374,7 +374,7 @@ def reset_character(stat_type, hero=None):
     hero.devotion = 0
     hero.gold = 5000
     hero.basic_ability_points = 5
-    hero.archetype_ability_points = 5
+    hero.archetypic_ability_points = 5
     hero.specialization_ability_points = 5
     hero.pantheonic_ability_points = 5
     hero.attribute_points = 10
@@ -397,12 +397,9 @@ def admin(hero=None):
         hero.devotion = int(request.form["Devotion"])
         hero.gold = int(request.form["Gold"])
         hero.basic_ability_points = int(request.form["Basic_ability_points"])
-        hero.archetype_ability_points \
-            = int(request.form["Archetypic_ability_points"])
-        hero.specialization_ability_points \
-            = int(request.form["Specialized_ability_points"])
-        hero.pantheonic_ability_points \
-            = int(request.form["Pantheonic_ability_points"])
+        hero.archetypic_ability_points = int(request.form["Archetypic_ability_points"])
+        hero.specialized_ability_points = int(request.form["Specialized_ability_points"])
+        hero.pantheonic_ability_points = int(request.form["Pantheonic_ability_points"])
         hero.attribute_points = int(request.form["Attribute_points"])
         hero.proficiency_points = int(request.form['Proficiency_Points'])
         hero.refresh_character()
@@ -589,36 +586,18 @@ def proficiencies(hero=None):
                            profs2=profs2, profs3=profs3)
 
 
-@app.route('/ability_tree/<spec>')
+@app.route('/ability_tree/<spec>', methods=['GET', 'POST'])
 @login_required
 @uses_hero_and_update
 def ability_tree(spec, hero=None):
     page_title = "Abilities"
-
-    learnable_abilities = database.get_learnable_abilities(hero)
-
-    """ Commented out for now
-    for ability in database.get_all_abilities():
-        # Create a list of unlearned abilities
-        # for the current page you are on (basic, archetype,
-        #     specialization, religion)
-        if ability not in hero.abilities and ability.type == spec:
-            if spec == "Archetype":  # If you are on the archetype page, we further narrow it down to your archetype and "all"
-                if ability.archetype == hero.archetype or ability.archetype == "All":
-                    unknown_abilities.append(ability)
-            elif spec == "Class":  # If you are on the specialization page, we further narrow it down to your specialization and "all"
-                if ability.specialization == hero.specialization or ability.specialization == "All":
-                    unknown_abilities.append(ability)
-            elif spec == "Religious":  # If you are on the religion page, we further narrow it down to your religion and "all"
-                if ability.religion == hero.religion or ability.religion == "All":
-                    unknown_abilities.append(ability)
-            else:
-                unknown_abilities.append(ability)
-    """
+    if request.method == 'POST':
+        hero.archetype = request.form["archetype"]
+        hero.religion = request.form["religion"]
+        hero.specialization = request.form["spec"]
+        database.update()
     return render_template(
-        'profile_ability.html', myHero=hero, ability_tree=spec,
-        learnable_abilities=learnable_abilities,
-        page_title=page_title)
+        'profile_ability.html', myHero=hero, ability_tree=spec, page_title=page_title)
 
 
 @app.route('/inventory_page')
