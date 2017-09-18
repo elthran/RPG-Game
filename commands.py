@@ -114,15 +114,14 @@ class Command:
         item = database.get_item_by_id(item_id)
         ids_to_unequip = hero.inventory.equip(item)
         hero.refresh_character()
-
         return item.type + "&&" + str(ids_to_unequip)
 
     @staticmethod
     def unequip(hero, database, arg_dict):
         item_id = arg_dict.get('data', None, type=int)
         item = database.get_item_by_id(item_id)
-        hero.refresh_character()
         hero.inventory.unequip(item)
+        hero.refresh_character()
         return item.type
 
     def update_ability(hero, database, arg_dict):
@@ -161,7 +160,7 @@ class Command:
         return "success"
 
     @staticmethod
-    def level_proficiency(hero, database, arg_dict):
+    def update_proficiency(hero, database, arg_dict):
         """Raise proficiency level, decrement proficiency_points.
 
         Return status of: success, hide_all, hide_this.
