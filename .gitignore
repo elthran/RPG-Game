@@ -6,3 +6,5 @@ static/database.db-journal
 Design/
 Helpme/
 .idea/
+.cache/
+
