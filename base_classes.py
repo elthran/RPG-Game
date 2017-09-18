@@ -19,6 +19,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import orm
 import sqlalchemy
+from sqlalchemy import inspect
+
+from pprint import pprint
 
 
 class Base(object):
@@ -45,6 +48,9 @@ class Base(object):
         return hierarchy_keys
 
     def get_all_atts(self):
+        mapper = inspect(self)
+        pprint(mapper.all_orm_descriptors)
+        exit('testing get all atts')
         data = set(vars(self).keys()) | \
             set(self.__table__.columns.keys()) | \
             set(self.__mapper__.relationships.keys())
