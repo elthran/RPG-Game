@@ -56,7 +56,7 @@ PROFICIENCY_INFORMATION = [
     # ("Stealth", "Chance to avoid detection", "Agility", [("Chance", "root", (3, 0))]),
     # ("Pickpocketing", "Skill at stealing from others", "Agility", [("Chance", "root", (1, 0))]),
     # ("Faith", "Strength of spells you cast", "Divinity", [("Modifier", "linear", (0.1, 1, 0))]),
-    # ("Sanctity", "Amount of sanctity you can have", "Divinity", [("Maximum", "linear", (3, 0, 0)), ("Current", "empty")]),
+    ("Sanctity", "Amount of sanctity you can have", "Divinity", [("Maximum", "linear", (3, 0, 0)), ("Current", "empty")]),
     # ("Resist holy", "Ability to resist holy damage", "Divinity", [("Modifier", "root", (0, 0))]),
     # ("Bartering", "Discount from negotiating prices", "Charisma", [("Modifier", "linear", (-0.05, 1, 0))]),
     # ("Oration", "Proficiency in speaking to others", "Charisma", [("Modifier", "root", (11, 0))]),
@@ -95,6 +95,25 @@ ALL_PROFICIENCY_COLUMNS = sorted({column[0].lower()
                            for prof in PROFICIENCY_INFORMATION
                            for column in prof[3]})
 
+ALL_PROFICIENCY_NAMES = [attrib[0] for attrib in PROFICIENCY_INFORMATION]
+
+
+# class NamedRelationshipMeta(type):
+#     def __new__(mcs, cls_name, bases, dct):
+#         for name in ALL_PROFICIENCY_NAMES:
+#             attr_name = name.lower().replace(" ", "_")
+#             dct[attr_name] = relationship(
+#                 name,
+#                 primaryjoin="and_(Proficiencies.id=="
+#                             "Proficiency.proficiencies_id, "
+#                             "Proficiency.name=='{}')".format(name),
+#                 back_populates="proficiencies", uselist=False)
+#
+#         for attr_name in ALL_PROFICIENCIES:
+#             dct[attr_name] = declared_attr(dct[attr_name])
+#
+#         return super().__new__(mcs, cls_name, bases, dct)
+
 
 class Proficiencies(Base):
     __tablename__ = 'proficiencies'
@@ -108,7 +127,7 @@ class Proficiencies(Base):
 
     # Proficiency Class
     health = relationship(
-        "Health",
+        "Proficiency",
         primaryjoin="and_(Proficiencies.id==Proficiency.proficiencies_id, "
                     "Proficiency.name=='Health')",
         back_populates="proficiencies", uselist=False)
