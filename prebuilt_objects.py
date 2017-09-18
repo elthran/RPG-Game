@@ -203,7 +203,7 @@ users = [marlen, admin]
 # Items
 ##########
 all_store_items = [
-    LegArmour("Medium Pants", 7, armour_value=25),
+    LegArmour("Medium Pants", 7, health_maximum=25),
     ChestArmour("Medium Tunic", 2, armour_value=25),
     ChestArmour("Strong Tunic", 5, armour_value=250),
     HeadArmour("Weak Helmet", 2, armour_value=1),

@@ -352,13 +352,8 @@ class Hero(Base):
         for proficiency in self.proficiencies:
             proficiency.update(self)
 
-    def refresh_items(self):
-        for item in self.equipped_items():
-            item.update_stats(self)
-
-    def refresh_character(self, full=True):
+    def refresh_character(self, full=False):
         self.refresh_proficiencies()
-        self.refresh_items()  # Should go after proficiencies
         if full:
             self.proficiencies.health.current = self.proficiencies.health.maximum
             self.proficiencies.sanctity.current = self.proficiencies.sanctity.maximum
@@ -376,14 +371,13 @@ class Hero(Base):
             self.attribute_points += 1
             self.proficiency_points += 1
             self.age += 1
-            self.refresh_character()
+            self.refresh_character(full=True)
             return True
         return False
 
     def gain_experience(self, amount):
         new_amount = amount * self.proficiencies.understanding.modifier
-        new_amount = int(new_amount) + (random.random() < new_amount - int(
-            new_amount))  # This will round the number weighted by its decimal (so 1.2 has 20% chance of rounding up)
+        new_amount = int(new_amount) + (random.random() < new_amount - int(new_amount))  # This will round the number weighted by its decimal (so 1.2 has 20% chance of rounding up)
         self.experience += new_amount
         level_up = self.level_up()
         return new_amount, level_up  # Return a variable in case you want to know how much experience you just gained or if you leveled up

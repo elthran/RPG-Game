@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
 
             var clickedButton = e.target;
+            var jsFunction = window[clickedButton.getAttribute("data-js-function")];
             var dataFunction = window[clickedButton.getAttribute("data-function")];
 
             // If data-function is not set then make a null function to prevent errors.
@@ -80,6 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // function to be called. Use of 'data-name' is the most flexible
             // and future proof as it can be used in other things than
             // <button> tags :)
+            var action = clickedButton.getAttribute("data-py-name");
             var action = clickedButton.getAttribute("data-name");
             // console.log("action_data-name:", action)
             if (action === null) {

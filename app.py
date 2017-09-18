@@ -236,11 +236,6 @@ def login():
 
             flash(hero.login_alerts)
             hero.login_alerts = ""
-
-            # Refresh admin accounts on login.
-            # if user.is_admin:
-            #     hero.refresh_character()
-
             # If it's a new character, send them to cerate_character url
             if hero.character_name is None:
                 return redirect(url_for('create_character'))
@@ -348,7 +343,7 @@ pierces the air.""".replace('\n', ' ').replace('\r', '')
             hero.attributes.divinity.level += 3
     if hero.character_name is not None and fathers_job is not None:
         hero.archetype = fathers_job
-        hero.refresh_character()
+        hero.refresh_character(full=True)
         database.update()
         return redirect(url_for('home'))
     else:
@@ -402,7 +397,7 @@ def admin(hero=None):
         hero.pantheonic_ability_points = int(request.form["Pantheonic_ability_points"])
         hero.attribute_points = int(request.form["Attribute_points"])
         hero.proficiency_points = int(request.form['Proficiency_Points'])
-        hero.refresh_character()
+        hero.refresh_character(full=True)
         return redirect(url_for('home'))
 
     admin = [
@@ -562,7 +557,7 @@ def attributes(hero=None):
             points_spent += form_value - attribute.level
             attribute.level = form_value
         hero.attribute_points -= points_spent
-        hero.refresh_character(full=False)
+        hero.refresh_character()
         database.update()
         return render_template('profile_attributes.html', page_title="Attributes", myHero=hero,
                                attribute_information=ATTRIBUTE_INFORMATION)
