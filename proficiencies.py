@@ -40,59 +40,128 @@ Empty: Sets this value to take on the value of "maximum". Must be placed after
     "Maximum" in the list of variables
 """
 PROFICIENCY_INFORMATION = [
-    ("Health", "How much you can take before you die", "Vitality", [("Maximum", "linear", (2, 5, 0)), ("Current", "empty")]),
-    ("Regeneration", "How quickly your wounds heal", "Vitality", [("Speed", "root", (1, 2))]),
-    # ("Recovery", "How quickly you recover from poisons and negative effects", "Vitality",[("Efficiency", "root", (0, 0))]),
-    # ("Climbing", "Your ability to climb obstacles", "Agility", [("Ability", "linear", (0.5, 0.5, 1))]),
-    ("Storage", "Your carrying capacity", "Brawn", [("Maximum", "linear", (2, 10, 0)), ("Current", "empty")]),
-    # ("Encumbrance", "How much your are slowed down in combat by your equipment", "Brawn", [("Amount", "root", (0, 0))]),
-    ("Endurance", "Actions performed each day", "Resilience", [("Maximum", "linear", (1, 3, 0)), ("Current", "empty")]),
-    # ("Damage", "How much damage you do on each hit", "Brawn", [("Minimum", "linear", (1, 0, 0)), ("Maximum", "linear", (1, 1, 0)), ("Modifier", "linear", (.1, 1, 1))]),
-    # ("Speed", "How fast you attack", "Quickness", [("Speed", "linear", (0.03, 1, 2))]),
-    # ("Accuracy", "The chance of your attacks hitting their target.", "Agility", [("Accuracy", "root", (35, 0))]),
-    # ("First strike", "Chance to strike first", "Quickness", [("Chance", "root", (0, 0))]),
-    # ("Killshot", "Ability to hit enemies in their weak spot", "Agility", [("Chance", "root", (0, 0)), ("Modifier", "linear", (0.1, 1, 1))]),
-    # ("Defence", "Damage reduction", "Resilience", [("Modifier", "root", (0, 0))]),
-    # ("Evade", "Chance to dodge", "Quickness", [("Chance", "root", (5, 0))]),
-    # ("Parry", "Chance to parry", "Quickness", [("Chance", "root", (2, 0))]),
-    # ("Flee", "Chance to run from a battle", "Quickness", [("Chance", "root", (7, 0))]),
-    # ("Riposte", "Chance to riposte an enrmy attack", "Agility", [("Chance", "root", (0, 0))]),
-    # ("Fatigue", "How quickly you tire in combat", "Resilience", [("Maximum", "linear", (1, 5, 0)), ("Current", "empty")]),
-    # ("Block", "Ability to block if a shield is equipped", "Resilience", [("Chance", "root", (0, 0)), ("Modifier", "root", (0, 0))]),
-    # ("Stealth", "Chance to avoid detection", "Agility", [("Chance", "root", (3, 0))]),
-    # ("Pickpocketing", "Skill at stealing from others", "Agility", [("Chance", "root", (1, 0))]),
-    # ("Faith", "Strength of spells you cast", "Divinity", [("Modifier", "linear", (0.1, 1, 0))]),
-    ("Sanctity", "Amount of sanctity you can have", "Divinity", [("Maximum", "linear", (3, 0, 0)), ("Current", "empty")]),
-    # ("Resist holy", "Ability to resist holy damage", "Divinity", [("Modifier", "root", (0, 0))]),
-    # ("Bartering", "Discount from negotiating prices", "Charisma", [("Modifier", "linear", (-0.05, 1, 0))]),
-    # ("Oration", "Proficiency in speaking to others", "Charisma", [("Modifier", "root", (11, 0))]),
-    # ("Charm", "How quickly other people will like you", "Charisma", [("Modifier", "root", (3, 0))]),
-    # ("Trustworthiness", "How much other players trust you", "Charisma", [("Modifier", "root", (0, 0))]),
-    # ("Renown", "How much your actions affect your reputation", "Charisma", [("Modifier", "linear", (0.1, 1, 0))]),
-    # ("Knowledge", "Ability to understand", "Intellect", [("Modifier", "root", (6, 0))]),
-    # ("Literacy", "Ability to read", "Intellect", [("Modifier", "root", (0, 0))]),
-    # ("Understanding", "How quickly you level up", "Intellect", [("Modifier", "linear", (0.05, 1, 0))]),
-    # ("Luckiness", "Chance to have things turn your way against all odds", "Fortuity", [("Chance", "linear", (0.01, 0, 0))]),
-    # ("Adventuring", "Chance to discover treasure", "Fortuity", [("Chance", "root", (0, 0))]),
-    # ("Logistics",  "How far you can move on the map", "Pathfinding", [("Modifier", "linear", (0.2, 1, 0))]),
-    # ("Mountaineering", "Modifier for mountain movement", "Pathfinding", [("Modifier", "linear", (0.5, 1, 0))]),
-    # ("Woodsman", "Modifier for forest movement", "Pathfinding", [("Modifier", "linear", (.5, 1, 0))]),
-    # ("Navigator", "Modifier for water movement", "Pathfinding", [("Modifier", "linear", (.5, 1, 0))]),
-    # ("Detection", "Chance to discover enemy stealth and traps", "Survivalism", [("Chance", "root", (0, 0))]),
-    # ("Caution",  "See information about a new grid before going there", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
-    # ("Explorer", "Additional options on the map, such as foraging", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
-    # ("Huntsman", "Learn additional information about enemies", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
-    # ("Survivalist", "Create bandages, tents, and other useful objects", "Survivalism", [("Ability", "linear", (0.5, 0.5, 0))]),
-    # ("Resist frost", "Ability to resist frost damage", "Resilience", [("Modifier", "root", (0, 0))]),
-    # ("Resist flame", "Ability to resist flame damage", "Resilience", [("Modifier", "root", (0, 0))]),
-    # ("Resist shadow", "Ability to resist shadow damage", "Resilience", [("Modifier", "root", (0, 0))]),
-    # ("Resist poison", "Ability to resist poison damage", "Resilience", [("Modifier", "root", (0, 0))]),
-    # ("Resist blunt", "Ability to resist blunt damage", "Resilience", [("Modifier", "root", (0, 0))]),
-    # ("Resist slashing", "Ability to resist slashing damage", "Resilience", [("Modifier", "root", (0, 0))]),
-    # ("Resist piercing", "Ability to resist piercing damage", "Resilience", [("Modifier", "root", (0, 0))]),
-    # ("Courage", "Your ability to overcome fears", "Willpower", [("Skill", "linear", (1, 0, 0))]),
-    # ("Sanity", "Your ability to resist mind altering affects", "Willpower", [("Skill", "linear", (1, 0, 0))]),
-    ]
+    ("Health", "How much you can take before you die", "Vitality",
+        [("Maximum", "linear", (2, 5, 0)),
+         ("Current", "empty")]),
+    ("Regeneration", "How quickly your wounds heal", "Vitality",
+        [("Speed", "root", (1, 2))]),
+    ("Recovery", "How quickly you recover from poisons and negative effects",
+        "Vitality",
+        [("Efficiency", "root", (0, 0))]),
+    ("Climbing", "Your ability to climb obstacles", "Agility",
+        [("Ability", "linear", (0.5, 0.5, 1))]),
+    ("Storage", "Your carrying capacity", "Brawn",
+        [("Maximum", "linear", (2, 10, 0)),
+         ("Current", "empty")]),
+    ("Encumbrance", "How much your are slowed down in combat by your "
+                    "equipment", "Brawn",
+        [("Amount", "root", (0, 0))]),
+    ("Endurance", "Actions performed each day", "Resilience",
+        [("Maximum", "linear", (1, 3, 0)),
+         ("Current", "empty")]),
+    ("Damage", "How much damage you do on each hit", "Brawn",
+        [("Minimum", "linear", (1, 0, 0)),
+         ("Maximum", "linear", (1, 1, 0)),
+         ("Modifier", "linear", (.1, 1, 1))]),
+    ("Speed", "How fast you attack", "Quickness",
+        [("Speed", "linear", (0.03, 1, 2))]),
+    ("Accuracy", "The chance of your attacks hitting their target.",
+        "Agility",
+        [("Accuracy", "root", (35, 0))]),
+    ("First strike", "Chance to strike first", "Quickness",
+        [("Chance", "root", (0, 0))]),
+    ("Killshot", "Ability to hit enemies in their weak spot", "Agility",
+        [("Chance", "root", (0, 0)),
+         ("Modifier", "linear", (0.1, 1, 1))]),
+    ("Defence", "Damage reduction", "Resilience",
+        [("Modifier", "root", (0, 0))]),
+    ("Evade", "Chance to dodge", "Quickness",
+        [("Chance", "root", (5, 0))]),
+    ("Parry", "Chance to parry", "Quickness",
+        [("Chance", "root", (2, 0))]),
+    ("Flee", "Chance to run from a battle", "Quickness",
+        [("Chance", "root", (7, 0))]),
+    ("Riposte", "Chance to riposte an enemy attack", "Agility",
+        [("Chance", "root", (0, 0))]),
+    ("Fatigue", "How quickly you tire in combat", "Resilience",
+        [("Maximum", "linear", (1, 5, 0)),
+         ("Current", "empty")]),
+    ("Block", "Ability to block if a shield is equipped", "Resilience",
+        [("Chance", "root", (0, 0)),
+         ("Modifier", "root", (0, 0))]),
+    ("Stealth", "Chance to avoid detection", "Agility",
+        [("Chance", "root", (3, 0))]),
+    ("Pickpocketing", "Skill at stealing from others", "Agility",
+        [("Chance", "root", (1, 0))]),
+    ("Faith", "Strength of spells you cast", "Divinity",
+        [("Modifier", "linear", (0.1, 1, 0))]),
+    ("Sanctity", "Amount of sanctity you can have", "Divinity",
+        [("Maximum", "linear", (3, 0, 0)),
+         ("Current", "empty")]),
+    ("Resist holy", "Ability to resist holy damage", "Divinity",
+        [("Modifier", "root", (0, 0))]),
+    ("Bartering", "Discount from negotiating prices", "Charisma",
+        [("Modifier", "linear", (-0.05, 1, 0))]),
+    ("Oration", "Proficiency in speaking to others", "Charisma",
+        [("Modifier", "root", (11, 0))]),
+    ("Charm", "How quickly other people will like you", "Charisma",
+        [("Modifier", "root", (3, 0))]),
+    ("Trustworthiness", "How much other players trust you", "Charisma",
+        [("Modifier", "root", (0, 0))]),
+    ("Renown", "How much your actions affect your reputation", "Charisma",
+        [("Modifier", "linear", (0.1, 1, 0))]),
+    ("Knowledge", "Ability to understand", "Intellect",
+        [("Modifier", "root", (6, 0))]),
+    ("Literacy", "Ability to read", "Intellect",
+        [("Modifier", "root", (0, 0))]),
+    ("Understanding", "How quickly you level up", "Intellect",
+        [("Modifier", "linear", (0.05, 1, 0))]),
+    ("Luckiness", "Chance to have things turn your way against all odds",
+        "Fortuity",
+        [("Chance", "linear", (0.01, 0, 0))]),
+    ("Adventuring", "Chance to discover treasure", "Fortuity",
+        [("Chance", "root", (0, 0))]),
+    ("Logistics",  "How far you can move on the map", "Pathfinding",
+        [("Modifier", "linear", (0.2, 1, 0))]),
+    ("Mountaineering", "Modifier for mountain movement", "Pathfinding",
+        [("Modifier", "linear", (0.5, 1, 0))]),
+    ("Woodsman", "Modifier for forest movement", "Pathfinding",
+        [("Modifier", "linear", (.5, 1, 0))]),
+    ("Navigator", "Modifier for water movement", "Pathfinding",
+        [("Modifier", "linear", (.5, 1, 0))]),
+    ("Detection", "Chance to discover enemy stealth and traps", "Survivalism",
+        [("Chance", "root", (0, 0))]),
+    ("Caution",  "See information about a new grid before going there",
+        "Survivalism",
+        [("Ability", "linear", (0.5, 0.5, 0))]),
+    ("Explorer", "Additional options on the map, such as foraging",
+        "Survivalism",
+        [("Ability", "linear", (0.5, 0.5, 0))]),
+    ("Huntsman", "Learn additional information about enemies",
+        "Survivalism",
+        [("Ability", "linear", (0.5, 0.5, 0))]),
+    ("Survivalist", "Create bandages, tents, and other useful objects",
+        "Survivalism",
+        [("Ability", "linear", (0.5, 0.5, 0))]),
+    ("Resist frost", "Ability to resist frost damage", "Resilience",
+        [("Modifier", "root", (0, 0))]),
+    ("Resist flame", "Ability to resist flame damage", "Resilience",
+        [("Modifier", "root", (0, 0))]),
+    ("Resist shadow", "Ability to resist shadow damage", "Resilience",
+        [("Modifier", "root", (0, 0))]),
+    ("Resist poison", "Ability to resist poison damage", "Resilience",
+        [("Modifier", "root", (0, 0))]),
+    ("Resist blunt", "Ability to resist blunt damage", "Resilience",
+        [("Modifier", "root", (0, 0))]),
+    ("Resist slashing", "Ability to resist slashing damage", "Resilience",
+        [("Modifier", "root", (0, 0))]),
+    ("Resist piercing", "Ability to resist piercing damage", "Resilience",
+        [("Modifier", "root", (0, 0))]),
+    ("Courage", "Your ability to overcome fears", "Willpower",
+        [("Skill", "linear", (1, 0, 0))]),
+    ("Sanity", "Your ability to resist mind altering affects", "Willpower",
+        [("Skill", "linear", (1, 0, 0))]),
+]
 
 ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_")
                      for attrib in PROFICIENCY_INFORMATION]
@@ -120,8 +189,8 @@ class Proficiency(Base):
     attribute_type = Column(String)
     level = Column(Integer)
     next_value = Column(Integer)
-    # is_not_max_level = Column(Boolean)
-    # reason_for_zero = Column(String)
+    is_not_max_level = Column(Boolean)  # Maybe remove
+    reason_for_zero = Column(String)    # Maybe remove
 
     # Extra Ability columns
     error = Column(String)
@@ -156,16 +225,16 @@ class Proficiency(Base):
 
         self.tooltip = ""
         # self.reason_for_zero = ""
-        
+
         self.level = 0
         # self.is_not_max_level = False
-        
+
     def is_max_level(self):
         """Return whether proficiency is max level.
-        
-        Should be able to get hero internally but the 
+
+        Should be able to get hero internally but the
         relationships may be messed up.
-        
+
         Replaces:
             is_not_max_level attribute.
         """
@@ -174,7 +243,7 @@ class Proficiency(Base):
             self.proficiencies.hero.attributes,
             self.attribute_type.lower()
         ).level // 2
-        
+
     def level_up(self):
         self.level += 1
 
@@ -353,10 +422,10 @@ class StaticMixin(object):
             for item in hero.equipped_items():
                 new_value = 0
                 try:
-                     new_value = getattr(item, item_attrib)
+                    new_value = getattr(item, item_attrib)
                 except AttributeError:
-                    # If the item doesn't have this attribute, don't worry about
-                    # it.
+                    # If the item doesn't have this attribute, don't worry
+                    # about it.
                     pass
                 new_value += getattr(self, attrib)
                 setattr(self, attrib, new_value)
@@ -366,14 +435,14 @@ class StaticMixin(object):
                 try:
                     new_value = getattr(ability, item_attrib)
                 except AttributeError:
-                    # If the item doesn't have this attribute, don't worry about
-                    # it.
+                    # If the item doesn't have this attribute, don't worry
+                    # about it.
                     pass
                 new_value *= ability.level
                 new_value += getattr(self, attrib)
                 setattr(self, attrib, new_value)
 
-        #This updates the main tooltip string variable.
+        # This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips)
 
 
@@ -393,2581 +462,817 @@ class Regeneration(StaticMixin, Proficiency):
         self.speed = round((100 * self.level)**0.5 - (self.level / 4) + 1, 2)
         super().generic_update(hero)
 
-# class Recovery(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Recovery",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.efficiency = 0
-#
-#         self.error = "You do not have enough vitality"
-#         self.formatted_name = "recovery" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Recovery's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.vitality.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.efficiency = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Efficiency: " + str(self.efficiency))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-        for item in myHero.equipped_items():
-            try:
-                self.efficiency += item.recovery_efficiency
-            except AttributeError:
-                # If the item doesn't have this attribute, don't worry about
-                # it.
-                pass
 
-        for ability in myHero.abilities:
-            try:
-                self.efficiency += ability.recovery_efficiency * ability.level
-            except AttributeError:
-                # If the item doesn't have this attribute, don't worry about
-                # it.
-                pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Climbing(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Climbing",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.ability = 0
-#
-#         self.error = "You do not have enough agility"
-#         self.formatted_name = "climbing" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Climbing's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.agility.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.ability = round(0.5 * self.level + 0.5, 1)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Ability: " + str(self.ability))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.ability += item.climbing_ability
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.ability += ability.climbing_ability * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-#
-# class Encumbrance(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Encumbrance",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.amount = 0
-#
-#         self.error = "You do not have enough brawn"
-#         self.formatted_name = "encumbrance" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Encumbrance's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.brawn.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.amount = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Amount: " + str(self.amount))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.amount += item.encumbrance_amount
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.amount += ability.encumbrance_amount * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Damage(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Damage",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.minimum = 0
-#         self.maximum = 0
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough brawn"
-#         self.formatted_name = "damage" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Damage's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.brawn.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.minimum = round(1 * self.level + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Minimum: " + str(self.minimum))
-#         self.maximum = round(1 * self.level + 1, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Maximum: " + str(self.maximum))
-#         self.modifier = round(0.1 * self.level + 1, 1)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.minimum += item.damage_minimum
-#                 self.maximum += item.damage_maximum
-#                 self.modifier += item.damage_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.minimum += ability.damage_minimum * ability.level
-#                 self.maximum += ability.damage_maximum * ability.level
-#                 self.modifier += ability.damage_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Speed(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Speed",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.speed = 0
-#
-#         self.error = "You do not have enough quickness"
-#         self.formatted_name = "speed" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Speed's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.quickness.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.speed = round(0.03 * self.level + 1, 2)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Speed: " + str(self.speed))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.speed += item.speed_speed
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.speed += ability.speed_speed * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Accuracy(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Accuracy",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.accuracy = 0
-#
-#         self.error = "You do not have enough agility"
-#         self.formatted_name = "accuracy" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Accuracy's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.agility.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.accuracy = round((100 * self.level)**0.5 - (self.level / 4) + 35, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Accuracy: " + str(self.accuracy))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.accuracy += item.accuracy_accuracy
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.accuracy += ability.accuracy_accuracy * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class FirstStrike(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "FirstStrike",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.chance = 0
-#
-#         self.error = "You do not have enough quickness"
-#         self.formatted_name = "first_strike" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update FirstStrike's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.quickness.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Chance: " + str(self.chance))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.chance += item.first_strike_chance
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.chance += ability.first_strike_chance * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Killshot(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Killshot",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.chance = 0
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough agility"
-#         self.formatted_name = "killshot" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Killshot's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.agility.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Chance: " + str(self.chance))
-#         self.modifier = round(0.1 * self.level + 1, 1)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.chance += item.killshot_chance
-#                 self.modifier += item.killshot_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.chance += ability.killshot_chance * ability.level
-#                 self.modifier += ability.killshot_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Defence(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Defence",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough resilience"
-#         self.formatted_name = "defence" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Defence's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.resilience.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.defence_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.defence_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Evade(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Evade",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.chance = 0
-#
-#         self.error = "You do not have enough quickness"
-#         self.formatted_name = "evade" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Evade's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.quickness.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 5, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Chance: " + str(self.chance))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.chance += item.evade_chance
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.chance += ability.evade_chance * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Parry(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Parry",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.chance = 0
-#
-#         self.error = "You do not have enough quickness"
-#         self.formatted_name = "parry" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Parry's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.quickness.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 2, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Chance: " + str(self.chance))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.chance += item.parry_chance
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.chance += ability.parry_chance * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Flee(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Flee",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.chance = 0
-#
-#         self.error = "You do not have enough quickness"
-#         self.formatted_name = "flee" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Flee's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.quickness.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 7, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Chance: " + str(self.chance))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.chance += item.flee_chance
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.chance += ability.flee_chance * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Riposte(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Riposte",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.chance = 0
-#
-#         self.error = "You do not have enough agility"
-#         self.formatted_name = "riposte" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Riposte's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.agility.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Chance: " + str(self.chance))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.chance += item.riposte_chance
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.chance += ability.riposte_chance * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Fatigue(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Fatigue",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.maximum = 0
-#         self.current = 0
-#         self.percent = 0
-#         self.error = "You do not have enough resilience"
-#         self.formatted_name = "fatigue" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Fatigue's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.resilience.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.maximum = round(1 * self.level + 5, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Maximum: " + str(self.maximum))
-#         self.current = self.maximum
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.maximum += item.fatigue_maximum
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.maximum += ability.fatigue_maximum * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Block(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Block",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.chance = 0
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough resilience"
-#         self.formatted_name = "block" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Block's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.resilience.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Chance: " + str(self.chance))
-#         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.chance += item.block_chance
-#                 self.modifier += item.block_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.chance += ability.block_chance * ability.level
-#                 self.modifier += ability.block_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Stealth(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Stealth",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.chance = 0
-#
-#         self.error = "You do not have enough agility"
-#         self.formatted_name = "stealth" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Stealth's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.agility.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Chance: " + str(self.chance))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.chance += item.stealth_chance
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.chance += ability.stealth_chance * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Pickpocketing(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Pickpocketing",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.chance = 0
-#
-#         self.error = "You do not have enough agility"
-#         self.formatted_name = "pickpocketing" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Pickpocketing's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.agility.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 1, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Chance: " + str(self.chance))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.chance += item.pickpocketing_chance
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.chance += ability.pickpocketing_chance * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Faith(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Faith",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough divinity"
-#         self.formatted_name = "faith" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Faith's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.divinity.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round(0.1 * self.level + 1, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.faith_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.faith_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-#
-# class ResistHoly(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "ResistHoly",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough divinity"
-#         self.formatted_name = "resist_holy" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update ResistHoly's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.divinity.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.resist_holy_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.resist_holy_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Bartering(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Bartering",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough charisma"
-#         self.formatted_name = "bartering" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Bartering's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.charisma.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round(-0.05 * self.level + 1, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.bartering_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.bartering_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Oration(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Oration",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough charisma"
-#         self.formatted_name = "oration" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Oration's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.charisma.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 11, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.oration_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.oration_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Charm(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Charm",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough charisma"
-#         self.formatted_name = "charm" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Charm's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.charisma.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.charm_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.charm_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Trustworthiness(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Trustworthiness",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough charisma"
-#         self.formatted_name = "trustworthiness" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Trustworthiness's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.charisma.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.trustworthiness_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.trustworthiness_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Renown(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Renown",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough charisma"
-#         self.formatted_name = "renown" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Renown's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.charisma.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round(0.1 * self.level + 1, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.renown_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.renown_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Knowledge(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Knowledge",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough intellect"
-#         self.formatted_name = "knowledge" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Knowledge's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.intellect.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 6, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.knowledge_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.knowledge_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Literacy(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Literacy",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough intellect"
-#         self.formatted_name = "literacy" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Literacy's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.intellect.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.literacy_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.literacy_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Understanding(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Understanding",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough intellect"
-#         self.formatted_name = "understanding" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Understanding's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.intellect.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round(0.05 * self.level + 1, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.understanding_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.understanding_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Luckiness(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Luckiness",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.chance = 0
-#
-#         self.error = "You do not have enough fortuity"
-#         self.formatted_name = "luckiness" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Luckiness's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.fortuity.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.chance = round(0.01 * self.level + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Chance: " + str(self.chance))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.chance += item.luckiness_chance
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.chance += ability.luckiness_chance * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Adventuring(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Adventuring",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.chance = 0
-#
-#         self.error = "You do not have enough fortuity"
-#         self.formatted_name = "adventuring" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Adventuring's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.fortuity.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Chance: " + str(self.chance))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.chance += item.adventuring_chance
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.chance += ability.adventuring_chance * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Logistics(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Logistics",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough pathfinding"
-#         self.formatted_name = "logistics" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Logistics's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.pathfinding.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round(0.2 * self.level + 1, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.logistics_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.logistics_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Mountaineering(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Mountaineering",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough pathfinding"
-#         self.formatted_name = "mountaineering" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Mountaineering's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.pathfinding.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round(0.5 * self.level + 1, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.mountaineering_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.mountaineering_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Woodsman(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Woodsman",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough pathfinding"
-#         self.formatted_name = "woodsman" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Woodsman's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.pathfinding.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round(0.5 * self.level + 1, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.woodsman_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.woodsman_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Navigator(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Navigator",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough pathfinding"
-#         self.formatted_name = "navigator" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Navigator's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.pathfinding.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round(0.5 * self.level + 1, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.navigator_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.navigator_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Detection(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Detection",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.chance = 0
-#
-#         self.error = "You do not have enough survivalism"
-#         self.formatted_name = "detection" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Detection's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.survivalism.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Chance: " + str(self.chance))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.chance += item.detection_chance
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.chance += ability.detection_chance * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Caution(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Caution",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.ability = 0
-#
-#         self.error = "You do not have enough survivalism"
-#         self.formatted_name = "caution" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Caution's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.survivalism.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.ability = round(0.5 * self.level + 0.5, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Ability: " + str(self.ability))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.ability += item.caution_ability
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.ability += ability.caution_ability * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Explorer(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Explorer",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.ability = 0
-#
-#         self.error = "You do not have enough survivalism"
-#         self.formatted_name = "explorer" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Explorer's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.survivalism.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.ability = round(0.5 * self.level + 0.5, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Ability: " + str(self.ability))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.ability += item.explorer_ability
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.ability += ability.explorer_ability * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Huntsman(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Huntsman",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.ability = 0
-#
-#         self.error = "You do not have enough survivalism"
-#         self.formatted_name = "huntsman" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Huntsman's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.survivalism.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.ability = round(0.5 * self.level + 0.5, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Ability: " + str(self.ability))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.ability += item.huntsman_ability
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.ability += ability.huntsman_ability * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Survivalist(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Survivalist",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.ability = 0
-#
-#         self.error = "You do not have enough survivalism"
-#         self.formatted_name = "survivalist" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Survivalist's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.survivalism.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.ability = round(0.5 * self.level + 0.5, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Ability: " + str(self.ability))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.ability += item.survivalist_ability
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.ability += ability.survivalist_ability * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class ResistFrost(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "ResistFrost",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough resilience"
-#         self.formatted_name = "resist_frost" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update ResistFrost's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.resilience.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.resist_frost_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.resist_frost_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class ResistFlame(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "ResistFlame",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough resilience"
-#         self.formatted_name = "resist_flame" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update ResistFlame's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.resilience.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.resist_flame_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.resist_flame_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class ResistShadow(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "ResistShadow",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough resilience"
-#         self.formatted_name = "resist_shadow" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update ResistShadow's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.resilience.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.resist_shadow_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.resist_shadow_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class ResistPoison(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "ResistPoison",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough resilience"
-#         self.formatted_name = "resist_poison" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update ResistPoison's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.resilience.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.resist_poison_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.resist_poison_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class ResistBlunt(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "ResistBlunt",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough resilience"
-#         self.formatted_name = "resist_blunt" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update ResistBlunt's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.resilience.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.resist_blunt_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.resist_blunt_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class ResistSlashing(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "ResistSlashing",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough resilience"
-#         self.formatted_name = "resist_slashing" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update ResistSlashing's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.resilience.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.resist_slashing_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.resist_slashing_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class ResistPiercing(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "ResistPiercing",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.modifier = 0
-#
-#         self.error = "You do not have enough resilience"
-#         self.formatted_name = "resist_piercing" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update ResistPiercing's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.resilience.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Modifier: " + str(self.modifier))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.modifier += item.resist_piercing_modifier
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.modifier += ability.resist_piercing_modifier * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Courage(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Courage",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.skill = 0
-#
-#         self.error = "You do not have enough willpower"
-#         self.formatted_name = "courage" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Courage's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.willpower.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.skill = round(1 * self.level + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Skill: " + str(self.skill))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.skill += item.courage_skill
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.skill += ability.courage_skill * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-# class Sanity(Proficiency):
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity': "Sanity",
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.skill = 0
-#
-#         self.error = "You do not have enough willpower"
-#         self.formatted_name = "sanity" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-#
-#     def update(self, myHero):
-#         """Update Sanity's attributes and tooltip variable.
-#         """
-#         tooltips = []
-#         if self.level < myHero.attributes.willpower.level // 2:
-#             self.is_not_max_level = True
-#         else:
-#             self.is_not_max_level = False
-#         self.skill = round(1 * self.level + 0, 0)
-#         # This creates a tooltip for each variable
-#         tooltips.append("Skill: " + str(self.skill))
-#         """
-#         { % if prof[0] == "Block" %}
-#         if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-#             self.chance = 0
-#             self.reason_for_zero = "You must have a shield equipped"
-#         else:
-#             self.reason_for_zero = ""
-#         { % endif %}
-# """
-#
-#         for item in myHero.equipped_items():
-#             try:
-#                 self.skill += item.sanity_skill
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         for ability in myHero.abilities:
-#             try:
-#                 self.skill += ability.sanity_skill * ability.level
-#             except AttributeError:
-#                 # If the item doesn't have this attribute, don't worry about
-#                 # it.
-#                 pass
-#
-#         #This updates the main tooltip string variable.
-#         self.tooltip = ';'.join(tooltips)
-#
-#
-#
-#
-#     """
-#
-#     @validates('endurance')
-#     def sync_endurance_percent(self, key_name, endurance_value):
-#         #Update endurance_percent on endurance change.
-#
-#         try:
-#             self.endurance_percent = round(endurance_value / self.proficiencies.endurance.maximum, 2) * 100
-#         except (TypeError, ZeroDivisionError):
-#             self.endurance_percent = 0
-#
-#         return max(endurance_value, 0)
-#
-#     @validates('sanctity')
-#     def sync_sanctity_percent(self, key_name, sanctity_value):
-#         #Update sanctity_percent on sanctity change.
-#
-#         try:
-#             self.sanctity_percent = round(sanctity_value / self.proficiencies.sanctity.maximum, 2) * 100
-#         except (TypeError, ZeroDivisionError):
-#             self.sanctity_percent = 0
-#
-#         return max(sanctity_value, 0)
-#
-#     @validates('experience')
-#     def sync_experience_percent(self, key_name, xp_value):
-#         #Update exp_percent on current_exp change.
-#
-#         #String conversion occurs in HTML and add the percent sign is added there to.
-#         #key_name is "current_exp" .. not actually used here at this time but it is sent to
-#         #this function so it must be accepted.
-#
-#         try:
-#             self.experience_percent = round(xp_value / self.experience_maximum, 2) * 100
-#         except (TypeError, ZeroDivisionError):
-#             self.experience_percent = 0
-#         return xp_value
-#
-#     @validates('health')
-#     def sync_health_percent(self, key_name, health_value):
-#         #Update health_percent on health change.
-#
-#         try:
-#             self.health_percent = round(health_value / self.proficiencies.health.maximum, 2) * 100
-#         except (TypeError, ZeroDivisionError):
-#             self.health_percent = 0
-#
-#         return max(health_value or 0, 0)
-#     """
-#
+class Recovery(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['efficiency', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "How quickly you recover from poisons and negative effects"
+        self.attribute_type = "Vitality"
+        
+    def update(self, hero):
+        """Update Recovery's attributes and tooltip variable.
+        """
+        self.efficiency = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        super().generic_update(hero)
+
+
+class Climbing(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['ability', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Your ability to climb obstacles"
+        self.attribute_type = "Agility"
+        
+    def update(self, hero):
+        """Update Climbing's attributes and tooltip variable.
+        """
+        self.ability = round(0.5 * self.level + 0.5, 1)
+        super().generic_update(hero)
+
+
+class Encumbrance(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['amount', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "How much your are slowed down in combat by your equipment"
+        self.attribute_type = "Brawn"
+        
+    def update(self, hero):
+        """Update Encumbrance's attributes and tooltip variable.
+        """
+        self.amount = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        super().generic_update(hero)
+
+
+class Damage(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['minimum', 'maximum', 'modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "How much damage you do on each hit"
+        self.attribute_type = "Brawn"
+        
+    def update(self, hero):
+        """Update Damage's attributes and tooltip variable.
+        """
+        self.minimum = round(1 * self.level + 0, 0)
+        self.maximum = round(1 * self.level + 1, 0)
+        self.modifier = round(0.1 * self.level + 1, 1)
+        super().generic_update(hero)
+
+
+class Speed(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['speed', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "How fast you attack"
+        self.attribute_type = "Quickness"
+        
+    def update(self, hero):
+        """Update Speed's attributes and tooltip variable.
+        """
+        self.speed = round(0.03 * self.level + 1, 2)
+        super().generic_update(hero)
+
+
+class Accuracy(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['accuracy', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "The chance of your attacks hitting their target."
+        self.attribute_type = "Agility"
+        
+    def update(self, hero):
+        """Update Accuracy's attributes and tooltip variable.
+        """
+        self.accuracy = round((100 * self.level)**0.5 - (self.level / 4) + 35, 0)
+        super().generic_update(hero)
+
+
+class FirstStrike(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['chance', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Chance to strike first"
+        self.attribute_type = "Quickness"
+        
+    def update(self, hero):
+        """Update FirstStrike's attributes and tooltip variable.
+        """
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        super().generic_update(hero)
+
+
+class Killshot(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['chance', 'modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Ability to hit enemies in their weak spot"
+        self.attribute_type = "Agility"
+        
+    def update(self, hero):
+        """Update Killshot's attributes and tooltip variable.
+        """
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        self.modifier = round(0.1 * self.level + 1, 1)
+        super().generic_update(hero)
+
+
+class Defence(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Damage reduction"
+        self.attribute_type = "Resilience"
+        
+    def update(self, hero):
+        """Update Defence's attributes and tooltip variable.
+        """
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        super().generic_update(hero)
+
+
+class Evade(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['chance', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Chance to dodge"
+        self.attribute_type = "Quickness"
+        
+    def update(self, hero):
+        """Update Evade's attributes and tooltip variable.
+        """
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 5, 0)
+        super().generic_update(hero)
+
+
+class Parry(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['chance', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Chance to parry"
+        self.attribute_type = "Quickness"
+        
+    def update(self, hero):
+        """Update Parry's attributes and tooltip variable.
+        """
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 2, 0)
+        super().generic_update(hero)
+
+
+class Flee(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['chance', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Chance to run from a battle"
+        self.attribute_type = "Quickness"
+        
+    def update(self, hero):
+        """Update Flee's attributes and tooltip variable.
+        """
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 7, 0)
+        super().generic_update(hero)
+
+
+class Riposte(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['chance', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Chance to riposte an enemy attack"
+        self.attribute_type = "Agility"
+        
+    def update(self, hero):
+        """Update Riposte's attributes and tooltip variable.
+        """
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        super().generic_update(hero)
+
+
+class Fatigue(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['maximum', 'current', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "How quickly you tire in combat"
+        self.attribute_type = "Resilience"
+        
+    def update(self, hero):
+        """Update Fatigue's attributes and tooltip variable.
+        """
+        self.maximum = round(1 * self.level + 5, 0)
+        self.current = self.maximum
+        super().generic_update(hero)
+
+
+class Block(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['chance', 'modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Ability to block if a shield is equipped"
+        self.attribute_type = "Resilience"
+        
+    def update(self, hero):
+        """Update Block's attributes and tooltip variable.
+        """
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        if hero.inventory.left_hand is None or hero.inventory.left_hand.type != "Shield":
+            self.chance = 0
+            self.reason_for_zero = "You must have a shield equipped"
+        else:
+            self.reason_for_zero = ""
+        super().generic_update(hero)
+
+
+class Stealth(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['chance', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Chance to avoid detection"
+        self.attribute_type = "Agility"
+        
+    def update(self, hero):
+        """Update Stealth's attributes and tooltip variable.
+        """
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
+        super().generic_update(hero)
+
+
+class Pickpocketing(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['chance', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Skill at stealing from others"
+        self.attribute_type = "Agility"
+        
+    def update(self, hero):
+        """Update Pickpocketing's attributes and tooltip variable.
+        """
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 1, 0)
+        super().generic_update(hero)
+
+
+class Faith(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Strength of spells you cast"
+        self.attribute_type = "Divinity"
+        
+    def update(self, hero):
+        """Update Faith's attributes and tooltip variable.
+        """
+        self.modifier = round(0.1 * self.level + 1, 0)
+        super().generic_update(hero)
+
+
+class ResistHoly(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Ability to resist holy damage"
+        self.attribute_type = "Divinity"
+        
+    def update(self, hero):
+        """Update ResistHoly's attributes and tooltip variable.
+        """
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        super().generic_update(hero)
+
+
+class Bartering(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Discount from negotiating prices"
+        self.attribute_type = "Charisma"
+        
+    def update(self, hero):
+        """Update Bartering's attributes and tooltip variable.
+        """
+        self.modifier = round(-0.05 * self.level + 1, 0)
+        super().generic_update(hero)
+
+
+class Oration(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Proficiency in speaking to others"
+        self.attribute_type = "Charisma"
+        
+    def update(self, hero):
+        """Update Oration's attributes and tooltip variable.
+        """
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 11, 0)
+        super().generic_update(hero)
+
+
+class Charm(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "How quickly other people will like you"
+        self.attribute_type = "Charisma"
+        
+    def update(self, hero):
+        """Update Charm's attributes and tooltip variable.
+        """
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
+        super().generic_update(hero)
+
+
+class Trustworthiness(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "How much other players trust you"
+        self.attribute_type = "Charisma"
+        
+    def update(self, hero):
+        """Update Trustworthiness's attributes and tooltip variable.
+        """
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        super().generic_update(hero)
+
+
+class Renown(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "How much your actions affect your reputation"
+        self.attribute_type = "Charisma"
+        
+    def update(self, hero):
+        """Update Renown's attributes and tooltip variable.
+        """
+        self.modifier = round(0.1 * self.level + 1, 0)
+        super().generic_update(hero)
+
+
+class Knowledge(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Ability to understand"
+        self.attribute_type = "Intellect"
+        
+    def update(self, hero):
+        """Update Knowledge's attributes and tooltip variable.
+        """
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 6, 0)
+        super().generic_update(hero)
+
+
+class Literacy(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Ability to read"
+        self.attribute_type = "Intellect"
+        
+    def update(self, hero):
+        """Update Literacy's attributes and tooltip variable.
+        """
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        super().generic_update(hero)
+
+
+class Understanding(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "How quickly you level up"
+        self.attribute_type = "Intellect"
+        
+    def update(self, hero):
+        """Update Understanding's attributes and tooltip variable.
+        """
+        self.modifier = round(0.05 * self.level + 1, 0)
+        super().generic_update(hero)
+
+
+class Luckiness(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['chance', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Chance to have things turn your way against all odds"
+        self.attribute_type = "Fortuity"
+        
+    def update(self, hero):
+        """Update Luckiness's attributes and tooltip variable.
+        """
+        self.chance = round(0.01 * self.level + 0, 0)
+        super().generic_update(hero)
+
+
+class Adventuring(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['chance', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Chance to discover treasure"
+        self.attribute_type = "Fortuity"
+        
+    def update(self, hero):
+        """Update Adventuring's attributes and tooltip variable.
+        """
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        super().generic_update(hero)
+
+
+class Logistics(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "How far you can move on the map"
+        self.attribute_type = "Pathfinding"
+        
+    def update(self, hero):
+        """Update Logistics's attributes and tooltip variable.
+        """
+        self.modifier = round(0.2 * self.level + 1, 0)
+        super().generic_update(hero)
+
+
+class Mountaineering(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Modifier for mountain movement"
+        self.attribute_type = "Pathfinding"
+        
+    def update(self, hero):
+        """Update Mountaineering's attributes and tooltip variable.
+        """
+        self.modifier = round(0.5 * self.level + 1, 0)
+        super().generic_update(hero)
+
+
+class Woodsman(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Modifier for forest movement"
+        self.attribute_type = "Pathfinding"
+        
+    def update(self, hero):
+        """Update Woodsman's attributes and tooltip variable.
+        """
+        self.modifier = round(0.5 * self.level + 1, 0)
+        super().generic_update(hero)
+
+
+class Navigator(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Modifier for water movement"
+        self.attribute_type = "Pathfinding"
+        
+    def update(self, hero):
+        """Update Navigator's attributes and tooltip variable.
+        """
+        self.modifier = round(0.5 * self.level + 1, 0)
+        super().generic_update(hero)
+
+
+class Detection(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['chance', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Chance to discover enemy stealth and traps"
+        self.attribute_type = "Survivalism"
+        
+    def update(self, hero):
+        """Update Detection's attributes and tooltip variable.
+        """
+        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        super().generic_update(hero)
+
+
+class Caution(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['ability', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "See information about a new grid before going there"
+        self.attribute_type = "Survivalism"
+        
+    def update(self, hero):
+        """Update Caution's attributes and tooltip variable.
+        """
+        self.ability = round(0.5 * self.level + 0.5, 0)
+        super().generic_update(hero)
+
+
+class Explorer(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['ability', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Additional options on the map, such as foraging"
+        self.attribute_type = "Survivalism"
+        
+    def update(self, hero):
+        """Update Explorer's attributes and tooltip variable.
+        """
+        self.ability = round(0.5 * self.level + 0.5, 0)
+        super().generic_update(hero)
+
+
+class Huntsman(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['ability', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Learn additional information about enemies"
+        self.attribute_type = "Survivalism"
+        
+    def update(self, hero):
+        """Update Huntsman's attributes and tooltip variable.
+        """
+        self.ability = round(0.5 * self.level + 0.5, 0)
+        super().generic_update(hero)
+
+
+class Survivalist(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['ability', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Create bandages, tents, and other useful objects"
+        self.attribute_type = "Survivalism"
+        
+    def update(self, hero):
+        """Update Survivalist's attributes and tooltip variable.
+        """
+        self.ability = round(0.5 * self.level + 0.5, 0)
+        super().generic_update(hero)
+
+
+class ResistFrost(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Ability to resist frost damage"
+        self.attribute_type = "Resilience"
+        
+    def update(self, hero):
+        """Update ResistFrost's attributes and tooltip variable.
+        """
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        super().generic_update(hero)
+
+
+class ResistFlame(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Ability to resist flame damage"
+        self.attribute_type = "Resilience"
+        
+    def update(self, hero):
+        """Update ResistFlame's attributes and tooltip variable.
+        """
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        super().generic_update(hero)
+
+
+class ResistShadow(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Ability to resist shadow damage"
+        self.attribute_type = "Resilience"
+        
+    def update(self, hero):
+        """Update ResistShadow's attributes and tooltip variable.
+        """
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        super().generic_update(hero)
+
+
+class ResistPoison(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Ability to resist poison damage"
+        self.attribute_type = "Resilience"
+        
+    def update(self, hero):
+        """Update ResistPoison's attributes and tooltip variable.
+        """
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        super().generic_update(hero)
+
+
+class ResistBlunt(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Ability to resist blunt damage"
+        self.attribute_type = "Resilience"
+        
+    def update(self, hero):
+        """Update ResistBlunt's attributes and tooltip variable.
+        """
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        super().generic_update(hero)
+
+
+class ResistSlashing(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Ability to resist slashing damage"
+        self.attribute_type = "Resilience"
+        
+    def update(self, hero):
+        """Update ResistSlashing's attributes and tooltip variable.
+        """
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        super().generic_update(hero)
+
+
+class ResistPiercing(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['modifier', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Ability to resist piercing damage"
+        self.attribute_type = "Resilience"
+        
+    def update(self, hero):
+        """Update ResistPiercing's attributes and tooltip variable.
+        """
+        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        super().generic_update(hero)
+
+
+class Courage(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['skill', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Your ability to overcome fears"
+        self.attribute_type = "Willpower"
+        
+    def update(self, hero):
+        """Update Courage's attributes and tooltip variable.
+        """
+        self.skill = round(1 * self.level + 0, 0)
+        super().generic_update(hero)
+
+
+class Sanity(StaticMixin, Proficiency):
+    @property
+    def modifiable_on(self):
+        return ['skill', ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Your ability to resist mind altering affects"
+        self.attribute_type = "Willpower"
+        
+    def update(self, hero):
+        """Update Sanity's attributes and tooltip variable.
+        """
+        self.skill = round(1 * self.level + 0, 0)
+        super().generic_update(hero)
 
 
 Proficiencies = container_factory(
-    "Proficiencies", "Proficiency", (Base, ),
+    "Proficiencies", "Proficiency", (Base,),
     ALL_PROFICIENCY_NAMES, locals()
-    )
+)
