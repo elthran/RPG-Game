@@ -136,10 +136,6 @@ class {{ prof_class }}(Proficiency):
         """Update {{ prof_class }}'s attributes and tooltip variable.
         """
         tooltips = []
-        if self.level < myHero.attributes.{{ prof[2].lower() }}.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
         {% for value in prof[3] -%}
         {% if value[1] == "root" -%}
         self.{{ value[0].lower() }} = round((100 * self.level)**0.5 - (self.level / 4) + {{ value[2][0]}}, {{ value[2][1]}})
@@ -188,58 +184,3 @@ class {{ prof_class }}(Proficiency):
         self.tooltip = ';'.join(tooltips)
 {% endfor %}
 
-
-
-    """
-
-    @validates('endurance')
-    def sync_endurance_percent(self, key_name, endurance_value):
-        #Update endurance_percent on endurance change.
-
-        try:
-            self.endurance_percent = round(endurance_value / self.proficiencies.endurance.maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.endurance_percent = 0
-
-        return max(endurance_value, 0)
-
-    @validates('sanctity')
-    def sync_sanctity_percent(self, key_name, sanctity_value):
-        #Update sanctity_percent on sanctity change.
-
-        try:
-            self.sanctity_percent = round(sanctity_value / self.proficiencies.sanctity.maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.sanctity_percent = 0
-
-        return max(sanctity_value, 0)
-
-    @validates('experience')
-    def sync_experience_percent(self, key_name, xp_value):
-        #Update exp_percent on current_exp change.
-
-        #String conversion occurs in HTML and add the percent sign is added there to.
-        #key_name is "current_exp" .. not actually used here at this time but it is sent to
-        #this function so it must be accepted.
-
-        try:
-            self.experience_percent = round(xp_value / self.experience_maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.experience_percent = 0
-        return xp_value
-
-    @validates('health')
-    def sync_health_percent(self, key_name, health_value):
-        #Update health_percent on health change.
-
-        try:
-            self.health_percent = round(health_value / self.proficiencies.health.maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.health_percent = 0
-
-        return max(health_value or 0, 0)
-    """
-
-    
-    def __iter__(self):
-        pass # I don't know what to put here yet but it will be used later on.

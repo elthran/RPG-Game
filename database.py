@@ -34,7 +34,7 @@ from items import ItemTemplate, Item
 from quests import Quest, QuestPath
 from proficiencies import Proficiency
 from events import Trigger
-import prebuilt_objects
+# import prebuilt_objects
 
 
 # Constants#

@@ -19,12 +19,14 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import orm
 import sqlalchemy
-from sqlalchemy import inspect
 
 from pprint import pprint
 
 
 class Base(object):
+    def get_mro_till_base(self):
+        """Return the MRO until you hit base."""
+
     def get_mro_keys(self):
         """Return all attributes of objects in MRO
 
@@ -33,10 +35,16 @@ class Base(object):
         <class 'object'> as these are the last two objects in the MRO
         """
         hierarchy_keys = set()
-        hierarchy = type(self).__mro__[1:-2]
+
+        hierarchy = type(self).__mro__
+        max_index = hierarchy.index(Base)
+        hierarchy = hierarchy[1:max_index]
 
         for obj in hierarchy:
-            hierarchy_keys |= set(vars(obj).keys()) \
+            if "Mixin" in obj.__name__:
+                hierarchy_keys |= set(vars(obj).keys())
+            else:
+                hierarchy_keys |= set(vars(obj).keys()) \
                               - set(obj.__mapper__.relationships.keys())
 
         # Remove private variables and id keys to prevent weird recursion
@@ -48,9 +56,8 @@ class Base(object):
         return hierarchy_keys
 
     def get_all_atts(self):
-        mapper = inspect(self)
-        pprint(mapper.all_orm_descriptors)
-        exit('testing get all atts')
+        if self.__class__ == Base:
+            return set()
         data = set(vars(self).keys()) | \
             set(self.__table__.columns.keys()) | \
             set(self.__mapper__.relationships.keys())

@@ -94,7 +94,9 @@ class Item(Base):
         # All non-base objects in inheritance path.
         # Remove <class 'sqlalchemy.ext.declarative.api.Base'>, <class 'object'> as these are
         # the last two objects in the MRO
-        hierarchy = type(self.template).__mro__[:-2]
+        hierarchy = type(self.template).__mro__
+        max_index = hierarchy.index(Base)
+        hierarchy = hierarchy[:max_index]
 
         for obj in hierarchy:
             template_keys |= set(vars(obj).keys()) - set(obj.__mapper__.relationships.keys())

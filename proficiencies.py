@@ -6,6 +6,7 @@ build_code.py.
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, validates
+from sqlalchemy.ext.declarative import declared_attr
 
 from base_classes import Base
 
@@ -93,6 +94,7 @@ ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_")
 ALL_PROFICIENCY_COLUMNS = sorted({column[0].lower()
                            for prof in PROFICIENCY_INFORMATION
                            for column in prof[3]})
+
 
 class Proficiencies(Base):
     __tablename__ = 'proficiencies'
@@ -277,6 +279,9 @@ class Proficiencies(Base):
     def __iter__(self):
         return (getattr(self, key) for key in ALL_PROFICIENCIES)
 
+
+# class ProficiencyMixin(object):
+#     name = Column(String, default=cls.__name__)
         
 class Proficiency(Base):
     """Proficiency class that stores data about a hero object.
@@ -291,50 +296,39 @@ class Proficiency(Base):
     attribute_type = Column(String)
     level = Column(Integer)
     next_value = Column(Integer)
-    is_not_max_level = Column(Boolean)
-    reason_for_zero = Column(String)
+    # is_not_max_level = Column(Boolean)
+    # reason_for_zero = Column(String)
 
     # Extra Ability columns
     error = Column(String)
     formatted_name = Column(String)
-    percent = Column(Integer)
-    ability = Column(Integer)
-    accuracy = Column(Integer)
-    amount = Column(Integer)
-    chance = Column(Integer)
-    current = Column(Integer)
-    efficiency = Column(Integer)
-    maximum = Column(Integer)
-    minimum = Column(Integer)
-    modifier = Column(Integer)
-    skill = Column(Integer)
-    speed = Column(Integer)
+    # ability = Column(Integer)
+    # accuracy = Column(Integer)
+    # amount = Column(Integer)
+    # chance = Column(Integer)
+    # efficiency = Column(Integer)
+    # maximum = Column(Integer)
+    # minimum = Column(Integer)
+    # modifier = Column(Integer)
+    # skill = Column(Integer)
+    # speed = Column(Integer)
 
-    type = Column(String)
     __mapper_args__ = {
         'polymorphic_identity': "Proficiency",
-        'polymorphic_on': type
+        'polymorphic_on': name
     }
 
-    def __init__(self, name, description, attribute_type):
-        self.name = name
+    def __init__(self, description, attribute_type):
+        self.name = self.__class__.__name__
+
         self.description = description
         self.attribute_type = attribute_type
+
         self.tooltip = ""
-        self.reason_for_zero = ""
+        # self.reason_for_zero = ""
         
         self.level = 0
-        self.is_not_max_level = False
-
-    @validates('current')
-    def validate_current(self, key_name, current):
-        # Update storage percent on health change.
-        # pdb.set_trace()
-        try:
-            self.percent = round(current / self.maximum, 2) * 100
-        except (TypeError, ZeroDivisionError):
-            self.percent = 0
-        return max(current or 0, 0)
+        # self.is_not_max_level = False
         
     def is_max_level(self, hero):
         """Return whether proficiency is max level.
@@ -351,43 +345,30 @@ class Proficiency(Base):
         self.level += 1
 
 
-class Health(Proficiency):
+class DynamicMixin(object):
+    current = Column(Integer)
+    maximum = Column(Integer)
 
-    __mapper_args__ = {
-        'polymorphic_identity': "Health",
-    }
+    @declared_attr
+    def __mapper_args__(cls):
+        return {'polymorphic_identity': cls.__name__}
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.maximum = 0
-        self.current = 0
-        self.percent = 0
-        self.error = "You do not have enough vitality"
-        self.formatted_name = "health" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
-        
-    def update(self, myHero):
-        """Update Health's attributes and tooltip variable.
+    @property
+    def percent(self):
+        try:
+            return round(self.current / self.maximum, 2) * 100
+        except ZeroDivisionError:
+            return 0
+
+    def generic_update(self, hero):
+        """Generic update function.
         """
-        tooltips = []
-        if self.level < myHero.attributes.vitality.level // 2:
-            self.is_not_max_level = True
-        else:
-            self.is_not_max_level = False
-        self.maximum = round(2 * self.level + 5, 0)
         # This creates a tooltip for each variable
-        tooltips.append("Maximum: " + str(self.maximum)) 
-        self.current = self.maximum
-        """
-        { % if prof[0] == "Block" %}
-        if myHero.inventory.left_hand is None or myHero.inventory.left_hand.type != "Shield":
-            self.chance = 0
-            self.reason_for_zero = "You must have a shield equipped"
-        else:
-            self.reason_for_zero = ""
-        { % endif %}
-"""
+        tooltips = ["Maximum: {}".format(self.maximum)]
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
 
-        for item in myHero.equipped_items():
+        for item in hero.equipped_items():
             try:
                 self.maximum += item.health_maximum
             except AttributeError:
@@ -395,16 +376,51 @@ class Health(Proficiency):
                 # it.
                 pass
 
-        for ability in myHero.abilities:
+        for ability in hero.abilities:
             try:
                 self.maximum += ability.health_maximum * ability.level
             except AttributeError:
                 # If the item doesn't have this attribute, don't worry about
                 # it.
                 pass
+
+
+class Health(DynamicMixin, Proficiency):
+    def __init__(self):
+        description = "How much you can take before you die"
+        attribute_type = "Vitality"
+        super().__init__(description, attribute_type)
+
+        self.maximum = 0
+        self.current = 0
+        #self.update()
+        self.error = "You do not have enough vitality"
+        self.formatted_name = "health" # (Elthran) I needed to add this to get the COMMAND code to work. Hopefully (Haldon) can improve this.
         
-        #This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
+    def update(self, hero):
+        """Update Health's attributes and tooltip variable.
+        """
+
+        self.maximum = round(2 * self.level + 5, 0)
+        self.current = self.maximum
+        super().generic_update(hero)
+
+
+class StaticMixin(object):
+    ability = Column(Integer)
+    accuracy = Column(Integer)
+    amount = Column(Integer)
+    chance = Column(Integer)
+    efficiency = Column(Integer)
+    maximum = Column(Integer)
+    minimum = Column(Integer)
+    modifier = Column(Integer)
+    skill = Column(Integer)
+    speed = Column(Integer)
+
+    def __init__(self):
+        self.reason_for_zero = ""
+        self.is_not_max_level = False
 
 class Regeneration(Proficiency):
 

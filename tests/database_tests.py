@@ -66,11 +66,11 @@ class DatabaseTestCase(unittest.TestCase):
         # I should be able to add a bunch of users from a text file.
         self.db.add_new_user('Marlen', 'Brunner')
         user = self.db.session.query(User).get(1)
-        str_user = user.pretty_str()
+        str_user = user.pretty
         self.rebuild_instance()
 
         user2 = self.db.session.query(User).get(1)
-        self.assertEqual(user2.pretty_str(), str_user)
+        self.assertEqual(user2.pretty, str_user)
 
     def test_get_user_id(self):
         """Test if user is stored correctly.
@@ -95,19 +95,19 @@ class DatabaseTestCase(unittest.TestCase):
         wizard = user.heroes[0]
         wizard.name = "Haldon"
         wizard.archetype = "Wizard"
-        wizard_str = wizard.pretty_str()
+        wizard_str = wizard.pretty
 
         welder = user.heroes[1]
         welder.name = "Haldon"
         welder.archetype = "Welder"
-        welder_str = welder.pretty_str()
+        welder_str = welder.pretty
         self.rebuild_instance()
 
         user2 = self.db.get_object_by_id("User", 1)
         wizard2 = self.db.get_object_by_id("Hero", 1)
         welder2 = self.db.get_object_by_id("Hero", 2)
-        self.assertEqual(wizard2.pretty_str(), wizard_str)
-        self.assertEqual(welder2.pretty_str(), welder_str)
+        self.assertEqual(wizard2.pretty, wizard_str)
+        self.assertEqual(welder2.pretty, welder_str)
 
     def test_validate(self):
         """Test if the validate function in the Database class works.
@@ -129,15 +129,15 @@ class DatabaseTestCase(unittest.TestCase):
         wizard = marlen.heroes[0]
         wizard.name = "Haldon"
         wizard.archetype = "Wizard"
-        wizard_str = wizard.pretty_str()
-        marlen_str = marlen.pretty_str()
+        wizard_str = wizard.pretty
+        marlen_str = marlen.pretty
 
         self.rebuild_instance()
         marlen2 = self.db.get_object_by_id("User", 1)
         wizard2 = self.db.get_object_by_id("Hero", 1)
 
-        self.assertEqual(marlen2.pretty_str(), marlen_str)
-        self.assertEqual(wizard2.pretty_str(), wizard_str)
+        self.assertEqual(marlen2.pretty, marlen_str)
+        self.assertEqual(wizard2.pretty, wizard_str)
 
     def test_update(self):
         """Test update function.
@@ -154,14 +154,14 @@ class DatabaseTestCase(unittest.TestCase):
         hero.name = "Haldon"
         hero.archetype = "Welder"
         self.db.update()
-        user_str = user.pretty_str()
-        hero_str = hero.pretty_str()
+        user_str = user.pretty
+        hero_str = hero.pretty
 
         self.rebuild_instance()
         user2 = self.db.get_object_by_id("User", 1)
         hero2 = user2.heroes[0]
-        self.assertEqual(user2.pretty_str(), user_str)
-        self.assertEqual(hero2.pretty_str(), hero_str)
+        self.assertEqual(user2.pretty, user_str)
+        self.assertEqual(hero2.pretty, hero_str)
 
     def test_update_time(self):
         """May fail on very slow machines do too slow code execution.
