@@ -8,6 +8,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy.ext.declarative import declared_attr
 
+from factories import container_factory
 from base_classes import Base
 
 from math import sin, floor
@@ -101,70 +102,6 @@ ALL_PROFICIENCY_COLUMNS = sorted({column[0].lower()
                            for column in prof[3]})
 
 ALL_PROFICIENCY_NAMES = [attrib[0] for attrib in PROFICIENCY_INFORMATION]
-
-
-def named_relationship_mixin_factory():
-    dct = {}
-    for name in ALL_PROFICIENCY_NAMES:
-        attr_name = name.lower().replace(" ", "_")
-        dct[attr_name] = lambda cls, name=name: relationship(
-                name,
-                primaryjoin="and_(Proficiencies.id=="
-                            "Proficiency.proficiencies_id, "
-                            "Proficiency.name=='{}')".format(name),
-                back_populates="proficiencies", uselist=False)
-
-        dct[attr_name] = declared_attr(dct[attr_name])
-
-    return type('NamedRelationshipMixin', (), dct)
-
-
-NamedRelationshipMixin = named_relationship_mixin_factory()
-
-
-def container_factory(cls_name, supers, names, namespace):
-    """Build a container object that pretends to be a normal python class
-    but is really a Database object.
-    """
-    attrib_names = [name.lower().replace(" ", "_") for name in names]
-    dct = {
-        '__tablename__': cls_name.lower(),
-        'id': Column(Integer, primary_key=True),
-
-        # Relationships
-        # Hero class, One -> One
-        'hero': relationship("Hero", back_populates=cls_name.lower(),
-                               uselist=False)
-    }
-
-    def setup_init(self):
-        """Create a generic init function with a bunch of objects.
-
-        self.health = Health()
-        self.sancity = Sanctity()
-
-        This may not work.
-        """
-        for name in names:
-            attrib_name = name.lower().replace(" ", "_")
-            setattr(self, attrib_name, namespace[name]())
-    dct['__init__'] = setup_init
-
-    def items(self):
-        """Returns a list of 2-tuples
-
-        Basically a dict.items() clone that looks like
-        [(key, value), (key, value), ...]
-        """
-        return [(key, getattr(self, key)) for key in attrib_names]
-    dct['items'] = items
-
-    def __iter__(self):
-        """Return all the attributes of this function as a list."""
-        return [getattr(self, key) for key in attrib_names]
-    dct['__iter__'] = __iter__
-
-    return type(cls_name, supers, dct)
 
 # class Proficiencies(NamedRelationshipMixin, Base):
 #     __tablename__ = 'proficiencies'
@@ -3149,6 +3086,6 @@ class StaticMixin(object):
 
 
 Proficiencies = container_factory(
-    "Proficiencies", (NamedRelationshipMixin, Base),
+    "Proficiencies", "Proficiency", (Base, ),
     ALL_PROFICIENCY_NAMES, locals()
     )

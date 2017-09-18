@@ -36,12 +36,13 @@ class TestProficiency:
         self.db.session.add(proficiencies)
         self.db.session.commit()
 
+        id = proficiencies.id
         health = proficiencies.health
         str_health = health.pretty
 
         self.rebuild_instance()
         health2 = self.db.session.query(
-            Health).filter_by(id=1).first()
+            Health).filter_by(name="Health", proficiencies_id=id).first()
         print("health", str_health)
         print(health2.pretty)
         assert str_health == health2.pretty != ''
