@@ -80,7 +80,7 @@ def container_factory(cls_name, cls_name_singular, supers, names, namespace):
 
     def __iter__(self):
         """Return all the attributes of this function as a list."""
-        return [getattr(self, key) for key in attrib_names]
+        return (getattr(self, key) for key in attrib_names)
     dct['__iter__'] = __iter__
 
     NamedRelationshipMixin = named_relationship_mixin_factory(
