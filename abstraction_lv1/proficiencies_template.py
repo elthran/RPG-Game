@@ -59,13 +59,8 @@ class Proficiency(Base):
     def __init__(self):
         self.name = self.__class__.__name__
         self.formatted_name = self.name.lower().replace(" ", "_")
-
-        # Move to error to HTML?
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
         self.tooltip = ""
         # self.reason_for_zero = ""
-
         self.level = 0
         # self.is_not_max_level = False
 
@@ -146,6 +141,7 @@ class Health(DynamicMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "How much you can take before you die"
         self.attribute_type = "Vitality"
+        self.error = "You do not have enough {}".format(self.attribute_type)
 
     def update(self, hero):
         """Update Health's attributes and tooltip variable.
@@ -161,6 +157,7 @@ class Sanctity(DynamicMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Amount of sanctity you can have"
         self.attribute_type = "Divinity"
+        self.error = "You do not have enough {}".format(self.attribute_type)
 
     def update(self, hero):
         """Update Sanctity's attributes and tooltip variable.
@@ -176,6 +173,7 @@ class Endurance(DynamicMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Actions performed each day"
         self.attribute_type = "Resilience"
+        self.error = "You do not have enough {}".format(self.attribute_type)
 
     def update(self, hero):
         """Update Endurance's attributes and tooltip variable.
@@ -190,6 +188,7 @@ class Storage(DynamicMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Your carrying capacity"
         self.attribute_type = "Brawn"
+        self.error = "You do not have enough {}".format(self.attribute_type)
 
     def update(self, hero):
         """Update Storage's attributes and tooltip variable.
@@ -295,6 +294,7 @@ class Regeneration(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "How quickly your wounds heal"
         self.attribute_type = "Vitality"
+        self.error = "You do not have enough {}".format(self.attribute_type)
 
     def update(self, hero):
         """Update Regeneration's attributes and tooltip variable.
@@ -318,7 +318,8 @@ class {{ prof_class }}(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "{{ prof[1]}}"
         self.attribute_type = "{{ prof[2]}}"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update {{ prof_class }}'s attributes and tooltip variable.
         """

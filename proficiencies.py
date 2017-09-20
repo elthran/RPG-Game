@@ -219,13 +219,8 @@ class Proficiency(Base):
     def __init__(self):
         self.name = self.__class__.__name__
         self.formatted_name = self.name.lower().replace(" ", "_")
-
-        # Move to error to HTML?
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
         self.tooltip = ""
         # self.reason_for_zero = ""
-
         self.level = 0
         # self.is_not_max_level = False
 
@@ -306,6 +301,7 @@ class Health(DynamicMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "How much you can take before you die"
         self.attribute_type = "Vitality"
+        self.error = "You do not have enough {}".format(self.attribute_type)
 
     def update(self, hero):
         """Update Health's attributes and tooltip variable.
@@ -321,6 +317,7 @@ class Sanctity(DynamicMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Amount of sanctity you can have"
         self.attribute_type = "Divinity"
+        self.error = "You do not have enough {}".format(self.attribute_type)
 
     def update(self, hero):
         """Update Sanctity's attributes and tooltip variable.
@@ -336,6 +333,7 @@ class Endurance(DynamicMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Actions performed each day"
         self.attribute_type = "Resilience"
+        self.error = "You do not have enough {}".format(self.attribute_type)
 
     def update(self, hero):
         """Update Endurance's attributes and tooltip variable.
@@ -350,6 +348,7 @@ class Storage(DynamicMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Your carrying capacity"
         self.attribute_type = "Brawn"
+        self.error = "You do not have enough {}".format(self.attribute_type)
 
     def update(self, hero):
         """Update Storage's attributes and tooltip variable.
@@ -455,6 +454,7 @@ class Regeneration(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "How quickly your wounds heal"
         self.attribute_type = "Vitality"
+        self.error = "You do not have enough {}".format(self.attribute_type)
 
     def update(self, hero):
         """Update Regeneration's attributes and tooltip variable.
@@ -472,7 +472,8 @@ class Recovery(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "How quickly you recover from poisons and negative effects"
         self.attribute_type = "Vitality"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Recovery's attributes and tooltip variable.
         """
@@ -489,7 +490,8 @@ class Climbing(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Your ability to climb obstacles"
         self.attribute_type = "Agility"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Climbing's attributes and tooltip variable.
         """
@@ -506,7 +508,8 @@ class Encumbrance(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "How much your are slowed down in combat by your equipment"
         self.attribute_type = "Brawn"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Encumbrance's attributes and tooltip variable.
         """
@@ -523,7 +526,8 @@ class Damage(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "How much damage you do on each hit"
         self.attribute_type = "Brawn"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Damage's attributes and tooltip variable.
         """
@@ -542,7 +546,8 @@ class Speed(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "How fast you attack"
         self.attribute_type = "Quickness"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Speed's attributes and tooltip variable.
         """
@@ -559,7 +564,8 @@ class Accuracy(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "The chance of your attacks hitting their target."
         self.attribute_type = "Agility"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Accuracy's attributes and tooltip variable.
         """
@@ -576,7 +582,8 @@ class FirstStrike(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Chance to strike first"
         self.attribute_type = "Quickness"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update FirstStrike's attributes and tooltip variable.
         """
@@ -593,7 +600,8 @@ class Killshot(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Ability to hit enemies in their weak spot"
         self.attribute_type = "Agility"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Killshot's attributes and tooltip variable.
         """
@@ -611,7 +619,8 @@ class Defence(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Damage reduction"
         self.attribute_type = "Resilience"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Defence's attributes and tooltip variable.
         """
@@ -628,7 +637,8 @@ class Evade(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Chance to dodge"
         self.attribute_type = "Quickness"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Evade's attributes and tooltip variable.
         """
@@ -645,7 +655,8 @@ class Parry(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Chance to parry"
         self.attribute_type = "Quickness"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Parry's attributes and tooltip variable.
         """
@@ -662,7 +673,8 @@ class Flee(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Chance to run from a battle"
         self.attribute_type = "Quickness"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Flee's attributes and tooltip variable.
         """
@@ -679,7 +691,8 @@ class Riposte(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Chance to riposte an enemy attack"
         self.attribute_type = "Agility"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Riposte's attributes and tooltip variable.
         """
@@ -696,7 +709,8 @@ class Fatigue(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "How quickly you tire in combat"
         self.attribute_type = "Resilience"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Fatigue's attributes and tooltip variable.
         """
@@ -714,7 +728,8 @@ class Block(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Ability to block if a shield is equipped"
         self.attribute_type = "Resilience"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Block's attributes and tooltip variable.
         """
@@ -737,7 +752,8 @@ class Stealth(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Chance to avoid detection"
         self.attribute_type = "Agility"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Stealth's attributes and tooltip variable.
         """
@@ -754,7 +770,8 @@ class Pickpocketing(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Skill at stealing from others"
         self.attribute_type = "Agility"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Pickpocketing's attributes and tooltip variable.
         """
@@ -771,7 +788,8 @@ class Faith(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Strength of spells you cast"
         self.attribute_type = "Divinity"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Faith's attributes and tooltip variable.
         """
@@ -788,7 +806,8 @@ class ResistHoly(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Ability to resist holy damage"
         self.attribute_type = "Divinity"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update ResistHoly's attributes and tooltip variable.
         """
@@ -805,7 +824,8 @@ class Bartering(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Discount from negotiating prices"
         self.attribute_type = "Charisma"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Bartering's attributes and tooltip variable.
         """
@@ -822,7 +842,8 @@ class Oration(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Proficiency in speaking to others"
         self.attribute_type = "Charisma"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Oration's attributes and tooltip variable.
         """
@@ -839,7 +860,8 @@ class Charm(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "How quickly other people will like you"
         self.attribute_type = "Charisma"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Charm's attributes and tooltip variable.
         """
@@ -856,7 +878,8 @@ class Trustworthiness(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "How much other players trust you"
         self.attribute_type = "Charisma"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Trustworthiness's attributes and tooltip variable.
         """
@@ -873,7 +896,8 @@ class Renown(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "How much your actions affect your reputation"
         self.attribute_type = "Charisma"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Renown's attributes and tooltip variable.
         """
@@ -890,7 +914,8 @@ class Knowledge(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Ability to understand"
         self.attribute_type = "Intellect"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Knowledge's attributes and tooltip variable.
         """
@@ -907,7 +932,8 @@ class Literacy(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Ability to read"
         self.attribute_type = "Intellect"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Literacy's attributes and tooltip variable.
         """
@@ -924,7 +950,8 @@ class Understanding(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "How quickly you level up"
         self.attribute_type = "Intellect"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Understanding's attributes and tooltip variable.
         """
@@ -941,7 +968,8 @@ class Luckiness(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Chance to have things turn your way against all odds"
         self.attribute_type = "Fortuity"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Luckiness's attributes and tooltip variable.
         """
@@ -958,7 +986,8 @@ class Adventuring(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Chance to discover treasure"
         self.attribute_type = "Fortuity"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Adventuring's attributes and tooltip variable.
         """
@@ -975,7 +1004,8 @@ class Logistics(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "How far you can move on the map"
         self.attribute_type = "Pathfinding"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Logistics's attributes and tooltip variable.
         """
@@ -992,7 +1022,8 @@ class Mountaineering(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Modifier for mountain movement"
         self.attribute_type = "Pathfinding"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Mountaineering's attributes and tooltip variable.
         """
@@ -1009,7 +1040,8 @@ class Woodsman(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Modifier for forest movement"
         self.attribute_type = "Pathfinding"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Woodsman's attributes and tooltip variable.
         """
@@ -1026,7 +1058,8 @@ class Navigator(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Modifier for water movement"
         self.attribute_type = "Pathfinding"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Navigator's attributes and tooltip variable.
         """
@@ -1043,7 +1076,8 @@ class Detection(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Chance to discover enemy stealth and traps"
         self.attribute_type = "Survivalism"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Detection's attributes and tooltip variable.
         """
@@ -1060,7 +1094,8 @@ class Caution(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "See information about a new grid before going there"
         self.attribute_type = "Survivalism"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Caution's attributes and tooltip variable.
         """
@@ -1077,7 +1112,8 @@ class Explorer(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Additional options on the map, such as foraging"
         self.attribute_type = "Survivalism"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Explorer's attributes and tooltip variable.
         """
@@ -1094,7 +1130,8 @@ class Huntsman(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Learn additional information about enemies"
         self.attribute_type = "Survivalism"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Huntsman's attributes and tooltip variable.
         """
@@ -1111,7 +1148,8 @@ class Survivalist(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Create bandages, tents, and other useful objects"
         self.attribute_type = "Survivalism"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Survivalist's attributes and tooltip variable.
         """
@@ -1128,7 +1166,8 @@ class ResistFrost(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Ability to resist frost damage"
         self.attribute_type = "Resilience"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update ResistFrost's attributes and tooltip variable.
         """
@@ -1145,7 +1184,8 @@ class ResistFlame(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Ability to resist flame damage"
         self.attribute_type = "Resilience"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update ResistFlame's attributes and tooltip variable.
         """
@@ -1162,7 +1202,8 @@ class ResistShadow(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Ability to resist shadow damage"
         self.attribute_type = "Resilience"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update ResistShadow's attributes and tooltip variable.
         """
@@ -1179,7 +1220,8 @@ class ResistPoison(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Ability to resist poison damage"
         self.attribute_type = "Resilience"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update ResistPoison's attributes and tooltip variable.
         """
@@ -1196,7 +1238,8 @@ class ResistBlunt(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Ability to resist blunt damage"
         self.attribute_type = "Resilience"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update ResistBlunt's attributes and tooltip variable.
         """
@@ -1213,7 +1256,8 @@ class ResistSlashing(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Ability to resist slashing damage"
         self.attribute_type = "Resilience"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update ResistSlashing's attributes and tooltip variable.
         """
@@ -1230,7 +1274,8 @@ class ResistPiercing(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Ability to resist piercing damage"
         self.attribute_type = "Resilience"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update ResistPiercing's attributes and tooltip variable.
         """
@@ -1247,7 +1292,8 @@ class Courage(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Your ability to overcome fears"
         self.attribute_type = "Willpower"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Courage's attributes and tooltip variable.
         """
@@ -1264,7 +1310,8 @@ class Sanity(StaticMixin, Proficiency):
         super().__init__(*args, **kwargs)
         self.description = "Your ability to resist mind altering affects"
         self.attribute_type = "Willpower"
-        
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
     def update(self, hero):
         """Update Sanity's attributes and tooltip variable.
         """
