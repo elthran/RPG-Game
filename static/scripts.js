@@ -222,14 +222,15 @@ function updateProf(button, status, newTooltip) {
     }
 }
 
-function updateAbility(button, id, ability_level, max_level, tree) {
+function updateAbility(button, id, ability_level, max_level, tree, description) {
     "use strict";
 
     var heroAbilityCurrentLvDiv = {};
     var heroBasicPointsDiv = {};
     var heroArchetypePointsDiv = {};
-    console.log("tree is:", tree)
+    var abilityDescriptionDiv = {};
 
+    abilityDescriptionDiv = document.getElementById("ability-" + id + "-description");
     heroAbilityCurrentLvDiv = document.getElementById("ability-" + id);
     if (tree === "basic") {
         heroBasicPointsDiv = document.getElementById("basic_points_remaining");
@@ -239,6 +240,7 @@ function updateAbility(button, id, ability_level, max_level, tree) {
         heroArchetypePointsDiv.innerHTML = parseInt(heroArchetypePointsDiv.innerHTML) - 1;
     }
     heroAbilityCurrentLvDiv.innerHTML = parseInt(heroAbilityCurrentLvDiv.innerHTML) + 1;
+    abilityDescriptionDiv.innerHTML = description;
     //if parseInt(heroAbilityCurrentLvDiv.innerHTML) === max_level:
     //    gray it out
 

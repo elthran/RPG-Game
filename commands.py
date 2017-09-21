@@ -148,10 +148,11 @@ class Command:
             return "error: this ability should have been grayed out as it's at max level"
         print("running learn_ability command:" + ability.name)
         ability.level += 1
+        new_description = ability.get_description()
         status = ""
         if ability.is_max_level():
             status = "max level"
-        return "{}&&{}&&{}&&{}".format(ability_id, ability.level, status, ability_tree)
+        return "{}&&{}&&{}&&{}&&{}".format(ability_id, ability.level, status, ability_tree, new_description)
 
     def cast_spell(hero, database, arg_dict):
         ability_id = arg_dict.get('data', None, type=int)

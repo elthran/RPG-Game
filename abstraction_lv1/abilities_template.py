@@ -168,8 +168,6 @@ class Ability(Base):
     #     return self.name.capitalize()
 
     def get_description(self):
-        print (render_template_string(self.description,
-            level=self.level))
         return render_template_string(self.description,
             level=self.level)
 

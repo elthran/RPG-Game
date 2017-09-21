@@ -18,46 +18,21 @@
 {% endif %}
 <h2 style="text-align:left;">{{ ability_tree.title() }} Abilities</h2>
     {% for ability in myHero.abilities if ability.tree == ability_tree and ability.hidden == False  %}
-<b>Ability: {{ ability.name.title() }} <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>/{{ ability.max_level }}</b>
+<b>{{ ability.name.title() }} <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>/{{ ability.max_level }}</b>
 
 <span id="tooltipPopup-{{ ability.id }}">
-{{ ability.get_description() }}:
+    <div style="display: inline" id="ability-{{ ability.id }}-description">{{ ability.get_description() }}</div>
 {%- for name in ability.requirements %}
     <br>&bull; {{ name | title }} {{ ability[name] }}
     {% else %}
-    PASS
+    <br>Cost: 1 Skill Point
 {%- endfor %}
 </span>
 
-        <button class="command" data="{{ ability.id }}, {{ ability.tree }}" data-function="updateAbility" data-name="update_ability">{{ ability.name }}</button><br>
+        <button class="command" data="{{ ability.id }}, {{ ability.tree }}" data-function="updateAbility" data-name="update_ability">Learn</button><br>
     {% else %}
         No Abilities Available
     {% endfor %}
-<h3>
-	<h1>*TESTING PURPOSES* Modify your character</h1>
-<form action="" method="post">
-	Archetype:
-    <select name="archetype" autofocus tabindex=1>
-	<option value="Brute" title="BE STRONG">Brute</option>
-	<option value="Woodsman">Woodsman</option>
-	<option value="Intellectual">Intellectual</option>
-	</select><br>
-    Specialization:
-    <select name="spec" autofocus tabindex=1>
-	<option value="Priest" title="BE STRONG">Priest</option>
-	<option value="Hunter">Hunter</option>
-	<option value="Merchant">Merchant</option>
-	</select><br>
-    Religion:
-    <select name="religion" autofocus tabindex=1>
-	<option value="firegod" title="BE STRONG">firegod</option>
-	<option value="icegod">icegod</option>
-	<option value="athiest">athiest</option>
-	</select>
-<input class="btn btn-default" type="submit" value="Next" tabindex=2 />
-      </form>
-
-
 {% endblock %}
 
 

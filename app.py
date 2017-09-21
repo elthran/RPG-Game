@@ -398,6 +398,34 @@ def admin(hero=None):
         hero.attribute_points = int(request.form["Attribute_points"])
         hero.proficiency_points = int(request.form['Proficiency_Points'])
         hero.refresh_character(full=True)
+
+        hero.archetype = request.form["archetype"]
+        hero.religion = request.form["religion"]
+        hero.specialization = request.form["spec"]
+
+        for ability in hero.abilities:
+            if ability.tree == "archetype":
+                if ability.tree_type != hero.archetype.lower():
+                    ability.hidden = True
+                    ability.level = 0
+                else:
+                    ability.hidden = False
+                    ability.learnable = True
+            elif ability.tree == "specialization":
+                if ability.tree_type != hero.specialization.lower():
+                    ability.hidden = True
+                    ability.level = 0
+                else:
+                    ability.hidden = False
+                    ability.learnable = True
+            elif ability.tree == "religion":
+                if ability.tree_type != hero.religion.lower():
+                    ability.hidden = True
+                    ability.level = 0
+                else:
+                    ability.hidden = False
+                    ability.learnable = True
+
         return redirect(url_for('home'))
 
     admin = [
@@ -581,16 +609,11 @@ def proficiencies(hero=None):
                            profs2=profs2, profs3=profs3)
 
 
-@app.route('/ability_tree/<spec>', methods=['GET', 'POST'])
+@app.route('/ability_tree/<spec>')
 @login_required
 @uses_hero_and_update
 def ability_tree(spec, hero=None):
     page_title = "Abilities"
-    if request.method == 'POST':
-        hero.archetype = request.form["archetype"]
-        hero.religion = request.form["religion"]
-        hero.specialization = request.form["spec"]
-        database.update()
     return render_template(
         'profile_ability.html', myHero=hero, ability_tree=spec, page_title=page_title)
 
