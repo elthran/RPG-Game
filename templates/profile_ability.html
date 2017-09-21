@@ -18,7 +18,17 @@
 {% endif %}
 <h2 style="text-align:left;">{{ ability_tree.title() }} Abilities</h2>
     {% for ability in myHero.abilities if ability.tree == ability_tree and ability.hidden == False  %}
-        Ability: {{ ability.name.title() }} <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>/{{ ability.max_level }} [{{ ability.description }}]
+<b>Ability: {{ ability.name.title() }} <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>/{{ ability.max_level }}</b>
+
+<span id="tooltipPopup-{{ ability.id }}">
+{{ ability.get_description() }}:
+{%- for name in ability.requirements %}
+    <br>&bull; {{ name | title }} {{ ability[name] }}
+    {% else %}
+    PASS
+{%- endfor %}
+</span>
+
         <button class="command" data="{{ ability.id }}, {{ ability.tree }}" data-function="updateAbility" data-name="update_ability">{{ ability.name }}</button><br>
     {% else %}
         No Abilities Available

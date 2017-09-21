@@ -9,6 +9,7 @@ from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
+from flask import render_template_string
 
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 # Well ... ok, but for simplicity sake just pretend that that is true.
@@ -166,6 +167,12 @@ class Ability(Base):
     # def display_name(self):
     #     return self.name.capitalize()
 
+    def get_description(self):
+        print (render_template_string(self.description,
+            level=self.level))
+        return render_template_string(self.description,
+            level=self.level)
+
     def is_max_level(self):
         """Return True if level is at max_level."""
         return self.level >= self.max_level
@@ -242,7 +249,7 @@ class AuraAbility(Ability):
     understanding_modifier = Column(Integer)
     evade_chance = Column(Integer)
 
-    def __init__(self, *args, health_maximum=0, damage_maximum=0, damage_minimum=0, understanding_modifier=0, evade_chance=0, **kwargs):
+    def __init__(self, *args, health_maximum=0, damage_maximum=0, damage_minimum=0, understanding_modifier=0, evade_chance=0, sanctity_regeneration=0, map_reveal=0, beast_damage_reduction=0, **kwargs):
         """Build a new Archetype_Ability object.
 
         Note: self.type must be set in __init__ to polymorphic identity.

@@ -25,12 +25,12 @@
                                         <br>&bull; {{ tooltip }}
                                     {%- endfor %}
                                     <div style="display:
-                                    {%- if proficiency.is_max_level(hero) %} inline{% else %} none
+                                    {%- if proficiency.is_max_level() %} inline{% else %} none
                                     {%- endif %}"><br>{{ proficiency.error }}</div>
                                 </span>
-                <button class="command" name="level_proficiency" data="{{ proficiency.id }}" id="proficiencyButton"
+                <button class="command" name="update_proficiency" data="{{ proficiency.id }}" id="proficiencyButton"
                         data-function="updateProf" {%- if myHero.proficiency_points
-                <= 0 or proficiency.is_max_level(hero) %} style="display: none"{% endif %}></button>
+                <= 0 or proficiency.is_max_level() %} style="display: none"{% endif %}></button>
             </ul>
         </div>
         {%- endif %}

@@ -183,7 +183,7 @@ class Command:
         # Defensive coding: command buttons should be hidden by JavaScript
         # when no longer valid due to the return values of this function.
         # If for some reason they are still clickable return error to JS console.
-        if hero.proficiency_points <= 0 or proficiency.is_max_level(hero):
+        if hero.proficiency_points <= 0 or proficiency.is_max_level():
             return "error: no proficiency_points or proficiency is at max level."
 
         hero.proficiency_points -= 1
