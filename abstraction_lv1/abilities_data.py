@@ -1,4 +1,5 @@
 """
+{% raw %}
 Abilities spec goes:
 
 name, class, class arguments (not including name as it is added later).
@@ -15,3 +16,8 @@ ALL_ABILITIES = [
 
 
 ABILITY_NAMES = [key[0] for key in ALL_ABILITIES]
+
+"""
+End of documentation.
+{% endraw %}
+"""
