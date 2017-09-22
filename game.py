@@ -185,7 +185,7 @@ class Hero(Base):
 
     age = Column(Integer)
     archetype = Column(String)
-    specialization = Column(String)
+    calling = Column(String)
     religion = Column(String)
     house = Column(String)
     experience = Column(Integer)
@@ -289,7 +289,7 @@ class Hero(Base):
         # Defaults will remain unchanged if no arguments are passed.
         self.age = 7
         self.archetype = None
-        self.specialization = None
+        self.calling = None
         self.religion = None
         self.house = None
 

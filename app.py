@@ -370,7 +370,7 @@ def reset_character(stat_type, hero=None):
     hero.gold = 5000
     hero.basic_ability_points = 5
     hero.archetypic_ability_points = 5
-    hero.specialization_ability_points = 5
+    hero.calling_ability_points = 5
     hero.pantheonic_ability_points = 5
     hero.attribute_points = 10
     hero.proficiency_points = 10
@@ -401,7 +401,7 @@ def admin(hero=None):
 
         hero.archetype = request.form["archetype"]
         hero.religion = request.form["religion"]
-        hero.specialization = request.form["spec"]
+        hero.calling = request.form["spec"]
 
         for ability in hero.abilities:
             if ability.tree == "archetype":
@@ -411,8 +411,8 @@ def admin(hero=None):
                 else:
                     ability.hidden = False
                     ability.learnable = True
-            elif ability.tree == "specialization":
-                if ability.tree_type != hero.specialization.lower():
+            elif ability.tree == "calling":
+                if ability.tree_type != hero.calling.lower():
                     ability.hidden = True
                     ability.level = 0
                 else:
