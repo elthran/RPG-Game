@@ -369,7 +369,7 @@ def reset_character(stat_type, hero=None):
     hero.devotion = 0
     hero.gold = 5000
     hero.basic_ability_points = 5
-    hero.archetypic_ability_points = 5
+    hero.archetype_ability_points = 5
     hero.calling_ability_points = 5
     hero.pantheonic_ability_points = 5
     hero.attribute_points = 10
@@ -392,8 +392,8 @@ def admin(hero=None):
         hero.devotion = int(request.form["Devotion"])
         hero.gold = int(request.form["Gold"])
         hero.basic_ability_points = int(request.form["Basic_ability_points"])
-        hero.archetypic_ability_points = int(request.form["Archetypic_ability_points"])
-        hero.specialized_ability_points = int(request.form["Specialized_ability_points"])
+        hero.archetype_ability_points = int(request.form["Archetype_ability_points"])
+        hero.calling_ability_points = int(request.form["Calling_ability_points"])
         hero.pantheonic_ability_points = int(request.form["Pantheonic_ability_points"])
         hero.attribute_points = int(request.form["Attribute_points"])
         hero.proficiency_points = int(request.form['Proficiency_Points'])
@@ -437,8 +437,8 @@ def admin(hero=None):
         ("Devotion", hero.devotion),
         ("Gold", hero.gold),
         ("Basic_ability_points", hero.basic_ability_points),
-        ("Archetypic_ability_points", hero.archetypic_ability_points),
-        ("Specialized_ability_points", hero.specialized_ability_points),
+        ("Archetype_ability_points", hero.archetype_ability_points),
+        ("Calling_ability_points", hero.calling_ability_points),
         ("Pantheonic_ability_points", hero.pantheonic_ability_points),
         ("Attribute_points", hero.attribute_points),
         ("Proficiency_Points", hero.proficiency_points)]
