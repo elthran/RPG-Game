@@ -1,0 +1,53 @@
+Problem: Current code makes used of global imports among all files. This leads to hidden bugs and name overlap.
+
+Proposed solution: Design and implement a code structure framework. (needs to be keep current).
+Example:
+Separate code into 3 and only import Objects and Constants between modules.
+
+Suggested sections:
+
+Website --> Anything that is fixed and does not relate to the main game mechanics, mainly would be display elements.
+-Pre logon data
+--Game marketing
+--help
+--forums
+--password recovery
+--account creation --> Access Character.__init__ and stores it with Database.save_game
+--login --> Loads world with Database.output/load_game
+
+-Post login --> set up a display for game data, basically a bunch of render modules for game data.
+--Main links should all be the same around the border
+--render_game --> All game objects should offer a render interface for this object to interact with.
+
+Database --> a basic module to implement "simple, human readable" ways to interact with a database.
+-save_game --> basic save character and world state--load_game --> request old character and world state
+##efficient_save_load --> Only save changes
+ 
+GameObjects --> The actual game broken down into a bunch of object that interact with each other to make an interesting playable environment. They must include DATA, ACTIONS and DISPLAYS
+-LivingObjects --> Note this provides a way to give Monster/NPC gear and other attributes.
+--Charaters
+---display
+--Monsters
+---display
+--fight
+--levelup
+--inventory
+--display_generic
+
+-Items
+--owner
+--price
+--display
+
+-Locations
+--Town
+---Shop
+----display
+---Blacksmith, etc.
+---display
+--leave
+--enter
+--display
+
+##Note about display functions.
+The website should integrate all display objects as elements of a display grid.

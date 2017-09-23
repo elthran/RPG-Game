@@ -134,7 +134,7 @@ class Command:
             ability_id = None
             ability_tree = None
             return "error: button came back with an empty string for data"
-        print (ability_tree)
+        print(ability_tree)
         if ability_tree == "basic":
             if hero.basic_ability_points == 0:
                 return "error: not enough points, should have been grayed out"
@@ -174,7 +174,7 @@ class Command:
 <br>&bull; {{ tooltip }}
 {%- endfor %}
 <div id="error-{{ proficiency.id }}" style="display:
-{%- if proficiency.is_max_level(hero) %} inline{% else %} none
+{%- if proficiency.is_max_level() %} inline{% else %} none
 {%- endif %}"><br>{{ proficiency.error }}</div>"""
 
         id = arg_dict.get('data', None, type=int)
@@ -196,7 +196,7 @@ class Command:
 
         if hero.proficiency_points == 0:
             return "hide_all&&{}".format(tooltip)
-        elif proficiency.is_max_level(hero):
+        elif proficiency.is_max_level():
             return "hide_this&&{}".format(tooltip)
         return "success&&{}".format(tooltip)
 

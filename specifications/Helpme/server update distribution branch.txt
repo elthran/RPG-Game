@@ -1,0 +1,14 @@
+From: https://stackoverflow.com/a/26464271
+ 
+Don’t care about local changes
+
+    Solution 1: Get the latest code and reset the code
+
+    git fetch origin
+    git reset --hard origin/[tag/branch/commit-id usually: master]
+
+    Solution 2: Delete the folder and clone again :D
+
+    rm -rf [project_folder]
+    git clone [remote_repo]
+

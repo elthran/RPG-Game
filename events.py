@@ -191,7 +191,10 @@ class HandlerMixin(object):
         try:
             self.completion_trigger.link(hero)
         except AttributeError as ex:
-            print(ex)
+            if str(ex) == "'NoneType' object has no attribute 'link'":
+                pass
+            else:
+                raise ex
 
     def run_handler(self):
         """Deactivate trigger and run activation code.
@@ -217,8 +220,7 @@ class HandlerMixin(object):
         print("You were supposed to have over ridden this method.")
         print("(in class Handler -> run_if_trigger_completed)")
         print("Returns the next trigger to be hooked up.")
-        raise Exception(
-            "Read the above message and maybe as me for help.")
+        raise Exception("Read the above message and maybe as me for help.")
 
 if __name__ == "__main__":
     class SomeClassThatUsesTriggers(HandlerMixin, Base):
