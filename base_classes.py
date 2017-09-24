@@ -44,8 +44,13 @@ class Base(object):
             if "Mixin" in obj.__name__:
                 hierarchy_keys |= set(vars(obj).keys())
             else:
-                hierarchy_keys |= set(vars(obj).keys()) \
-                              - set(obj.__mapper__.relationships.keys())
+
+                hierarchy_keys |= set(vars(obj).keys())
+                try:
+                    hierarchy_keys -= set(obj.__mapper__.relationships.keys())
+                except AttributeError as ex:
+                    if "has no attribute '__mapper__'" not in str(ex):
+                        raise ex
 
         # Remove private variables and id keys to prevent weird recursion
         # and redundancy.

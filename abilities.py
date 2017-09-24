@@ -9,12 +9,17 @@ from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
+from sqlalchemy.ext.declarative import declared_attr
 from flask import render_template_string
 
+from factories import PolymorphicIdentityOnClassNameMixin
+from factories import non_synchronous_relationship_mixin_factory
+from factories import iter_items_factory
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 # Well ... ok, but for simplicity sake just pretend that that is true.
 from base_classes import Base
 import pdb
+from pprint import pprint
 
 """
 
@@ -34,6 +39,7 @@ ALL_ABILITIES = [
 
 
 ABILITY_NAMES = [key[0] for key in ALL_ABILITIES]
+ABILITY_WITH_CLASS_NAMES = [(key[0], key[1]) for key in ALL_ABILITIES]
 
 """
 End of documentation.
@@ -43,7 +49,14 @@ End of documentation.
 # "determination", 5, "Increases Endurance by 3 for each level."
 
 
-class Abilities(Base):
+AbilitiesRelationshipMixin = non_synchronous_relationship_mixin_factory(
+    'Abilities', 'Ability', ABILITY_WITH_CLASS_NAMES
+)
+
+IterItemsExtension = iter_items_factory(ABILITY_NAMES)
+
+
+class Abilities(IterItemsExtension, AbilitiesRelationshipMixin, Base):
     __tablename__ = 'abilities'
 
     id = Column(Integer, primary_key=True)
@@ -54,36 +67,36 @@ class Abilities(Base):
     hero = relationship("Hero", back_populates='abilities')
 
     # Relationships to a particular ability.
-    scholar = relationship(
-        "AuraAbility",
-        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
-                    "Ability.name=='scholar')",
-        back_populates="abilities", uselist=False)
-    reflexes = relationship(
-        "AuraAbility",
-        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
-                    "Ability.name=='reflexes')",
-        back_populates="abilities", uselist=False)
-    meditation = relationship(
-        "AuraAbility",
-        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
-                    "Ability.name=='meditation')",
-        back_populates="abilities", uselist=False)
-    explorer = relationship(
-        "AuraAbility",
-        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
-                    "Ability.name=='explorer')",
-        back_populates="abilities", uselist=False)
-    cure = relationship(
-        "CastableAbility",
-        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
-                    "Ability.name=='cure')",
-        back_populates="abilities", uselist=False)
-    beastmaster = relationship(
-        "AuraAbility",
-        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
-                    "Ability.name=='beastmaster')",
-        back_populates="abilities", uselist=False)
+    # scholar = relationship(
+    #     "AuraAbility",
+    #     primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+    #                 "Ability.name=='scholar')",
+    #     back_populates="abilities", uselist=False)
+    # reflexes = relationship(
+    #     "AuraAbility",
+    #     primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+    #                 "Ability.name=='reflexes')",
+    #     back_populates="abilities", uselist=False)
+    # meditation = relationship(
+    #     "AuraAbility",
+    #     primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+    #                 "Ability.name=='meditation')",
+    #     back_populates="abilities", uselist=False)
+    # explorer = relationship(
+    #     "AuraAbility",
+    #     primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+    #                 "Ability.name=='explorer')",
+    #     back_populates="abilities", uselist=False)
+    # cure = relationship(
+    #     "CastableAbility",
+    #     primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+    #                 "Ability.name=='cure')",
+    #     back_populates="abilities", uselist=False)
+    # beastmaster = relationship(
+    #     "AuraAbility",
+    #     primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+    #                 "Ability.name=='beastmaster')",
+    #     back_populates="abilities", uselist=False)
 
     def __init__(self):
         self.scholar = AuraAbility('scholar', 5, 'Gain experience {{ level }}% faster.', learnable=True, understanding_modifier=1)
@@ -93,29 +106,29 @@ class Abilities(Base):
         self.cure = CastableAbility('cure', 3, 'Recover {{ level * 3 }} health at the cost of {{ level }} sanctity.', tree='calling', tree_type='priest', sanctity_cost=1, heal_amount=3)
         self.beastmaster = AuraAbility('beastmaster', 5, 'Take {{ level * 5 }}% reduced damage from beasts.', tree='calling', tree_type='hunter', beast_damage_reduction=5)
 
-    def items(self):
-        """Return each Ability and its name.
-
-        Returns a list of 2-tuples
-        Basically a dict.items() clone that looks like ([(key, value),
-            (key, value), ...])
-
-        Usage:
-        for name, ability in abilities.items():
-            name -- the name of the attribute
-            ability -- the object that corresponds to the named attribute.
-        """
-
-        return ((key, getattr(self, key)) for key in ABILITY_NAMES)
-
-    def __iter__(self):
-        """Allow this object to be used in a for call.
-
-        for ability in abilities:
-            ability -- where the ability is each of the attribute objects of
-                the abilities class.
-        """
-        return (getattr(self, key) for key in ABILITY_NAMES)
+    # def items(self):
+    #     """Return each Ability and its name.
+    #
+    #     Returns a list of 2-tuples
+    #     Basically a dict.items() clone that looks like ([(key, value),
+    #         (key, value), ...])
+    #
+    #     Usage:
+    #     for name, ability in abilities.items():
+    #         name -- the name of the attribute
+    #         ability -- the object that corresponds to the named attribute.
+    #     """
+    #
+    #     return ((key, getattr(self, key)) for key in ABILITY_NAMES)
+    #
+    # def __iter__(self):
+    #     """Allow this object to be used in a for call.
+    #
+    #     for ability in abilities:
+    #         ability -- where the ability is each of the attribute objects of
+    #             the abilities class.
+    #     """
+    #     return (getattr(self, key) for key in ABILITY_NAMES)
 
 
 class Ability(Base):
@@ -241,16 +254,16 @@ class Ability(Base):
         # self.heroes = [hero]
 
 
-class CastableAbility(Ability):
+class CastableAbility(PolymorphicIdentityOnClassNameMixin, Ability):
     castable = Column(Boolean)
     sanctity_cost = Column(Integer)
     endurance_cost = Column(Integer)
     heal_amount = Column(Integer)
     gold_amount = Column(Integer)
 
-    __mapper_args__ = {
-        'polymorphic_identity': 'CastableAbility',
-    }
+    # __mapper_args__ = {
+    #     'polymorphic_identity': 'CastableAbility',
+    # }
 
     def __init__(self, *args, sanctity_cost=0, endurance_cost=0, heal_amount=0, gold_amount=0, **kwargs):
         """Build a new ArchetypeAbility object.
@@ -284,11 +297,7 @@ class CastableAbility(Ability):
             return True
 
 
-class AuraAbility(Ability):
-    __mapper_args__ = {
-        'polymorphic_identity': 'AuraAbility',
-    }
-
+class AuraAbility(PolymorphicIdentityOnClassNameMixin, Ability):
     health_maximum = Column(Integer)
     damage_maximum = Column(Integer)
     damage_minimum = Column(Integer)
