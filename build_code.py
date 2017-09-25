@@ -3,33 +3,61 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 import importlib
 import os
 import stat
+import hashlib
 
 # import sys
 # print(sys.path)
 # exit()
 
 
-def backup(filename, extension):
-    """If the file has been modified by the user make a backup.
+def get_hash(filename):
+    """Return the hexdigest of the file at filename."""
+    hasher = hashlib.md5()
+    with open(filename, 'rb') as afile:
+        buf = afile.read()
+        hasher.update(buf)
+    return hasher.hexdigest()
+
+
+def hash_match(filename, filename2):
+    """Check whether the hexdigest's of two files match."""
+    return get_hash(filename) == get_hash(filename2)
+
+
+def maybe_backup(temp_name, final_name, extension):
+    """If the template is out of sync with the file make a backup.
 
     This is done through checking if the file is _readonly_ (built by template
     code) or not _readonly_ (modified by the user).
     """
-    backup_name = filename[:-len(extension)] + '.bak'
+    backup_name = final_name[:-len(extension)] + '.bak'
 
-    fileAtt = os.stat(filename)[0]
-    if (not fileAtt & stat.S_IWRITE):
-        # File is read-only, so no backup is required
-        print("No backup required for '{}'.".format(filename))
+    fileAtt = os.stat(final_name)[0]
+    if hash_match(final_name, temp_name):
+        # Template has not been changed.
+        os.remove(temp_name)
+        print("Template unmodified for '{}'.".format(final_name))
+    elif not fileAtt & stat.S_IWRITE:
+        # File is read-only, but different from template
+        # so no backup is required
+        # but file should be updated!
+        print("No backup required for '{}', updating!".format(final_name))
+        os.remove(final_name)
+        os.rename(temp_name, final_name)
+    elif os.path.exists(backup_name):
+        # File needs to be updated, but _not_ the backup.
+        print("Updating '{}, old backup still exists!".format(backup_name))
+        os.remove(final_name)
+        os.rename(temp_name, final_name)
     else:
-        # File is writeable, user has modified it .. so
-        # make a backup
-        print("Backup required for '{}'!".format(filename))
-        if not os.path.exists(backup_name):
-            os.rename(filename, backup_name)
-            print("'{}' backed up to '{}'.".format(filename, backup_name))
-        else:
-            print("A backup of '{}' already exists!".format(backup_name))
+        # File is writeable, and hashes don't match and no backup exists
+        # so a backup is needed!
+        os.rename(final_name, backup_name)
+        os.rename(temp_name, final_name)
+        print("'{}' updated, old version backed up to '{}!".format(
+            final_name, backup_name))
+    # Set file to read only.
+    os.chmod(final_name, stat.S_IREAD)
 
 
 def build_templates(filenames, extension):
@@ -54,7 +82,8 @@ def build_templates(filenames, extension):
     )
 
     for name in filenames:
-        filename = "../" + name + extension
+        temp_name = "../" + name + '.tmp'
+        final_name = "../" + name + extension
         template_name = name + "_template" + extension
 
         # Note this is an import name so the file type is left off.
@@ -67,21 +96,12 @@ def build_templates(filenames, extension):
         data = {key: getattr(data_module, key) for key in dir(data_module) if
                 key[:2] != '__'}
 
-        # Build a backup of all files if needed.
-        backup(filename, extension)
-
-        # Set file to writeable if it exists.
-        try:
-            os.chmod(filename, stat.S_IWRITE)
-        except FileNotFoundError:
-            pass
-
         # Save the newly built code.
-        with open(filename, 'w') as file:
+        with open(temp_name, 'w') as file:
             file.write(template.render(**data))
-        print("'{}' updated!".format(name + extension))
-        # Set file to read only.
-        os.chmod(filename, stat.S_IREAD)
+
+        # Build a backup of all files if needed.
+        maybe_backup(temp_name, final_name, extension)
 
 
 if __name__ == "__main__":

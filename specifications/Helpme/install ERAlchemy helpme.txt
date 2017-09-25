@@ -1,0 +1,5 @@
+C:\Python27\Scripts\pip.exe install --global-option=build_ext --global-option="-IC:/Program Files (x86)/Graphviz2.38/include" --global-option="-LC:/Program Files (x86)/Graphviz2.38/lib/release/lib" pygraphviz 
+
+pip install pygraphviz
+
+eralchemy -i sqlite:///"D:\Dropbox\The Written Word\Programming\pythgrams\jacobs_game\flask-intro\static\database.db" -o "D:\Dropbox\The Written Word\Programming\pythgrams\jacobs_game\flask-intro\static\erd_from_sqlite.pdf"
