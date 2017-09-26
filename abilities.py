@@ -37,7 +37,6 @@ ALL_ABILITIES = [
     ("beastmaster", "AuraAbility", "5, 'Take {{ level * 5 }}% reduced damage from beasts.', tree='calling', tree_type='hunter', beast_damage_reduction=5")
 ]
 
-
 ABILITY_NAMES = [key[0] for key in ALL_ABILITIES]
 ABILITY_WITH_CLASS_NAMES = [(key[0], key[1]) for key in ALL_ABILITIES]
 
@@ -304,7 +303,10 @@ class AuraAbility(PolymorphicIdentityOnClassNameMixin, Ability):
     understanding_modifier = Column(Integer)
     evade_chance = Column(Integer)
 
-    def __init__(self, *args, health_maximum=0, damage_maximum=0, damage_minimum=0, understanding_modifier=0, evade_chance=0, sanctity_regeneration=0, map_reveal=0, beast_damage_reduction=0, **kwargs):
+    def __init__(self, *args, health_maximum=0, damage_maximum=0,
+                 damage_minimum=0, understanding_modifier=0, evade_chance=0,
+                 sanctity_regeneration=0, map_reveal=0,
+                 beast_damage_reduction=0, **kwargs):
         """Build a new Archetype_Ability object.
 
         Note: self.type must be set in __init__ to polymorphic identity.

@@ -33,7 +33,7 @@ def non_synchronous_relationship_mixin_factory(container_name, cls_name,
 
         dct[name] = declared_attr(dct[name])
 
-    return type('RelationshipMixin', (), dct)
+    return type('RelationshipMixin', (object, ), dct)
 
 
 def synchronous_relationship_mixin_factory(container_name, cls_name, names):
@@ -62,7 +62,7 @@ def synchronous_relationship_mixin_factory(container_name, cls_name, names):
 
         dct[attr_name] = declared_attr(dct[attr_name])
 
-    return type('RelationshipMixin', (), dct)
+    return type('RelationshipMixin', (object, ), dct)
 
 
 def container_factory(cls_name, cls_name_singular, supers, names, namespace):
