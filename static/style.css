@@ -12,7 +12,7 @@ div.row > * {
 }
 
 .col-1 {width: 8.33%;}
-.col-2 {width: 16.66%;}
+.col-2 {width: 16.5%;}
 .col-3 {width: 25%;}
 .col-4 {width: 33.33%;}
 .col-5 {width: 41.66%;}
@@ -26,8 +26,8 @@ div.row > * {
 
 [class*="col-"] {
     float: left;
-    padding: 15px;
-    border: 1px solid red;
+    padding: 10px;
+    border: 1px dotted gray;
 }
 
 .row::after {
@@ -453,6 +453,58 @@ input.abilityButtonMinus {
     box-shadow: 5px 5px 8px #CCC;
 }
 
+/* Ability Pages */
+
+    /* Religion Individual Containers */
+.religioncontainer {
+    width: 14%;
+    height: 300px;
+    float: left;
+    padding: 10px;
+    background-image: url("/static/images/grayscale.jpg");
+    border: 1px dotted gray;
+}
+
+    /* Container for the 6 archetype fields */
+.popuparchetypecontainer {
+	display: inline;
+	float: left;
+	cursor: pointer;
+	height: 350px;
+	width: 16%;
+	border: 1px dotted gray;
+}
+
+    /* {TAGGED FOR DELETION ONCE REPLACED} The popup message you get if you click on an archetype container*/
+.popuparchetypechangingmessage {
+	visibility: hidden;
+	max-width: 100px;
+	height: 50px;
+	background-color: #555;
+	color: #fff;
+	text-align: center;
+	border-radius: 6px;
+	position: static;
+	z-index: 1;
+	margin: auto;
+}
+
+    /* {REPLACING CONTENT DIRECTLY ABOVE} The popup message that should show up below the 6 archetypes */
+.popuparchetypemessage {
+    text-align: center;
+}
+
+.popuparchetypemessage li {
+    color: red;
+}
+
+    /* The toggle of the popup message of the archetype containers */
+.popuparchetypecontainer .show {
+	visibility: visible;
+	-webkit-animation: fadeIn 1s;
+	animation: fadeIn 1s;
+}
+
 /* The % full bars used in the game */
 
 .progressBar { 
@@ -553,13 +605,6 @@ img.profileImage {
 	user-select: none;
 }
 
-/* Popup container for archetype pop ups - can be anything you want */
-.popuparchetypecontainer {
-	display: inline;
-	cursor: pointer;
-	height: 700px;
-}
-
 /* The actual popup */
 .popup .popupachievement {
 	visibility: hidden;
@@ -576,20 +621,6 @@ img.profileImage {
 	margin-left: -80px;
 }
 
-/* The actual popup */
-.popuparchetypecontainer .popuparchetype {
-	visibility: hidden;
-	max-width: 100px;
-	height: 50px;
-	background-color: #555;
-	color: #fff;
-	text-align: center;
-	border-radius: 6px;
-	position: static;
-	z-index: 1;
-	margin: auto;
-}
-
 /* Popup arrow */
 .popup .popupachievement::after {
 	content: "";
@@ -604,12 +635,6 @@ img.profileImage {
 
 /* Toggle this class - hide and show the popup */
 .popup .show {
-	visibility: visible;
-	-webkit-animation: fadeIn 1s;
-	animation: fadeIn 1s;
-}
-
-.popuparchetypecontainer .show {
 	visibility: visible;
 	-webkit-animation: fadeIn 1s;
 	animation: fadeIn 1s;
