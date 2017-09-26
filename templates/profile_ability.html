@@ -2,13 +2,118 @@
 {% block block1 %}
 <!-- This is the ability page. It let's you learn/upgrade abilities -->
 
-<h1 style="text-align:center;">{{ ability_tree.title() }} Abilities</h1>
-{{ ability_tree.title() }} Ability Points:
 {% if ability_tree == "basic" %}
+    <h1 style="text-align:center;">Basic Abilities</h1>
+    Basic Ability Points:
     <div style="display: inline" id="basic_points_remaining">{{ myHero.basic_ability_points }}</div>
+    <h2 style="text-align:left;">Basic Abilities</h2>
+    {% for ability in myHero.abilities if ability.tree == ability_tree and ability.hidden == False  %}
+        <h3>{{ ability.name.title() }}</h3>
+        <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>/{{ ability.max_level }}</b>
+        <span id="tooltipPopup-{{ ability.id }}">
+            <div style="display: inline" id="ability-{{ ability.id }}-description">{{ ability.get_description() }}</div>
+            {%- for name in ability.requirements %}
+                <br>&bull; {{ name | title }} {{ ability[name] }}
+            {% else %}
+                <br>Cost: 1 Skill Point
+            {%- endfor %}
+        </span>
+        <button class="command" data="{{ ability.id }}, {{ ability.tree }}" data-function="updateAbility" data-name="update_ability">Learn</button><br>
+    {% else %}
+        No Abilities Available
+    {% endfor %}
+
 {% elif ability_tree == "archetype" %}
-    <div style="display: inline" id="archetypic_points_remaining">{{ myHero.archetypic_ability_points }}</div>
-    <br>Current Archetype: {{ myHero.archetype }}
+    {% if hero.archetype == None %}
+<div class="popuparchetypecontainer" onclick="archetype_popup('brute')"><img src="/static/images/archetype_brute.jpg">
+  <span class="popuparchetype" id="js_popupbrute">
+      <h1>Brute</h1>
+      <p>A character who uses strength and combat to solve problems. Proficient with many types of weapons.</p>
+        <ul style="color:red">Requirements:
+            <li>Brawn ~ 6</li>
+            <li>Any Weapon Talent ~ 10</li>
+            <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Brute"></form></li>
+        </ul>
+  </span>
+</div>
+<div class="popuparchetypecontainer" onclick="archetype_popup('scoundrel')"><img src="/static/images/archetype_scoundrel.jpg">
+  <span class="popuparchetype" id="js_popupscoundrel">
+      <h1>Scoundrel</h1>
+      <p>A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.</p>
+        <ul style="color:red">Requirements:
+            <li>Dagger Talent ~ 6</li>
+            <li>Virtue ~ -100</li>
+            <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Scoundrel"></form></li>
+        </ul>
+  </span>
+</div>
+<div class="popuparchetypecontainer" onclick="archetype_popup('ascetic')"><img src="/static/images/archetype_ascetic.jpg">
+  <span class="popuparchetype" id="js_popupascetic">
+      <h1>Ascetic</h1>
+      <p>A character who focuses on disciplining mind and body. They use a combination of combat and intellect.</p>
+        <ul style="color:red">Requirements:
+            <li>Errands Completed ~ 10</li>
+            <li>Virtue ~ +100</li>
+            <li>Willpower ~ 4</li>
+            <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Ascetic"></form></li>
+        </ul>
+  </span>
+</div>
+<div class="popuparchetypecontainer" onclick="archetype_popup('survivalist')"><img src="/static/images/archetype_survivalist.jpg">
+  <span class="popuparchetype" id="js_popupsurvivalist">
+      <h1>Survivalist</h1>
+      <p>A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.</p>
+        <ul style="color:red">Requirements:
+            <li>Locations Discovered ~ 5</li>
+            <li>Animals in Bestiary ~ 10</li>
+            <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Survivalist"></form></li>
+        </ul>
+  </span>
+</div>
+<div class="popuparchetypecontainer" onclick="archetype_popup('philosopher')"><img src="/static/images/archetype_philosopher.jpg">
+  <span class="popuparchetype" id="js_popupphilosopher">
+      <h1>Philosopher</h1>
+      <p>A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.</p>
+        <ul style="color:red">Requirements:
+            <li>Intellect ~ 7</li>
+            <li>Books Read ~ 10</li>
+            <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Philosopher"></form></li>
+        </ul>
+  </span>
+</div>
+<div class="popuparchetypecontainer" onclick="archetype_popup('opportunist')"><img src="/static/images/archetype_opportunist.jpg">
+  <span class="popuparchetype" id="js_popupopportunist">
+      <h1>Opportunist</h1>
+      <p>A character who solves problems using speech and dialogue.</p>
+        <ul style="color:red">Requirements:
+            <li>Charisma ~ 7</li>
+            <li>Fame ~ +200</li>
+            <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Opportunist"></form></li>
+        </ul>
+  </span>
+</div>
+    {% else %}
+        <h1 style="text-align:center;">Archetype Abilities</h1>
+        Archetype Ability Points:
+        <div style="display: inline" id="basic_points_remaining">{{ myHero.basic_ability_points }}</div>
+        <h2 style="text-align:left;">Archetype Abilities</h2>
+        {% for ability in myHero.abilities if ability.tree == ability_tree and ability.hidden == False  %}
+            <h3>{{ ability.name.title() }}</h3>
+            <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>/{{ ability.max_level }}</b>
+            <span id="tooltipPopup-{{ ability.id }}">
+                <div style="display: inline" id="ability-{{ ability.id }}-description">{{ ability.get_description() }}</div>
+                {%- for name in ability.requirements %}
+                    <br>&bull; {{ name | title }} {{ ability[name] }}
+                {% else %}
+                    <br>Cost: 1 Skill Point
+                {%- endfor %}
+            </span>
+            <button class="command" data="{{ ability.id }}, {{ ability.tree }}" data-function="updateAbility" data-name="update_ability">Learn</button>
+        {% else %}
+            No Abilities Available
+        {% endfor %}
+    {% endif %}
+
 {% elif ability_tree == "calling" %}
     <div style="display: inline" id="calling_points_remaining">{{ myHero.calling_ability_points }}</div>
     <br>Current Calling: {{ myHero.calling }}
@@ -16,23 +121,7 @@
     <div style="display: inline" id="religious_points_remaining">{{ myHero.religious_ability_points }}</div>
     <br>Current Religion: {{ myHero.religion }}
 {% endif %}
-<h2 style="text-align:left;">{{ ability_tree.title() }} Abilities</h2>
-    {% for ability in myHero.abilities if ability.tree == ability_tree and ability.hidden == False  %}
-<b>{{ ability.name.title() }} <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>/{{ ability.max_level }}</b>
 
-<span id="tooltipPopup-{{ ability.id }}">
-    <div style="display: inline" id="ability-{{ ability.id }}-description">{{ ability.get_description() }}</div>
-{%- for name in ability.requirements %}
-    <br>&bull; {{ name | title }} {{ ability[name] }}
-    {% else %}
-    <br>Cost: 1 Skill Point
-{%- endfor %}
-</span>
-
-        <button class="command" data="{{ ability.id }}, {{ ability.tree }}" data-function="updateAbility" data-name="update_ability">Learn</button><br>
-    {% else %}
-        No Abilities Available
-    {% endfor %}
 {% endblock %}
 
 

@@ -548,6 +548,16 @@ img.profileImage {
 	user-select: none;
 }
 
+/* Popup container for archetype pop ups - can be anything you want */
+.popuparchetypecontainer {
+	display: inline;
+	cursor: pointer;
+	height: 5%;
+	width: 1%;
+	padding: 5%;
+	margin: 5%;
+}
+
 /* The actual popup */
 .popup .popupachievement {
 	visibility: hidden;
@@ -564,6 +574,20 @@ img.profileImage {
 	margin-left: -80px;
 }
 
+/* The actual popup */
+.popuparchetypecontainer .popuparchetype {
+	visibility: hidden;
+	max-width: 100px;
+	height: 50px;
+	background-color: #555;
+	color: #fff;
+	text-align: center;
+	border-radius: 6px;
+	position: static;
+	z-index: 1;
+	margin: auto;
+}
+
 /* Popup arrow */
 .popup .popupachievement::after {
 	content: "";
@@ -578,6 +602,12 @@ img.profileImage {
 
 /* Toggle this class - hide and show the popup */
 .popup .show {
+	visibility: visible;
+	-webkit-animation: fadeIn 1s;
+	animation: fadeIn 1s;
+}
+
+.popuparchetypecontainer .show {
 	visibility: visible;
 	-webkit-animation: fadeIn 1s;
 	animation: fadeIn 1s;

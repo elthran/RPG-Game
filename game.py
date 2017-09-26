@@ -197,7 +197,7 @@ class Hero(Base):
 
     basic_ability_points = Column(Integer)
     archetype_ability_points = Column(Integer)
-    class_ability_points = Column(Integer)
+    calling_ability_points = Column(Integer)
     pantheonic_ability_points = Column(Integer)
     attribute_points = Column(Integer)
     proficiency_points = Column(Integer)
@@ -302,8 +302,8 @@ class Hero(Base):
         self.gold = 50
 
         self.basic_ability_points = 5
-        self.archetypic_ability_points = 0
-        self.class_ability_points = 0
+        self.archetype_ability_points = 0
+        self.calling_ability_points = 0
         self.pantheonic_ability_points = 0
 
         self.attribute_points = 0

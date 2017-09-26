@@ -140,9 +140,9 @@ class Command:
                 return "error: not enough points, should have been grayed out"
             hero.basic_ability_points -= 1
         elif ability_tree == "archetype":
-            if hero.archetypic_ability_points == 0:
+            if hero.archetype_ability_points == 0:
                 return "error: not enough points, should have been grayed out"
-            hero.archetypic_ability_points -= 1
+            hero.archetype_ability_points -= 1
         ability = database.get_ability_by_id(ability_id)
         if ability.is_max_level():
             return "error: this ability should have been grayed out as it's at max level"

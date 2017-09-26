@@ -117,6 +117,36 @@ function quest_popup() {
     popup.classList.toggle('show');
 }
 
+function archetype_popup(archetype) {
+    var brute_popup = document.getElementById('js_popupbrute');
+    var scoundrel_popup = document.getElementById('js_popupscoundrel');
+    var ascetic_popup = document.getElementById('js_popupascetic');
+    var survivalist_popup = document.getElementById('js_popupsurvivalist');
+    var philosopher_popup = document.getElementById('js_popupphilosopher');
+    var opportunist_popup = document.getElementById('js_popupopportunist');
+
+    brute_popup.classList.remove('show')
+    scoundrel_popup.classList.remove('show')
+    ascetic_popup.classList.remove('show')
+    survivalist_popup.classList.remove('show')
+    philosopher_popup.classList.remove('show')
+    opportunist_popup.classList.remove('show')
+
+    if (archetype === 'brute') {
+    brute_popup.classList.add('show')
+    } else if (archetype === 'scoundrel') {
+    scoundrel_popup.classList.add('show')
+    } else if (archetype === 'ascetic') {
+    ascetic_popup.classList.add('show')
+    } else if (archetype === 'survivalist') {
+    survivalist_popup.classList.add('show')
+    } else if (archetype === 'philosopher') {
+    philosopher_popup.classList.add('show')
+    } else if (archetype === 'opportunist') {
+    opportunist_popup.classList.add('show')
+    }
+}
+
 // This toggles whether or not you can see the battle log after a fight.
 function battle_popup() {
     var x = document.getElementById('battle_log_div_id');
@@ -250,6 +280,7 @@ function updateAbility(button, id, ability_level, max_level, tree, description) 
     // make all buttons grayed out
     }
 }
+
 
 
 //NOTE: <div style="display: inline"> should be replaced by a span tag
