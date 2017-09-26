@@ -117,6 +117,16 @@ function quest_popup() {
     popup.classList.toggle('show');
 }
 
+function show(element) {
+    element.classList.remove('hide')
+    element.classList.add('show')
+}
+
+function hide(element) {
+    element.classList.remove('show')
+    element.classList.add('hide')
+}
+
 function archetype_popup(archetype) {
     var brute_popup = document.getElementById('js_popupbrute');
     var scoundrel_popup = document.getElementById('js_popupscoundrel');
@@ -125,25 +135,25 @@ function archetype_popup(archetype) {
     var philosopher_popup = document.getElementById('js_popupphilosopher');
     var opportunist_popup = document.getElementById('js_popupopportunist');
 
-    brute_popup.classList.remove('show')
-    scoundrel_popup.classList.remove('show')
-    ascetic_popup.classList.remove('show')
-    survivalist_popup.classList.remove('show')
-    philosopher_popup.classList.remove('show')
-    opportunist_popup.classList.remove('show')
+    hide(brute_popup)
+    hide(scoundrel_popup)
+    hide(ascetic_popup)
+    hide(survivalist_popup)
+    hide(philosopher_popup)
+    hide(opportunist_popup)
 
     if (archetype === 'brute') {
-    brute_popup.classList.add('show')
+    show(brute_popup)
     } else if (archetype === 'scoundrel') {
-    scoundrel_popup.classList.add('show')
+    show(scoundrel_popup)
     } else if (archetype === 'ascetic') {
-    ascetic_popup.classList.add('show')
+    show(ascetic_popup)
     } else if (archetype === 'survivalist') {
-    survivalist_popup.classList.add('show')
+    show(survivalist_popup)
     } else if (archetype === 'philosopher') {
-    philosopher_popup.classList.add('show')
+    show(philosopher_popup)
     } else if (archetype === 'opportunist') {
-    opportunist_popup.classList.add('show')
+    show(opportunist_popup)
     }
 }
 

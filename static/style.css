@@ -499,10 +499,14 @@ input.abilityButtonMinus {
 }
 
     /* The toggle of the popup message of the archetype containers */
-.popuparchetypecontainer .show {
+.show {
 	visibility: visible;
 	-webkit-animation: fadeIn 1s;
 	animation: fadeIn 1s;
+}
+
+.hide {
+    display: none;
 }
 
 /* The % full bars used in the game */

@@ -27,29 +27,39 @@
     {% if hero.archetype == None %}
 <div>
     <div class="popuparchetypecontainer" onclick="archetype_popup('brute')"><img class="archetypeImages" src="/static/images/archetype_brute.jpg">
-      <span class="popuparchetypechangingmessage" id="js_popupbrute">
-          <h1>Brute</h1>
-          <p>A character who uses strength and combat to solve problems. Proficient with many types of weapons.</p>
+    </div>
+    <div class="popuparchetypecontainer" onclick="archetype_popup('scoundrel')"><img class="archetypeImages" src="/static/images/archetype_scoundrel.jpg">
+    </div>
+    <div class="popuparchetypecontainer" onclick="archetype_popup('ascetic')"><img class="archetypeImages" src="/static/images/archetype_ascetic.jpg">
+    </div>
+    <div class="popuparchetypecontainer" onclick="archetype_popup('survivalist')"><img class="archetypeImages" src="/static/images/archetype_survivalist.jpg">
+    </div>
+    <div class="popuparchetypecontainer" onclick="archetype_popup('philosopher')"><img class="archetypeImages" src="/static/images/archetype_philosopher.jpg">
+    </div>
+    <div class="popuparchetypecontainer" onclick="archetype_popup('opportunist')"><img class="archetypeImages" src="/static/images/archetype_opportunist.jpg">
+    </div>
+</div>
+<div>
+    <span class="popuparchetypemessage" id="popuparchetype">
+        <span class="popuparchetypechangingmessage" id="js_popupbrute">
+            <h1>Brute</h1>
+            <p>A character who uses strength and combat to solve problems. Proficient with many types of weapons.</p>
             <ul style="color:red">Requirements:
                 <li>Brawn ~ 6</li>
                 <li>Any Weapon Talent ~ 10</li>
                 <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Brute"></form></li>
             </ul>
-      </span>
-    </div>
-    <div class="popuparchetypecontainer" onclick="archetype_popup('scoundrel')"><img class="archetypeImages" src="/static/images/archetype_scoundrel.jpg">
-      <span class="popuparchetypechangingmessage" id="js_popupscoundrel">
-          <h1>Scoundrel</h1>
-          <p>A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.</p>
+        </span>
+        <span class="popuparchetypechangingmessage" id="js_popupscoundrel">
+            <h1>Scoundrel</h1>
+            <p>A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.</p>
             <ul style="color:red">Requirements:
                 <li>Dagger Talent ~ 6</li>
                 <li>Virtue ~ -100</li>
                 <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Scoundrel"></form></li>
             </ul>
-      </span>
-    </div>
-    <div class="popuparchetypecontainer" onclick="archetype_popup('ascetic')"><img class="archetypeImages" src="/static/images/archetype_ascetic.jpg">
-      <span class="popuparchetypechangingmessage" id="js_popupascetic">
+        </span>
+        <span class="popuparchetypechangingmessage" id="js_popupascetic">
           <h1>Ascetic</h1>
           <p>A character who focuses on disciplining mind and body. They use a combination of combat and intellect.</p>
             <ul style="color:red">Requirements:
@@ -58,10 +68,8 @@
                 <li>Willpower ~ 4</li>
                 <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Ascetic"></form></li>
             </ul>
-      </span>
-    </div>
-    <div class="popuparchetypecontainer" onclick="archetype_popup('survivalist')"><img class="archetypeImages" src="/static/images/archetype_survivalist.jpg">
-      <span class="popuparchetypechangingmessage" id="js_popupsurvivalist">
+        </span>
+        <span class="popuparchetypechangingmessage" id="js_popupsurvivalist">
           <h1>Survivalist</h1>
           <p>A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.</p>
             <ul style="color:red">Requirements:
@@ -69,10 +77,8 @@
                 <li>Animals in Bestiary ~ 10</li>
                 <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Survivalist"></form></li>
             </ul>
-      </span>
-    </div>
-    <div class="popuparchetypecontainer" onclick="archetype_popup('philosopher')"><img class="archetypeImages" src="/static/images/archetype_philosopher.jpg">
-      <span class="popuparchetypechangingmessage" id="js_popupphilosopher">
+        </span>
+        <span class="popuparchetypechangingmessage" id="js_popupphilosopher">
           <h1>Philosopher</h1>
           <p>A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.</p>
             <ul style="color:red">Requirements:
@@ -80,10 +86,8 @@
                 <li>Books Read ~ 10</li>
                 <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Philosopher"></form></li>
             </ul>
-      </span>
-    </div>
-    <div class="popuparchetypecontainer" onclick="archetype_popup('opportunist')"><img class="archetypeImages" src="/static/images/archetype_opportunist.jpg">
-      <span class="popuparchetypechangingmessage" id="js_popupopportunist">
+        </span>
+        <span class="popuparchetypechangingmessage" id="js_popupopportunist">
           <h1>Opportunist</h1>
           <p>A character who solves problems using speech and dialogue.</p>
             <ul style="color:red">Requirements:
@@ -91,15 +95,7 @@
                 <li>Fame ~ +200</li>
                 <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Opportunist"></form></li>
             </ul>
-      </span>
-    </div>
-</div>
-<div>
-    <span class="popuparchetypemessage" id="popuparchetype">
-        <h1>CLASS NAME</h1>
-        <p>DESCRIPTION</p>
-            <li>REQUIREMENT #1</li>
-        </u1>
+        </span>
     </span>
 </div>
     {% else %}
