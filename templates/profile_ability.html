@@ -25,7 +25,8 @@
 
 {% elif ability_tree == "archetype" %}
     {% if hero.archetype == None %}
-<div class="popuparchetypecontainer" onclick="archetype_popup('brute')"><img src="/static/images/archetype_brute.jpg">
+<div class="row">
+<div class="popuparchetypecontainer col-2" onclick="archetype_popup('brute')"><img class="archetypeImages" src="/static/images/archetype_brute.jpg">
   <span class="popuparchetype" id="js_popupbrute">
       <h1>Brute</h1>
       <p>A character who uses strength and combat to solve problems. Proficient with many types of weapons.</p>
@@ -36,7 +37,7 @@
         </ul>
   </span>
 </div>
-<div class="popuparchetypecontainer" onclick="archetype_popup('scoundrel')"><img src="/static/images/archetype_scoundrel.jpg">
+<div class="popuparchetypecontainer col-2" onclick="archetype_popup('scoundrel')"><img class="archetypeImages" src="/static/images/archetype_scoundrel.jpg">
   <span class="popuparchetype" id="js_popupscoundrel">
       <h1>Scoundrel</h1>
       <p>A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.</p>
@@ -47,7 +48,7 @@
         </ul>
   </span>
 </div>
-<div class="popuparchetypecontainer" onclick="archetype_popup('ascetic')"><img src="/static/images/archetype_ascetic.jpg">
+<div class="popuparchetypecontainer col-2" onclick="archetype_popup('ascetic')"><img class="archetypeImages" src="/static/images/archetype_ascetic.jpg">
   <span class="popuparchetype" id="js_popupascetic">
       <h1>Ascetic</h1>
       <p>A character who focuses on disciplining mind and body. They use a combination of combat and intellect.</p>
@@ -59,7 +60,7 @@
         </ul>
   </span>
 </div>
-<div class="popuparchetypecontainer" onclick="archetype_popup('survivalist')"><img src="/static/images/archetype_survivalist.jpg">
+<div class="popuparchetypecontainer col-2" onclick="archetype_popup('survivalist')"><img class="archetypeImages" src="/static/images/archetype_survivalist.jpg">
   <span class="popuparchetype" id="js_popupsurvivalist">
       <h1>Survivalist</h1>
       <p>A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.</p>
@@ -70,7 +71,7 @@
         </ul>
   </span>
 </div>
-<div class="popuparchetypecontainer" onclick="archetype_popup('philosopher')"><img src="/static/images/archetype_philosopher.jpg">
+<div class="popuparchetypecontainer col-2" onclick="archetype_popup('philosopher')"><img class="archetypeImages" src="/static/images/archetype_philosopher.jpg">
   <span class="popuparchetype" id="js_popupphilosopher">
       <h1>Philosopher</h1>
       <p>A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.</p>
@@ -81,7 +82,7 @@
         </ul>
   </span>
 </div>
-<div class="popuparchetypecontainer" onclick="archetype_popup('opportunist')"><img src="/static/images/archetype_opportunist.jpg">
+<div class="popuparchetypecontainer col-2" onclick="archetype_popup('opportunist')"><img class="archetypeImages" src="/static/images/archetype_opportunist.jpg">
   <span class="popuparchetype" id="js_popupopportunist">
       <h1>Opportunist</h1>
       <p>A character who solves problems using speech and dialogue.</p>
@@ -91,6 +92,7 @@
             <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Opportunist"></form></li>
         </ul>
   </span>
+</div>
 </div>
     {% else %}
         <h1 style="text-align:center;">Archetype Abilities</h1>

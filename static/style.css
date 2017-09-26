@@ -87,7 +87,7 @@ ul {
 /* Basic Content throughout the game */
 
 #content {
-	width: 80%;
+	width: 85%;
 	padding-top: 60px;
 	float: right;
 }
@@ -521,6 +521,11 @@ img.profileImage {
 	margin: 20px;
 }
 
+.archetypeImages {
+    width: 175px;
+    height: 325px;
+    }
+
 /***** Jacob's messing around *******/
 
 /* Attribute Page Container to split page into 2 vertical halves using absolute positioning technique
@@ -552,10 +557,7 @@ img.profileImage {
 .popuparchetypecontainer {
 	display: inline;
 	cursor: pointer;
-	height: 5%;
-	width: 1%;
-	padding: 5%;
-	margin: 5%;
+	height: 700px;
 }
 
 /* The actual popup */
