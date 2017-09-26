@@ -266,7 +266,7 @@ function updateAbility(button, id, ability_level, max_level, tree, description) 
         heroBasicPointsDiv = document.getElementById("basic_points_remaining");
         heroBasicPointsDiv.innerHTML = parseInt(heroBasicPointsDiv.innerHTML) - 1;
     } else if (tree === "archetype") {
-        heroArchetypePointsDiv = document.getElementById("archetypic_points_remaining");
+        heroArchetypePointsDiv = document.getElementById("archetype_points_remaining");
         heroArchetypePointsDiv.innerHTML = parseInt(heroArchetypePointsDiv.innerHTML) - 1;
     }
     heroAbilityCurrentLvDiv.innerHTML = parseInt(heroAbilityCurrentLvDiv.innerHTML) + 1;

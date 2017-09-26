@@ -97,7 +97,7 @@
     {% else %}
         <h1 style="text-align:center;">Archetype Abilities</h1>
         Archetype Ability Points:
-        <div style="display: inline" id="basic_points_remaining">{{ myHero.basic_ability_points }}</div>
+        <div style="display: inline" id="archetype_points_remaining">{{ myHero.archetype_ability_points }}</div>
         <h2 style="text-align:left;">Archetype Abilities</h2>
         {% for ability in myHero.abilities if ability.tree == ability_tree and ability.hidden == False  %}
             <h3>{{ ability.name.title() }}</h3>
