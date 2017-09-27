@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declared_attr
 
 from pprint import pprint
 
+from functools import partial
 
 def non_synchronous_relationship_mixin_factory(container_name, cls_name,
                                                attribute_and_class_names):
@@ -24,7 +25,9 @@ def non_synchronous_relationship_mixin_factory(container_name, cls_name,
 
     dct = {}
     for name, relationship_cls_name in attribute_and_class_names:
-        dct[name] = lambda cls: relationship(
+        dct[name] = lambda cls, container_name=container_name,\
+            cls_name=cls_name, relationship_cls_name=relationship_cls_name,\
+            name=name: relationship(
             relationship_cls_name,
             primaryjoin="and_({}.id=={}.{}_id, {}.name=='{}')".format(
                 container_name, cls_name, container_name.lower(),
@@ -53,7 +56,10 @@ def synchronous_relationship_mixin_factory(container_name, cls_name, names):
     for false_name in names:
         attr_name = false_name.lower().replace(" ", "_")
         name = false_name.title().replace(" ", '')
-        dct[attr_name] = lambda cls: relationship(
+        dct[attr_name] = lambda cls, name=name, \
+                                container_name=container_name, \
+                                cls_name=cls_name: \
+            relationship(
                 name,
                 primaryjoin="and_({}.id=={}.{}_id, {}.name=='{}')".format(
                     container_name, cls_name, container_name.lower(),
