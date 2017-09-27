@@ -580,32 +580,11 @@ def proficiencies(hero=None):
                            profs2=profs2, profs3=profs3)
 
 
-@app.route('/ability_tree/<spec>', methods=['GET', 'POST'])
+@app.route('/ability_tree/<spec>')
 @login_required
 @uses_hero_and_update
 def ability_tree(spec, hero=None):
     page_title = "Abilities"
-    if request.method == 'POST':
-        if request.form['submit'] == 'Brute':
-            hero.archetype = "Brute"
-        elif request.form['submit'] == 'Scoundrel':
-            hero.archetype = "Scoundrel"
-        elif request.form['submit'] == 'Ascetic':
-            hero.archetype = "Ascetic"
-        elif request.form['submit'] == 'Survivalist':
-            hero.archetype = "Survivalist"
-        elif request.form['submit'] == 'Philosopher':
-            hero.archetype = "Philosopher"
-        elif request.form['submit'] == 'Opportunist':
-            hero.archetype = "Opportunist"
-        for ability in hero.abilities:
-            if ability.tree == "archetype":
-                if ability.tree_type != hero.archetype.lower():
-                    ability.hidden = True
-                    ability.level = 0
-                else:
-                    ability.hidden = False
-                    ability.learnable = True
     return render_template(
         'profile_ability.html', myHero=hero, ability_tree=spec, page_title=page_title)
 

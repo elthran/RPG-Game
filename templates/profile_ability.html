@@ -47,7 +47,7 @@
             <ul style="color:red">Requirements:
                 <li>Brawn ~ 6</li>
                 <li>Any Weapon Talent ~ 10</li>
-                <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Brute"></form></li>
+                <li><button class="command" data="Brute" data-function="refreshPage" data-name="become_archetype">Become Brute</button></li>
             </ul>
         </span>
         <span class="popuparchetypechangingmessage" id="js_popupscoundrel">
@@ -56,7 +56,7 @@
             <ul style="color:red">Requirements:
                 <li>Dagger Talent ~ 6</li>
                 <li>Virtue ~ -100</li>
-                <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Scoundrel"></form></li>
+                <li><button class="command" data="Scoundrel" data-function="refreshPage" data-name="become_archetype">Become Scoundrel</button></li>
             </ul>
         </span>
         <span class="popuparchetypechangingmessage" id="js_popupascetic">
@@ -66,7 +66,7 @@
                 <li>Errands Completed ~ 10</li>
                 <li>Virtue ~ +100</li>
                 <li>Willpower ~ 4</li>
-                <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Ascetic"></form></li>
+                <li><button class="command" data="Ascetic" data-function="refreshPage" data-name="become_archetype">Become Ascetic</button></li>
             </ul>
         </span>
         <span class="popuparchetypechangingmessage" id="js_popupsurvivalist">
@@ -75,7 +75,7 @@
             <ul style="color:red">Requirements:
                 <li>Locations Discovered ~ 5</li>
                 <li>Animals in Bestiary ~ 10</li>
-                <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Survivalist"></form></li>
+                <li><button class="command" data="Survivalist" data-function="refreshPage" data-name="become_archetype">Become Survivalist</button></li>
             </ul>
         </span>
         <span class="popuparchetypechangingmessage" id="js_popupphilosopher">
@@ -84,7 +84,7 @@
             <ul style="color:red">Requirements:
                 <li>Intellect ~ 7</li>
                 <li>Books Read ~ 10</li>
-                <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Philosopher"></form></li>
+                <li><button class="command" data="Philosopher" data-function="refreshPage" data-name="become_archetype">Become Philosopher</button></li>
             </ul>
         </span>
         <span class="popuparchetypechangingmessage" id="js_popupopportunist">
@@ -93,14 +93,14 @@
             <ul style="color:red">Requirements:
                 <li>Charisma ~ 7</li>
                 <li>Fame ~ +200</li>
-                <li><form method="post"><input class="btn btn-default" type="submit" name="submit" value="Opportunist"></form></li>
+                <li><button class="command" data="Opportunist" data-function="refreshPage" data-name="become_archetype">Become Opportunist</button></li>
             </ul>
         </span>
     </span>
 </div>
     {% else %}
-        <h1 style="text-align:center;">Archetype Abilities</h1>
-        Archetype Ability Points:
+        <h1 style="text-align:center;">{{myHero.archetype }} Abilities</h1>
+        Archetype Points:
         <div style="display: inline" id="archetype_points_remaining">{{ myHero.archetype_ability_points }}</div>
         <h2 style="text-align:left;">Archetype Abilities</h2>
         {% for ability in myHero.abilities if ability.tree == ability_tree and ability.hidden == False  %}

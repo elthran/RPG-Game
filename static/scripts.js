@@ -111,6 +111,11 @@ document.addEventListener("DOMContentLoaded", function () {
 /*
 Unknown scripts (Marlen)
 */
+
+function refreshPage() {
+    location.reload();
+}
+
 // This is for the quest pop-up window. When the user clicks on div, open/close the popup
 function quest_popup() {
     var popup = document.getElementById('js_popupachievement');

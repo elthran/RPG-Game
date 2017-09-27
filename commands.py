@@ -154,6 +154,19 @@ class Command:
             status = "max level"
         return "{}&&{}&&{}&&{}&&{}".format(ability_id, ability.level, status, ability_tree, new_description)
 
+    def become_archetype(hero, database, arg_dict):
+        archetype = arg_dict.get('data', None, type=str)
+        hero.archetype = archetype
+        for ability in hero.abilities:
+            if ability.tree == "archetype":
+                if ability.tree_type != hero.archetype.lower():
+                    ability.hidden = True
+                    ability.level = 0
+                else:
+                    ability.hidden = False
+                    ability.learnable = True
+        return "success"
+
     def cast_spell(hero, database, arg_dict):
         ability_id = arg_dict.get('data', None, type=int)
         ability = database.get_ability_by_id(ability_id)
