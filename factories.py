@@ -3,8 +3,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 
 from pprint import pprint
+from collections import Callable
+from functools import partialmethod, partial
 
-from functools import partial
 
 def non_synchronous_relationship_mixin_factory(container_name, cls_name,
                                                attribute_and_class_names):
@@ -22,18 +23,28 @@ def non_synchronous_relationship_mixin_factory(container_name, cls_name,
 
     names = [('scholar', 'AuraAbility'), (...)]
     """
+    class RelationshipCallable(Callable):
+        def __init__(self, name, relationship_self_name):
+            self.name = name
+            self.relationship_cls_name = relationship_cls_name
+            self.container_name = container_name
+            self.cls_name = cls_name
+
+        def __call__(self, cls):
+            return relationship(
+                self.relationship_cls_name,
+                primaryjoin="and_({}.id=={}.{}_id, {}.name=='{}')".format(
+                    self.container_name,
+                    self.cls_name,
+                    self.container_name.lower(),
+                    self.relationship_cls_name,
+                    self.name),
+                back_populates=self.container_name.lower(),
+                uselist=False)
 
     dct = {}
     for name, relationship_cls_name in attribute_and_class_names:
-        dct[name] = lambda cls, container_name=container_name,\
-            cls_name=cls_name, relationship_cls_name=relationship_cls_name,\
-            name=name: relationship(
-            relationship_cls_name,
-            primaryjoin="and_({}.id=={}.{}_id, {}.name=='{}')".format(
-                container_name, cls_name, container_name.lower(),
-                relationship_cls_name, name),
-            back_populates=container_name.lower(), uselist=False)
-
+        dct[name] = RelationshipCallable(name, relationship_cls_name)
         dct[name] = declared_attr(dct[name])
 
     return type('RelationshipMixin', (object, ), dct)
