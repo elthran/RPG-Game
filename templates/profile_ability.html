@@ -8,10 +8,8 @@
     <div style="display: inline" id="basic_points_remaining">{{ myHero.basic_ability_points }}</div>
     <h2 style="text-align:left;">Basic Abilities</h2>
     {% for ability in myHero.abilities if ability.tree == ability_tree and ability.hidden == False  %}
-    <div class="tooltip">
-        <button class="command" data="{{ ability.id }}, {{ ability.tree }}" data-function="updateAbility" data-name="update_ability">
-            <img class="archetypeImages" src="/static/images/ability_icon_{{ ability.name.lower() }}.jpg">
-        </button>
+    <div class="tooltip" style="float:left">
+            <img class="archetypeImages command" src="/static/images/ability_icon_{{ ability.name.lower() }}.jpg" data="{{ ability.id }}, {{ ability.tree }}" data-function="updateAbility" data-name="update_ability">
         <div style="display: inline">
             <span>
                 <h3>{{ ability.name.title() }}</h3>
