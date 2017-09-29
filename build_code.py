@@ -32,6 +32,10 @@ def maybe_backup(temp_name, final_name, extension):
     """
     backup_name = final_name[:-len(extension)] + '.bak'
 
+    try:
+        os.chmod(final_name, stat.S_IWRITE)
+    except FileNotFoundError:
+        pass
     fileAtt = os.stat(final_name)[0]
     if hash_match(final_name, temp_name):
         # Template has not been changed.
@@ -42,13 +46,11 @@ def maybe_backup(temp_name, final_name, extension):
         # so no backup is required
         # but file should be updated!
         print("No backup required for '{}', updating!".format(final_name))
-        os.remove(final_name)
-        os.rename(temp_name, final_name)
+        os.replace(temp_name, final_name)
     elif os.path.exists(backup_name):
         # File needs to be updated, but _not_ the backup.
         print("Updating '{}, old backup still exists!".format(backup_name))
-        os.remove(final_name)
-        os.rename(temp_name, final_name)
+        os.replace(temp_name, final_name)
     else:
         # File is writeable, and hashes don't match and no backup exists
         # so a backup is needed!

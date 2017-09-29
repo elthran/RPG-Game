@@ -342,7 +342,6 @@ pierces the air.""".replace('\n', ' ').replace('\r', '')
         elif fathers_job == "Priest":
             hero.attributes.divinity.level += 3
     if hero.character_name is not None and fathers_job is not None:
-        hero.archetype = fathers_job
         hero.refresh_character(full=True)
         database.update()
         return redirect(url_for('home'))
@@ -369,7 +368,7 @@ def reset_character(stat_type, hero=None):
     hero.devotion = 0
     hero.gold = 5000
     hero.basic_ability_points = 5
-    hero.archetypic_ability_points = 5
+    hero.archetype_ability_points = 5
     hero.calling_ability_points = 5
     hero.pantheonic_ability_points = 5
     hero.attribute_points = 10
@@ -392,40 +391,12 @@ def admin(hero=None):
         hero.devotion = int(request.form["Devotion"])
         hero.gold = int(request.form["Gold"])
         hero.basic_ability_points = int(request.form["Basic_ability_points"])
-        hero.archetypic_ability_points = int(request.form["Archetypic_ability_points"])
-        hero.specialized_ability_points = int(request.form["Specialized_ability_points"])
+        hero.archetype_ability_points = int(request.form["Archetype_ability_points"])
+        hero.calling_ability_points = int(request.form["Calling_ability_points"])
         hero.pantheonic_ability_points = int(request.form["Pantheonic_ability_points"])
         hero.attribute_points = int(request.form["Attribute_points"])
         hero.proficiency_points = int(request.form['Proficiency_Points'])
         hero.refresh_character(full=True)
-
-        hero.archetype = request.form["archetype"]
-        hero.religion = request.form["religion"]
-        hero.calling = request.form["spec"]
-
-        for ability in hero.abilities:
-            if ability.tree == "archetype":
-                if ability.tree_type != hero.archetype.lower():
-                    ability.hidden = True
-                    ability.level = 0
-                else:
-                    ability.hidden = False
-                    ability.learnable = True
-            elif ability.tree == "calling":
-                if ability.tree_type != hero.calling.lower():
-                    ability.hidden = True
-                    ability.level = 0
-                else:
-                    ability.hidden = False
-                    ability.learnable = True
-            elif ability.tree == "religion":
-                if ability.tree_type != hero.religion.lower():
-                    ability.hidden = True
-                    ability.level = 0
-                else:
-                    ability.hidden = False
-                    ability.learnable = True
-
         return redirect(url_for('home'))
 
     admin = [
@@ -437,8 +408,8 @@ def admin(hero=None):
         ("Devotion", hero.devotion),
         ("Gold", hero.gold),
         ("Basic_ability_points", hero.basic_ability_points),
-        ("Archetypic_ability_points", hero.archetypic_ability_points),
-        ("Specialized_ability_points", hero.specialized_ability_points),
+        ("Archetype_ability_points", hero.archetype_ability_points),
+        ("Calling_ability_points", hero.calling_ability_points),
         ("Pantheonic_ability_points", hero.pantheonic_ability_points),
         ("Attribute_points", hero.attribute_points),
         ("Proficiency_Points", hero.proficiency_points)]
@@ -630,7 +601,6 @@ def inventory_page(hero=None):
         'inventory.html', hero=hero, page_title=page_title,
         isinstance=isinstance)
 
-
 @app.route('/quest_log')
 @login_required
 @uses_hero_and_update
@@ -639,7 +609,6 @@ def quest_log(hero=None):
     page_title = "Quest Log"
     return render_template(
         'journal.html', myHero=hero, quest_log=True, page_title=page_title)
-
 
 @app.route('/bestiary/<current_monster_id>')
 @login_required
@@ -673,7 +642,6 @@ def people_log(current_npc, hero=None):
     return render_template('journal.html', myHero=hero, people_log=True, page_title=page_title, npc_data=npc_data,
                            current_npc=current_npc)  # return a string
 
-
 @app.route('/map_log')
 @login_required
 @uses_hero_and_update
@@ -695,7 +663,6 @@ def achievement_log(hero=None):
 def under_construction(hero=None):
     page_title = "Under Construction"
     return render_template('layout.html', page_title=page_title, hero=hero)  # return a string
-
 
 @app.route('/map/<location_name>')
 @app.route('/town/<location_name>')
@@ -724,7 +691,6 @@ def move(location_name, hero=None):
         page_image=location.display.page_image,
         paragraph=location.display.paragraph,
         places_of_interest=location.places_of_interest)
-
 
 @app.route('/barracks/<name>')
 @login_required

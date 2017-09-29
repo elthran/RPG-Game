@@ -111,10 +111,55 @@ document.addEventListener("DOMContentLoaded", function () {
 /*
 Unknown scripts (Marlen)
 */
+
+function refreshPage() {
+    location.reload();
+}
+
 // This is for the quest pop-up window. When the user clicks on div, open/close the popup
 function quest_popup() {
     var popup = document.getElementById('js_popupachievement');
     popup.classList.toggle('show');
+}
+
+function show(element) {
+    element.classList.remove('hide')
+    element.classList.add('show')
+}
+
+function hide(element) {
+    element.classList.remove('show')
+    element.classList.add('hide')
+}
+
+function archetype_popup(archetype) {
+    var brute_popup = document.getElementById('js_popupbrute');
+    var scoundrel_popup = document.getElementById('js_popupscoundrel');
+    var ascetic_popup = document.getElementById('js_popupascetic');
+    var survivalist_popup = document.getElementById('js_popupsurvivalist');
+    var philosopher_popup = document.getElementById('js_popupphilosopher');
+    var opportunist_popup = document.getElementById('js_popupopportunist');
+
+    hide(brute_popup)
+    hide(scoundrel_popup)
+    hide(ascetic_popup)
+    hide(survivalist_popup)
+    hide(philosopher_popup)
+    hide(opportunist_popup)
+
+    if (archetype === 'brute') {
+    show(brute_popup)
+    } else if (archetype === 'scoundrel') {
+    show(scoundrel_popup)
+    } else if (archetype === 'ascetic') {
+    show(ascetic_popup)
+    } else if (archetype === 'survivalist') {
+    show(survivalist_popup)
+    } else if (archetype === 'philosopher') {
+    show(philosopher_popup)
+    } else if (archetype === 'opportunist') {
+    show(opportunist_popup)
+    }
 }
 
 // This toggles whether or not you can see the battle log after a fight.
@@ -236,7 +281,7 @@ function updateAbility(button, id, ability_level, max_level, tree, description) 
         heroBasicPointsDiv = document.getElementById("basic_points_remaining");
         heroBasicPointsDiv.innerHTML = parseInt(heroBasicPointsDiv.innerHTML) - 1;
     } else if (tree === "archetype") {
-        heroArchetypePointsDiv = document.getElementById("archetypic_points_remaining");
+        heroArchetypePointsDiv = document.getElementById("archetype_points_remaining");
         heroArchetypePointsDiv.innerHTML = parseInt(heroArchetypePointsDiv.innerHTML) - 1;
     }
     heroAbilityCurrentLvDiv.innerHTML = parseInt(heroAbilityCurrentLvDiv.innerHTML) + 1;
@@ -250,6 +295,7 @@ function updateAbility(button, id, ability_level, max_level, tree, description) 
     // make all buttons grayed out
     }
 }
+
 
 
 //NOTE: <div style="display: inline"> should be replaced by a span tag
