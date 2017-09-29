@@ -6,10 +6,64 @@ from pprint import pprint
 from collections import Callable
 from functools import partialmethod, partial
 
+import pdb
 
-def non_synchronous_relationship_mixin_factory(container_name, cls_name,
-                                               attribute_and_class_names):
-    """Build a mixin of relationships with varying class names.
+def normalize_naming(names, scheme='attribute'):
+    """A function to convert a list of names into names of a certain type.
+
+    Returns a generator! So don't reuse!
+    Input type is always assumed to be Human Readable names
+    e.g. 'Resist flame'
+    schemes are:
+        attribute -> name.lower().replace(" ", "_")
+        classname -> name.title().replace(" ", '')
+
+    Conversion would look like:
+    Resist flame -> attribute -> resist_flame
+    Resist flame -> classname -> ResistFlame
+    """
+    if scheme == 'attribute':
+        return (name.lower().replace(" ", "_") for name in names)
+    elif scheme == 'classname':
+        return (name.title().replace(" ", '') for name in names)
+
+
+class RelationshipCallable(Callable):
+    """Return a relationship as a function for mixins"""
+    def __init__(self, name, relationship_cls_name, container_name,
+                 cls_name):
+        self.name = name
+        self.relationship_cls_name = relationship_cls_name
+        self.container_name = container_name
+        self.cls_name = cls_name
+
+    def __call__(self, cls):
+        """Makes this object act like a function.
+
+        Basically does this:
+        @declared_attr
+        def target(cls):
+            return relationship("Target",
+                primaryjoin="Target.id==cls.target_id".format(cls.__name__)
+            )
+        and some extra magic too :)
+        """
+        return relationship(
+            self.relationship_cls_name,
+            primaryjoin="and_({}.id=={}.{}_id, {}.name=='{}')".format(
+                self.container_name,
+                self.cls_name,
+                self.container_name.lower(),
+                self.relationship_cls_name,
+                self.name),
+            back_populates=self.container_name.lower(),
+            uselist=False)
+
+
+def relationship_mixin_factory(container_name, cls_name,
+                               attribute_and_class_names,
+                               connects_on_class_name=False):
+    """Build a Mixin of relationships for the container class.
 
     Example:
         scholar = relationship(
@@ -17,68 +71,35 @@ def non_synchronous_relationship_mixin_factory(container_name, cls_name,
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='scholar')",
         back_populates="abilities", uselist=False)
-
-    NOTE: the attribute name != relationship name
-    i.e. 'scholar' != "AuraAbility"
-
-    names = [('scholar', 'AuraAbility'), (...)]
-    """
-    class RelationshipCallable(Callable):
-        def __init__(self, name, relationship_self_name):
-            self.name = name
-            self.relationship_cls_name = relationship_cls_name
-            self.container_name = container_name
-            self.cls_name = cls_name
-
-        def __call__(self, cls):
-            return relationship(
-                self.relationship_cls_name,
-                primaryjoin="and_({}.id=={}.{}_id, {}.name=='{}')".format(
-                    self.container_name,
-                    self.cls_name,
-                    self.container_name.lower(),
-                    self.relationship_cls_name,
-                    self.name),
-                back_populates=self.container_name.lower(),
-                uselist=False)
-
-    dct = {}
-    for name, relationship_cls_name in attribute_and_class_names:
-        dct[name] = RelationshipCallable(name, relationship_cls_name)
-        dct[name] = declared_attr(dct[name])
-
-    return type('RelationshipMixin', (object, ), dct)
-
-
-def synchronous_relationship_mixin_factory(container_name, cls_name, names):
-    """Build a Mixin of relationships for the container class.
-
-    Example:
+    OR
         health = relationship(
         "Health",
         primaryjoin="and_(Proficiencies.id==Proficiency.proficiencies_id, "
                     "Proficiency.name=='Heath')",
         back_populates="proficiencies", uselist=False)
 
+    NOTE: the attribute name != relationship name
+    i.e. 'scholar' != "AuraAbility"
     NOTE: the attribute name == relationship name capitalized
     i.e. 'health' -> "Heath"
+
+    names = [('scholar', 'AuraAbility'), (...)]
+    names =[('health', 'Health'), (...)]
     """
     dct = {}
-    for false_name in names:
-        attr_name = false_name.lower().replace(" ", "_")
-        name = false_name.title().replace(" ", '')
-        dct[attr_name] = lambda cls, name=name, \
-                                container_name=container_name, \
-                                cls_name=cls_name: \
-            relationship(
-                name,
-                primaryjoin="and_({}.id=={}.{}_id, {}.name=='{}')".format(
-                    container_name, cls_name, container_name.lower(),
-                    cls_name, name),
-                back_populates=container_name.lower(), uselist=False)
+    for name, relationship_cls_name in attribute_and_class_names:
 
-        dct[attr_name] = declared_attr(dct[attr_name])
-
+        if connects_on_class_name:
+            dct[name] = RelationshipCallable(relationship_cls_name,
+                                             relationship_cls_name,
+                                             container_name,
+                                             cls_name)
+        else:
+            dct[name] = RelationshipCallable(name,
+                                             relationship_cls_name,
+                                             container_name,
+                                             cls_name)
+        dct[name] = declared_attr(dct[name])
     return type('RelationshipMixin', (object, ), dct)
 
 
@@ -91,6 +112,15 @@ def container_factory(cls_name, cls_name_singular, supers, names, namespace):
             self.health = Health()
             self.sanctity = Sanctity()
     """
+
+    # NOTE: if you don't convert these to lists you can only use them once!
+    # This is because it is a generator and generators get used up.
+    attrib_names = list(normalize_naming(names))
+    attribute_and_class_names = list(
+        zip(normalize_naming(names),
+            normalize_naming(names, scheme='classname'))
+    )
+
     dct = {
         '__tablename__': cls_name.lower(),
         'id': Column(Integer, primary_key=True),
@@ -109,23 +139,22 @@ def container_factory(cls_name, cls_name_singular, supers, names, namespace):
 
         This may not work.
         """
-        for false_name in names:
-            attrib_name = false_name.lower().replace(" ", "_")
-            name = false_name.title().replace(" ", '')
-            setattr(self, attrib_name, namespace[name]())
+        for attrib, classname in attribute_and_class_names:
+            setattr(self, attrib, namespace[classname]())
     dct['__init__'] = setup_init
 
-    RelationshipMixin = synchronous_relationship_mixin_factory(
-        cls_name, cls_name_singular, names)
-    attrib_names = [name.lower().replace(" ", "_") for name in names]
+    RelationshipMixin = relationship_mixin_factory(
+        cls_name, cls_name_singular, attribute_and_class_names,
+        connects_on_class_name=True)
+
     IterItemsExtension = iter_items_factory(attrib_names)
+
     supers += (RelationshipMixin, IterItemsExtension)
     return type(cls_name, supers, dct)
 
 
 def iter_items_factory(attrib_names):
     dct = {}
-
     def items(self):
         """Returns a list of 2-tuples
 

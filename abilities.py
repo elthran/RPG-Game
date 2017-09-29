@@ -13,8 +13,9 @@ from sqlalchemy.ext.declarative import declared_attr
 from flask import render_template_string
 
 from factories import PolymorphicIdentityOnClassNameMixin
-from factories import non_synchronous_relationship_mixin_factory
 from factories import iter_items_factory
+from factories import normalize_naming
+from factories import relationship_mixin_factory
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 # Well ... ok, but for simplicity sake just pretend that that is true.
 from base_classes import Base
@@ -38,8 +39,7 @@ ALL_ABILITIES = [
 ]
 
 ABILITY_NAMES = [key[0] for key in ALL_ABILITIES]
-ABILITY_WITH_CLASS_NAMES = [(key[0], key[1]) for key in ALL_ABILITIES]
-
+CLASS_NAMES = [key[1] for key in ALL_ABILITIES]
 """
 End of documentation.
 
@@ -47,9 +47,9 @@ End of documentation.
 
 # "determination", 5, "Increases Endurance by 3 for each level."
 
-
-AbilitiesRelationshipMixin = non_synchronous_relationship_mixin_factory(
-    'Abilities', 'Ability', ABILITY_WITH_CLASS_NAMES
+AbilitiesRelationshipMixin = relationship_mixin_factory(
+    'Abilities', 'Ability',
+    zip(normalize_naming(ABILITY_NAMES), CLASS_NAMES)
 )
 
 IterItemsExtension = iter_items_factory(ABILITY_NAMES)
