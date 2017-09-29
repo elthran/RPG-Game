@@ -27,9 +27,8 @@ ALL_ABILITIES = [
     ("Haggler", "AuraAbility", "3, 'Prices at shops are {{ level * 3}}% cheaper.', tree='archetype', tree_type='opportunist'")
 ]
 
-
 ABILITY_NAMES = [key[0] for key in ALL_ABILITIES]
-
+CLASS_NAMES = [key[1] for key in ALL_ABILITIES]
 """
 End of documentation.
 {% endraw %}

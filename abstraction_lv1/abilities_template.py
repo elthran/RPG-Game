@@ -9,19 +9,30 @@ from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
+from sqlalchemy.ext.declarative import declared_attr
 from flask import render_template_string
 
+from factories import PolymorphicIdentityOnClassNameMixin
+from factories import iter_items_factory
+from factories import normalize_naming
+from factories import relationship_mixin_factory
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 # Well ... ok, but for simplicity sake just pretend that that is true.
 from base_classes import Base
 import pdb
-
+from pprint import pprint
 {% include "abilities_data.py" %}
 
-# "determination", 5, "Increases Endurance by 3 for each level."
+
+AbilitiesRelationshipMixin = relationship_mixin_factory(
+    'Abilities', 'Ability',
+    zip(normalize_naming(ABILITY_NAMES), CLASS_NAMES)
+)
+
+IterItemsExtension = iter_items_factory(ABILITY_NAMES)
 
 
-class Abilities(Base):
+class Abilities(IterItemsExtension, AbilitiesRelationshipMixin, Base):
     __tablename__ = 'abilities'
 
     id = Column(Integer, primary_key=True)
@@ -31,43 +42,10 @@ class Abilities(Base):
     hero_id = Column(Integer, ForeignKey('hero.id'))
     hero = relationship("Hero", back_populates='abilities')
 
-    # Relationships to a particular ability.
-    {%- for value in ALL_ABILITIES %}
-    {{ value[0] }} = relationship(
-        "{{ value[1] }}",
-        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
-                    "Ability.name=='{{ value[0] }}')",
-        back_populates="abilities", uselist=False)
-    {%- endfor %}
-
     def __init__(self):
         {%- for value in ALL_ABILITIES %}
-        self.{{ value[0] }} = {{ value[1] }}('{{ value[0] }}', {{ value[2] }})
+        self.{{ value[0] | lower }} = {{ value[1] }}('{{ value[0] }}', {{ value[2] }})
         {%- endfor %}
-
-    def items(self):
-        """Return each Ability and its name.
-
-        Returns a list of 2-tuples
-        Basically a dict.items() clone that looks like ([(key, value),
-            (key, value), ...])
-
-        Usage:
-        for name, ability in abilities.items():
-            name -- the name of the attribute
-            ability -- the object that corresponds to the named attribute.
-        """
-
-        return ((key, getattr(self, key)) for key in ABILITY_NAMES)
-
-    def __iter__(self):
-        """Allow this object to be used in a for call.
-
-        for ability in abilities:
-            ability -- where the ability is each of the attribute objects of
-                the abilities class.
-        """
-        return (getattr(self, key) for key in ABILITY_NAMES)
 
 
 class Ability(Base):
@@ -126,7 +104,9 @@ class Ability(Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, max_level, description, hero=None, hidden=True, learnable=False, tree="basic", tree_type="", cost=1):
+    def __init__(self, name, max_level, description, hero=None,
+                 hidden=True, learnable=False, tree="basic", tree_type="",
+                 cost=1):
         """Build a basic ability object.
 
         Note: arguments (name, hero, max_level, etc.) that require input are
@@ -195,16 +175,12 @@ class Ability(Base):
         # self.heroes = [hero]
 
 
-class CastableAbility(Ability):
+class CastableAbility(PolymorphicIdentityOnClassNameMixin, Ability):
     castable = Column(Boolean)
     sanctity_cost = Column(Integer)
     endurance_cost = Column(Integer)
     heal_amount = Column(Integer)
     gold_amount = Column(Integer)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'CastableAbility',
-    }
 
     def __init__(self, *args, sanctity_cost=0, endurance_cost=0, heal_amount=0, gold_amount=0, **kwargs):
         """Build a new ArchetypeAbility object.
@@ -226,7 +202,7 @@ class CastableAbility(Ability):
         use:
         ability.activate(hero)
         NOTE: returns False if spell is too expensive (cost > proficiencies.sanctity.current)
-        If cast is succesful then return value is True.
+        If cast is successful then return value is True.
         """
         if hero.proficiencies.sanctity.current < self.sanctity_cost or hero.proficiencies.endurance.current < self.endurance_cost:
             return False
@@ -238,18 +214,16 @@ class CastableAbility(Ability):
             return True
 
 
-class AuraAbility(Ability):
-    __mapper_args__ = {
-        'polymorphic_identity': 'AuraAbility',
-    }
-
+class AuraAbility(PolymorphicIdentityOnClassNameMixin, Ability):
     health_maximum = Column(Integer)
     damage_maximum = Column(Integer)
     damage_minimum = Column(Integer)
     understanding_modifier = Column(Integer)
     evade_chance = Column(Integer)
 
-    def __init__(self, *args, health_maximum=0, damage_maximum=0, damage_minimum=0, understanding_modifier=0, evade_chance=0, sanctity_regeneration=0, **kwargs):
+    def __init__(self, *args, health_maximum=0, damage_maximum=0,
+                 damage_minimum=0, understanding_modifier=0, evade_chance=0,
+                 sanctity_regeneration=0, **kwargs):
         """Build a new Archetype_Ability object.
 
         Note: self.type must be set in __init__ to polymorphic identity.
@@ -263,3 +237,4 @@ class AuraAbility(Ability):
         self.damage_minimum = damage_minimum
         self.understanding_modifier = understanding_modifier
         self.evade_chance = evade_chance
+
