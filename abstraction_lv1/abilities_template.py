@@ -23,13 +23,13 @@ import pdb
 from pprint import pprint
 {% include "abilities_data.py" %}
 
-
+attrib_names = list(normalize_naming(ABILITY_NAMES))
 AbilitiesRelationshipMixin = relationship_mixin_factory(
     'Abilities', 'Ability',
-    zip(normalize_naming(ABILITY_NAMES), CLASS_NAMES)
+    zip(attrib_names, CLASS_NAMES)
 )
 
-IterItemsExtension = iter_items_factory(ABILITY_NAMES)
+IterItemsExtension = iter_items_factory(attrib_names)
 
 
 class Abilities(IterItemsExtension, AbilitiesRelationshipMixin, Base):
@@ -44,7 +44,8 @@ class Abilities(IterItemsExtension, AbilitiesRelationshipMixin, Base):
 
     def __init__(self):
         {%- for value in ALL_ABILITIES %}
-        self.{{ value[0] | lower }} = {{ value[1] }}('{{ value[0] }}', {{ value[2] }})
+            {% set attrib = value[0].lower().replace(" ", '_') -%}
+        self.{{ attrib }} = {{ value[1] }}('{{ value[0] }}', {{ value[2] }})
         {%- endfor %}
 
 

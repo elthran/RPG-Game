@@ -48,6 +48,13 @@ class RelationshipCallable(Callable):
             )
         and some extra magic too :)
         """
+        if False:
+            print("and_({}.id=={}.{}_id, {}.name=='{}')".format(
+                    self.container_name,
+                    self.cls_name,
+                    self.container_name.lower(),
+                    self.relationship_cls_name,
+                    self.name))
         return relationship(
             self.relationship_cls_name,
             primaryjoin="and_({}.id=={}.{}_id, {}.name=='{}')".format(
@@ -69,7 +76,7 @@ def relationship_mixin_factory(container_name, cls_name,
         scholar = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
-                    "Ability.name=='scholar')",
+                    "Ability.name=='Scholar')",
         back_populates="abilities", uselist=False)
     OR
         health = relationship(
@@ -95,10 +102,12 @@ def relationship_mixin_factory(container_name, cls_name,
                                              container_name,
                                              cls_name)
         else:
-            dct[name] = RelationshipCallable(name,
-                                             relationship_cls_name,
-                                             container_name,
-                                             cls_name)
+            # TODO: Safer name mangling!
+            dct[name] = RelationshipCallable(
+                name.title().replace("_", ' '),
+                relationship_cls_name,
+                container_name,
+                cls_name)
         dct[name] = declared_attr(dct[name])
     return type('RelationshipMixin', (object, ), dct)
 
