@@ -44,7 +44,7 @@ class Abilities(IterItemsExtension, AbilitiesRelationshipMixin, Base):
 
     def __init__(self):
         {%- for value in ALL_ABILITIES %}
-            {% set attrib = value[0].lower().replace(" ", '_') -%}
+        {% set attrib = value[0].lower().replace(" ", '_') -%}
         self.{{ attrib }} = {{ value[1] }}('{{ value[0] }}', {{ value[2] }})
         {%- endfor %}
 

@@ -66,7 +66,8 @@ class RelationshipCallable(Callable):
             back_populates=self.container_name.lower(),
             uselist=False)
 
-
+# TODO: Safer name mangling! I need to add in a new variable for the join
+# condition!
 def relationship_mixin_factory(container_name, cls_name,
                                attribute_and_class_names,
                                connects_on_class_name=False):
