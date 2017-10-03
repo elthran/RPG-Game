@@ -466,14 +466,13 @@ def global_chat(hero=None):
         the_hour = str((itsnow.hour + 17) % 24)
         the_minute = str(itsnow.minute)
         the_second = str(itsnow.second)
-        game.global_chat_user_list[hero] = int(the_second)
+        game.global_chat_user_list[hero] = int(the_minute)
         users_needing_to_be_removed = []
         for user, time_stamp in game.global_chat_user_list.items():
-            if int(the_second) - time_stamp > 10:
+            if (int(the_minute) - time_stamp) % 60 > 5:
                 users_needing_to_be_removed.append(user)
         for user in users_needing_to_be_removed:
             del game.global_chat_user_list[user]
-        print (game.global_chat_user_list)
         if len(the_hour) < 2:
             the_hour = "0" + the_hour
         if len(the_minute) < 2:

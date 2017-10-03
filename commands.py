@@ -150,6 +150,7 @@ class Command:
         ability.level += 1
         new_description = ability.get_description()
         status = ""
+        hero.refresh_character()
         if ability.is_max_level():
             status = "max level"
         return "{}&&{}&&{}&&{}&&{}".format(ability_id, ability.level, status, ability_tree, new_description)

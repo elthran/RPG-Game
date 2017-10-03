@@ -278,6 +278,9 @@ class DynamicMixin(object):
 
         for ability in hero.abilities:
             try:
+                this_name = self.name.lower() + "_maximum"
+                # Should be self.maximum += ability.this_name * ability.level
+                # Then it would work for all cases with just that code. Right now they all add to the health maximum.
                 self.maximum += ability.health_maximum * ability.level
             except AttributeError:
                 # If the item doesn't have this attribute, don't worry about

@@ -244,12 +244,14 @@ class AuraAbility(Ability):
     }
 
     health_maximum = Column(Integer)
+    sanctity_maximum = Column(Integer)
     damage_maximum = Column(Integer)
     damage_minimum = Column(Integer)
     understanding_modifier = Column(Integer)
-    evade_chance = Column(Integer)
+    stealth_chance = Column(Integer)
+    firststrike_chance = Column(Integer)
 
-    def __init__(self, *args, health_maximum=0, damage_maximum=0, damage_minimum=0, understanding_modifier=0, evade_chance=0, sanctity_regeneration=0, **kwargs):
+    def __init__(self, *args, health_maximum=0, sanctity_maximum=0, damage_maximum=0, damage_minimum=0, understanding_modifier=0, stealth_chance=0, sanctity_regeneration=0, firststrike_chance=0, **kwargs):
         """Build a new Archetype_Ability object.
 
         Note: self.type must be set in __init__ to polymorphic identity.
@@ -259,7 +261,9 @@ class AuraAbility(Ability):
         super().__init__(*args, **kwargs)
 
         self.health_maximum = health_maximum
+        self.sanctity_maximum = sanctity_maximum
         self.damage_maximum = damage_maximum
         self.damage_minimum = damage_minimum
         self.understanding_modifier = understanding_modifier
-        self.evade_chance = evade_chance
+        self.stealth_chance = stealth_chance
+        self.firststrike_chance = firststrike_chance

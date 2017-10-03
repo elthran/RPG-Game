@@ -24,14 +24,14 @@ name, class, class arguments (not including name as it is added later).
 """
 
 ALL_ABILITIES = [
-    ("Relentless", "AuraAbility", "5, 'Gain {{ level * 5 }} maximum health. Master this ability to unlock the Brute archetype.', learnable=True"),
-    ("Trickster", "AuraAbility", "5, 'Become {{ level * 5 }}% harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', learnable=True"),
+    ("Relentless", "AuraAbility", "5, 'Gain {{ level * 5 }} maximum health. Master this ability to unlock the Brute archetype.', learnable=True, health_maximum=5"),
+    ("Trickster", "AuraAbility", "5, 'Become {{ level * 5 }}% harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', learnable=True, stealth_chance=5"),
     ("Discipline", "AuraAbility", "5, 'Gain devotion {{ level * 5 }}% faster. Master this ability to unlock the Ascetic archetype.', learnable=True"),
     ("Explorer", "AuraAbility", "5, 'Reveal {{ level * 10 }}% more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', learnable=True"),
-    ("Arcanum", "AuraAbility", "5, 'Gain {{ level * 3 }} maximum sanctity. Master this ability to unlock the Philosopher archetype.', learnable=True"),
+    ("Arcanum", "AuraAbility", "5, 'Gain {{ level * 3 }} maximum sanctity. Master this ability to unlock the Philosopher archetype.', learnable=True, sanctity_maximum=3"),
     ("Poet", "AuraAbility", "5, 'Gain fame {{ level * 5 }}% faster. Master this ability to unlock the Opportunist archetype.', learnable=True"),
     ("Blackhearted", "AuraAbility", "3, 'Lose virtue {{ level * 5 }}% faster.', tree='archetype', tree_type='scoundrel'"),
-    ("Backstab", "AuraAbility", "3, 'You are {{ level * 15 }}% more likely to attack first in combat.', tree='archetype', tree_type='scoundrel'"),
+    ("Backstab", "AuraAbility", "3, 'You are {{ level * 15 }}% more likely to attack first in combat.', tree='archetype', tree_type='scoundrel', firststrike_chance=15"),
     ("MartialArts", "AuraAbility", "3, 'You deal {{ level * 5 }}% more damage in combat.', tree='archetype', tree_type='ascetic'"),
     ("Apprentice", "AuraAbility", "3, 'You are capable of learning level {{ level }} spells.', tree='archetype', tree_type='ascetic'"),
     ("Meditation", "AuraAbility", "3, 'Regenerate {{ level }} sanctity per day.', tree='archetype', tree_type='ascetic', sanctity_regeneration=1"),
@@ -164,14 +164,14 @@ class Abilities(Base):
         back_populates="abilities", uselist=False)
 
     def __init__(self):
-        self.Relentless = AuraAbility('Relentless', 5, 'Gain {{ level * 5 }} maximum health. Master this ability to unlock the Brute archetype.', learnable=True)
-        self.Trickster = AuraAbility('Trickster', 5, 'Become {{ level * 5 }}% harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', learnable=True)
+        self.Relentless = AuraAbility('Relentless', 5, 'Gain {{ level * 5 }} maximum health. Master this ability to unlock the Brute archetype.', learnable=True, health_maximum=5)
+        self.Trickster = AuraAbility('Trickster', 5, 'Become {{ level * 5 }}% harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', learnable=True, stealth_chance=5)
         self.Discipline = AuraAbility('Discipline', 5, 'Gain devotion {{ level * 5 }}% faster. Master this ability to unlock the Ascetic archetype.', learnable=True)
         self.Explorer = AuraAbility('Explorer', 5, 'Reveal {{ level * 10 }}% more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', learnable=True)
-        self.Arcanum = AuraAbility('Arcanum', 5, 'Gain {{ level * 3 }} maximum sanctity. Master this ability to unlock the Philosopher archetype.', learnable=True)
+        self.Arcanum = AuraAbility('Arcanum', 5, 'Gain {{ level * 3 }} maximum sanctity. Master this ability to unlock the Philosopher archetype.', learnable=True, sanctity_maximum=3)
         self.Poet = AuraAbility('Poet', 5, 'Gain fame {{ level * 5 }}% faster. Master this ability to unlock the Opportunist archetype.', learnable=True)
         self.Blackhearted = AuraAbility('Blackhearted', 3, 'Lose virtue {{ level * 5 }}% faster.', tree='archetype', tree_type='scoundrel')
-        self.Backstab = AuraAbility('Backstab', 3, 'You are {{ level * 15 }}% more likely to attack first in combat.', tree='archetype', tree_type='scoundrel')
+        self.Backstab = AuraAbility('Backstab', 3, 'You are {{ level * 15 }}% more likely to attack first in combat.', tree='archetype', tree_type='scoundrel', firststrike_chance=15)
         self.MartialArts = AuraAbility('MartialArts', 3, 'You deal {{ level * 5 }}% more damage in combat.', tree='archetype', tree_type='ascetic')
         self.Apprentice = AuraAbility('Apprentice', 3, 'You are capable of learning level {{ level }} spells.', tree='archetype', tree_type='ascetic')
         self.Meditation = AuraAbility('Meditation', 3, 'Regenerate {{ level }} sanctity per day.', tree='archetype', tree_type='ascetic', sanctity_regeneration=1)
@@ -383,12 +383,14 @@ class AuraAbility(Ability):
     }
 
     health_maximum = Column(Integer)
+    sanctity_maximum = Column(Integer)
     damage_maximum = Column(Integer)
     damage_minimum = Column(Integer)
     understanding_modifier = Column(Integer)
-    evade_chance = Column(Integer)
+    stealth_chance = Column(Integer)
+    firststrike_chance = Column(Integer)
 
-    def __init__(self, *args, health_maximum=0, damage_maximum=0, damage_minimum=0, understanding_modifier=0, evade_chance=0, sanctity_regeneration=0, **kwargs):
+    def __init__(self, *args, health_maximum=0, sanctity_maximum=0, damage_maximum=0, damage_minimum=0, understanding_modifier=0, stealth_chance=0, sanctity_regeneration=0, firststrike_chance=0, **kwargs):
         """Build a new Archetype_Ability object.
 
         Note: self.type must be set in __init__ to polymorphic identity.
@@ -398,7 +400,9 @@ class AuraAbility(Ability):
         super().__init__(*args, **kwargs)
 
         self.health_maximum = health_maximum
+        self.sanctity_maximum = sanctity_maximum
         self.damage_maximum = damage_maximum
         self.damage_minimum = damage_minimum
         self.understanding_modifier = understanding_modifier
-        self.evade_chance = evade_chance
+        self.stealth_chance = stealth_chance
+        self.firststrike_chance = firststrike_chance
