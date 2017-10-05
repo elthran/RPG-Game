@@ -10,6 +10,7 @@ import pdb  # For testing!
 from pprint import pprint  # For testing!
 from functools import wraps
 import os
+import time
 
 from flask import (
     Flask, render_template, redirect, url_for, request, session,
@@ -526,7 +527,7 @@ def home(hero=None):
     """
 
     # Is this supposed to update the time of all hero objects?
-    database.update_time(hero)
+    # database.update_time(hero)
 
     # Not implemented. Control user moves on map.
     # Sets up initial valid moves on the map.
@@ -1129,6 +1130,21 @@ def main():
     return redirect(url_for('login'))
 
 
+def foo():
+    interval = 60  # 1 minute in seconds
+    count = 0
+    while True:
+        print("Running update version {}.".format(count))
+        database.update_time_all_heroes()
+        time.sleep(interval)
+        count += 1
+    print("Exiting update loop!")
+
+
+def bar():
+    app.run(debug=False)
+
+
 # start the server with the 'run()' method
 if __name__ == '__main__':
     # import os
@@ -1149,4 +1165,11 @@ if __name__ == '__main__':
     # for item in hero.inventory:
     #     item.amount_owned = 5
 
-    app.run(debug=True)
+    from multiprocessing import Process
+    # pdb.set_trace()
+
+    p1 = Process(target=foo)
+    p1.start()
+
+    p2 = Process(target=bar)
+    p2.start()

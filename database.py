@@ -38,7 +38,7 @@ import prebuilt_objects
 
 
 # Constants#
-SECOND_PER_ENDURANCE = 10
+SECOND_PER_ENDURANCE = 3600  # One endurance per minute?
 
 
 class EZDB:
@@ -161,9 +161,13 @@ class EZDB:
         return item
         
     def get_all_users(self):
-        """Return all Users order_by name.
+        """Return all Users order_by id.
         """
         return self.session.query(User).order_by(User.id).all()
+
+    def get_all_heroes(self):
+        """Return all Hero objects ordered by id."""
+        return self.session.query(Hero).order_by(Hero.id).all()
 
     def get_ability_by_id(self, ability_id):
         """Return an ability from its ID."""
@@ -350,6 +354,16 @@ class EZDB:
         """
         return datetime.datetime.utcnow()
 
+    def update_time_all_heroes(self):
+        """Run update_time on all hero objects.
+
+        Consider moving the While True: + sleep somewhere else?
+        Seems a little out of place here.
+        """
+
+        for hero in self.get_all_heroes():
+            self.update_time(hero)
+
     # Marked for renaming as it effects Hero endurance as well as time.
     # Consider update_endurance_and_time()
     # Or update_game_clock
@@ -368,6 +382,13 @@ class EZDB:
         """
         timestamp = hero.timestamp
         time_diff = (EZDB.now() - timestamp).total_seconds()
+
+        # Do nothing if less than 30 minutes have passed.
+        # if time_diff < 60 * 30:
+        if time_diff < 60:  # Temp: update once a minute!
+            print("Main update is too early for Hero {}?".format(hero.id))
+            return None
+
         endurance_increment = int(time_diff / SECOND_PER_ENDURANCE)
         hero.proficiencies.endurance.current += endurance_increment
             
@@ -380,6 +401,7 @@ class EZDB:
         if endurance_increment:
             hero.timestamp = EZDB.now()
         self.session.commit()
+        print("Hero {} updated on schedule.".format(hero.id))
         
     def get_world(self, name):
         """Return WorldMap object from database using by name.
