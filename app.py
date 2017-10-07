@@ -208,32 +208,18 @@ def login():
             flash("LOG IN SUCCESSFUL")
             user = database.get_user_by_username(username)
             session['id'] = user.id
-
             # I recommend a dialogue here to select the specific hero that the
             # user wants to play with. Or a page redirect whatever ...
             # Choose hero dialogue ... not implemented.
             hero = user.heroes[0]
             # Below is code for daily login reward. It's temporary as I am just trying to play with and learn about timestamps and whatnot.
-            time_now = str(EZDB.now())
-            time_now = time_now.split(" ")
-            time_now = time_now[0]
-            if hero.last_login == "":
-                hero.login_alerts += "First time logging in!"
-                hero.last_login = time_now
-            elif hero.last_login != time_now:
-                reward = 3
-                hero.login_alerts += "Thanks for logging in today! You earn " + str(reward) + " experience."
-                hero.experience += reward
-                hero.level_up()
-                hero.last_login = time_now
+            hero.check_daily_login_reward(str(EZDB.now()))
             # End of daily login reward code (Elthran)
             session['hero_id'] = hero.id
-
             # Now I need to work out how to make game not global *sigh*
             # (Marlen)
             game.set_hero(hero)
             game.set_enemy(monster_generator(hero.age))
-
             flash(hero.login_alerts)
             hero.login_alerts = ""
             # If it's a new character, send them to cerate_character url

@@ -365,12 +365,14 @@ class Hero(Base):
         self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100
 
     # updates field variables when hero levels up
-    def level_up(self):
+    def check_if_leveled_up(self):
         if self.experience >= self.experience_maximum:
             self.experience -= self.experience_maximum
             self.experience_maximum = math.floor(1.5 * self.experience_maximum)
             self.attribute_points += 1
             self.proficiency_points += 1
+            self.basic_ability_points +=1
+            self.archetype_ability_points += 1
             self.age += 1
             self.refresh_character(full=True)
             return True
@@ -380,7 +382,7 @@ class Hero(Base):
         new_amount = amount * self.proficiencies.understanding.modifier
         new_amount = int(new_amount) + (random.random() < new_amount - int(new_amount))  # This will round the number weighted by its decimal (so 1.2 has 20% chance of rounding up)
         self.experience += new_amount
-        level_up = self.level_up()
+        level_up = self.check_if_leveled_up()
         return new_amount, level_up  # Return a variable in case you want to know how much experience you just gained or if you leveled up
 
     def equipped_items(self):
@@ -419,6 +421,20 @@ class Hero(Base):
                 # except AttributeError:
                 # assert location is None
                 # return None
+
+    def check_daily_login_reward(self, time):
+        if self.last_login == "":
+            self.login_alerts += "First time logging in!"
+            print("first time log in EVER (printed from game.py)")
+        elif self.last_login != time[:10]:
+            reward = 3
+            self.login_alerts += "Thanks for logging in today! You earn " + str(reward) + " experience."
+            self.experience += reward
+            self.check_if_leveled_up()
+            print("first time log in TODAY (printed from game.py)")
+        else:
+            print("you have already logged in today (printed from game.py)")
+        self.last_login = time[:10]
 
     @validates('current_location')
     def validate_current_location(self, key, location):

@@ -120,7 +120,9 @@
         {% endfor %}
     {% endif %}
 {% elif ability_tree == "calling" %}
-    {% if hero.calling == None %}
+Under Construction
+{% elif ability_tree == "religious" %}
+    {% if hero.religion == None %}
         <div>
             <div class="religioncontainer"><h1>Unknown</h1></div>
             <div class="religioncontainer"><h1>Unknown</h1></div>
@@ -138,12 +140,9 @@
             <div class="religioncontainer"><h1>Unknown</h1></div>
         </div>
     {% else %}
-        <div style="display: inline" id="calling_points_remaining">{{ myHero.calling_ability_points }}</div>
-        Current Calling: {{ myHero.calling }}
+        <div style="display: inline" id="religion_points_remaining">{{ myHero.religion_ability_points }}</div>
+        Current Religion: {{ myHero.religion }}
     {% endif %}
-{% elif ability_tree == "religious" %}
-    <div style="display: inline" id="religious_points_remaining">{{ myHero.religious_ability_points }}</div>
-    <br>Current Religion: {{ myHero.religion }}
 {% endif %}
 
 {% endblock %}
