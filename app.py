@@ -273,7 +273,6 @@ def create_account():
             return redirect(url_for('login'))
     return render_template('index.html', error=error, create_account=True)
 
-
 # this gets called if you press "logout"
 @app.route('/logout')
 @login_required
@@ -284,7 +283,6 @@ def logout(hero=None):
     session.pop('logged_in', None)
     flash("Thank you for playing! Your have successfully logged out.")
     return redirect(url_for('login'))
-
 
 # this gets called if you are logged in and there is no character info stored
 @app.route('/create_character', methods=['GET', 'POST'])
@@ -430,7 +428,7 @@ def display_user_page(page_type, page_detail, hero=None):
         if request.method == 'POST':
             this_message = request.form['message']
             if len(this_message) > 1:
-                hero.user.inbox.send_message(this_user, this_message)
+                hero.user.inbox.send_message(this_user, this_message, str(EZDB.now()))
                 confirmation_message = "Message sent!"
             else:
                 confirmation_message = "Please type your message"
@@ -487,7 +485,7 @@ def inbox(outbox, hero=None):
         username_of_receiver = request.form["receiver"]
         content = request.form["message"]
         receiver = database.get_user_by_username(username_of_receiver)
-        hero.user.inbox.send_message(receiver, content)
+        hero.user.inbox.send_message(receiver, content, str(EZDB.now()))
         receiver.inbox_alert = True
         database.update()  # IMPORTANT!
         return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)

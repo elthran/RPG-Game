@@ -128,7 +128,7 @@ class Inbox(Base):
         """
         return self.received_messages
 
-    def send_message(self, receiver, content):
+    def send_message(self, receiver, content, time):
         """Create a message between the inbox's user and another user.
 
         A database commit must take place after this method or the
@@ -143,7 +143,7 @@ class Inbox(Base):
         user.inbox.send_message(other_user, content)
         database.update()
         """
-        Message(self, receiver.inbox, content)
+        Message(self, receiver.inbox, content, time)
 
 
 class Message(Base):
@@ -159,9 +159,11 @@ class Message(Base):
                           foreign_keys="[Message.sender_id]")
     receiver_id = Column(Integer, ForeignKey('inbox.id'))
     receiver = relationship("Inbox", back_populates="received_messages",
-                                         foreign_keys="[Message.receiver_id]")
+                              foreign_keys = "[Message.receiver_id]")
 
-    def __init__(self, sender, receiver, content):
+    timestamp = Column(String)
+
+    def __init__(self, sender, receiver, content, time):
         """A message between two users with some content.
 
         Both the sender and receiver are User objects.
@@ -171,7 +173,7 @@ class Message(Base):
         self.receiver = receiver
         self.content = content
         self.unread = True
-        # self.timestamp = timestamp
+        self.timestamp = time[:19]
 
 
 class Hero(Base):
