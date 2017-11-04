@@ -215,6 +215,13 @@ class Command:
         return "success&&{}".format(tooltip)
 
     @staticmethod
+    def get_message_content_by_id(hero, database, arg_dict):
+        """Return the content of a message based on its id."""
+        id = arg_dict.get('data', None, type=int)
+        message = database.get_object_by_id("Message", id)
+        return "{}".format(message.content)
+
+    @staticmethod
     def cmd_functions(name):
         """Use to refer to return a function from string of its name.
         

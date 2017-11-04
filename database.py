@@ -27,7 +27,7 @@ from sqlalchemy import desc
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 import base_classes
 # Internal game modules
-from game import User, Hero, Inbox
+from game import User, Hero, Inbox, Message
 from abilities import Abilities, Ability
 from locations import Location  # , WorldMap, Town, Cave
 from items import ItemTemplate, Item

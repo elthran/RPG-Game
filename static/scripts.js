@@ -28,11 +28,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             var clickedButton = e.target;
             var jsFunction = window[clickedButton.getAttribute("data-js-function")];
-            var dataFunction = window[clickedButton.getAttribute("data-function")];
+            var jsFunction = window[clickedButton.getAttribute("data-function")];
 
             // If data-function is not set then make a null function to prevent errors.
-            if (dataFunction === undefined) {
-                dataFunction = function () {
+            if (jsFunction === undefined) {
+                jsFunction = function () {
                     return;
                 };
             }
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     // Accepts 'button' as default arg ... plus the item.type and
                     // list of ids.
                     if (xhttp.responseText === "success") {
-                        dataFunction(clickedButton);
+                        jsFunction(clickedButton);
                     } else if (xhttp.responseText.substring(0, 5) === "error") {
                         console.log("Python code returned an error from " + clickedButton);
                         console.log(xhttp.responseText);
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         // I will put some error checking in to make sure that this happens at some point.
                         var requestArray = xhttp.responseText.split("&&");
                         requestArray.unshift(clickedButton);
-                        dataFunction.apply(document, requestArray);
+                        jsFunction.apply(document, requestArray);
                     }
                 }
             };
@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // function to be called. Use of 'data-name' is the most flexible
             // and future proof as it can be used in other things than
             // <button> tags :)
-            var action = clickedButton.getAttribute("data-py-name");
+            var action = clickedButton.getAttribute("data-py-function");
             var action = clickedButton.getAttribute("data-name");
             // console.log("action_data-name:", action)
             if (action === null) {

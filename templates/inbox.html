@@ -23,18 +23,18 @@ document.getElementById('form').submit();
 alert("Form Submitted Successfully...");
 }
 }
+
 //Function To Display Popup
-function div_show(messageContent) {
-document.getElementById('inboxPopupOuter').style.display = "block";
-var newText = document.getElementById('newTextNeeded').value;
-newText = messageContent;
+function divShow(button, messageContent) {
+    document.getElementById('inboxPopupOuter').style.display = "block";
+    var newText = document.getElementById('newTextNeeded').value;
+    newText = messageContent;
 }
+
 //Function to Hide Popup
 function div_hide(){
 document.getElementById('inboxPopupOuter').style.display = "none";
 }
-
-
 </script>
 
 <div class="inboxTopbar">
@@ -101,11 +101,14 @@ document.getElementById('inboxPopupOuter').style.display = "none";
         </tr>
     {% for message in hero.user.inbox.received_messages %}
         <tr>
-            <td><img src="/static/images/empty_box.jpg" style="width:25px;height:25px;"</td>
+            <td><img src="/static/images/empty_box.jpg" style="width:25px;height:25px;"></td>
             <td><a href=/display_users/see_user/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
             <td>
                 <!-- Button to Display Popup Button -->
-                <button id="popup" onclick="div_show('{{ message.content }}')">{{ message.content[0:10] }}</button>
+                <button id="popup" data="{{ message.id }}"
+                        data-py-function="get_message_content_by_id"
+                        data-js-function="divShow">{{ message.content[0:10]
+                    }}</button>
             </td>
             <td>{{ message.timestamp[0:10] }}</td>
             <td>{{ message.id }}</td>
