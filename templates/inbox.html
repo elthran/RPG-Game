@@ -27,8 +27,7 @@ alert("Form Submitted Successfully...");
 //Function To Display Popup
 function divShow(button, messageContent) {
     document.getElementById('inboxPopupOuter').style.display = "block";
-    var newText = document.getElementById('newTextNeeded').value;
-    newText = messageContent;
+    document.getElementById('newTextNeeded').innerHTML = messageContent;
 }
 
 //Function to Hide Popup
@@ -105,7 +104,7 @@ document.getElementById('inboxPopupOuter').style.display = "none";
             <td><a href=/display_users/see_user/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
             <td>
                 <!-- Button to Display Popup Button -->
-                <button id="popup" data="{{ message.id }}"
+                <button class="command" id="popup" data="{{ message.id }}"
                         data-py-function="get_message_content_by_id"
                         data-js-callback="divShow">{{ message.content[0:10]
                     }}</button>

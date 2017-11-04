@@ -28,8 +28,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             var clickedButton = e.target;
             var jsFunction = window[clickedButton.getAttribute("data-js-callback")];
-            var jsFunction = window[clickedButton.getAttribute("data-function")];
-
+            if (jsFunction === undefined) {
+                jsFunction = window[clickedButton.getAttribute("data-function")];
+            }
             // If data-function is not set then make a null function to prevent errors.
             if (jsFunction === undefined) {
                 jsFunction = function () {
@@ -82,7 +83,9 @@ document.addEventListener("DOMContentLoaded", function () {
             // and future proof as it can be used in other things than
             // <button> tags :)
             var action = clickedButton.getAttribute("data-py-function");
-            var action = clickedButton.getAttribute("data-name");
+            if (action === null) {
+                action = clickedButton.getAttribute("data-name");
+            }
             // console.log("action_data-name:", action)
             if (action === null) {
                 action = clickedButton.getAttribute("name");

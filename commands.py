@@ -219,6 +219,7 @@ class Command:
         """Return the content of a message based on its id."""
         id = arg_dict.get('data', None, type=int)
         message = database.get_object_by_id("Message", id)
+        print("Sending message content back to JS.")
         return "{}".format(message.content)
 
     @staticmethod
