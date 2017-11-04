@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
 
             var clickedButton = e.target;
-            var jsFunction = window[clickedButton.getAttribute("data-js-function")];
+            var jsFunction = window[clickedButton.getAttribute("data-js-callback")];
             var jsFunction = window[clickedButton.getAttribute("data-function")];
 
             // If data-function is not set then make a null function to prevent errors.

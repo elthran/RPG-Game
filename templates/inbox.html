@@ -107,7 +107,7 @@ document.getElementById('inboxPopupOuter').style.display = "none";
                 <!-- Button to Display Popup Button -->
                 <button id="popup" data="{{ message.id }}"
                         data-py-function="get_message_content_by_id"
-                        data-js-function="divShow">{{ message.content[0:10]
+                        data-js-callback="divShow">{{ message.content[0:10]
                     }}</button>
             </td>
             <td>{{ message.timestamp[0:10] }}</td>
