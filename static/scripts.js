@@ -9,9 +9,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // Grab all of the elements with a class of command
     // (which all of the buttons we just created have)
     var commandButtons = document.querySelectorAll(".command");
+    // considering querySelectorAll("[data-py-function]");
 
     // As commandButtons is a NodeList ... foreach shouldn't work
-    // but it does. This may cause browsers incompatabilites?
+    // but it does. This may cause browsers incompatibilities?
     // If this becomes a problem use:
     // var i = 0;
     // var button = {};
