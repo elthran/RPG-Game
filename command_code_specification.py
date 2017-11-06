@@ -101,7 +101,8 @@ OR
     e.g.
     var clickedButton = e.target;
     var jsFunction = window[clickedButton.getAttribute("data-js-callback")];
-    // If data-function is not set then make a null function to prevent errors.
+    // If data-js-callback is not set then make a null function to
+    // prevent errors.
     if (jsFunction === undefined) {
         jsFunction = function () {
             return;
