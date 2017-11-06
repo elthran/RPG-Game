@@ -14,8 +14,8 @@
         <table>{% for item in items_for_sale %}
             <tr>
                 <td>{{ item.name }}</td>
-                <td><button class="command" data="{{ item.id }}"
-                data-function="itemPurchasedPopup">Buy</button>
+                <td><button data-py-function="buy" data="{{ item.id }}"
+                data-js-callback="itemPurchasedPopup">Buy</button>
                 <td><b>{{ item.buy_price }}</b> gold</td>
             </tr>{% endfor %}  
         </table>

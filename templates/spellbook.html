@@ -8,7 +8,8 @@
     {% if ability.sanctity_cost %}(Sanctity Cost: {{ ability.sanctity_cost }})
     {% elif ability.endurance_cost %}(Endurance Cost: {{ ability.endurance_cost }})
     {% endif %}
-<button class="command" data={{ ability.id }} data-name = "cast_spell">cast</button> [{{ ability.description }}]<br>
+<button data={{ ability.id }} data-py-function="cast_spell">cast</button>
+[{{ ability.description }}]<br>
 {% else %}
 You have no spells
 {% endfor %}

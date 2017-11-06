@@ -9,7 +9,7 @@
     <h2 style="text-align:left;">Basic Abilities</h2>
     {% for ability in myHero.abilities if ability.tree == ability_tree and ability.hidden == False  %}
     <div class="tooltip" style="float:left">
-            <img class="archetypeImages command" src="/static/images/ability_icon_{{ ability.name.lower() }}.jpg" data="{{ ability.id }}, {{ ability.tree }}" data-function="updateAbility" data-name="update_ability">
+            <img class="archetypeImages" src="/static/images/ability_icon_{{ ability.name.lower() }}.jpg" data="{{ ability.id }}, {{ ability.tree }}" data-js-callback="updateAbility" data-py-function="update_ability">
         <div style="display: inline">
             <span>
                 <h3>{{ ability.name.title() }}</h3>
@@ -47,7 +47,7 @@
             <ul style="color:red">Requirements:
                 <li>Brawn ~ 6</li>
                 <li>Any Weapon Talent ~ 10</li>
-                <li><button class="command" data="Brute" data-function="refreshPage" data-name="become_archetype">Become Brute</button></li>
+                <li><button data="Brute" data-js-callback="refreshPage" data-py-function="become_archetype">Become Brute</button></li>
             </ul>
         </span>
         <span class="popuparchetypechangingmessage" id="js_popupscoundrel">
@@ -56,7 +56,7 @@
             <ul style="color:red">Requirements:
                 <li>Dagger Talent ~ 6</li>
                 <li>Virtue ~ -100</li>
-                <li><button class="command" data="Scoundrel" data-function="refreshPage" data-name="become_archetype">Become Scoundrel</button></li>
+                <li><button data="Scoundrel" data-js-callback="refreshPage" data-py-function="become_archetype">Become Scoundrel</button></li>
             </ul>
         </span>
         <span class="popuparchetypechangingmessage" id="js_popupascetic">
@@ -66,7 +66,7 @@
                 <li>Errands Completed ~ 10</li>
                 <li>Virtue ~ +100</li>
                 <li>Willpower ~ 4</li>
-                <li><button class="command" data="Ascetic" data-function="refreshPage" data-name="become_archetype">Become Ascetic</button></li>
+                <li><button data="Ascetic" data-js-callback="refreshPage" data-py-function="become_archetype">Become Ascetic</button></li>
             </ul>
         </span>
         <span class="popuparchetypechangingmessage" id="js_popupsurvivalist">
@@ -75,7 +75,7 @@
             <ul style="color:red">Requirements:
                 <li>Locations Discovered ~ 5</li>
                 <li>Animals in Bestiary ~ 10</li>
-                <li><button class="command" data="Survivalist" data-function="refreshPage" data-name="become_archetype">Become Survivalist</button></li>
+                <li><button data="Survivalist" data-js-callback="refreshPage" data-py-function="become_archetype">Become Survivalist</button></li>
             </ul>
         </span>
         <span class="popuparchetypechangingmessage" id="js_popupphilosopher">
@@ -84,7 +84,7 @@
             <ul style="color:red">Requirements:
                 <li>Intellect ~ 7</li>
                 <li>Books Read ~ 10</li>
-                <li><button class="command" data="Philosopher" data-function="refreshPage" data-name="become_archetype">Become Philosopher</button></li>
+                <li><button data="Philosopher" data-js-callback="refreshPage" data-py-function="become_archetype">Become Philosopher</button></li>
             </ul>
         </span>
         <span class="popuparchetypechangingmessage" id="js_popupopportunist">
@@ -93,7 +93,7 @@
             <ul style="color:red">Requirements:
                 <li>Charisma ~ 7</li>
                 <li>Fame ~ +200</li>
-                <li><button class="command" data="Opportunist" data-function="refreshPage" data-name="become_archetype">Become Opportunist</button></li>
+                <li><button data="Opportunist" data-js-callback="refreshPage" data-py-function="become_archetype">Become Opportunist</button></li>
             </ul>
         </span>
     </span>
@@ -114,7 +114,7 @@
                     <br>Cost: 1 Skill Point
                 {%- endfor %}
             </span>
-            <button class="command" data="{{ ability.id }}, {{ ability.tree }}" data-function="updateAbility" data-name="update_ability">Learn</button>
+            <button data="{{ ability.id }}, {{ ability.tree }}" data-js-callback="updateAbility" data-py-function="update_ability">Learn</button>
         {% else %}
             No Abilities Available
         {% endfor %}

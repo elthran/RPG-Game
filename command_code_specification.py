@@ -6,16 +6,14 @@ As it stands it works like this:
 # HTML
 1. The user clicks on a prepared "Command" button.
 The command button requires:
-    a. class="command"
-    b. data="data to send to python" - any kind you want
-    c. data-py-function="the_name_of_a_python_function" - a static function in
+    a. data="data to send to python" - any kind you want
+    b. data-py-function="the_name_of_a_python_function" - a static function in
         the commands.py module.
-    d. data-js-callback="jsFunctionName" - (optional) js function to run that
+    c. data-js-callback="jsFunctionName" - (optional) js function to run that
         operates on the return values of the previous python function.
 
     e.g.
     <button
-        class="command"
         data="{{ message.id }}"
         data-py-function="get_message_content_by_id"
         data-js-callback="divShow">

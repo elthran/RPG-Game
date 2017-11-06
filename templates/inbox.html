@@ -104,7 +104,7 @@ document.getElementById('inboxPopupOuter').style.display = "none";
             <td><a href=/display_users/see_user/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
             <td>
                 <!-- Button to Display Popup Button -->
-                <button class="command" id="popup" data="{{ message.id }}"
+                <button id="popup" data="{{ message.id }}"
                         data-py-function="get_message_content_by_id"
                         data-js-callback="divShow">{{ message.content[0:10]
                     }}</button>

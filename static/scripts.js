@@ -4,12 +4,14 @@ Main command script that interacts with server through AJAX and
 commands.py
 */
 // Only run what comes next *after* the page has loaded
+
+// OFFICIAL NAME: js EventListener code??
 document.addEventListener("DOMContentLoaded", function () {
     "use strict";
     // Grab all of the elements with a class of command
     // (which all of the buttons we just created have)
-    var commandButtons = document.querySelectorAll(".command");
-    // considering querySelectorAll("[data-py-function]");
+    // var commandButtons = document.querySelectorAll(".command");
+    var commandButtons = document.querySelectorAll("[data-py-function]");
 
     // As commandButtons is a NodeList ... foreach shouldn't work
     // but it does. This may cause browsers incompatibilities?
@@ -28,10 +30,10 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
 
             var clickedButton = e.target;
+
+            // Build a handler to a function named in data-js-callback if one
+            // exists.
             var jsFunction = window[clickedButton.getAttribute("data-js-callback")];
-            if (jsFunction === undefined) {
-                jsFunction = window[clickedButton.getAttribute("data-function")];
-            }
             // If data-function is not set then make a null function to prevent errors.
             if (jsFunction === undefined) {
                 jsFunction = function () {
@@ -78,24 +80,9 @@ document.addEventListener("DOMContentLoaded", function () {
             // See https://www.w3schools.com/xml/ajax_xmlhttprequest_send.asp
             // "&&" acts like the "," in pythonic {key:value, key2:value2}
 
-            // I now have, from most specific to least, 'data-name', 'name' or
-            // 'innerHTML' which can all be used as the name of the Python
-            // function to be called. Use of 'data-name' is the most flexible
-            // and future proof as it can be used in other things than
-            // <button> tags :)
+            // The value of data-py-function should be the name of a
+            // @staticmethod in the Command class in the commands.py file.
             var action = clickedButton.getAttribute("data-py-function");
-            if (action === null) {
-                action = clickedButton.getAttribute("data-name");
-            }
-            // console.log("action_data-name:", action)
-            if (action === null) {
-                action = clickedButton.getAttribute("name");
-                // console.log("action_name:", action)
-            }
-            if (action === null) {
-                action = clickedButton.innerHTML.toLowerCase();
-                // console.log("action_innerHTML:", action)
-            }
 
             // console.log("action_final:", action)
             console.log("Button clicked was:", clickedButton);
