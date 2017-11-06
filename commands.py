@@ -36,19 +36,17 @@ class Command:
     This should call the function and execute it in the Command class.
 
     The format for a button is:
-    Format (3 different ways ... from most flexible and longest to type to
-        least flexible and shortest to type)
-    -<button class="command" data-name="consume" data="{{ item.id }}" data-function="javascript_consume"></button>
-    -<button class="command" name="consume" data="{{ item.id }}" data-function="javascript_consume"></button>
-    -<button class="command" data="{{ item.id }}" data-function="javascript_consume"">Consume</button>
-    -Where class="command" means this object runs command code.
+    -<button data-py-function="consume" data="{{ item.id }}"
+    data-js-callback="javascript_consume"></button>
+    -Where data-py-function means this object runs command code.
     -Where data is the python object's database id. Or any other data necessary.
-    -Where data-name="consume" is the name of the Python method/function to run (in commands.py).
-        -Or name="consume" or 'innerHTML' >Consume< (minus ><) this is from older code
-    -Where data-function="javascript_consume" is the name of a JavaScript function that accepts
-        data as a return value from the Python function defined in name="".
+    -Where data-py-function="consume" is the name of the Python
+        method/function to run (in commands.py).
+    -Where data-js-callback="javascript_consume" is the name of a JavaScript
+        function that accepts data as a return value from the Python
+        function defined in data-py-function="..".
         NOTE: This function runs after the python code returns a response.
-        "onClick" does not. It runs first/or independantly?
+        "onClick" does not. It runs first/or independently?
 
     Usage:
         Use the python functions if you need to change the database or hero
@@ -60,7 +58,8 @@ class Command:
         gold value on the website and some kind of visual feedback for the purchase.
 
     **Alternative JavaScript function call:
-    -<button class="command" data-name="consume" data="{{ item.id }}" onClick="remove(this)"></button>
+    -<button data-py-function="consume" data="{{ item.id }}"
+        onClick="remove(this)"></button>
     -Where onClick is a local function to run. "this" is the button object itself.
 
 
