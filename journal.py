@@ -30,6 +30,7 @@ from datetime import datetime
 
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from base_classes import Base
 
@@ -56,10 +57,23 @@ class Entry(Base):
     timestamp = Column(DateTime)
     info = Column(String)
 
-    #Each entry can have one beast
+    # Each entry can have one beast
     _beast = relationship()
+    _person = relationship()
+    _place = relationship()
 
-    @property
+    @hybrid_property
     def obj(self):
-        if obj.type == "Beast":
-            self._beast = obj
+        return self._beast or self._person or self._place
+
+    @obj.setter
+    def obj(self, value):
+        """Assign object to appropriate column."""
+        if value.type == "beast":
+            self._beast = value
+        elif value.type == "person":
+            self._person = value
+        else:
+            raise "TypeError: 'obj' does not accept " \
+                  "type '{}':".format(value.type)
+
