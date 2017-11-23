@@ -25,6 +25,27 @@ So maybe:
     -time + date
 
 Journal is almost a Frontend for lots of other objects?
+
+Project breakdown:
+
+1. Design backend for quests
+    -build to allow for type checking/instanceOf checking
+    -build to allow quest_path.description property
+    -build to describe what happens when you click on the current quest in a
+        quest_path. I quest it would bring up info on the current quest?
+
+2. Design backend for persons
+3. Design backend for places
+4. Design backend for beasts
+
+5. Design frontend for quests
+    -pull data from the current quest in the questpath and the questpath itself
+6. Design frontend for person
+7. Design frontend for places
+8. Design frontend for beasts
+
+9. Design event system link-in.
+    -Journal entries should be populated by the occurrence of events
 """
 from datetime import datetime
 
@@ -38,13 +59,18 @@ from base_classes import Base
 import pdb
 
 
+# I think I can combine the entry and Journal.
+# This would give me custom places such as beasts or quests in the Journal
+# The add_entry would sort the new objects into the right category.
 class Journal(Base):
     __tablename__ = 'journal'
 
     id = Column(Integer, primary_key=True)
 
     # Each journal can have many entries
-    entries = relationship("Entry", back_populates='journal')
+    # entries = relationship("Entry", back_populates='journal')
+
+    quest_paths = relationship("QuestPath")
 
     def add_entry(self, obj):
         entry = Entry(obj, datetime.now(), obj.description)
@@ -73,7 +99,7 @@ class Entry(Base):
 
     @hybrid_property
     def obj(self):
-        return self._beast or self._person or self._place or self._quest_past
+        return self._beast or self._person or self._place or self._quest_path
 
     @obj.setter
     def obj(self, value):
@@ -89,4 +115,3 @@ class Entry(Base):
         else:
             raise "TypeError: 'obj' does not accept " \
                   "type '{}':".format(value.type)
-

@@ -122,7 +122,8 @@ class QuestPath(HandlerMixin, Base):
     __tablename__ = 'quest_path'
     
     id = Column(Integer, primary_key=True)
-    
+
+    name = Column(String)
     stage = Column(Integer)
     stage_count = orm.synonym('stage')
     display_stage = orm.synonym('stage')
@@ -136,7 +137,7 @@ class QuestPath(HandlerMixin, Base):
     # Heroes to Quests.
     # Hero object relates to quests via the QuestPath object.
     # This path may be either active or completed, but not both.
-    # Which establishes a manay to many relationship between quests and heroes.
+    # Which establishes a many to many relationship between quests and heroes.
     # QuestPath provides many special methods.
     hero_id = Column(Integer, ForeignKey('hero.id'))
     hero = relationship("Hero", back_populates='quest_paths',
@@ -289,6 +290,18 @@ class QuestPath(HandlerMixin, Base):
         """
         self.advance()
         return None if self.completed else self.quest.completion_trigger
+
+    def get_description(self):
+        """Return a description of the of the quest path.
+
+        Description format changes if quest is completed.
+
+        This might be kind of confusing .. maybe I should just have 2 methods?
+        """
+
+        if self.completed:
+            return [self.name, self.total_reward]
+        return [self.stage, self.stages, self.current_quest.name, self.name]
 
 
 quest_to_quest = Table(
