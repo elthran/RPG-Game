@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer
+from sqlalchemy import Column, Integer, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 
@@ -87,3 +87,26 @@ def container_factory(cls_name, cls_name_singular, supers, names, namespace):
         cls_name, cls_name_singular, names)
     supers += (NamedRelationshipMixin, )
     return type(cls_name, supers, dct)
+
+
+class TemplateMixin(object):
+    """Add the ability to use an item of the class as a template."""
+
+    id = Column(Integer, primary_key=True)
+
+    @declared_attr
+    def template(cls):
+        return Column(Boolean, default=False)
+
+    def build_new_from_template(self):
+        """Build a new object from a given template object.
+
+        Code should look something like:
+
+        if self.template:
+            # should create a new object of same class as self but with
+            # data from template object. I guess it is running the init method?
+            return self.__class__(self.arg1=arg1, self.arg2=arg2, etc)
+        """
+        raise Exception("You need to implement this in your code.")
+

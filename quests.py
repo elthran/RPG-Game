@@ -82,11 +82,12 @@ from sqlalchemy import orm
 
 from base_classes import Base
 from events import HandlerMixin
+from factories import TemplateMixin
 import pdb
 from pprint import pprint
 
 
-class QuestPath(HandlerMixin, Base):
+class QuestPath(TemplateMixin, HandlerMixin, Base):
     """Allow storage of quest stage for a given hero and a given quest.
     
     This means that each hero can be in a different stage of the same quest.
@@ -336,11 +337,13 @@ class Quest(Base):
     # Relationships
     # Self ... forward and back Many to Many?
     # A.k.a. each quest can have many future quests and maybe many past quests?
-    next_quests = relationship("Quest",
+    next_quests = relationship(
+        "Quest",
         secondary=quest_to_quest,
         primaryjoin=id==quest_to_quest.c.past_quest_id,
         secondaryjoin=id==quest_to_quest.c.next_quest_id,
-        backref="past_quests")
+        backref="past_quests"
+    )
 
     # QuestPath
     quest_paths = relationship("QuestPath", back_populates='quest',
