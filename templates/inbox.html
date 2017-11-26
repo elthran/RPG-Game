@@ -74,13 +74,13 @@ document.getElementById('inboxPopupOuter').style.display = "none";
 <!-- Popup Div Starts Here -->
 <div id="inboxPopupInner">
 <!-- Reply Popup Box Starts Here -->
-<form action="#" id="form" method="post" name="form">
+<form action="#" id="inbox-form" method="post" name="form">
 <img id="closeReplyBox" src="/static/images/closing_x.jpg" onclick ="div_hide()">
 <h2>Reply</h2>
     <span id="newTextNeeded"></span>
 <hr>
-<input id="name" name="name" placeholder="Title" type="text">
-<input id="email" name="email" placeholder="Message" type="text">
+<input class="inbox-input" id="inbox-form-inner" name="name" placeholder="Title" type="text">
+<input id="inbox-form-inner"" name="email" placeholder="Message" type="text">
 <a href="javascript:%20check_empty()" id="submit">Send</a>
 </form>
 </div>
@@ -104,7 +104,7 @@ document.getElementById('inboxPopupOuter').style.display = "none";
             <td><a href=/display_users/see_user/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
             <td>
                 <!-- Button to Display Popup Button -->
-                <button id="popup" data="{{ message.id }}"
+                <button class="command" id="popup" data="{{ message.id }}"
                         data-py-function="get_message_content_by_id"
                         data-js-callback="divShow">{{ message.content[0:10]
                     }}</button>
