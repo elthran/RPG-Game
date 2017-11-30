@@ -162,16 +162,21 @@ buy_item_from_blacksmith_trigger = Trigger(
 ###########
 # Quests
 ##########
-blacksmith_quest = Quest("Get Acquainted with the Blacksmith",
-                         "Go talk to the blacksmith.",
-                         completion_trigger=visit_blacksmith_trigger)
-blacksmith_quest.next_quests.append(
-    Quest("Get Acquainted with the Blacksmith", "Buy your first item.",
-          reward_experience=7,
-          completion_trigger=buy_item_from_blacksmith_trigger))
+blacksmith_quest_stage1 = Quest(
+    "Go talk to the blacksmith.",
+    "Find the blacksmith in Thornwall and enter his shop.",
+    completion_trigger=visit_blacksmith_trigger
+)
 
-equipment_quest = Quest("Equipping/Unequipping", "Equip any item.")
-equipment_quest.next_quests.append(Quest("Equipping/Unequipping", "Unequip any item."))
+blacksmith_quest_stage2 = Quest(
+    "Buy your first item.",
+    "Buy any item from the blacksmith.",
+    reward_experience=7,
+    completion_trigger=buy_item_from_blacksmith_trigger
+)
+
+# equipment_quest = Quest("Equipping/Unequipping", "Equip any item.")
+# equipment_quest.next_quests.append(Quest("Equipping/Unequipping", "Unequip any item."))
 
 # tavern = Quest("Become an apprentice at the tavern", "Ask if there are any jobs you can do.")
 # tavern.next_quests.append("Become an apprentice at the tavern", "Collect 2 Wolf Pelts for the Bartender")
@@ -180,7 +185,13 @@ equipment_quest.next_quests.append(Quest("Equipping/Unequipping", "Unequip any i
 
 # tavern.next_quests.append("Become an apprentice at the tavern", "Give the bartender 2 copper coins.")
 
-all_quests = [blacksmith_quest, equipment_quest]  # Which is really 4 quests.
+all_quests = [blacksmith_quest_stage1, blacksmith_quest_stage2]
+
+QuestPath(
+    "Get Acquainted with the Blacksmith",
+    "Find the blacksmith and buy something from him.",
+    quests=[blacksmith_quest_stage1, blacksmith_quest_stage2]
+)
 
 ##########
 # Users (and heroes)
@@ -194,8 +205,9 @@ adminHero = Hero(name="Admin", fathers_job="Priest", current_world=world, curren
 admin.heroes = [adminHero]
 marlen = User(username="marlen", password="brunner", is_admin=True)
 haldon = Hero(name="Haldon", fathers_job="Priest", current_world=world, current_location=town, gold=5000)
-QuestPath(blacksmith_quest, haldon)  # What are these?
-QuestPath(equipment_quest, haldon)  # ///
+# What are
+#  these?
+# QuestPath(equipment_quest, haldon)
 marlen.heroes = [haldon]
 users = [marlen, admin]
 

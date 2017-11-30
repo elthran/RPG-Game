@@ -22,7 +22,7 @@
     <h1 class="indented">Current Quests</h1>
     {% for path in myHero.quest_paths if path.active %}
         <h2>{{ path.quest.name }}</h2>
-        <p>{{ path.quest.current_description }} (Stage: {{ path.stage }}/{{ path.stages }})</p>
+        <p>{{ path.quest.description }} (Stage: {{ path.stage }}/{{ path.stages }})</p>
     {% else %}
         No current quests
     {% endfor %}

@@ -175,7 +175,7 @@ class HandlerMixin(object):
     def hero(cls):
         return relationship("Hero")
 
-    def __init__(self, completion_trigger=None, hero=None):
+    def activate(self, completion_trigger=None, hero=None):
         self.completion_trigger = completion_trigger
         self.hero = hero
 
