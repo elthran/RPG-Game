@@ -90,7 +90,23 @@ def container_factory(cls_name, cls_name_singular, supers, names, namespace):
 
 
 class TemplateMixin(object):
-    """Add the ability to use an item of the class as a template."""
+    """Add the ability to use an item of the class as a template.
+
+    NOTE: for inherited class must include:
+    def __init__(*arg, template=True, **kwarg)
+        self.template = template
+
+    def build_new_from_template(self):
+        return FooBar(*arg, **kwarg, template=False)
+
+    Should include a validator that automates template building:
+    i.e.
+    @validates('completion_trigger')
+    def valid_completion_trigger(self, key, trigger):
+        if trigger.template:
+            trigger = trigger.build_new_from_template()
+        return trigger
+    """
 
     id = Column(Integer, primary_key=True)
 

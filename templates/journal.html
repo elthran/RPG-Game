@@ -24,7 +24,7 @@
 {% if quest_log %}
     <h2 class="indented">Current Quests</h2>
     {% for path in hero.journal.quest_paths if not path.completed %}
-        <p>Stage: {{ path.stage }}/{{ path.stages }} ->
+        <p>Stage: {{ path.stage+1 }}/{{ path.stages }} ->
             Quest: {{ path.current_quest.name }} -> Path: {{ path.name }}</p>
     {% else %}
         No current quests

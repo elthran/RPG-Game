@@ -171,7 +171,7 @@ blacksmith_quest_stage1 = Quest(
 blacksmith_quest_stage2 = Quest(
     "Buy your first item",
     "Buy any item from the blacksmith.",
-    reward_experience=7,
+    reward_experience=4,
     completion_trigger=buy_item_from_blacksmith_trigger
 )
 

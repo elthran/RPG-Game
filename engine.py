@@ -45,7 +45,9 @@ class Engine:
         event = Event(event_name, hero_id=hero.id, description=description)
         self.db.add_object(event)
         triggers = self.db.get_all_triggers_by(event_name, hero.id)
-        print("Triggers: ", triggers)
+        print("Triggers: ")
+        for trigger in triggers:
+            print(trigger)
         for trigger in triggers:
             trigger.evaluate()
             print("Trigger '{}' is completed: {}".format(trigger.id,

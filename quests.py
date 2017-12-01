@@ -149,7 +149,7 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
                          self.reward_experience, self.stage, self.quests,
                          template=False)
 
-    def activate(self):
+    def activate(self, hero):
         """Activate a current quest's trigger.
 
         This is assumed to deactivate the old trigger but I haven't tested
@@ -157,7 +157,7 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         """
         super().activate(
             completion_trigger=self.current_quest.completion_trigger,
-            hero=self.journal.hero
+            hero=hero
         )
 
     @property
@@ -198,13 +198,13 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         if self.completed:
             raise Exception("Quest Path is already completed!")
 
-        if self.stage == self.stages:
+        if self.stage == self.stages-1:
             self.completed = True
             self.reward_hero(final=True)
         else:
+            self.reward_hero()  # Reward must come before stage increase.
             self.stage += 1
-            self.reward_hero()
-            self.activate()
+            self.activate(self.hero)
 
         # Potentially spawn a new path? or maybe that would be a trigger
         # in Quests?
@@ -222,10 +222,12 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         quest = self.current_quest
         if final:
             hero.experience += quest.reward_experience + self.reward_experience
-            hero.quest_notification = (quest.name, quest.reward_experience)
+            hero.quest_notification = (self.name, self.total_reward, 'quest '
+                                                                     'path')
         else:
             hero.experience += quest.reward_experience
-            hero.quest_notification = (quest.description, quest.reward_experience)
+            hero.quest_notification = (quest.name, quest.reward_experience,
+                                       'quest stage')
 
     def run_if_trigger_completed(self):
         """Special handler method over ride.
@@ -233,7 +235,8 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         In this case run the local 'advance()' method.
         """
         self.advance()
-        return None if self.completed else self.quest.completion_trigger
+        return None if self.completed \
+            else self.current_quest.completion_trigger
 
 
 class Quest(Base):

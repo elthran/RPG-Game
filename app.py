@@ -301,7 +301,7 @@ pierces the air.""".replace('\n', ' ').replace('\r', '')
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
     if len(hero.quest_paths) == 0:
         # pdb.set_trace()
-        hero.journal.quest_paths = database.build_default_quest_paths()
+        hero.journal.quest_paths = database.get_default_quest_paths()
     if hero.current_world is None:
         hero.current_world = database.get_default_world()
         hero.current_location = database.get_default_location()

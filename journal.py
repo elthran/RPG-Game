@@ -51,6 +51,7 @@ from datetime import datetime
 
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm import validates
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from base_classes import Base
@@ -68,12 +69,24 @@ class Journal(Base):
     id = Column(Integer, primary_key=True)
 
     # Relationships
-    #Hero to Journal is One to One
+    # Hero to Journal is One to One
     hero = relationship("Hero", uselist=False, back_populates='journal')
 
     # Journal to QuestPath is One to Many
     # QuestPath provides many special methods.
     quest_paths = relationship("QuestPath", back_populates='journal')
+
+    @validates('quest_paths')
+    def validate_quest_path(self, key, quest_path):
+        """Overload quest_path assignment.
+
+        Build a new path if current one is a template.
+        Activate the current_quest as well.
+        """
+        if quest_path.template:
+            quest_path = quest_path.build_new_from_template()
+        quest_path.activate(self.hero)
+        return quest_path
 
     # Each journal can have many entries
     # entries = relationship("Entry", back_populates='journal')

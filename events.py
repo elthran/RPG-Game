@@ -5,8 +5,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import validates
 
 from base_classes import Base
+from factories import TemplateMixin
 import pdb
 from pprint import pprint
 
@@ -50,7 +52,7 @@ class Event(Base):
         # arg_dict.get('location', None, type=str)
 
 
-class Trigger(Base):
+class Trigger(TemplateMixin, Base):
     __tablename__ = 'trigger'
 
     id = Column(Integer, primary_key=True)
@@ -66,12 +68,16 @@ class Trigger(Base):
     # One to many with Conditions. Each trigger might have many conditions.
     conditions = relationship('Condition', back_populates='trigger')
 
-    def __init__(self, event_name, conditions, hero=None,
-                 extra_info_for_humans=None):
+    def __init__(self, event_name, conditions, extra_info_for_humans=None,
+                 template=True):
         self.event_name = event_name
         self.conditions = conditions
-        self.hero = hero
         self.extra_info_for_humans = extra_info_for_humans
+        self.template = template
+
+    def build_new_from_template(self):
+        return Trigger(self.event_name, self.conditions,
+                       self.extra_info_for_humans, template=False)
 
     def link(self, hero):
         """Make this trigger accessible to the game engine for this hero.
@@ -174,6 +180,12 @@ class HandlerMixin(object):
     @declared_attr
     def hero(cls):
         return relationship("Hero")
+
+    @validates('completion_trigger')
+    def valid_completion_trigger(self, key, trigger):
+        if trigger and trigger.template:
+            trigger = trigger.build_new_from_template()
+        return trigger
 
     def activate(self, completion_trigger=None, hero=None):
         self.completion_trigger = completion_trigger
