@@ -67,51 +67,57 @@ class Journal(Base):
 
     id = Column(Integer, primary_key=True)
 
+    # Relationships
+    #Hero to Journal is One to One
+    hero = relationship("Hero", uselist=False, back_populates='journal')
+
+    # Journal to QuestPath is One to Many
+    # QuestPath provides many special methods.
+    quest_paths = relationship("QuestPath", back_populates='journal')
+
     # Each journal can have many entries
     # entries = relationship("Entry", back_populates='journal')
 
-    quest_paths = relationship("QuestPath")
-
-    def add_entry(self, obj):
-        entry = Entry(obj, datetime.now(), obj.description)
-        self.entries.append(entry)
+    # def add_entry(self, obj):
+    #     entry = Entry(obj, datetime.now(), obj.description)
+    #     self.entries.append(entry)
 
 
-class Entry(Base):
-    __tablename__ = 'entry'
-
-    id = Column(Integer, primary_key=True)
-
-    timestamp = Column(DateTime)
-    info = Column(String)
-
-    # relationships
-    journal_id = Column(Integer, ForeignKey('journal.id'))
-    journal = relationship("Journal", back_populates='entries')
-
-    # Each entry can have object (beast, person or place)
-    # I may need to build the inverse of the relationship ... not positive
-    # though.
-    _beast = relationship()
-    _person = relationship()
-    _place = relationship("Location")
-    _quest_path = relationship("QuestPath")
-
-    @hybrid_property
-    def obj(self):
-        return self._beast or self._person or self._place or self._quest_path
-
-    @obj.setter
-    def obj(self, value):
-        """Assign object to appropriate column."""
-        dir(value)
-        pdb.set_trace()
-        if value.type == "beast":
-            self._beast = value
-        elif value.type == "person":
-            self._person = value
-        elif value.type == "quest_path":
-            self._quest_path = value
-        else:
-            raise "TypeError: 'obj' does not accept " \
-                  "type '{}':".format(value.type)
+# class Entry(Base):
+#     __tablename__ = 'entry'
+#
+#     id = Column(Integer, primary_key=True)
+#
+#     timestamp = Column(DateTime)
+#     info = Column(String)
+#
+#     # relationships
+#     journal_id = Column(Integer, ForeignKey('journal.id'))
+#     journal = relationship("Journal", back_populates='entries')
+#
+#     # Each entry can have object (beast, person or place)
+#     # I may need to build the inverse of the relationship ... not positive
+#     # though.
+#     _beast = relationship()
+#     _person = relationship()
+#     _place = relationship("Location")
+#     _quest_path = relationship("QuestPath")
+#
+#     @hybrid_property
+#     def obj(self):
+#         return self._beast or self._person or self._place or self._quest_path
+#
+#     @obj.setter
+#     def obj(self, value):
+#         """Assign object to appropriate column."""
+#         dir(value)
+#         pdb.set_trace()
+#         if value.type == "beast":
+#             self._beast = value
+#         elif value.type == "person":
+#             self._person = value
+#         elif value.type == "quest_path":
+#             self._quest_path = value
+#         else:
+#             raise "TypeError: 'obj' does not accept " \
+#                   "type '{}':".format(value.type)

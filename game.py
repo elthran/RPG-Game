@@ -25,6 +25,7 @@ from attributes import Attributes
 from abilities import Abilities
 from proficiencies import Proficiencies
 from inventory import Inventory
+from journal import Journal
 
 
 # TODO put this somewhere else, in a class, or just delete.
@@ -251,13 +252,9 @@ class Hero(Base):
     proficiencies_id = Column(Integer, ForeignKey('proficiencies.id'))
     proficiencies = relationship("Proficiencies", back_populates='hero')
 
-    # Heroes to Quests.
-    # Hero object relates to quests via the QuestPath object.
-    # This path may be either active or completed, but not both.
-    # Which establishes a manay to many relationship between quests and heroes.
-    # QuestPath provides many special methods.
-    quest_paths = relationship("QuestPath", back_populates='hero',
-                               foreign_keys='[QuestPath.hero_id]')
+    # Journal to Hero is One to One
+    journal_id = Column(Integer, ForeignKey('journal.id'))
+    journal = relationship('Journal', back_populates='hero')
 
     # Many to one with Triggers, Each hero has many triggers.
     triggers = relationship('Trigger', back_populates='hero')
@@ -288,6 +285,7 @@ class Hero(Base):
         self.proficiencies = Proficiencies()
         self.abilities = Abilities()
         self.inventory = Inventory()
+        self.journal = Journal()
 
         # Defaults will remain unchanged if no arguments are passed.
         self.age = 7

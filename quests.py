@@ -88,6 +88,14 @@ import pdb
 from pprint import pprint
 
 
+quest_path_to_quest = Table(
+    "quest_path_to_quest",
+    Base.metadata,
+    Column("quest_path_id", Integer, ForeignKey("quest_path.id")),
+    Column("quest_id", Integer, ForeignKey("quest.id"))
+)
+
+
 class QuestPath(TemplateMixin, HandlerMixin, Base):
     """A list of sequential quests that must be completed in order.
 
@@ -96,7 +104,7 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
     to do with events and triggers?
 
     A QuestPath does not need to be attached to a hero when it is created?
-    This is specific to a Template quest.
+    This is specific to a Template quest?
     Once a normal Path is opened it will be linked to a hero object through
     that hero's Journal.
     """
@@ -111,6 +119,10 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
     completed = Column(Boolean)
 
     # Relationships
+    # QuestPath to Journal is Many to One.
+    journal_id = Column(Integer, ForeignKey('journal.id'))
+    journal = relationship("Journal", back_populates='quest_paths')
+
     # Each Path can be connected to any quest.
     # Each Quest can be connected to multiple paths.
     # The relationship is linear and ordered!
@@ -155,6 +167,11 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
     @property
     def current_quest(self):
         return self.quests[self.stage]
+
+    @property
+    def total_reward(self):
+        return sum((quest.reward_experience for quest in self.quests)) \
+               + self.reward_experience
 
     def get_description(self):
         """Return a description of the of the quest path.
@@ -217,14 +234,6 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         """
         self.advance()
         return None if self.completed else self.quest.completion_trigger
-
-
-quest_path_to_quest = Table(
-    "quest_path_to_quest",
-    Base.metadata,
-    Column("quest_path_id", Integer, ForeignKey("quest_path.id")),
-    Column("quest_id", Integer, ForeignKey("quest.id"))
-)
 
 
 class Quest(Base):

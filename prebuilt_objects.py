@@ -163,13 +163,13 @@ buy_item_from_blacksmith_trigger = Trigger(
 # Quests
 ##########
 blacksmith_quest_stage1 = Quest(
-    "Go talk to the blacksmith.",
+    "Go talk to the blacksmith",
     "Find the blacksmith in Thornwall and enter his shop.",
     completion_trigger=visit_blacksmith_trigger
 )
 
 blacksmith_quest_stage2 = Quest(
-    "Buy your first item.",
+    "Buy your first item",
     "Buy any item from the blacksmith.",
     reward_experience=7,
     completion_trigger=buy_item_from_blacksmith_trigger
@@ -187,11 +187,13 @@ blacksmith_quest_stage2 = Quest(
 
 all_quests = [blacksmith_quest_stage1, blacksmith_quest_stage2]
 
-QuestPath(
+meet_the_blacksmith_path = QuestPath(
     "Get Acquainted with the Blacksmith",
     "Find the blacksmith and buy something from him.",
     quests=[blacksmith_quest_stage1, blacksmith_quest_stage2]
 )
+
+default_quest_paths = [meet_the_blacksmith_path]
 
 ##########
 # Users (and heroes)
@@ -203,11 +205,9 @@ when prebuilt_objects are preloaded into the database.
 admin = User(username="admin", password="admin", is_admin=True)
 adminHero = Hero(name="Admin", fathers_job="Priest", current_world=world, current_location=town, gold=5000)
 admin.heroes = [adminHero]
+
 marlen = User(username="marlen", password="brunner", is_admin=True)
 haldon = Hero(name="Haldon", fathers_job="Priest", current_world=world, current_location=town, gold=5000)
-# What are
-#  these?
-# QuestPath(equipment_quest, haldon)
 marlen.heroes = [haldon]
 users = [marlen, admin]
 

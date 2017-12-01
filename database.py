@@ -104,6 +104,12 @@ class EZDB:
                 except sqlalchemy.exc.IntegrityError as ex:
                     # print(ex)
                     self.session.rollback()
+        for hero in self.session.query(Hero).all():
+            hero.journal.quest_paths = self.build_default_quest_paths()
+            try:
+                self.session.commit()
+            except sqlalchemy.exc.IntegrityError as ex:
+                self.session.rollback()
                     
     def delete_item(self, item_id):
         """Delete a given object from the database.
@@ -194,15 +200,14 @@ class EZDB:
         """
         return self.session.query(Location).filter_by(name="Thornwall", type="town").first()
         
-    def get_default_quests(self):
-        """Get the default quests for starting heroes.
+    def build_default_quest_paths(self):
+        """Get the default quest_paths from prebuilt_objects.
         
-        Currently gets quests id's 1 and 3,
-        these are the start's of two testing quests
-        located prebuilt_object.py
+        This may fail? I don't know if prebuilt_objects will only load the
+        default_quest_paths once? So the second hero will be blank?
         """
-
-        return self.session.query(Quest).filter(Quest.id.in_((1, 3))).all()
+        return [quest_path.build_new_from_template()
+                for quest_path in prebuilt_objects.default_quest_paths]
 
     def get_user_id(self, username):
         """Return the id of the user by username from the User's table.
