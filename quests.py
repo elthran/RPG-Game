@@ -218,10 +218,10 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         advancing for a quest. (quest.name vs path.name)
         """
         
-        hero = self.hero
-        quest = self.quest
+        hero = self.journal.hero
+        quest = self.current_quest
         if final:
-            hero.experience += int(quest.reward_experience * self.stage * 0.3)
+            hero.experience += quest.reward_experience + self.reward_experience
             hero.quest_notification = (quest.name, quest.reward_experience)
         else:
             hero.experience += quest.reward_experience

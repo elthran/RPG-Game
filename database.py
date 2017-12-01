@@ -58,15 +58,19 @@ class EZDB:
         Hidden method: _delete_database is for testing and does what it
         sounds like it does :).
         """
+        first_run = True
         engine = create_engine(database, echo=debug)
         self.file_name = database[10:]
+
+        if os.path.isfile(self.file_name):
+            first_run = False
         
         base_classes.Base.metadata.create_all(engine, checkfirst=True)
         Session = sessionmaker(bind=engine)
         
         self.engine = engine
         self.session = Session()
-        if not testing:
+        if first_run and not testing:
             self.add_prebuilt_objects()
         
     def add_prebuilt_objects(self):
@@ -106,10 +110,13 @@ class EZDB:
                     self.session.rollback()
         for hero in self.session.query(Hero).all():
             hero.journal.quest_paths = self.build_default_quest_paths()
-            try:
-                self.session.commit()
-            except sqlalchemy.exc.IntegrityError as ex:
-                self.session.rollback()
+            # try:
+            #     self.session.commit()
+            # except sqlalchemy.exc.IntegrityError as ex:
+            #     self.session.rollback()
+            for path in hero.journal.quest_paths:
+                path.activate()
+            self.session.commit()
                     
     def delete_item(self, item_id):
         """Delete a given object from the database.
