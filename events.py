@@ -145,6 +145,7 @@ class Trigger(TemplateMixin, Base):
         self.event_name = template_trigger.event_name
         self.conditions = template_trigger.conditions
         self.extra_info_for_humans = template_trigger.extra_info_for_humans
+        self.completed = False
 
     def evaluate(self):
         """Return true if all conditions are true.
