@@ -1,16 +1,20 @@
-# Move event occurs - CREATION PHASE, PHASE I
-# app.py
+#### CREATION PHASE, PHASE I
+_Move event occurs_
+> app.py
+```python
 @app.route('/store/<name>')
 @login_required
 @uses_hero_and_update
 @update_current_location
 def store(name, hero=None, location=None):
-    engine.spawn('move_event', hero, description="The Hero visits a store.")
+    engine.spawn('move_event', hero,
+                 description="The {} visits {}.".format(hero.name, name))
+```
 
-
-# Move event is built as an object and stored for later (maybe journal)
-# BUILD PHASE, PHASE II
-# engine.py
+#### BUILD PHASE, PHASE II
+Move event is built as an object and stored for later (maybe journal)
+> engine.py
+```python
 def spawn(self, event_name, hero, *args, description=None):
     event = Event(event_name, hero_id=hero.id, description=description)
     self.db.add_object(event)
@@ -40,34 +44,36 @@ def spawn(self, event_name, hero, *args, description=None):
     # When all code has been run, save everything.
     # UPDATE PHASE, PHASE V
     self.db.update()
+```
 
-
-"""
 I am currently using a Handler parent class. To make this work you need
-6 steps:
+2 steps:
+```python
 class QuestPath(Handler):
-    id = Column(Integer, ForeignKey('handler.id'), primary_key=True)
-    
-    # If there is a column override (most common with be hero_id)
-    hero_id = column_property(Column(Integer, ForeignKey('hero.id')),
-                              Handler.hero_id)
-                              
-    __mapper_args__ = {
-        'polymorphic_identity': 'quest_path',
-    }
-    
-    def __init__(self, etc.)
-        super().__init__(completion_trigger=quest.completion_trigger,
-                         hero=hero)
-    
+
+    # The when the QuestPath is added to the Journal/Hero
+    # It is activated .. which activates the trigger of the first quest.
+    # Basically it is a 3 or 4 layer fallthrough? to the HandlerMixin?
+    def activate(self, hero):
+        """Activate a current quest's trigger.
+
+        This is assumed to deactivate the old trigger but I haven't tested
+        this.
+        """
+        super().activate(
+            completion_trigger=self.current_quest.completion_trigger,
+            hero=hero
+        )
+
     def run_if_trigger_completed(self):
-        '''Special handler method over ride.
+        """Special handler method over ride.
 
         In this case run the local 'advance()' method.
-        '''
+        """
         self.advance()
-        return None if self.completed else self.quest.completion_trigger
-"""
+        return None if self.completed \
+            else self.current_quest.completion_trigger
+```
 
 
 

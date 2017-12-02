@@ -881,7 +881,8 @@ def battle(this_user=None, hero=None):
 # @spawns_event
 def store(name, hero=None, location=None):
     # pdb.set_trace()
-    engine.spawn('move_event', hero, description="The Hero visits a store.")
+    engine.spawn('move_event', hero,
+                 description="The {} visits {}.".format(hero.name, name))
     page_title = "Store"
 
     # path = database.get_path_if_exists_and_active(quest_name, hero)
