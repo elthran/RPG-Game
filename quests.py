@@ -116,7 +116,6 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
     description = Column(String)
     reward_experience = Column(Integer)
     stage = Column(Integer)
-    completed = Column(Boolean)
 
     # Relationships
     # QuestPath to Journal is Many to One.
@@ -142,23 +141,11 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         self.stage = stage
         self.quests = quests
         self.template = template  # See TemplateMixin?
-        self.completed = False
 
     def build_new_from_template(self):
         return QuestPath(self.name, self.description,
                          self.reward_experience, self.stage, self.quests,
                          template=False)
-
-    def activate(self, hero):
-        """Activate a current quest's trigger.
-
-        This is assumed to deactivate the old trigger but I haven't tested
-        this.
-        """
-        super().activate(
-            completion_trigger=self.current_quest.completion_trigger,
-            hero=hero
-        )
 
     @property
     def stages(self):
@@ -195,8 +182,7 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         
         # Sort of like a failsafe. Active paths should not be advanced.
         # Maybe this should be an assert?
-        if self.completed:
-            raise Exception("Quest Path is already completed!")
+        assert self.completed != True
 
         if self.stage == self.stages-1:
             self.completed = True
@@ -204,7 +190,6 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         else:
             self.reward_hero()  # Reward must come before stage increase.
             self.stage += 1
-            self.activate(self.hero)
 
         # Potentially spawn a new path? or maybe that would be a trigger
         # in Quests?
@@ -229,14 +214,19 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
             hero.quest_notification = (quest.name, quest.reward_experience,
                                        'quest stage')
 
-    def run_if_trigger_completed(self):
+    def activate(self, hero):
+        """Run super's activate using locations of local variables."""
+        super().activate(self.current_quest.trigger, hero)
+
+    def run(self):
         """Special handler method over ride.
 
         In this case run the local 'advance()' method.
+        And then handle possible completion which means either
+        deactivate if completed or update the current trigger.
         """
         self.advance()
-        return None if self.completed \
-            else self.current_quest.completion_trigger
+        super().run(self.current_quest.trigger)
 
 
 class Quest(Base):
@@ -269,10 +259,10 @@ class Quest(Base):
     # complete multiple quests?
     # One to Many? (Later will be many to many).
     trigger_id = Column(Integer, ForeignKey('trigger.id'))
-    completion_trigger = relationship("Trigger")
+    trigger = relationship("Trigger")
 
     def __init__(self, name, description=name, reward_experience=3,
-                 completion_trigger=None):
+                 trigger=None):
         """Build a new Quest object.
         
         You can link this quest to other quests at initialization or afterwards.
@@ -282,7 +272,7 @@ class Quest(Base):
         self.name = name
         self.description = description
         self.reward_experience = reward_experience
-        self.completion_trigger = completion_trigger
+        self.trigger = trigger
 
 
 # class Primary_Quest(Quest):

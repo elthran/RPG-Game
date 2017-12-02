@@ -101,8 +101,8 @@ class TemplateMixin(object):
 
     Should include a validator that automates template building:
     i.e.
-    @validates('completion_trigger')
-    def valid_completion_trigger(self, key, trigger):
+    @validates('trigger')
+    def valid_trigger(self, key, trigger):
         if trigger.template:
             trigger = trigger.build_new_from_template()
         return trigger

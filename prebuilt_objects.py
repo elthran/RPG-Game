@@ -165,14 +165,14 @@ buy_item_from_blacksmith_trigger = Trigger(
 blacksmith_quest_stage1 = Quest(
     "Go talk to the blacksmith",
     "Find the blacksmith in Thornwall and enter his shop.",
-    completion_trigger=visit_blacksmith_trigger
+    trigger=visit_blacksmith_trigger
 )
 
 blacksmith_quest_stage2 = Quest(
     "Buy your first item",
     "Buy any item from the blacksmith.",
     reward_experience=4,
-    completion_trigger=buy_item_from_blacksmith_trigger
+    trigger=buy_item_from_blacksmith_trigger
 )
 
 # equipment_quest = Quest("Equipping/Unequipping", "Equip any item.")

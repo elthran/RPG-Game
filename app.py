@@ -178,9 +178,17 @@ def update_current_location(f):
 
     @wraps(f)
     def wrap_current_location(*args, **kwargs):
+        hero = kwargs['hero']
         database.update()
         location = database.get_object_by_name('Location', kwargs['name'])
-        kwargs['hero'].current_location = location
+        hero.current_location = location
+        database.update()
+        pdb.set_trace()
+        engine.spawn(
+            'move_event',
+            hero,
+            description="The {} visits {}.".format(hero.name, location.url)
+        )
         return f(*args, location=location, **kwargs)
 
     return wrap_current_location
@@ -880,19 +888,7 @@ def battle(this_user=None, hero=None):
 @update_current_location
 # @spawns_event
 def store(name, hero=None, location=None):
-    # pdb.set_trace()
-    engine.spawn('move_event', hero,
-                 description="The {} visits {}.".format(hero.name, name))
     page_title = "Store"
-
-    # path = database.get_path_if_exists_and_active(quest_name, hero)
-    # if path in hero.quest_paths:
-    #     path.advance()
-    # for path in hero.quest_paths:
-    #     if path.active \
-    #             and path.quest.name == "Get Acquainted with the Blacksmith" \
-    #             and path.stage == 1:
-    #         path.advance()
     items_for_sale = []
     if name == "Blacksmith":
         page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]
