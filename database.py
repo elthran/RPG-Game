@@ -331,7 +331,7 @@ class EZDB:
         for obj in objs:
             handlers += self.session.query(obj).\
                 filter(obj.trigger_is_completed).\
-                filter(Trigger == hero.id)).all()
+                filter(obj._hero_id == hero.id).all()
 
         return handlers
 

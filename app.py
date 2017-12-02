@@ -183,7 +183,6 @@ def update_current_location(f):
         location = database.get_object_by_name('Location', kwargs['name'])
         hero.current_location = location
         database.update()
-        pdb.set_trace()
         engine.spawn(
             'move_event',
             hero,
@@ -667,7 +666,7 @@ def under_construction(hero=None):
 @app.route('/explorable/<location_name>')
 @login_required
 @uses_hero_and_update
-@prevent_url_typing
+@prevent_url_typing  # TODO: this should implement @update_current_location?
 def move(location_name, hero=None):
     """Set up a directory for the hero to move to.
 

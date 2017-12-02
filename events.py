@@ -192,12 +192,13 @@ class HandlerMixin(object):
             primaryjoin="and_({}.trigger_id==Trigger.id, "
                         "Trigger.completed==True)".format(cls.__name__))
 
-    @classmethod
-    def trigger_hero_id(cls):
-        return relationship(
-            "Trigger",
-            primaryjoin="and_({}.trigger_id==Trigger.id, "
-                        "Trigger.hero_id)".format(cls.__name__))
+    @declared_attr
+    def _hero_id(cls):
+        """This should remain the same for the lifetime of the handler.
+
+        Assigned in the 'activate' method.
+        """
+        return Column(Integer)
 
     def activate(self, new_trigger_template, hero):
         """Fully activate this Handler.
@@ -214,6 +215,7 @@ class HandlerMixin(object):
         NOTE: this is because the location of next triggers may vary between
         Handler sub classes as may the location of the hero object.
         """
+        self._hero_id = hero.id
         self.trigger = Trigger.new_blank_trigger()
         self.trigger.hero = hero
         self.trigger.update(new_trigger_template)
