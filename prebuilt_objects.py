@@ -138,8 +138,8 @@ game_worlds = [world]  # Just chop this out and use world instead.
 # Conditions
 #########
 blacksmith_condition = Condition('current_location', '==', blacksmith)
-blacksmith_parent_condition = Condition('current_location.parent', '==',
-                                        blacksmith)
+blacksmith_is_parent_of_current_location_condition \
+    = Condition('current_location.parent', '==', blacksmith)
 
 
 
@@ -153,9 +153,22 @@ visit_blacksmith_trigger = Trigger(
                           'blacksmith object.')
 
 buy_item_from_blacksmith_trigger = Trigger(
-    'buy_event', conditions=[blacksmith_parent_condition],
+    'buy_event',
+    conditions=[blacksmith_is_parent_of_current_location_condition],
     extra_info_for_humans='Should activate when buy code runs and '
                           'hero.current_location.id == id of the blacksmith.'
+)
+
+equip_item_trigger = Trigger(
+    'equip_event',
+    conditions=[],
+    extra_info_for_humans="Should activate when equip_event spawns."
+)
+
+unequip_item_trigger = Trigger(
+    'unequip_event',
+    conditions=[],
+    extra_info_for_humans="Should activate when unequip_event spawns."
 )
 
 
@@ -175,8 +188,17 @@ blacksmith_quest_stage2 = Quest(
     trigger=buy_item_from_blacksmith_trigger
 )
 
-# equipment_quest = Quest("Equipping/Unequipping", "Equip any item.")
-# equipment_quest.next_quests.append(Quest("Equipping/Unequipping", "Unequip any item."))
+inventory_quest_stage1 = Quest(
+    "Equip an item",
+    "Equip any item in your inventory.",
+    trigger=equip_item_trigger
+)
+
+inventory_quest_stage2 = Quest(
+    "Unequip an item",
+    "Unequip any item in your inventory.",
+    trigger=unequip_item_trigger
+)
 
 # tavern = Quest("Become an apprentice at the tavern", "Ask if there are any jobs you can do.")
 # tavern.next_quests.append("Become an apprentice at the tavern", "Collect 2 Wolf Pelts for the Bartender")
@@ -185,7 +207,8 @@ blacksmith_quest_stage2 = Quest(
 
 # tavern.next_quests.append("Become an apprentice at the tavern", "Give the bartender 2 copper coins.")
 
-all_quests = [blacksmith_quest_stage1, blacksmith_quest_stage2]
+all_quests = [blacksmith_quest_stage1, blacksmith_quest_stage2,
+              inventory_quest_stage1, inventory_quest_stage2]
 
 meet_the_blacksmith_path = QuestPath(
     "Get Acquainted with the Blacksmith",
@@ -193,7 +216,15 @@ meet_the_blacksmith_path = QuestPath(
     quests=[blacksmith_quest_stage1, blacksmith_quest_stage2]
 )
 
-default_quest_paths = [meet_the_blacksmith_path]
+learn_about_your_inventory_path = QuestPath(
+    "Learn how your inventory works",
+    "Practice equipping an unequipping.",
+    quests=[inventory_quest_stage1, inventory_quest_stage2]
+)
+
+default_quest_paths = [
+    meet_the_blacksmith_path, learn_about_your_inventory_path
+]
 
 ##########
 # Users (and heroes)

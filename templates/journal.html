@@ -31,7 +31,7 @@
     {% endfor %}
     <h2 class="indented">Completed Quests</h2>
     {% for path in hero.journal.quest_paths if path.completed %}
-        <b>Path: {{ path.name }}</b> -> Reward: {{ path.total_reward }}xp
+        <p>Path: <strong>{{ path.name }}</strong> -> Reward: {{ path.total_reward }}xp</p>
     {% else %}
         No completed quests
     {% endfor %}

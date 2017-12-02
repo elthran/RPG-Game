@@ -117,6 +117,12 @@ class Command:
         item = database.get_item_by_id(item_id)
         ids_to_unequip = hero.inventory.equip(item)
         hero.refresh_character()
+        engine = Engine(database)
+        engine.spawn(
+            'equip_event',
+            hero,
+            description="{} equips a/an {}.".format(hero.name, item.name)
+        )
         return item.type + "&&" + str(ids_to_unequip)
 
     @staticmethod
@@ -125,6 +131,12 @@ class Command:
         item = database.get_item_by_id(item_id)
         hero.inventory.unequip(item)
         hero.refresh_character()
+        engine = Engine(database)
+        engine.spawn(
+            'unequip_event',
+            hero,
+            description="{} unequips a/an {}.".format(hero.name, item.name)
+        )
         return item.type
 
     def update_ability(hero, database, arg_dict):

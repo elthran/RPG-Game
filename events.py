@@ -155,6 +155,14 @@ class Trigger(TemplateMixin, Base):
 
         If they are set completed and return true.
         If not return false.
+
+        NOTE: if there are _no_ conditions will evaluate to True!
+        This basically means that when the first correct event occurs
+        the Trigger will complete.
+        e.g.
+            equip_event spawns ... self.coditions = []
+            ->
+            self.completed = True
         """
         for condition in self.conditions:
             if not eval(condition.code, {'self': condition}):

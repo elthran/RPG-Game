@@ -65,7 +65,10 @@ h2 {
 	font-weight: 600;
 	line-height: 100%;  
 }
-
+/* Commented out by Marlen because it overrides _all_ format tags inside
+of <p> tag.
+i.e.
+<p><strong>Should be bold</strong></p> doesn't work.
 p { 
 	color: Black; 
 	font-family: 'Helvetica Neue', sans-serif; 
@@ -73,6 +76,7 @@ p {
 	font-weight: 300;
 	line-height: 100%;   
 }
+*/
 
 ul {
 	list-style-type: none;
