@@ -5,8 +5,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import validates
 
 from base_classes import Base
+from factories import TemplateMixin
 import pdb
 from pprint import pprint
 
@@ -33,6 +35,10 @@ class Event(Base):
 
         Tries to answer who, what, where, when, why, how.
         """
+
+        # Trigger special names that should never be triggered by an Event.
+        assert event_type not in ['Blank', 'Deactivated']
+
         self.type = event_type
         self.hero_id = hero_id
         self.description = description
@@ -48,55 +54,6 @@ class Event(Base):
     #     return cls(who, what, to_whom, description)
 
         # arg_dict.get('location', None, type=str)
-
-
-class Trigger(Base):
-    __tablename__ = 'trigger'
-
-    id = Column(Integer, primary_key=True)
-    event_name = Column(String)
-    extra_info_for_humans = Column(String)
-    completed = Column(Boolean)
-
-    # relationships
-    # One to Many with Heroes?
-    hero_id = Column(Integer, ForeignKey('hero.id'))
-    hero = relationship('Hero', back_populates='triggers')
-
-    # One to many with Conditions. Each trigger might have many conditions.
-    conditions = relationship('Condition', back_populates='trigger')
-
-    def __init__(self, event_name, conditions, hero=None,
-                 extra_info_for_humans=None):
-        self.event_name = event_name
-        self.conditions = conditions
-        self.hero = hero
-        self.extra_info_for_humans = extra_info_for_humans
-
-    def link(self, hero):
-        """Make this trigger accessible to the game engine for this hero.
-
-        A trigger is considered active if it has a linked hero.
-        """
-
-        self.hero = hero
-
-    def unlink(self):
-        self.hero = None
-
-    def evaluate(self):
-        """Return true if all conditions are true.
-
-        And set the completed flag.
-
-        If they are set completed and return true.
-        If not return false.
-        """
-        for condition in self.conditions:
-            if not eval(condition.code, {'self': condition}):
-                return False
-        self.completed = True
-        return self.completed
 
 
 class Condition(Base):
@@ -136,19 +93,98 @@ class Condition(Base):
         setattr(self, condition_attribute, object_of_comparison)
 
 
+class Trigger(TemplateMixin, Base):
+    __tablename__ = 'trigger'
+
+    id = Column(Integer, primary_key=True)
+    event_name = Column(String)
+    extra_info_for_humans = Column(String)
+    completed = Column(Boolean)
+
+    # relationships
+    # One to Many with Heroes?
+    hero_id = Column(Integer, ForeignKey('hero.id'))
+    hero = relationship('Hero', back_populates='triggers')
+
+    # One to many with Conditions. Each trigger might have many conditions.
+    conditions = relationship('Condition', back_populates='trigger')
+
+    def __init__(self, event_name, conditions, extra_info_for_humans=None,
+                 template=True):
+        self.event_name = event_name
+        self.conditions = conditions
+        self.extra_info_for_humans = extra_info_for_humans
+        self.template = template
+        self.completed = False
+
+    @staticmethod
+    def new_blank_trigger():
+        """Build a blank trigger to be modified by the update function.
+
+        This trigger will never run as no Event should have this name.
+        """
+        return Trigger("Blank", [], template=False)
+
+    def deactivate(self):
+        """Deactivate this trigger.
+
+        As it has no conditions it should never run.
+        """
+        self.event_name = "Deactivated"
+        self.conditions = []
+        self.extra_info_for_humans = None
+        self.completed = False
+
+    def update(self, template_trigger):
+        """Change the values of this trigger.
+
+        Essential make a new trigger without producing a tonne of spam
+        defunct triggers.
+        """
+        assert template_trigger.template
+
+        self.event_name = template_trigger.event_name
+        self.conditions = template_trigger.conditions
+        self.extra_info_for_humans = template_trigger.extra_info_for_humans
+        self.completed = False
+
+    def evaluate(self):
+        """Return true if all conditions are true.
+
+        And set the completed flag.
+
+        If they are set completed and return true.
+        If not return false.
+
+        NOTE: if there are _no_ conditions will evaluate to True!
+        This basically means that when the first correct event occurs
+        the Trigger will complete.
+        e.g.
+            equip_event spawns ... self.coditions = []
+            ->
+            self.completed = True
+        """
+        for condition in self.conditions:
+            if not eval(condition.code, {'self': condition}):
+                return False
+        self.completed = True
+        return self.completed  # mostly not used.
+
+
 class HandlerMixin(object):
     """Handler mixin to add trigger functionality to a class.
 
     The basic steps are:
-        1. add completion trigger to __init__
-        2. add link/try except.
-        3. add relationship to trigger (back_population my be unneeded)
-        4. add run_if_completed code.
-        4a. unlink old trigger
-        4b. do the thing that the whole party if for (e.g. quest.advance())
-        4c. link next trigger if available.
+        1. add an 'activate' method to sub-class that can be run when a
+            hero and trigger are available
+        2. add some code that causes sub-class to 'complete'
+        3.
     """
     id = Column(Integer, primary_key=True)
+
+    @declared_attr
+    def completed(cls):
+        return Column(Boolean, default=False)
 
     # Add relationship to cls spec.
     @declared_attr
@@ -156,7 +192,7 @@ class HandlerMixin(object):
         return Column(Integer, ForeignKey('trigger.id'))
 
     @declared_attr
-    def completion_trigger(cls):
+    def trigger(cls):
         return relationship("Trigger")
 
     @declared_attr
@@ -166,61 +202,52 @@ class HandlerMixin(object):
             primaryjoin="and_({}.trigger_id==Trigger.id, "
                         "Trigger.completed==True)".format(cls.__name__))
 
-    # This might be redundant.
     @declared_attr
-    def hero_id(cls):
-        return Column(Integer, ForeignKey('hero.id'))
+    def _hero_id(cls):
+        """This should remain the same for the lifetime of the handler.
 
-    @declared_attr
-    def hero(cls):
-        return relationship("Hero")
-
-    def __init__(self, completion_trigger=None, hero=None):
-        self.completion_trigger = completion_trigger
-        self.hero = hero
-
-        self.add_hero_to_trigger(hero)
-
-    def add_hero_to_trigger(self, hero):
-        """Add a hero object to be handled.
-
-        Make Trigger available!
-        Some kind of linkage between trigger and hero.
-        Instantiated triggers must relate to a specific hero.
+        Assigned in the 'activate' method.
         """
-        try:
-            self.completion_trigger.link(hero)
-        except AttributeError as ex:
-            if str(ex) == "'NoneType' object has no attribute 'link'":
-                pass
-            else:
-                raise ex
+        return Column(Integer)
 
-    def run_handler(self):
-        """Deactivate trigger and run activation code.
+    def activate(self, new_trigger_template, hero):
+        """Fully activate this Handler.
 
-        In this case ... unlink the trigger from the given quest
-        and the advance the quest to the next stage.
+        This is used when all variables are available.
+        This is needed to support templates as the template won't
+        have any of the data until it is linked to a hero as a non-template
+        object and then activated.
 
-        In theory ... this would bring the new trigger in to play
-        through activation of a new quest? Or have I not set that up right?
+        The subclass should run:
+            super().activate(some_local_trigger_template, hero)
+        when all of these variables are available.
 
-        NOTE: must have overwritten the run_if_trigger_completed() method
-        for this to work.
+        NOTE: this is because the location of next triggers may vary between
+        Handler sub classes as may the location of the hero object.
         """
-        self.completion_trigger.unlink()
-        next_trigger = self.run_if_trigger_completed()
+        self._hero_id = hero.id
+        self.trigger = Trigger.new_blank_trigger()
+        self.trigger.hero = hero
+        self.trigger.update(new_trigger_template)
 
-        self.completion_trigger = next_trigger
-        if next_trigger is not None:
-            self.add_hero_to_trigger(self.hero)
+    def run(self, new_trigger_template):
+        """Deactivate or update the current trigger.
 
-    def run_if_trigger_completed(self):
-        """A method that needs to be over ridden in the inherited class."""
-        print("You were supposed to have over ridden this method.")
-        print("(in class Handler -> run_if_trigger_completed)")
-        print("Returns the next trigger to be hooked up.")
-        raise Exception("Read the above message and maybe as me for help.")
+        NOTE: sub-class needs its own local version!
+        Which should:
+            1. run some local code -> which should have a possibility of
+                triggering the 'completed' flag
+            2. run super().run(maybe_a_trigger)
+
+        i.e.
+        self.advance()
+        super().run(self.current_quest.trigger)
+        """
+        if self.completed:
+            self.trigger.deactivate()
+        else:
+            self.trigger.update(new_trigger_template)
+
 
 if __name__ == "__main__":
     class SomeClassThatUsesTriggers(HandlerMixin, Base):

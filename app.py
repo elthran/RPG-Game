@@ -178,9 +178,16 @@ def update_current_location(f):
 
     @wraps(f)
     def wrap_current_location(*args, **kwargs):
+        hero = kwargs['hero']
         database.update()
         location = database.get_object_by_name('Location', kwargs['name'])
-        kwargs['hero'].current_location = location
+        hero.current_location = location
+        database.update()
+        engine.spawn(
+            'move_event',
+            hero,
+            description="{} visits {}.".format(hero.name, location.url)
+        )
         return f(*args, location=location, **kwargs)
 
     return wrap_current_location
@@ -301,8 +308,7 @@ pierces the air.""".replace('\n', ' ').replace('\r', '')
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
     if len(hero.quest_paths) == 0:
         # pdb.set_trace()
-        for quest in database.get_default_quests():
-            quest.add_hero(hero)
+        hero.journal.quest_paths = database.get_default_quest_paths()
     if hero.current_world is None:
         hero.current_world = database.get_default_world()
         hero.current_location = database.get_default_location()
@@ -598,7 +604,7 @@ def quest_log(hero=None):
     hero.page_refresh_character()
     page_title = "Quest Log"
     return render_template(
-        'journal.html', myHero=hero, quest_log=True, page_title=page_title)
+        'journal.html', hero=hero, quest_log=True, page_title=page_title)
 
 @app.route('/bestiary/<current_monster_id>')
 @login_required
@@ -660,7 +666,7 @@ def under_construction(hero=None):
 @app.route('/explorable/<location_name>')
 @login_required
 @uses_hero_and_update
-@prevent_url_typing
+@prevent_url_typing  # TODO: this should implement @update_current_location?
 def move(location_name, hero=None):
     """Set up a directory for the hero to move to.
 
@@ -881,18 +887,7 @@ def battle(this_user=None, hero=None):
 @update_current_location
 # @spawns_event
 def store(name, hero=None, location=None):
-    # pdb.set_trace()
-    engine.spawn('move_event', hero, description="The Hero visits a store.")
     page_title = "Store"
-
-    # path = database.get_path_if_exists_and_active(quest_name, hero)
-    # if path in hero.quest_paths:
-    #     path.advance()
-    # for path in hero.quest_paths:
-    #     if path.active \
-    #             and path.quest.name == "Get Acquainted with the Blacksmith" \
-    #             and path.stage == 1:
-    #         path.advance()
     items_for_sale = []
     if name == "Blacksmith":
         page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]

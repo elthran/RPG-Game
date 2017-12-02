@@ -3,32 +3,35 @@
 {% extends "layout.html" %}
 
 {% block nav_bar %}
-<div id="content">
-    <div class="nav">
-        <ul>
-            <li><a href=/quest_log>Quests</a></li>
-            <li><a href=/bestiary/default>Bestiary</a></li>
-            <li><a href=/people_log/default>People</a></li>
-            <li><a href=/map_log>Map</a></li>
-            <li><a href=/quest_log>Achievements</a></li>
-        </ul>
-    </div>
+<div class="topbar">
+    <ul>
+        <li><a {% if quest_log %}class="topbarActive" {% endif -%}
+            href=/quest_log>Quests</a></li>
+        <li><a {% if bestiary %}class="topbarActive" {% endif -%}
+               href=/bestiary/default>Bestiary</a></li>
+        <li><a {% if people_log %}class="topbarActive" {% endif -%}
+               href=/people_log/default>People</a></li>
+        <li><a {% if map_log %}class="topbarActive" {% endif -%}
+               href=/map_log>Map</a></li>
+        <li><a {% if achievement_log %}class="topbarActive" {% endif -%}
+               href=/quest_log>Achievements</a></li>
+    </ul>
 </div>
 {% endblock %}
 
 {% block block1 %}
 <!-- This shows the quest log within the journal -->
 {% if quest_log %}
-    <h1 class="indented">Current Quests</h1>
-    {% for path in myHero.quest_paths if path.active %}
-        <h2>{{ path.quest.name }}</h2>
-        <p>{{ path.quest.current_description }} (Stage: {{ path.stage }}/{{ path.stages }})</p>
+    <h2 class="indented">Current Quests</h2>
+    {% for path in hero.journal.quest_paths if not path.completed %}
+        <p>Stage: {{ path.stage+1 }}/{{ path.stages }} ->
+            Quest: {{ path.current_quest.name }} -> Path: {{ path.name }}</p>
     {% else %}
         No current quests
     {% endfor %}
-    <h1 class="indented">Completed Quests</h1>
-    {% for path in myHero.quest_paths if path.completed %}
-        <b>{{ path.quest.name }}</b> (Reward: {{ path.quest.reward_experience }} xp)
+    <h2 class="indented">Completed Quests</h2>
+    {% for path in hero.journal.quest_paths if path.completed %}
+        <p>Path: <strong>{{ path.name }}</strong> -> Reward: {{ path.total_reward }}xp</p>
     {% else %}
         No completed quests
     {% endfor %}
@@ -37,7 +40,7 @@
 <!-- This shows the bestiary within the journal -->
 {% if bestiary %}
     <div class="rightside">
-        {% for monster in myHero.bestiary %}
+        {% for monster in hero.bestiary %}
         <ul>
             <li><a href=/bestiary/{{ monster.monster_id }}>{{ monster.name }}</a></li>
         </ul>
@@ -90,7 +93,7 @@ No completed achievements.
 <h2><br><b>{{ achievement[0] }}</b></h2>
 {% endfor %}
 <h1> Current Kill Statistics </h1>
-{% for key, value in myHero.kill_quests.items() %}
+{% for key, value in hero.kill_quests.items() %}
 {{ key }}: {{ value }}<br>
 {% endfor %}
 {% endif %}
@@ -98,7 +101,7 @@ No completed achievements.
 <!-- This shows the map log within the journal -->
 {% if map_log %}
 <h1>Maps</h1>
-{% for map in myHero.known_locations %}
+{% for map in hero.known_locations %}
 {{ map }}
 {% endfor %}
 {% endif %}

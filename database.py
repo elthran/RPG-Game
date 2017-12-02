@@ -58,15 +58,19 @@ class EZDB:
         Hidden method: _delete_database is for testing and does what it
         sounds like it does :).
         """
+        first_run = True
         engine = create_engine(database, echo=debug)
         self.file_name = database[10:]
+
+        if os.path.isfile(self.file_name):
+            first_run = False
         
         base_classes.Base.metadata.create_all(engine, checkfirst=True)
         Session = sessionmaker(bind=engine)
         
         self.engine = engine
         self.session = Session()
-        if not testing:
+        if first_run and not testing:
             self.add_prebuilt_objects()
         
     def add_prebuilt_objects(self):
@@ -104,6 +108,9 @@ class EZDB:
                 except sqlalchemy.exc.IntegrityError as ex:
                     # print(ex)
                     self.session.rollback()
+        for hero in self.session.query(Hero).all():
+            hero.journal.quest_paths = prebuilt_objects.default_quest_paths
+            self.session.commit()
                     
     def delete_item(self, item_id):
         """Delete a given object from the database.
@@ -193,16 +200,9 @@ class EZDB:
         """Get the default location for starting heroes.
         """
         return self.session.query(Location).filter_by(name="Thornwall", type="town").first()
-        
-    def get_default_quests(self):
-        """Get the default quests for starting heroes.
-        
-        Currently gets quests id's 1 and 3,
-        these are the start's of two testing quests
-        located prebuilt_object.py
-        """
 
-        return self.session.query(Quest).filter(Quest.id.in_((1, 3))).all()
+    def get_default_quest_paths(self):
+        return prebuilt_objects.default_quest_paths
 
     def get_user_id(self, username):
         """Return the id of the user by username from the User's table.
@@ -331,7 +331,7 @@ class EZDB:
         for obj in objs:
             handlers += self.session.query(obj).\
                 filter(obj.trigger_is_completed).\
-                filter(obj.hero_id == hero.id).all()
+                filter(obj._hero_id == hero.id).all()
 
         return handlers
 

@@ -28,7 +28,8 @@
     </div> 
 </div>
 <div>
-    Return to <a href="{{hero.current_city.url }}">{{ hero.current_city.name }}</a>
+    Return to <a href="{{ hero.current_location.parent.url }}">
+    {{ hero.current_location.parent.name }}</a>
 </div>
 {% endblock %}
 

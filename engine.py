@@ -44,12 +44,11 @@ class Engine:
         # pdb.set_trace()
         event = Event(event_name, hero_id=hero.id, description=description)
         self.db.add_object(event)
+        self.db.update()
+
         triggers = self.db.get_all_triggers_by(event_name, hero.id)
-        print("Triggers: ", triggers)
         for trigger in triggers:
             trigger.evaluate()
-            print("Trigger '{}' is completed: {}".format(trigger.id,
-                                                         trigger.completed))
         self.db.update()
 
         handlers = self.db.get_all_handlers_with_completed_triggers(hero)
@@ -58,6 +57,5 @@ class Engine:
         # It is now completed. Run the method that you run when trigger
         # completes.
         for handler in handlers:
-            handler.run_handler()
-
+            handler.run()  # This should be overridden by the subclass.
         self.db.update()

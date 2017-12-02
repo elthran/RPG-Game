@@ -138,8 +138,8 @@ game_worlds = [world]  # Just chop this out and use world instead.
 # Conditions
 #########
 blacksmith_condition = Condition('current_location', '==', blacksmith)
-blacksmith_parent_condition = Condition('current_location.parent', '==',
-                                        blacksmith)
+blacksmith_is_parent_of_current_location_condition \
+    = Condition('current_location.parent', '==', blacksmith)
 
 
 
@@ -153,25 +153,52 @@ visit_blacksmith_trigger = Trigger(
                           'blacksmith object.')
 
 buy_item_from_blacksmith_trigger = Trigger(
-    'buy_event', conditions=[blacksmith_parent_condition],
+    'buy_event',
+    conditions=[blacksmith_is_parent_of_current_location_condition],
     extra_info_for_humans='Should activate when buy code runs and '
                           'hero.current_location.id == id of the blacksmith.'
+)
+
+equip_item_trigger = Trigger(
+    'equip_event',
+    conditions=[],
+    extra_info_for_humans="Should activate when equip_event spawns."
+)
+
+unequip_item_trigger = Trigger(
+    'unequip_event',
+    conditions=[],
+    extra_info_for_humans="Should activate when unequip_event spawns."
 )
 
 
 ###########
 # Quests
 ##########
-blacksmith_quest = Quest("Get Acquainted with the Blacksmith",
-                         "Go talk to the blacksmith.",
-                         completion_trigger=visit_blacksmith_trigger)
-blacksmith_quest.next_quests.append(
-    Quest("Get Acquainted with the Blacksmith", "Buy your first item.",
-          reward_experience=7,
-          completion_trigger=buy_item_from_blacksmith_trigger))
+blacksmith_quest_stage1 = Quest(
+    "Go talk to the blacksmith",
+    "Find the blacksmith in Thornwall and enter his shop.",
+    trigger=visit_blacksmith_trigger
+)
 
-equipment_quest = Quest("Equipping/Unequipping", "Equip any item.")
-equipment_quest.next_quests.append(Quest("Equipping/Unequipping", "Unequip any item."))
+blacksmith_quest_stage2 = Quest(
+    "Buy your first item",
+    "Buy any item from the blacksmith.",
+    reward_experience=4,
+    trigger=buy_item_from_blacksmith_trigger
+)
+
+inventory_quest_stage1 = Quest(
+    "Equip an item",
+    "Equip any item in your inventory.",
+    trigger=equip_item_trigger
+)
+
+inventory_quest_stage2 = Quest(
+    "Unequip an item",
+    "Unequip any item in your inventory.",
+    trigger=unequip_item_trigger
+)
 
 # tavern = Quest("Become an apprentice at the tavern", "Ask if there are any jobs you can do.")
 # tavern.next_quests.append("Become an apprentice at the tavern", "Collect 2 Wolf Pelts for the Bartender")
@@ -180,7 +207,24 @@ equipment_quest.next_quests.append(Quest("Equipping/Unequipping", "Unequip any i
 
 # tavern.next_quests.append("Become an apprentice at the tavern", "Give the bartender 2 copper coins.")
 
-all_quests = [blacksmith_quest, equipment_quest]  # Which is really 4 quests.
+all_quests = [blacksmith_quest_stage1, blacksmith_quest_stage2,
+              inventory_quest_stage1, inventory_quest_stage2]
+
+meet_the_blacksmith_path = QuestPath(
+    "Get Acquainted with the Blacksmith",
+    "Find the blacksmith and buy something from him.",
+    quests=[blacksmith_quest_stage1, blacksmith_quest_stage2]
+)
+
+learn_about_your_inventory_path = QuestPath(
+    "Learn how your inventory works",
+    "Practice equipping an unequipping.",
+    quests=[inventory_quest_stage1, inventory_quest_stage2]
+)
+
+default_quest_paths = [
+    meet_the_blacksmith_path, learn_about_your_inventory_path
+]
 
 ##########
 # Users (and heroes)
@@ -192,10 +236,9 @@ when prebuilt_objects are preloaded into the database.
 admin = User(username="admin", password="admin", is_admin=True)
 adminHero = Hero(name="Admin", fathers_job="Priest", current_world=world, current_location=town, gold=5000)
 admin.heroes = [adminHero]
+
 marlen = User(username="marlen", password="brunner", is_admin=True)
 haldon = Hero(name="Haldon", fathers_job="Priest", current_world=world, current_location=town, gold=5000)
-QuestPath(blacksmith_quest, haldon)  # What are these?
-QuestPath(equipment_quest, haldon)  # ///
 marlen.heroes = [haldon]
 users = [marlen, admin]
 

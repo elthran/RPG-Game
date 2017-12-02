@@ -1,3 +1,4 @@
+"""
 I would like to suggest/request that we default to "Human readable" (a.k.a. random capitalization) as the default format for all data and then use a standard module to convert the default data format into some common forms such as ClassName or variable_name.
 
 An example of this (an why) is as follows:
@@ -18,4 +19,4 @@ The alternatives/alternate defaults up for discussion:
 I am developing a function (which might become a class) in 'factories.py' currently called 'normalize_naming' that accepts a list (currently, though should be a string with a separte list version :P) and a "scheme" that you want to convert to.
 
 I believe that having a standard way of describing data with help me avoid the hard to detect "capitialization bug" that requires hours of print statement/manual debugging.
-    
+"""
