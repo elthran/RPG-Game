@@ -133,6 +133,7 @@ class Trigger(TemplateMixin, Base):
         self.event_name = "Deactivated"
         self.conditions = []
         self.extra_info_for_humans = None
+        self.completed = False
 
     def update(self, template_trigger):
         """Change the values of this trigger.

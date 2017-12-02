@@ -186,7 +186,7 @@ def update_current_location(f):
         engine.spawn(
             'move_event',
             hero,
-            description="The {} visits {}.".format(hero.name, location.url)
+            description="{} visits {}.".format(hero.name, location.url)
         )
         return f(*args, location=location, **kwargs)
 

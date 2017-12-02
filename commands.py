@@ -91,7 +91,11 @@ class Command:
             #         location in ["/store/armoury", "/store/weaponry"]):
             #         path.advance()
             engine = Engine(database)
-            engine.spawn('buy_event', hero, description="Hero buys an item.")
+            engine.spawn(
+                'buy_event',
+                hero,
+                description="{} buys a/an {}.".format(hero.name, item.name)
+            )
 
             return "{}: id={}&&{}".format(item.name, item.id, hero.gold)
         return "error: not enough gold!"
