@@ -230,12 +230,25 @@ class Command:
         return "success&&{}".format(tooltip)
 
     @staticmethod
-    def get_message_content_by_id(hero, database, arg_dict):
+    def get_message_content_and_sender_by_id(hero, database, arg_dict):
         """Return the content of a message based on its id."""
         id = arg_dict.get('data', None, type=int)
         message = database.get_object_by_id("Message", id)
         print("Sending message content back to JS.")
-        return "{}".format(message.content)
+        return "{}&&{}".format(message.content, message.sender.user.username)
+
+    @staticmethod
+    def send_message_to_user_by_username(hero, database, arg_dict):
+        """Return the content of a message based on its id."""
+        username = arg_dict.get('data', None, type=str)
+        print ("username is: ", username)
+        print("Attempting to generate a reply. Getting user now.")
+        receiver = database.get_user_by_username(username)
+        print("Generating reply to user: ", receiver.username)
+        hero.user.inbox.send_message(receiver, "TEST REPLY!", "55:55:55")
+        print ("Reply is successful. Message sent.")
+        print("Sending message content back to JS.")
+        return "message replied to successfully"
 
     @staticmethod
     def cmd_functions(name):
