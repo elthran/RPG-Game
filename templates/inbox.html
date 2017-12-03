@@ -27,7 +27,8 @@ alert("Form Submitted Successfully...");
 //Function To Display Popup
 function divShow(button, messageContent) {
     document.getElementById('inboxPopupOuter').style.display = "block";
-    document.getElementById('newTextNeeded').innerHTML = messageContent;
+    document.getElementById('replyBoxMessageContent').innerHTML = messageContent;
+    document.getElementById('replyBoxMessageSender').innerHTML = messageSender;
 }
 
 //Function to Hide Popup
@@ -77,10 +78,11 @@ document.getElementById('inboxPopupOuter').style.display = "none";
 <form action="#" id="inbox-form" method="post" name="form">
 <img id="closeReplyBox" src="/static/images/closing_x.jpg" onclick ="div_hide()">
 <h2>Reply</h2>
-    <span id="newTextNeeded"></span>
+    <span id="replyBoxMessageContent"></span>
+    <span id="replyBoxMessageSender"></span>
 <hr>
 <input class="inbox-input" id="inbox-form-inner" name="name" placeholder="Title" type="text">
-<input id="inbox-form-inner"" name="email" placeholder="Message" type="text">
+<input id="inbox-form-inner" name="email" placeholder="Message" type="text">
 <a href="javascript:%20check_empty()" id="submit">Send</a>
 </form>
 </div>

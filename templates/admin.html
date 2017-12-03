@@ -2,6 +2,24 @@
 
 {% extends "layout.html" %}
 {% block block1 %}
+
+<div class="inboxTopbar">
+    <ul>
+        {% if myself %}
+        <li><a class="topbarActive" href="/admin/myself">Myself</a></li>
+        {% else %}
+        <li><a href="/admin/myself">Myself</a></li>
+        {% endif %}
+        {% if items %}
+        <li><a class="topbarActive" href="/inbox/items">Items</a></li>
+        {% else %}
+        <li><a href="/inbox/items">Items</a></li>
+        {% endif %}
+    </ul>
+</div>
+<div style="clear: both;"></div>
+
+{% if myself %}
 <h1>
     <center>Reset Character
         <ul>
@@ -28,6 +46,8 @@
     <li>Experience Modifier: {{ hero.experience_gain_modifier }}</li>
     <li>Gold Modifier: {{ hero.gold_gain_modifier }}</li>
 </ul>
+{% endif %}
+
 {% endblock %}
 
 
