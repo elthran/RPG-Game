@@ -26,6 +26,15 @@ function div_hide(){
 document.getElementById('inboxPopupOuter').style.display = "none";
 }
 
+function attachMessage() {
+    var messageContent = document.getElementById('inbox-form-inner').value;
+    var spacer = "-";
+    var messageSender = document.getElementById('replyBoxMessageSender').innerHTML
+    var finalData = messageContent.concat(spacer, messageSender)
+    document.getElementById("replyPopupBoxButton").setAttribute('data', finalData);
+}
+
+
 </script>
 
 <div class="inboxTopbar">
@@ -51,9 +60,8 @@ document.getElementById('inboxPopupOuter').style.display = "none";
     <span id="replyBoxMessageContent"></span>
     <br>From <span id="replyBoxMessageSender"></span>
 <hr>
-<input class="inbox-input" id="inbox-form-inner" name="name" placeholder="Title..." type="text">
-<input id="inbox-form-inner" name="email" placeholder="Response..." type="text">
-<button id="replyPopupBoxButton" data="1" data-py-function="send_message_to_user_by_username">
+<input class="inbox-input" id="inbox-form-inner" name="name" placeholder="reply..." type="text">
+<button id="replyPopupBoxButton" data="none" data-js-callback="attachMessage" data-py-function="send_message_to_user_by_username">
     Send
 </button>
 </form>
