@@ -1,8 +1,6 @@
 import pdb
 
 from flask import render_template_string
-from engine import Engine
-
 
 class Command:
     """Run a list of html update commands based on the string cmd.
@@ -72,7 +70,7 @@ class Command:
     """
 
     @staticmethod
-    def buy(hero, database, arg_dict):
+    def buy(hero, database, arg_dict, engine):
         """Allow the user to buy items from the Blacksmith.
         Returns an error if the character doesn't have enough gold.
         """
@@ -90,7 +88,6 @@ class Command:
             #         path.stage == 2 and
             #         location in ["/store/armoury", "/store/weaponry"]):
             #         path.advance()
-            engine = Engine(database)
             engine.spawn(
                 'buy_event',
                 hero,
@@ -112,12 +109,11 @@ class Command:
         return "success"
 
     @staticmethod
-    def equip(hero, database, arg_dict):
+    def equip(hero, database, arg_dict, engine):
         item_id = arg_dict.get('data', None, type=int)
         item = database.get_item_by_id(item_id)
         ids_to_unequip = hero.inventory.equip(item)
         hero.refresh_character()
-        engine = Engine(database)
         engine.spawn(
             'equip_event',
             hero,
@@ -126,12 +122,11 @@ class Command:
         return item.type + "&&" + str(ids_to_unequip)
 
     @staticmethod
-    def unequip(hero, database, arg_dict):
+    def unequip(hero, database, arg_dict, engine):
         item_id = arg_dict.get('data', None, type=int)
         item = database.get_item_by_id(item_id)
         hero.inventory.unequip(item)
         hero.refresh_character()
-        engine = Engine(database)
         engine.spawn(
             'unequip_event',
             hero,

@@ -1072,7 +1072,7 @@ def command(cmd=None, hero=None):
         command_function = Command.cmd_functions(cmd)
         try:
             response = command_function(hero, database=database,
-                                        arg_dict=request.args)
+                                        arg_dict=request.args, engine=engine)
             database.update()
             # pdb.set_trace()
             return response
