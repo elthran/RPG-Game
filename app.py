@@ -215,25 +215,9 @@ def login():
             flash("LOG IN SUCCESSFUL")
             user = database.get_user_by_username(username)
             session['id'] = user.id
-            # I recommend a dialogue here to select the specific hero that the
-            # user wants to play with. Or a page redirect whatever ...
-            # Choose hero dialogue ... not implemented.
-            hero = user.heroes[0]
-            # Below is code for daily login reward. It's temporary as I am just trying to play with and learn about timestamps and whatnot.
-            hero.check_daily_login_reward(str(EZDB.now()))
-            # End of daily login reward code (Elthran)
-            session['hero_id'] = hero.id
-            # Now I need to work out how to make game not global *sigh*
-            # (Marlen)
-            game.set_hero(hero)
-            game.set_enemy(monster_generator(hero.age))
-            flash(hero.login_alerts)
-            hero.login_alerts = ""
-            # If it's a new character, send them to cerate_character url
-            if hero.character_name is None:
-                return redirect(url_for('create_character'))
-            # If the character already exist go straight the main home page!
-            return redirect(url_for('home'))
+            # Will barely pause her if only one character exists.
+            # Maybe should just go directly to home page.
+            return redirect(url_for('choose_character'))
         # Marked for upgrade, consider checking if user exists
         # and redirect to account creation page.
         else:
@@ -280,6 +264,7 @@ def create_account():
             return redirect(url_for('login'))
     return render_template('index.html', error=error, create_account=True)
 
+
 # this gets called if you press "logout"
 @app.route('/logout')
 @login_required
@@ -306,9 +291,9 @@ approaching in the sand. Unsure of where you are, you quickly look
 around for something to defend yourself. A firm and inquisitive voice
 pierces the air.""".replace('\n', ' ').replace('\r', '')
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
-    if len(hero.quest_paths) == 0:
-        # pdb.set_trace()
+    if len(hero.journal.quest_paths) == 0:
         hero.journal.quest_paths = database.get_default_quest_paths()
+    pdb.set_trace()
     if hero.current_world is None:
         hero.current_world = database.get_default_world()
         hero.current_location = database.get_default_location()
@@ -342,6 +327,43 @@ pierces the air.""".replace('\n', ' ').replace('\r', '')
             'create_character.html', page_title=page_title,
             page_heading=page_heading, page_image=page_image,
             paragraph=paragraph, conversation=conversation, display=display)
+
+
+@app.route("/choose_character", methods=['GET', 'POST'])
+@login_required
+def choose_character():
+    user = database.get_object_by_id("User", session['id'])
+    # print(user)
+    # exit("testing choose character.")
+    hero = None
+    if len(user.heroes) == 1:
+        hero = user.heroes[0]
+        print("Gets to _only one hero_ section", hero.name)
+    elif request.method == 'POST':
+        hero = database.get_object_by_id("Hero", request.form['hero_id'])
+        print("Gets to fulfill post request", hero.name)
+    else:
+        print("Gets to render template ...")
+        return render_template('choose_character.html', user=user)
+
+    print("Gets to move on code ...")
+    print("Hero is working:", hero.name)
+    # Below is code for daily login reward. It's temporary as I am just trying to play with and learn about timestamps and whatnot.
+    hero.check_daily_login_reward(str(EZDB.now()))
+    # End of daily login reward code (Elthran)
+    session['hero_id'] = hero.id
+    # Now I need to work out how to make game not global *sigh*
+    # (Marlen)
+    game.set_hero(hero)
+    game.set_enemy(monster_generator(hero.age))
+    flash(hero.login_alerts)
+    hero.login_alerts = ""
+    # If it's a new character, send them to cerate_character url
+    if hero.character_name is None:
+        database.update()
+        return redirect(url_for('create_character'))
+    # If the character already exist go straight the main home page!
+    return redirect(url_for('home'))
 
 
 # An admin button that lets you reset your character. Currently doesnt reset attributes/proficiencies, nor inventory and other stuff. Should be rewritten as something

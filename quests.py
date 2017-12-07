@@ -1,4 +1,7 @@
 """
+
+THIS IS REALLY OUT OF DATE! ASK ME TO UPDATE IT. SAVE ME FROM MYSELF!
+
 How to use:
 Quests must be created separately in the prebuilt_objects.py module.
 We will really need a quest editor.
@@ -10,7 +13,7 @@ for quest in database.get_default_quests():
     quest.add_hero(myHero)
 
 To trigger a quest to advance to the next stage or complete.
-for path in myHero.quest_paths:
+for path in hero.journal.quest_paths:
     if path.quest.name == "Get Acquainted with the Blacksmith" and
             path.stage == 1:
         path.advance()
