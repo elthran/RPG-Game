@@ -83,7 +83,7 @@ class EZDB:
         Note: each prebuilt_object must be a list.
         NOTE2: users must come first as it somehow gets built before it gets
         built if it doesn't?
-        Maybe becuase .. it has a hero which has a current_world? So when
+        Maybe because .. it has a hero which has a current_world? So when
         current_world gets
         built then the user gets built too? Which may mean most of my code
         here is redundant
@@ -91,6 +91,7 @@ class EZDB:
         """
         
         # global prebuilt_objects
+        # I can't remember why I need to reload this ...
         importlib.reload(prebuilt_objects)
         
         for obj_list in [
@@ -112,8 +113,7 @@ class EZDB:
                     print(ex)
                     print("Please debug database setup -> prebuilt object loading.")
                     pass  # rollback is now handled by 'update()'
-        default_quest_paths = self.session.query(QuestPath).filter(
-            QuestPath.id < 3).all()
+        default_quest_paths = self.get_default_quest_paths()
         for hero in self.session.query(Hero).all():
             hero.journal.quest_paths = default_quest_paths
         self.update()
@@ -207,7 +207,12 @@ class EZDB:
         return self.session.query(Location).filter_by(name="Thornwall", type="town").first()
 
     def get_default_quest_paths(self):
-        return prebuilt_objects.default_quest_paths
+        """Return the quest that are applied to starting heroes.
+
+        NOTE: This is a placeholder! The implementation should probably have
+        a "is_default" flag for QuestPath objects.
+        """
+        return self.session.query(QuestPath).filter(QuestPath.id < 3).all()
 
     def get_user_id(self, username):
         """Return the id of the user by username from the User's table.
