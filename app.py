@@ -141,6 +141,10 @@ def login_required(f):
     return wrap_login
 
 
+# This runs after every @app.route before returning a response.
+# It even runs if there is an error.
+# I am unsure of this approach. Myabe '@app.after_request' would be a better
+# fit as this wouldn't write data that caused an error.
 @app.teardown_request
 def update_on_teardown(response):
     database.update()
@@ -291,7 +295,6 @@ def create_account():
 @uses_hero
 def logout(hero=None):
     hero.refresh_character()
-    database.update()
     session.pop('logged_in', None)
     flash("Thank you for playing! Your have successfully logged out.")
     return redirect(url_for('login'))
@@ -338,10 +341,8 @@ pierces the air.""".replace('\n', ' ').replace('\r', '')
             hero.attributes.divinity.level += 3
     if hero.character_name is not None and fathers_job is not None:
         hero.refresh_character(full=True)
-        database.update()
         return redirect(url_for('home'))
     else:
-        database.update()
         # Builds a web page from a list of variables and a template file.
         return render_template(
             'create_character.html', page_title=page_title,
@@ -498,7 +499,6 @@ def inbox(outbox, hero=None):
         receiver = database.get_user_by_username(username_of_receiver)
         hero.user.inbox.send_message(receiver, content, str(EZDB.now()))
         receiver.inbox_alert = True
-        database.update()  # IMPORTANT!
         return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)
     return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)
 
@@ -558,7 +558,6 @@ def attributes(hero=None):
             attribute.level = form_value
         hero.attribute_points -= points_spent
         hero.refresh_character()
-        database.update()
         return render_template('profile_attributes.html', page_title="Attributes", myHero=hero,
                                attribute_information=ATTRIBUTE_INFORMATION)
     return render_template('profile_attributes.html', page_title="Attributes", myHero=hero,
@@ -683,7 +682,6 @@ def move(location_name, hero=None):
         hero.current_world = location
     else:
         hero.current_location = location
-    database.update()
 
     return render_template(
         'move.html', myHero=hero,
@@ -875,8 +873,6 @@ def battle(this_user=None, hero=None):
         if level_up:
             page_heading += " You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ", "/home", "profile", " page and distribute your new attribute points.")]
-
-    database.update()
 
     # Return an html page built from a Jinja2 form and the passed data.
     return render_template(
@@ -1078,7 +1074,6 @@ def command(cmd=None, hero=None):
         try:
             response = command_function(hero, database=database,
                                         arg_dict=request.args, engine=engine)
-            database.update()
             # pdb.set_trace()
             return response
         except Exception as ex:

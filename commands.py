@@ -20,7 +20,6 @@ class Command:
             try:
                 response = command_function(hero, database=database,
                                             arg_dict=request.args)
-                database.update()
                 # pdb.set_trace()
                 return response
             except Exception as ex:
@@ -165,7 +164,7 @@ class Command:
             status = "max level"
         return "{}&&{}&&{}&&{}&&{}".format(ability_id, ability.level, status, ability_tree, new_description)
 
-    def become_archetype(hero, database, arg_dict):
+    def become_archetype(hero, database, arg_dict, **kwargs):
         archetype = arg_dict.get('data', None, type=str)
         hero.archetype = archetype
         for ability in hero.abilities:
