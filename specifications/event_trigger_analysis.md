@@ -44,6 +44,7 @@ _Move event is built as an object and stored for later (maybe journal)_
 def spawn(self, event_name, hero, *args, description=None):
     event = Event(event_name, hero_id=hero.id, description=description)
     self.db.add_object(event)
+    self.db.update()
 ```
 
 #### TRIGGER PHASE, PHASE III
