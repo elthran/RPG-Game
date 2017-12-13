@@ -75,15 +75,6 @@ class EZDB:
         self.session = EZDB.Session()
         if first_run and not testing:
             self.add_prebuilt_objects()
-
-    # @property
-    # def session(self):
-    #     pdb.set_trace()
-    #     if self._session: # exists and is not closed.
-    #         return self._session
-    #     else:
-    #         self._session = Session()
-    #         return self._session
         
     def add_prebuilt_objects(self):
         """Add all the predefined object into the database.
@@ -315,35 +306,19 @@ class EZDB:
                             " does not accommodate.")
 
     def update(self):
-        """Commit, handle errors, close the session, open a new one.
+        """Commit current session.
         
-        NOTE: This may not totally work and maybe should use:
-        from contextlib import contextmanager
-
-        @contextmanager
-        def session_scope(self):
-            pass
-
-        See:
-        http://docs.sqlalchemy.org/en/latest/orm/session_basics.html#when-do-i-construct-a-session-when-do-i-commit-it-and-when-do-i-close-it
+        NOTE: update function is now mostly redundant!
+        Only use on program exit or logout.
+        When you edit the hero ... he stays edited!
+        Using any of the other methods will push him to database.
         """
-        try:
-            self.session.commit()
-        except Exception as ex:
-            self.session.rollback()
-            raise ex
-        finally:
-            self.session.close()
-            # Make a new session.
-            self.session = EZDB.Session()
+        self.session.commit()
 
     def add_object(self, obj):
         """Add an object to the database.
 
         Hides the session object. And the commit :P
-
-        NOTE: You still need to call the 'update()' function.
-        I am considering making this do an 'update()' as well ...
         """
         self.session.add(obj)
 
