@@ -366,7 +366,6 @@ def choose_character():
     hero.login_alerts = ""
     # If it's a new character, send them to cerate_character url
     if hero.character_name is None:
-        database.update()
         return redirect(url_for('create_character'))
     # If the character already exist go straight the main home page!
     return redirect(url_for('home'))
