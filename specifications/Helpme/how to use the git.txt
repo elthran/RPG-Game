@@ -36,6 +36,10 @@ git config --global core.editor "'C:/Program Files/Notepad++/notepad++.exe' -mul
 git checkout master
 git reset --hard HEAD
 
+## A new commit to undo the previous commit.
+git revert HEAD  # HEAD~1 reverts the last 2 commits, HEAD~n reverts the last n+1 commits
+git push
+
 #BEST FIX GUIDE EVER!
 https://sethrobertson.github.io/GitFixUm/fixup.html
 

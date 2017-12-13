@@ -13,6 +13,7 @@ import os
 import datetime
 # Testing only
 import pdb
+from pprint import pprint
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -49,6 +50,8 @@ class EZDB:
     
     All add_* methods should end with a commit!
     """
+    Session = None
+
     def __init__(self, database="sqlite:///:memory:", debug=True,
                  testing=False):
         """Create a basic SQLAlchemy engine and session.
@@ -66,10 +69,10 @@ class EZDB:
             first_run = False
         
         base_classes.Base.metadata.create_all(engine, checkfirst=True)
-        Session = sessionmaker(bind=engine)
-        
+        EZDB.Session = sessionmaker(bind=engine)
+
         self.engine = engine
-        self.session = Session()
+        self.session = EZDB.Session()
         if first_run and not testing:
             self.add_prebuilt_objects()
         
@@ -99,25 +102,27 @@ class EZDB:
                 prebuilt_objects.all_quests]:
             for obj in obj_list:
                 try:
+                    self.session.add(obj)
                     if isinstance(obj, User):
                         obj.password = hashlib.md5(
                             obj.password.encode()).hexdigest()
                         obj.timestamp = EZDB.now()
-                    self.session.add(obj)
-                    self.session.commit()
+                    self.update()
                 except sqlalchemy.exc.IntegrityError as ex:
-                    # print(ex)
-                    self.session.rollback()
+                    print(ex)
+                    print("Please debug database setup -> prebuilt object loading.")
+                    pass  # rollback is now handled by 'update()'
+        default_quest_paths = self.session.query(QuestPath).filter(
+            QuestPath.id < 3).all()
         for hero in self.session.query(Hero).all():
-            hero.journal.quest_paths = prebuilt_objects.default_quest_paths
-            self.session.commit()
+            hero.journal.quest_paths = default_quest_paths
+        self.update()
                     
     def delete_item(self, item_id):
         """Delete a given object from the database.
         """
         self.session.query(Item).filter(Item.id == item_id).delete()
-        self.session.commit()
-        
+
     def get_object_by_id(self, obj_name, obj_id):
         """Return an object given its class name and id.
         
@@ -226,7 +231,6 @@ class EZDB:
         user = User(username=username, password=hashed_password, email=email,
                     timestamp=EZDB.now())
         self.session.add(user)
-        self.session.commit()
         return user
         
     def add_new_hero_to_user(self, user):
@@ -236,8 +240,7 @@ class EZDB:
         """
         
         self.session.add(Hero(user=user))
-        self.session.commit()
-    
+
     def validate(self, username, password):
         """Check if password if valid for user.
         """
@@ -318,7 +321,6 @@ class EZDB:
         Hides the session object. And the commit :P
         """
         self.session.add(obj)
-        self.session.commit()
 
     def get_all_handlers_with_completed_triggers(self, hero):
         """Return all the handler objects with completed triggers.
@@ -379,12 +381,11 @@ class EZDB:
         # Only update if endurance has been incremented.
         if endurance_increment:
             hero.timestamp = EZDB.now()
-        self.session.commit()
-        
-    def get_world(self, name):
-        """Return WorldMap object from database using by name.
-        """
-        return self.session.query(WorldMap).filter_by(name=name).first()
+
+    # def get_world(self, name):
+    #     """Return WorldMap object from database using by name.
+    #     """
+    #     return self.session.query(WorldMap).filter_by(name=name).first()
     
     def _delete_database(self):
         """Deletes current database file.

@@ -20,7 +20,6 @@ class Command:
             try:
                 response = command_function(hero, database=database,
                                             arg_dict=request.args)
-                database.update()
                 # pdb.set_trace()
                 return response
             except Exception as ex:
@@ -72,6 +71,7 @@ class Command:
     @staticmethod
     def buy(hero, database, arg_dict, engine):
         """Allow the user to buy items from the Blacksmith.
+
         Returns an error if the character doesn't have enough gold.
         """
         item_id = arg_dict.get('data', None, type=int)
@@ -98,8 +98,9 @@ class Command:
         return "error: not enough gold!"
 
     @staticmethod
-    def consume(hero, database, arg_dict):
+    def consume(hero, database, arg_dict, **kwargs):
         """Apply the effect of a potion when the hero consumes it.
+
         NOTE: the item is then deleted from the hero's inventory and the database.
         """
         item_id = arg_dict.get('data', None, type=int)
@@ -134,7 +135,7 @@ class Command:
         )
         return item.type
 
-    def update_ability(hero, database, arg_dict):
+    def update_ability(hero, database, arg_dict, **kwargs):
         # Format of data in html button is: data = "{{ ability.id }}, {{ ability.tree }}"
         data = arg_dict.get('data', "").split(", ")
         if data:
@@ -165,7 +166,7 @@ class Command:
             status = "max level"
         return "{}&&{}&&{}&&{}&&{}".format(ability_id, ability.level, status, ability_tree, new_description)
 
-    def become_archetype(hero, database, arg_dict):
+    def become_archetype(hero, database, arg_dict, **kwargs):
         archetype = arg_dict.get('data', None, type=str)
         hero.archetype = archetype
         for ability in hero.abilities:
@@ -178,18 +179,18 @@ class Command:
                     ability.learnable = True
         return "success"
 
-    def cast_spell(hero, database, arg_dict):
+    def cast_spell(hero, database, arg_dict, **kwargs):
         ability_id = arg_dict.get('data', None, type=int)
         ability = database.get_ability_by_id(ability_id)
         ability.cast(hero)
         return "success"
 
     @staticmethod
-    def update_proficiency(hero, database, arg_dict):
+    def update_proficiency(hero, database, arg_dict, **kwargs):
         """Raise proficiency level, decrement proficiency_points.
 
         Return status of: success, hide_all, hide_this.
-        "succes" means hide none ... maybe I should call it that instead?
+        "success" means hide none ... maybe I should call it that instead?
         """
 
         tooltip_template = """{{ proficiency.description }}:
@@ -225,7 +226,7 @@ class Command:
         return "success&&{}".format(tooltip)
 
     @staticmethod
-    def get_message_content_and_sender_by_id(hero, database, arg_dict):
+    def get_message_content_and_sender_by_id(hero, database, arg_dict, **kwargs):
         """Return the content of a message based on its id."""
         id = arg_dict.get('data', None, type=int)
         message = database.get_object_by_id("Message", id)
@@ -233,7 +234,7 @@ class Command:
         return "{}&&{}".format(message.content, message.sender.user.username)
 
     @staticmethod
-    def send_message_to_user_by_username(hero, database, arg_dict):
+    def send_message_to_user_by_username(hero, database, arg_dict, **kwargs):
         """Return the content of a message based on its id."""
         username = arg_dict.get('data', None, type=str)
         print ("username is: ", username)

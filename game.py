@@ -142,7 +142,6 @@ class Inbox(Base):
 
         So in app.py you will call:
         user.inbox.send_message(other_user, content)
-        database.update()
         """
         Message(self, receiver.inbox, content, time)
 

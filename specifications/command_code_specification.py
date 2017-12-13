@@ -56,7 +56,6 @@ This operates like:
         try:
             response = command_function(hero, database=database,
                                         arg_dict=request.args)
-            database.update()
             # pdb.set_trace()
             return response
         except Exception as ex:

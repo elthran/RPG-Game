@@ -1,1 +1,0 @@
-del static\database.db

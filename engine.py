@@ -49,7 +49,6 @@ class Engine:
         triggers = self.db.get_all_triggers_by(event_name, hero.id)
         for trigger in triggers:
             trigger.evaluate()
-        self.db.update()
 
         handlers = self.db.get_all_handlers_with_completed_triggers(hero)
         # return the "Blacksmith" quest object ...
@@ -58,4 +57,3 @@ class Engine:
         # completes.
         for handler in handlers:
             handler.run()  # This should be overridden by the subclass.
-        self.db.update()
