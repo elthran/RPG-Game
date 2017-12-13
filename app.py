@@ -117,6 +117,7 @@ def prevent_url_typing(f):
             return redirect(session['last_url'])
     return wrap_url
 
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(
@@ -140,36 +141,46 @@ def login_required(f):
     return wrap_login
 
 
+# This runs after every @app.route before returning a response.
+# It even runs if there is an error.
+# I am unsure of this approach. Myabe '@app.after_request' would be a better
+# fit as this wouldn't write data that caused an error.
+@app.teardown_request
+def update_on_teardown(response):
+    database.update()
+
+
 # Untested (Marlen)
-def uses_hero_and_update(f):
+def uses_hero(f):
     """Preload hero object and save it afterwards.
 
-    If this function returns an error ... please document.
-
-    Especially if the error is KeyError on "hero_id". I had a
-    bug with this but it disappeared and I don't know why it
-    occurred.
+    Note: KeyError occurs when this method is called before login method
+    has been run.
     """
 
     @wraps(f)
-    def wrap_hero_and_update(*args, **kwargs):
-        database.update()
-        hero = database.get_object_by_id("Hero", session["hero_id"])
+    def wrap_uses_hero(*args, **kwargs):
+        try:
+            hero = database.get_object_by_id("Hero", session["hero_id"])
+        except KeyError as ex:
+            # hero = None
+            print("Please document this as it is a hard to find bug.")
+            raise ex
         return f(*args, hero=hero, **kwargs)
 
-    return wrap_hero_and_update
+    return wrap_uses_hero
 
 
 def update_current_location(f):
     """Load the location object and set it to hero.current_location.
 
-    NOTE: this must come after "@uses_hero_and_update"
+    NOTE: this must come after "@uses_hero"
     Adds a keyword argument 'location' to argument list.
 
     Example usage:
     @app.route('/barracks/<name>')
     @login_required
-    @uses_hero_and_update
+    @uses_hero
     @update_current_location
     def barracks(name='', hero=None, location=None):
         if hero.proficiencies.health.current <= 0:
@@ -179,10 +190,8 @@ def update_current_location(f):
     @wraps(f)
     def wrap_current_location(*args, **kwargs):
         hero = kwargs['hero']
-        database.update()
         location = database.get_object_by_name('Location', kwargs['name'])
         hero.current_location = location
-        database.update()
         engine.spawn(
             'move_event',
             hero,
@@ -283,10 +292,9 @@ def create_account():
 # this gets called if you press "logout"
 @app.route('/logout')
 @login_required
-@uses_hero_and_update
+@uses_hero
 def logout(hero=None):
     hero.refresh_character()
-    database.update()
     session.pop('logged_in', None)
     flash("Thank you for playing! Your have successfully logged out.")
     return redirect(url_for('login'))
@@ -294,7 +302,7 @@ def logout(hero=None):
 # this gets called if you are logged in and there is no character info stored
 @app.route('/create_character', methods=['GET', 'POST'])
 @login_required
-@uses_hero_and_update
+@uses_hero
 def create_character(hero=None):
     display = True
     fathers_job = None
@@ -333,10 +341,8 @@ pierces the air.""".replace('\n', ' ').replace('\r', '')
             hero.attributes.divinity.level += 3
     if hero.character_name is not None and fathers_job is not None:
         hero.refresh_character(full=True)
-        database.update()
         return redirect(url_for('home'))
     else:
-        database.update()
         # Builds a web page from a list of variables and a template file.
         return render_template(
             'create_character.html', page_title=page_title,
@@ -348,7 +354,7 @@ pierces the air.""".replace('\n', ' ').replace('\r', '')
 # like deleting the current hero and rebuilding the admin hero. I commented out the beginning of that but I cant get it to work
 @app.route('/reset_character/<stat_type>')
 @login_required
-@uses_hero_and_update
+@uses_hero
 def reset_character(stat_type, hero=None):
     hero.age = 7
     hero.experience = 0
@@ -369,7 +375,7 @@ def reset_character(stat_type, hero=None):
 # this is a temporary page that lets you modify any attributes for testing
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
-@uses_hero_and_update
+@uses_hero
 def admin(hero=None):
     page_title = "Admin"
     if request.method == 'POST':
@@ -413,7 +419,7 @@ def admin(hero=None):
 # Now, I am having trouble sending the user to HTML. I can't seem to
 # understand how to store the user information as a variable.
 @app.route('/display_users/<page_type>/<page_detail>', methods=['GET', 'POST'])
-@uses_hero_and_update
+@uses_hero
 def display_user_page(page_type, page_detail, hero=None):
     descending = False
     if page_detail == hero.clicked_user_attribute:
@@ -447,7 +453,7 @@ def display_user_page(page_type, page_detail, hero=None):
 
 
 @app.route('/global_chat', methods=['GET', 'POST'])
-@uses_hero_and_update
+@uses_hero
 def global_chat(hero=None):
     if request.method == 'POST':
         message = request.form["message"]
@@ -480,7 +486,7 @@ def global_chat(hero=None):
 
 
 @app.route('/inbox/<outbox>', methods=['GET', 'POST'])
-@uses_hero_and_update
+@uses_hero
 def inbox(outbox, hero=None):
     hero.user.inbox_alert = False
     if outbox == "outbox":
@@ -493,12 +499,11 @@ def inbox(outbox, hero=None):
         receiver = database.get_user_by_username(username_of_receiver)
         hero.user.inbox.send_message(receiver, content, str(EZDB.now()))
         receiver.inbox_alert = True
-        database.update()  # IMPORTANT!
         return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)
     return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)
 
 @app.route('/spellbook')
-@uses_hero_and_update
+@uses_hero
 def spellbook(hero=None):
     return render_template('spellbook.html', page_title="Spellbook", myHero=hero)
 
@@ -508,7 +513,7 @@ def spellbook(hero=None):
 # display and stats)
 @app.route('/home')
 @login_required
-@uses_hero_and_update
+@uses_hero
 def home(hero=None):
     """Build the home page and return it as a string of HTML.
 
@@ -534,7 +539,7 @@ def home(hero=None):
 # the bar and show that you are on this page
 @app.route('/attributes', methods=['GET', 'POST'])
 @login_required
-@uses_hero_and_update
+@uses_hero
 def attributes(hero=None):
     # (Elthran) ATTRIBUTE_INFORMATION is currently being imported from attributes.py  This is because I was getting a hard to track down bug where I was modifying that file
     # but you had hand typed the info here and that was causing my bug. Maybelater we can store it all in an html file or something?
@@ -553,7 +558,6 @@ def attributes(hero=None):
             attribute.level = form_value
         hero.attribute_points -= points_spent
         hero.refresh_character()
-        database.update()
         return render_template('profile_attributes.html', page_title="Attributes", myHero=hero,
                                attribute_information=ATTRIBUTE_INFORMATION)
     return render_template('profile_attributes.html', page_title="Attributes", myHero=hero,
@@ -564,7 +568,7 @@ def attributes(hero=None):
 # the bar and show that you are on this page
 @app.route('/proficiencies', methods=['GET', 'POST'])
 @login_required
-@uses_hero_and_update
+@uses_hero
 def proficiencies(hero=None):
     profs1 = [hero.attributes.agility, hero.attributes.brawn, hero.attributes.charisma, hero.attributes.divinity]
     profs2 = [hero.attributes.fortuity, hero.attributes.intellect, hero.attributes.pathfinding,
@@ -578,7 +582,7 @@ def proficiencies(hero=None):
 
 @app.route('/ability_tree/<spec>')
 @login_required
-@uses_hero_and_update
+@uses_hero
 def ability_tree(spec, hero=None):
     page_title = "Abilities"
     return render_template(
@@ -587,7 +591,7 @@ def ability_tree(spec, hero=None):
 
 @app.route('/inventory_page')
 @login_required
-@uses_hero_and_update
+@uses_hero
 def inventory_page(hero=None):
     page_title = "Inventory"
     # for item in hero.inventory:
@@ -599,7 +603,7 @@ def inventory_page(hero=None):
 
 @app.route('/quest_log')
 @login_required
-@uses_hero_and_update
+@uses_hero
 def quest_log(hero=None):
     hero.page_refresh_character()
     page_title = "Quest Log"
@@ -608,7 +612,7 @@ def quest_log(hero=None):
 
 @app.route('/bestiary/<current_monster_id>')
 @login_required
-@uses_hero_and_update
+@uses_hero
 def bestiary(current_monster_id, hero=None):
     if current_monster_id == "default":
         current_monster = None
@@ -625,7 +629,7 @@ def bestiary(current_monster_id, hero=None):
 
 @app.route('/people_log/<current_npc>')
 @login_required
-@uses_hero_and_update
+@uses_hero
 def people_log(current_npc, hero=None):
     if current_npc == "default":
         current_npc = None
@@ -640,14 +644,14 @@ def people_log(current_npc, hero=None):
 
 @app.route('/map_log')
 @login_required
-@uses_hero_and_update
+@uses_hero
 def map_log(hero=None):
     page_title = "Map"
     return render_template('journal.html', myHero=hero, map_log=True, page_title=page_title)  # return a string
 
 @app.route('/achievement_log')
 @login_required
-@uses_hero_and_update
+@uses_hero
 def achievement_log(hero=None):
     page_title = "Achievements"
     return render_template('journal.html', myHero=hero, achievement_log=True,
@@ -655,7 +659,7 @@ def achievement_log(hero=None):
 
 @app.route('/under_construction')
 @login_required
-@uses_hero_and_update
+@uses_hero
 def under_construction(hero=None):
     page_title = "Under Construction"
     return render_template('layout.html', page_title=page_title, hero=hero)  # return a string
@@ -665,7 +669,7 @@ def under_construction(hero=None):
 @app.route('/cave/<location_name>')
 @app.route('/explorable/<location_name>')
 @login_required
-@uses_hero_and_update
+@uses_hero
 @prevent_url_typing  # TODO: this should implement @update_current_location?
 def move(location_name, hero=None):
     """Set up a directory for the hero to move to.
@@ -678,7 +682,6 @@ def move(location_name, hero=None):
         hero.current_world = location
     else:
         hero.current_location = location
-    database.update()
 
     return render_template(
         'move.html', myHero=hero,
@@ -690,7 +693,7 @@ def move(location_name, hero=None):
 
 @app.route('/barracks/<name>')
 @login_required
-@uses_hero_and_update
+@uses_hero
 @update_current_location
 def barracks(name='', hero=None, location=None):
     if hero.proficiencies.health.current <= 0:
@@ -718,7 +721,7 @@ def barracks(name='', hero=None, location=None):
 # From /barracks
 @app.route('/spar/<name>')
 @login_required
-@uses_hero_and_update
+@uses_hero
 @update_current_location
 def spar(name='', hero=None, location=None):
     spar_cost = 50
@@ -749,7 +752,7 @@ def spar(name='', hero=None, location=None):
 # From /barracks
 @app.route('/arena/<name>')
 @login_required
-@uses_hero_and_update
+@uses_hero
 @update_current_location
 def arena(name='', hero=None, location=None):
     """Set up a battle between the player and a random monster.
@@ -799,7 +802,7 @@ def arena(name='', hero=None, location=None):
 # this gets called if you fight in the arena
 @app.route('/battle/<this_user>')
 @login_required
-@uses_hero_and_update
+@uses_hero
 def battle(this_user=None, hero=None):
     required_endurance = 1  # T
     page_title = "Battle"
@@ -871,8 +874,6 @@ def battle(this_user=None, hero=None):
             page_heading += " You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ", "/home", "profile", " page and distribute your new attribute points.")]
 
-    database.update()
-
     # Return an html page built from a Jinja2 form and the passed data.
     return render_template(
         'battle.html', page_title=page_title, page_heading=page_heading,
@@ -883,7 +884,7 @@ def battle(this_user=None, hero=None):
 # a.k.a. "Blacksmith"
 @app.route('/store/<name>')
 @login_required
-@uses_hero_and_update
+@uses_hero
 @update_current_location
 # @spawns_event
 def store(name, hero=None, location=None):
@@ -910,7 +911,7 @@ def store(name, hero=None, location=None):
 # @app.route('/tavern')
 @app.route('/tavern/<name>', methods=['GET', 'POST'])
 @login_required
-@uses_hero_and_update
+@uses_hero
 def tavern(name='', hero=None):
     tavern = True
     page_title = "Tavern"
@@ -986,7 +987,7 @@ def tavern(name='', hero=None):
 
 @app.route('/marketplace/<inventory>')
 @login_required
-@uses_hero_and_update
+@uses_hero
 def marketplace(inventory, hero=None):
     page_title = "Marketplace"
     items_for_sale = []
@@ -1002,7 +1003,7 @@ def marketplace(inventory, hero=None):
 
 @app.route('/house/<name>')
 @login_required
-@uses_hero_and_update
+@uses_hero
 def house(name='', hero=None):
     """A web page for a house.
 
@@ -1014,7 +1015,7 @@ def house(name='', hero=None):
 
 @app.route('/gate/<name>')
 @login_required
-@uses_hero_and_update
+@uses_hero
 def leave_town(name='', hero=None):
     location = database.get_object_by_name('Location', name)
     conversation = [
@@ -1032,7 +1033,7 @@ def leave_town(name='', hero=None):
 # <button class="command", value="foo">. "foo" is what gets sent to this
 # Python code.
 @app.route('/command/<cmd>')  # need to make sure this doesn't conflict with other routes
-@uses_hero_and_update
+@uses_hero
 def command(cmd=None, hero=None):
     """Accept a string from HTML button code -> send back a response.
 
@@ -1073,7 +1074,6 @@ def command(cmd=None, hero=None):
         try:
             response = command_function(hero, database=database,
                                         arg_dict=request.args, engine=engine)
-            database.update()
             # pdb.set_trace()
             return response
         except Exception as ex:
@@ -1090,7 +1090,7 @@ def command(cmd=None, hero=None):
 
 
 @app.route('/about')
-@uses_hero_and_update
+@uses_hero
 def about_page(hero=None):
     info = "The game is being created by Elthran and Haldon, with some help " \
            "from Gnahz. Any inquiries can be made to elthranRPG@gmail.com"

@@ -97,7 +97,6 @@ class LocationTestCase(unittest.TestCase):
         cave.type = 'cave'
 
         self.db.session.add(world)
-        self.db.update()
 
         """
         Test Map Visual Representation:
@@ -132,7 +131,6 @@ class LocationTestCase(unittest.TestCase):
         node_grid[9].adjacent = [node_grid[5], node_grid[6]]
         node_grid[10].adjacent = []
 
-        self.db.update()
         str_town = str(town)
         str_adjacent = Base.pretty_list(town.adjacent, key='name')
         

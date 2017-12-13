@@ -153,7 +153,6 @@ class DatabaseTestCase(unittest.TestCase):
         hero = user.heroes[0]
         hero.name = "Haldon"
         hero.archetype = "Welder"
-        self.db.update()
         user_str = user.pretty
         hero_str = hero.pretty
 
