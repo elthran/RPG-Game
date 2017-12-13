@@ -44,7 +44,6 @@ class Engine:
         # pdb.set_trace()
         event = Event(event_name, hero_id=hero.id, description=description)
         self.db.add_object(event)
-        self.db.update()
 
         triggers = self.db.get_all_triggers_by(event_name, hero.id)
         for trigger in triggers:

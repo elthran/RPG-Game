@@ -72,6 +72,15 @@ class EZDB:
         self.session = Session()
         if first_run and not testing:
             self.add_prebuilt_objects()
+
+    # @property
+    # def session(self):
+    #     pdb.set_trace()
+    #     if self._session: # exists and is not closed.
+    #         return self._session
+    #     else:
+    #         self._session = Session()
+    #         return self._session
         
     def add_prebuilt_objects(self):
         """Add all the predefined object into the database.
@@ -104,19 +113,20 @@ class EZDB:
                             obj.password.encode()).hexdigest()
                         obj.timestamp = EZDB.now()
                     self.session.add(obj)
-                    self.session.commit()
+                    self.update()
                 except sqlalchemy.exc.IntegrityError as ex:
-                    # print(ex)
-                    self.session.rollback()
+                    print(ex)
+                    print("Please debug database setup -> prebuilt object loading.")
+                    pass  # rollback is now handled by 'update()'
         for hero in self.session.query(Hero).all():
             hero.journal.quest_paths = prebuilt_objects.default_quest_paths
-            self.session.commit()
+            self.update()
                     
     def delete_item(self, item_id):
         """Delete a given object from the database.
         """
         self.session.query(Item).filter(Item.id == item_id).delete()
-        self.session.commit()
+        self.update()
         
     def get_object_by_id(self, obj_name, obj_id):
         """Return an object given its class name and id.
@@ -226,7 +236,7 @@ class EZDB:
         user = User(username=username, password=hashed_password, email=email,
                     timestamp=EZDB.now())
         self.session.add(user)
-        self.session.commit()
+        self.update()
         return user
         
     def add_new_hero_to_user(self, user):
@@ -236,7 +246,7 @@ class EZDB:
         """
         
         self.session.add(Hero(user=user))
-        self.session.commit()
+        self.update()
     
     def validate(self, username, password):
         """Check if password if valid for user.
@@ -303,22 +313,38 @@ class EZDB:
                             " does not accommodate.")
 
     def update(self):
-        """Commit current session.
+        """Commit, handle errors, close the session, open a new one.
         
-        NOTE: update function is now mostly redundant!
-        Only use on program exit or logout.
-        When you edit the hero ... he stays edited!
-        Using any of the other methods will push him to database.
+        NOTE: This may not totally work and maybe should use:
+        from contextlib import contextmanager
+
+        @contextmanager
+        def session_scope(self):
+            pass
+
+        See:
+        http://docs.sqlalchemy.org/en/latest/orm/session_basics.html#when-do-i-construct-a-session-when-do-i-commit-it-and-when-do-i-close-it
         """
-        self.session.commit()
+        try:
+            self.session.commit()
+        except Exception as ex:
+            self.session.rollback()
+            raise ex
+        finally:
+            self.session.close()
+            # Make a new session.
+            self.session = EZDB.Session()
 
     def add_object(self, obj):
         """Add an object to the database.
 
         Hides the session object. And the commit :P
+
+        NOTE: You still need to call the 'update()' function.
+        I am considering making this do an 'update()' as well ...
         """
         self.session.add(obj)
-        self.session.commit()
+        self.update()
 
     def get_all_handlers_with_completed_triggers(self, hero):
         """Return all the handler objects with completed triggers.
@@ -379,12 +405,12 @@ class EZDB:
         # Only update if endurance has been incremented.
         if endurance_increment:
             hero.timestamp = EZDB.now()
-        self.session.commit()
+        self.update()
         
-    def get_world(self, name):
-        """Return WorldMap object from database using by name.
-        """
-        return self.session.query(WorldMap).filter_by(name=name).first()
+    # def get_world(self, name):
+    #     """Return WorldMap object from database using by name.
+    #     """
+    #     return self.session.query(WorldMap).filter_by(name=name).first()
     
     def _delete_database(self):
         """Deletes current database file.
