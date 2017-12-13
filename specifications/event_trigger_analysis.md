@@ -52,7 +52,6 @@ _Test to see if any triggers are in place to handle this event. Note that the tr
     triggers = self.db.get_all_triggers_by(event_name, hero.id)
     for trigger in triggers:
         trigger.evaluate()
-    self.db.update()
 ```
 
 #### HANDLE PHASE, PHASE IV
@@ -65,7 +64,6 @@ _This should find all database objects that have completed triggers and run any 
     # completes.
     for handler in handlers:
         handler.run()
-        self.db.update()
 ```
 
 _I am currently using a Handler parent class. To make this work you need
