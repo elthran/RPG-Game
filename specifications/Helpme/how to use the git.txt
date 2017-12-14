@@ -54,6 +54,9 @@ Git Using Different Branches: http://stackoverflow.com/a/9210786
 
 Git create a branch from another branch
 $ git checkout -b <my_new_branch> <my_branch_base>
+## with default customization: git config --global push.default current
+$ git push -u
+OR (without default customization ...)
 $ git push --set-upstream origin <branch_name>
 
 

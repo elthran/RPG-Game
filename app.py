@@ -50,7 +50,6 @@ ALWAYS_VALID_URLS = [
     '/inbox', '/logout',
 ]
 
-
 # Work in progress.
 # Control user moves on map.
 def prevent_url_typing(f):
@@ -118,6 +117,26 @@ def prevent_url_typing(f):
     return wrap_url
 
 
+@app.template_filter()
+def validate_hero_image(hero):
+    """Used to handle an expected/possible error in the template.
+
+    See https://codenhagen.wordpress.com/2015/08/20/custom-jinja2-template-filters-and-flask/
+    """
+    # pdb.set_trace()
+    image_name = ''
+    try:
+        image_name = "archetype_{}.jpg".format(hero.archetype.lower())
+    except AttributeError:
+        image_name = "character.jpg"
+    return image_name
+
+
+@app.template_filter()
+def validate_hero_name(hero):
+    return hero.name if hero.name else "UnNamed"
+
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(
@@ -145,9 +164,18 @@ def login_required(f):
 # It even runs if there is an error.
 # I am unsure of this approach. Myabe '@app.after_request' would be a better
 # fit as this wouldn't write data that caused an error.
-@app.teardown_request
-def update_on_teardown(response):
+@app.after_request
+def update_after_request(response):
     database.update()
+    # print("Database updated.")
+    return response
+
+
+# @app.before_request
+# def handle_redirect_session_bug():
+#     print("Before Request session status")
+#     print(database.session.new)
+#     print(database.session.dirty)
 
 
 # Untested (Marlen)
@@ -161,6 +189,7 @@ def uses_hero(f):
     @wraps(f)
     def wrap_uses_hero(*args, **kwargs):
         try:
+            # print("Currently at the uses_hero function!")
             hero = database.get_object_by_id("Hero", session["hero_id"])
         except KeyError as ex:
             # hero = None
@@ -224,25 +253,9 @@ def login():
             flash("LOG IN SUCCESSFUL")
             user = database.get_user_by_username(username)
             session['id'] = user.id
-            # I recommend a dialogue here to select the specific hero that the
-            # user wants to play with. Or a page redirect whatever ...
-            # Choose hero dialogue ... not implemented.
-            hero = user.heroes[0]
-            # Below is code for daily login reward. It's temporary as I am just trying to play with and learn about timestamps and whatnot.
-            hero.check_daily_login_reward(str(EZDB.now()))
-            # End of daily login reward code (Elthran)
-            session['hero_id'] = hero.id
-            # Now I need to work out how to make game not global *sigh*
-            # (Marlen)
-            game.set_hero(hero)
-            game.set_enemy(monster_generator(hero.age))
-            flash(hero.login_alerts)
-            hero.login_alerts = ""
-            # If it's a new character, send them to cerate_character url
-            if hero.character_name is None:
-                return redirect(url_for('create_character'))
-            # If the character already exist go straight the main home page!
-            return redirect(url_for('home'))
+            # Will barely pause her if only one character exists.
+            # Maybe should just go directly to home page.
+            return redirect(url_for('choose_character'))
         # Marked for upgrade, consider checking if user exists
         # and redirect to account creation page.
         else:
@@ -289,6 +302,14 @@ def create_account():
             return redirect(url_for('login'))
     return render_template('index.html', error=error, create_account=True)
 
+
+@app.route('/add_new_character')
+def add_new_character():
+    user = database.get_object_by_id("User", session['id'])
+    database.add_new_hero_to_user(user)
+    return redirect(url_for('choose_character'))
+
+
 # this gets called if you press "logout"
 @app.route('/logout')
 @login_required
@@ -314,12 +335,14 @@ approaching in the sand. Unsure of where you are, you quickly look
 around for something to defend yourself. A firm and inquisitive voice
 pierces the air.""".replace('\n', ' ').replace('\r', '')
     conversation = [("Stranger: ", "Who are you and what are you doing here?")]
-    if len(hero.quest_paths) == 0:
-        # pdb.set_trace()
+
+    if len(hero.journal.quest_paths) == 0:
         hero.journal.quest_paths = database.get_default_quest_paths()
+
     if hero.current_world is None:
         hero.current_world = database.get_default_world()
         hero.current_location = database.get_default_location()
+
     if request.method == 'POST' and hero.name is None:
         hero.name = request.form["name"].title()
         page_image = "old_man"
@@ -339,6 +362,7 @@ pierces the air.""".replace('\n', ' ').replace('\r', '')
             hero.gold += 50
         elif fathers_job == "Priest":
             hero.attributes.divinity.level += 3
+
     if hero.character_name is not None and fathers_job is not None:
         hero.refresh_character(full=True)
         return redirect(url_for('home'))
@@ -348,6 +372,42 @@ pierces the air.""".replace('\n', ' ').replace('\r', '')
             'create_character.html', page_title=page_title,
             page_heading=page_heading, page_image=page_image,
             paragraph=paragraph, conversation=conversation, display=display)
+
+
+@app.route("/choose_character", methods=['GET', 'POST'])
+@login_required
+def choose_character():
+    user = database.get_object_by_id("User", session['id'])
+    # print(user)
+    # exit("testing choose character.")
+    hero = None
+    if len(user.heroes) == 1:
+        hero = user.heroes[0]
+        print("Gets to _only one hero_ section", hero.name)
+    elif request.method == 'POST':
+        hero = database.get_object_by_id("Hero", request.form['hero_id'])
+        print("Gets to fulfill post request", hero.name)
+    else:
+        print("Gets to render template ...")
+        return render_template('choose_character.html', user=user)
+
+    print("Gets to move on code ...")
+    print("Hero is working:", hero.name)
+    # Below is code for daily login reward. It's temporary as I am just trying to play with and learn about timestamps and whatnot.
+    hero.check_daily_login_reward(str(EZDB.now()))
+    # End of daily login reward code (Elthran)
+    session['hero_id'] = hero.id
+    # Now I need to work out how to make game not global *sigh*
+    # (Marlen)
+    game.set_hero(hero)
+    game.set_enemy(monster_generator(hero.age))
+    flash(hero.login_alerts)
+    hero.login_alerts = ""
+    # If it's a new character, send them to create_character url
+    if hero.character_name is None:
+        return redirect(url_for('create_character'))
+    # If the character already exist go straight the main home page!
+    return redirect(url_for('home'))
 
 
 # An admin button that lets you reset your character. Currently doesnt reset attributes/proficiencies, nor inventory and other stuff. Should be rewritten as something
@@ -373,10 +433,11 @@ def reset_character(stat_type, hero=None):
 
 
 # this is a temporary page that lets you modify any attributes for testing
+@app.route('/admin/<myself>', methods=['GET', 'POST'])
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 @uses_hero
-def admin(hero=None):
+def admin(myself=None, hero=None):
     page_title = "Admin"
     if request.method == 'POST':
         hero.age = int(request.form["Age"])
@@ -410,7 +471,7 @@ def admin(hero=None):
         ("Attribute_points", hero.attribute_points),
         ("Proficiency_Points", hero.proficiency_points)]
     return render_template('admin.html', page_title=page_title, hero=hero,
-                           admin=admin)  # return a string
+                           admin=admin, myself=myself)  # return a string
 
 
 # The if statement works and displays the user page as normal. Now if you
@@ -690,6 +751,7 @@ def move(location_name, hero=None):
         page_image=location.display.page_image,
         paragraph=location.display.paragraph,
         places_of_interest=location.places_of_interest)
+
 
 @app.route('/barracks/<name>')
 @login_required
