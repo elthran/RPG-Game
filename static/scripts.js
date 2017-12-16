@@ -308,11 +308,11 @@ function confirmHeroSelection(element) {
 //Function To Display Popup
 function popupReplyBox(button, messageContent, messageSender) {
     document.getElementById('myModal').style.display = "block";
+    document.querySelector("[name=content]").focus();
+
     document.getElementById('replyBoxMessageContent').innerHTML = messageContent;
     document.getElementById('replyBoxMessageSender').innerHTML = messageSender;
-    console.log("Button data: " + button.getAttribute("data"));
     document.querySelector("[name=message_id]").value = button.getAttribute("data");
-    console.log("Modal should have popped up.");
 }
 
 document.addEventListener("DOMContentLoaded", function () {

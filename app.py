@@ -550,14 +550,13 @@ def inbox(outbox, hero=None):
         outbox = False
     if request.method == 'POST':
         pprint(request.form)
-        pdb.set_trace()
-        username_of_receiver = request.form["receiver"]
-        content = request.form["message"]
-        receiver = database.get_user_by_username(username_of_receiver)
+        message = database.get_object_by_id("Message", request.form['message_id'])
+        content = request.form["content"]
+        receiver = message.sender.user
         hero.user.inbox.send_message(receiver, content, str(EZDB.now()))
         receiver.inbox_alert = True
-        return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)
-    return render_template('inbox.html', page_title="Inbox", myHero=hero, outbox=outbox)
+        return render_template('inbox.html', page_title="Inbox", hero=hero, outbox=outbox)
+    return render_template('inbox.html', page_title="Inbox", hero=hero, outbox=outbox)
 
 @app.route('/spellbook')
 @uses_hero
