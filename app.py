@@ -50,8 +50,9 @@ ALWAYS_VALID_URLS = [
     '/inbox', '/logout',
 ]
 
+
 # Work in progress.
-# Control user moves on map.
+# Control user moves on map. Rename too 'url_protect' because it sounds _sick_.
 def prevent_url_typing(f):
     """Redirects to last page if hero can't travel here.
 
@@ -1185,4 +1186,6 @@ if __name__ == '__main__':
     # for item in hero.inventory:
     #     item.amount_owned = 5
 
+    # Remove when not testing.
+    app.jinja_env.auto_reload = True
     app.run(debug=True)
