@@ -289,6 +289,19 @@ function updateAbility(button, id, ability_level, max_level, tree, description) 
 }
 
 
+// Choose character page, confirms user choice of hero.
+function confirmHeroSelection(element) {
+    // Should bring up a confirmation dialogue or something.
+    if (true) {
+        formHeroIDInput = document.querySelector("[name=hero_id]");
+        console.log("Hidden input button");
+        console.log(formHeroIDInput);
+        console.log("Clicked button/input image thing.");
+        console.log(element);
+        formHeroIDInput.value = element.id;
+        return true;
+    } else {
+        return false;
+    }
 
-//NOTE: <div style="display: inline"> should be replaced by a span tag
-// once I figure out how make them visible again.
+}

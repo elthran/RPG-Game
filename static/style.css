@@ -756,3 +756,17 @@ img.profileImage {
 	from {opacity: 0;}
 	to {opacity:1 ;}
 }
+
+/* Choose character page */
+.imageContainer {
+    position: relative;
+    text-align: center;
+    color: white;
+}
+.label {
+    position: absolute;
+    bottom: 0.8em;
+    width: 100%;
+    left: 0;
+}
+

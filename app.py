@@ -373,8 +373,7 @@ pierces the air.""".replace('\n', ' ').replace('\r', '')
             page_heading=page_heading, page_image=page_image,
             paragraph=paragraph, conversation=conversation, display=display)
 
-
-@app.route("/choose_character", methods=['GET', 'POST'])
+@app.route('/choose_character', methods=['GET', 'POST'])
 @login_required
 def choose_character():
     user = database.get_object_by_id("User", session['id'])

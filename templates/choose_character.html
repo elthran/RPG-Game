@@ -13,9 +13,12 @@
         <h1>Welcome {{ user.username }}!</h1>
         <br>
         <h3>Please choose the Hero you want to play as:</h3>
+        <input type="hidden" name="hero_id" value="" />
         {%- for hero in user.heroes %}
-        <label for="{{ hero.id }}">{{ hero | validate_hero_name }}</label>
-        <input id="{{ hero.id }}" type="image" name="hero_id" value={{ hero.id }} src="/static/images/{{ hero | validate_hero_image }}" border="0" alt="{{ hero.name }}" autofocus tabindex={{ loop.index }} onsubmit="return confirm('Are you sure you want to play as {{ hero.name }}?');" />
+        <span class="imageContainer">
+            <input type="image" id="{{ hero.id }}" src="/static/images/{{ hero | validate_hero_image }}" border="0" alt="{{ hero.name }}" {% if loop.first %}autofocus {% endif %}tabindex={{ loop.index }} onclick="return confirmHeroSelection(this);" />
+            <label class="label" for="{{ hero.id }}">{{ hero | validate_hero_name }}</label>
+        </span>
         {%- endfor %}
     </form>
 </div>
