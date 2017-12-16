@@ -78,47 +78,30 @@ alert("Form Submitted Successfully...");
         {% endif %}
     </table>
 
-    {% if outbox %}
     <!-- The Modal -->
         <div id="inboxPopupWindow" class="modal">
-
           <!-- Modal content -->
           <div class="modal-content">
               <span class="close">&times;</span>
-              <form action="#" id="inbox-form" method="post" name="form">
-                  <h2>Message received from <span id="replyBoxMessageSender"></span></h2>
-                  <h3>Content:</h3>
-                    <p>
-                        <div id="replyBoxMessageContent"></div>
-                    </p>
-                  <br>
-                  <input type="hidden" name="message_id" value="">
-                  <input type="text" name="content" placeholder="reply...">
-                  <br>
-                </form>
-          </div>
-
-        </div>
-{% else %}
-        <!-- The Modal -->
-        <div id="inboxPopupWindow" class="modal">
-
-          <!-- Modal content -->
-          <div class="modal-content">
-              <span class="close">&times;</span>
-              <form action="#" id="inbox-form" method="post" name="form">
-                  <h2>Message from <span id="replyBoxMessageSender"></span></h2>
-                  <h3>Content:</h3>
-                      <p>
-                        <div id="replyBoxMessageContent"></div>
-                      </p>
-                  <h3>Response:</h3>
-                  <input type="hidden" name="message_id" value="">
-                  <input type="text" name="content" placeholder="reply...">
-                  <br><br>
-                  <input type="submit" value="Submit">
-                </form>
+              {% if outbox %}
+                  <form action="#" id="inbox-form" method="post" name="form">
+                      <h2>Message received from <span id="replyBoxMessageSender"></span></h2>
+                      <h3>Content:</h3>
+                      <div id="replyBoxMessageContent"></div>
+                      <br>
+                    </form>
+              {% else %}
+                  <form action="#" id="inbox-form" method="post" name="form">
+                      <h2>Message from <span id="replyBoxMessageSender"></span></h2>
+                      <h3>Content:</h3>
+                      <div id="replyBoxMessageContent"></div>
+                      <h3>Response:</h3>
+                      <input type="hidden" name="message_id" value="">
+                      <input type="text" name="content" placeholder="reply...">
+                      <br><br>
+                      <input type="submit" value="Submit">
+                    </form>
+              {% endif %}
           </div>
         </div>
-    {% endif %}
 {% endblock %}
