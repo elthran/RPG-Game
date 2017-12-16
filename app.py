@@ -382,16 +382,11 @@ def choose_character():
     hero = None
     if len(user.heroes) == 1:
         hero = user.heroes[0]
-        print("Gets to _only one hero_ section", hero.name)
     elif request.method == 'POST':
         hero = database.get_object_by_id("Hero", request.form['hero_id'])
-        print("Gets to fulfill post request", hero.name)
     else:
-        print("Gets to render template ...")
         return render_template('choose_character.html', user=user)
 
-    print("Gets to move on code ...")
-    print("Hero is working:", hero.name)
     # Below is code for daily login reward. It's temporary as I am just trying to play with and learn about timestamps and whatnot.
     hero.check_daily_login_reward(str(EZDB.now()))
     # End of daily login reward code (Elthran)
