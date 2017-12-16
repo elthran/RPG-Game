@@ -302,3 +302,43 @@ function confirmHeroSelection(element) {
     }
 
 }
+
+// Inbox Reply popup
+
+//Function To Display Popup
+function popupReplyBox(button, messageContent, messageSender) {
+    document.getElementById('myModal').style.display = "block";
+    document.getElementById('replyBoxMessageContent').innerHTML = messageContent;
+    document.getElementById('replyBoxMessageSender').innerHTML = messageSender;
+    console.log("Button data: " + button.getAttribute("data"));
+    document.querySelector("[name=message_id]").value = button.getAttribute("data");
+    console.log("Modal should have popped up.");
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    "use strict";
+    // Get the modal
+    var modal = document.getElementById('myModal');
+
+    // Get the <span> element that closes the modal
+    var span = document.querySelector(".close");
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // Handle ESC key (key code 27)
+    document.addEventListener('keyup', function(e) {
+        if (e.keyCode == 27) {
+            modal.style.display = "none";
+        }
+    });
+}, true);

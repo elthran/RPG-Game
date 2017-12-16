@@ -13,28 +13,6 @@ alert("Form Submitted Successfully...");
 }
 }
 
-//Function To Display Popup
-function popupReplyBox(button, messageContent, messageSender) {
-    document.getElementById('inboxPopupOuter').style.display = "block";
-    document.getElementById('replyBoxMessageContent').innerHTML = messageContent;
-    document.getElementById('replyBoxMessageSender').innerHTML = messageSender;
-    document.getElementById("replyPopupBoxButton").setAttribute('data', messageSender);
-}
-
-//Function to Hide Popup
-function div_hide(){
-document.getElementById('inboxPopupOuter').style.display = "none";
-}
-
-function attachMessage() {
-    var messageContent = document.getElementById('inbox-form-inner').value;
-    var spacer = "-";
-    var messageSender = document.getElementById('replyBoxMessageSender').innerHTML
-    var finalData = messageContent.concat(spacer, messageSender)
-    document.getElementById("replyPopupBoxButton").setAttribute('data', finalData);
-}
-
-
 </script>
 
 <div class="inboxTopbar">
@@ -49,26 +27,6 @@ function attachMessage() {
     </ul>
 </div>
 <div style="clear: both;"></div>
-
-<div id="inboxPopupOuter">
-<!-- Popup Div Starts Here -->
-<div id="inboxPopupInner">
-<!-- Reply Popup Box Starts Here -->
-<form action="#" id="inbox-form" method="post" name="form">
-<img id="closeReplyBox" src="/static/images/closing_x.jpg" onclick ="div_hide()">
-<h2>Reply</h2>
-    <span id="replyBoxMessageContent"></span>
-    <br>From <span id="replyBoxMessageSender"></span>
-<hr>
-<input class="inbox-input" id="inbox-form-inner" name="name" placeholder="reply..." type="text">
-<button id="replyPopupBoxButton" data="none" data-js-callback="attachMessage" data-py-function="send_message_to_user_by_username">
-    Send
-</button>
-</form>
-</div>
-<!-- Reply Popup Box Ends Here -->
-</div>
-
 {SELECT ALL} {DELETE}
 <table id="inboxTable">
     <tr>
@@ -83,8 +41,8 @@ function attachMessage() {
             <td><img src="/static/images/empty_box.jpg" style="width:25px;height:25px;"></td>
             <td><a href=/display_users/see_user/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
             <td>
-                <!-- Button to Display Popup Button -->
-                <button id="popup" data="{{ message.id }}" data-py-function="get_message_content_and_sender_by_id" data-js-callback="popupReplyBox">
+                <!-- Trigger/Open The Modal -->
+                <button id="myBtn" data="{{ message.id }}" data-py-function="get_message_content_and_sender_by_id" data-js-callback="popupReplyBox">
                     {{ message.content[0:10] }}
                 </button>
             </td>
@@ -93,4 +51,24 @@ function attachMessage() {
         </tr>
     {% endfor %}
 </table>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+      <span class="close">&times;</span>
+      <form action="#" id="inbox-form" method="post" name="form">
+          <h2>Reply to ..</h2>
+          <div id="replyBoxMessageContent"></div>
+          <br>From <span id="replyBoxMessageSender"></span>
+          <br>
+          <input type="hidden" name="message_id" value="">
+          <input type="text" name="content" placeholder="reply..." >
+          <br>
+          <input type="submit" value="Submit">
+        </form>
+  </div>
+
+</div>
 {% endblock %}

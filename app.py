@@ -549,6 +549,8 @@ def inbox(outbox, hero=None):
     else:
         outbox = False
     if request.method == 'POST':
+        pprint(request.form)
+        pdb.set_trace()
         username_of_receiver = request.form["receiver"]
         content = request.form["message"]
         receiver = database.get_user_by_username(username_of_receiver)
