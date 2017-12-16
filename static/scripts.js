@@ -308,8 +308,12 @@ function confirmHeroSelection(element) {
 //Function To Display Popup
 function popupReplyBox(button, messageContent, messageSender) {
     document.getElementById('inboxPopupWindow').style.display = "block";
-    document.querySelector("[name=content]").focus();
 
+    var contentInput = document.querySelector("[name=content]");
+
+    if (contentInput) {
+        contentInput.focus();
+    }
     document.getElementById('replyBoxMessageContent').innerHTML = messageContent;
     document.getElementById('replyBoxMessageSender').innerHTML = messageSender;
     document.querySelector("[name=message_id]").value = button.getAttribute("data");
@@ -324,8 +328,10 @@ document.addEventListener("DOMContentLoaded", function () {
     var span = document.querySelector(".close");
 
     // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
-        modal.style.display = "none";
+    if (span) {
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
     }
 
     // When the user clicks anywhere outside of the modal, close it
