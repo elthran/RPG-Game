@@ -307,7 +307,7 @@ function confirmHeroSelection(element) {
 
 //Function To Display Popup
 function popupReplyBox(button, messageContent, messageSender) {
-    document.getElementById('myModal').style.display = "block";
+    document.getElementById('inboxPopupWindow').style.display = "block";
     document.querySelector("[name=content]").focus();
 
     document.getElementById('replyBoxMessageContent').innerHTML = messageContent;
@@ -318,7 +318,7 @@ function popupReplyBox(button, messageContent, messageSender) {
 document.addEventListener("DOMContentLoaded", function () {
     "use strict";
     // Get the modal
-    var modal = document.getElementById('myModal');
+    var modal = document.getElementById('inboxPopupWindow');
 
     // Get the <span> element that closes the modal
     var span = document.querySelector(".close");

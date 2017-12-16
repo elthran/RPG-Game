@@ -15,112 +15,110 @@ alert("Form Submitted Successfully...");
 
 </script>
 
-{% if outbox %}
+
     <div class="inboxTopbar">
         <ul>
-            <li><a href="/inbox/inbox">Inbox</a></li>
-            <li><a class="topbarActive" href="/inbox/outbox">Outbox</a></li>
+            {% if outbox %}
+                <li><a href="/inbox/inbox">Inbox</a></li>
+                <li><a class="topbarActive" href="/inbox/outbox">Outbox</a></li>
+            {% else %}
+                <li><a class="topbarActive" href="/inbox/inbox">Inbox</a></li>
+                <li><a href="/inbox/outbox">Outbox</a></li>
+            {% endif %}
         </ul>
     </div>
     <div style="clear: both;"></div>
-    {SELECT ALL} {DELETE}
+    <br>
+    <button>
+        Compose Message
+    </button>
+    <br><br>{SELECT ALL} {DELETE}
     <table id="inboxTable">
         <tr>
             <th></th>
+            {% if outbox %}
             <th>To</th>
-            <th>Message</th>
-            <th>Timestamp</th>
-            <th>ID</th>
-        </tr>
-        {% for message in hero.user.inbox.sent_messages %}
-            <tr>
-                <td><img src="/static/images/empty_box.jpg" style="width:25px;height:25px;"></td>
-                <td><a href=/display_users/see_user/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
-                <td>
-                    <!-- Trigger/Open The Modal -->
-                    <button id="myBtn" data="{{ message.id }}" data-py-function="get_message_content_and_sender_by_id" data-js-callback="popupReplyBox">
-                        {{ message.content[0:7] }}...
-                    </button>
-                </td>
-                <td>{{ message.timestamp }}</td>
-                <td>{{ message.id }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-
-    <!-- The Modal -->
-    <div id="myModal" class="modal">
-
-      <!-- Modal content -->
-      <div class="modal-content">
-          <span class="close">&times;</span>
-          <form action="#" id="inbox-form" method="post" name="form">
-              <h2>Message received from <span id="replyBoxMessageSender"></span></h2>
-              <h3>Content:</h3>
-                <p>
-                    <div id="replyBoxMessageContent"></div>
-                </p>
-              <br>
-              <input type="hidden" name="message_id" value="">
-              <input type="text" name="content" placeholder="reply...">
-              <br>
-            </form>
-      </div>
-
-    </div>
-{% else %} <!-- Is inbox -->
-    <div class="inboxTopbar">
-        <ul>
-            <li><a class="topbarActive" href="/inbox/inbox">Inbox</a></li>
-            <li><a href="/inbox/outbox">Outbox</a></li>
-        </ul>
-    </div>
-    <div style="clear: both;"></div>
-    {SELECT ALL} {DELETE}
-    <table id="inboxTable">
-        <tr>
-            <th></th>
+            {% else %}
             <th>From</th>
+            {% endif %}
             <th>Message</th>
             <th>Timestamp</th>
             <th>ID</th>
         </tr>
-        {% for message in hero.user.inbox.received_messages %}
-            <tr>
-                <td><img src="/static/images/empty_box.jpg" style="width:25px;height:25px;"></td>
-                <td><a href=/display_users/see_user/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
-                <td>
-                    <!-- Trigger/Open The Modal -->
-                    <button id="myBtn" data="{{ message.id }}" data-py-function="get_message_content_and_sender_by_id" data-js-callback="popupReplyBox">
-                        {{ message.content[0:7] }}...
-                    </button>
-                </td>
-                <td>{{ message.timestamp }}</td>
-                <td>{{ message.id }}</td>
-            </tr>
-        {% endfor %}
+        {% if outbox %}
+            {% for message in hero.user.inbox.sent_messages %}
+                <tr>
+                    <td><img src="/static/images/empty_box.jpg" style="width:25px;height:25px;"></td>
+                    <td><a href=/display_users/see_user/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
+                    <td>
+                        <!-- Trigger/Open The Modal -->
+                        <button data="{{ message.id }}" data-py-function="get_message_content_and_sender_by_id" data-js-callback="popupReplyBox">
+                            {{ message.content[0:7] }}...
+                        </button>
+                    </td>
+                    <td>{{ message.timestamp }}</td>
+                    <td>{{ message.id }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            {% for message in hero.user.inbox.received_messages %}
+                <tr>
+                    <td><img src="/static/images/empty_box.jpg" style="width:25px;height:25px;"></td>
+                    <td><a href=/display_users/see_user/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
+                    <td>
+                        <!-- Trigger/Open The Modal -->
+                        <button data="{{ message.id }}" data-py-function="get_message_content_and_sender_by_id" data-js-callback="popupReplyBox">
+                            {{ message.content[0:7] }}...
+                        </button>
+                    </td>
+                    <td>{{ message.timestamp }}</td>
+                    <td>{{ message.id }}</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
     </table>
 
+    {% if outbox %}
     <!-- The Modal -->
-    <div id="myModal" class="modal">
+        <div id="inboxPopupWindow" class="modal">
 
-      <!-- Modal content -->
-      <div class="modal-content">
-          <span class="close">&times;</span>
-          <form action="#" id="inbox-form" method="post" name="form">
-              <h2>Message from <span id="replyBoxMessageSender"></span></h2>
-              <h3>Content:</h3>
-                  <p>
-                    <div id="replyBoxMessageContent"></div>
-                  </p>
-              <h3>Response:</h3>
-              <input type="hidden" name="message_id" value="">
-              <input type="text" name="content" placeholder="reply...">
-              <br><br>
-              <input type="submit" value="Submit">
-            </form>
-      </div>
+          <!-- Modal content -->
+          <div class="modal-content">
+              <span class="close">&times;</span>
+              <form action="#" id="inbox-form" method="post" name="form">
+                  <h2>Message received from <span id="replyBoxMessageSender"></span></h2>
+                  <h3>Content:</h3>
+                    <p>
+                        <div id="replyBoxMessageContent"></div>
+                    </p>
+                  <br>
+                  <input type="hidden" name="message_id" value="">
+                  <input type="text" name="content" placeholder="reply...">
+                  <br>
+                </form>
+          </div>
 
-    </div>
-{% endif %}
+        </div>
+{% else %}
+        <!-- The Modal -->
+        <div id="inboxPopupWindow" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+              <span class="close">&times;</span>
+              <form action="#" id="inbox-form" method="post" name="form">
+                  <h2>Message from <span id="replyBoxMessageSender"></span></h2>
+                  <h3>Content:</h3>
+                      <p>
+                        <div id="replyBoxMessageContent"></div>
+                      </p>
+                  <h3>Response:</h3>
+                  <input type="hidden" name="message_id" value="">
+                  <input type="text" name="content" placeholder="reply...">
+                  <br><br>
+                  <input type="submit" value="Submit">
+                </form>
+          </div>
+        </div>
+    {% endif %}
 {% endblock %}
