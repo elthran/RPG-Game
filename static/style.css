@@ -718,7 +718,6 @@ img.profileImage {
     font-family:raleway;
     padding: 10px 50px; /* Makes sure the box is big enough to fit the text */
     display: inline-block; /* Makes sure it stays in the center */
-    margin: 40%; /* Pushes to towards the center horizontally */
 }
 
 /* The Close Button */
