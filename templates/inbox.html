@@ -32,7 +32,8 @@ alert("Form Submitted Successfully...");
     <button>
         Compose Message
     </button>
-    <br><br>{SELECT ALL} {DELETE}
+    <br><br>{SELECT ALL} <input type="submit" name="delete" form="messageForm" value="DELETE" />
+    <form id="messageForm" onsubmit="return sendToPy(event, updateMessageTable, getIdsFromCheckboxes);">
     <table id="inboxTable">
         <tr>
             <th></th>
@@ -47,7 +48,7 @@ alert("Form Submitted Successfully...");
         </tr>
         {% macro message_list(message) %}
         <tr>
-            <td><img src="/static/images/empty_box.jpg" style="width:25px;height:25px;"></td>
+            <td><input type="checkbox" id="messageId" value="{{ message.id }}" /></td>
             <td><a href=/display_users/see_user/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
             <td>
                 <!-- Trigger/Open The Modal -->
@@ -69,6 +70,7 @@ alert("Form Submitted Successfully...");
             {% endfor %}
         {% endif %}
     </table>
+    </form>
 
     <!-- The Modal -->
         <div id="inboxPopupWindow" class="modal row">

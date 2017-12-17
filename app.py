@@ -550,13 +550,23 @@ def inbox(outbox, hero=None):
     else:
         outbox = False
     if request.method == 'POST':
-        pprint(request.form)
-        message = database.get_object_by_id("Message", request.form['message_id'])
-        content = request.form["content"]
-        receiver = message.sender.user
-        hero.user.inbox.send_message(receiver, content, str(EZDB.now()))
-        receiver.inbox_alert = True
-        return render_template('inbox.html', page_title="Inbox", hero=hero, outbox=outbox)
+        # pprint(request)
+        # pprint(request.form)
+        # if
+        if request.is_json:
+            print("Data is:")
+            data = request.get_json()
+            pprint(data)
+            ids_to_delete = [id for id in request.form.values() if id != "DELETE"]
+            print("Ids to delete:", ids_to_delete)
+            # pdb.set_trace()
+            return "success"
+        else:
+            message = database.get_object_by_id("Message", request.form['message_id'])
+            content = request.form["content"]
+            receiver = message.sender.user
+            hero.user.inbox.send_message(receiver, content, str(EZDB.now()))
+            receiver.inbox_alert = True
     return render_template('inbox.html', page_title="Inbox", hero=hero, outbox=outbox)
 
 @app.route('/spellbook')

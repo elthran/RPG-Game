@@ -348,3 +348,83 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 }, true);
+
+// Inbox form data transfer
+function getIdsFromCheckboxes(element, event) {
+    console.log("preprocessing data");
+//    console.log(event);
+//    console.log(element);
+    return {"action": event.explicitOriginalTarget.getAttribute('name')}
+}
+
+function updateMessageTable(response) {
+    console.log("Callback working");
+    console.log("Response was: " + response.responseText);
+}
+
+
+
+/* Server communication v2
+Usage:
+    <form onsubmit="return sendToPy(event, updateMessageTable, getIdsFromCheckboxes);></form>
+    OR
+    <button onclick="sendToPy(event, someCallBack, somePreprocess, someUrl);"></button>
+
+NOTE: Form must have a return method too.
+NOTE: url defaults to current page unless specified.
+*/
+function sendToPy(event, callback, pre_process, url) {
+    "use strict";
+    var element = event.target;
+    var data;
+
+    if (!url) { // if url is blank use url of page
+        url = window.location.pathname;
+    }
+
+    // Normal data processing is object form.
+    // auto-converts to JSON.
+    if (pre_process) {
+        data = pre_process(element, event);
+    } else {
+        data = element.getAttribute('data');
+    }
+    postJSON(url, data, callback);
+
+    // For normal event suppression.
+    event.preventDefault();
+    // Extra event suppression
+    event.stopPropagation();
+    // For form submit suppression
+    return false;
+}
+
+// Send the data via POST to the server. Run callback if it exists.
+// Sends data as JSON. Customizable.
+function postJSON(url, data, callback) {
+    var xhttp;
+    xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            if (callback) {
+                callback(this);
+            }
+        }
+    };
+    xhttp.open("POST", url, true);
+    data = JSON.stringify(data);
+    console.log("Data to be sent: " + data);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send(data);
+}
+
+// Get a valid function handler (if one exists) for a given function string.
+function getFunc(element, funcName) {
+    func =  window[element.getAttribute(funcName)];
+    if (func === undefined) {
+        func = function () {
+            return;
+        };
+    }
+    return func;
+}
