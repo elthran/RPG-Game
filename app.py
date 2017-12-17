@@ -557,7 +557,7 @@ def inbox(outbox, hero=None):
             print("Data is:")
             data = request.get_json()
             pprint(data)
-            ids_to_delete = [id for id in request.form.values() if id != "DELETE"]
+            ids_to_delete = data['ids']
             print("Ids to delete:", ids_to_delete)
             # pdb.set_trace()
             return "success"

@@ -350,11 +350,20 @@ document.addEventListener("DOMContentLoaded", function () {
 }, true);
 
 // Inbox form data transfer
-function getIdsFromCheckboxes(element, event) {
+function getIdsFromCheckboxes(form, event) {
     console.log("preprocessing data");
-//    console.log(event);
-//    console.log(element);
-    return {"action": event.explicitOriginalTarget.getAttribute('name')}
+    console.log(form);
+    var ids = [];
+    var i;
+    for (i = 0; i < form.length; i++) {
+        if (form.elements[i].checked) {
+            ids.push(form.elements[i].value);
+        }
+    }
+    return {
+        "action": event.explicitOriginalTarget.getAttribute('name'),
+        "ids": ids
+    }
 }
 
 function updateMessageTable(response) {
