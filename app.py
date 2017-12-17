@@ -1187,5 +1187,7 @@ if __name__ == '__main__':
     #     item.amount_owned = 5
 
     # Remove when not testing.
+    app.jinja_env.trim_blocks = True
+    app.jinja_env.lstrip_blocks = True
     app.jinja_env.auto_reload = True
     app.run(debug=True)

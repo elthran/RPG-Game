@@ -12,30 +12,30 @@
         <h1>
             <center>{{ attribute.name }}: {{attribute.level }}</center>
         </h1>
-        {%- for proficiency in myHero.proficiencies %}
-        {%- if proficiency.attribute_type == attribute.name %}
+        {% for proficiency in myHero.proficiencies %}
+        {% if proficiency.attribute_type == attribute.name %}
         <div class="tooltip">
             <ul>
                 {{ proficiency.name}}:
                 <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
                 <span id="tooltipPopup-{{ proficiency.id }}">
                                     {{ proficiency.description }}:
-                                    {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
-                                    {%- for tooltip in proficiency_tooltip %}
+                                    {% set proficiency_tooltip = proficiency.tooltip.split(';') %}
+                                    {% for tooltip in proficiency_tooltip %}
                                         <br>&bull; {{ tooltip }}
-                                    {%- endfor %}
+                                    {% endfor %}
                                     <div style="display:
-                                    {%- if proficiency.is_max_level() %} inline{% else %} none
-                                    {%- endif %}"><br>{{ proficiency.error }}</div>
+                                    {% if proficiency.is_max_level() %} inline{% else %} none
+                                    {% endif %}"><br>{{ proficiency.error }}</div>
                                 </span>
                 <button data-py-function="update_proficiency"
                         data="{{ proficiency.id }}" id="proficiencyButton"
-                        data-js-callback="updateProf" {%- if myHero.proficiency_points
+                        data-js-callback="updateProf" {% if myHero.proficiency_points
                 <= 0 or proficiency.is_max_level() %} style="display: none"{% endif %}></button>
             </ul>
         </div>
-        {%- endif %}
-        {%- endfor %}
+        {% endif %}
+        {% endfor %}
         {% endfor %}
     </div>
     <div class="proficiencyPageInner">
@@ -43,29 +43,29 @@
         <h1>
             <center>{{ attribute.name }}: {{attribute.level }}</center>
         </h1>
-        {%- for proficiency in myHero.proficiencies %}
-        {%- if proficiency.attribute_type == attribute.name %}
+        {% for proficiency in myHero.proficiencies %}
+        {% if proficiency.attribute_type == attribute.name %}
         <div class="tooltip">
             <ul>
                 {{ proficiency.name}}:
                 <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
                 <span id="tooltipPopup-{{ proficiency.id }}">
                                     {{ proficiency.description }}:
-                                    {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
-                                    {%- for tooltip in proficiency_tooltip %}
+                                    {% set proficiency_tooltip = proficiency.tooltip.split(';') %}
+                                    {% for tooltip in proficiency_tooltip %}
                                         <br>&bull; {{ tooltip }}
-                                    {%- endfor %}
+                                    {% endfor %}
                                     <div style="display:
-                                    {%- if proficiency.is_max_level() %} inline{% else %} none
-                                    {%- endif %}"><br>{{ proficiency.error }}</div>
+                                    {% if proficiency.is_max_level() %} inline{% else %} none
+                                    {% endif %}"><br>{{ proficiency.error }}</div>
                                 </span>
                 <button data-py-function="update_proficiency" data="{{ proficiency.id }}" id="proficiencyButton"
-                        data-js-callback="updateProf" {%- if myHero.proficiency_points
+                        data-js-callback="updateProf" {% if myHero.proficiency_points
                 <= 0 or proficiency.is_max_level() %} style="display: none"{% endif %}></button>
             </ul>
         </div>
-        {%- endif %}
-        {%- endfor %}
+        {% endif %}
+        {% endfor %}
         {% endfor %}
     </div>
     <div class="proficiencyPageInner">
@@ -73,29 +73,29 @@
         <h1>
             <center>{{ attribute.name }}: {{attribute.level }}</center>
         </h1>
-        {%- for proficiency in myHero.proficiencies %}
-        {%- if proficiency.attribute_type == attribute.name %}
+        {% for proficiency in myHero.proficiencies %}
+        {% if proficiency.attribute_type == attribute.name %}
         <div class="tooltip">
             <ul>
                 {{ proficiency.name}}:
                 <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
                 <span id="tooltipPopup-{{ proficiency.id }}">
                                     {{ proficiency.description }}:
-                                    {%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
-                                    {%- for tooltip in proficiency_tooltip %}
+                                    {% set proficiency_tooltip = proficiency.tooltip.split(';') %}
+                                    {% for tooltip in proficiency_tooltip %}
                                         <br>&bull; {{ tooltip }}
-                                    {%- endfor %}
+                                    {% endfor %}
                                     <div style="display:
-                                    {%- if proficiency.is_max_level() %} inline{% else %} none
-                                    {%- endif %}"><br>{{ proficiency.error }}</div>
+                                    {% if proficiency.is_max_level() %} inline{% else %} none
+                                    {% endif %}"><br>{{ proficiency.error }}</div>
                                 </span>
                 <button data-py-function="update_proficiency" data="{{ proficiency.id }}" id="proficiencyButton"
-                        data-js-callback="updateProf" {%- if myHero.proficiency_points
+                        data-js-callback="updateProf" {% if myHero.proficiency_points
                 <= 0 or proficiency.is_max_level() %} style="display: none"{% endif %}></button>
             </ul>
         </div>
-        {%- endif %}
-        {%- endfor %}
+        {% endif %}
+        {% endfor %}
         {% endfor %}
     </div>
 </div>

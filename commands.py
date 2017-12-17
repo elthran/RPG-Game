@@ -194,13 +194,13 @@ class Command:
         """
 
         tooltip_template = """{{ proficiency.description }}:
-{%- set proficiency_tooltip = proficiency.tooltip.split(';') %}
-{%- for tooltip in proficiency_tooltip %}
+{% set proficiency_tooltip = proficiency.tooltip.split(';') %}
+{% for tooltip in proficiency_tooltip %}
 <br>&bull; {{ tooltip }}
-{%- endfor %}
+{% endfor %}
 <div id="error-{{ proficiency.id }}" style="display:
-{%- if proficiency.is_max_level() %} inline{% else %} none
-{%- endif %}"><br>{{ proficiency.error }}</div>"""
+{% if proficiency.is_max_level() %} inline{% else %} none
+{% endif %}"><br>{{ proficiency.error }}</div>"""
 
         id = arg_dict.get('data', None, type=int)
         proficiency = database.get_proficiency_by_id(id)

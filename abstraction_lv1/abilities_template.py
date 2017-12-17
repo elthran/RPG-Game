@@ -32,18 +32,18 @@ class Abilities(Base):
     hero = relationship("Hero", back_populates='abilities')
 
     # Relationships to a particular ability.
-    {%- for value in ALL_ABILITIES %}
+    {% for value in ALL_ABILITIES %}
     {{ value[0] }} = relationship(
         "{{ value[1] }}",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='{{ value[0] }}')",
         back_populates="abilities", uselist=False)
-    {%- endfor %}
+    {% endfor %}
 
     def __init__(self):
-        {%- for value in ALL_ABILITIES %}
+        {% for value in ALL_ABILITIES %}
         self.{{ value[0] }} = {{ value[1] }}('{{ value[0] }}', {{ value[2] }})
-        {%- endfor %}
+        {% endfor %}
 
     def items(self):
         """Return each Ability and its name.

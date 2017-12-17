@@ -45,35 +45,27 @@ alert("Form Submitted Successfully...");
             <th>Timestamp</th>
             <th>ID</th>
         </tr>
+        {% macro message_list(message) %}
+        <tr>
+            <td><img src="/static/images/empty_box.jpg" style="width:25px;height:25px;"></td>
+            <td><a href=/display_users/see_user/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
+            <td>
+                <!-- Trigger/Open The Modal -->
+                <button data="{{ message.id }}" data-py-function="get_message_content_and_sender_by_id" data-js-callback="popupReplyBox">
+                    {{ message.content[0:7] }}...
+                </button>
+            </td>
+            <td>{{ message.timestamp }}</td>
+            <td>{{ message.id }}</td>
+        </tr>
+        {% endmacro %}
         {% if outbox %}
             {% for message in hero.user.inbox.sent_messages %}
-                <tr>
-                    <td><img src="/static/images/empty_box.jpg" style="width:25px;height:25px;"></td>
-                    <td><a href=/display_users/see_user/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
-                    <td>
-                        <!-- Trigger/Open The Modal -->
-                        <button data="{{ message.id }}" data-py-function="get_message_content_and_sender_by_id" data-js-callback="popupReplyBox">
-                            {{ message.content[0:7] }}...
-                        </button>
-                    </td>
-                    <td>{{ message.timestamp }}</td>
-                    <td>{{ message.id }}</td>
-                </tr>
+                {{ message_list(message) }}
             {% endfor %}
         {% else %}
             {% for message in hero.user.inbox.received_messages %}
-                <tr>
-                    <td><img src="/static/images/empty_box.jpg" style="width:25px;height:25px;"></td>
-                    <td><a href=/display_users/see_user/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
-                    <td>
-                        <!-- Trigger/Open The Modal -->
-                        <button data="{{ message.id }}" data-py-function="get_message_content_and_sender_by_id" data-js-callback="popupReplyBox">
-                            {{ message.content[0:7] }}...
-                        </button>
-                    </td>
-                    <td>{{ message.timestamp }}</td>
-                    <td>{{ message.id }}</td>
-                </tr>
+                {{ message_list(message) }}
             {% endfor %}
         {% endif %}
     </table>

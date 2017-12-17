@@ -19,10 +19,10 @@ class Attributes(Base):
 
     # Relationships
     # Attribute class
-    {%- for name in ALL_ATTRIBUTES %}
+    {% for name in ALL_ATTRIBUTES %}
     {{ name }}_id = Column(Integer, ForeignKey('attribute.id'))
     {{ name }} = relationship("Attribute", uselist=False, foreign_keys="[Attributes.{{ name }}_id]")
-    {%- endfor %}
+    {% endfor %}
 
     # Hero class
     # One Hero -> one Attributes object
@@ -31,7 +31,7 @@ class Attributes(Base):
     def __init__(self):
         {% for attrib in ATTRIBUTE_INFORMATION %}
         self.{{ attrib[0].lower() }} = Attribute("{{ attrib[0] }}", "{{ attrib[1] }}")
-        {%- endfor %}
+        {% endfor %}
         
 
     def items(self):

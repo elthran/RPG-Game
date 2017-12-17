@@ -34,11 +34,11 @@
 <h1 style="text-align:center;">Primary Attributes</h1>
 <form method="post" action="" autocomplete="off">
     <ul>
-        {%- for attribute in admin %}
+        {% for attribute in admin %}
         <li><label for="name">{{ attribute[0] }}: {{ attribute[1] }}</label>
             <input type="number" name="{{ attribute[0] }}" min="0" title="Numbers only" value={{ attribute[1] }}><br>
         </li>
-        {%- endfor %}
+        {% endfor %}
     </ul>
 <input class="btn btn-default" type="submit" value="Save">
 </form>

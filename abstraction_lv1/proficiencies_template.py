@@ -43,9 +43,9 @@ class Proficiency(Base):
     # Extra Ability columns
     error = Column(String)
     formatted_name = Column(String)
-    {%- for column in ALL_PROFICIENCY_COLUMNS %}
+    {% for column in ALL_PROFICIENCY_COLUMNS %}
     {{ column }} = Column(Integer)
-    {%- endfor %}
+    {% endfor %}
 
     # Relationships
     proficiencies_id = Column(Integer, ForeignKey('proficiencies.id'))
@@ -307,12 +307,12 @@ class Regeneration(StaticMixin, Proficiency):
                                                           'Storage',
                                                           'Endurance',
                                                           'Regeneration'] %}
-{% set prof_class = prof[0].title().replace(" ", '') -%}
-{% set prof_tablename = prof[0].lower().replace(" ", '_') -%}
+{% set prof_class = prof[0].title().replace(" ", '') %}
+{% set prof_tablename = prof[0].lower().replace(" ", '_') %}
 class {{ prof_class }}(StaticMixin, Proficiency):
     @property
     def modifiable_on(self):
-        return [{%- for value in prof[3] -%}'{{ value[0].lower() }}', {% endfor -%}]
+        return [{% for value in prof[3] %}'{{ value[0].lower() }}', {% endfor %}]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -323,22 +323,22 @@ class {{ prof_class }}(StaticMixin, Proficiency):
     def update(self, hero):
         """Update {{ prof_class }}'s attributes and tooltip variable.
         """
-        {% for value in prof[3] -%}
-        {% if value[1] == "root" -%}
+        {% for value in prof[3] %}
+        {% if value[1] == "root" %}
         self.{{ value[0].lower() }} = round((100 * self.level)**0.5 - (self.level / 4) + {{ value[2][0]}}, {{ value[2][1]}})
-        {% elif value[1] == "linear" -%}
+        {% elif value[1] == "linear" %}
         self.{{ value[0].lower() }} = round({{ value[2][0] }} * self.level + {{ value[2][1] }}, {{ value[2][2]}})
-        {% elif value[1] == "empty" -%}
+        {% elif value[1] == "empty" %}
         self.{{ value[0].lower() }} = self.maximum
-        {% endif -%}
-        {% endfor -%}
-        {% if prof[0] == "Block" -%}
+        {% endif %}
+        {% endfor %}
+        {% if prof[0] == "Block" %}
         if hero.inventory.left_hand is None or hero.inventory.left_hand.type != "Shield":
             self.chance = 0
             self.reason_for_zero = "You must have a shield equipped"
         else:
             self.reason_for_zero = ""
-        {% endif -%}
+        {% endif %}
         super().generic_update(hero)
 
 {% endfor %}
