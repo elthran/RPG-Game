@@ -562,11 +562,21 @@ def inbox(outbox, hero=None):
             # pdb.set_trace()
             return "success"
         else:
-            message = database.get_object_by_id("Message", request.form['message_id'])
-            content = request.form["content"]
-            receiver = message.sender.user
-            hero.user.inbox.send_message(receiver, content, str(EZDB.now()))
-            receiver.inbox_alert = True
+            if "replyToMessage" in request.form:
+                message = database.get_object_by_id("Message", request.form['message_id'])
+                content = request.form["replyContent"]
+                receiver = message.sender.user
+                hero.user.inbox.send_message(receiver, content, str(EZDB.now()))
+                receiver.inbox_alert = True
+            else:
+                content = request.form["newMessageContent"]
+                receiver = request.form["receiver"]
+                receiver = database.get_user_by_username(receiver)
+                try:
+                    hero.user.inbox.send_message(receiver, content, str(EZDB.now()))
+                    receiver.inbox_alert = True
+                except AttributeError:
+                    print("Message failed to send: the username does not exist")
     return render_template('inbox.html', page_title="Inbox", hero=hero, outbox=outbox)
 
 @app.route('/spellbook')

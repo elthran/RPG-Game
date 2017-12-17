@@ -232,6 +232,11 @@ class Command:
         message = database.get_object_by_id("Message", id)
         return "{}&&{}".format(message.content, message.sender.user.username)
 
+    @staticmethod
+    def temp_temp(hero, database, arg_dict, **kwargs):
+        """Return the content of a message based on its id."""
+        return "success"
+
     # @staticmethod
     # def send_message_to_user_by_username(hero, database, arg_dict, **kwargs):
     #     """Return the content of a message based on its id."""

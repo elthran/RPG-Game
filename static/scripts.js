@@ -319,6 +319,15 @@ function popupReplyBox(button, messageContent, messageSender) {
     document.querySelector("[name=message_id]").value = button.getAttribute("data");
 }
 
+function newPopupReplyBox(button, messageContent, messageSender) {
+    document.getElementById('inboxNewPopupWindow').style.display = "block";
+    var contentInput = document.querySelector("[name=content]");
+    if (contentInput) {
+        contentInput.focus();
+    }
+    document.querySelector("[name=message_id]").value = button.getAttribute("data");
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     "use strict";
     // Get the modal

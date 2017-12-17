@@ -29,7 +29,7 @@ alert("Form Submitted Successfully...");
     </div>
     <div style="clear: both;"></div>
     <br>
-    <button>
+    <button data="" data-py-function="temp_temp" data-js-callback="newPopupReplyBox">
         Compose Message
     </button>
     <br><br>{SELECT ALL} <input type="submit" name="delete" form="messageForm" value="DELETE" />
@@ -49,7 +49,11 @@ alert("Form Submitted Successfully...");
         {% macro message_list(message) %}
         <tr>
             <td><input type="checkbox" id="messageId" value="{{ message.id }}" /></td>
+            {% if outbox %}
+            <td><a href=/display_users/see_user/{{ message.receiver.user.username }}>{{ message.receiver.user.username }}</a></td>
+            {% else %}
             <td><a href=/display_users/see_user/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
+            {% endif %}
             <td>
                 <!-- Trigger/Open The Modal -->
                 <button data="{{ message.id }}" data-py-function="get_message_content_and_sender_by_id" data-js-callback="popupReplyBox">
@@ -72,7 +76,7 @@ alert("Form Submitted Successfully...");
     </table>
     </form>
 
-    <!-- The Modal -->
+    <!-- The Modal for a reply box -->
         <div id="inboxPopupWindow" class="modal row">
             <div class="col-2"></div>
             <div class="col-8">
@@ -80,7 +84,7 @@ alert("Form Submitted Successfully...");
                 <div class="modal-content">
                     <span class="close">&times;</span>
                     {% if outbox %}
-                        <form action="#" id="inbox-form" method="post" name="form">
+                        <form action="#" id="inbox-form" method="post" name="replyToMessage">
                             <h2>Message received from <span id="replyBoxMessageSender"></span></h2>
                             <h3>Content:</h3>
                             <div id="replyBoxMessageContent"></div>
@@ -93,11 +97,31 @@ alert("Form Submitted Successfully...");
                             <div id="replyBoxMessageContent"></div>
                             <h3>Response:</h3>
                             <input type="hidden" name="message_id" value="">
-                            <input type="text" name="content" placeholder="reply...">
+                            <input type="text" name="replyContent" placeholder="reply...">
                             <br><br>
-                            <input type="submit" value="Submit">
+                            <input type="submit" name="replyToMessage" value="Submit">
                           </form>
                     {% endif %}
+                </div>
+            </div>
+            <div class="col-2"></div>
+        </div>
+    <!-- The Modal for a new message -->
+        <div id="inboxNewPopupWindow" class="modal row">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                        <form action="#" id="inbox-form" method="post" name="newMessage">
+                            <h2>Send message to:</h2>
+                            <input type="text" name="receiver" placeholder="username">
+                            <h3>Content:</h3>
+                            <input type="hidden" name="message_id" value="">
+                            <input type="text" name="newMessageContent" placeholder="reply...">
+                            <br><br>
+                            <input type="submit" name="newMessage" value="Submit">
+                          </form>
                 </div>
             </div>
             <div class="col-2"></div>
