@@ -47,8 +47,8 @@ alert("Form Submitted Successfully...");
             <th>ID</th>
         </tr>
         {% macro message_list(message) %}
-        <tr>
-            <td><input type="checkbox" id="messageId" name="{{ message.id }}" value="{{ message.id }}" /></td>
+        <tr id="messageID-{{ message.id }}">
+            <td><input type="checkbox" value="{{ message.id }}" /></td>
             {% if outbox %}
             <td><a href=/display_users/see_user/{{ message.receiver.user.username }}>{{ message.receiver.user.username }}</a></td>
             {% else %}

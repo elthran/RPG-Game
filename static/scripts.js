@@ -377,14 +377,17 @@ function getIdsFromCheckboxes(form, event) {
 function updateMessageTable(response, data) {
     console.log("Callback working");
     console.log("Response was: " + response.responseText);
-    console.log(data);
-    var boxesToDelete;
     if (response.responseText == "success") {
-        boxesToDelete = document.querySelectorAll("[id=messageID]");
-        console.log(boxesToDelete);
+        var ids = data.ids;
+        var box;
+        var i;
+        for (i=0; i < ids.length; i++) {
+            console.log("Removing row with id: " + "messageID-" + ids[i]);
+            box = document.getElementById("messageID-" + ids[i]);
+            box.parentElement.removeChild(box)
+        }
     }
 }
-
 
 
 /* Server communication v2
@@ -436,10 +439,10 @@ function postJSON(url, data, callback) {
         }
     };
     xhttp.open("POST", url, true);
-    data = JSON.stringify(data);
-    console.log("Data to be sent: " + data);
+    JSONdata = JSON.stringify(data);
+    console.log("Data to be sent: " + JSONdata);
     xhttp.setRequestHeader("Content-type", "application/json");
-    xhttp.send(data);
+    xhttp.send(JSONdata);
 }
 
 // Get a valid function handler (if one exists) for a given function string.
@@ -451,4 +454,9 @@ function getFunc(element, funcName) {
         };
     }
     return func;
+}
+
+// Basic print statement that should be built in!!!
+function log (data) {
+    console.log(data);
 }
