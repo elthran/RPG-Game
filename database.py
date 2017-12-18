@@ -121,7 +121,19 @@ class EZDB:
     def delete_item(self, item_id):
         """Delete a given object from the database.
         """
-        self.session.query(Item).filter(Item.id == item_id).delete()
+        self.delete_object_by_id("Item", item_id)
+
+    def delete_object_by_id(self, obj_name, obj_id):
+        """Delete an object given its type and id."""
+        try:
+            obj = globals()[obj_name.capitalize()]
+            # test if obj is a class.?
+            self.session.query(obj).get(obj_id).delete()
+        except IndexError:
+            raise Exception(
+                "Object name: '{}' is not an "
+                "object, or has not been imported into "
+                "'database' module yet.".format(obj_name))
 
     def get_object_by_id(self, obj_name, obj_id):
         """Return an object given its class name and id.
