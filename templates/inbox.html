@@ -32,8 +32,8 @@ alert("Form Submitted Successfully...");
     <button data="" data-py-function="temp_temp" data-js-callback="newPopupReplyBox">
         Compose Message
     </button>
-    <br><br>{SELECT ALL} <input type="submit" name="delete" form="messageForm" value="DELETE" />
-    <form id="messageForm" onsubmit="return sendToPy(event, updateMessageTable, getIdsFromCheckboxes);">
+    <br><br>{SELECT ALL} <input type="submit" name="delete" form="messageForm" value="DELETE" onclick="return sendToPy(event, updateMessageTable, getIdsFromCheckboxes);"/>
+    <form id="messageForm">
     <table id="inboxTable">
         <tr>
             <th></th>

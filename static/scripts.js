@@ -359,8 +359,10 @@ document.addEventListener("DOMContentLoaded", function () {
 }, true);
 
 // Inbox form data transfer
-function getIdsFromCheckboxes(form, event) {
+function getIdsFromCheckboxes(element) {
+    "use strict";
     console.log("preprocessing data");
+    var form = document.forms[element.getAttribute("form")];
     var ids = [];
     var i;
     for (i = 0; i < form.length; i++) {
@@ -369,12 +371,13 @@ function getIdsFromCheckboxes(form, event) {
         }
     }
     return {
-        "action": event.explicitOriginalTarget.getAttribute('name'),
+        "action": element.getAttribute("name"),
         "ids": ids
     };
 }
 
 function updateMessageTable(response, data) {
+    "use strict";
     console.log("Callback working");
     console.log("Response was: " + response.responseText);
     if (response.responseText == "success") {
@@ -411,7 +414,7 @@ function sendToPy(event, callback, pre_process, url) {
     // Normal data processing is object form.
     // auto-converts to JSON.
     if (pre_process) {
-        data = pre_process(element, event);
+        data = pre_process(element);
     } else {
         data = element.getAttribute('data');
     }
@@ -428,6 +431,7 @@ function sendToPy(event, callback, pre_process, url) {
 // Send the data via POST to the server. Run callback if it exists.
 // Sends data as JSON. Customizable.
 function postJSON(url, data, callback) {
+    "use strict";
     var xhttp;
     xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -439,7 +443,7 @@ function postJSON(url, data, callback) {
         }
     };
     xhttp.open("POST", url, true);
-    JSONdata = JSON.stringify(data);
+    var JSONdata = JSON.stringify(data);
     console.log("Data to be sent: " + JSONdata);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send(JSONdata);
@@ -447,6 +451,7 @@ function postJSON(url, data, callback) {
 
 // Get a valid function handler (if one exists) for a given function string.
 function getFunc(element, funcName) {
+    "use strict";
     func =  window[element.getAttribute(funcName)];
     if (func === undefined) {
         func = function () {
@@ -458,5 +463,6 @@ function getFunc(element, funcName) {
 
 // Basic print statement that should be built in!!!
 function log (data) {
+    "use strict";
     console.log(data);
 }
