@@ -108,10 +108,20 @@ cave.display.page_heading = "You are in a cave called {}".format(cave.name)
 cave.display.paragraph = "There are many scary places to die within the " \
                          "cave. Have a look!"
 cave.update()
-"""
-cave.display.places_of_interest=[
-("/WorldMap/{}/{}".format(cave.location_world.name, cave.id), "World Map")])
-"""
+
+#cave.display.places_of_interest=[
+#("/WorldMap/{}/{}".format(cave.location_world.name, cave.id), "World Map")])
+enter_cave = Location('Enter Cave', "cave")
+enter_cave.display.page_heading = "Inside Cave"
+enter_cave.display.page_image = 'hut.jpeg'
+enter_cave.display.paragraph = "Nice to see you again kid. What do you need?"
+enter_cave.update()
+cave.children.append(enter_cave)
+
+walk_forward = Location('Explore', 'cave')
+walk_forward.display.page_title = "Exploring Cave"
+walk_forward.children.append(enter_cave)
+
 
 node_grid[0].adjacent = [node_grid[1], node_grid[3], node_grid[5]]
 node_grid[1].adjacent = [node_grid[0], node_grid[2], node_grid[5]]

@@ -803,6 +803,27 @@ def barracks(name='', hero=None, location=None):
 
     return render_template('generic.html', hero=hero)
 
+@app.route('/enter_cave/<name>')
+@login_required
+@uses_hero
+@update_current_location
+def enter_cave(name='', hero=None, location=None):
+    if hero.proficiencies.health.current <= 0:
+        location.display.page_heading = "Your hero is currently dead."
+        location.display.page_image = "dead.jpg"
+
+        location.children = None
+        location.display.paragraph = "You have no health."
+    else:
+        location.display.page_heading = "Explore the cave!"
+        location.display.page_image = "barracks.jpg"
+
+        walk_forward = database.get_object_by_name('Location', 'Walk')
+        walk_forward.display.paragraph = "Walk forward."
+        location.children = [arena, walk_forward]
+
+    return render_template('generic.html', hero=hero)
+
 
 # From /barracks
 @app.route('/spar/<name>')
