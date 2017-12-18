@@ -361,7 +361,6 @@ document.addEventListener("DOMContentLoaded", function () {
 // Inbox form data transfer
 function getIdsFromCheckboxes(form, event) {
     console.log("preprocessing data");
-    console.log(form);
     var ids = [];
     var i;
     for (i = 0; i < form.length; i++) {
@@ -372,12 +371,18 @@ function getIdsFromCheckboxes(form, event) {
     return {
         "action": event.explicitOriginalTarget.getAttribute('name'),
         "ids": ids
-    }
+    };
 }
 
-function updateMessageTable(response) {
+function updateMessageTable(response, data) {
     console.log("Callback working");
     console.log("Response was: " + response.responseText);
+    console.log(data);
+    var boxesToDelete;
+    if (response.responseText == "success") {
+        boxesToDelete = document.querySelectorAll("[id=messageID]");
+        console.log(boxesToDelete);
+    }
 }
 
 
@@ -425,7 +430,8 @@ function postJSON(url, data, callback) {
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             if (callback) {
-                callback(this);
+                callback(this, data);
+                // window.location.replace(url);
             }
         }
     };

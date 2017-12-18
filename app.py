@@ -184,7 +184,9 @@ def uses_hero(f):
     """Preload hero object and save it afterwards.
 
     Note: KeyError occurs when this method is called before login method
-    has been run.
+    has been run. Also after a POST request before page reload.
+    Seems wipe the session cookie temporarily? Fine after normal page load
+    Only fails if view page source after POST.
     """
 
     @wraps(f)
@@ -193,11 +195,15 @@ def uses_hero(f):
             # print("Currently at the uses_hero function!")
             hero = database.get_object_by_id("Hero", session["hero_id"])
         except KeyError as ex:
-            # hero = None
-            print("Please document this as it is a hard to find bug.")
-            raise ex
+            if not session:
+                # After making a POST request with AJAX the session
+                # gets cleared? Until you make a new GET request?
+                # This is a request for the Page Source and it occurs
+                # in a new blank session.
+                return "After POST request reload the page to view source."
+            else:
+                raise ex
         return f(*args, hero=hero, **kwargs)
-
     return wrap_uses_hero
 
 
@@ -578,6 +584,7 @@ def inbox(outbox, hero=None):
                 except AttributeError:
                     print("Message failed to send: the username does not exist")
     return render_template('inbox.html', page_title="Inbox", hero=hero, outbox=outbox)
+
 
 @app.route('/spellbook')
 @uses_hero
