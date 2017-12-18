@@ -763,6 +763,7 @@ def move(location_name, hero=None):
     found with the 'view page source' command in the browser window.
     """
     location = database.get_object_by_name('Location', location_name)
+    # pdb.set_trace()
     if location.type == 'map':
         hero.current_world = location
     else:

@@ -116,11 +116,12 @@ enter_cave.display.page_heading = "Inside Cave"
 enter_cave.display.page_image = 'hut.jpeg'
 enter_cave.display.paragraph = "Nice to see you again kid. What do you need?"
 enter_cave.update()
-cave.children.append(enter_cave)
 
 walk_forward = Location('Explore', 'cave')
 walk_forward.display.page_title = "Exploring Cave"
-walk_forward.children.append(enter_cave)
+enter_cave.children.append(walk_forward)
+
+cave.children.append(enter_cave)
 
 
 node_grid[0].adjacent = [node_grid[1], node_grid[3], node_grid[5]]
