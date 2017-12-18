@@ -53,7 +53,7 @@ ALWAYS_VALID_URLS = [
 
 # Work in progress.
 # Control user moves on map. Rename too 'url_protect' because it sounds _sick_.
-def prevent_url_typing(f):
+def url_protect(f):
     """Redirects to last page if hero can't travel here.
 
     I need to update the location.py code to deal more with urls.
@@ -114,6 +114,7 @@ def prevent_url_typing(f):
             return f(*args, **kwargs)
         else:
             flash("You can't access '{}' from there.".format(requested_move))
+            print("Possibly a bug in 'url_protect' .. possibly intended.")
             return redirect(session['last_url'])
     return wrap_url
 
@@ -754,7 +755,7 @@ def under_construction(hero=None):
 @app.route('/explorable/<location_name>')
 @login_required
 @uses_hero
-@prevent_url_typing  # TODO: this should implement @update_current_location?
+@url_protect  # TODO: this should implement @update_current_location?
 def move(location_name, hero=None):
     """Set up a directory for the hero to move to.
 
