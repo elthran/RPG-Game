@@ -169,7 +169,7 @@ class Location(Base):
     ALL_TYPES = [
         'town', 'map', 'explorable', 'cave', 'blacksmith',
         'merchant', 'house', 'store', 'barracks', 'marketplace',
-        'tavern', 'gate', 'combat', 'spar', 'arena'
+        'tavern', 'gate', 'combat', 'spar', 'arena', 'inside_cave', 'explore_cave'
     ]
 
     __tablename__ = 'location'

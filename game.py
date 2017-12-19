@@ -205,6 +205,8 @@ class Hero(Base):
     attribute_points = Column(Integer)
     proficiency_points = Column(Integer)
 
+    deepest_cave = Column(Integer) # High score for dungeon runs
+
     # Time code of when the (account?) was created
     timestamp = Column(DateTime)
     # Date of last login
@@ -308,6 +310,8 @@ class Hero(Base):
 
         self.attribute_points = 0
         self.proficiency_points = 0
+
+        self.deepest_cave = 0
 
         # Time code
         self.timestamp = datetime.datetime.utcnow()

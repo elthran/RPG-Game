@@ -10,6 +10,7 @@
         <th><a href=/display_users/display/user.username>Username</a></th>
         <th><a href=/display_users/display/name>Character Name:</a></th>
         <th><a href=/display_users/display/age>Age:</a></th>
+        <th>Deepest Cave</th>
         <th><a href=/display_users/display/archetype>Archetype:</a></th>
         <th><a href=/display_users/display/last_login>Last Login:</a></th>
     </tr>
@@ -19,6 +20,7 @@
         <td><a href=/display_users/see_user/{{ hero.user.username }}>{{ hero.user.username }}</a> {% if hero.user.is_admin %}[ADMIN]{% endif %}</td>
         <td>{{ hero.character_name }}</td>
         <td>{{ hero.age }}</td>
+        <td>{{ hero.deepest_cave }}</td>
         <td>{{ hero.archetype }}</td>
         <td>{{ hero.last_login }}</td>
     </tr>

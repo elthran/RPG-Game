@@ -11,7 +11,7 @@
 {% block block1 %}
     <h1>I am at {{ location.name }}</h1>
     <h1>{{ location.display.page_heading }}</h1>
-    <img src="static/images/{{ location.display.page_image }}" alt="{{ location.display.page_image }}">
+    <img src="/static/images/{{ location.display.page_image }}" alt="{{ location.display.page_image }}">
     <p>{{ location.display.paragraph }}</p>
     {% if places_of_interest['children'] %}
     <h3>Explore this location</h3>

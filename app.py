@@ -108,7 +108,7 @@ def url_protect(f):
         # It may need additional parsing.
         requested_move = request.path
         # pdb.set_trace()
-        if requested_move in valid_urls:
+        if requested_move in valid_urls or hero.user.is_admin:
             # print("url is valid")
             session['last_url'] = request.path
             return f(*args, **kwargs)
@@ -804,27 +804,29 @@ def barracks(name='', hero=None, location=None):
 
     return render_template('generic.html', hero=hero)
 
-@app.route('/enter_cave/<name>')
+# From /cave
+@app.route('/inside_cave/<name>')
 @login_required
 @uses_hero
 @update_current_location
-def enter_cave(name='', hero=None, location=None):
-    if hero.proficiencies.health.current <= 0:
-        location.display.page_heading = "Your hero is currently dead."
-        location.display.page_image = "dead.jpg"
+def inside_cave(name='', hero=None, location=None):
+    location.display.page_heading = " You are in the cave and exploring!"
 
-        location.children = None
-        location.display.paragraph = "You have no health."
-    else:
-        location.display.page_heading = "Explore the cave!"
-        location.display.page_image = "barracks.jpg"
+    explore_cave = database.get_object_by_name('Location', 'Arena')
+    explore_cave.display.paragraph = "Take a step into the cave."
 
-        walk_forward = database.get_object_by_name('Location', 'Walk')
-        walk_forward.display.paragraph = "Walk forward."
-        location.children = [arena, walk_forward]
+    location.children = [explore_cave]
 
-    return render_template('generic.html', hero=hero)
+    return render_template('generic.html', hero=hero, game=game)  # return a string
 
+# From /inside_cave
+@app.route('/explore_cave/<name>')
+@login_required
+@uses_hero
+@update_current_location
+def explore_cave(name='', hero=None, location=None):
+    location.display.page_heading = "You are exploring! Good luck!"
+    return render_template('generic.html', hero=hero, game=game)  # return a string
 
 # From /barracks
 @app.route('/spar/<name>')

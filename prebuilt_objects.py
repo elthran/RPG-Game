@@ -102,26 +102,20 @@ gate = Location('Village Gate', 'gate')
 town.children.append(gate)
 
 cave = node_grid[2]
-cave.name = "Creepy cave"
+cave.name = "Entrance to Creepy cave"
 cave.type = 'cave'
 cave.display.page_heading = "You are in a cave called {}".format(cave.name)
-cave.display.paragraph = "There are many scary places to die within the " \
-                         "cave. Have a look!"
+cave.page_image = "cave_entrance.jpg"
+cave.display.paragraph = "There are many scary places to die within the cave. Have a look!"
 cave.update()
 
-#cave.display.places_of_interest=[
-#("/WorldMap/{}/{}".format(cave.location_world.name, cave.id), "World Map")])
-enter_cave = Location('Enter Cave', "cave")
-enter_cave.display.page_heading = "Inside Cave"
-enter_cave.display.page_image = 'hut.jpeg'
-enter_cave.display.paragraph = "Nice to see you again kid. What do you need?"
-enter_cave.update()
+inside_cave = Location('Inside Cave', 'inside_cave')
+inside_cave.page_image = "cave.jpg"
+explore_cave = Location('Explore Cave', 'explore_cave')
+explore_cave.display.page_title = "Exploring"
+inside_cave.children.append(explore_cave)
 
-walk_forward = Location('Explore', 'cave')
-walk_forward.display.page_title = "Exploring Cave"
-enter_cave.children.append(walk_forward)
-
-cave.children.append(enter_cave)
+cave.children.append(inside_cave)
 
 
 node_grid[0].adjacent = [node_grid[1], node_grid[3], node_grid[5]]
