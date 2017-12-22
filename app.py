@@ -558,20 +558,15 @@ def inbox(outbox, hero=None):
         outbox = False
     if request.method == 'POST':
         # pprint(request.form)
-        # if
         if request.is_json:
-            print("Data is:")
             data = request.get_json()
-            pprint(data)
             ids_to_delete = data['ids']
-            print("Ids to delete:", ids_to_delete)
             try:
                 for message_id in ids_to_delete:
-                    database.delete_item(message_id)
+                    database.delete_object_by_id("Message", message_id)
                 return "success"
-            except Exception as ex:
-                print(ex)
-                return "error: {}".format(ex.message)
+            except IndexError as ex:
+                return "error: {}".format(ex)
         else:
             if "replyToMessage" in request.form:
                 message = database.get_object_by_id("Message", request.form['message_id'])

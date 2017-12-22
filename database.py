@@ -119,21 +119,29 @@ class EZDB:
         self.update()
                     
     def delete_item(self, item_id):
-        """Delete a given object from the database.
+        """Delete an Item object from the database.
         """
         self.delete_object_by_id("Item", item_id)
 
     def delete_object_by_id(self, obj_name, obj_id):
-        """Delete an object given its type and id."""
+        """Delete an object given its type and id.
+
+        NOTE: the delete will not take effect until the session is flushed/
+        commited/closed.
+        """
         try:
             obj = globals()[obj_name.capitalize()]
-            # test if obj is a class.?
-            self.session.query(obj).get(obj_id).delete()
         except IndexError:
             raise Exception(
                 "Object name: '{}' is not an "
                 "object, or has not been imported into "
                 "'database' module yet.".format(obj_name))
+        db_obj = self.session.query(obj).get(obj_id)
+        if db_obj:
+            self.session.delete(db_obj)
+        else:
+            raise IndexError(
+                "No '{}' with id '{}' exists.".format(obj_name, obj_id))
 
     def get_object_by_id(self, obj_name, obj_id):
         """Return an object given its class name and id.
