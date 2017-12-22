@@ -32,7 +32,8 @@ alert("Form Submitted Successfully...");
     <button data="" data-py-function="temp_temp" data-js-callback="newPopupReplyBox">
         Compose Message
     </button>
-    <br><br>{SELECT ALL} <input type="submit" name="delete" form="messageForm" value="DELETE" onclick="return sendToPy(event, updateMessageTable, getIdsFromCheckboxes);"/>
+    <br><br>
+    <button type="button" form="messageForm" onclick="toggleSelectAll(this);">SELECT ALL</button><input type="submit" name="delete" form="messageForm" value="DELETE" onclick="return sendToPy(event, updateMessageTable, getIdsFromCheckboxes);"/>
     <form id="messageForm">
     <table id="inboxTable">
         <tr>
@@ -48,7 +49,7 @@ alert("Form Submitted Successfully...");
         </tr>
         {% macro message_list(message) %}
         <tr id="messageID-{{ message.id }}">
-            <td><input type="checkbox" value="{{ message.id }}" /></td>
+            <td><input id="selectableCheckbox" type="checkbox" value="{{ message.id }}" /></td>
             {% if outbox %}
             <td><a href=/display_users/see_user/{{ message.receiver.user.username }}>{{ message.receiver.user.username }}</a></td>
             {% else %}

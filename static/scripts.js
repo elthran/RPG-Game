@@ -358,6 +358,29 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 }, true);
 
+// Inbox toggle select all messags
+function toggleSelectAll(button) {
+    "use strict";
+
+    var checkBoxes = document.querySelectorAll("#selectableCheckbox");
+
+    if (button.innerHTML === "SELECT ALL") {
+        button.innerHTML = "DE-SELECT ALL";
+        checkBoxes.forEach(check);
+    } else {
+        button.innerHTML = "SELECT ALL";
+        checkBoxes.forEach(uncheck);
+    }
+
+    function check(element) {
+        element.checked = true;
+    }
+
+    function uncheck(element) {
+        element.checked = false;
+    }
+}
+
 // Inbox form data transfer
 function getIdsFromCheckboxes(element) {
     "use strict";
