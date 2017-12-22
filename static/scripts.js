@@ -281,8 +281,6 @@ function updateAbility(button, id, ability_level, max_level, tree, description) 
     //if parseInt(heroAbilityCurrentLvDiv.innerHTML) === max_level:
     //    gray it out
 
-
-
     if (status === "no ability points") {
     // make all buttons grayed out
     }
@@ -358,10 +356,32 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 }, true);
 
+// Inbox toggle select all messags
+function toggleSelectAll(button) {
+    "use strict";
+
+    var checkBoxes = document.querySelectorAll("#selectableCheckbox");
+
+    if (button.innerHTML === "SELECT ALL") {
+        button.innerHTML = "DE-SELECT ALL";
+        checkBoxes.forEach(check);
+    } else {
+        button.innerHTML = "SELECT ALL";
+        checkBoxes.forEach(uncheck);
+    }
+
+    function check(element) {
+        element.checked = true;
+    }
+
+    function uncheck(element) {
+        element.checked = false;
+    }
+}
+
 // Inbox form data transfer
 function getIdsFromCheckboxes(element) {
     "use strict";
-    console.log("preprocessing data");
     var form = document.forms[element.getAttribute("form")];
     var ids = [];
     var i;
@@ -378,14 +398,11 @@ function getIdsFromCheckboxes(element) {
 
 function updateMessageTable(response, data) {
     "use strict";
-    console.log("Callback working");
-    console.log("Response was: " + response.responseText);
     if (response.responseText == "success") {
         var ids = data.ids;
         var box;
         var i;
         for (i=0; i < ids.length; i++) {
-            console.log("Removing row with id: " + "messageID-" + ids[i]);
             box = document.getElementById("messageID-" + ids[i]);
             box.parentElement.removeChild(box)
         }
