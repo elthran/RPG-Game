@@ -109,13 +109,13 @@ cave.page_image = "cave_entrance.jpg"
 cave.display.paragraph = "There are many scary places to die within the cave. Have a look!"
 cave.update()
 
-inside_cave = Location('Inside Cave', 'inside_cave')
-inside_cave.page_image = "cave.jpg"
+cave_entrance = Location('Cave Entrance', 'cave_entrance')
+cave_entrance.page_image = "cave.jpg"
 explore_cave = Location('Explore Cave', 'explore_cave')
 explore_cave.display.page_title = "Exploring"
-inside_cave.children.append(explore_cave)
+cave_entrance.children.append(explore_cave)
 
-cave.children.append(inside_cave)
+cave.children.append(cave_entrance)
 
 
 node_grid[0].adjacent = [node_grid[1], node_grid[3], node_grid[5]]

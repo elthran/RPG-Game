@@ -805,14 +805,15 @@ def barracks(name='', hero=None, location=None):
     return render_template('generic.html', hero=hero)
 
 # From /cave
-@app.route('/inside_cave/<name>')
+@app.route('/cave_entrance/<name>')
 @login_required
 @uses_hero
 @update_current_location
-def inside_cave(name='', hero=None, location=None):
+def cave_entrance(name='', hero=None, location=None):
     location.display.page_heading = " You are in the cave and exploring!"
+    hero.current_cave_progress = 0
 
-    explore_cave = database.get_object_by_name('Location', 'Arena')
+    explore_cave = database.get_object_by_name('Location', 'Explore Cave')
     explore_cave.display.paragraph = "Take a step into the cave."
 
     location.children = [explore_cave]
@@ -825,8 +826,15 @@ def inside_cave(name='', hero=None, location=None):
 @uses_hero
 @update_current_location
 def explore_cave(name='', hero=None, location=None):
-    location.display.page_heading = "You are exploring! Good luck!"
-    return render_template('generic.html', hero=hero, game=game)  # return a string
+    encounter_chance = randint(0,100)
+    hero.current_cave_progress += 1
+    if encounter_chance > 50:
+        location.display.page_heading = "You should be fighting a monster!!!! But I'm too lazy to program it. Current progress: " + str(hero.current_cave_progress)
+    else:
+        location.display.page_heading = "You explore deeper into the cave! Current progress: " + str(hero.current_cave_progress)
+
+    page_links = [("Walk deeper into the", "/explore_cave/Explore%20Cave", "cave", ".")]
+    return render_template('cave_exploring.html', hero=hero, game=game, page_links=page_links)  # return a string
 
 # From /barracks
 @app.route('/spar/<name>')
