@@ -3,6 +3,9 @@
 {% extends "layout.html" %}
 {% block block1 %}
     <h1>I am at {{ myHero.current_location.name }}</h1>
+    {% if page_image %}
+    <img src="/static/images/{{ page_image }}" alt="{{ page_image }}">
+    {% endif %}
     <h3>Explore this location</h3>
     {% for place in places_of_interest['children'] %}
      	<h2><a href="{{ place.url }}">{{ place.name }}</a>: {{ place.type }}</h2>

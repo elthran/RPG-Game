@@ -347,8 +347,10 @@ class Location(Base):
 
         Old: Create a url for this location based on the parent's url.
         """
-
-        return "/{}/{}".format(self.type, self.name)
+        url_name = self.name.replace(" ", "%20")
+        if self.type == "explore_cave":
+            url_name += "/False"
+        return "/{}/{}".format(self.type, url_name)
         # if self.parent is None:
         #     return "/{}/{}".format(self.type, self.name)
         # else:
