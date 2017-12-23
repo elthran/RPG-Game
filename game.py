@@ -205,8 +205,9 @@ class Hero(Base):
     attribute_points = Column(Integer)
     proficiency_points = Column(Integer)
 
-    deepest_cave = Column(Integer) # High score for dungeon runs
-    current_cave_progress = Column(Integer) # Current progress in cave
+    deepest_cave_floor = Column(Integer) # High score for dungeon runs
+    current_cave_floor = Column(Integer) # Which floor of cave your on
+    current_cave_floor_progress = Column(Integer) # Current progress in current cave floor
 
     # Time code of when the (account?) was created
     timestamp = Column(DateTime)
@@ -312,8 +313,9 @@ class Hero(Base):
         self.attribute_points = 0
         self.proficiency_points = 0
 
-        self.deepest_cave = 0
-        self.current_cave_progress = 0
+        self.deepest_cave_floor = 0
+        self.current_cave_floor = 0
+        self.current_cave_floor_progress = 0
 
         # Time code
         self.timestamp = datetime.datetime.utcnow()

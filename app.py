@@ -810,6 +810,7 @@ def barracks(name='', hero=None, location=None):
 @update_current_location
 def cave_entrance(name='', hero=None, location=None):
     location.display.page_heading = " You are in the cave and exploring!"
+    hero.current_cave_floor = 0
     hero.current_cave_progress = 0
 
     explore_cave = database.get_object_by_name('Location', 'Explore Cave')
@@ -825,14 +826,26 @@ def cave_entrance(name='', hero=None, location=None):
 @uses_hero
 @update_current_location
 def explore_cave(name='', hero=None, location=None):
+    location.display.page_heading = "Current Floor of Cave: " + str(hero.current_cave_floor)
     encounter_chance = randint(0,100)
-    hero.current_cave_progress += 1
-    if encounter_chance > 50:
-        location.display.page_heading = "You should be fighting a monster!!!! But I'm too lazy to program it. Current progress: " + str(hero.current_cave_progress)
+    hero.current_cave_floor_progress += 1
+    if encounter_chance > (100 - (hero.current_cave_floor_progress*5)):
+        hero.current_cave_floor += 1
+        if hero.current_cave_floor > hero.deepest_cave_floor:
+            hero.deepest_cave_floor = hero.current_cave_floor
+        hero.current_cave_floor_progress = 0
+        location.display.page_heading = "You descend to a deeper level of the cave!! Current Floor of Cave: " + str(hero.current_cave_floor)
+        page_links = [("Start ", "/explore_cave/Explore%20Cave", "exploring", " this level of the cave.")]
+    elif encounter_chance > 50:
+        location.display.page_heading += "You come across a terrifying monster lurking in the shadows."
+        enemy = monster_generator(hero.age - 6)
+        game.set_enemy(enemy)
+        page_links = [("Attack the ", "/battle/monster/Explore%20Cave", "monster", "."),
+                      ("Attempt to ", "/cave_entrance/Creepy%20Cave", "flee", ".")]
     else:
-        location.display.page_heading = "You explore deeper into the cave! Current progress: " + str(hero.current_cave_progress)
-
-    page_links = [("Walk deeper into the", "/explore_cave/Explore%20Cave", "cave", ".")]
+        location.display.page_heading += " You explore deeper into the cave!"
+        location.display.page_heading += " Current progress on this floor: " + str(hero.current_cave_floor_progress)
+        page_links = [("Walk deeper into the", "/explore_cave/Explore%20Cave", "cave", ".")]
     return render_template('cave_exploring.html', hero=hero, game=game, page_links=page_links)  # return a string
 
 # From /barracks
@@ -917,10 +930,10 @@ def arena(name='', hero=None, location=None):
 
 
 # this gets called if you fight in the arena
-@app.route('/battle/<this_user>')
+@app.route('/battle/<this_user>/<return_to_location>')
 @login_required
 @uses_hero
-def battle(this_user=None, hero=None):
+def battle(this_user=None, hero=None, return_to_location=None):
     required_endurance = 1  # T
     page_title = "Battle"
     page_heading = "Fighting"
@@ -985,11 +998,11 @@ def battle(this_user=None, hero=None):
         page_title = "Victory!"
         page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(
             experience_gained) + " experience!"
-        page_links = [("Compete in the ", "/arena", "arena", "."), ("Go back to the ", "/barracks", "barracks", "."),
-                      ("Return to your ", "/home", "profile", " page.")]
+        page_links = [("Return to where you ", "/explore_cave/Explore%20Cave", "were", ".")]
         if level_up:
             page_heading += " You have leveled up! You should return to your profile page to advance in skill."
-            page_links = [("Return to your ", "/home", "profile", " page and distribute your new attribute points.")]
+            page_links = [("Return to your ", "/home", "profile", " page and distribute your new attribute points."),
+                          ("Return to where you ", "/explore_cave/Explore%20Cave", "were", ".")]
 
     # Return an html page built from a Jinja2 form and the passed data.
     return render_template(
