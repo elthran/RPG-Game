@@ -8,6 +8,9 @@ from items import (
 )
 from events import Trigger, Condition
 
+# for testing
+import pdb
+
 """
 This module preloads all of its objects directly into the database or does
 nothing if the objects already exists in the database.
@@ -95,7 +98,6 @@ old_mans_hut = Location("Old Man's Hut", 'house')
 old_mans_hut.display.page_heading = "Old Man's Hut"
 old_mans_hut.display.page_image = 'hut.jpg'
 old_mans_hut.display.paragraph = "Nice to see you again kid. What do you need?"
-old_mans_hut.update()
 town.children.append(old_mans_hut)
 
 gate = Location('Village Gate', 'gate')
@@ -104,13 +106,13 @@ town.children.append(gate)
 cave = node_grid[2]
 cave.name = "Outside Creepy cave"
 cave.type = 'cave'
-cave.display.page_heading = "You are outside a cave called {}".format(cave.name)
-cave.page_image = "generic_cave_entrance.jpg"
-cave.display.paragraph = "There are many scary places to die within the cave. Have a look!"
 cave.update()
+cave.display.page_heading = "You are outside a cave called {}".format(cave.name)
+cave.display.page_image = "generic_cave_entrance.jpg"
+cave.display.paragraph = "There are many scary places to die within the cave. Have a look!"
 
 cave_entrance = Location('Cave Entrance', 'cave_entrance')
-cave_entrance.page_image = "generic_cave_entrance2.jpg"
+cave_entrance.display.page_image = "generic_cave_entrance2.jpg"
 explore_cave = Location('Explore Cave', 'explore_cave')
 explore_cave.display.page_title = "Exploring"
 cave_entrance.children.append(explore_cave)

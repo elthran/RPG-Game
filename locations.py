@@ -126,6 +126,25 @@ class Display(Base):
         that calls this function.
 
         !IMPORTANT! this could overwrite custom attributes incorrectly.
+
+        ONLY RUN THIS if you change the object's:
+            name or
+            type
+        after creation.
+        e.g.
+            USE update()
+        cave = node_grid[2]
+        cave.name = "Outside Creepy cave"
+        cave.type = 'cave'
+        cave.update()
+        cave.display.page_heading = "You are outside a cave called {}".format(cave.name)
+        cave.display.page_image = "generic_cave_entrance.jpg"
+        cave.display.paragraph = "There are many scary places to die within the cave. Have a look!"
+            DON'T USE update()
+        old_mans_hut = Location("Old Man's Hut", 'house')
+        old_mans_hut.display.page_heading = "Old Man's Hut"
+        old_mans_hut.display.page_image = 'hut.jpg'
+        old_mans_hut.display.paragraph = "Nice to see you again kid. What do you need?"
         """
 
         if self.page_heading == self.default_heading():
@@ -334,11 +353,31 @@ class Location(Base):
         self.children = children
         self.update()
 
-    @orm.reconstructor
+    # @orm.reconstructor  # I uncommented this. I don't know why it was here.
+    # I imagine it was important? But I guess not ...
     def update(self):
         """Update the derived attributes to reflect changes to the main ones.
 
         !IMPORTANT! This could overwrite custom attribute values incorrectly.
+
+        ONLY RUN THIS if you change the location's:
+            name or
+            type
+        after creation.
+        e.g.
+            USE update()
+        cave = node_grid[2]
+        cave.name = "Outside Creepy cave"
+        cave.type = 'cave'
+        cave.update()
+        cave.display.page_heading = "You are outside a cave called {}".format(cave.name)
+        cave.display.page_image = "generic_cave_entrance.jpg"
+        cave.display.paragraph = "There are many scary places to die within the cave. Have a look!"
+            DON'T USE update()
+        old_mans_hut = Location("Old Man's Hut", 'house')
+        old_mans_hut.display.page_heading = "Old Man's Hut"
+        old_mans_hut.display.page_image = 'hut.jpg'
+        old_mans_hut.display.paragraph = "Nice to see you again kid. What do you need?"
         """
         self.url = self.build_url()
         if self.display is None:
