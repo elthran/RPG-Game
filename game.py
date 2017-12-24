@@ -234,6 +234,9 @@ class Hero(Base):
     current_city = relationship(
         "Location", back_populates='heroes_by_city',
         foreign_keys='[Hero.city_id]')
+    last_city = relationship(
+        "Location", back_populates='heroes_by_city',
+        foreign_keys='[Hero.city_id]') # When you die, you should return to the last city you were at
 
     # Each hero can have one set of Abilities. (bidirectional, One to One).
     abilities = relationship("Abilities", uselist=False, back_populates='hero')
