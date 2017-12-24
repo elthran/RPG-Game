@@ -321,7 +321,7 @@ class Hero(Base):
         self.deepest_cave_floor = 0
         self.current_cave_floor = 0
         self.current_cave_floor_progress = 0
-        self.current_cave_monster = None
+        self.random_encounter_monster = None
 
         # Time code
         self.timestamp = datetime.datetime.utcnow()

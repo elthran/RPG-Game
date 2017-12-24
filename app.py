@@ -229,7 +229,6 @@ def update_current_location(f):
         hero = kwargs['hero']
         location = database.get_object_by_name('Location', kwargs['name'])
         hero.current_location = location
-        hero.current_cave_monster = False
         engine.spawn(
             'move_event',
             hero,
@@ -815,6 +814,7 @@ def cave_entrance(name='', hero=None, location=None):
     location.display.page_heading = " You are in the cave and exploring!"
     hero.current_cave_floor = 0
     hero.current_cave_progress = 0
+    hero.random_encounter_monster = False
 
     explore_cave = database.get_object_by_name('Location', 'Explore Cave')
     explore_cave.display.paragraph = "Take a step into the cave."
@@ -827,9 +827,9 @@ def cave_entrance(name='', hero=None, location=None):
 @app.route('/explore_cave/<name>/<explore_boolean>')
 @login_required
 @uses_hero
-def explore_cave(name='', hero=None, explore_boolean=None):
+@update_current_location
+def explore_cave(name='', hero=None, location=None, explore_boolean=None):
     # For convenience
-    location = hero.current_location
 
     location.display.page_heading = "Current Floor of Cave: " + str(hero.current_cave_floor)
     encounter_chance = randint(0, 100)
