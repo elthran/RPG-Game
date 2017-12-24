@@ -208,6 +208,7 @@ class Hero(Base):
     deepest_cave_floor = Column(Integer) # High score for dungeon runs
     current_cave_floor = Column(Integer) # Which floor of cave your on
     current_cave_floor_progress = Column(Integer) # Current progress in current cave floor
+    current_cave_monster = Column(Boolean) # Checks if you are currently about to fight a monster
 
     # Time code of when the (account?) was created
     timestamp = Column(DateTime)
@@ -320,6 +321,7 @@ class Hero(Base):
         self.deepest_cave_floor = 0
         self.current_cave_floor = 0
         self.current_cave_floor_progress = 0
+        self.current_cave_monster = None
 
         # Time code
         self.timestamp = datetime.datetime.utcnow()

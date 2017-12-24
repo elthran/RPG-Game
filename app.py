@@ -830,18 +830,25 @@ def cave_entrance(name='', hero=None, location=None):
 def explore_cave(name='', hero=None, location=None, explore_boolean=None):
     location.display.page_heading = "Current Floor of Cave: " + str(hero.current_cave_floor)
     encounter_chance = randint(0, 100)
-    if explore_boolean == "True":
+    if hero.current_cave_monster == True:
+        location.display.page_heading += "You come across a terrifying monster lurking in the shadows."
+        enemy = monster_generator(hero.current_cave_floor + 10)
+        game.set_enemy(enemy)
+        page_links = [("Attack the ", "/battle/monster", "monster", "."),
+                      ("Attempt to ", "/cave_entrance/Creepy%20Cave", "flee", ".")]
+    elif explore_boolean == "True":
         hero.current_cave_floor_progress += 1
-        if encounter_chance > (100 - (hero.current_cave_floor_progress*5)):
+        if encounter_chance > (100 - (hero.current_cave_floor_progress*4)):
             hero.current_cave_floor += 1
             if hero.current_cave_floor > hero.deepest_cave_floor:
                 hero.deepest_cave_floor = hero.current_cave_floor
             hero.current_cave_floor_progress = 0
             location.display.page_heading = "You descend to a deeper level of the cave!! Current Floor of Cave: " + str(hero.current_cave_floor)
             page_links = [("Start ", "/explore_cave/Explore%20Cave/True", "exploring", " this level of the cave.")]
-        elif encounter_chance > 10:
+        elif encounter_chance > 25:
             location.display.page_heading += "You come across a terrifying monster lurking in the shadows."
-            enemy = monster_generator(hero.current_cave_floor+10)
+            enemy = monster_generator(hero.current_cave_floor+1)
+            hero.current_cave_monster = True
             game.set_enemy(enemy)
             page_links = [("Attack the ", "/battle/monster", "monster", "."),
                           ("Attempt to ", "/cave_entrance/Creepy%20Cave", "flee", ".")]
@@ -966,6 +973,7 @@ def battle(this_user=None, hero=None):
         page_heading = "You have died."
         location = database.get_object_by_name('Location', hero.last_city.name)
         hero.current_location = location
+        hero.current_cave_monster = False
     else:
         """
         for item in hero.equipped_items:
@@ -1007,6 +1015,7 @@ def battle(this_user=None, hero=None):
         page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(
             experience_gained) + " experience!"
         page_links = [("Return to where you ", hero.current_location.url, "were", ".")]
+        hero.current_cave_monster = False
         if level_up:
             page_heading += " You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ", "/home", "profile", " page and distribute your new attribute points."),
