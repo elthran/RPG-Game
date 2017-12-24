@@ -220,6 +220,10 @@ class Location(Base):
     heroes_by_city = relationship(
         "Hero", back_populates="current_city",
         foreign_keys='[Hero.city_id]')
+    heroes_by_last_city = relationship(
+        "Hero", back_populates="last_city",
+        foreign_keys='[Hero.last_city_id]'
+    )
 
     # One location -> one display (bi)
     display_id = Column(Integer, ForeignKey('display.id'))
