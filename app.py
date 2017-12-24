@@ -947,16 +947,10 @@ def arena(name='', hero=None, location=None):
 @login_required
 @uses_hero
 def battle(this_user=None, hero=None):
-    required_endurance = 1  # T
     page_title = "Battle"
     page_heading = "Fighting"
     print("running function: battle2")
     page_links = [("Return to your ", "/home", "profile", " page.")]
-    if hero.proficiencies.endurance.current < required_endurance:
-        page_title = "Battle"
-        page_heading = "Not enough endurance, wait a bit!"
-        return render_template('layout.html', page_title=page_title, myHero=hero, page_heading=page_heading,
-                               page_links=page_links)
     if this_user == "monster":
         pass
     else:
@@ -966,7 +960,6 @@ def battle(this_user=None, hero=None):
         game.enemy.experience_rewarded = 5
         game.enemy.items_rewarded = []
     hero.proficiencies.health.current, game.enemy.proficiencies.health.current, battle_log = combat_simulator.battle_logic(hero, game.enemy) # This should return the full heroes, not just their health
-    hero.proficiencies.endurance.current -= required_endurance
     game.has_enemy = False
     if hero.proficiencies.health.current == 0:
         page_title = "Defeat!"
@@ -1019,7 +1012,7 @@ def battle(this_user=None, hero=None):
         if level_up:
             page_heading += " You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ", "/home", "profile", " page and distribute your new attribute points."),
-                          ("Return to where you ", "/explore_cave/Explore%20Cave", "were", ".")]
+                          ("Return to where you ", "/explore_cave/Explore%20Cave/False", "were", ".")]
 
     # Return an html page built from a Jinja2 form and the passed data.
     return render_template(
