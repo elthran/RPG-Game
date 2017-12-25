@@ -10,6 +10,10 @@
     {% for place in places_of_interest['children'] %}
      	<h2><a href="{{ place.url }}">{{ place.name }}</a>: {{ place.type }}</h2>
     {% endfor %}
+    <h3>People of Interest</h3>
+    {% for person in people_of_interest %}
+        <a href=/display_users/see_user/{{ person.user.username }}>{{ person.name }}</a>
+    {% endfor %}
     <h3>Explore nearby locations</h3>
     {% for place in places_of_interest['adjacent'] %}
      	<h2><a href="{{ place.url }}">{{ place.name }}</a>: {{ place.type }}</h2>

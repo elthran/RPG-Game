@@ -769,6 +769,8 @@ def move(location_name, hero=None):
         hero.current_world = location
     else:
         hero.current_location = location
+        other_heroes = [other_hero for other_hero in hero.current_location.heroes_by_current_location if
+                        hero.id != other_hero.id]
 
     return render_template(
         'move.html', myHero=hero,
@@ -776,6 +778,7 @@ def move(location_name, hero=None):
         page_heading=location.display.page_heading,
         page_image=location.display.page_image,
         paragraph=location.display.paragraph,
+        people_of_interest=other_heroes,
         places_of_interest=location.places_of_interest)
 
 
