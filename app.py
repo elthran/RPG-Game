@@ -21,7 +21,7 @@ from attributes import \
     ATTRIBUTE_INFORMATION  # Since attribute information was hand typed out in both modules, it was causing bugs. Seems cleaner to import it and then only edit it in one place
 # Marked for restructure! Avoid use of import * in production code.
 from bestiary import *
-from items import QuestItem
+from items import QuestItem, Shield
 from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
@@ -827,22 +827,35 @@ def cave_entrance(name='', hero=None, location=None):
     return render_template('generic.html', hero=hero, game=game)  # return a string
 
 # From /inside_cave
-@app.route('/explore_cave/<name>/<explore_boolean>')
+@app.route('/explore_cave/<name>/<extra_data>')
 @login_required
 @uses_hero
 @update_current_location
-def explore_cave(name='', hero=None, location=None, explore_boolean=None):
+def explore_cave(name='', hero=None, location=None, extra_data=None):
     # For convenience
 
     location.display.page_heading = "Current Floor of Cave: " + str(hero.current_cave_floor)
+    if extra_data == "Entering": # You just arrived into the cave
+        location.display.page_heading += "You explore deeper into the cave!"
+        page_links = [("Walk deeper into the", "/explore_cave/Explore%20Cave/None", "cave", ".")]
+        return render_template('cave_exploring.html', hero=hero, game=game, page_links=page_links)
+    if extra_data == "Item":
+        discovered_item = Shield("Rare Fire Buckler", buy_price=100, max_durability=3,
+           damage_minimum=2, damage_maximum=10, damage_modifier=1,
+           block_chance=50, block_modifier=50,
+           resist_frost_modifier=30)
+        location.display.page_heading = "You find an item in the cave! It's a " + discovered_item.name
+        #hero.inventory.add_item(discovered_item)
+        page_links = [("Pick up the ", "/explore_cave/Explore%20Cave/None", "item", ".")]
+        return render_template('cave_exploring.html', hero=hero, game=game, page_links=page_links)
     encounter_chance = randint(0, 100)
-    if hero.current_cave_monster == True:
-        location.display.page_heading += "You come across a terrifying monster lurking in the shadows."
-        enemy = monster_generator(hero.current_cave_floor + 10)
+    if hero.random_encounter_monster == True: # You have a monster waiting for you from before
+        location.display.page_heading += "The monster paces in front of you."
+        enemy = monster_generator(hero.current_cave_floor + 1) # This should be a saved monster and not re-generated :(
         game.set_enemy(enemy)
         page_links = [("Attack the ", "/battle/monster", "monster", "."),
-                      ("Attempt to ", "/cave_entrance/Creepy%20Cave", "flee", ".")]
-    elif explore_boolean == "True":
+                      ("Attempt to ", "/cave_entrance/Cave%20Entrance", "flee", ".")]
+    else: # You continue exploring
         hero.current_cave_floor_progress += 1
         if encounter_chance > (100 - (hero.current_cave_floor_progress*4)):
             hero.current_cave_floor += 1
@@ -850,20 +863,20 @@ def explore_cave(name='', hero=None, location=None, explore_boolean=None):
                 hero.deepest_cave_floor = hero.current_cave_floor
             hero.current_cave_floor_progress = 0
             location.display.page_heading = "You descend to a deeper level of the cave!! Current Floor of Cave: " + str(hero.current_cave_floor)
-            page_links = [("Start ", "/explore_cave/Explore%20Cave/True", "exploring", " this level of the cave.")]
-        elif encounter_chance > 25:
+            page_links = [("Start ", "/explore_cave/Explore%20Cave/None", "exploring", " this level of the cave.")]
+        elif encounter_chance > 35: # You find a monster! Oh no!
             location.display.page_heading += "You come across a terrifying monster lurking in the shadows."
             enemy = monster_generator(hero.current_cave_floor+1)
             hero.current_cave_monster = True
             game.set_enemy(enemy)
             page_links = [("Attack the ", "/battle/monster", "monster", "."),
-                          ("Attempt to ", "/cave_entrance/Creepy%20Cave", "flee", ".")]
+                          ("Attempt to ", "/cave_entrance/Cave%20Entrance", "flee", ".")]
+        elif encounter_chance > 15: # You find an item!
+            location.display.page_heading += "You find something shiny in a corner of the cave."
+            page_links = [("", "/explore_cave/Explore%20Cave/Item", "Investigate", " the light's source.")]
         else:
             location.display.page_heading += " You explore deeper into the cave!"
-            page_links = [("Walk deeper into the", "/explore_cave/Explore%20Cave/True", "cave", ".")]
-    else:
-        location.display.page_heading += " You explore deeper into the cave!"
-        page_links = [("Walk deeper into the", "/explore_cave/Explore%20Cave/True", "cave", ".")]
+            page_links = [("Walk deeper into the", "/explore_cave/Explore%20Cave/None", "cave", ".")]
     location.display.page_heading += " Current progress on this floor: " + str(hero.current_cave_floor_progress)
     return render_template('cave_exploring.html', hero=hero, game=game, page_links=page_links)  # return a string
 
@@ -1018,7 +1031,7 @@ def battle(this_user=None, hero=None):
         if level_up:
             page_heading += " You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ", "/home", "profile", " page and distribute your new attribute points."),
-                          ("Return to where you ", "/explore_cave/Explore%20Cave/False", "were", ".")]
+                          ("Return to where you ", "/explore_cave/Explore%20Cave/Entering", "were", ".")]
 
     # Return an html page built from a Jinja2 form and the passed data.
     return render_template(
