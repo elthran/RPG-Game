@@ -11,6 +11,7 @@ import hashlib
 import importlib
 import os
 import datetime
+import random
 # Testing only
 import pdb
 from pprint import pprint
@@ -190,6 +191,13 @@ class EZDB:
         """
         template = self.session.query(ItemTemplate).get(item_id)
         item = Item(template)
+        return item
+
+    def get_random_item(self):
+        """Return a new random item."""
+        num_rows = self.session.query(ItemTemplate).count()
+        item_id = random.randint(1, num_rows)
+        item = self.create_item(item_id)
         return item
         
     def get_all_users(self):

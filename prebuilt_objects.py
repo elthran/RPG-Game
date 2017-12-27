@@ -278,6 +278,10 @@ all_store_items = [
            damage_minimum=2, damage_maximum=10, damage_modifier=1,
            block_chance=50, block_modifier=50,
            resist_frost_modifier=30),
+    Shield("Rare Fire Buckler", buy_price=100, max_durability=3,
+           damage_minimum=2, damage_maximum=10, damage_modifier=1,
+           block_chance=50, block_modifier=50,
+           resist_frost_modifier=30),
     TwoHandedWeapon("Simple Staff", buy_price=100, max_durability=3,
                     damage_minimum=2, damage_maximum=10, damage_modifier=1)
     ]

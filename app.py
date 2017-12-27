@@ -840,12 +840,13 @@ def explore_cave(name='', hero=None, location=None, extra_data=None):
         page_links = [("Walk deeper into the", "/explore_cave/Explore%20Cave/None", "cave", ".")]
         return render_template('cave_exploring.html', hero=hero, game=game, page_links=page_links)
     if extra_data == "Item":
-        discovered_item = Shield("Rare Fire Buckler", buy_price=100, max_durability=3,
-           damage_minimum=2, damage_maximum=10, damage_modifier=1,
-           block_chance=50, block_modifier=50,
-           resist_frost_modifier=30)
+        # The problem here is that when you see an item .. you have already
+        # picked it up.
+        # I think you need to use a different order of operations.
+        # Like put the "add item" after the "pick up item" part
+        discovered_item = database.get_random_item()
         location.display.page_heading = "You find an item in the cave! It's a " + discovered_item.name
-        #hero.inventory.add_item(discovered_item)
+        hero.inventory.add_item(discovered_item)
         page_links = [("Pick up the ", "/explore_cave/Explore%20Cave/None", "item", ".")]
         return render_template('cave_exploring.html', hero=hero, game=game, page_links=page_links)
     encounter_chance = randint(0, 100)
