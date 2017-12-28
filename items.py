@@ -153,6 +153,7 @@ class ItemTemplate(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
+    image = Column(String)
 
     # Marked for restructure/removal.
     # I believe that this should be part of a Display class or be built into
@@ -403,6 +404,7 @@ class OneHandedWeapon(Weapon):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.one_handed_weapon = True
+        self.image = "sword"
 
 
 class Shield(Weapon):
@@ -414,6 +416,7 @@ class Shield(Weapon):
         super().__init__(*args, **kwargs)
         self.shield = True
         self.weapon = False
+        self.image = "shield"
 
 
 class TwoHandedWeapon(Weapon):
@@ -451,6 +454,7 @@ class ChestArmour(Garment):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.chest_armour = True
+        self.image = "chest"
 
 
 class HeadArmour(Garment):
@@ -463,6 +467,7 @@ class HeadArmour(Garment):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.head_armour = True
+        self.image = "helmet"
 
 
 class LegArmour(Garment):
@@ -475,6 +480,7 @@ class LegArmour(Garment):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.leg_armour = True
+        self.image = "legs"
 
 
 class FeetArmour(Garment):
@@ -487,6 +493,7 @@ class FeetArmour(Garment):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.feet_armour = True
+        self.image = "feet"
 
 
 class ArmArmour(Garment):
@@ -499,6 +506,7 @@ class ArmArmour(Garment):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.arm_armour = True
+        self.image = "arms"
 
 
 class HandArmour(Garment):
@@ -511,6 +519,7 @@ class HandArmour(Garment):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.hand_armour = True
+        self.image = "gloves"
 
 
 # New Class

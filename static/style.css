@@ -735,3 +735,54 @@ img.profileImage {
     cursor: pointer;
 }
 
+.inventory {
+    border: 5px solid;
+    position: absolute;
+    height: 125px;
+    width: 125px;
+}
+
+#inventory-helmet {
+    left: 50%;
+    top: 10%;
+}
+
+#inventory-chest {
+    left: 50%;
+    top: 30%;
+}
+
+#inventory-shoulders {
+    left: 40%;
+    top: 20%;
+}
+
+#inventory-sleeves {
+    left: 65%;
+    top: 40%;
+}
+
+#inventory-gloves {
+    left: 35%;
+    top: 45%;
+}
+
+#inventory-legs {
+    left: 50%;
+    top: 50%;
+}
+
+#inventory-feet {
+    left: 50%;
+    top: 70%;
+}
+
+#inventory-left-hand {
+    left: 70%;
+    top: 65%;
+}
+
+#inventory-right-hand {
+    left: 30%;
+    top: 65%;
+}
