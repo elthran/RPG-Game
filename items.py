@@ -6,6 +6,7 @@ from sqlalchemy import orm
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 # Well ... ok, but for simplicity sake just pretend that that is true.
 from base_classes import Base
+from factories import TemplateMixin
 
 import warnings
 import pdb
@@ -25,7 +26,7 @@ Item Specification:
 """
 
 
-class Item(Base):
+class Item(TemplateMixin, Base):
     """Represent an unique version of an item.
 
     Each item exists in only one place. Each item can be place in an inventory to belong

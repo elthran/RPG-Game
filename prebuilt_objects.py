@@ -1,6 +1,7 @@
 from locations import Location
 from abilities import Ability
-from game import User, Hero
+from game import User
+from hero import Hero
 from quests import Quest, QuestPath
 from items import (
     OneHandedWeapon, Shield, TwoHandedWeapon, LegArmour, ChestArmour,

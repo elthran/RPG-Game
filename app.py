@@ -15,19 +15,17 @@ from flask import (
     Flask, render_template, redirect, url_for, request, session,
     flash, send_from_directory)
 
-from game import Game, Hero
+from game import Game
 import combat_simulator
 from attributes import \
     ATTRIBUTE_INFORMATION  # Since attribute information was hand typed out in both modules, it was causing bugs. Seems cleaner to import it and then only edit it in one place
 # Marked for restructure! Avoid use of import * in production code.
 from bestiary import *
-from items import QuestItem, Shield
 from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
 # _before_ any of them are used.
 from database import EZDB
-from events import Event
 from engine import Engine
 
 
@@ -61,6 +59,10 @@ def url_protect(f):
 
     @wraps(f)
     def wrap_url(*args, **kwargs):
+        #Currently disabled ... does nothing.
+        return f(*args, **kwargs)
+
+
         # Break immediately if server is just being set up.
         # Everything after this will run just before the function
         # runs but not during function setup.
