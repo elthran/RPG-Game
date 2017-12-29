@@ -6,6 +6,7 @@
 <!-- This is the inventory page and displays everything your character wears/owns and gives you CMD buttons to equip/unequip -->
 {% set inventory = hero.inventory %}
 
+<div class="inventory_image">
 {% if inventory.helmet %}{% set item = inventory.helmet %}
 <input type="image" class="inventory" id="inventory-helmet" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/{{ item.image }}.jpg"/>
 {% else %}
@@ -51,6 +52,7 @@
 {% else %}
 <img class="inventory" id="inventory-right-hand" src="/static/images/inventory_right_hand.jpg" alt="right_hand.jpg">
 {% endif %}
+</div>
 
 <h1>Inventory:</h1>
 <table id="non_equipped_items">
