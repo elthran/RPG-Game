@@ -7,6 +7,7 @@
 {% set inventory = hero.inventory %}
 
 <div class="inventory_equipped_outer" id="equipped">
+    <img id="inventory-body-outline" src="/static/images/body.jpg" alt="head.jpg">
     <h1>Equipped Items:</h1>
     <img class="inventory-equipped" id="inventory-helmet" src="/static/images/items/inventory_head.jpg" alt="head.jpg" data-id="inventory-helmet-empty"
     {% if inventory.helmet %}{% set item = inventory.helmet %} style="display: none;" >

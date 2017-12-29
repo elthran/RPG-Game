@@ -753,6 +753,13 @@ img.profileImage {
     border-radius: 10%;
 }
 
+#inventory-body-outline {
+    position: absolute;
+    left: 470px;
+    height: 700px;
+    width: 500px;
+}
+
 #inventory-helmet {
     left: 650px;
     top: 25px;
