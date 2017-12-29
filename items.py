@@ -154,6 +154,7 @@ class ItemTemplate(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
     image = Column(String)
+    inventory_icon = Column(String)
 
     # Marked for restructure/removal.
     # I believe that this should be part of a Display class or be built into
@@ -315,6 +316,7 @@ class Wearable(ItemTemplate):
         self.garment = False
         self.weapon = False
         self.jewelry = False
+        self.inventory_icon = "default_inventory_icon"
 
         self.max_durability = max_durability
         self.item_rating = item_rating
@@ -405,6 +407,7 @@ class OneHandedWeapon(Weapon):
         super().__init__(*args, **kwargs)
         self.one_handed_weapon = True
         self.image = "sword"
+        self.inventory_icon = "default_inventory_icon"
 
 
 class Shield(Weapon):
@@ -417,6 +420,7 @@ class Shield(Weapon):
         self.shield = True
         self.weapon = False
         self.image = "shield"
+        self.inventory_icon = "shield"
 
 
 class TwoHandedWeapon(Weapon):
@@ -440,7 +444,6 @@ class Garment(Wearable):
     def __init__(self, *args, armour_value=1, **kwargs):
         super().__init__(*args, **kwargs)
         self.garment = True
-
         self.armour_value = armour_value
 
 
@@ -455,6 +458,7 @@ class ChestArmour(Garment):
         super().__init__(*args, **kwargs)
         self.chest_armour = True
         self.image = "chest"
+        self.inventory_icon = "chest"
 
 
 class HeadArmour(Garment):
@@ -468,6 +472,7 @@ class HeadArmour(Garment):
         super().__init__(*args, **kwargs)
         self.head_armour = True
         self.image = "helmet"
+        self.inventory_icon = "helmet"
 
 
 class LegArmour(Garment):
@@ -481,6 +486,7 @@ class LegArmour(Garment):
         super().__init__(*args, **kwargs)
         self.leg_armour = True
         self.image = "legs"
+        self.inventory_icon = "legs"
 
 
 class FeetArmour(Garment):
@@ -494,6 +500,7 @@ class FeetArmour(Garment):
         super().__init__(*args, **kwargs)
         self.feet_armour = True
         self.image = "feet"
+        self.inventory_icon = "feet"
 
 
 class ArmArmour(Garment):
@@ -507,6 +514,7 @@ class ArmArmour(Garment):
         super().__init__(*args, **kwargs)
         self.arm_armour = True
         self.image = "arms"
+        self.inventory_icon = "arms"
 
 
 class HandArmour(Garment):
@@ -520,6 +528,7 @@ class HandArmour(Garment):
         super().__init__(*args, **kwargs)
         self.hand_armour = True
         self.image = "gloves"
+        self.inventory_icon = "gloves"
 
 
 # New Class
