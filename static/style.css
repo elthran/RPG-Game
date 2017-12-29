@@ -760,7 +760,7 @@ img.profileImage {
     width: 500px;
 }
 
-#inventory-helmet {
+#inventory-head {
     left: 650px;
     top: 25px;
 }
@@ -771,7 +771,7 @@ img.profileImage {
     height: 150px;
 }
 
-#inventory-shoulders {
+#inventory-shoulder {
     left: 520px;
     top: 100px;
     height: 125px;
@@ -782,22 +782,22 @@ img.profileImage {
     top: 100px;
 }
 
-#inventory-sleeves {
+#inventory-arm {
     left: 850px;
     top: 250px;
 }
 
-#inventory-gloves {
+#inventory-hand {
     left: 450px;
     top: 250px;
 }
 
-#inventory-left-ring {
+#inventory-left-finger {
     left: 500px;
     top: 375px;
 }
 
-#inventory-right-ring {
+#inventory-right-finger {
     left: 800px;
     top: 375px;
 }
@@ -808,13 +808,13 @@ img.profileImage {
     height: 50px;
 }
 
-#inventory-legs {
+#inventory-leg {
     left: 650px;
     top: 400px;
     height: 150px;
 }
 
-#inventory-feet {
+#inventory-foot {
     left: 650px;
     top: 575px;
 }

@@ -153,8 +153,6 @@ class ItemTemplate(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
-    image = Column(String)
-    inventory_icon = Column(String)
 
     # Marked for restructure/removal.
     # I believe that this should be part of a Display class or be built into
@@ -194,6 +192,8 @@ class Wearable(ItemTemplate):
     garment = Column(Boolean)
     weapon = Column(Boolean)
     jewelry = Column(Boolean)
+
+    style = Column(String)
 
     # Modifiable proficiencies
     health_maximum = Column(Integer)
@@ -316,7 +316,7 @@ class Wearable(ItemTemplate):
         self.garment = False
         self.weapon = False
         self.jewelry = False
-        self.inventory_icon = "default_inventory_icon"
+        self.style = "leather"
 
         self.max_durability = max_durability
         self.item_rating = item_rating
@@ -385,7 +385,6 @@ class Weapon(Wearable):
     one_handed_weapon = Column(Boolean)
     shield = Column(Boolean)
     two_handed_weapon = Column(Boolean)
-
     __mapper_args__ = {
         'polymorphic_identity': "Weapon",
     }
@@ -393,10 +392,9 @@ class Weapon(Wearable):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.weapon = True
-        self.one_handed_weapon = False
+        self.one_handed_weapon = True
         self.shield = False
         self.two_handed_weapon = False
-
 
 class OneHandedWeapon(Weapon):
     __mapper_args__ = {
@@ -405,10 +403,6 @@ class OneHandedWeapon(Weapon):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.one_handed_weapon = True
-        self.image = "sword"
-        self.inventory_icon = "default_inventory_icon"
-
 
 class Shield(Weapon):
     __mapper_args__ = {
@@ -418,10 +412,6 @@ class Shield(Weapon):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.shield = True
-        self.weapon = False
-        self.image = "shield"
-        self.inventory_icon = "shield"
-
 
 class TwoHandedWeapon(Weapon):
     __mapper_args__ = {
@@ -430,8 +420,8 @@ class TwoHandedWeapon(Weapon):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.one_handed_weapon = False
         self.two_handed_weapon = True
-
 
 # New Class
 class Garment(Wearable):
@@ -440,30 +430,13 @@ class Garment(Wearable):
     __mapper_args__ = {
         'polymorphic_identity': "Garment",
     }
-
     def __init__(self, *args, armour_value=1, **kwargs):
         super().__init__(*args, **kwargs)
         self.garment = True
         self.armour_value = armour_value
 
-
-class ChestArmour(Garment):
-    chest_armour = Column(Boolean)
-
-    __mapper_args__ = {
-        'polymorphic_identity': "ChestArmour",
-    }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.chest_armour = True
-        self.image = "chest"
-        self.inventory_icon = "chest"
-
-
 class HeadArmour(Garment):
     head_armour = Column(Boolean)
-
     __mapper_args__ = {
         'polymorphic_identity': "HeadArmour",
     }
@@ -471,13 +444,29 @@ class HeadArmour(Garment):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.head_armour = True
-        self.image = "helmet"
-        self.inventory_icon = "helmet"
 
+class ShoulderArmour(Garment):
+    shoulder_armour = Column(Boolean)
+    __mapper_args__ = {
+        'polymorphic_identity': "ShoulderArmour",
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.shoulder_armour = True
+
+class ChestArmour(Garment):
+    chest_armour = Column(Boolean)
+    __mapper_args__ = {
+        'polymorphic_identity': "ChestArmour",
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chest_armour = True
 
 class LegArmour(Garment):
     leg_armour = Column(Boolean)
-
     __mapper_args__ = {
         'polymorphic_identity': "LegArmour",
     }
@@ -485,27 +474,19 @@ class LegArmour(Garment):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.leg_armour = True
-        self.image = "legs"
-        self.inventory_icon = "legs"
 
-
-class FeetArmour(Garment):
-    feet_armour = Column(Boolean)
-
+class FootArmour(Garment):
+    foot_armour = Column(Boolean)
     __mapper_args__ = {
-        'polymorphic_identity': "FeetArmour",
+        'polymorphic_identity': "FootArmour",
     }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.feet_armour = True
-        self.image = "feet"
-        self.inventory_icon = "feet"
-
+        self.foot_armour = True
 
 class ArmArmour(Garment):
     arm_armour = Column(Boolean)
-
     __mapper_args__ = {
         'polymorphic_identity': "ArmArmour",
     }
@@ -513,13 +494,9 @@ class ArmArmour(Garment):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.arm_armour = True
-        self.image = "arms"
-        self.inventory_icon = "arms"
-
 
 class HandArmour(Garment):
     hand_armour = Column(Boolean)
-
     __mapper_args__ = {
         'polymorphic_identity': "HandArmour",
     }
@@ -527,9 +504,6 @@ class HandArmour(Garment):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.hand_armour = True
-        self.image = "gloves"
-        self.inventory_icon = "gloves"
-
 
 # New Class
 class Jewelry(Wearable):

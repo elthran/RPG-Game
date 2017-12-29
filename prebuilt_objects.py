@@ -5,7 +5,7 @@ from hero import Hero
 from quests import Quest, QuestPath
 from items import (
     OneHandedWeapon, Shield, TwoHandedWeapon, LegArmour, ChestArmour,
-    HeadArmour, FeetArmour, ArmArmour, HandArmour, Ring, Consumable
+    HeadArmour, FootArmour, ArmArmour, HandArmour, Ring, Consumable
 )
 from events import Trigger, Condition
 
@@ -259,7 +259,7 @@ all_store_items = [
     ChestArmour("Strong Tunic", 5, armour_value=250),
     HeadArmour("Weak Helmet", 2, armour_value=1),
     HeadArmour("Medium Helmet", 4, armour_value=3),
-    FeetArmour("Light Boots", 3, armour_value=3),
+    FootArmour("Light Boots", 3, armour_value=3),
     ArmArmour("Light Sleeves", 4, armour_value=5),
     HandArmour("Light Gloves", 5, armour_value=7),
     Ring("Silver Ring", 8),
