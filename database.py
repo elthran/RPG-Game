@@ -24,18 +24,18 @@ from sqlalchemy import desc
 # Base is the initialize SQLAlchemy base class. It is used to set up the
 # table metadata.
 # Used like so in the __init__ method: Base.metadata.create_all(engine)
-# What this actually means or does I have no idea but it is neccessary.
+# What this actually means or does I have no idea but it is necessary.
 # And I know how to use it.
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 import base_classes
 # Internal game modules
 from game import User
-from inbox import Inbox, Message
+# from inbox import Inbox, Message
 from hero import Hero
-from abilities import Abilities, Ability
-from locations import Location  # , WorldMap, Town, Cave
-from items import ItemTemplate, Item
-from quests import Quest, QuestPath
+from abilities import Ability
+from locations import Location
+from items import Item
+from quests import QuestPath
 from proficiencies import Proficiency
 from events import Trigger
 import prebuilt_objects
@@ -114,7 +114,8 @@ class EZDB:
                     self.update()
                 except sqlalchemy.exc.IntegrityError as ex:
                     print(ex)
-                    print("Please debug database setup -> prebuilt object loading.")
+                    print("Please debug database setup -> "
+                          "prebuilt object loading.")
                     pass  # rollback is now handled by 'update()'
         default_quest_paths = self.get_default_quest_paths()
         for hero in self.session.query(Hero).all():
@@ -191,13 +192,13 @@ class EZDB:
     def create_item(self, item_id):
         """Create a new item from a given template name.
         """
-        template = self.session.query(ItemTemplate).get(item_id)
-        item = Item(template)
+        template = self.session.query(Item).get(item_id)
+        item = template.build_new_from_template()
         return item
 
     def get_random_item(self):
         """Return a new random item."""
-        num_rows = self.session.query(ItemTemplate).count()
+        num_rows = self.session.query(Item).count()
         item_id = random.randint(1, num_rows)
         item = self.create_item(item_id)
         return item
@@ -215,15 +216,15 @@ class EZDB:
         """Return all items in the database ordered by name.
         """
         return self.session.query(
-            ItemTemplate).filter(
-            ItemTemplate.type != "Consumable").order_by(
-            ItemTemplate.name).all()
+            Item).filter_by(template=True).filter(
+            Item.type != "Consumable").order_by(
+            Item.name).all()
         
     def get_all_marketplace_items(self):
-        """Not Implemented!
+        """Return a list of all consumables in the marketplace.
         """
         return self.session.query(
-            ItemTemplate).filter_by(type="Consumable").all()
+            Item).filter_by(template=True).filter_by(type="Consumable").all()
 
     def get_default_world(self):
         """Get the default world for starting heroes.
@@ -234,7 +235,8 @@ class EZDB:
     def get_default_location(self):
         """Get the default location for starting heroes.
         """
-        return self.session.query(Location).filter_by(name="Thornwall", type="town").first()
+        return self.session.query(
+            Location).filter_by(name="Thornwall", type="town").first()
 
     def get_default_quest_paths(self):
         """Return the quest that are applied to starting heroes.
@@ -301,11 +303,12 @@ class EZDB:
     def fetch_hero_by_id(self, hero_id):
         return self.session.query(Hero).get(hero_id)
 
-    def fetch_sorted_heroes(self, attribute, descending = False):
+    def fetch_sorted_heroes(self, attribute, descending=False):
         """Return a list of all heroes sorted by attribute.
 
         :param attribute: an attribute of the Hero object.
-        :param descending: the desired direction for the sorted list ascending/descending
+        :param descending: the desired direction for the sorted list
+            ascending/descending
         :return: list sorted by attribute.
 
         NOTE: this code is not very flexible. If you tried to access
@@ -333,9 +336,11 @@ class EZDB:
         elif attribute.startswith('user'):
             _, attribute = attribute.split('.')
             if descending:
-                return self.session.query(Hero).join(Hero.user).order_by(desc(attribute)).all()
+                return self.session.query(
+                    Hero).join(Hero.user).order_by(desc(attribute)).all()
             else:
-                return self.session.query(Hero).join(Hero.user).order_by(attribute).all()
+                return self.session.query(
+                    Hero).join(Hero.user).order_by(attribute).all()
         else:
             raise Exception("Trying to access an attribute that this code"
                             " does not accommodate.")
@@ -375,8 +380,9 @@ class EZDB:
     def get_all_triggers_by(self, event_name, hero_id):
         """Return all triggers for this hero that fit a given event."""
 
-        return self.session.query(Trigger).filter_by(event_name=event_name,
-                                              hero_id=hero_id).all()
+        return self.session.query(
+            Trigger).filter_by(
+            event_name=event_name, hero_id=hero_id).all()
 
     @staticmethod
     def now():

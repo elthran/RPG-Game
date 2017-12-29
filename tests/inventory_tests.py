@@ -3,8 +3,9 @@ import pdb
 import re
 
 from database import EZDB
-from game import Hero, Inventory
-from items import Item, ItemTemplate
+from hero import Hero
+from inventory import Inventory
+from items import Item
 
 ##########
 # Inventory: work in progress
@@ -53,7 +54,7 @@ class InventoryTestCase(unittest.TestCase):
     
     # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_add_item(self):
-        template = self.db.session.query(ItemTemplate).filter_by(name="Medium Helmet").first()
+        template = self.db.session.query(Item).filter_by(name="Medium Helmet").first()
         item = self.db.create_item(template.id)
         self.inv.add_item(item)
         
@@ -64,7 +65,7 @@ class InventoryTestCase(unittest.TestCase):
     
     # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")    
     def test_equip_helmet(self):
-        template = self.db.session.query(ItemTemplate).filter_by(name="Medium Helmet").first()
+        template = self.db.session.query(Item).filter_by(name="Medium Helmet").first()
         item = self.db.create_item(template.id)
         self.inv.add_item(item)
         
@@ -89,7 +90,7 @@ class InventoryTestCase(unittest.TestCase):
            
     # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_equip_both_hands(self):
-        template = self.db.session.query(ItemTemplate).filter_by(name="Medium Polearm").first()
+        template = self.db.session.query(Item).filter_by(name="Medium Polearm").first()
         item = self.db.create_item(template.id)
         self.inv.add_item(item)
         
@@ -114,7 +115,7 @@ class InventoryTestCase(unittest.TestCase):
             
     # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_equip_ring(self):
-        template = self.db.session.query(ItemTemplate).filter_by(name="Silver Ring").first()
+        template = self.db.session.query(Item).filter_by(name="Silver Ring").first()
         item = self.db.create_item(template.id)
         self.inv.add_item(item)
         
@@ -141,7 +142,7 @@ class InventoryTestCase(unittest.TestCase):
     
     # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_replace_helmet(self):
-        template = self.db.session.query(ItemTemplate).filter_by(name="Medium Helmet").first()
+        template = self.db.session.query(Item).filter_by(name="Medium Helmet").first()
         item = self.db.create_item(template.id)
         item2 = self.db.create_item(template.id)
         self.inv.add_item(item)
@@ -169,9 +170,9 @@ class InventoryTestCase(unittest.TestCase):
         
     # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_replace_both_hands(self):
-        polearm_template = self.db.session.query(ItemTemplate).filter_by(name="Medium Polearm").first()
-        shield_template = self.db.session.query(ItemTemplate).filter_by(name="Small Shield").first()
-        sword_template = self.db.session.query(ItemTemplate).filter_by(name="Big Dagger").first()
+        polearm_template = self.db.session.query(Item).filter_by(name="Medium Polearm").first()
+        shield_template = self.db.session.query(Item).filter_by(name="Small Shield").first()
+        sword_template = self.db.session.query(Item).filter_by(name="Big Dagger").first()
         
         shield = self.db.create_item(shield_template.id)
         sword = self.db.create_item(sword_template.id)
@@ -203,7 +204,7 @@ class InventoryTestCase(unittest.TestCase):
         
     # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_equip_lots_of_rings(self):
-        template = self.db.session.query(ItemTemplate).filter_by(name="Silver Ring").first()
+        template = self.db.session.query(Item).filter_by(name="Silver Ring").first()
         
         ids_to_unequip = []
         for i in range(12):
@@ -232,7 +233,7 @@ class InventoryTestCase(unittest.TestCase):
         
     # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_unequip_legs(self):
-        pants_template = self.db.session.query(ItemTemplate).filter_by(name="Medium Pants").first()
+        pants_template = self.db.session.query(Item).filter_by(name="Medium Pants").first()
         
         pants = self.db.create_item(pants_template.id)
         self.inv.add_item(pants)
@@ -259,7 +260,7 @@ class InventoryTestCase(unittest.TestCase):
 
     # @unittest.skip("Temporarily disabled for speed of development -> re-enable before you trust :)")
     def test_unequip_ring(self):
-        template = self.db.session.query(ItemTemplate).filter_by(name="Silver Ring").first()
+        template = self.db.session.query(Item).filter_by(name="Silver Ring").first()
         
         ids_to_unequip = []
         for i in range(12):

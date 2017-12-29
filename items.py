@@ -1,16 +1,12 @@
-from sqlalchemy import Column, Integer, String, Boolean
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy import orm
-
-# !Important!: Base can only be defined in ONE location and ONE location ONLY!
-# Well ... ok, but for simplicity sake just pretend that that is true.
-from base_classes import Base
-from factories import TemplateMixin
-
-import warnings
+# for testing
+from pprint import pprint
 import pdb
 
+from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import ForeignKey
+
+from base_classes import Base
+from factories import TemplateMixin
 """
 Item Specification:
     All hero specific attributes must be moved from the Template classes.
@@ -27,25 +23,32 @@ Item Specification:
 
 
 class Item(TemplateMixin, Base):
-    """Represent an unique version of an item.
+    """Represent an unique version of an item or the template to create one.
 
-    Each item exists in only one place. Each item can be place in an inventory to belong
-    to a hero.
+    Each item exists in only one place.
+    Each item can be placed in an inventory to belong to a hero.
+    Each item is built from a template of the same name.
 
-    Each item has a template that it links to. Templates are not modifiable.
-
-    All attributes of a item should be item specific. Such as durability
-    or whether the item is broken. All generic attributes will mearly link to the
-    items template.
+    How to use:
+    name : Name of the Item, e.x. "power bracelet"
+    hero : The Hero who owns the item
+    buy_price : Price to buy the item
+    level_req : level requirement
     """
     __tablename__ = "item"
-    id = Column(Integer, primary_key=True)
 
-    # template = relationship(ItemTemplate) -> One to Many
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    image = Column(String)
+
+    buy_price = Column(Integer)
+    wearable = Column(Boolean)
+    consumable = Column(Boolean)
+
+    type = Column(String)
     durability = Column(Integer)
     broken = Column(Boolean)
     consumed = Column(Boolean)
-    name = Column(String)
 
     # Relationships
     # Inventory
@@ -56,58 +59,43 @@ class Item(TemplateMixin, Base):
     unequipped_inventory_id = Column(Integer, ForeignKey('inventory.id'))
     unequipped_position = Column(Integer)
 
-    # ItemTemplate
-    # Each ItemTemplate can have many regular Items.
-    item_template_id = Column(Integer, ForeignKey('item_template.id'))
-    template = relationship("ItemTemplate", back_populates='items')
+    __mapper_args__ = {
+        'polymorphic_identity': "Item",
+        'polymorphic_on': type
+    }
 
-    def __init__(self, template):
-        """Build a new item from a given template.
-
-        Set initial values for item attributes. of
-        """
-        self.template = template
-        self.name = template.name
-
+    def __init__(self, name, buy_price, template=True):
+        self.name = name
+        self.buy_price = buy_price
+        self.wearable = False
+        self.consumable = False
         # Should be a current_durability value as well?
         try:
-            self.durability = template.max_durability
+            self.durability = self.max_durability
         except AttributeError:
             pass
         self.broken = False
         self.consumed = False
+        self.template = template
 
-        self.load_template()
+    def build_new_from_template(self):
+        keys = self.__class__.__table__.columns.keys()
+        keys.remove('id')
+        keys.remove('template')
 
-    @orm.reconstructor
-    def load_template(self):
-        """Load all the attributes of a given template into this item.
-
-        This loads all keys for each object in the method resolution order (MRO)
-        of the template and then removes things like relationships, ids and
-        all keys already in this item. All private/internal variables are removed as well.
-
-        Perhaps this should only occur once? instead of during load?
-        """
-
-        template_keys = set()
-
-        # All non-base objects in inheritance path.
-        # Remove <class 'sqlalchemy.ext.declarative.api.Base'>, <class 'object'> as these are
-        # the last two objects in the MRO
-        hierarchy = type(self.template).__mro__
-        max_index = hierarchy.index(Base)
-        hierarchy = hierarchy[:max_index]
-
-        for obj in hierarchy:
-            template_keys |= set(vars(obj).keys()) - set(obj.__mapper__.relationships.keys())
-
-        template_keys -= set([key for key in template_keys if key.startswith('_')])
-        template_keys -= {'id'}
-        template_keys -= set(vars(self).keys())
-
-        for key in template_keys:
-            setattr(self, key, getattr(self.template, key))
+        relationship_keys = [
+            'rings_inventory_id', 'rings_position', 'unequipped_inventory_id',
+            'unequipped_position'
+        ]
+        for relationship_key in relationship_keys:
+            keys.remove(relationship_key)
+        item = self.__class__(self.name, self.buy_price, template=False)
+        for key in keys:
+            try:
+                setattr(item, key, getattr(self, key))
+            except AttributeError:
+                pass
+        return item
 
     def is_equipped(self):
         # Untested!
@@ -120,7 +108,7 @@ class Item(TemplateMixin, Base):
         """
         if self.broken:
             return None
-        self.template.update_stats(hero)
+        hero.refresh_proficiencies()
 
     def check_if_improvement(self):
         # warnings.warn("Not implemented yet!", RuntimeWarning)
@@ -136,58 +124,8 @@ class Item(TemplateMixin, Base):
         self.inventory.hero = hero
 
 
-class ItemTemplate(Base):
-    """Item object base class.
-
-    A list of all items, the relationship to the Hero class is many to many.
-    Each hero can have many items and each item can be assigned multiple heroes.
-    I think this is a good idea?
-
-    How to use:
-    name : Name of the Item, e.x. "power bracelet"
-    hero : The Hero who owns the item
-    buy_price : Price to buy the item
-    level_req : level requirement
-    """
-    __tablename__ = "item_template"
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True)
-    image = Column(String)
-
-    # Marked for restructure/removal.
-    # I believe that this should be part of a Display class or be built into
-    # the HTML code.
-    buy_name = Column(String)
-
-    buy_price = Column(Integer)
-    wearable = Column(Boolean)
-    consumable = Column(Boolean)
-
-    type = Column(String)
-
-    # Relationships
-    # Each ItemTemplate can have many regular Items.
-    items = relationship("Item", back_populates='template')
-
-    __mapper_args__ = {
-        'polymorphic_identity': "ItemTemplate",
-        'polymorphic_on': type
-    }
-
-    def __init__(self, name, buy_price):
-        self.name = name
-        self.buy_name = self.name + "_buy"
-        self.buy_price = buy_price
-        self.wearable = False
-        self.consumable = False
-
-    def update_stats(self, hero):
-        hero.refresh_proficiencies()
-
-
-# Subclass of ItemTemplate
-class Wearable(ItemTemplate):
+# Subclass of Item
+class Wearable(Item):
     max_durability = Column(Integer)
     item_rating = Column(Integer)
     garment = Column(Boolean)
@@ -329,7 +267,7 @@ class Wearable(ItemTemplate):
         self.endurance_maximum = endurance_maximum
         self.damage_minimum = damage_minimum
         self.damage_maximum = damage_maximum
-        self.damage_modifier= damage_modifier
+        self.damage_modifier = damage_modifier
         self.speed_speed = speed_speed
         self.accuracy_accuracy = accuracy_accuracy
         self.first_strike_chance = first_strike_chance
@@ -378,7 +316,7 @@ class Wearable(ItemTemplate):
         self.sanity_skill = sanity_skill
 
 
-# Subclass of ItemTemplate
+# Subclass of Item
 class Weapon(Wearable):
     one_handed_weapon = Column(Boolean)
     shield = Column(Boolean)
@@ -548,8 +486,8 @@ class Ring(Jewelry):
         pass
 
 
-# Subclass of ItemTemplate
-class Consumable(ItemTemplate):
+# Subclass of Item
+class Consumable(Item):
     healing_amount = Column(Integer)
     sanctity_amount = Column(Integer)
 
@@ -574,7 +512,7 @@ class Consumable(ItemTemplate):
 
 
 # New Class
-class QuestItem(ItemTemplate):
+class QuestItem(Item):
     quest_item = Column(Boolean)
     __mapper_args__ = {
         'polymorphic_identity': "QuestItem",
