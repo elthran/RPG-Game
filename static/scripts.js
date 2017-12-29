@@ -181,28 +181,57 @@ function removeRow(button) {
 
 function toggleEquip(button, itemType, idsArrayStr) {
     "use strict";
-    //console.log(button);
-    //console.log(itemType);
-    //console.log(idsArray);
-    var slot = document.getElementById(itemType);
-    var tr = document.getElementById(button.getAttribute("data"));
-    if (button.innerHTML === "Equip") {
-        button.innerHTML = "Unequip";
-
-        var idsArray = JSON.parse(idsArrayStr);
-        idsArray.forEach(function (id) {
-            //console.log("id: " + id);
-            button = document.getElementById(id).querySelector("button");
-            //console.log("Buttons to replace: " + button);
-            //console.log("If button is real, data: " + button.getAttribute("data"))
-            toggleEquip(button);
-        });
-        slot.insertAdjacentElement("afterend", tr);
-    } else if (button.innerHTML === "Unequip") {
-        slot = document.getElementById("non_equipped_items");
-        button.innerHTML = "Equip";
-        slot.appendChild(tr);
+//    log("toggleEquip function");
+//    console.log(button);
+//    console.log(itemType);
+//    console.log(idsArrayStr);
+    if (itemType === "HeadArmour") {
+        button.id = "inventory-" + "helmet";
     }
+
+    var empty_slot = document.querySelector("[data-id=" + button.id + "-empty]");
+    var command = button.getAttribute("data-py-function");
+    var unequipped = document.getElementById("unequipped");
+    var equipped = document.getElementById("equipped");
+
+    if (command === "unequip") {
+        button.parentElement.removeChild(button);
+        empty_slot.style.display = "";
+
+        button.classList.remove("inventory-equipped");
+        button.classList.add("inventory-unequipped");
+        button.setAttribute("data-py-function", "equip");
+        button.removeAttribute("id");
+        unequipped.appendChild(button);
+    } else if (command === "equip") {
+        button.parentElement.removeChild(button);
+        empty_slot.style.display = "none";
+
+        button.classList.remove("inventory-unequipped");
+        button.classList.add("inventory-equipped");
+        button.setAttribute("id", empty_slot.id);
+        equipped.insertBefore(button, empty_slot);
+    }
+
+//    var slot = document.getElementById(itemType);
+//    var tr = document.getElementById(button.getAttribute("data"));
+//    if (button.innerHTML === "Equip") {
+//        button.innerHTML = "Unequip";
+//
+//        var idsArray = JSON.parse(idsArrayStr);
+//        idsArray.forEach(function (id) {
+//            //console.log("id: " + id);
+//            button = document.getElementById(id).querySelector("button");
+//            //console.log("Buttons to replace: " + button);
+//            //console.log("If button is real, data: " + button.getAttribute("data"))
+//            toggleEquip(button);
+//        });
+//        slot.insertAdjacentElement("afterend", tr);
+//    } else if (button.innerHTML === "Unequip") {
+//        slot = document.getElementById("non_equipped_items");
+//        button.innerHTML = "Equip";
+//        slot.appendChild(tr);
+//    }
 }
 
 /*
