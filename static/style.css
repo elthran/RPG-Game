@@ -738,8 +738,8 @@ img.profileImage {
 .inventory {
     border: 5px solid;
     position: absolute;
-    height: 125px;
-    width: 125px;
+    height: 10%;
+    width: 10%;
 }
 
 #inventory-helmet {
