@@ -748,8 +748,9 @@ img.profileImage {
     position: absolute;
     border: 5px solid;
     position: absolute;
-    height: 125px;
-    width: 125px;
+    height: 100px;
+    width: 100px;
+    border-radius: 10%;
 }
 
 #inventory-helmet {
@@ -759,42 +760,68 @@ img.profileImage {
 
 #inventory-chest {
     left: 650px;
-    top: 175px;
+    top: 150px;
+    height: 150px;
 }
 
 #inventory-shoulders {
     left: 520px;
-    top: 125px;
+    top: 100px;
+    height: 125px;
+}
+
+#inventory-neck {
+    left: 780px;
+    top: 100px;
 }
 
 #inventory-sleeves {
-    left: 845px;
+    left: 850px;
     top: 250px;
 }
 
 #inventory-gloves {
-    left: 455px;
+    left: 450px;
     top: 250px;
+}
+
+#inventory-left-ring {
+    left: 500px;
+    top: 375px;
+}
+
+#inventory-right-ring {
+    left: 800px;
+    top: 375px;
+}
+
+#inventory-waist {
+    left: 650px;
+    top: 325px;
+    height: 50px;
 }
 
 #inventory-legs {
     left: 650px;
-    top: 325px;
+    top: 400px;
+    height: 150px;
 }
 
 #inventory-feet {
     left: 650px;
-    top: 475px;
+    top: 575px;
 }
 
 #inventory-left-hand {
-    left: 910px;
-    top: 400px;
+    left: 850px;
+    top: 500px;
+    height: 150px;
 }
 
 #inventory-right-hand {
-    left: 390px;
-    top: 400px;
+    left: 450px;
+    top: 500px;
+    height: 150px;
 }
 
 .inventory_unequipped_outer {
@@ -812,4 +839,5 @@ img.profileImage {
     border: 5px solid;
     height: 125px;
     width: 125px;
+    border-radius: 10%;
 }

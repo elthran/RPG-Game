@@ -18,6 +18,11 @@
 {% else %}
 <img class="inventory-equipped" id="inventory-shoulders" src="/static/images/items/inventory_shoulders.jpg" alt="shoulders.jpg">
 {% endif %}
+{% if inventory.neck %}{% set item = inventory.neck %}
+<input type="image" class="inventory-equipped" id="inventory-neck" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.image }}.jpg"/>
+{% else %}
+<img class="inventory-equipped" id="inventory-neck" src="/static/images/items/inventory_neck.jpg" alt="neck.jpg">
+{% endif %}
 {% if inventory.sleeves %}{% set item = inventory.sleeves %}
 <input type="image" class="inventory-equipped" id="inventory-sleeves" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.image }}.jpg"/>
 {% else %}
@@ -28,6 +33,11 @@
 {% else %}
 <img class="inventory-equipped" id="inventory-chest" src="/static/images/items/inventory_chest.jpg" alt="chest.jpg">
 {% endif %}
+{% if inventory.waist %}{% set item = inventory.waist %}
+<input type="image" class="inventory-equipped" id="inventory-waist" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.image }}.jpg"/>
+{% else %}
+<img class="inventory-equipped" id="inventory-waist" src="/static/images/items/inventory_waist.jpg" alt="waist.jpg">
+{% endif %}
 {% if inventory.legs %}{% set item = inventory.legs %}
 <input type="image" class="inventory-equipped" id="inventory-legs" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.image }}.jpg"/>
 {% else %}
@@ -37,6 +47,16 @@
 <input type="image" class="inventory-equipped" id="inventory-gloves" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.image }}.jpg"/>
 {% else %}
 <img class="inventory-equipped" id="inventory-gloves" src="/static/images/items/inventory_gloves.jpg" alt="gloves.jpg">
+{% endif %}
+{% if inventory.right_ring %}{% set item = inventory.right_ring %}
+<input type="image" class="inventory-equipped" id="inventory-right-ring" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.image }}.jpg"/>
+{% else %}
+<img class="inventory-equipped" id="inventory-right-ring" src="/static/images/items/inventory_right_ring.jpg" alt="right_ring.jpg">
+{% endif %}
+{% if inventory.left_ring %}{% set item = inventory.left_ring %}
+<input type="image" class="inventory-equipped" id="inventory-left-ring" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.image }}.jpg"/>
+{% else %}
+<img class="inventory-equipped" id="inventory-left-ring" src="/static/images/items/inventory_left_ring.jpg" alt="left_ring.jpg">
 {% endif %}
 {% if inventory.feet %}{% set item = inventory.feet %}
 <input type="image" class="inventory-equipped" id="inventory-feet" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.image }}.jpg"/>
