@@ -179,15 +179,14 @@ function removeRow(button) {
     // button.style.display = 'none';
 }
 
-function toggleEquip(button, itemType, idsArrayStr) {
+function toggleEquip(button, slot, idsArrayStr) {
     "use strict";
 //    log("toggleEquip function");
 //    console.log(button);
-//    console.log(itemType);
+//    console.log(slot);
 //    console.log(idsArrayStr);
-    if (itemType === "HeadArmour") {
-        button.id = "inventory-" + "helmet";
-    }
+    var slot_type = slot.replace('_', '-');
+    button.id = "inventory-" + slot_type;
 
     var empty_slot = document.querySelector("[data-id=" + button.id + "-empty]");
     var command = button.getAttribute("data-py-function");
@@ -209,29 +208,10 @@ function toggleEquip(button, itemType, idsArrayStr) {
 
         button.classList.remove("inventory-unequipped");
         button.classList.add("inventory-equipped");
+        button.setAttribute("data-py-function", "unequip");
         button.setAttribute("id", empty_slot.id);
         equipped.insertBefore(button, empty_slot);
     }
-
-//    var slot = document.getElementById(itemType);
-//    var tr = document.getElementById(button.getAttribute("data"));
-//    if (button.innerHTML === "Equip") {
-//        button.innerHTML = "Unequip";
-//
-//        var idsArray = JSON.parse(idsArrayStr);
-//        idsArray.forEach(function (id) {
-//            //console.log("id: " + id);
-//            button = document.getElementById(id).querySelector("button");
-//            //console.log("Buttons to replace: " + button);
-//            //console.log("If button is real, data: " + button.getAttribute("data"))
-//            toggleEquip(button);
-//        });
-//        slot.insertAdjacentElement("afterend", tr);
-//    } else if (button.innerHTML === "Unequip") {
-//        slot = document.getElementById("non_equipped_items");
-//        button.innerHTML = "Equip";
-//        slot.appendChild(tr);
-//    }
 }
 
 /*

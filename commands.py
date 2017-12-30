@@ -120,7 +120,8 @@ class Command:
             hero,
             description="{} equips a/an {}.".format(hero.name, item.name)
         )
-        return item.type + "&&" + str(ids_to_unequip)
+        slot = hero.inventory.slots_used_by_item_type[item.type]["primary"]
+        return slot + "&&" + str(ids_to_unequip)
 
     @staticmethod
     def unequip(hero, database, arg_dict, engine):
@@ -133,7 +134,8 @@ class Command:
             hero,
             description="{} unequips a/an {}.".format(hero.name, item.name)
         )
-        return item.type
+        slot = hero.inventory.slots_used_by_item_type[item.type]["primary"]
+        return slot
 
     def update_ability(hero, database, arg_dict, **kwargs):
         # Format of data in html button is: data = "{{ ability.id }}, {{ ability.tree }}"
