@@ -108,19 +108,23 @@ town.children.append(old_mans_hut)
 gate = Location('Village Gate', 'gate')
 town.children.append(gate)
 
-dungeon = node_grid[2]
-dungeon.name = choice(adjective_list) + " Cave"
-dungeon.type = 'dungeon'
-dungeon.update()
-dungeon.display.page_heading = "You are outside {}".format(dungeon.name)
-dungeon.display.page_image = "generic_cave_entrance.jpg"
-dungeon.display.paragraph = "There are many scary places to die within the cave. Have a look!"
-dungeon_entrance = Location('Dungeon Entrance', 'dungeon_entrance')
-dungeon_entrance.display.page_image = "generic_cave_entrance2.jpg"
+# Child of Dungeon Entrance
 explore_dungeon = Location('Explore Dungeon', 'explore_dungeon')
 explore_dungeon.display.page_title = "Exploring"
+
+# Child of all "type == dungeon": Cave/Forest/etc.
+dungeon_entrance = Location('Dungeon Entrance', 'dungeon_entrance')
+dungeon_entrance.display.page_image = "generic_cave_entrance2.jpg"
 dungeon_entrance.children.append(explore_dungeon)
-dungeon.children.append(dungeon_entrance)
+
+cave = node_grid[2]
+cave.name = choice(adjective_list) + " Cave"
+cave.type = 'dungeon'
+cave.update()
+cave.display.page_heading = "You are outside {}".format(cave.name)
+cave.display.page_image = "generic_cave_entrance.jpg"
+cave.display.paragraph = "There are many scary places to die within the cave. Have a look!"
+cave.children.append(dungeon_entrance)
 
 forest = node_grid[6]
 forest.name = choice(adjective_list) + " Forest"
@@ -130,7 +134,6 @@ forest.display.page_heading = "You are outside {}".format(forest.name)
 forest.display.page_image = "generic_forest_entrance.jpg"
 forest.display.paragraph = "There are many scary places to die within the forest. Have a look!"
 forest.children.append(dungeon_entrance)
-
 
 node_grid[0].adjacent = [node_grid[1], node_grid[3], node_grid[5]]
 node_grid[1].adjacent = [node_grid[0], node_grid[2], node_grid[5]]
