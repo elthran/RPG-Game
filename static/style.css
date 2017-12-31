@@ -87,9 +87,7 @@ ul {
 	padding-left: 5px;
 }
 
-
 /* Basic Content throughout the game */
-
 #content {
 	width: 85%;
 	padding-top: 60px;
@@ -99,7 +97,6 @@ ul {
 #content img {
 	opacity:1;
 	border-radius: 50%;
-
 }
 
 .nav ul {
@@ -135,7 +132,6 @@ ul {
 }
 
 /* Sidebar used for all pages */
-
 #sidebar {
     font-size: 12px;
 	width:12%;
@@ -195,7 +191,6 @@ ul {
 }
 
 /* Topbar used in profile_template */
-
 .topbar {
 	float: right;
 	width: 40%;
@@ -234,7 +229,6 @@ ul {
 }
 
 /* Top bar added drop-down portion (used on Ability section) */
-
 .topbarDropLink li a {
 	display: inline-block;
 	color: Black;
@@ -269,7 +263,6 @@ ul {
 }
 
 /* Topbar used in inbox */
-
 .inboxTopbar {
 	float: left;
 	width: auto;
@@ -324,7 +317,6 @@ ul {
 }
 
 /* Attribute Page */
-
 .profilePage {
 	float: left;
 	text-align: left;
@@ -407,7 +399,6 @@ input.abilityButtonMinus {
 }
 
 /* Proficiency Page */
-
 .proficiencyPage {
 	font-family: arial;
 	font-size: 20px;
@@ -482,7 +473,6 @@ input.abilityButtonMinus {
 }
 
 /* Ability Pages */
-
     /* Religion Individual Containers */
 .religioncontainer {
     width: 14%;
@@ -538,7 +528,6 @@ input.abilityButtonMinus {
 }
 
 /* The % full bars used in the game */
-
 .progressBar { 
 	height: 10px; 
 	width: 70px;
@@ -611,11 +600,8 @@ img.profileImage {
     }
 
 /***** Jacob's messing around *******/
-
 /* Attribute Page Container to split page into 2 vertical halves using absolute positioning technique
     temporary because absolute positioning requires set height and will mess up display below it */
-
-
 /* Ability button design */
 
 .button_ability {
@@ -734,7 +720,7 @@ img.profileImage {
     text-decoration: none;
     cursor: pointer;
 }
-
+/* Inventory Page Code */
 .inventory_equipped_outer {
     position: relative;
     float: left;
@@ -811,7 +797,6 @@ img.profileImage {
 #inventory-leg {
     left: 650px;
     top: 400px;
-    height: 150px;
 }
 
 #inventory-foot {
@@ -848,3 +833,40 @@ img.profileImage {
     width: 125px;
     border-radius: 10%;
 }
+
+.inventory-tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.inventory-tooltip .inventory-tooltip-text {
+    visibility: hidden;
+    position: absolute;
+    height: auto;
+    width: auto;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+.inventory-tooltip .inventory-tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: Red transparent transparent transparent;
+}
+
+.inventory-tooltip:hover .inventory-tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+/* End of Inventory Page Code */

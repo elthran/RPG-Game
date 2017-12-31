@@ -33,9 +33,11 @@
     <img class="inventory-equipped" id="inventory-waist" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
     {% else %}> {% endif %}
 
+    <div class="inventory-tooltip">
     <img class="inventory-equipped" id="inventory-leg" src="/static/images/items/inventory_leg.jpg" alt="leg.jpg" data-id="inventory-leg-empty" {% if inventory.leg %}{% set item = inventory.leg %} style="display:none;">
     <img class="inventory-equipped" id="inventory-leg" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
-    {% else %}> {% endif %}
+        <span class="inventory-tooltip-text" id="inventory-leg">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>{% else %}> {% endif %}
+    </div>
 
     <img class="inventory-equipped" id="inventory-hand" src="/static/images/items/inventory_hand.jpg" alt="hand.jpg" data-id="inventory-hand-empty" {% if inventory.hand %}{% set item = inventory.hand %} style="display:none;">
     <img class="inventory-equipped" id="inventory-hand" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
@@ -49,9 +51,11 @@
     <img class="inventory-equipped" id="inventory-left-finger" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
     {% else %}> {% endif %}
 
+    <div class="inventory-tooltip">
     <img class="inventory-equipped" id="inventory-foot" src="/static/images/items/inventory_foot.jpg" alt="foot.jpg" data-id="inventory-foot-empty" {% if inventory.foot %}{% set item = inventory.foot %} style="display:none;">
     <img class="inventory-equipped" id="inventory-foot" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
-    {% else %}> {% endif %}
+    <span class="inventory-tooltip-text" id="inventory-foot">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>{% else %}> {% endif %}
+    </div>
 
     <img class="inventory-equipped" id="inventory-right-hand" src="/static/images/items/inventory_right_hand.jpg" alt="right_hand.jpg" data-id="inventory-right-hand-empty" {% if inventory.right_hand %}{% set item = inventory.right_hand %} style="display:none;">
     <img class="inventory-equipped" id="inventory-right-hand" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
