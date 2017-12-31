@@ -53,7 +53,7 @@ PROFICIENCY_INFORMATION = [
     ("Killshot", "Ability to hit enemies in their weak spot", "Agility",
         [("Chance", "root", (0, 0)),
          ("Modifier", "linear", (0.1, 1, 1))]),
-    ("Defence", "Damage reduction", "Resilience",
+    ("Toughness", "Damage reduction", "Resilience",
         [("Modifier", "root", (0, 0))]),
     ("Evade", "Chance to dodge", "Quickness",
         [("Chance", "root", (5, 0))]),

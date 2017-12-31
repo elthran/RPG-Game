@@ -30,7 +30,8 @@
                                 </span>
                 <button data-py-function="update_proficiency"
                         data="{{ proficiency.id }}" id="proficiencyButton"
-                        data-js-callback="updateProf" {% if myHero.proficiency_points
+                        data-js-callback="updateProf" {% if
+                        myHero.proficiency_points
                 <= 0 or proficiency.is_max_level() %} style="display: none"{% endif %}></button>
             </ul>
         </div>
@@ -59,8 +60,10 @@
                                     {% if proficiency.is_max_level() %} inline{% else %} none
                                     {% endif %}"><br>{{ proficiency.error }}</div>
                                 </span>
-                <button data-py-function="update_proficiency" data="{{ proficiency.id }}" id="proficiencyButton"
-                        data-js-callback="updateProf" {% if myHero.proficiency_points
+                <button data-py-function="update_proficiency"
+                        data="{{ proficiency.id }}" id="proficiencyButton"
+                        data-js-callback="updateProf" {% if
+                        myHero.proficiency_points
                 <= 0 or proficiency.is_max_level() %} style="display: none"{% endif %}></button>
             </ul>
         </div>
@@ -89,8 +92,10 @@
                                     {% if proficiency.is_max_level() %} inline{% else %} none
                                     {% endif %}"><br>{{ proficiency.error }}</div>
                                 </span>
-                <button data-py-function="update_proficiency" data="{{ proficiency.id }}" id="proficiencyButton"
-                        data-js-callback="updateProf" {% if myHero.proficiency_points
+                <button data-py-function="update_proficiency"
+                        data="{{ proficiency.id }}" id="proficiencyButton"
+                        data-js-callback="updateProf" {% if
+                        myHero.proficiency_points
                 <= 0 or proficiency.is_max_level() %} style="display: none"{% endif %}></button>
             </ul>
         </div>

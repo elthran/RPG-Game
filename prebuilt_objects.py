@@ -8,6 +8,7 @@ from items import (
     HeadArmour, FootArmour, ArmArmour, HandArmour, Ring, Consumable
 )
 from events import Trigger, Condition
+from random import choice # To create pre-built adjectives
 
 # for testing
 import pdb
@@ -50,6 +51,9 @@ which loads these object from a .csv file.
  +Thornwall at location 5
  +Creepy Cave at location 2
  +'''
+
+adjective_list = ["Dark", "Creepy", "Shadowy", "Haunted", "Sacred"]
+
 world = Location(name="Htrae", location_type="map")
 world.display.page_heading = "You are wandering in the world"
 world.display.paragraph = "Be safe"
@@ -104,21 +108,28 @@ town.children.append(old_mans_hut)
 gate = Location('Village Gate', 'gate')
 town.children.append(gate)
 
-cave = node_grid[2]
-cave.name = "Outside Creepy cave"
-cave.type = 'cave'
-cave.update()
-cave.display.page_heading = "You are outside a cave called {}".format(cave.name)
-cave.display.page_image = "generic_cave_entrance.jpg"
-cave.display.paragraph = "There are many scary places to die within the cave. Have a look!"
+dungeon = node_grid[2]
+dungeon.name = choice(adjective_list) + " Cave"
+dungeon.type = 'dungeon'
+dungeon.update()
+dungeon.display.page_heading = "You are outside {}".format(dungeon.name)
+dungeon.display.page_image = "generic_cave_entrance.jpg"
+dungeon.display.paragraph = "There are many scary places to die within the cave. Have a look!"
+dungeon_entrance = Location('Dungeon Entrance', 'dungeon_entrance')
+dungeon_entrance.display.page_image = "generic_cave_entrance2.jpg"
+explore_dungeon = Location('Explore Dungeon', 'explore_dungeon')
+explore_dungeon.display.page_title = "Exploring"
+dungeon_entrance.children.append(explore_dungeon)
+dungeon.children.append(dungeon_entrance)
 
-cave_entrance = Location('Cave Entrance', 'cave_entrance')
-cave_entrance.display.page_image = "generic_cave_entrance2.jpg"
-explore_cave = Location('Explore Cave', 'explore_cave')
-explore_cave.display.page_title = "Exploring"
-cave_entrance.children.append(explore_cave)
-
-cave.children.append(cave_entrance)
+forest = node_grid[6]
+forest.name = choice(adjective_list) + " Forest"
+forest.type = 'dungeon'
+forest.update()
+forest.display.page_heading = "You are outside {}".format(forest.name)
+forest.display.page_image = "generic_forest_entrance.jpg"
+forest.display.paragraph = "There are many scary places to die within the forest. Have a look!"
+forest.children.append(dungeon_entrance)
 
 
 node_grid[0].adjacent = [node_grid[1], node_grid[3], node_grid[5]]

@@ -752,7 +752,7 @@ def under_construction(hero=None):
 
 @app.route('/map/<location_name>')
 @app.route('/town/<location_name>')
-@app.route('/cave/<location_name>')
+@app.route('/dungeon/<location_name>')
 @app.route('/explorable/<location_name>')
 @login_required
 @uses_hero
@@ -810,78 +810,78 @@ def barracks(name='', hero=None, location=None):
 
     return render_template('generic.html', hero=hero)
 
-# From /cave
-@app.route('/cave_entrance/<name>')
+# From /dungeon
+@app.route('/dungeon_entrance/<name>')
 @login_required
 @uses_hero
 @update_current_location
-def cave_entrance(name='', hero=None, location=None):
-    location.display.page_heading = " You are in the cave and exploring!"
-    hero.current_cave_floor = 0
-    hero.current_cave_progress = 0
+def dungeon_entrance(name='', hero=None, location=None):
+    location.display.page_heading = " You are in the dungeon and exploring!"
+    hero.current_dungeon_floor = 0
+    hero.current_dungeon_progress = 0
     hero.random_encounter_monster = False
 
-    explore_cave = database.get_object_by_name('Location', 'Explore Cave')
-    explore_cave.display.paragraph = "Take a step into the cave."
+    explore_dungeon = database.get_object_by_name('Location', 'Explore Dungeon')
+    explore_dungeon.display.paragraph = "Take a step into the dungeon."
 
-    location.children = [explore_cave]
+    location.children = [explore_dungeon]
 
     return render_template('generic.html', hero=hero, game=game)  # return a string
 
-# From /inside_cave
-@app.route('/explore_cave/<name>/<extra_data>')
+# From /inside_dungeon
+@app.route('/explore_dungeon/<name>/<extra_data>')
 @login_required
 @uses_hero
 @update_current_location
-def explore_cave(name='', hero=None, location=None, extra_data=None):
+def explore_dungeon(name='', hero=None, location=None, extra_data=None):
     # For convenience
 
-    location.display.page_heading = "Current Floor of Cave: " + str(hero.current_cave_floor)
-    if extra_data == "Entering": # You just arrived into the cave
-        location.display.page_heading += "You explore deeper into the cave!"
-        page_links = [("Walk deeper into the", "/explore_cave/Explore%20Cave/None", "cave", ".")]
-        return render_template('cave_exploring.html', hero=hero, game=game, page_links=page_links)
+    location.display.page_heading = "Current Floor of dungeon: " + str(hero.current_dungeon_floor)
+    if extra_data == "Entering": # You just arrived into the dungeon
+        location.display.page_heading += "You explore deeper into the dungeon!"
+        page_links = [("Walk deeper into the", "/explore_dungeon/Explore%20Dungeon/None", "dungeon", ".")]
+        return render_template('dungeon_exploring.html', hero=hero, game=game, page_links=page_links)
     if extra_data == "Item":
         # The problem here is that when you see an item .. you have already
         # picked it up.
         # I think you need to use a different order of operations.
         # Like put the "add item" after the "pick up item" part
         discovered_item = database.get_random_item()
-        location.display.page_heading = "You find an item in the cave! It's a " + discovered_item.name
+        location.display.page_heading = "You find an item in the dungeon! It's a " + discovered_item.name
         hero.inventory.add_item(discovered_item)
-        page_links = [("Pick up the ", "/explore_cave/Explore%20Cave/None", "item", ".")]
-        return render_template('cave_exploring.html', hero=hero, game=game, page_links=page_links)
+        page_links = [("Pick up the ", "/explore_dungeon/Explore%20Dungeon/None", "item", ".")]
+        return render_template('dungeon_exploring.html', hero=hero, game=game, page_links=page_links)
     encounter_chance = randint(0, 100)
     if hero.random_encounter_monster == True: # You have a monster waiting for you from before
         location.display.page_heading += "The monster paces in front of you."
-        enemy = monster_generator(hero.current_cave_floor + 1) # This should be a saved monster and not re-generated :(
+        enemy = monster_generator(hero.current_dungeon_floor + 1) # This should be a saved monster and not re-generated :(
         game.set_enemy(enemy)
         page_links = [("Attack the ", "/battle/monster", "monster", "."),
-                      ("Attempt to ", "/cave_entrance/Cave%20Entrance", "flee", ".")]
+                      ("Attempt to ", "/dungeon_entrance/Dungeon%20Entrance", "flee", ".")]
     else: # You continue exploring
-        hero.current_cave_floor_progress += 1
-        if encounter_chance > (100 - (hero.current_cave_floor_progress*4)):
-            hero.current_cave_floor += 1
-            if hero.current_cave_floor > hero.deepest_cave_floor:
-                hero.deepest_cave_floor = hero.current_cave_floor
-            hero.current_cave_floor_progress = 0
-            location.display.page_heading = "You descend to a deeper level of the cave!! Current Floor of Cave: " + str(hero.current_cave_floor)
-            page_links = [("Start ", "/explore_cave/Explore%20Cave/None", "exploring", " this level of the cave.")]
+        hero.current_dungeon_floor_progress += 1
+        if encounter_chance > (100 - (hero.current_dungeon_floor_progress*4)):
+            hero.current_dungeon_floor += 1
+            if hero.current_dungeon_floor > hero.deepest_dungeon_floor:
+                hero.deepest_dungeon_floor = hero.current_dungeon_floor
+            hero.current_dungeon_floor_progress = 0
+            location.display.page_heading = "You descend to a deeper level of the dungeon!! Current Floor of dungeon: " + str(hero.current_dungeon_floor)
+            page_links = [("Start ", "/explore_dungeon/Explore%20Dungeon/None", "exploring", " this level of the dungeon.")]
         elif encounter_chance > 35: # You find a monster! Oh no!
             location.display.page_heading += "You come across a terrifying monster lurking in the shadows."
-            enemy = monster_generator(hero.current_cave_floor+1)
-            hero.current_cave_monster = True
+            enemy = monster_generator(hero.current_dungeon_floor+1)
+            hero.current_dungeon_monster = True
             game.set_enemy(enemy)
             page_links = [("Attack the ", "/battle/monster", "monster", "."),
-                          ("Attempt to ", "/cave_entrance/Cave%20Entrance", "flee", ".")]
+                          ("Attempt to ", "/dungeon_entrance/Dungeon%20Entrance", "flee", ".")]
         elif encounter_chance > 15: # You find an item!
-            location.display.page_heading += "You find something shiny in a corner of the cave."
-            page_links = [("", "/explore_cave/Explore%20Cave/Item", "Investigate", " the light's source.")]
+            location.display.page_heading += "You find something shiny in a corner of the dungeon."
+            page_links = [("", "/explore_dungeon/Explore%20Dungeon/Item", "Investigate", " the light's source.")]
         else:
-            location.display.page_heading += " You explore deeper into the cave!"
-            page_links = [("Walk deeper into the", "/explore_cave/Explore%20Cave/None", "cave", ".")]
-    location.display.page_heading += " Current progress on this floor: " + str(hero.current_cave_floor_progress)
-    return render_template('cave_exploring.html', hero=hero, game=game, page_links=page_links)  # return a string
+            location.display.page_heading += " You explore deeper into the dungeon!"
+            page_links = [("Walk deeper into the", "/explore_dungeon/Explore%20Dungeon/None", "dungeon", ".")]
+    location.display.page_heading += " Current progress on this floor: " + str(hero.current_dungeon_floor_progress)
+    return render_template('dungeon_exploring.html', hero=hero, game=game, page_links=page_links)  # return a string
 
 # From /barracks
 @app.route('/spar/<name>')
@@ -988,7 +988,7 @@ def battle(this_user=None, hero=None):
         page_heading = "You have died."
         location = database.get_object_by_name('Location', hero.last_city.name)
         hero.current_location = location
-        hero.current_cave_monster = False
+        hero.current_dungeon_monster = False
     else:
         """
         for item in hero.equipped_items:
@@ -1030,11 +1030,11 @@ def battle(this_user=None, hero=None):
         page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(
             experience_gained) + " experience!"
         page_links = [("Return to where you ", hero.current_location.url, "were", ".")]
-        hero.current_cave_monster = False
+        hero.current_dungeon_monster = False
         if level_up:
             page_heading += " You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ", "/home", "profile", " page and distribute your new attribute points."),
-                          ("Return to where you ", "/explore_cave/Explore%20Cave/Entering", "were", ".")]
+                          ("Return to where you ", "/explore_dungeon/Explore%20Dungeon/Entering", "were", ".")]
 
     # Return an html page built from a Jinja2 form and the passed data.
     return render_template(

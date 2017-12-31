@@ -186,9 +186,9 @@ class Location(Base):
     """
 
     ALL_TYPES = [
-        'town', 'map', 'explorable', 'cave', 'blacksmith',
+        'town', 'map', 'explorable', 'dungeon', 'blacksmith',
         'merchant', 'house', 'store', 'barracks', 'marketplace',
-        'tavern', 'gate', 'combat', 'spar', 'arena', 'cave_entrance', 'explore_cave'
+        'tavern', 'gate', 'combat', 'spar', 'arena', 'dungeon_entrance', 'explore_dungeon'
     ]
 
     __tablename__ = 'location'
@@ -391,7 +391,7 @@ class Location(Base):
         Old: Create a url for this location based on the parent's url.
         """
         url_name = self.name.replace(" ", "%20")
-        if self.type == "explore_cave":
+        if self.type == "explore_dungeon":
             url_name += "/False"
         return "/{}/{}".format(self.type, url_name)
         # if self.parent is None:

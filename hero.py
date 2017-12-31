@@ -47,9 +47,9 @@ class Hero(Base):
     attribute_points = Column(Integer)
     proficiency_points = Column(Integer)
 
-    deepest_cave_floor = Column(Integer)  # High score for dungeon runs
-    current_cave_floor = Column(Integer)  # Which floor of cave your on
-    current_cave_floor_progress = Column(
+    deepest_dungeon_floor = Column(Integer)  # High score for dungeon runs
+    current_dungeon_floor = Column(Integer)  # Which floor of dungeon your on
+    current_dungeon_floor_progress = Column(
         Integer)  # Current progress in current cave floor
     random_encounter_monster = Column(
         Boolean)  # Checks if you are currently about to fight a monster
@@ -165,9 +165,9 @@ class Hero(Base):
         self.attribute_points = 0
         self.proficiency_points = 0
 
-        self.deepest_cave_floor = 0
-        self.current_cave_floor = 0
-        self.current_cave_floor_progress = 0
+        self.deepest_dungeon_floor = 0
+        self.current_dungeon_floor = 0
+        self.current_dungeon_floor_progress = 0
         self.random_encounter_monster = None
 
         # Time code

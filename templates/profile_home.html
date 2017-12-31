@@ -79,6 +79,7 @@
 	<div class="profileColumn">
 		<h2>Defence</h2>
 		<ul>
+			<li>Toughness: {{ myHero.proficiencies.defence.modifier }}</li>
 			<li>Block Chance: {% if myHero.proficiencies.block.chance %}{{ myHero.proficiencies.block.chance }}%{% else %}<font color="red">You need a shield</font>{% endif %}</li>
 			<li>Fatigue: {{ myHero.proficiencies.fatigue.current }}</li>
 			<li>Resist Frost: {{ myHero.proficiencies.resist_frost.modifier }}%</li>

@@ -42,12 +42,12 @@ class LocationTestCase(unittest.TestCase):
     def test_main(self):
         game_map = Location("Earth", "map")
         town = Location("Thornwall", "town", parent=game_map)
-        cave = Location("Scary Cave", "cave", parent=game_map, siblings=[town])
+        cave = Location("Scary Cave", "dungeon", parent=game_map, siblings=[town])
         blacksmith = Location("Hendrick's", 'blacksmith', parent=town)
         merchant = Location("Mathers", 'merchant', parent=town,
                             siblings=[blacksmith])
 
-        self.db.session.add_all([game_map, town, cave, blacksmith, merchant])
+        self.db.session.add_all([game_map, town, dungeon, blacksmith, merchant])
         self.db.session.commit()
         # print(game_map.pretty_str())
         # print(town.pretty_str())
@@ -92,9 +92,9 @@ class LocationTestCase(unittest.TestCase):
         town = node_grid[5]
         town.name = "Thornwall"
         town.type = 'town'
-        cave = node_grid[2]
-        cave.name = "Creepy cave"
-        cave.type = 'cave'
+        dungeon = node_grid[2]
+        dungeon.name = "Creepy cave"
+        dungeon.type = 'cave'
 
         self.db.session.add(world)
 
