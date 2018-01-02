@@ -754,6 +754,7 @@ def under_construction(hero=None):
 @app.route('/town/<location_name>')
 @app.route('/dungeon/<location_name>')
 @app.route('/explorable/<location_name>')
+@app.route('/building/<location_name>')
 @login_required
 @uses_hero
 @url_protect  # TODO: this should implement @update_current_location?
@@ -769,6 +770,8 @@ def move(location_name, hero=None):
         hero.last_city = location
     if location.type == 'map':
         hero.current_world = location
+        print(location)
+        other_heroes = []
     else:
         hero.current_location = location
         other_heroes = [other_hero for other_hero in hero.current_location.heroes_by_current_location if
@@ -782,7 +785,6 @@ def move(location_name, hero=None):
         paragraph=location.display.paragraph,
         people_of_interest=other_heroes,
         places_of_interest=location.places_of_interest)
-
 
 @app.route('/barracks/<name>')
 @login_required
@@ -820,12 +822,9 @@ def dungeon_entrance(name='', hero=None, location=None):
     hero.current_dungeon_floor = 0
     hero.current_dungeon_progress = 0
     hero.random_encounter_monster = False
-
     explore_dungeon = database.get_object_by_name('Location', 'Explore Dungeon')
     explore_dungeon.display.paragraph = "Take a step into the dungeon."
-
     location.children = [explore_dungeon]
-
     return render_template('generic.html', hero=hero, game=game)  # return a string
 
 # From /inside_dungeon
@@ -835,7 +834,6 @@ def dungeon_entrance(name='', hero=None, location=None):
 @update_current_location
 def explore_dungeon(name='', hero=None, location=None, extra_data=None):
     # For convenience
-
     location.display.page_heading = "Current Floor of dungeon: " + str(hero.current_dungeon_floor)
     if extra_data == "Entering": # You just arrived into the dungeon
         location.display.page_heading += "You explore deeper into the dungeon!"

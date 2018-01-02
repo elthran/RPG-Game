@@ -22,14 +22,14 @@
 {% block block1 %}
 <!-- This shows the quest log within the journal -->
 {% if quest_log %}
-    <h2 class="indented">Current Quests</h2>
+    <h2>Current Quests</h2>
     {% for path in hero.journal.quest_paths if not path.completed %}
         <p>Stage: {{ path.stage+1 }}/{{ path.stages }} ->
             Quest: {{ path.current_quest.name }} -> Path: {{ path.name }}</p>
     {% else %}
         No current quests
     {% endfor %}
-    <h2 class="indented">Completed Quests</h2>
+    <h2>Completed Quests</h2>
     {% for path in hero.journal.quest_paths if path.completed %}
         <p>Path: <strong>{{ path.name }}</strong> -> Reward: {{ path.total_reward }}xp</p>
     {% else %}
@@ -39,7 +39,7 @@
 
 <!-- This shows the bestiary within the journal -->
 {% if bestiary %}
-    <div class="rightside">
+    <div style="float:right;">
         {% for monster in hero.bestiary %}
         <ul>
             <li><a href=/bestiary/{{ monster.monster_id }}>{{ monster.name }}</a></li>
@@ -60,7 +60,7 @@
 
 <!-- This shows the People Log within the journal-->
 {% if people_log %}
-    <div class="rightside">
+    <div style="float:right;">
         {% for npc in npc_data %}
         <ul>
             <li><a href=/people_log/{{ npc.npc_id }}>{{ npc.name }}</a></li>

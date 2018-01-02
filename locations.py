@@ -186,9 +186,11 @@ class Location(Base):
     """
 
     ALL_TYPES = [
-        'town', 'map', 'explorable', 'dungeon', 'blacksmith',
-        'merchant', 'house', 'store', 'barracks', 'marketplace',
-        'tavern', 'gate', 'combat', 'spar', 'arena', 'dungeon_entrance', 'explore_dungeon'
+        'map', 'explorable', 'town',
+        'blacksmith', 'merchant', 'house', 'store', 'barracks', 'marketplace',
+        'tavern', 'gate', 'combat', 'spar', 'arena',
+        'building',
+        'dungeon', 'dungeon_entrance', 'explore_dungeon'
     ]
 
     __tablename__ = 'location'

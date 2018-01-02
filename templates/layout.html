@@ -15,34 +15,21 @@
 </head>
 
 <body>
-<div id="sidebar">
-    <div id="sidebartop">
+<div class="sidebar">
+    <div>
         <h1>{{ myHero.name }}</h1>
-        <h3><img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px">
-            Age: {{ myHero.age }}<br>
-            Gold: <span id="heroGold">{{ myHero.gold }}</span></h3>
+        <img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px">
+        Age: {{ myHero.age }}
+        <br>Gold: <span id="heroGold">{{ myHero.gold }}</span>
     </div>
-    <div id="sidebarmiddle">
-        <ul>
-            <li>Health:
-                <div class="progressBar"><span style="width:{{ myHero.proficiencies.health.percent }}%"></span></div>
-            </li>
-            {% if myHero.proficiencies.sanctity.maximum %}
-            <li>Sanctity:
-                <div class="progressBar sanctity"><span
-                        style="width:{{ myHero.proficiencies.sanctity.percent }}%"></span></div>
-            </li>
-            {% endif %}
-            <li>Endurance:
-                <div class="progressBar endurance"><span
-                        style="width:{{ myHero.proficiencies.endurance.percent }}%"></span></div>
-            </li>
-            <li>Progress:
-                <div class="progressBar progress"><span style="width:{{ myHero.experience_percent }}%"></span></div>
-            </li>
-        </ul>
-    </div>
-    <div id="sidebarbottom">
+    <div class="sideBarProgressDiv">Health:<div class="sideBarProgressMeter"><span style="width:{{ myHero.proficiencies.health.percent }}%"></span></div></div>
+    {% if myHero.proficiencies.sanctity.maximum %}
+    <div class="sideBarProgressDiv">Sanctity:<div class="sideBarProgressMeter sidebarSanctity"><span style="width:{{ myHero.proficiencies.sanctity.percent }}%"></span></div></div>
+    {% endif %}
+    <div class="sideBarProgressDiv">Endurance:<div class="sideBarProgressMeter sidebarEndurance"><span style="width:{{ myHero.proficiencies.endurance.percent }}%"></span></div></div>
+    <div class="sideBarProgressDiv">Progress:<div class="sideBarProgressMeter sidebarProgress"><span style="width:{{ myHero.experience_percent }}%"></span></div></div>
+
+    <div>
         <ul>
             <li><a href=/home>Profile</a></li>
             <li><a href=/inventory_page>Inventory</a></li>

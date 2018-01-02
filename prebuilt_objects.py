@@ -50,20 +50,24 @@ which loads these object from a .csv file.
  +
  +Thornwall at location 5
  +Creepy Cave at location 2
+ Haunted Forest at 8
+ Old Man's Hut at 7
  +'''
 
 adjective_list = ["Dark", "Creepy", "Shadowy", "Haunted", "Sacred"]
 
-world = Location(name="Htrae", location_type="map")
-world.display.page_heading = "You are wandering in the world"
-world.display.paragraph = "Be safe"
+starting_world = Location(name="Htrae", location_type="map")
+starting_world.display.page_heading = "You are wandering in the world"
+starting_world.page_heading = "You are looking at the world map."
+starting_world.display.paragraph = "Be safe"
+starting_world.display.page_image = "htrae.jpg"
 
 node_grid = []
 for i in range(0, 12):
     node_grid.append(
         Location(name="Location{}".format(i),
                  location_type='explorable'))
-world.children = node_grid
+starting_world.children = node_grid
 
 town = node_grid[5]
 town.name = "Thornwall"
@@ -99,11 +103,13 @@ town.children.append(barracks)
 town.children.append(marketplace)
 town.children.append(tavern)
 
-old_mans_hut = Location("Old Man's Hut", 'house')
+old_mans_hut = node_grid[7]
+old_mans_hut.name = "Old Man's Hut"
+old_mans_hut.type = 'building'
+old_mans_hut.update()
 old_mans_hut.display.page_heading = "Old Man's Hut"
 old_mans_hut.display.page_image = 'hut.jpg'
 old_mans_hut.display.paragraph = "Nice to see you again kid. What do you need?"
-town.children.append(old_mans_hut)
 
 gate = Location('Village Gate', 'gate')
 town.children.append(gate)
@@ -126,7 +132,7 @@ cave.display.page_image = "generic_cave_entrance.jpg"
 cave.display.paragraph = "There are many scary places to die within the cave. Have a look!"
 cave.children.append(dungeon_entrance)
 
-forest = node_grid[6]
+forest = node_grid[8]
 forest.name = choice(adjective_list) + " Forest"
 forest.type = 'dungeon'
 forest.update()
@@ -149,7 +155,7 @@ node_grid[9].adjacent = [node_grid[5], node_grid[6]]
 node_grid[10].adjacent = []
 
 current_location = town
-game_worlds = [world]  # Just chop this out and use world instead.
+game_worlds = [starting_world]  # Just chop this out and use world instead.
 
 # game_locations = [World_Map("Test_World", 999, [Town("Thornwall", "Test_World"), Cave("Samplecave", "Test_World")]), World_Map("Test_World2", [(0,0), (0,1), (0,2), (1,2), (1, 3), (1, 4), (2, 1), (2, 2)], [])]
 # game_worlds = [World_Map("Test_World", TEST_WORLD_ID, test_locations)]
@@ -256,11 +262,11 @@ when prebuilt_objects are preloaded into the database.
 """
 ##########
 admin = User(username="admin", password="admin", is_admin=True)
-adminHero = Hero(name="Admin", fathers_job="Priest", current_world=world, current_location=town, gold=5000)
+adminHero = Hero(name="Admin", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
 admin.heroes = [adminHero]
 
 marlen = User(username="marlen", password="brunner", is_admin=True)
-haldon = Hero(name="Haldon", fathers_job="Priest", current_world=world, current_location=town, gold=5000)
+haldon = Hero(name="Haldon", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
 marlen.heroes = [haldon]
 users = [marlen, admin]
 
