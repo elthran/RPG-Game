@@ -553,7 +553,7 @@ def global_chat(hero=None):
 @app.route('/inbox/<outbox>', methods=['GET', 'POST'])
 @uses_hero
 def inbox(outbox, hero=None):
-    hero.user.inbox_alert = False
+    hero.user.inbox_alert = False # Your inbox alert will no longer glow until a new message is sent to you, even if you dont open all your letters
     if outbox == "outbox":
         outbox = True
     else:

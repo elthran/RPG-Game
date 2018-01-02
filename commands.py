@@ -232,6 +232,7 @@ class Command:
         """Return the content of a message based on its id."""
         id = arg_dict.get('data', None, type=int)
         message = database.get_object_by_id("Message", id)
+        message.unread = False #Marks the message as having been seen by the receiver
         return "{}&&{}".format(message.content, message.sender.user.username)
 
     @staticmethod

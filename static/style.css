@@ -316,6 +316,10 @@ ul {
     width: 3%;
 }
 
+#inboxTableUnreadMessage {
+outline: 2px solid black;
+}
+
 /* Attribute Page */
 .profilePage {
 	float: left;

@@ -314,6 +314,7 @@ function confirmHeroSelection(element) {
 
 //Function To Display Popup
 function popupReplyBox(button, messageContent, messageSender) {
+    // Here we need to add some JS to make the message no longer bold, as it is no longer unread
     document.getElementById('inboxPopupWindow').style.display = "block";
 
     var contentInput = document.querySelector("[name=content]");
