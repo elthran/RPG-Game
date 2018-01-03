@@ -116,6 +116,9 @@ class EZDB:
                     print(ex)
                     print("Please debug database setup -> prebuilt object loading.")
                     pass  # rollback is now handled by 'update()'
+                finally:
+                    self.session.close()
+                    self.session = EZDB.Session()
         default_quest_paths = self.get_default_quest_paths()
         for hero in self.session.query(Hero).all():
             hero.journal.quest_paths = default_quest_paths
