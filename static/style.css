@@ -40,10 +40,8 @@ div.row > * {
 
 /* Basic Content throughout the game */
 /* NOTE: All html files are default id='content'. This is passed in through layout.html */
-#content {
-	width: 85%;
-	padding-top: 60px;
-	float: right;
+.content {
+	margin-left: 175px; /* This needs to match the sidebars width, so all content is pushed away from the sidebar */
 }
 
 body {
@@ -181,106 +179,44 @@ ul {
     width: 500px;
     }
 
-/* Topbar used in profile_template */
+/* Topbar that runs horizontal to any page */
 .topbar {
-	float: right;
-	width: 40%;
+	float: left;
+	width: auto;
+	margin-top: -25px; /* Pushes it right to the top of the page */
 }
 
 .topbar ul {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-	overflow: hidden;
+	overflow: hidden; /* Makes the background visible */
 	background: Black;
+	padding: 0px; /* Need this or there is a rectangle to the left? */
 }
 
 .topbar li {
-	float: left;
+	float: left; /* Makes each item float beside the other */
 }
 
 .topbar li a {
-	display: block;
+	display: block; /* Each item starts a new segment and takes the full width */
 	color: white;
 	text-align: center;
-	padding: 14px 16px;
-	text-decoration: none;
+	padding: 14px 16px; /* Decides how big each box is */
+	text-decoration: none; /* Removes underlining of links */
 }
 
 .topbar li a:hover:not(.active) {
 	background-color: Green;
 }
 
-.topbarActive {
-	background-color: Red;
-}
-
-.topbarGlowing {
-	background-color: Blue;
-}
-
-/* Top bar added drop-down portion (used on Ability section) */
-.topbarDropLink li a {
-	display: inline-block;
-	color: Black;
-	text-align: center;
-	padding: 14px 16px;
-	text-decoration: none;
-}
-
-.topbarDropdownOuter li {
-	display: inline-block;
-}
-
+/* Top bar optionally added drop-down portion */
 .topbarDropdownInner {
-	display: none;
+	display: none; /* Makes it invisible by default */
 	position: absolute;
-	min-width: 160px;       /* Not Sure what it does */
-	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);   /* Not Sure what it does */
-    z-index: 1;   /* Not Sure what it does */
 	background-color: Black;
 }
 
-.topbarDropdownInner a {
-	color: Black;
-	padding: 12px 16px;
-	text-decoration: none;
-	display: block;
-	text-align: left;
-}
-
 .topbarDropdownOuter:hover .topbarDropdownInner {
-	display: block;
-}
-
-/* Topbar used in inbox */
-.inboxTopbar {
-	float: left;
-	width: auto;
-}
-
-.inboxTopbar ul {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-	overflow: hidden;
-	background: Black;
-}
-
-.inboxTopbar li {
-	float: left;
-}
-
-.inboxTopbar li a {
-	display: block;
-	color: white;
-	text-align: center;
-	padding: 14px 16px;
-	text-decoration: none;
-}
-
-.inboxTopbar li a:hover:not(.active) {
-	background-color: Green;
+	display: block; /* Makes it visible on hover */
 }
 
 /* INBOX CODE */
@@ -682,7 +618,6 @@ img.profileImage {
     width: 1300px;
     height: 725px;
     border: 5px solid;
-    margin: -60px -40px;
 }
 
 .inventory-equipped {

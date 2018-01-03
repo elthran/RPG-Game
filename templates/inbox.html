@@ -16,15 +16,10 @@ alert("Form Submitted Successfully...");
 </script>
 
 
-    <div class="inboxTopbar">
+    <div class="topbar">
         <ul>
-            {% if outbox %}
-                <li><a href="/inbox/inbox">Inbox</a></li>
-                <li><a class="topbarActive" href="/inbox/outbox">Outbox</a></li>
-            {% else %}
-                <li><a class="topbarActive" href="/inbox/inbox">Inbox</a></li>
-                <li><a href="/inbox/outbox">Outbox</a></li>
-            {% endif %}
+            <li><a href="/inbox/inbox" {% if not outbox %}style="background-color:Red;"{% endif %}>Inbox</a></li>
+            <li><a href="/inbox/outbox" {% if outbox %}style="background-color:Red;"{% endif %}>Outbox</a></li>
         </ul>
     </div>
     <div style="clear: both;"></div>
