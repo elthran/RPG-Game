@@ -45,7 +45,7 @@ Ideas:
 import warnings
 import pdb
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Table, Column, Integer, String
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy import orm
@@ -157,6 +157,14 @@ class Display(Base):
         self.page_image = self.obj.type.lower() + '.jpg'
 
 
+class Navigator(Base):
+    """An object that understand where the hero has gone and can go.
+
+    This will replace the mishmash of adjacency/sibling/child/parent junk
+    from locations.
+    """
+
+
 class AdjacentLocation(Base):
     """Allow for locations to connect to other locations.
 
@@ -169,6 +177,13 @@ class AdjacentLocation(Base):
                              primary_key=True)
     in_adjacent_id = Column(Integer, ForeignKey('location.id'),
                             primary_key=True)
+
+
+location_association_table = Table(
+    'location_association', Base.metadata,
+    Column('parent_id', Integer, ForeignKey('location.id')),
+    Column('child_id', Integer, ForeignKey('location.id'))
+)
 
 
 class Location(Base):
@@ -206,16 +221,19 @@ class Location(Base):
     # Think a hex grid
 
     id = Column(Integer, primary_key=True)
-    parent_id = Column(Integer, ForeignKey('location.id'))
+    # parent_id = Column(Integer, ForeignKey('location.id'))
+    # child_id = Column(Integer, ForeignKey('location.id'))
     name = Column(String, nullable=False, unique=True)
     url = Column(String)
     type = Column(String)
 
-    children = relationship("Location", back_populates="parent",
-                            foreign_keys=[parent_id])
-    parent = relationship("Location", remote_side=[id],
-                          back_populates="children",
-                          foreign_keys=[parent_id])
+    children = relationship(
+        "Location",
+        secondary=location_association_table,
+        primaryjoin=id == location_association_table.c.parent_id,
+        secondaryjoin=id == location_association_table.c.child_id,
+        backref="parents"
+    )
     locations = orm.synonym('children')
     encompassing_location = orm.synonym('parent')
 
@@ -250,13 +268,16 @@ class Location(Base):
     display_id = Column(Integer, ForeignKey('display.id'))
     display = relationship("Display", back_populates='_location')
 
-    # @orm.validates('adjacent')
-    # def build_adjacency(self, key, sibling):
-    #     if isinstance(sibling, int):
-    #         raise Exception("Use Database method add_sibling_by_id")
-    #     if sibling in self.parent.children:
-    #         return sibling
-    #     raise Exception("Not all of these are valid siblings.")
+    def get_parent(self, hero):
+        """The adjacent parent.
+
+        This equates to the last visted parent.
+        This is a derived variable. And defaults to ???
+        Each child that has multiple parents can track which parent
+        was last visited.
+        And the last visited parent would be the 'adjacent_parent'.
+        """
+        return hero.last_visited_parent
 
     @hybrid_property
     def adjacent(self):
@@ -271,18 +292,14 @@ class Location(Base):
     def adjacent(self, values):
         """Build a path between sibling locations.
 
-        Raise and error if the potential adjacent locations are not siblings
-        of this location.
+        Allows any locations to be connected.
         """
-        for value in values:
-            if value in self.siblings:
-                self._out_adjacent = values
-            else:
-                raise Exception(
-                    "Location.name='{}' is not a valid sibling of this "
-                    "location. Try checking the parents of both objects."
-                    "".format(value.name)
-                )
+        self._out_adjacent = values
+        # raise Exception(
+        #     "Location.name='{}' is not a valid sibling of this "
+        #     "location. Try checking the parents of both objects."
+        #     "".format(value.name)
+        # )
 
     # @orm.validates('parent', 'children')
     # def update_siblings(self, key, value):
@@ -297,11 +314,11 @@ class Location(Base):
 
         NOTE: this object is not returned.
         Definition: A sibling is an object with the same parent.
+
+        NOTE2: if an object has 2 parents it can't have siblings.
         """
-        siblings = []
-        if self.parent:
-            siblings = list(self.parent.children)
-            siblings.remove(self)
+        siblings = self.adjacent
+        siblings.remove(self)
         return siblings
 
     def get_sibling_ids(self):
@@ -329,7 +346,7 @@ class Location(Base):
                 )
             )
 
-    def __init__(self, name, location_type, parent=None, children=[]):
+    def __init__(self, name, location_type, parents=[], children=[]):
         """Create a new location object that the hero can explore.
 
         :param location_type: e.g. map, town, store
@@ -351,7 +368,7 @@ class Location(Base):
         """
         self.name = name
         self.type = location_type
-        self.parent = parent
+        self.parents = parents
         self.children = children
         self.update()
 
@@ -407,199 +424,18 @@ class Location(Base):
         """The places that are directly connected to this place.
 
         This is a dictionary of objects lists.
-        The children are those places enclosed by this place.
-        The parent is the place this place encloses.
         The adjacent is the locations that you can travel to from here.
-            They are on the same relative level as this place.
+        They are on the same relative level as this place.
+        The siblings is _adjacent_ minus this location.
+
+        NOTE:
+            children and parents are now not valuable for navigation.
         """
-        places = {'children': [],
-                  'adjacent': [],
-                  'siblings': [],
-                  'parent': None}
-        children = sorted(self.children, key=lambda x: x.name)
-        places['children'] = sorted(children, key=lambda x: x.type)
-        places['adjacent'] = sorted(self.adjacent, key=lambda x: x.name)
-        places['siblings'] = sorted(self.siblings, key=lambda x: x.name)
-
-        if self.parent:
-            places['parent'] = self.parent
+        places = {
+            'adjacent': sorted(self.adjacent, key=lambda x: x.name),
+            'siblings': sorted(self.siblings, key=lambda x: x.name)
+        }
         return places
-
-
-# # Marked for refactor
-# # Consider using a grid and implementing (x,y) coordinates for each location.
-# class Location(Base):
-#     """A place a hero can travel to that is storable in the database.
-#
-#     Note: adjacent_locations is a list of integers. Note a list of locations,
-#     I could figure out how to do that.
-#     Maybe when I implement x,y coordinates for each location it could
-#     calculate the adjacent ones
-#     automatically.
-#     Note: 'location_type' is now 'type'. But you can still use location_type
-#     because orm.synonym! ... bam!
-#
-#     Use:
-#     loc1 = Location(id=1, name="test")
-#     loc1.adjacent_locations = [2, 3, 4]
-#     """
-#     __tablename__ = "location"
-#
-#     id = Column(Integer, primary_key=True)
-#     name = Column(String, nullable=False)
-#     type = Column(String)
-#     location_type = orm.synonym('type')
-#     url = Column(String)
-#
-#     map_id = Column(Integer, ForeignKey('map.id'))
-#     map = relationship("Map", foreign_keys=[map_id], back_populates="locations")
-#     location_world = orm.synonym('map')
-#
-#     display = relationship("Display", uselist=False)
-#
-#     def __init__(self, name, id=None):
-#         self.id = id
-#         self.name = name
-#         self.adjacent_locations = []
-#         self.url = "/{}/{}".format(self.type, self.name)
-#
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity':'Location',
-#         'polymorphic_on':type
-#     }
-#
-#
-#     @hybrid_property
-#     def adjacent_locations(self):
-#         """Return a list of ids of adjacent locations.
-#         """
-#         return [element.value for element in self._adjacent_locations]
-#
-#
-#     @adjacent_locations.setter
-#     def adjacent_locations(self, values):
-#         """Create list of BaseListElement objects.
-#         """
-#         self._adjacent_locations = [BaseListElement(value) for value in values]
-#
-#
-# class Town(Location):
-#     """Town object database ready class.
-#
-#     Basically adds a display and identity of "Town" to the location object.
-#     """
-#     __tablename__ = "town"
-#
-#     id = Column(Integer, ForeignKey('location.id'), primary_key=True)
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity':'Town',
-#     }
-#
-#
-# class Cave(Location):
-#     """Cave object database ready class.
-#
-#     Basically adds a display and identity of "Cave" to the location object.
-#     """
-#     __tablename__ = "cave"
-#
-#     id = Column(Integer, ForeignKey('location.id'), primary_key=True)
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity':'Cave',
-#     }
-#
-#
-# class Map(Base):
-#     """Basically a location clone but without the mess of joins and relationship problems :P.
-#
-#     Solves: Incest ...
-#     """
-#     __tablename__ = "map"
-#
-#     id = Column(Integer, primary_key=True)
-#     name = Column(String, nullable=False)
-#     type = Column(String)
-#     location_type = orm.synonym('type')
-#
-#     locations = relationship("Location", foreign_keys='[Location.map_id]', back_populates="map")
-#     all_map_locations = orm.synonym('locations')
-#
-#     display = relationship("Display", uselist=False)
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity':'Map',
-#         'polymorphic_on':type
-#     }
-#
-#     @hybrid_property
-#     def adjacent_locations(self):
-#         """Return a list of ids of adjacent locations.
-#         """
-#         return [element.value for element in self._adjacent_locations]
-#
-#
-#     @adjacent_locations.setter
-#     def adjacent_locations(self, values):
-#         """Create list of BaseListElement objects.
-#         """
-#         self._adjacent_locations = [BaseListElement(value) for value in values]
-#
-#
-#     # def __str__(self):
-#         # locations = str([location.name for location in self.locations])
-#         # try:
-#             # return """<{}(id={}, name='{}', type='{}', adjacent_locations={}, locations={}, display={}>""".format(self.type, self.id, self.name, self.type, self.adjacent_locations, locations, self.display)
-#         # except AttributeError:
-#             # return """<{}(id={}, name='{}', type='{}', adjacent_locations={}, locations={}, display={}>""".format(self.type, self.id, self.name, self.type, self.adjacent_locations, locations, self.display)
-#
-#
-# class WorldMap(Map):
-#     __tablename__ = "world_map"
-#
-#     id = Column(Integer, ForeignKey('map.id'), primary_key=True)
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity':'WorldMap',
-#     }
-#
-#     #Marked for rebuild
-#     #Creates attribute map_cities. Prehaps should be a relations?
-#     #And map_cities should probably be map_city? Or some other name that actually explains
-#     #what it does??
-#     #This function modifes the object and returns a value. It should only do one or the other.
-#     def show_directions(self, current_location):
-#         """Return a list of directions you can go from your current_location.
-#
-#         ALSO! modifies the attribute map_cities and places_of_interest.
-#         map_cities is only a single value of either a cave or a town.
-#         """
-#         assert current_location in self.locations
-#
-#         directions = current_location.adjacent_locations
-#         if directions == []:
-#             directions = [1,2,3]
-#
-#         self.map_cities = []
-#         if current_location.type in ["Town", "Cave"]:
-#             self.map_cities = [current_location]
-#
-#         if self.map_cities:
-#             city = self.map_cities[0]
-#             self.display.places_of_interest = [("/{}/{}".format(city.type, city.name), city.name)]
-#
-#         return directions
-#
-#
-#     # temporarily location_id is the same as the index in the list of all_map_locations
-#     def find_location(self, location_id):
-#         return self.all_map_locations[location_id]
-#
-#
-# #Just another synonym for backwards compatability (which id don't know if it even works?)
-# World_Map = WorldMap
 
  
 if __name__ == "__main__":
