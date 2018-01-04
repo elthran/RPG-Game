@@ -173,11 +173,14 @@ ul {
 
 /* General content */
 .location_page_image {
-    position: absolute;
-    left: 50%;
-    height: 500px;
-    width: 500px;
+    position: relative;
+    height: 300px;
+    width: 300px;
     }
+
+.button {
+	font-size: 30px;
+}
 
 /* Topbar that runs horizontal to any page */
 .topbar {
@@ -247,7 +250,27 @@ ul {
 outline: 2px solid black;
 }
 
-/* Attribute Page */
+/* Custom containers */
+.leftPageHalf {
+    float: left;
+    padding: 0px 0px 0px 20px;
+}
+
+.rightPageHalf {
+    float: right;
+    padding: 0px 20px 0px 0px; /* Usually this class inherits .leftPageHalf, so make sure to set left padding to 0 */
+}
+
+.leftPageHalf,.rightPageHalf { /* This sets the width to 45% if the class is either .leftPageHalf or .rightPageHalf */
+    width: 45%;
+}
+
+.leftPageHalf > .textRight,.rightPageHalf > .textRight {
+    text-align: right;
+}
+
+
+
 .profilePage {
 	float: left;
 	text-align: left;
@@ -255,17 +278,11 @@ outline: 2px solid black;
 	font-size: 30px;
 	padding: 5px;
 	margin: 30px;
-	border: 5px Double Black;  
+	border: 5px Double Black;
 	width: 40%;
 	background-color: Gray;
 	color: white;
 	line-height: 35px;
-}
-
-.submitButton {
-	float: left;
-	font-size: 30px;
-	margin: 30px;
 }
 
 .profilePageAttributes {
@@ -459,32 +476,6 @@ input.abilityButtonMinus {
 }
 
 /* Profile Page */
-
-img.profileImage {
-	width: 20%;
-	height: auto;
-	padding-left: 100px;
-}
-
-.profileContainer {
-	width: 100%;
-	margin: 0 auto;
-}
-
-.profileContainer h1 {
-	padding-left: 40px;
-}
-
-.profileContainer li {
-	font-size: 20px;
-}
-
-.profileColumn {
-	float: left;
-	width: 40%;
-	margin: 20px;
-}
-
 .archetypeImages {
     width: 175px;
     height: 325px;

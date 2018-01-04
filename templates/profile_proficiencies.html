@@ -1,10 +1,73 @@
 {% extends "profile_template.html" %}
 {% block block1 %}{% set hero = myHero %}
 <!-- Basic Skill Page -->
-<div class="profilePage">
-    Points Remaining:
-    <div style="display: inline" id="points_remaining">{{ myHero.proficiency_points }}</div>
+<h1 style="text-align:center;">Proficiencies</h1>
+<div class="profilePage">Points Remaining: <div style="display: inline" id="points_remaining">{{ myHero.proficiency_points }}</div></div>
+<div style="clear: both;"></div>
+<div>
+	<div class="leftPageHalf">
+		<h2>Agility</h2>
+		<div class="leftPageHalf">
+			<ul>
+                {% for proficiency in myHero.proficiencies %}
+                    {% if proficiency.attribute_type == "Agility" %}
+                        <li>{{ proficiency.name}}</li>
+                    {% endif %}
+                {% endfor %}
+			</ul>
+		</div>
+		<div class="rightPageHalf textRight">
+			<ul>
+                {% for proficiency in myHero.proficiencies %}
+                    {% if proficiency.attribute_type == "Agility" %}
+                        <li><div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
+                        <button data-py-function="update_proficiency"
+                            data="{{ proficiency.id }}" id="proficiencyButton"
+                            data-js-callback="updateProf" {% if
+                            myHero.proficiency_points
+                            <= 0 or proficiency.is_max_level() %} style="display: none"{% endif %}>
+                        </button>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+			</ul>
+		</div>
+	</div>
+    <div class="rightPageHalf">
+		<h2>Brawn</h2>
+		<div class="leftPageHalf">
+			<ul>
+                {% for proficiency in myHero.proficiencies %}
+                    {% if proficiency.attribute_type == "Brawn" %}
+                        <li>{{ proficiency.name}}</li>
+                    {% endif %}
+                {% endfor %}
+			</ul>
+		</div>
+		<div class="rightPageHalf textRight">
+			<ul>
+                {% for proficiency in myHero.proficiencies %}
+                    {% if proficiency.attribute_type == "Brawn" %}
+                        <li><div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
+                        <button data-py-function="update_proficiency"
+                            data="{{ proficiency.id }}" id="proficiencyButton"
+                            data-js-callback="updateProf" {% if
+                            myHero.proficiency_points
+                            <= 0 or proficiency.is_max_level() %} style="display: none"{% endif %}>
+                        </button>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+			</ul>
+		</div>
+	</div>
 </div>
+
+
+
+
+
+
 <div style="clear: both;"></div>
 <div class="proficiencyPage">
     <div class="proficiencyPageInner">

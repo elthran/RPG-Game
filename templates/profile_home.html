@@ -1,99 +1,139 @@
 {% extends "profile_template.html" %}
 {% block block1 %}
 
-<!-- This is the Home page -->	
-<img class="profileImage" src="/static/images/character_background.jpg" alt="Sample">
+<!-- This is the Home page -->
+<h1 style="text-align:center;">General</h1>
 <div style="clear: both;"></div>
-<div class="profileContainer">
-	{% for message in get_flashed_messages() %}
-		<p>
-			{{ message }}
-		</p>
-	{% endfor %}
-<h1>General Statistics</h1>
-	<div class="profileColumn">
-		<h2>Basic</h2>
-		<ul> 
-			<li>Name: {{ myHero.character_name}}</li>
-			<li>Age: {{ myHero.age }}</li>
-			{% if myHero.renown %}}
-				<li>Renown: {{ myHero.character_name}}</li>
-			{% endif %}
-			{% if myHero.devotion %}}
-				<li>Devotion: {{ myHero.age }}</li>
-			{% endif %}
-			{% if myHero.virtue %}}
-				<li>Virtue: {{ myHero.virtue }}</li>
-			{% endif %}			
-			<li>Experience: {{ myHero.experience }} / {{ myHero.experience_maximum }}</li>
-			<li>Health: {{ myHero.proficiencies.health.current }} / {{ myHero.proficiencies.health.maximum }}</li>
-			{% if myHero.proficiencies.sanctity.maximum %}
-				<li>Sanctity: {{ myHero.proficiencies.sanctity.current }} / {{ myHero.proficiencies.sanctity.maximum }}</li>
-			{% endif %}
-			<li>Storage: {{ myHero.proficiencies.storage.current }} / {{ myHero.proficiencies.storage.maximum }}</li>
-			<li>Endurance: {{ myHero.proficiencies.endurance.current }} / {{ myHero.proficiencies.endurance.maximum }}</li>
-		</ul>
+<div>
+	<div class="leftPageHalf">
+		<h2>Basics</h2>
+		<div class="leftPageHalf">
+			<ul>
+				<li>Name:</li>
+				<li>Age:</li>
+				{% if myHero.renown %}}<li>Renown:</li>{% endif %}
+				{% if myHero.devotion %}}<li>Devotion:</li>{% endif %}
+				{% if myHero.virtue %}}<li>Virtue:</li>{% endif %}
+				<li>Experience:</li>
+				<li>Health:</li>
+				{% if myHero.proficiencies.sanctity.maximum %}<li>Sanctity:</li>{% endif %}
+				<li>Storage:</li>
+				<li>Endurance:</li>
+			</ul>
+		</div>
+		<div class="rightPageHalf textRight">
+			<ul>
+				<li>{{ myHero.character_name}}</li>
+				<li>{{ myHero.age }}</li>
+				{% if myHero.renown %}<li>{{ myHero.character_name}}</li>{% endif %}
+				{% if myHero.devotion %}}<li>Devotion: {{ myHero.age }}</li>{% endif %}
+				{% if myHero.virtue %}}<li>{{ myHero.virtue }}</li>{% endif %}
+				<li>{{ myHero.experience }} / {{ myHero.experience_maximum }}</li>
+				<li>{{ myHero.proficiencies.health.current }} / {{ myHero.proficiencies.health.maximum }}</li>
+				{% if myHero.proficiencies.sanctity.maximum %}<li>{{ myHero.proficiencies.sanctity.current }} / {{ myHero.proficiencies.sanctity.maximum }}</li>{% endif %}
+				<li>{{ myHero.proficiencies.storage.current }} / {{ myHero.proficiencies.storage.maximum }}</li>
+				<li>{{ myHero.proficiencies.endurance.current }} / {{ myHero.proficiencies.endurance.maximum }}</li>
+			</ul>
+		</div>
 	</div>
-	<div class="profileColumn">
-	<h2>Skills</h2>	
-		<ul> 
-			{% if myHero.archetype %}
-				<li>Archetype: {{ myHero.archetype }}</li>
-			{% endif %}
-			{% if myHero.calling %}
-				<li>Calling: {{ myHero.calling }}</li>
-			{% endif %}
-			{% if myHero.religion %}
-				<li>Religion: {{ myHero.religion }}</li>
-			{% endif %}
-			{% if myHero.house %}
-				<li>House: {{ myHero.house }}</li>
-			{% endif %}
-			<li>Stealth: {{ myHero.proficiencies.stealth.chance }}%</li>
-			<li>Pickpocketing: {{ myHero.proficiencies.pickpocketing.chance }}%</li>
-			<li>Faith: {{ myHero.proficiencies.faith.modifier }}%</li>
-			<li>Bartering: {{ myHero.proficiencies.bartering.chance }}%</li>
-			<li>Oration: {{ myHero.proficiencies.oration.modifier }}%</li>
-			<li>Literacy: {{ myHero.proficiencies.literacy.modifier }}%</li>
-			<li>Luck: {{ myHero.proficiencies.luckiness.chance }}%</li>
-		</ul>
+	<div class="rightPageHalf">
+		<h2>Skills</h2>
+		<div class="leftPageHalf">
+				<ul>
+					{% if myHero.archetype %}<li>Archetype:</li>{% endif %}
+					{% if myHero.calling %}<li>Calling:</li>{% endif %}
+					{% if myHero.religion %}<li>Religion:</li>{% endif %}
+					{% if myHero.house %}<li>House:</li>{% endif %}
+					<li>Stealth:</li>
+					<li>Pickpocketing:</li>
+					<li>Faith:</li>
+					<li>Bartering:</li>
+					<li>Oration:</li>
+					<li>Literacy:</li>
+					<li>Luck:</li>
+				</ul>
+		</div>
+		<div class="rightPageHalf textRight">
+			<ul>
+				{% if myHero.archetype %}<li>{{ myHero.archetype }}</li>{% endif %}
+				{% if myHero.calling %}<li>{{ myHero.calling }}</li>{% endif %}
+				{% if myHero.religion %}<li>{{ myHero.religion }}</li>{% endif %}
+				{% if myHero.house %}<li>{{ myHero.house }}</li>{% endif %}
+				<li>{{ myHero.proficiencies.stealth.chance }}%</li>
+				<li>{{ myHero.proficiencies.pickpocketing.chance }}%</li>
+				<li>{{ myHero.proficiencies.faith.modifier }}%</li>
+				<li>{{ myHero.proficiencies.bartering.chance }}%</li>
+				<li>{{ myHero.proficiencies.oration.modifier }}%</li>
+				<li>{{ myHero.proficiencies.literacy.modifier }}%</li>
+				<li>{{ myHero.proficiencies.luckiness.chance }}%</li>
+			</ul>
+		</div>
 	</div>
 </div>
-<div style="clear: both;"></div>
-<div class="profileContainer">
-<h1>Battle Statistics</h1>
-	<div class="profileColumn">
+<div style="clear:both;"></div>
+<div>
+	<div class="leftPageHalf">
 		<h2>Offense</h2>
-		<ul> 
-			<li>Damage: {{ myHero.proficiencies.damage.minimum }}-{{ myHero.proficiencies.damage.maximum }}</li>
-			<li>Attack Speed: {{ myHero.proficiencies.speed.speed }}</li>
-			<li>Accuracy: {{ myHero.proficiencies.accuracy.accuracy }}%</li>
-			<li>First Strike: {{ myHero.proficiencies.first_strike.chance }}%</li>
-			<li>Critical Hit Chance: {{ myHero.proficiencies.killshot.chance }}% (Modifier: {{ myHero.proficiencies.killshot.modifier }}%)</li>
-			<li>Defence: {{ myHero.proficiencies.defence.modifier }}%</li>
-			<li>Evade: {{ myHero.proficiencies.evade.chance }}%</li>
-			<li>Parry: {{ myHero.proficiencies.parry.chance }}%</li>
-			<li>Riposte: {{ myHero.proficiencies.riposte.chance }}%</li>
-		</ul>
+		<div class="leftPageHalf">
+			<ul>
+				<li>Damage:</li>
+				<li>Attack Speed:</li>
+				<li>Accuracy:</li>
+				<li>First Strike:</li>
+				<li>Critical Hit Chance:</li>
+				<li>Defence:</li>
+				<li>Evade:</li>
+				<li>Parry:</li>
+				<li>Riposte:</li>
+			</ul>
+		</div>
+		<div class="rightPageHalf textRight">
+			<ul>
+				<li>{{ myHero.proficiencies.damage.minimum }}-{{ myHero.proficiencies.damage.maximum }}</li>
+				<li>{{ myHero.proficiencies.speed.speed }}</li>
+				<li>{{ myHero.proficiencies.accuracy.accuracy }}%</li>
+				<li>{{ myHero.proficiencies.first_strike.chance }}%</li>
+				<li>{{ myHero.proficiencies.killshot.chance }}% (Modifier: {{ myHero.proficiencies.killshot.modifier }}%)</li>
+				<li>{{ myHero.proficiencies.defence.modifier }}%</li>
+				<li>{{ myHero.proficiencies.evade.chance }}%</li>
+				<li>{{ myHero.proficiencies.parry.chance }}%</li>
+				<li>{{ myHero.proficiencies.riposte.chance }}%</li>
+			</ul>
+		</div>
 	</div>
-	<div class="profileColumn">
+	<div class="rightPageHalf">
 		<h2>Defence</h2>
-		<ul>
-			<li>Toughness: {{ myHero.proficiencies.defence.modifier }}</li>
-			<li>Block Chance: {% if myHero.proficiencies.block.chance %}{{ myHero.proficiencies.block.chance }}%{% else %}<font color="red">You need a shield</font>{% endif %}</li>
-			<li>Fatigue: {{ myHero.proficiencies.fatigue.current }}</li>
-			<li>Resist Frost: {{ myHero.proficiencies.resist_frost.modifier }}%</li>
-			<li>Resist Flame: {{ myHero.proficiencies.resist_flame.modifier }}%</li>
-			<li>Resist Shadow: {{ myHero.proficiencies.resist_shadow.modifier }}%</li>
-			<li>Resist Holy: {{ myHero.proficiencies.resist_holy.modifier }}%</li>
-			<li>Resist Poison: {{ myHero.proficiencies.resist_poison.modifier }}%</li>
-			<li>Resist Blunt: {{ myHero.proficiencies.resist_blunt.modifier }}%</li>
-			<li>Resist Slashing: {{ myHero.proficiencies.resist_slashing.modifier }}%</li>
-			<li>Resist Piercing: {{ myHero.proficiencies.resist_piercing.modifier }}%</li>
-		</ul>
+		<div class="leftPageHalf">
+				<ul>
+					<li>Toughness:</li>
+					<li>Block Chance:</li>
+					<li>Fatigue:</li>
+					<li>Resist Frost:</li>
+					<li>Resist Flame:</li>
+					<li>Resist Shadow:</li>
+					<li>Resist Holy:</li>
+					<li>Resist Poison:</li>
+					<li>Resist Blunt:</li>
+					<li>Resist Slashing:</li>
+					<li>Resist Piercing:</li>
+				</ul>
+		</div>
+		<div class="rightPageHalf textRight">
+			<ul>
+				<li>{{ myHero.proficiencies.defence.modifier }}</li>
+				<li>{% if myHero.proficiencies.block.chance %}{{ myHero.proficiencies.block.chance }}%{% else %}<font color="red">You need a shield</font>{% endif %}</li>
+				<li>{{ myHero.proficiencies.fatigue.current }}</li>
+				<li>{{ myHero.proficiencies.resist_frost.modifier }}%</li>
+				<li>{{ myHero.proficiencies.resist_flame.modifier }}%</li>
+				<li>{{ myHero.proficiencies.resist_shadow.modifier }}%</li>
+				<li>{{ myHero.proficiencies.resist_holy.modifier }}%</li>
+				<li>{{ myHero.proficiencies.resist_poison.modifier }}%</li>
+				<li>{{ myHero.proficiencies.resist_blunt.modifier }}%</li>
+				<li>{{ myHero.proficiencies.resist_slashing.modifier }}%</li>
+				<li>{{ myHero.proficiencies.resist_piercing.modifier }}%</li>
+			</ul>
+		</div>
 	</div>
 </div>
-<div style="clear: both;"></div>
-
 {% endblock %}
 
