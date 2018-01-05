@@ -188,6 +188,15 @@ class Command:
         ability.cast(hero)
         return "success"
 
+
+    @staticmethod
+    def change_proficiency_tooltip(hero, database, arg_dict, **kwargs):
+        tooltip_id = arg_dict.get('data', None, type=int)
+        proficiency = database.get_proficiency_by_id(tooltip_id)
+        tooltip = proficiency.tooltip
+        print(tooltip)
+        return "{}".format(tooltip)
+
     @staticmethod
     def update_proficiency(hero, database, arg_dict, **kwargs):
         """Raise proficiency level, decrement proficiency_points.

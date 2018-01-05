@@ -173,11 +173,14 @@ ul {
 
 /* General content */
 .location_page_image {
-    position: absolute;
-    left: 50%;
-    height: 500px;
-    width: 500px;
+    position: relative;
+    height: 300px;
+    width: 300px;
     }
+
+.button {
+	font-size: 30px;
+}
 
 /* Topbar that runs horizontal to any page */
 .topbar {
@@ -247,7 +250,81 @@ ul {
 outline: 2px solid black;
 }
 
-/* Attribute Page */
+/* Custom containers */
+.leftPageHalf {
+    float: left;
+    padding: 0px 0px 0px 20px;
+}
+
+.rightPageHalf {
+    float: right;
+    padding: 0px 20px 0px 0px; /* Usually this class inherits .leftPageHalf, so make sure to set left padding to 0 */
+}
+
+.leftPageHalf,.rightPageHalf { /* This sets the width to 45% if the class is either .leftPageHalf or .rightPageHalf */
+    width: 45%;
+}
+
+.leftPageHalf > .textRight,.rightPageHalf > .textRight {
+    text-align: right;
+}
+
+/* Profile Pages */
+
+.stickyPointsRemainingBar {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    width: 200px;
+    padding: 5px;
+    text-align: center;
+	border: 5px Double Black;
+	background-color: Gray;
+	color: White;
+}
+
+.proficiencyAccordion { /* The giant box which contains the 12 attributes on the proficiency page */
+    background-color: Grey;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    transition: 0.4s;
+    outline: dotted;
+}
+
+.active, .proficiencyAccordion:hover {
+    background-color: White;
+}
+
+.proficiencyAccordionPanel { /* The 12 individual panels which open up on the accordion bar */
+    padding: 0px;
+    margin: 0px;
+    display: none;
+    background-color: Silver;
+}
+
+.proficiencyTooltipTrigger { /* Each individual attribute which can change the tooltip */
+    background-color: Grey;
+    cursor: pointer;
+    width: 90%;
+    outline: double;
+    transition: 0.4s;
+    padding: 5px 0px 5px 0px;
+    margin: 8px 0px 8px 0px;
+}
+
+.proficiencyTooltip { /* The tooltip box on the right side of the page */
+    float: right;
+    width: 30%;
+}
+
+/* */
+
+
 .profilePage {
 	float: left;
 	text-align: left;
@@ -255,17 +332,11 @@ outline: 2px solid black;
 	font-size: 30px;
 	padding: 5px;
 	margin: 30px;
-	border: 5px Double Black;  
+	border: 5px Double Black;
 	width: 40%;
 	background-color: Gray;
 	color: white;
 	line-height: 35px;
-}
-
-.submitButton {
-	float: left;
-	font-size: 30px;
-	margin: 30px;
 }
 
 .profilePageAttributes {
@@ -459,32 +530,6 @@ input.abilityButtonMinus {
 }
 
 /* Profile Page */
-
-img.profileImage {
-	width: 20%;
-	height: auto;
-	padding-left: 100px;
-}
-
-.profileContainer {
-	width: 100%;
-	margin: 0 auto;
-}
-
-.profileContainer h1 {
-	padding-left: 40px;
-}
-
-.profileContainer li {
-	font-size: 20px;
-}
-
-.profileColumn {
-	float: left;
-	width: 40%;
-	margin: 20px;
-}
-
 .archetypeImages {
     width: 175px;
     height: 325px;

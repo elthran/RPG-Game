@@ -66,6 +66,7 @@
     <!-- This is for content that is displayed on the main page -->
     <div class="content">
         {% block nav_bar %}{% endblock %}
+        <div style="clear: both;"></div>
         <!-- This calls a notification script to run if the Hero has any new quests completed -->
         {% if myHero.quest_notification %}
         <div class="popup" onclick="quest_popup()" style="color:red"
