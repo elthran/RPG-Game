@@ -269,6 +269,60 @@ outline: 2px solid black;
     text-align: right;
 }
 
+/* Profile Pages */
+
+.stickyPointsRemainingBar {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    width: 200px;
+    padding: 5px;
+    text-align: center;
+	border: 5px Double Black;
+	background-color: Gray;
+	color: White;
+}
+
+.proficiencyAccordion { /* The giant box which contains the 12 attributes on the proficiency page */
+    background-color: Grey;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    transition: 0.4s;
+    outline: dotted;
+}
+
+.active, .proficiencyAccordion:hover {
+    background-color: White;
+}
+
+.proficiencyAccordionPanel { /* The 12 individual panels which open up on the accordion bar */
+    padding: 0px;
+    margin: 0px;
+    display: none;
+    background-color: Silver;
+}
+
+.proficiencyTooltipTrigger { /* Each individual attribute which can change the tooltip */
+    background-color: Grey;
+    cursor: pointer;
+    width: 90%;
+    outline: double;
+    transition: 0.4s;
+    padding: 5px 0px 5px 0px;
+    margin: 8px 0px 8px 0px;
+}
+
+.proficiencyTooltip { /* The tooltip box on the right side of the page */
+    float: right;
+    width: 30%;
+}
+
+/* */
 
 
 .profilePage {

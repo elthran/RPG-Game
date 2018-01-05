@@ -233,6 +233,12 @@ function itemPurchasedPopup(button, message, heroGold) {
 // This function is used in the profile_proficiencies.html
 // This function only runs if command code return successfully from Python.
 // Could be updated to just rerender all html for tooltip :P
+function proficiencyTooltip(button, tooltip) {
+    var newTooltip = {};
+    newTooltip = document.getElementById("proficiencyTooltip");
+    newTooltip.innerHTML = tooltip;
+}
+
 function updateProf(button, status, newTooltip) {
     "use strict";
 
@@ -247,7 +253,7 @@ function updateProf(button, status, newTooltip) {
     id = button.getAttribute("data");
     profCurrentLvDiv = document.getElementById("proficiency-" + id);
     heroProfPointsDiv = document.getElementById("points_remaining");
-    tooltipPopupSpan = document.getElementById("tooltipPopup-" + id);
+    tooltipPopupSpan = document.getElementById("proficiencyTooltip");
 
     profCurrentLvDiv.innerHTML = parseInt(profCurrentLvDiv.innerHTML) + 1;
     heroProfPointsDiv.innerHTML = parseInt(heroProfPointsDiv.innerHTML) - 1;

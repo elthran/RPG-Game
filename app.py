@@ -661,9 +661,14 @@ def proficiencies(hero=None):
               hero.attributes.quickness]
     profs3 = [hero.attributes.resilience, hero.attributes.survivalism, hero.attributes.vitality,
               hero.attributes.willpower]
+    all_proficiencies = [hero.attributes.agility, hero.attributes.brawn, hero.attributes.charisma, hero.attributes.divinity,
+                         hero.attributes.fortuity, hero.attributes.intellect, hero.attributes.pathfinding,
+                         hero.attributes.quickness,
+                         hero.attributes.resilience, hero.attributes.survivalism, hero.attributes.vitality,
+                         hero.attributes.willpower]
     # This page is literally just a html page with tooltips and proficiency level up buttons. No python code is needed. Python only tells html which page to load.
     return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=hero, profs1=profs1,
-                           profs2=profs2, profs3=profs3)
+                           profs2=profs2, profs3=profs3, all_proficiencies=all_proficiencies)
 
 
 @app.route('/ability_tree/<spec>')
