@@ -613,24 +613,30 @@ img.profileImage {
 }
 /* Inventory Page Code */
 .inventory_equipped_outer {
-    position: relative;
-    float: left;
-    width: 1300px;
-    height: 725px;
     border: 5px solid;
 }
 
 .inventory-equipped {
     position: absolute;
-    border: 5px solid;
-    position: absolute;
     height: 100px;
     width: 100px;
+}
+
+.inventory-unequipped {
+    height: 125px;
+    width: 125px;
+    display: inline-block;
+    margin: 5px;
+}
+
+.inventory-item img {
+    border: 5px solid;
+    height: 100%;
+    width: 100%;
     border-radius: 10%;
 }
 
 #inventory-body-outline {
-    position: absolute;
     left: 470px;
     height: 700px;
     width: 500px;
@@ -639,6 +645,7 @@ img.profileImage {
 #inventory-head {
     left: 650px;
     top: 25px;
+    position: relative;
 }
 
 #inventory-chest {
@@ -707,24 +714,12 @@ img.profileImage {
 }
 
 .inventory_unequipped_outer {
-    position: relative;
-    float: left;
-    width: 1300px;
-    height: auto;
     border: 5px solid;
-    margin: 55px -40px;
-}
-
-.inventory-unequipped {
-    position: relative;
-    margin: 5px;
-    border: 5px solid;
-    height: 125px;
-    width: 125px;
-    border-radius: 10%;
 }
 
 .inventory-tooltip {
+    height: inherit;
+    width: inherit;
     position: relative;
     display: inline-block;
     border-bottom: 1px dotted black;
@@ -732,31 +727,20 @@ img.profileImage {
 
 .inventory-tooltip .inventory-tooltip-text {
     visibility: hidden;
-    position: absolute;
-    height: auto;
-    width: auto;
     background-color: #555;
     color: #fff;
     text-align: center;
+    padding: 5px;
     border-radius: 6px;
-    z-index: 1;
-    opacity: 0;
-    transition: opacity 1s;
-}
 
-.inventory-tooltip .inventory-tooltip-text::after {
-    content: "";
+    /* position the tooltip */
     position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: Red transparent transparent transparent;
+    z-index: 1;
+    top: 50%;
+    width: inherit;
 }
 
 .inventory-tooltip:hover .inventory-tooltip-text {
     visibility: visible;
-    opacity: 1;
 }
 /* End of Inventory Page Code */

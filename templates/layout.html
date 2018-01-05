@@ -15,20 +15,35 @@
 </head>
 
 <body>
-
     <div class="sidebar">
         <div>
             <h1>{{ myHero.name }}</h1>
-            <img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px">
+            <img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px" />
             Age: {{ myHero.age }}
             <br>Gold: <span id="heroGold">{{ myHero.gold }}</span>
         </div>
-        <div class="sideBarProgressDiv">Health:<div class="sideBarProgressMeter"><span style="width:{{ myHero.proficiencies.health.percent }}%"></span></div></div>
+        <div class="sideBarProgressDiv">Health:
+            <div class="sideBarProgressMeter">
+                <span style="width:{{ myHero.proficiencies.health.percent }}%"></span>
+            </div>
+        </div>
         {% if myHero.proficiencies.sanctity.maximum %}
-            <div class="sideBarProgressDiv">Sanctity:<div class="sideBarProgressMeter sidebarSanctity"><span style="width:{{ myHero.proficiencies.sanctity.percent }}%"></span></div></div>
+        <div class="sideBarProgressDiv">Sanctity:
+            <div class="sideBarProgressMeter sidebarSanctity">
+                <span style="width:{{ myHero.proficiencies.sanctity.percent }}%"></span>
+            </div>
+        </div>
         {% endif %}
-        <div class="sideBarProgressDiv">Endurance:<div class="sideBarProgressMeter sidebarEndurance"><span style="width:{{ myHero.proficiencies.endurance.percent }}%"></span></div></div>
-        <div class="sideBarProgressDiv">Progress:<div class="sideBarProgressMeter sidebarProgress"><span style="width:{{ myHero.experience_percent }}%"></span></div></div>
+        <div class="sideBarProgressDiv">Endurance:
+            <div class="sideBarProgressMeter sidebarEndurance">
+                <span style="width:{{ myHero.proficiencies.endurance.percent }}%"></span>
+            </div>
+        </div>
+        <div class="sideBarProgressDiv">Progress:
+            <div class="sideBarProgressMeter sidebarProgress">
+                <span style="width:{{ myHero.experience_percent }}%"></span>
+            </div>
+        </div>
         <div>
             <ul>
                 <li><a href=/home>Profile</a></li>
@@ -46,12 +61,8 @@
             </ul>
         </div>
     </div>
-
     <!-- This is where you want to add HTML that will not be contained within the main body of the page -->
-
     <!-- Here you can add a navigation bar at the top of the page -->
-
-
     <!-- This is for content that is displayed on the main page -->
     <div class="content">
         {% block nav_bar %}{% endblock %}
@@ -64,16 +75,13 @@
             >{{ myHero.quest_notification[0] }}</span>
         </div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
         {% endif %}
-
         <!-- This displays notifications at the top of the page -->
         {% for notice in notifications %}
             {{ notice }}
         {% endfor %}
-
         <!-- This is info pulled from other html files -->
         {% block block1 %}{% endblock %}
         {% block block2 %}{% endblock %}
-
         <!-- This ends the main body container of the page -->
     </div>
 </body>

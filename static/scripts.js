@@ -167,50 +167,44 @@ function battle_popup() {
 /* 
 Scrips for inventory page.
 
-A script to hide the row in a table.
-The element is hidden based on the button clicked having the same data value
-as the id value of the table row id. These should both be unique.
+Currently handles unequip and equipping one item at at time.
+The current approach is not very flexible.
 */
-function removeRow(button) {
-    "use strict";
-    var tr = document.getElementById(button.getAttribute("data"));
-    // console.log(tr);
-    tr.style.display = "none";
-    // button.style.display = 'none';
-}
-
-function toggleEquip(button, slot, idsArrayStr) {
+function toggleEquip(button, slot_type, idsArrayStr) {
     "use strict";
 //    log("toggleEquip function");
 //    console.log(button);
-//    console.log(slot);
+//    console.log(slot_type);
 //    console.log(idsArrayStr);
-    var slot_type = slot.replace('_', '-');
-    button.id = "inventory-" + slot_type;
+    var tooltipDiv = button.parentElement;
+    var inventoryItemDiv = button.parentElement.parentElement;
+    var empty_slot = document.getElementById("inventory-" + slot_type + "-empty");
+//    console.log(empty_slot);
 
-    var empty_slot = document.querySelector("[data-id=" + button.id + "-empty]");
     var command = button.getAttribute("data-py-function");
-    var unequipped = document.getElementById("unequipped");
-    var equipped = document.getElementById("equipped");
 
+    // When you are Unequipping an Item.
     if (command === "unequip") {
-        button.parentElement.removeChild(button);
-        empty_slot.style.display = "";
+        inventoryItemDiv.removeChild(tooltipDiv);
+        empty_slot.style.display = "inline";
 
-        button.classList.remove("inventory-equipped");
-        button.classList.add("inventory-unequipped");
         button.setAttribute("data-py-function", "equip");
-        button.removeAttribute("id");
-        unequipped.appendChild(button);
+
+        var unequippedItemDiv = document.createElement("div");
+        unequippedItemDiv.classList.add("inventory-unequipped", "inventory-item");
+        unequippedItemDiv.appendChild(tooltipDiv);
+
+        var unequippedGeneralDiv = document.getElementById("unequipped");
+        unequippedGeneralDiv.appendChild(unequippedItemDiv);
+
+    // When you are Equipping and Item.
     } else if (command === "equip") {
-        button.parentElement.removeChild(button);
+        inventoryItemDiv.parentElement.removeChild(inventoryItemDiv);
         empty_slot.style.display = "none";
 
-        button.classList.remove("inventory-unequipped");
-        button.classList.add("inventory-equipped");
         button.setAttribute("data-py-function", "unequip");
-        button.setAttribute("id", empty_slot.id);
-        equipped.insertBefore(button, empty_slot);
+        var slotDiv = document.getElementById("inventory-" + slot_type);
+        slotDiv.appendChild(tooltipDiv);
     }
 }
 
