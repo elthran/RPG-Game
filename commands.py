@@ -121,6 +121,7 @@ class Command:
             description="{} equips a/an {}.".format(hero.name, item.name)
         )
         slot = hero.inventory.slots_used_by_item_type[item.type]["primary"]
+        slot = slot.replace('_', "-")
         return slot + "&&" + str(ids_to_unequip)
 
     @staticmethod
