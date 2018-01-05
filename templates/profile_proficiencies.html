@@ -6,7 +6,7 @@
 <div style="clear: both;"></div>
 <div>
 	<div class="leftPageHalf" style="width:65%;">
-        {% for attribute in all_proficiencies %}
+        {% for attribute in all_attributes %}
             <button class="proficiencyAccordion">{{ attribute.name }} (Current level: {{ attribute.level }})</button>
             <div class="proficiencyAccordionPanel">
                 <ul>
@@ -15,7 +15,7 @@
                             <li>
                                 <button class="proficiencyTooltipTrigger" data-py-function="change_proficiency_tooltip" data="{{ proficiency.id }}" data-js-callback="proficiencyTooltip">
                                     {{ proficiency.name}} (Current Level: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>)
-                                    <button data-py-function="update_proficiency" data="{{ proficiency.id }}" id="proficiencyButton" data-js-callback="updateProf" {% if myHero.proficiency_points <= 0 or proficiency.is_max_level() %}style="display: none"{% endif %}>
+                                    <button class="upgradeButton" data-py-function="update_proficiency" data="{{ proficiency.id }}" id="proficiencyButton" data-js-callback="updateProficiency" {% if myHero.proficiency_points <= 0 or proficiency.is_max_level() %}style="display: none"{% endif %}>
                                     </button>
                                 </button>
                                 </li>
@@ -30,6 +30,7 @@
     </div>
 </div>
 
+<!-- I don't know why this needs to be below my code and not above it -->
 <script>
 var allProfs = document.getElementsByClassName("proficiencyAccordion");
 var index;
@@ -45,106 +46,5 @@ for (index = 0; index < allProfs.length; index++) {
     });
 }
 </script>
-
-<!-- Below here is the old code. It can be deleted. -->
-
-<div style="clear: both;"></div>
-<div class="proficiencyPage">
-    <div class="proficiencyPageInner">
-        {% for attribute in profs1 %}
-            <h1>
-                <center>{{ attribute.name }}: {{attribute.level }}</center>
-            </h1>
-            {% for proficiency in myHero.proficiencies %}
-                {% if proficiency.attribute_type == attribute.name %}
-                    <div class="tooltip">
-                        <ul>
-                            {{ proficiency.name}}:
-                            <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
-                            <span id="tooltipPopup-{{ proficiency.id }}">
-                                                {{ proficiency.description }}:
-                                                {% set proficiency_tooltip = proficiency.tooltip.split(';') %}
-                                                {% for tooltip in proficiency_tooltip %}
-                                                    <br>&bull; {{ tooltip }}
-                                                {% endfor %}
-                                                <div style="display:
-                                                {% if proficiency.is_max_level() %} inline{% else %} none
-                                                {% endif %}"><br>{{ proficiency.error }}</div>
-                                            </span>
-                            <button data-py-function="update_proficiency" data="{{ proficiency.id }}"
-                                    id="proficiencyButton"
-                                    data-js-callback="updateProf" {% if myHero.proficiency_points <= 0 or proficiency.is_max_level() %} style="display: none"{% endif %}></button>
-                        </ul>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        {% endfor %}
-    </div>
-    <div class="proficiencyPageInner">
-        {% for attribute in profs2 %}
-        <h1>
-            <center>{{ attribute.name }}: {{attribute.level }}</center>
-        </h1>
-        {% for proficiency in myHero.proficiencies %}
-        {% if proficiency.attribute_type == attribute.name %}
-        <div class="tooltip">
-            <ul>
-                {{ proficiency.name}}:
-                <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
-                <span id="tooltipPopup-{{ proficiency.id }}">
-                                    {{ proficiency.description }}:
-                                    {% set proficiency_tooltip = proficiency.tooltip.split(';') %}
-                                    {% for tooltip in proficiency_tooltip %}
-                                        <br>&bull; {{ tooltip }}
-                                    {% endfor %}
-                                    <div style="display:
-                                    {% if proficiency.is_max_level() %} inline{% else %} none
-                                    {% endif %}"><br>{{ proficiency.error }}</div>
-                                </span>
-                <button data-py-function="update_proficiency"
-                        data="{{ proficiency.id }}" id="proficiencyButton"
-                        data-js-callback="updateProf" {% if
-                        myHero.proficiency_points
-                <= 0 or proficiency.is_max_level() %} style="display: none"{% endif %}></button>
-            </ul>
-        </div>
-        {% endif %}
-        {% endfor %}
-        {% endfor %}
-    </div>
-    <div class="proficiencyPageInner">
-        {% for attribute in profs3 %}
-        <h1>
-            <center>{{ attribute.name }}: {{attribute.level }}</center>
-        </h1>
-        {% for proficiency in myHero.proficiencies %}
-        {% if proficiency.attribute_type == attribute.name %}
-        <div class="tooltip">
-            <ul>
-                {{ proficiency.name}}:
-                <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>
-                <span id="tooltipPopup-{{ proficiency.id }}">
-                                    {{ proficiency.description }}:
-                                    {% set proficiency_tooltip = proficiency.tooltip.split(';') %}
-                                    {% for tooltip in proficiency_tooltip %}
-                                        <br>&bull; {{ tooltip }}
-                                    {% endfor %}
-                                    <div style="display:
-                                    {% if proficiency.is_max_level() %} inline{% else %} none
-                                    {% endif %}"><br>{{ proficiency.error }}</div>
-                                </span>
-                <button data-py-function="update_proficiency"
-                        data="{{ proficiency.id }}" id="proficiencyButton"
-                        data-js-callback="updateProf" {% if
-                        myHero.proficiency_points
-                <= 0 or proficiency.is_max_level() %} style="display: none"{% endif %}></button>
-            </ul>
-        </div>
-        {% endif %}
-        {% endfor %}
-        {% endfor %}
-    </div>
-</div>
-<div style="clear: both;"></div>
 
 {% endblock %}

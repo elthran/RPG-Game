@@ -4,7 +4,7 @@
 <div class="topbar">
 	<ul>
 		<li><a {% if profile %}style="background-color:Red;"{% endif %} href="/home">General</a></li>
-		<li><a {% if attribute_information %}style="background-color:Red;" {% elif myHero.attribute_points %}style="background-color:Blue;"{% endif %} href="/attributes">{% if myHero.attribute_points %}Level Up!{% else %}Attributes{% endif %}</a></li>
+		<li><a {% if page_title == "Attributes" %}style="background-color:Red;" {% elif myHero.attribute_points %}style="background-color:Blue;"{% endif %} href="/attributes">{% if myHero.attribute_points %}Level Up!{% else %}Attributes{% endif %}</a></li>
 		<li><a {% if page_title == "Proficiencies" %}style="background-color:Red;"{% elif myHero.proficiency_points %}style="background-color:Blue;"{% endif %} href="/proficiencies">{% if myHero.proficiency_points %}Upgrade!{% else %}Proficiencies{% endif %}</a></li>
 		<li class="topbarDropdownOuter" {% if ability_tree %}style="background-color:Red;"{% endif %}>
 			<a href="/ability_tree/basic" style="display:inline-block;">Abilities</a>

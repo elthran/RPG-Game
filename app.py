@@ -627,27 +627,7 @@ def home(hero=None):
 @login_required
 @uses_hero
 def attributes(hero=None):
-    # (Elthran) ATTRIBUTE_INFORMATION is currently being imported from attributes.py  This is because I was getting a hard to track down bug where I was modifying that file
-    # but you had hand typed the info here and that was causing my bug. Maybelater we can store it all in an html file or something?
-    # Fix single quotes in string bug when converting from JS to HTML
-    # Python to Jinja to HTML to JS needs separate fix.
-    for index, data in enumerate(ATTRIBUTE_INFORMATION):
-        attribute, description = data
-        ATTRIBUTE_INFORMATION[index] = attribute, description.replace("'", "\\'")
-
-    if request.method == 'POST':
-        points_spent = 0
-        for element in request.form:
-            form_value = int(request.form[element])
-            attribute = getattr(hero.attributes, element[0:-5])  # Convert name e.g. agilityInput becomes agility.
-            points_spent += form_value - attribute.level
-            attribute.level = form_value
-        hero.attribute_points -= points_spent
-        hero.refresh_character()
-        return render_template('profile_attributes.html', page_title="Attributes", myHero=hero,
-                               attribute_information=ATTRIBUTE_INFORMATION)
-    return render_template('profile_attributes.html', page_title="Attributes", myHero=hero,
-                           attribute_information=ATTRIBUTE_INFORMATION)
+    return render_template('profile_attributes.html', page_title="Attributes", myHero=hero, all_attributes=hero.attributes)
 
 # This gets called anytime you have secondary attribute points to spend
 # Currently I send "proficiencies=True" so that the html knows to highlight
@@ -656,19 +636,8 @@ def attributes(hero=None):
 @login_required
 @uses_hero
 def proficiencies(hero=None):
-    profs1 = [hero.attributes.agility, hero.attributes.brawn, hero.attributes.charisma, hero.attributes.divinity]
-    profs2 = [hero.attributes.fortuity, hero.attributes.intellect, hero.attributes.pathfinding,
-              hero.attributes.quickness]
-    profs3 = [hero.attributes.resilience, hero.attributes.survivalism, hero.attributes.vitality,
-              hero.attributes.willpower]
-    all_proficiencies = [hero.attributes.agility, hero.attributes.brawn, hero.attributes.charisma, hero.attributes.divinity,
-                         hero.attributes.fortuity, hero.attributes.intellect, hero.attributes.pathfinding,
-                         hero.attributes.quickness,
-                         hero.attributes.resilience, hero.attributes.survivalism, hero.attributes.vitality,
-                         hero.attributes.willpower]
     # This page is literally just a html page with tooltips and proficiency level up buttons. No python code is needed. Python only tells html which page to load.
-    return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=hero, profs1=profs1,
-                           profs2=profs2, profs3=profs3, all_proficiencies=all_proficiencies)
+    return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=hero, all_attributes=hero.attributes)
 
 
 @app.route('/ability_tree/<spec>')
@@ -676,8 +645,7 @@ def proficiencies(hero=None):
 @uses_hero
 def ability_tree(spec, hero=None):
     page_title = "Abilities"
-    return render_template(
-        'profile_ability.html', myHero=hero, ability_tree=spec, page_title=page_title)
+    return render_template('profile_ability.html', myHero=hero, ability_tree=spec, page_title=page_title)
 
 
 @app.route('/inventory_page')
@@ -688,9 +656,7 @@ def inventory_page(hero=None):
     # for item in hero.inventory:
     #     if item.wearable:
     #         item.check_if_improvement()
-    return render_template(
-        'inventory.html', hero=hero, page_title=page_title,
-        isinstance=isinstance)
+    return render_template('inventory.html', hero=hero, page_title=page_title, isinstance=isinstance)
 
 @app.route('/quest_log')
 @login_required
@@ -698,8 +664,7 @@ def inventory_page(hero=None):
 def quest_log(hero=None):
     hero.page_refresh_character()
     page_title = "Quest Log"
-    return render_template(
-        'journal.html', hero=hero, quest_log=True, page_title=page_title)
+    return render_template('journal.html', hero=hero, quest_log=True, page_title=page_title)
 
 @app.route('/bestiary/<current_monster_id>')
 @login_required

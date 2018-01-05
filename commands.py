@@ -187,13 +187,30 @@ class Command:
         ability.cast(hero)
         return "success"
 
+    @staticmethod
+    def change_attribute_tooltip(hero, database, arg_dict, **kwargs):
+        tooltip = arg_dict.get('data', None, type=str)
+        return "{}".format(tooltip)
+
+    @staticmethod
+    def update_attribute(hero, database, arg_dict, **kwargs):
+        attribute_id = arg_dict.get('data', None, type=int)
+        if hero.attribute_points <= 0:
+            return "error: no attribute points"
+        for attribute in hero.attributes:
+            if attribute.id == attribute_id:
+                attribute.level += 1
+        hero.attribute_points -= 1
+        if hero.attribute_points == 0:
+            return "hide_all".format()
+        return "success".format()
 
     @staticmethod
     def change_proficiency_tooltip(hero, database, arg_dict, **kwargs):
         tooltip_id = arg_dict.get('data', None, type=int)
         proficiency = database.get_proficiency_by_id(tooltip_id)
-        tooltip = proficiency.tooltip
-        print(tooltip)
+        tooltip = proficiency.tooltip.replace(";", "</li><li>")
+        tooltip = proficiency.description + "<ul><li>" + tooltip + "</li></ul>"
         return "{}".format(tooltip)
 
     @staticmethod
@@ -203,33 +220,20 @@ class Command:
         Return status of: success, hide_all, hide_this.
         "success" means hide none ... maybe I should call it that instead?
         """
-
-        tooltip_template = """{{ proficiency.description }}:
-{% set proficiency_tooltip = proficiency.tooltip.split(';') %}
-{% for tooltip in proficiency_tooltip %}
-<br>&bull; {{ tooltip }}
-{% endfor %}
-<div id="error-{{ proficiency.id }}" style="display:
-{% if proficiency.is_max_level() %} inline{% else %} none
-{% endif %}"><br>{{ proficiency.error }}</div>"""
-
         id = arg_dict.get('data', None, type=int)
         proficiency = database.get_proficiency_by_id(id)
-
-
+        #tooltip = change_proficiency_tooltip(hero, database, arg_dict, **kwargs)
+        #print(tooltip)
         # Defensive coding: command buttons should be hidden by JavaScript
         # when no longer valid due to the return values of this function.
         # If for some reason they are still clickable return error to JS console.
         if hero.proficiency_points <= 0 or proficiency.is_max_level():
             return "error: no proficiency_points or proficiency is at max level."
-
         hero.proficiency_points -= 1
         proficiency.level_up()
         proficiency.update(hero)
-
-        tooltip = render_template_string(tooltip_template,
-            proficiency=proficiency, hero=hero)
-
+        tooltip = proficiency.tooltip.replace(";", "</li><li>")
+        tooltip = proficiency.description + "<ul><li>" + tooltip + "</li></ul>"
         if hero.proficiency_points == 0:
             return "hide_all&&{}".format(tooltip)
         elif proficiency.is_max_level():

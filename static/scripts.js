@@ -233,31 +233,65 @@ function itemPurchasedPopup(button, message, heroGold) {
 // This function is used in the profile_proficiencies.html
 // This function only runs if command code return successfully from Python.
 // Could be updated to just rerender all html for tooltip :P
+function attributeTooltip(button, tooltip) {
+    var newTooltip = {};
+    newTooltip = document.getElementById("attributeTooltip");
+    newTooltip.innerHTML = tooltip;
+}
+
+function updateAttribute(button, status) {
+    "use strict";
+    var id = 0;
+    var i = 0;
+    var heroAtrPointsDiv = {};
+    var atrCurrentLvDiv = {};
+    var buttonsNodeList = {};
+    var errorDivNodeList = {};
+
+    id = button.getAttribute("data");
+    atrCurrentLvDiv = document.getElementById("attribute-" + id);
+    heroAtrPointsDiv = document.getElementById("points_remaining");
+
+    atrCurrentLvDiv.innerHTML = parseInt(atrCurrentLvDiv.innerHTML) + 1;
+    heroAtrPointsDiv.innerHTML = parseInt(heroAtrPointsDiv.innerHTML) - 1;
+
+    //hide this button
+    if (status === "hide_this") {
+        button.style.display = "none";
+    //hide all buttons
+    //show all errors
+    } else if (status === "hide_all") {
+        buttonsNodeList = document.querySelectorAll("button[id=attributeButton]");
+        errorDivNodeList = document.querySelectorAll("div[id^=error-]");
+        for (i = 0; i < buttonsNodeList.length; i += 1) {
+            buttonsNodeList[i].style.display = "none";
+            errorDivNodeList[i].style.display = "inline";
+        }
+    }
+}
+
 function proficiencyTooltip(button, tooltip) {
     var newTooltip = {};
     newTooltip = document.getElementById("proficiencyTooltip");
     newTooltip.innerHTML = tooltip;
 }
 
-function updateProf(button, status, newTooltip) {
+function updateProficiency(button, status, tooltip) {
     "use strict";
-
+    proficiencyTooltip(button, tooltip);
     var id = 0;
     var i = 0;
     var heroProfPointsDiv = {};
     var profCurrentLvDiv = {};
-    var tooltipPopupSpan = {};
     var buttonsNodeList = {};
     var errorDivNodeList = {};
 
     id = button.getAttribute("data");
     profCurrentLvDiv = document.getElementById("proficiency-" + id);
     heroProfPointsDiv = document.getElementById("points_remaining");
-    tooltipPopupSpan = document.getElementById("proficiencyTooltip");
 
     profCurrentLvDiv.innerHTML = parseInt(profCurrentLvDiv.innerHTML) + 1;
     heroProfPointsDiv.innerHTML = parseInt(heroProfPointsDiv.innerHTML) - 1;
-    tooltipPopupSpan.innerHTML = newTooltip;
 
     //hide this button
     if (status === "hide_this") {
