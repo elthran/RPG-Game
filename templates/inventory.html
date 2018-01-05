@@ -7,35 +7,45 @@
         {% set inventory = hero.inventory %}
         <div class="inventory_equipped_outer" id="equipped">
             <img id="inventory-body-outline" src="/static/images/body.jpg" alt="body.jpg" />
-
+            <!--Nice for loop of inventory slots-->
             {% for js_slot, slot in inventory.js_single_slots %}
             <div class="inventory-equipped inventory-item" id="inventory-{{ js_slot }}">
                 <img src="/static/images/items/inventory_{{ slot }}.jpg" alt="{{ slot }}.jpg" id="inventory-{{ js_slot }}-empty" {% if getattr(inventory, slot) %}{% set item = getattr(inventory, slot) %} style="display: none;" />
-                <div class="inventory-tooltip">
-                    <img data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
+                <div class="inventory-tooltip" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">
+                    <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
                     <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
                 </div>
                 {% else %}/>
                 {% endif %}
             </div>
             {% endfor %}
-
-            <img class="inventory-equipped" id="inventory-right-finger" src="/static/images/items/inventory_right_finger.jpg" alt="right_finger.jpg" id="inventory-right-finger-empty" {% if inventory.right_finger %}{% set item = inventory.right_finger %} style="display:none;" />
-            <img class="inventory-equipped" id="inventory-right-finger" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
-            {% else %}/> {% endif %}
-
-            <img class="inventory-equipped" id="inventory-left-finger" src="/static/images/items/inventory_left_finger.jpg" alt="left_finger.jpg" id="inventory-left-finger-empty" {% if inventory.left_finger %}{% set item = inventory.left_finger %} style="display:none;" />
-            <img class="inventory-equipped" id="inventory-left-finger" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
-            {% else %}/> {% endif %}
-
+            <!--Not yet for looped inventory slots-->
+            <div class="inventory-equipped inventory-item" id="inventory-right-finger">
+                <img src="/static/images/items/inventory_right_finger.jpg" alt="right_finger.jpg" id="inventory-right-finger-empty" {% if inventory.right_finger %}{% set item = inventory.right_finger %} style="display:none;" />
+                <div class="inventory-tooltip" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">
+                    <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
+                    <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
+                </div>
+                {% else %}/>
+                {% endif %}
+            </div>
+            <div class="inventory-equipped inventory-item" id="inventory-left-finger">
+                <img src="/static/images/items/inventory_left_finger.jpg" alt="left_finger.jpg" id="inventory-left-finger-empty" {% if inventory.left_finger %}{% set item = inventory.left_finger %} style="display:none;" />
+                <div class="inventory-tooltip" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">
+                    <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
+                    <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
+                </div>
+                {% else %}/>
+                {% endif %}
+            </div>
         </div>
         <div></div>
         <div class="inventory_unequipped_outer" id="unequipped">
             <h1>Inventory:</h1>
             {% for item in hero.non_equipped_items() %}
             <div class="inventory-unequipped inventory-item">
-                <div class="inventory-tooltip">
-                    <img data-py-function="equip" data="{{ item.id }}" data-js-callback="toggleEquip" src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
+                <div class="inventory-tooltip" data-py-function="equip" data="{{ item.id }}" data-js-callback="toggleEquip">
+                    <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
                     <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
                 </div>
             </div>

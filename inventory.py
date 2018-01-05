@@ -108,6 +108,7 @@ class Inventory(Base):
     single_slots = [
         "head",
         "chest",
+        # "shoulder",
         "left_hand",
         "right_hand",
         "both_hands",
