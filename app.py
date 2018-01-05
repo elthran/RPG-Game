@@ -690,7 +690,7 @@ def inventory_page(hero=None):
     #         item.check_if_improvement()
     return render_template(
         'inventory.html', hero=hero, page_title=page_title,
-        isinstance=isinstance)
+        isinstance=isinstance, getattr=getattr)
 
 @app.route('/quest_log')
 @login_required
