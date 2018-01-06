@@ -653,10 +653,17 @@ def ability_tree(spec, hero=None):
 @uses_hero
 def inventory_page(hero=None):
     page_title = "Inventory"
+    total_armour = 0
+    for armour in hero.inventory:
+        if armour.inventory_unequipped == None:
+            total_armour += armour.armour_value
+            print(armour)
+       # if not armour.unequipped:
+      #      total_armour += armour.armour_value
     # for item in hero.inventory:
     #     if item.wearable:
     #         item.check_if_improvement()
-    return render_template('inventory.html', hero=hero, page_title=page_title, isinstance=isinstance)
+    return render_template('inventory.html', hero=hero, page_title=page_title, isinstance=isinstance, test_value=total_armour)
 
 @app.route('/quest_log')
 @login_required

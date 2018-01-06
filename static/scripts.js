@@ -240,26 +240,15 @@ function updateAttribute(button, status) {
     var heroAtrPointsDiv = {};
     var atrCurrentLvDiv = {};
     var buttonsNodeList = {};
-    var errorDivNodeList = {};
-
     id = button.getAttribute("data");
     atrCurrentLvDiv = document.getElementById("attribute-" + id);
     heroAtrPointsDiv = document.getElementById("points_remaining");
-
     atrCurrentLvDiv.innerHTML = parseInt(atrCurrentLvDiv.innerHTML) + 1;
     heroAtrPointsDiv.innerHTML = parseInt(heroAtrPointsDiv.innerHTML) - 1;
-
-    //hide this button
-    if (status === "hide_this") {
-        button.style.display = "none";
-    //hide all buttons
-    //show all errors
-    } else if (status === "hide_all") {
-        buttonsNodeList = document.querySelectorAll("button[id=attributeButton]");
-        errorDivNodeList = document.querySelectorAll("div[id^=error-]");
-        for (i = 0; i < buttonsNodeList.length; i += 1) {
+    if (status === "hide_all") { //hide all buttons
+        buttonsNodeList = document.querySelectorAll("button[class=upgradeButton]");
+        for (i = 0; i < buttonsNodeList.length; i++) {
             buttonsNodeList[i].style.display = "none";
-            errorDivNodeList[i].style.display = "inline";
         }
     }
 }
@@ -278,26 +267,17 @@ function updateProficiency(button, status, tooltip) {
     var heroProfPointsDiv = {};
     var profCurrentLvDiv = {};
     var buttonsNodeList = {};
-    var errorDivNodeList = {};
-
     id = button.getAttribute("data");
     profCurrentLvDiv = document.getElementById("proficiency-" + id);
     heroProfPointsDiv = document.getElementById("points_remaining");
-
     profCurrentLvDiv.innerHTML = parseInt(profCurrentLvDiv.innerHTML) + 1;
     heroProfPointsDiv.innerHTML = parseInt(heroProfPointsDiv.innerHTML) - 1;
-
-    //hide this button
-    if (status === "hide_this") {
+    if (status === "hide_this") { //hide this button
         button.style.display = "none";
-    //hide all buttons
-    //show all errors
-    } else if (status === "hide_all") {
-        buttonsNodeList = document.querySelectorAll("button[id=proficiencyButton]");
-        errorDivNodeList = document.querySelectorAll("div[id^=error-]");
-        for (i = 0; i < buttonsNodeList.length; i += 1) {
+    } else if (status === "hide_all") { //hide all buttons
+        buttonsNodeList = document.querySelectorAll("button[class=upgradeButton]");
+        for (i = 0; i < buttonsNodeList.length; i++) {
             buttonsNodeList[i].style.display = "none";
-            errorDivNodeList[i].style.display = "inline";
         }
     }
 }

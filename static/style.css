@@ -253,7 +253,6 @@ outline: 2px solid black;
 /* Custom containers */
 .leftPageHalf {
     float: left;
-    padding: 0px 0px 0px 20px;
 }
 
 .rightPageHalf {
@@ -301,8 +300,6 @@ outline: 2px solid black;
 }
 
 .proficiencyAccordionPanel { /* The 12 individual panels which open up on the accordion bar */
-    padding: 0px;
-    margin: 0px;
     display: none;
     background-color: Silver;
 }
@@ -311,10 +308,9 @@ outline: 2px solid black;
     background-color: Grey;
     cursor: pointer;
     width: 90%;
+    height: 30px;
     outline: double;
     transition: 0.4s;
-    padding: 5px 0px 5px 0px;
-    margin: 8px 0px 8px 0px;
 }
 
 .proficiencyTooltip { /* The tooltip box on the right side of the page */
@@ -324,22 +320,149 @@ outline: 2px solid black;
 
 .proficiencyTooltip li {
     list-style-type: circle;
-    margin-top: 10px;
 }
 
 .upgradeButton {
-	background-color: transparent; /* make the button transparent */
-	background-repeat: no-repeat;  /* make the background image appear only once */
-	background-position: 0px 0px;  /* equivalent to 'top left' */
-	border: none;           /* assuming we don't want any borders */
 	cursor: pointer;        /* make the cursor like hovering over an <a> element */
-	height: 20px;           /* make this the size of your image */
-	padding-left: 15px;     /* make text start to the right of the image */
-	vertical-align: middle; /* align the text vertically centered */
+	height: 30px;           /* make this the size of your image */
+	width: 30px;
 	background-image: url(/static/images/prof_button.jpg); /* Image size needs to match abilityButton (about 16px x 16px) */
 }
 
-/* */
+/* Inventory Page Code */
+.inventory_equipped_outer {
+    position: relative;
+    width: auto;
+    height: 700px;
+    border: 5px solid;
+}
+
+.inventory_unequipped_outer {
+    position: relative;
+    border: 5px solid;
+    width: auto;
+    height: auto;
+}
+
+#inventory-body-outline {
+    position: relative;
+    height: 700px;
+    left: 500px;
+    display: none;
+}
+
+.inventory-equipped {
+    position: absolute;
+    height: 100px;
+    width: 100px;
+}
+
+.inventory-unequipped {
+    position: relative;
+    margin: 5px;
+    border: 5px solid;
+    height: 125px;
+    width: 125px;
+    border-radius: 10%;
+    display: inline-block;
+}
+
+.inventory-item img {
+    border: 5px solid;
+    height: 100%;
+    width: 100%;
+    border-radius: 10%;
+}
+
+#inventory-head {
+    left: 650px;
+    top: 25px;
+}
+
+#inventory-chest {
+    left: 650px;
+    top: 150px;
+    height: 150px;
+}
+
+#inventory-shoulder {
+    left: 520px;
+    top: 100px;
+    height: 125px;
+}
+
+#inventory-neck {
+    left: 780px;
+    top: 100px;
+}
+
+#inventory-arm {
+    left: 850px;
+    top: 250px;
+}
+
+#inventory-hand {
+    left: 450px;
+    top: 250px;
+}
+
+#inventory-left-finger {
+    left: 500px;
+    top: 375px;
+}
+
+#inventory-right-finger {
+    left: 800px;
+    top: 375px;
+}
+
+#inventory-waist {
+    left: 650px;
+    top: 325px;
+    height: 50px;
+}
+
+#inventory-leg {
+    left: 650px;
+    top: 400px;
+}
+
+#inventory-foot {
+    left: 650px;
+    top: 575px;
+}
+
+#inventory-left-hand {
+    left: 850px;
+    top: 500px;
+    height: 150px;
+}
+
+#inventory-right-hand {
+    left: 450px;
+    top: 500px;
+    height: 150px;
+}
+
+.inventory-tooltip .inventory-tooltip-text {
+    visibility: hidden;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 6px;
+    /* position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    width: inherit;
+    margin-left: 125px;
+}
+
+.inventory-tooltip:hover .inventory-tooltip-text {
+    visibility: visible;
+}
+/* End of Inventory Page Code */
 
 /* Ability Pages */
     /* Religion Individual Containers */
@@ -523,146 +646,3 @@ outline: 2px solid black;
     text-decoration: none;
     cursor: pointer;
 }
-/* Inventory Page Code */
-.inventory_equipped_outer {
-    position: relative;
-    width: auto;
-    height: 700px;
-    border: 5px solid;
-}
-
-.inventory_unequipped_outer {
-    position: relative;
-    border: 5px solid;
-    width: auto;
-    height: auto;
-}
-
-#inventory-body-outline {
-    position: relative;
-    height: 700px;
-    left: 500px;
-    display: none;
-}
-
-.inventory-equipped {
-    position: absolute;
-    height: 100px;
-    width: 100px;
-}
-
-.inventory-item img {
-    border: 5px solid;
-    height: 100%;
-    width: 100%;
-    border-radius: 10%;
-}
-
-#inventory-head {
-    left: 650px;
-    top: 25px;
-}
-
-#inventory-chest {
-    left: 650px;
-    top: 150px;
-    height: 150px;
-}
-
-#inventory-shoulder {
-    left: 520px;
-    top: 100px;
-    height: 125px;
-}
-
-#inventory-neck {
-    left: 780px;
-    top: 100px;
-}
-
-#inventory-arm {
-    left: 850px;
-    top: 250px;
-}
-
-#inventory-hand {
-    left: 450px;
-    top: 250px;
-}
-
-#inventory-left-finger {
-    left: 500px;
-    top: 375px;
-}
-
-#inventory-right-finger {
-    left: 800px;
-    top: 375px;
-}
-
-#inventory-waist {
-    left: 650px;
-    top: 325px;
-    height: 50px;
-}
-
-#inventory-leg {
-    left: 650px;
-    top: 400px;
-}
-
-#inventory-foot {
-    left: 650px;
-    top: 575px;
-}
-
-#inventory-left-hand {
-    left: 850px;
-    top: 500px;
-    height: 150px;
-}
-
-#inventory-right-hand {
-    left: 450px;
-    top: 500px;
-    height: 150px;
-}
-
-.inventory-unequipped {
-    position: relative;
-    margin: 5px;
-    border: 5px solid;
-    height: 125px;
-    width: 125px;
-    border-radius: 10%;
-    display: inline-block;
-}
-
-
-.inventory-tooltip {
-    height: inherit;
-    width: inherit;
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-}
-
-.inventory-tooltip .inventory-tooltip-text {
-    visibility: hidden;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    padding: 5px;
-    border-radius: 6px;
-
-    /* position the tooltip */
-    position: absolute;
-    z-index: 1;
-    top: 50%;
-    width: inherit;
-}
-
-.inventory-tooltip:hover .inventory-tooltip-text {
-    visibility: visible;
-}
-/* End of Inventory Page Code */
