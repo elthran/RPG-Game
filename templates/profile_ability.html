@@ -2,28 +2,28 @@
 {% block block1 %}
 <!-- This is the ability page. It let's you learn/upgrade abilities -->
 
-{% if ability_tree == "basic" %}
-    <h1 style="text-align:center;">Basic Abilities</h1>
-    Basic Ability Points:
-    <div style="display: inline" id="basic_points_remaining">{{ myHero.basic_ability_points }}</div>
-    <h2 style="text-align:left;">Basic Abilities</h2>
-    {% for ability in myHero.abilities if ability.tree == ability_tree and ability.hidden == False  %}
-    <div class="tooltip" style="float:left">
-            <img class="archetypeImages" src="/static/images/ability_icon_{{ ability.name.lower() }}.jpg" data="{{ ability.id }}, {{ ability.tree }}" data-js-callback="updateAbility" data-py-function="update_ability">
-        <div style="display: inline">
-            <span>
-                <h3>{{ ability.name.title() }}</h3>
-                {{ ability.get_description() }}<br>
-                Current Level: <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>/{{ ability.max_level }}<br>
-                Cost: {{ ability.cost }}
-            </span>
-        </div>
+<h1 style="text-align:center;">{{ ability_tree.title() }} Abilities</h1>
+<div class="stickyPointsRemainingBar">Points Remaining: <div style="display: inline" id="points_remaining">{{ hero.basic_ability_points }}</div></div>
+<div style="clear: both;"></div>
+<div>
+	<div class="leftPageHalf" style="width:65%;">
+        <ul>
+        {% for ability in all_abilities %}
+            <li>
+            <button class="proficiencyTooltipTrigger" data-py-function="change_ability_tooltip" data="{{ ability.id }}" data-js-callback="abilityTooltip">{{ ability.name }} (Current level: <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>)</button>
+            <button class="upgradeButton" data-py-function="update_ability" data="{{ ability.id }}" id="abilityButton-{{ ability.id }}" data-js-callback="updateAbility" {% if myHero.basic_ability_points <= 0 %}style="display: none"{% endif %}></button>
+            </li>
+        {% endfor %}
+        </ul>
     </div>
-{% else %}
-    No Abilities Available
-{% endfor %}
+    <div class="attributeTooltip">
+        <div><span id="attributeTooltip">Click on an attribute to see more information.</span></div>
+        <div><span id="attributeImage"></span></div>
+    </div>
+</div>
+<div style="clear:both;"></div>
 
-{% elif ability_tree == "archetype" %}
+{% if ability_tree == "archetype" %}
     {% if hero.archetype == None %}
 <div>
     <div class="popuparchetypecontainer" onclick="archetype_popup('brute')"><img class="archetypeImages" src="/static/images/archetype_brute.jpg">

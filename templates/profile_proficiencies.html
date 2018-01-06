@@ -1,8 +1,8 @@
 {% extends "profile_template.html" %}
-{% block block1 %}{% set hero = myHero %}
+{% block block1 %}
 <!-- Basic Skill Page -->
 <h1 style="text-align:center;">Proficiencies</h1>
-<div class="stickyPointsRemainingBar">Points Remaining: <div style="display: inline" id="points_remaining">{{ myHero.proficiency_points }}</div></div>
+<div class="stickyPointsRemainingBar">Points Remaining: <div style="display: inline" id="points_remaining">{{ hero.proficiency_points }}</div></div>
 <div style="clear: both;"></div>
 <div>
 	<div class="leftPageHalf" style="width:65%;">
@@ -10,12 +10,12 @@
             <button class="proficiencyAccordion">{{ attribute.name }} (Current level: {{ attribute.level }})</button>
             <div class="proficiencyAccordionPanel">
                 <ul>
-                    {% for proficiency in myHero.proficiencies %}
+                    {% for proficiency in all_proficiencies %}
                         {% if proficiency.attribute_type == attribute.name %}
                             <li>
                                 <button class="proficiencyTooltipTrigger" data-py-function="change_proficiency_tooltip" data="{{ proficiency.id }}" data-js-callback="proficiencyTooltip">
                                     {{ proficiency.name}} (Current Level: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>)
-                                    <button class="upgradeButton" data-py-function="update_proficiency" data="{{ proficiency.id }}" id="proficiencyButton" data-js-callback="updateProficiency" {% if myHero.proficiency_points <= 0 or proficiency.is_max_level() %}style="display: none"{% endif %}>
+                                    <button class="upgradeButton" data-py-function="update_proficiency" data="{{ proficiency.id }}" id="proficiencyButton" data-js-callback="updateProficiency" {% if hero.proficiency_points <= 0 or proficiency.is_max_level() %}style="display: none"{% endif %}>
                                     </button>
                                 </button>
                                 </li>

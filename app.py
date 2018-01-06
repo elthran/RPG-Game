@@ -627,7 +627,7 @@ def home(hero=None):
 @login_required
 @uses_hero
 def attributes(hero=None):
-    return render_template('profile_attributes.html', page_title="Attributes", myHero=hero, all_attributes=hero.attributes)
+    return render_template('profile_attributes.html', page_title="Attributes", hero=hero, all_attributes=hero.attributes)
 
 # This gets called anytime you have secondary attribute points to spend
 # Currently I send "proficiencies=True" so that the html knows to highlight
@@ -637,15 +637,20 @@ def attributes(hero=None):
 @uses_hero
 def proficiencies(hero=None):
     # This page is literally just a html page with tooltips and proficiency level up buttons. No python code is needed. Python only tells html which page to load.
-    return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=hero, all_attributes=hero.attributes)
+    return render_template('profile_proficiencies.html', page_title="Proficiencies", hero=hero, all_attributes=hero.attributes
+                           ,all_proficiencies=hero.proficiencies)
 
 
 @app.route('/ability_tree/<spec>')
 @login_required
 @uses_hero
 def ability_tree(spec, hero=None):
-    page_title = "Abilities"
-    return render_template('profile_ability.html', myHero=hero, ability_tree=spec, page_title=page_title)
+    all_abilities = []
+    for ability in hero.abilities:
+        if ability.hidden == False and ability.tree == spec:
+            all_abilities.append(ability)
+    return render_template('profile_ability.html', page_title="Abilities", hero=hero, ability_tree=spec,
+                           all_abilities=all_abilities)
 
 
 @app.route('/inventory_page')

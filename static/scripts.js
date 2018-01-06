@@ -282,33 +282,38 @@ function updateProficiency(button, status, tooltip) {
     }
 }
 
-function updateAbility(button, id, ability_level, max_level, tree, description) {
-    "use strict";
-
-    var heroAbilityCurrentLvDiv = {};
-    var heroBasicPointsDiv = {};
-    var heroArchetypePointsDiv = {};
-    var abilityDescriptionDiv = {};
-
-    abilityDescriptionDiv = document.getElementById("ability-" + id + "-description");
-    heroAbilityCurrentLvDiv = document.getElementById("ability-" + id);
-    if (tree === "basic") {
-        heroBasicPointsDiv = document.getElementById("basic_points_remaining");
-        heroBasicPointsDiv.innerHTML = parseInt(heroBasicPointsDiv.innerHTML) - 1;
-    } else if (tree === "archetype") {
-        heroArchetypePointsDiv = document.getElementById("archetype_points_remaining");
-        heroArchetypePointsDiv.innerHTML = parseInt(heroArchetypePointsDiv.innerHTML) - 1;
-    }
-    heroAbilityCurrentLvDiv.innerHTML = parseInt(heroAbilityCurrentLvDiv.innerHTML) + 1;
-    abilityDescriptionDiv.innerHTML = description;
-    //if parseInt(heroAbilityCurrentLvDiv.innerHTML) === max_level:
-    //    gray it out
-
-    if (status === "no ability points") {
-    // make all buttons grayed out
-    }
+function abilityTooltip(button, tooltip, image) {
+    var newTooltip = {};
+    var newImage = {};
+    var startImage = '<img src="/static/images/';
+    var endImage = '.jpg" alt="none">';
+    newTooltip = document.getElementById("attributeTooltip");
+    newTooltip.innerHTML = tooltip;
+    newImage = document.getElementById("attributeImage");
+    newImage.innerHTML = startImage + image + endImage;
 }
 
+function updateAbility(button, status) {
+    "use strict";
+    var id = 0;
+    var i = 0;
+    var heroAbiPointsDiv = {};
+    var abiCurrentLvDiv = {};
+    var buttonsNodeList = {};
+    id = button.getAttribute("data");
+    abiCurrentLvDiv = document.getElementById("ability-" + id);
+    heroAbiPointsDiv = document.getElementById("points_remaining");
+    abiCurrentLvDiv.innerHTML = parseInt(abiCurrentLvDiv.innerHTML) + 1;
+    heroAbiPointsDiv.innerHTML = parseInt(heroAbiPointsDiv.innerHTML) - 1;
+    if (status === "hide_this") { //hide this button
+        button.style.display = "none";
+    } else if (status === "hide_all") { //hide all buttons
+        buttonsNodeList = document.querySelectorAll("button[class=upgradeButton]");
+        for (i = 0; i < buttonsNodeList.length; i++) {
+            buttonsNodeList[i].style.display = "none";
+        }
+    }
+}
 
 // Choose character page, confirms user choice of hero.
 function confirmHeroSelection(element) {

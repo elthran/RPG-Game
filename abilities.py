@@ -245,6 +245,7 @@ class Ability(Base):
 
     tree = Column(String)
     tree_type = Column(String)
+    image = Column(String)
 
     # Relationships.
     # Ability to abilities. Abilities is a list of ability objects.
@@ -293,6 +294,7 @@ class Ability(Base):
         self.learnable = learnable  # If the player currently has the requirements to learn/upgrade it
         self.tree = tree    # Which research tre it belongs to (basic, archetype, class, religious)
         self.tree_type = tree_type  # Which specific tree (ie. if the tree is religious, then which religion is it)
+        self.image = "ability_pic"
 
         self.init_on_load()
 
