@@ -525,20 +525,30 @@ outline: 2px solid black;
 }
 /* Inventory Page Code */
 .inventory_equipped_outer {
+    position: relative;
+    width: auto;
+    height: 700px;
     border: 5px solid;
+}
+
+.inventory_unequipped_outer {
+    position: relative;
+    border: 5px solid;
+    width: auto;
+    height: auto;
+}
+
+#inventory-body-outline {
+    position: relative;
+    height: 700px;
+    left: 500px;
+    display: none;
 }
 
 .inventory-equipped {
     position: absolute;
     height: 100px;
     width: 100px;
-}
-
-.inventory-unequipped {
-    height: 125px;
-    width: 125px;
-    display: inline-block;
-    margin: 5px;
 }
 
 .inventory-item img {
@@ -548,16 +558,9 @@ outline: 2px solid black;
     border-radius: 10%;
 }
 
-#inventory-body-outline {
-    left: 470px;
-    height: 700px;
-    width: 500px;
-}
-
 #inventory-head {
     left: 650px;
     top: 25px;
-    position: relative;
 }
 
 #inventory-chest {
@@ -625,10 +628,6 @@ outline: 2px solid black;
     height: 150px;
 }
 
-.inventory_unequipped_outer {
-    border: 5px solid;
-}
-
 .inventory-unequipped {
     position: relative;
     margin: 5px;
@@ -636,7 +635,9 @@ outline: 2px solid black;
     height: 125px;
     width: 125px;
     border-radius: 10%;
+    display: inline-block;
 }
+
 
 .inventory-tooltip {
     height: inherit;
