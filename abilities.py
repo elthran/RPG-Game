@@ -294,7 +294,7 @@ class Ability(Base):
         self.learnable = learnable  # If the player currently has the requirements to learn/upgrade it
         self.tree = tree    # Which research tre it belongs to (basic, archetype, class, religious)
         self.tree_type = tree_type  # Which specific tree (ie. if the tree is religious, then which religion is it)
-        self.image = "ability_pic"
+        self.image = "ability_icon_" + self.name
 
         self.init_on_load()
 
