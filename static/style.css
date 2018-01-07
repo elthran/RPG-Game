@@ -254,7 +254,6 @@ outline: 2px solid black;
 /* Custom containers */
 .leftPageHalf {
     float: left;
-    padding: 0px 0px 0px 20px;
 }
 
 .rightPageHalf {
@@ -302,8 +301,6 @@ outline: 2px solid black;
 }
 
 .proficiencyAccordionPanel { /* The 12 individual panels which open up on the accordion bar */
-    padding: 0px;
-    margin: 0px;
     display: none;
     background-color: Silver;
 }
@@ -312,10 +309,9 @@ outline: 2px solid black;
     background-color: Grey;
     cursor: pointer;
     width: 90%;
+    height: 30px;
     outline: double;
     transition: 0.4s;
-    padding: 5px 0px 5px 0px;
-    margin: 8px 0px 8px 0px;
 }
 
 .proficiencyTooltip { /* The tooltip box on the right side of the page */
@@ -323,157 +319,163 @@ outline: 2px solid black;
     width: 30%;
 }
 
-/* */
-
-
-.profilePage {
-	float: left;
-	text-align: left;
-	font-family: arial;
-	font-size: 30px;
-	padding: 5px;
-	margin: 30px;
-	border: 5px Double Black;
-	width: 40%;
-	background-color: Gray;
-	color: white;
-	line-height: 35px;
+.proficiencyTooltip li {
+    list-style-type: circle;
 }
 
-.profilePageAttributes {
-	float: left;
-	padding-left: 10px;
-} 
-
-.profilePageValues {
-	float: right;
-	padding-right: 10px;
-} 
-
-.profilePageAttributes .profilePageValues ul {
-	margin-top: 0px;
-	margin-bottom: 0px;
-}
-
-.profilePageInfo { /* This page shows the description for each attribute */
-	float: right;
-	height: 350px;
-}
-
-.profilePageInfo h1 {
-	text-align: center;
-}
-
-button.profileText {
-	background:none;
-	border:none;
-	margin:0;
-	padding:0;
-	width: 100%;
-	text-align: left;
-	font-family: arial;
-	font-size: 30px;
-	text-transform: uppercase;
-}
-
-.profilePageAttributes li:hover {
-	background-color: lightGrey;
-}
-
-input.abilityButton {
-	background-color: transparent; /* make the button transparent */
-	background-repeat: no-repeat;  /* make the background image appear only once */
-	background-position: 0px 0px;  /* equivalent to 'top left' */
-	border: none;           /* assuming we don't want any borders */
+.upgradeButton {
 	cursor: pointer;        /* make the cursor like hovering over an <a> element */
-	height: 20px;           /* make this the size of your image */
-	padding-left: 15px;     /* make text start to the right of the image */
-	vertical-align: middle; /* align the text vertically centered */
-}
-
-input.abilityButtonPlus {
-	background-image: url(/static/images/plus_button.jpg); /* Image size needs to match abilityButton (about 16px x 16px) */
-	float: right;
-}
-
-input.abilityButtonMinus {
-	background-image: url(/static/images/minus_button.jpg); /* Image size needs to match abilityButton (about 16px x 16px) */
-	float: left;
-}
-
-/* Proficiency Page */
-.proficiencyPage {
-	font-family: arial;
-	font-size: 20px;
-	margin: 5px;
-	width: 1100px;
-	height: 1000px;
-	color: white;
-	line-height: 55px;
-	overflow-x: auto;  /* Makes sure that if the screen is too small, you can scroll to the right instead of chopping up the page */
-}
-
-.proficiencyPage h1 {
-	font-size: 30px;
-}
-
-.proficiencyPageInner {
-	width: 350px;
-	height: auto;
-	border: 5px Double Black;
-	margin: 0;
-	padding: 0;
-	float: left;
-	background-color: Darkgray;
-}
-
-#proficiencyButton {
-	background-color: transparent; /* make the button transparent */
-	background-repeat: no-repeat;  /* make the background image appear only once */
-	background-position: 0px 0px;  /* equivalent to 'top left' */
-	border: none;           /* assuming we don't want any borders */
-	cursor: pointer;        /* make the cursor like hovering over an <a> element */
-	height: 20px;           /* make this the size of your image */
-	padding-left: 15px;     /* make text start to the right of the image */
-	vertical-align: middle; /* align the text vertically centered */
+	height: 30px;           /* make this the size of your image */
+	width: 30px;
 	background-image: url(/static/images/prof_button.jpg); /* Image size needs to match abilityButton (about 16px x 16px) */
 }
 
-.tooltip {
-	outline:none; 
+.tooltipImage img {
+    display: block;
+    margin: 0 auto; /* Centers the image */
+	height: 250px;  /* make this the size of your image */
+	width: 250px;
 }
 
-.tooltip:hover {
-	text-decoration:none;
-} 
+/* Inventory Page Code */
+.inventory_equipped_outer {
+    border: 5px solid;
+    height: 800px;
+    min-width: 650px;
+    z-index: 50;
+}
 
-.tooltip span {
+#inventory-body-outline {
+    height: 100%;
+    position: relative;
+    left: 100px;
+
+
+.inventory-equipped {
+    position: absolute;
+    height: 100px;
+    width: 100px;
+}
+
+.inventory-unequipped {
+    height: 125px;
+    width: 125px;
+    display: inline-block;
+    margin: 5px;
+}
+
+.inventory-item img {
+    border: 5px solid;
+    height: 100%;
+    width: 100%;
+    border-radius: 10%;
+}
+
+#inventory-head {
+    left: 445px;
+    top: 25px;
+}
+
+#inventory-chest {
+    left: 451px;
+    top: 196px;
+    /* height: 150px; */
+}
+
+#inventory-shoulder {
+    left: 520px;
+    top: 100px;
+    height: 125px;
+}
+
+#inventory-neck {
+    left: 780px;
+    top: 100px;
+}
+
+#inventory-arm {
+    left: 588px;
+    top: 250px;
+}
+
+#inventory-hand {
+    left: 320px;
+    top: 250px;
+}
+
+#inventory-left-finger {
+    left: 280px;
+    top: 528px;
+}
+
+#inventory-right-finger {
+    left: 620px;
+    top: 528px;
+}
+
+#inventory-waist {
+    left: 650px;
+    top: 325px;
+    height: 50px;
+}
+
+#inventory-leg {
+    left: 455px;
+    top: 400px;
+}
+
+#inventory-foot {
+    left: 457px;
+    top: 657px;
+}
+
+#inventory-left-hand {
+    left: 280px;
+    top: 376px;
+    /* height: 150px; */
+}
+
+#inventory-right-hand {
+    left: 621px;
+    top: 376px;
+    /* height: 150px; */
+}
+
+.inventory_unequipped_outer {
+    border: 5px solid;
+    min-width: 650px;
+    z-index: 50;
+}
+
+.inventory-tooltip {
+    height: inherit;
+    width: inherit;
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.inventory-tooltip .inventory-tooltip-text {
+    visibility: hidden;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 6px;
+
+    /* position the tooltip */
+    position: absolute;
     z-index: 1;
-    display: none; 
-    padding: 25px 25px; /* Padding inside the tooltip */
-    margin-top:-50px; /* Moves the tooltip relative to the text you are hovering over */
-    margin-left: 28px;    /* How far to the right of your text the display box will show */
-    width: auto; 
-    line-height: 35px;
+    top: 50%;
+    width: inherit;
 }
 
-.tooltipLeft span {   /* Add this if you want the tooltip to display to the left of what you are hovering over */
-	margin-left: -500px;
+.inventory-tooltip:hover .inventory-tooltip-text {
+    visibility: visible;
 }
+/* End of Inventory Page Code */
 
-.tooltip:hover span {
-    display:inline; 
-    position:absolute; 
-    color:White;
-    border:1px 
-    solid #DCA;
-    background-color: Black;
-}
 
-.tooltip span {
-    border-radius:4px;
-    box-shadow: 5px 5px 8px #CCC;
-}
 
 /* Ability Pages */
     /* Religion Individual Containers */
@@ -657,145 +659,3 @@ input.abilityButtonMinus {
     text-decoration: none;
     cursor: pointer;
 }
-/* Inventory Page Code */
-.inventory_equipped_outer {
-    border: 5px solid;
-    height: 800px;
-    min-width: 650px;
-    z-index: 50;
-}
-
-.inventory-equipped {
-    position: absolute;
-    height: 100px;
-    width: 100px;
-}
-
-.inventory-unequipped {
-    height: 125px;
-    width: 125px;
-    display: inline-block;
-    margin: 5px;
-}
-
-.inventory-item img {
-    border: 5px solid;
-    height: 100%;
-    width: 100%;
-    border-radius: 10%;
-}
-
-#inventory-body-outline {
-    /*
-    left: 470px;
-    height: 700px;
-    width: 500px;
-    */
-    height: 100%;
-    position: relative;
-    left: 100px;
-}
-
-#inventory-head {
-    left: 445px;
-    top: 25px;
-}
-
-#inventory-chest {
-    left: 451px;
-    top: 196px;
-    /* height: 150px; */
-}
-
-#inventory-shoulder {
-    left: 520px;
-    top: 100px;
-    height: 125px;
-}
-
-#inventory-neck {
-    left: 780px;
-    top: 100px;
-}
-
-#inventory-arm {
-    left: 588px;
-    top: 250px;
-}
-
-#inventory-hand {
-    left: 320px;
-    top: 250px;
-}
-
-#inventory-left-finger {
-    left: 280px;
-    top: 528px;
-}
-
-#inventory-right-finger {
-    left: 620px;
-    top: 528px;
-}
-
-#inventory-waist {
-    left: 650px;
-    top: 325px;
-    height: 50px;
-}
-
-#inventory-leg {
-    left: 455px;
-    top: 400px;
-}
-
-#inventory-foot {
-    left: 457px;
-    top: 657px;
-}
-
-#inventory-left-hand {
-    left: 280px;
-    top: 376px;
-    /* height: 150px; */
-}
-
-#inventory-right-hand {
-    left: 621px;
-    top: 376px;
-    /* height: 150px; */
-}
-
-.inventory_unequipped_outer {
-    border: 5px solid;
-    min-width: 650px;
-    z-index: 50;
-}
-
-.inventory-tooltip {
-    height: inherit;
-    width: inherit;
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-}
-
-.inventory-tooltip .inventory-tooltip-text {
-    visibility: hidden;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    padding: 5px;
-    border-radius: 6px;
-
-    /* position the tooltip */
-    position: absolute;
-    z-index: 1;
-    top: 50%;
-    width: inherit;
-}
-
-.inventory-tooltip:hover .inventory-tooltip-text {
-    visibility: visible;
-}
-/* End of Inventory Page Code */

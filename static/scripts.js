@@ -232,74 +232,93 @@ function itemPurchasedPopup(button, message, heroGold) {
 // This function is used in the profile_proficiencies.html
 // This function only runs if command code return successfully from Python.
 // Could be updated to just rerender all html for tooltip :P
+function attributeTooltip(button, tooltip) {
+    var newTooltip = {};
+    newTooltip = document.getElementById("attributeTooltip");
+    newTooltip.innerHTML = tooltip;
+}
+
+function updateAttribute(button, status) {
+    "use strict";
+    var id = 0;
+    var i = 0;
+    var heroAtrPointsDiv = {};
+    var atrCurrentLvDiv = {};
+    var buttonsNodeList = {};
+    id = button.getAttribute("data");
+    atrCurrentLvDiv = document.getElementById("attribute-" + id);
+    heroAtrPointsDiv = document.getElementById("points_remaining");
+    atrCurrentLvDiv.innerHTML = parseInt(atrCurrentLvDiv.innerHTML) + 1;
+    heroAtrPointsDiv.innerHTML = parseInt(heroAtrPointsDiv.innerHTML) - 1;
+    if (status === "hide_all") { //hide all buttons
+        buttonsNodeList = document.querySelectorAll("button[class=upgradeButton]");
+        for (i = 0; i < buttonsNodeList.length; i++) {
+            buttonsNodeList[i].style.display = "none";
+        }
+    }
+}
+
 function proficiencyTooltip(button, tooltip) {
     var newTooltip = {};
     newTooltip = document.getElementById("proficiencyTooltip");
     newTooltip.innerHTML = tooltip;
 }
 
-function updateProf(button, status, newTooltip) {
+function updateProficiency(button, status, tooltip) {
     "use strict";
-
+    proficiencyTooltip(button, tooltip);
     var id = 0;
     var i = 0;
     var heroProfPointsDiv = {};
     var profCurrentLvDiv = {};
-    var tooltipPopupSpan = {};
     var buttonsNodeList = {};
-    var errorDivNodeList = {};
-
     id = button.getAttribute("data");
     profCurrentLvDiv = document.getElementById("proficiency-" + id);
     heroProfPointsDiv = document.getElementById("points_remaining");
-    tooltipPopupSpan = document.getElementById("proficiencyTooltip");
-
     profCurrentLvDiv.innerHTML = parseInt(profCurrentLvDiv.innerHTML) + 1;
     heroProfPointsDiv.innerHTML = parseInt(heroProfPointsDiv.innerHTML) - 1;
-    tooltipPopupSpan.innerHTML = newTooltip;
-
-    //hide this button
-    if (status === "hide_this") {
+    if (status === "hide_this") { //hide this button
         button.style.display = "none";
-    //hide all buttons
-    //show all errors
-    } else if (status === "hide_all") {
-        buttonsNodeList = document.querySelectorAll("button[id=proficiencyButton]");
-        errorDivNodeList = document.querySelectorAll("div[id^=error-]");
-        for (i = 0; i < buttonsNodeList.length; i += 1) {
+    } else if (status === "hide_all") { //hide all buttons
+        buttonsNodeList = document.querySelectorAll("button[class=upgradeButton]");
+        for (i = 0; i < buttonsNodeList.length; i++) {
             buttonsNodeList[i].style.display = "none";
-            errorDivNodeList[i].style.display = "inline";
         }
     }
 }
 
-function updateAbility(button, id, ability_level, max_level, tree, description) {
-    "use strict";
-
-    var heroAbilityCurrentLvDiv = {};
-    var heroBasicPointsDiv = {};
-    var heroArchetypePointsDiv = {};
-    var abilityDescriptionDiv = {};
-
-    abilityDescriptionDiv = document.getElementById("ability-" + id + "-description");
-    heroAbilityCurrentLvDiv = document.getElementById("ability-" + id);
-    if (tree === "basic") {
-        heroBasicPointsDiv = document.getElementById("basic_points_remaining");
-        heroBasicPointsDiv.innerHTML = parseInt(heroBasicPointsDiv.innerHTML) - 1;
-    } else if (tree === "archetype") {
-        heroArchetypePointsDiv = document.getElementById("archetype_points_remaining");
-        heroArchetypePointsDiv.innerHTML = parseInt(heroArchetypePointsDiv.innerHTML) - 1;
-    }
-    heroAbilityCurrentLvDiv.innerHTML = parseInt(heroAbilityCurrentLvDiv.innerHTML) + 1;
-    abilityDescriptionDiv.innerHTML = description;
-    //if parseInt(heroAbilityCurrentLvDiv.innerHTML) === max_level:
-    //    gray it out
-
-    if (status === "no ability points") {
-    // make all buttons grayed out
-    }
+function abilityTooltip(button, tooltip, image) {
+    var newTooltip = {};
+    var newImage = {};
+    var startImage = '<img src="/static/images/';
+    var endImage = '.jpg" alt="none">';
+    newTooltip = document.getElementById("attributeTooltip");
+    newTooltip.innerHTML = tooltip;
+    newImage = document.getElementById("attributeImage");
+    newImage.innerHTML = startImage + image + endImage;
 }
 
+function updateAbility(button, status) {
+    "use strict";
+    var id = 0;
+    var i = 0;
+    var heroAbiPointsDiv = {};
+    var abiCurrentLvDiv = {};
+    var buttonsNodeList = {};
+    id = button.getAttribute("data");
+    abiCurrentLvDiv = document.getElementById("ability-" + id);
+    heroAbiPointsDiv = document.getElementById("points_remaining");
+    abiCurrentLvDiv.innerHTML = parseInt(abiCurrentLvDiv.innerHTML) + 1;
+    heroAbiPointsDiv.innerHTML = parseInt(heroAbiPointsDiv.innerHTML) - 1;
+    if (status === "hide_this") { //hide this button
+        button.style.display = "none";
+    } else if (status === "hide_all") { //hide all buttons
+        buttonsNodeList = document.querySelectorAll("button[class=upgradeButton]");
+        for (i = 0; i < buttonsNodeList.length; i++) {
+            buttonsNodeList[i].style.display = "none";
+        }
+    }
+}
 
 // Choose character page, confirms user choice of hero.
 function confirmHeroSelection(element) {

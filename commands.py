@@ -138,37 +138,6 @@ class Command:
         slot = hero.inventory.slots_used_by_item_type[item.type]["primary"]
         return slot
 
-    def update_ability(hero, database, arg_dict, **kwargs):
-        # Format of data in html button is: data = "{{ ability.id }}, {{ ability.tree }}"
-        data = arg_dict.get('data', "").split(", ")
-        if data:
-            ability_id = int(data[0])
-            ability_tree = data[1]
-        else:
-            ability_id = None
-            ability_tree = None
-            return "error: button came back with an empty string for data"
-        print(ability_tree)
-        if ability_tree == "basic":
-            if hero.basic_ability_points == 0:
-                return "error: not enough points, should have been grayed out"
-            hero.basic_ability_points -= 1
-        elif ability_tree == "archetype":
-            if hero.archetype_ability_points == 0:
-                return "error: not enough points, should have been grayed out"
-            hero.archetype_ability_points -= 1
-        ability = database.get_ability_by_id(ability_id)
-        if ability.is_max_level():
-            return "error: this ability should have been grayed out as it's at max level"
-        print("running learn_ability command:" + ability.name)
-        ability.level += 1
-        new_description = ability.get_description()
-        status = ""
-        hero.refresh_character()
-        if ability.is_max_level():
-            status = "max level"
-        return "{}&&{}&&{}&&{}&&{}".format(ability_id, ability.level, status, ability_tree, new_description)
-
     def become_archetype(hero, database, arg_dict, **kwargs):
         archetype = arg_dict.get('data', None, type=str)
         hero.archetype = archetype
@@ -188,13 +157,32 @@ class Command:
         ability.cast(hero)
         return "success"
 
+    @staticmethod
+    def change_attribute_tooltip(hero, database, arg_dict, **kwargs):
+        # I want to pass in the actual attribute here instead of the description. That way I can assign the attribute name and description to the tooltip.
+        # Unfortunately, I don't know how to pull the attribute object from the database. I need a get_attribute_by_name() function in database.py
+        tooltip = arg_dict.get('data', None, type=str)
+        return "{}".format(tooltip)
+
+    @staticmethod
+    def update_attribute(hero, database, arg_dict, **kwargs):
+        attribute_id = arg_dict.get('data', None, type=int)
+        if hero.attribute_points <= 0:
+            return "error: no attribute points"
+        for attribute in hero.attributes:
+            if attribute.id == attribute_id:
+                attribute.level += 1
+        hero.attribute_points -= 1
+        if hero.attribute_points == 0:
+            return "hide_all".format()
+        return "success".format()
 
     @staticmethod
     def change_proficiency_tooltip(hero, database, arg_dict, **kwargs):
         tooltip_id = arg_dict.get('data', None, type=int)
         proficiency = database.get_proficiency_by_id(tooltip_id)
-        tooltip = proficiency.tooltip
-        print(tooltip)
+        tooltip = proficiency.tooltip.replace(";", "</li><li>")
+        tooltip = "<h2>" + proficiency.name + "</h2>" + proficiency.description + "<ul><li>" + tooltip + "</li></ul>"
         return "{}".format(tooltip)
 
     @staticmethod
@@ -204,38 +192,50 @@ class Command:
         Return status of: success, hide_all, hide_this.
         "success" means hide none ... maybe I should call it that instead?
         """
-
-        tooltip_template = """{{ proficiency.description }}:
-{% set proficiency_tooltip = proficiency.tooltip.split(';') %}
-{% for tooltip in proficiency_tooltip %}
-<br>&bull; {{ tooltip }}
-{% endfor %}
-<div id="error-{{ proficiency.id }}" style="display:
-{% if proficiency.is_max_level() %} inline{% else %} none
-{% endif %}"><br>{{ proficiency.error }}</div>"""
-
         id = arg_dict.get('data', None, type=int)
         proficiency = database.get_proficiency_by_id(id)
-
-
+        #tooltip = change_proficiency_tooltip(hero, database, arg_dict, **kwargs)
+        #print(tooltip)
         # Defensive coding: command buttons should be hidden by JavaScript
         # when no longer valid due to the return values of this function.
         # If for some reason they are still clickable return error to JS console.
         if hero.proficiency_points <= 0 or proficiency.is_max_level():
             return "error: no proficiency_points or proficiency is at max level."
-
         hero.proficiency_points -= 1
         proficiency.level_up()
         proficiency.update(hero)
-
-        tooltip = render_template_string(tooltip_template,
-            proficiency=proficiency, hero=hero)
-
+        tooltip = proficiency.tooltip.replace(";", "</li><li>")
+        tooltip = "<h2>" + proficiency.name + "</h2>" + proficiency.description + "<ul><li>" + tooltip + "</li></ul>"
         if hero.proficiency_points == 0:
             return "hide_all&&{}".format(tooltip)
         elif proficiency.is_max_level():
             return "hide_this&&{}".format(tooltip)
         return "success&&{}".format(tooltip)
+
+    @staticmethod
+    def change_ability_tooltip(hero, database, arg_dict, **kwargs):
+        # I want to pass in the actual attribute here instead of the description. That way I can assign the attribute name and description to the tooltip.
+        # Unfortunately, I don't know how to pull the attribute object from the database. I need a get_attribute_by_name() function in database.py
+        ability_id = arg_dict.get('data', None, type=int)
+        ability = database.get_ability_by_id(ability_id)
+        return "{}&&{}".format(ability.description, ability.image)
+
+    @staticmethod
+    def update_ability(hero, database, arg_dict, **kwargs):
+        ability_id = arg_dict.get('data', None, type=int)
+        if hero.basic_ability_points <= 0:
+            return "error: no attribute points"
+        for ability in hero.abilities:
+            if ability.id == ability_id: # This code terminates as soon as it finds the ability which matches the id
+                if ability.level >= ability.max_level:
+                    return "error: " + ability.name + " is already at max level"
+                ability.level += 1
+                hero.basic_ability_points -= 1
+                if hero.basic_ability_points == 0:
+                    return "hide_all".format()
+                if ability.level >= ability.max_level:
+                    return "hide_this".format()
+                return "success".format()
 
     @staticmethod
     def get_message_content_and_sender_by_id(hero, database, arg_dict, **kwargs):

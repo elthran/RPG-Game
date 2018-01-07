@@ -91,6 +91,7 @@ class Ability(Base):
     # Maybe description should be unique? use: unique=True as keyword.
     description = Column(String)
     cost = Column(String)
+    image = Column(String)
 
     # Note: Original code used default of "Unknown"
     # I chopped the BasicAbility class as redundant. Now I am going to
@@ -154,6 +155,7 @@ class Ability(Base):
         self.learnable = learnable  # If the player currently has the requirements to learn/upgrade it
         self.tree = tree    # Which research tre it belongs to (basic, archetype, class, religious)
         self.tree_type = tree_type  # Which specific tree (ie. if the tree is religious, then which religion is it)
+        self.image = "ability_pic"
 
         self.init_on_load()
 
