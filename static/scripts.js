@@ -30,6 +30,11 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
 
             var clickedButton = e.target;
+            // Bubbles Event until it hits py call
+            // This is useful for using a div as the sender.
+            while (!clickedButton.getAttribute("data-py-function")) {
+                clickedButton = clickedButton.parentElement;
+            }
 
             // Build a handler to a function named in data-js-callback if one
             // exists.
@@ -170,25 +175,25 @@ Scrips for inventory page.
 Currently handles unequip and equipping one item at at time.
 The current approach is not very flexible.
 */
-function toggleEquip(button, slot_type, idsArrayStr) {
+function toggleEquip(clicked, slot_type, idsArrayStr) {
     "use strict";
 //    log("toggleEquip function");
-//    console.log(button);
+//    console.log(clicked);
 //    console.log(slot_type);
 //    console.log(idsArrayStr);
-    var tooltipDiv = button.parentElement;
-    var inventoryItemDiv = button.parentElement.parentElement;
+    var tooltipDiv = clicked;
+    var inventoryItemDiv = tooltipDiv.parentElement;
     var empty_slot = document.getElementById("inventory-" + slot_type + "-empty");
 //    console.log(empty_slot);
 
-    var command = button.getAttribute("data-py-function");
+    var command = tooltipDiv.getAttribute("data-py-function");
 
     // When you are Unequipping an Item.
     if (command === "unequip") {
         inventoryItemDiv.removeChild(tooltipDiv);
         empty_slot.style.display = "inline";
 
-        button.setAttribute("data-py-function", "equip");
+        tooltipDiv.setAttribute("data-py-function", "equip");
 
         var unequippedItemDiv = document.createElement("div");
         unequippedItemDiv.classList.add("inventory-unequipped", "inventory-item");
@@ -202,7 +207,7 @@ function toggleEquip(button, slot_type, idsArrayStr) {
         inventoryItemDiv.parentElement.removeChild(inventoryItemDiv);
         empty_slot.style.display = "none";
 
-        button.setAttribute("data-py-function", "unequip");
+        tooltipDiv.setAttribute("data-py-function", "unequip");
         var slotDiv = document.getElementById("inventory-" + slot_type);
         slotDiv.appendChild(tooltipDiv);
     }
