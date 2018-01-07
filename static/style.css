@@ -343,6 +343,13 @@ outline: 2px solid black;
     height: 800px;
     min-width: 650px;
     z-index: 50;
+    position: relative;  /* Allows children to use position: absolute */
+}
+
+.inventory_unequipped_outer {
+    border: 5px solid;
+    min-width: 650px;
+    z-index: 50;
 }
 
 #inventory-body-outline {
@@ -371,80 +378,78 @@ outline: 2px solid black;
     border-radius: 10%;
 }
 
+/* The center line is at 257px
+I think it might be interesting to make the content centered?
+And then make each slot at some defection off of center?
+*/
 #inventory-head {
-    left: 445px;
+    left: 257px;
     top: 25px;
 }
 
 #inventory-chest {
-    left: 451px;
-    top: 196px;
-    /* height: 150px; */
+    left: 257px;
+    top: 150px;
+    height: 150px;
 }
 
 #inventory-shoulder {
-    left: 520px;
+    left: 127px;
     top: 100px;
     height: 125px;
 }
 
 #inventory-neck {
-    left: 780px;
+    left: 387px;
     top: 100px;
 }
 
 #inventory-arm {
-    left: 588px;
+    left: 457px;
     top: 250px;
 }
 
 #inventory-hand {
-    left: 320px;
+    left: 57px;
     top: 250px;
 }
 
 #inventory-left-finger {
-    left: 280px;
-    top: 528px;
+    left: 107px;
+    top: 375px;
 }
 
 #inventory-right-finger {
-    left: 620px;
-    top: 528px;
+    left: 407px;
+    top: 375px;
 }
 
 #inventory-waist {
-    left: 650px;
+    left: 257px;
     top: 325px;
     height: 50px;
 }
 
 #inventory-leg {
-    left: 455px;
+    left: 257px;
     top: 400px;
 }
 
 #inventory-foot {
-    left: 457px;
-    top: 657px;
+    left: 257px;
+    top: 575px;
 }
 
 #inventory-left-hand {
-    left: 280px;
-    top: 376px;
-    /* height: 150px; */
+    left: 457px;
+    top: 500px;
+    height: 150px;
 }
 
 #inventory-right-hand {
-    left: 621px;
-    top: 376px;
-    /* height: 150px; */
-}
-
-.inventory_unequipped_outer {
-    border: 5px solid;
-    min-width: 650px;
-    z-index: 50;
+    left: 57px;
+    top: 500px;
+    height: 150px;
 }
 
 .inventory-tooltip {
