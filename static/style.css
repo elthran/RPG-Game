@@ -98,6 +98,7 @@ ul {
 	top: 0px; /* Removes margin on top */
 	left: 0px; /* Removes margin on the left side */
 	line-height: 20px;
+	z-index: 100;
 }
 
 .sidebar img { /* Used for the profile picture in the sidebar */
@@ -338,24 +339,17 @@ outline: 2px solid black;
 
 /* Inventory Page Code */
 .inventory_equipped_outer {
-    position: relative;
-    width: auto;
-    height: 700px;
     border: 5px solid;
+    height: 800px;
+    min-width: 650px;
+    z-index: 50;
+    position: relative;  /* Allows children to use position: absolute */
 }
 
 .inventory_unequipped_outer {
-    position: relative;
     border: 5px solid;
-    width: auto;
-    height: auto;
-}
-
-#inventory-body-outline {
-    position: relative;
-    height: 700px;
-    left: 500px;
-    display: none;
+    min-width: 650px;
+    z-index: 50;
 }
 
 .inventory-equipped {
@@ -365,13 +359,10 @@ outline: 2px solid black;
 }
 
 .inventory-unequipped {
-    position: relative;
-    margin: 5px;
-    border: 5px solid;
     height: 125px;
     width: 125px;
-    border-radius: 10%;
     display: inline-block;
+    margin: 5px;
 }
 
 .inventory-item img {
@@ -381,74 +372,139 @@ outline: 2px solid black;
     border-radius: 10%;
 }
 
+/* Content is based on deflection from center.
+The body-outline is slightly warped so I compensated with some padding.
+Centered margin is 275px left/right.
+*/
+
+#inventory-body-outline {
+    height: 100%;
+    position: absolute;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding-left: 35px;
+}
+
 #inventory-head {
-    left: 650px;
-    top: 25px;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 650px;
+    left: 0;
 }
 
 #inventory-chest {
-    left: 650px;
-    top: 150px;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 350px;
+    left: 0;
     height: 150px;
 }
 
 #inventory-shoulder {
-    left: 520px;
-    top: 100px;
+    margin: auto;
+    top: 0;
+    right: 260px;
+    bottom: 475px;
+    left: 0;
     height: 125px;
 }
 
 #inventory-neck {
-    left: 780px;
-    top: 100px;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 475px;  /* This could be 500 if you want them on the same level */
+    left: 260px;
 }
 
 #inventory-arm {
-    left: 850px;
-    top: 250px;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 200px;
+    left: 400px;
 }
 
 #inventory-hand {
-    left: 450px;
-    top: 250px;
+    margin: auto;
+    top: 0;
+    right: 400px;
+    bottom: 200px;
+    left: 0;
 }
 
 #inventory-left-finger {
-    left: 500px;
-    top: 375px;
+    margin: auto;
+    top: 50px;
+    right: 300px;
+    bottom: 0;
+    left: 0;
 }
 
 #inventory-right-finger {
-    left: 800px;
-    top: 375px;
+    margin: auto;
+    top: 50px;
+    right: 0;
+    bottom: 0;
+    left: 300px;
 }
 
 #inventory-waist {
-    left: 650px;
-    top: 325px;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 100px;
+    left: 0;
     height: 50px;
 }
 
 #inventory-leg {
-    left: 650px;
-    top: 400px;
+    margin: auto;
+    top: 150px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 150px;
 }
 
 #inventory-foot {
-    left: 650px;
-    top: 575px;
+    margin: auto;
+    top: 525px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 125px;
 }
 
 #inventory-left-hand {
-    left: 850px;
-    top: 500px;
+    margin: auto;
+    top: 350px;
+    right: 400px;
+    bottom: 0;
+    left: 0;
     height: 150px;
 }
 
 #inventory-right-hand {
-    left: 450px;
-    top: 500px;
+    margin: auto;
+    top: 350px;
+    right: 0;
+    bottom: 0;
+    left: 400px;
     height: 150px;
+}
+
+.inventory-tooltip {
+    height: inherit;
+    width: inherit;
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
 }
 
 .inventory-tooltip .inventory-tooltip-text {
@@ -458,18 +514,20 @@ outline: 2px solid black;
     text-align: center;
     padding: 5px;
     border-radius: 6px;
+
     /* position the tooltip */
     position: absolute;
     z-index: 1;
     top: 50%;
     width: inherit;
-    margin-left: 125px;
 }
 
 .inventory-tooltip:hover .inventory-tooltip-text {
     visibility: visible;
 }
 /* End of Inventory Page Code */
+
+
 
 /* Ability Pages */
     /* Religion Individual Containers */

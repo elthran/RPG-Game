@@ -693,7 +693,9 @@ def inventory_page(hero=None):
     # for item in hero.inventory:
     #     if item.wearable:
     #         item.check_if_improvement()
-    return render_template('inventory.html', hero=hero, page_title=page_title, isinstance=isinstance, test_value=total_armour)
+    return render_template(
+        'inventory.html', hero=hero, page_title=page_title,
+        isinstance=isinstance, getattr=getattr, test_value=total_armour)
 
 @app.route('/quest_log')
 @login_required
