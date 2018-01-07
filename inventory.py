@@ -108,6 +108,7 @@ class Inventory(Base):
     single_slots = [
         "head",
         "chest",
+        # "shoulder",
         "left_hand",
         "right_hand",
         "both_hands",
@@ -123,6 +124,8 @@ class Inventory(Base):
     ]
 
     all_slot_names = single_slots + multiple_slots
+    js_single_slots = [(slot.replace('_', '-'), slot) for slot in single_slots
+                       if slot != 'both_hands']
 
     def equip_all(self, equipped_items):
         """Equip all passed items.
