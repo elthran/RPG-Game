@@ -664,12 +664,12 @@ def ability_tree(spec, hero=None):
         points_remaining = hero.calling_ability_points
         if hero.calling == None:
             becomeType = "archetype"
-            all_type_choices = [("brute"), ("scoundrel"), ("ascetic"), ("survivalist"), ("philosopher"), ("opportunist")]
+            all_type_choices = [("thief", "A character who specializes in thievery and stealth.")]
     elif spec == "pantheon":
         points_remaining = hero.pantheon_ability_points
         if hero.pantheon == None:
             becomeType = "pantheon"
-            all_type_choices = [("brute"), ("scoundrel"), ("ascetic"), ("survivalist"), ("philosopher"), ("opportunist")]
+            all_type_choices = [("ashari'", "Goddess of the sun")]
     for ability in hero.abilities:
         if ability.hidden == False and ability.tree == spec:
             all_abilities.append(ability)

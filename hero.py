@@ -31,7 +31,7 @@ class Hero(Base):
     age = Column(Integer)
     archetype = Column(String)
     calling = Column(String)
-    religion = Column(String)
+    pantheon = Column(String)
     house = Column(String)
     experience = Column(Integer)
     experience_maximum = Column(Integer)
@@ -43,7 +43,7 @@ class Hero(Base):
     basic_ability_points = Column(Integer)
     archetype_ability_points = Column(Integer)
     calling_ability_points = Column(Integer)
-    pantheonic_ability_points = Column(Integer)
+    pantheon_ability_points = Column(Integer)
     attribute_points = Column(Integer)
     proficiency_points = Column(Integer)
 

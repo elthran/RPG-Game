@@ -329,6 +329,10 @@ function abilityChoiceTooltip(button, description, image) {
     newImage.innerHTML = startImage + image + endImage;
 }
 
+function pageReload(button) {
+    location.reload();
+}
+
 // Choose character page, confirms user choice of hero.
 function confirmHeroSelection(element) {
     // Should bring up a confirmation dialogue or something.

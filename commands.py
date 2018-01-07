@@ -226,13 +226,23 @@ class Command:
 
     @staticmethod
     def change_ability_choice_tooltip(hero, database, arg_dict, **kwargs):
-        print(arg_dict)
         choice = arg_dict.get('data', None, type=str)
         choice = choice.split("-")
         image = choice[0]
         description = choice[1]
-        print(image, description)
         return "{}&&{}".format(description, image)
+
+    @staticmethod
+    def update_specialization(hero, database, arg_dict, **kwargs):
+        print(arg_dict)
+        choice = arg_dict.get('data', None, type=str)
+        print(choice)
+        spec = choice.split("_")
+        if spec[0] == "archetype":
+            hero.archetype = spec[1]
+            return "success".format()
+        else:
+            return "error: code not written for this choice".format()
 
     def become_archetype(hero, database, arg_dict, **kwargs):
         archetype = arg_dict.get('data', None, type=str)
