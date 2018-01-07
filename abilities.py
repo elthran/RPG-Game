@@ -164,12 +164,12 @@ class Abilities(Base):
         back_populates="abilities", uselist=False)
 
     def __init__(self):
-        self.Relentless = AuraAbility('Relentless', 5, 'Gain {{ level * 5 }} maximum health. Master this ability to unlock the Brute archetype.', learnable=True, health_maximum=5)
-        self.Trickster = AuraAbility('Trickster', 5, 'Become {{ level * 5 }}% harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', learnable=True, stealth_chance=5)
-        self.Discipline = AuraAbility('Discipline', 5, 'Gain devotion {{ level * 5 }}% faster. Master this ability to unlock the Ascetic archetype.', learnable=True)
-        self.Explorer = AuraAbility('Explorer', 5, 'Reveal {{ level * 10 }}% more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', learnable=True)
-        self.Arcanum = AuraAbility('Arcanum', 5, 'Gain {{ level * 3 }} maximum sanctity. Master this ability to unlock the Philosopher archetype.', learnable=True, sanctity_maximum=3)
-        self.Poet = AuraAbility('Poet', 5, 'Gain fame {{ level * 5 }}% faster. Master this ability to unlock the Opportunist archetype.', learnable=True)
+        self.Relentless = AuraAbility('Relentless', 5, 'Gain <font color="green">{{ (level+1) * 5 }}</font> maximum health. Master this ability to unlock the Brute archetype.', learnable=True, health_maximum=5)
+        self.Trickster = AuraAbility('Trickster', 5, 'Become <font color="green">{{ (level+1) * 5 }}</font>% harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', learnable=True, stealth_chance=5)
+        self.Discipline = AuraAbility('Discipline', 5, 'Gain devotion <font color="green">{{ (level+1) * 5 }}</font>% faster. Master this ability to unlock the Ascetic archetype.', learnable=True)
+        self.Explorer = AuraAbility('Explorer', 5, 'Reveal <font color="green">{{ (level+1) * 10 }}</font>% more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', learnable=True)
+        self.Arcanum = AuraAbility('Arcanum', 5, 'Gain <font color="green">{{ (level+1) * 3 }}</font> maximum sanctity. Master this ability to unlock the Philosopher archetype.', learnable=True, sanctity_maximum=3)
+        self.Poet = AuraAbility('Poet', 5, 'Gain fame <font color="green">{{ (level+1) * 5 }}</font>% faster. Master this ability to unlock the Opportunist archetype.', learnable=True)
         self.Blackhearted = AuraAbility('Blackhearted', 3, 'Lose virtue {{ level * 5 }}% faster.', tree='archetype', tree_type='scoundrel')
         self.Backstab = AuraAbility('Backstab', 3, 'You are {{ level * 15 }}% more likely to attack first in combat.', tree='archetype', tree_type='scoundrel', firststrike_chance=15)
         self.MartialArts = AuraAbility('MartialArts', 3, 'You deal {{ level * 5 }}% more damage in combat.', tree='archetype', tree_type='ascetic')
@@ -292,7 +292,7 @@ class Ability(Base):
         else:
             self.hidden = hidden    # If the player can see it
         self.learnable = learnable  # If the player currently has the requirements to learn/upgrade it
-        self.tree = tree    # Which research tre it belongs to (basic, archetype, class, religious)
+        self.tree = tree    # Which research tree it belongs to (basic, archetype, class, religious)
         self.tree_type = tree_type  # Which specific tree (ie. if the tree is religious, then which religion is it)
         self.image = "ability_icon_" + self.name
 

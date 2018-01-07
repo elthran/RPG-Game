@@ -138,19 +138,6 @@ class Command:
         slot = hero.inventory.slots_used_by_item_type[item.type]["primary"]
         return slot
 
-    def become_archetype(hero, database, arg_dict, **kwargs):
-        archetype = arg_dict.get('data', None, type=str)
-        hero.archetype = archetype
-        for ability in hero.abilities:
-            if ability.tree == "archetype":
-                if ability.tree_type != hero.archetype.lower():
-                    ability.hidden = True
-                    ability.level = 0
-                else:
-                    ability.hidden = False
-                    ability.learnable = True
-        return "success"
-
     def cast_spell(hero, database, arg_dict, **kwargs):
         ability_id = arg_dict.get('data', None, type=int)
         ability = database.get_ability_by_id(ability_id)
@@ -218,7 +205,8 @@ class Command:
         # Unfortunately, I don't know how to pull the attribute object from the database. I need a get_attribute_by_name() function in database.py
         ability_id = arg_dict.get('data', None, type=int)
         ability = database.get_ability_by_id(ability_id)
-        return "{}&&{}".format(ability.description, ability.image)
+        tooltip = ability.get_description()
+        return "{}&&{}".format(tooltip, ability.image)
 
     @staticmethod
     def update_ability(hero, database, arg_dict, **kwargs):
@@ -227,15 +215,37 @@ class Command:
             return "error: no attribute points"
         for ability in hero.abilities:
             if ability.id == ability_id: # This code terminates as soon as it finds the ability which matches the id
-                if ability.level >= ability.max_level:
-                    return "error: " + ability.name + " is already at max level"
                 ability.level += 1
+                tooltip = ability.get_description()
                 hero.basic_ability_points -= 1
                 if hero.basic_ability_points == 0:
-                    return "hide_all".format()
+                    return "hide_all&&{}".format(tooltip)
                 if ability.level >= ability.max_level:
-                    return "hide_this".format()
-                return "success".format()
+                    return "hide_this&&{}".format(tooltip)
+                return "success&&{}".format(tooltip)
+
+    @staticmethod
+    def change_ability_choice_tooltip(hero, database, arg_dict, **kwargs):
+        print(arg_dict)
+        choice = arg_dict.get('data', None, type=str)
+        choice = choice.split("-")
+        image = choice[0]
+        description = choice[1]
+        print(image, description)
+        return "{}&&{}".format(description, image)
+
+    def become_archetype(hero, database, arg_dict, **kwargs):
+        archetype = arg_dict.get('data', None, type=str)
+        hero.archetype = archetype
+        for ability in hero.abilities:
+            if ability.tree == "archetype":
+                if ability.tree_type != hero.archetype.lower():
+                    ability.hidden = True
+                    ability.level = 0
+                else:
+                    ability.hidden = False
+                    ability.learnable = True
+        return "success"
 
     @staticmethod
     def get_message_content_and_sender_by_id(hero, database, arg_dict, **kwargs):

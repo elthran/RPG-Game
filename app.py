@@ -646,11 +646,36 @@ def proficiencies(hero=None):
 @uses_hero
 def ability_tree(spec, hero=None):
     all_abilities = []
+    becomeType = None
+    all_type_choices = []
+    if spec == "basic":
+        points_remaining = hero.basic_ability_points
+    elif spec == "archetype":
+        points_remaining = hero.archetype_ability_points
+        if hero.archetype == None:
+            becomeType = "archetype"
+            all_type_choices = [("brute", "A character who uses strength and combat to solve problems. Proficient with many types of weapons."),
+                                ("scoundrel", "A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery."),
+                                ("ascetic", "A character who focuses on disciplining mind and body. They use a combination of combat and intellect."),
+                                ("survivalist", "A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration."),
+                                ("philosopher", "A character who uses intellect to solve problems. Excels at any task requiring powers of the mind."),
+                                ("opportunist", "A character who solves problems using speech and dialogue.")]
+    elif spec == "calling":
+        points_remaining = hero.calling_ability_points
+        if hero.calling == None:
+            becomeType = "archetype"
+            all_type_choices = [("brute"), ("scoundrel"), ("ascetic"), ("survivalist"), ("philosopher"), ("opportunist")]
+    elif spec == "pantheon":
+        points_remaining = hero.pantheon_ability_points
+        if hero.pantheon == None:
+            becomeType = "pantheon"
+            all_type_choices = [("brute"), ("scoundrel"), ("ascetic"), ("survivalist"), ("philosopher"), ("opportunist")]
     for ability in hero.abilities:
         if ability.hidden == False and ability.tree == spec:
             all_abilities.append(ability)
     return render_template('profile_ability.html', page_title="Abilities", hero=hero, ability_tree=spec,
-                           all_abilities=all_abilities)
+                           all_abilities=all_abilities, points_remaining=points_remaining, becomeType=becomeType,
+                           all_type_choices=all_type_choices)
 
 
 @app.route('/inventory_page')

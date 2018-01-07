@@ -145,7 +145,7 @@ class Hero(Base):
         self.age = 7
         self.archetype = None
         self.calling = None
-        self.religion = None
+        self.pantheon = None
         self.house = None
 
         self.experience_percent = 0
@@ -160,7 +160,7 @@ class Hero(Base):
         self.basic_ability_points = 5
         self.archetype_ability_points = 0
         self.calling_ability_points = 0
-        self.pantheonic_ability_points = 0
+        self.pantheon_ability_points = 0
 
         self.attribute_points = 0
         self.proficiency_points = 0

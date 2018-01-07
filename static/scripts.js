@@ -293,13 +293,16 @@ function abilityTooltip(button, tooltip, image) {
     newImage.innerHTML = startImage + image + endImage;
 }
 
-function updateAbility(button, status) {
+function updateAbility(button, status, tooltip) {
     "use strict";
     var id = 0;
     var i = 0;
     var heroAbiPointsDiv = {};
     var abiCurrentLvDiv = {};
     var buttonsNodeList = {};
+    var newTooltip = {};
+    newTooltip = document.getElementById("attributeTooltip");
+    newTooltip.innerHTML = tooltip;
     id = button.getAttribute("data");
     abiCurrentLvDiv = document.getElementById("ability-" + id);
     heroAbiPointsDiv = document.getElementById("points_remaining");
@@ -313,6 +316,17 @@ function updateAbility(button, status) {
             buttonsNodeList[i].style.display = "none";
         }
     }
+}
+
+function abilityChoiceTooltip(button, description, image) {
+    var newTooltip = {};
+    var newImage = {};
+    var startImage = '<img src="/static/images/';
+    var endImage = '.jpg" alt="none">';
+    newTooltip = document.getElementById("abilityChoiceTooltip");
+    newTooltip.innerHTML = description;
+    newImage = document.getElementById("choiceImage");
+    newImage.innerHTML = startImage + image + endImage;
 }
 
 // Choose character page, confirms user choice of hero.
