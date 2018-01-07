@@ -109,13 +109,16 @@ class Inventory(Base):
         "head",
         "chest",
         # "shoulder",
+        # "neck",
+        "arm",
+        "hand",
+        # rings?? left-finger, right-finger
+        # "waist",
+        "leg",
+        "foot",
         "left_hand",
         "right_hand",
         "both_hands",
-        "arm",
-        "hand",
-        "leg",
-        "foot",
     ]
 
     multiple_slots = [
