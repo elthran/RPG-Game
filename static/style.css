@@ -352,12 +352,6 @@ outline: 2px solid black;
     z-index: 50;
 }
 
-#inventory-body-outline {
-    height: 100%;
-    position: relative;
-    left: 100px;
-}
-
 .inventory-equipped {
     position: absolute;
     height: 100px;
@@ -378,77 +372,130 @@ outline: 2px solid black;
     border-radius: 10%;
 }
 
-/* The center line is at 257px
-I think it might be interesting to make the content centered?
-And then make each slot at some defection off of center?
+/* Content is based on deflection from center.
+The body-outline is slightly warped so I compensated with some padding.
+Centered margin is 275px left/right.
 */
+
+#inventory-body-outline {
+    height: 100%;
+    position: absolute;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding-left: 35px;
+}
+
 #inventory-head {
-    left: 257px;
-    top: 25px;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 650px;
+    left: 0;
 }
 
 #inventory-chest {
-    left: 257px;
-    top: 150px;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 350px;
+    left: 0;
     height: 150px;
 }
 
 #inventory-shoulder {
-    left: 127px;
-    top: 100px;
+    margin: auto;
+    top: 0;
+    right: 260px;
+    bottom: 475px;
+    left: 0;
     height: 125px;
 }
 
 #inventory-neck {
-    left: 387px;
-    top: 100px;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 475px;  /* This could be 500 if you want them on the same level */
+    left: 260px;
 }
 
 #inventory-arm {
-    left: 457px;
-    top: 250px;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 200px;
+    left: 400px;
 }
 
 #inventory-hand {
-    left: 57px;
-    top: 250px;
+    margin: auto;
+    top: 0;
+    right: 400px;
+    bottom: 200px;
+    left: 0;
 }
 
 #inventory-left-finger {
-    left: 107px;
-    top: 375px;
+    margin: auto;
+    top: 50px;
+    right: 300px;
+    bottom: 0;
+    left: 0;
 }
 
 #inventory-right-finger {
-    left: 407px;
-    top: 375px;
+    margin: auto;
+    top: 50px;
+    right: 0;
+    bottom: 0;
+    left: 300px;
 }
 
 #inventory-waist {
-    left: 257px;
-    top: 325px;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 100px;
+    left: 0;
     height: 50px;
 }
 
 #inventory-leg {
-    left: 257px;
-    top: 400px;
+    margin: auto;
+    top: 150px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 150px;
 }
 
 #inventory-foot {
-    left: 257px;
-    top: 575px;
+    margin: auto;
+    top: 525px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 125px;
 }
 
 #inventory-left-hand {
-    left: 457px;
-    top: 500px;
+    margin: auto;
+    top: 350px;
+    right: 400px;
+    bottom: 0;
+    left: 0;
     height: 150px;
 }
 
 #inventory-right-hand {
-    left: 57px;
-    top: 500px;
+    margin: auto;
+    top: 350px;
+    right: 0;
+    bottom: 0;
+    left: 400px;
     height: 150px;
 }
 
