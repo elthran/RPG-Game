@@ -187,16 +187,16 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         # Maybe this should be an assert?
         assert self.completed != True
 
-        # elthrans CODE
-        hero = self.journal.hero
-        hero.quest_messsage = self # Or should this be self.current_quest ?
-
         if self.stage == self.stages-1:
             self.completed = True
             self.reward_hero(final=True)
         else:
             self.reward_hero()  # Reward must come before stage increase.
             self.stage += 1
+
+        # elthrans CODE
+        hero = self.journal.hero
+        hero.quest_messsage = self  # Or should this be self.current_quest ?
 
         # Potentially spawn a new path? or maybe that would be a trigger
         # in Quests?
