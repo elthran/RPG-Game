@@ -187,6 +187,10 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         # Maybe this should be an assert?
         assert self.completed != True
 
+        # elthrans CODE
+        hero = self.journal.hero
+        hero.quest_messsage = self # Or should this be self.current_quest ?
+
         if self.stage == self.stages-1:
             self.completed = True
             self.reward_hero(final=True)

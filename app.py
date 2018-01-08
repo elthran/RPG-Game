@@ -430,7 +430,7 @@ def reset_character(stat_type, hero=None):
     hero.basic_ability_points = 5
     hero.archetype_ability_points = 5
     hero.calling_ability_points = 5
-    hero.pantheonic_ability_points = 5
+    hero.pantheon_ability_points = 5
     hero.attribute_points = 10
     hero.proficiency_points = 10
     return redirect(url_for('home'))  # return a string
@@ -454,7 +454,7 @@ def admin(myself=None, hero=None):
         hero.basic_ability_points = int(request.form["Basic_ability_points"])
         hero.archetype_ability_points = int(request.form["Archetype_ability_points"])
         hero.calling_ability_points = int(request.form["Calling_ability_points"])
-        hero.pantheonic_ability_points = int(request.form["Pantheonic_ability_points"])
+        hero.pantheon_ability_points = int(request.form["Pantheon_ability_points"])
         hero.attribute_points = int(request.form["Attribute_points"])
         hero.proficiency_points = int(request.form['Proficiency_Points'])
         hero.refresh_character(full=True)
@@ -471,7 +471,7 @@ def admin(myself=None, hero=None):
         ("Basic_ability_points", hero.basic_ability_points),
         ("Archetype_ability_points", hero.archetype_ability_points),
         ("Calling_ability_points", hero.calling_ability_points),
-        ("Pantheonic_ability_points", hero.pantheonic_ability_points),
+        ("Pantheonic_ability_points", hero.pantheon_ability_points),
         ("Attribute_points", hero.attribute_points),
         ("Proficiency_Points", hero.proficiency_points)]
     return render_template('admin.html', page_title=page_title, hero=hero,
@@ -701,7 +701,6 @@ def inventory_page(hero=None):
 @login_required
 @uses_hero
 def quest_log(hero=None):
-    hero.page_refresh_character()
     page_title = "Quest Log"
     return render_template('journal.html', hero=hero, quest_log=True, page_title=page_title)
 

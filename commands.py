@@ -266,6 +266,12 @@ class Command:
         return "{}&&{}".format(message.content, message.sender.user.username)
 
     @staticmethod
+    def clearQuestNotification(hero, database, arg_dict, **kwargs):
+        id = arg_dict.get('data', None, type=int)
+        hero.quest_messsage = None
+        return "success".format()
+
+    @staticmethod
     def temp_temp(hero, database, arg_dict, **kwargs):
         """Return the content of a message based on its id."""
         return "success"

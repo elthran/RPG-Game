@@ -270,12 +270,6 @@ class Hero(Base):
     def non_equipped_items(self):
         return self.inventory.unequipped or []
 
-    # Can we renamed this? I don't really get what it is from the name
-    # (elthran) It's just temporary code while I amtesting notifications.
-    # It will be scrapped soon.
-    def page_refresh_character(self):
-        self.quest_notification = None
-
     def consume_item(self, item_name):
         for my_item in self.inventory:
             if my_item.name == item_name:

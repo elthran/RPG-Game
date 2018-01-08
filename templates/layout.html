@@ -66,15 +66,32 @@
     <!-- This is for content that is displayed on the main page -->
     <div class="content">
         {% block nav_bar %}{% endblock %}
-        <div style="clear: both;"></div>
+        <div style="clear:both;"></div>
         <!-- This calls a notification script to run if the Hero has any new quests completed -->
-        {% if myHero.quest_notification %}
+        {% if myHero.quest_messsage %}
+        <button id="globalNotificationButton"  data-py-function="clearQuestNotification" data="None" data-js-callback="showGlobalModal">Achievement Progress!</button>
+        <div class="globalMessageModal" id="globalMessage">
+            <div class="globalMessageModalContent">
+                <div class="globalMessageModalHeader">
+                    <span class="closeGlobalModal">&times;</span>
+                    <h1>{{ hero.quest_messsage.name }}</h1><h2>Stage: {{ hero.quest_messsage.stage }} / {{ hero.quest_messsage.stages }}</h2>
+                </div>
+                <div class="globalMessageModalBody">
+                    <h3>{{ hero.quest_messsage.name }}</h3>
+                </div>
+                <div class="globalMessageModalFooter">
+                    <h3>Reward: {% if hero.quest_messsage.reward %}{{ hero.quest_messsage.reward }}xp{% else %}None{% endif %}</h3>
+                </div>
+            </div>
+        </div>
+        <div style="clear:both;"></div>
+        <!--
         <div class="popup" onclick="quest_popup()" style="color:red"
         >You have completed a {{ hero.quest_notification[2] }}! (+{{
             myHero.quest_notification[1] }}xp)
             <span class="popupachievement" id="js_popupachievement"
             >{{ myHero.quest_notification[0] }}</span>
-        </div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
+        </div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log -->
         {% endif %}
         <!-- This displays notifications at the top of the page -->
         {% for notice in notifications %}

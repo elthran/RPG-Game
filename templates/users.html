@@ -21,7 +21,7 @@
         <td>{{ hero.character_name }}</td>
         <td>{{ hero.age }}</td>
         <td>{{ hero.deepest_dungeon_floor }}</td>
-        <td>{{ hero.archetype }}</td>
+        <td>{% if hero.archetype %}{{ hero.archetype.title() }}{% endif %}</td>
         <td>{{ hero.last_login }}</td>
     </tr>
     {% else %}

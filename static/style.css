@@ -173,6 +173,70 @@ ul {
 }
 
 /* General content */
+.globalMessageModal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    width: 90%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.globalMessageModalContent {
+    position: relative;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 80%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s
+}
+
+@-webkit-keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
+
+.closeGlobalModal {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.closeGlobalModal:hover,.closeGlobalModal:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.globalMessageModalHeader {
+    padding: 2px 16px;
+    background-color: #5cb85c;
+    color: white;
+}
+
+.globalMessageModalBody {
+    padding: 2px 16px;
+}
+
+.globalMessageModalFooter {
+    padding: 2px 16px;
+    background-color: #5cb85c;
+    color: white;
+}
+
 .location_page_image {
     position: relative;
     height: 300px;
@@ -540,39 +604,6 @@ Centered margin is 275px left/right.
     border: 1px dotted gray;
 }
 
-    /* Container for the 6 archetype fields */
-.popuparchetypecontainer {
-	display: inline;
-	float: left;
-	cursor: pointer;
-	height: 350px;
-	width: 16%;
-	border: 1px dotted gray;
-}
-
-    /* {TAGGED FOR DELETION ONCE REPLACED} The popup message you get if you click on an archetype container*/
-.popuparchetypechangingmessage {
-	visibility: hidden;
-	max-width: 100px;
-	height: 50px;
-	background-color: #555;
-	color: #fff;
-	text-align: center;
-	border-radius: 6px;
-	position: static;
-	z-index: 1;
-	margin: auto;
-}
-
-    /* {REPLACING CONTENT DIRECTLY ABOVE} The popup message that should show up below the 6 archetypes */
-.popuparchetypemessage {
-    text-align: center;
-}
-
-.popuparchetypemessage li {
-    color: red;
-}
-
     /* The toggle of the popup message of the archetype containers */
 .show {
 	visibility: visible;
@@ -601,45 +632,6 @@ Centered margin is 275px left/right.
 	height: 700px;
 	background-repeat: no-repeat;
 	box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-}
-
-/* Popup container for achievement pop up - can be anything you want */
-.popup {
-	position: relative;
-	display: inline-block;
-	cursor: pointer;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
-
-/* The actual popup */
-.popup .popupachievement {
-	visibility: hidden;
-	width: 160px;
-	background-color: #555;
-	color: #fff;
-	text-align: center;
-	border-radius: 6px;
-	padding: 8px 0;
-	position: absolute;
-	z-index: 1;
-	bottom: 125%;
-	left: 50%;
-	margin-left: -80px;
-}
-
-/* Popup arrow */
-.popup .popupachievement::after {
-	content: "";
-	position: absolute;
-	top: 100%;
-	left: 50%;
-	margin-left: -5px;
-	border-width: 5px;
-	border-style: solid;
-	border-color: #555 transparent transparent transparent;
 }
 
 /* Toggle this class - hide and show the popup */

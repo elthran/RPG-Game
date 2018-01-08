@@ -113,12 +113,6 @@ function refreshPage() {
     location.reload();
 }
 
-// This is for the quest pop-up window. When the user clicks on div, open/close the popup
-function quest_popup() {
-    var popup = document.getElementById('js_popupachievement');
-    popup.classList.toggle('show');
-}
-
 function show(element) {
     element.classList.remove('hide')
     element.classList.add('show')
@@ -127,36 +121,6 @@ function show(element) {
 function hide(element) {
     element.classList.remove('show')
     element.classList.add('hide')
-}
-
-function archetype_popup(archetype) {
-    var brute_popup = document.getElementById('js_popupbrute');
-    var scoundrel_popup = document.getElementById('js_popupscoundrel');
-    var ascetic_popup = document.getElementById('js_popupascetic');
-    var survivalist_popup = document.getElementById('js_popupsurvivalist');
-    var philosopher_popup = document.getElementById('js_popupphilosopher');
-    var opportunist_popup = document.getElementById('js_popupopportunist');
-
-    hide(brute_popup)
-    hide(scoundrel_popup)
-    hide(ascetic_popup)
-    hide(survivalist_popup)
-    hide(philosopher_popup)
-    hide(opportunist_popup)
-
-    if (archetype === 'brute') {
-    show(brute_popup)
-    } else if (archetype === 'scoundrel') {
-    show(scoundrel_popup)
-    } else if (archetype === 'ascetic') {
-    show(ascetic_popup)
-    } else if (archetype === 'survivalist') {
-    show(survivalist_popup)
-    } else if (archetype === 'philosopher') {
-    show(philosopher_popup)
-    } else if (archetype === 'opportunist') {
-    show(opportunist_popup)
-    }
 }
 
 // This toggles whether or not you can see the battle log after a fight.
@@ -336,6 +300,28 @@ function abilityChoiceTooltip(button, description, image) {
 
 function pageReload(button) {
     location.reload();
+}
+
+function showGlobalModal(button) {
+    // Get the modal
+    var modal = document.getElementById('globalMessage');
+    // Get the button that opens the modal
+    var clickedButton = document.getElementById("globalNotificationButton");
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("closeGlobalModal")[0];
+    // When the user clicks the button, open the modal
+    modal.style.display = "block";
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+    clickedButton.style.display = "none";
 }
 
 // Choose character page, confirms user choice of hero.
