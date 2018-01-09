@@ -12,7 +12,7 @@ from sqlalchemy.orm import validates
 from base_classes import Base
 from attributes import Attributes
 from abilities import Abilities
-from specializations import Specializations
+from specializations import SpecializationContainer
 from proficiencies import Proficiencies
 from inventory import Inventory
 from journal import Journal
@@ -90,6 +90,14 @@ class Hero(Base):
     # Each hero can have one set of Abilities. (bidirectional, One to One).
     abilities = relationship("Abilities", uselist=False, back_populates='hero')
 
+    # Connect with SpecializationContainer
+    archetype = relationship("SpecializationContainer", uselist=False,
+                             back_populates='hero')
+    calling = relationship("SpecializationContainer", uselist=False,
+                           back_populates='hero')
+    pantheon = relationship("SpecializationContainer", uselist=False,
+                            back_populates='hero')
+
     # User to Hero. One to many. Ordered!
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship("User", back_populates='heroes')
@@ -144,9 +152,9 @@ class Hero(Base):
 
         # Defaults will remain unchanged if no arguments are passed.
         self.age = 7
-        self.archetype = Specializations()
-        self.calling = Specializations()
-        self.pantheon = Specializations()
+        self.archetype = SpecializationContainer()
+        self.calling = SpecializationContainer()
+        self.pantheon = SpecializationContainer()
         self.house = None
 
         self.experience_percent = 0
