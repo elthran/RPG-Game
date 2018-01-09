@@ -1200,12 +1200,13 @@ def leave_town(name='', hero=None):
 # This gets called anytime a button gets clicked in html using
 # <button class="command", value="foo">. "foo" is what gets sent to this
 # Python code.
-@app.route('/command/<cmd>')  # need to make sure this doesn't conflict with other routes
+# need to make sure this doesn't conflict with other routes
+@app.route('/command/<cmd>', methods=['GET', 'POST'])
 @uses_hero
 def command(cmd=None, hero=None):
     """Accept a string from HTML button code -> send back a response.
 
-    The respose must be in the form: "key=value" (at this time.)
+    The response must be in the form: "key=value" (at this time.)
     See the Command class in the commands.py module.
     cmd is equal to the value of the value field in the html code
     i.e. <button value='foo'> -> cmd == 'foo'
@@ -1221,7 +1222,7 @@ def command(cmd=None, hero=None):
     than I need right now.
     """
 
-    testing = False  # True
+    testing = False  # True/False
     if testing:
         print('request is:', repr(request))
         # print('request data:', repr(request.data))
@@ -1234,13 +1235,19 @@ def command(cmd=None, hero=None):
     # event.add["hero"] = hero
     # event.add["database"] = database
 
+    response = None
     try:
         # command_function = getattr(Command, <cmd>)
         # response = command_function(hero, database,
         #   javascript_kwargs_from_html)
         command_function = Command.cmd_functions(cmd)
         try:
-            response = command_function(hero, database=database,
+            if request.method == 'POST' and request.is_json:
+                data = request.get_json()
+                response = command_function(hero, database, data=data,
+                                            engine=engine)
+            else:
+                response = command_function(hero, database=database,
                                         arg_dict=request.args, engine=engine)
             # pdb.set_trace()
             return response
@@ -1249,7 +1256,6 @@ def command(cmd=None, hero=None):
     except AttributeError as ex:
         if str(ex) == "type object 'Command' has no attribute '{}'".format(
                 cmd):
-            print("Warning: Using old code for command: '{}'".format(cmd))
             print("You need to write a static function called '{}' in "
                   "commands.py in the Command class.".format(cmd))
             raise ex

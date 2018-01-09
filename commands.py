@@ -1,7 +1,8 @@
 import pdb
 
-from flask import render_template_string
+from flask import render_template_string, jsonify
 
+#TODO: update documentation!
 class Command:
     """Run a list of html update commands based on the string cmd.
     
@@ -69,33 +70,26 @@ class Command:
     """
 
     @staticmethod
-    def buy(hero, database, arg_dict, engine):
+    def buy(hero, database, data, engine):
         """Allow the user to buy items from the Blacksmith.
 
         Returns an error if the character doesn't have enough gold.
         """
-        item_id = arg_dict.get('data', None, type=int)
-        location = arg_dict.get('location', None, type=str)
+        item_id = data['id']
+        location = data['location']
         item = database.create_item(item_id)
         if hero.gold >= item.buy_price:
             hero.inventory.add_item(item)
             hero.gold -= item.buy_price
-            # return buy success event.
-            # Test event later against posible quest events conditions.
-            # for path in hero.journal.quest_paths:
-            #     if (path.active and
-            #         path.quest.name == "Get Acquainted with the Blacksmith" and
-            #         path.stage == 2 and
-            #         location in ["/store/armoury", "/store/weaponry"]):
-            #         path.advance()
             engine.spawn(
                 'buy_event',
                 hero,
                 description="{} buys a/an {}.".format(hero.name, item.name)
             )
-
-            return "{}: id={}&&{}".format(item.name, item.id, hero.gold)
-        return "error: not enough gold!"
+            return jsonify(
+                message="Purchased: {}: id={}".format(item.name, item.id),
+                heroGold=hero.gold)
+        return jsonify(error="Not enough gold to buy '{}'!".format(item.name))
 
     @staticmethod
     def consume(hero, database, arg_dict, **kwargs):

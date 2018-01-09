@@ -180,17 +180,26 @@ function toggleEquip(clicked, slot_type, idsArrayStr) {
 /*
 Scripts for store to provide feedback when user buys something.
 */
-function itemPurchasedPopup(button, message, heroGold) {
+function itemPurchasedPopup(xhttp) {
+    "use strict";
+
+    var response = JSON.parse(xhttp.responseText);
+    var message;
+    if (response.error) {
+        message = response.error;
+    } else {
+        message = response.message;
+        // Update hero gold
+        var span = document.getElementById("heroGold");
+        span.innerHTML = response.heroGold;
+    }
+
     var div = document.getElementById("purchaseLog");
 
     var para = document.createElement("p");
     var node = document.createTextNode(message);
     para.appendChild(node);
     div.insertBefore(para, div.firstChild);
-
-    // Update hero gold
-    var span = document.getElementById("heroGold");
-    span.innerHTML = heroGold
 }
 
 // This function is used in the profile_proficiencies.html
@@ -434,10 +443,10 @@ function getIdsFromCheckboxes(element) {
     };
 }
 
-function updateMessageTable(response, data) {
+function updateMessageTable(xhttp, oldData) {
     "use strict";
-    if (response.responseText == "success") {
-        var ids = data.ids;
+    if (xhttp.responseText == "success") {
+        var ids = oldData.ids;
         var box;
         var i;
         for (i=0; i < ids.length; i++) {
@@ -455,24 +464,41 @@ Usage:
     <button onclick="sendToPy(event, someCallBack, somePreprocess, someUrl);"></button>
 
 NOTE: Form must have a return method too.
-NOTE: url defaults to current page unless specified.
+NOTE: url defaults to current page if unspecified.
+NOTE: if data is a string window location isn't passed.
+If the data is (preferably) a JSON object the page location is passed along.
 */
-function sendToPy(event, callback, pre_process, url) {
+function sendToPy(event, callback, cmd, data, preProcess, url) {
     "use strict";
     var element = event.target;
-    var data;
 
-    if (!url) { // if url is blank use url of page
+    if (cmd && url) {
+        throw "Use a cmd or a url not both!";
+    }
+    if (data && preProcess) {
+        throw "Use preProcess or data not both!";
+    }
+
+    if (cmd) {
+        url = "/command/" + cmd;
+    } else if (!cmd && !url) {
+        // if url is blank use url of page
         url = window.location.pathname;
     }
 
     // Normal data processing is object form.
-    // auto-converts to JSON.
-    if (pre_process) {
-        data = pre_process(element);
-    } else {
-        data = element.getAttribute('data');
+    // Must return a JSON object - no I can't check for this.
+    if (preProcess) {
+        data = preProcess(element);
     }
+
+    // If you send a simple string location won't be added.
+    // If you send (hopefully) some JSON the location parameter will be added.
+    if (typeof data !== "string") {
+        // If there is some (JSON type data) add in the location variable.
+        data.location = window.location.pathname;
+    }
+
     postJSON(url, data, callback);
 
     // For normal event suppression.
@@ -485,26 +511,31 @@ function sendToPy(event, callback, pre_process, url) {
 
 // Send the data via POST to the server. Run callback if it exists.
 // Sends data as JSON. Customizable.
-function postJSON(url, data, callback) {
+function postJSON(url, oldData, callback) {
     "use strict";
     var xhttp;
     xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
+    xhttp.onreadystatechange = function () {
+        if (xhttp.readyState === 4 && xhttp.status === 200) {
             if (callback) {
-                callback(this, data);
+                // I am considering setting a default of
+                // var response = JSON.parse(xhttp.responseText);
+                // instead of xhttp.
+                callback(xhttp, oldData);
+                // if you want to reload the page?
                 // window.location.replace(url);
             }
         }
     };
     xhttp.open("POST", url, true);
-    var JSONdata = JSON.stringify(data);
+    var JSONdata = JSON.stringify(oldData);
     console.log("Data to be sent: " + JSONdata);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send(JSONdata);
 }
 
 // Get a valid function handler (if one exists) for a given function string.
+// Probably no longer relevant now that I can pass function names directly.
 function getFunc(element, funcName) {
     "use strict";
     func =  window[element.getAttribute(funcName)];
