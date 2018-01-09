@@ -28,7 +28,7 @@ alert("Form Submitted Successfully...");
         Compose Message
     </button>
     <br><br>
-    <button type="button" form="messageForm" onclick="toggleSelectAll(this);">SELECT ALL</button><input type="submit" name="delete" form="messageForm" value="DELETE" onclick="return sendToPy(event, updateMessageTable, getIdsFromCheckboxes);"/>
+    <button type="button" form="messageForm" onclick="toggleSelectAll(this);">SELECT ALL</button><input type="submit" name="delete" form="messageForm" value="DELETE" onclick="return sendToPy(event, updateMessageTable, null, null, getIdsFromCheckboxes);"/>
     <form id="messageForm">
     <table id="inboxTable">
         <tr>
