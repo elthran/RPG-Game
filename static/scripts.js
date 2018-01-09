@@ -180,10 +180,9 @@ function toggleEquip(clicked, slot_type, idsArrayStr) {
 /*
 Scripts for store to provide feedback when user buys something.
 */
-function itemPurchasedPopup(xhttp) {
+function itemPurchasedPopup(response) {
     "use strict";
 
-    var response = JSON.parse(xhttp.responseText);
     var message;
     if (response.error) {
         message = response.error;
@@ -511,6 +510,7 @@ function sendToPy(event, callback, cmd, data, preProcess, url) {
 
 // Send the data via POST to the server. Run callback if it exists.
 // Sends data as JSON. Customizable.
+// Pre-parses responseText if the ResponseHeader is JSON type.
 function postJSON(url, oldData, callback) {
     "use strict";
     var xhttp;
@@ -518,10 +518,12 @@ function postJSON(url, oldData, callback) {
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState === 4 && xhttp.status === 200) {
             if (callback) {
-                // I am considering setting a default of
-                // var response = JSON.parse(xhttp.responseText);
-                // instead of xhttp.
-                callback(xhttp, oldData);
+                if (xhttp.getResponseHeader("Content-Type") === "application/json") {
+                    var response = JSON.parse(xhttp.responseText);
+                    callback(response, oldData)
+                } else {
+                    callback(xhttp, oldData);
+                }
                 // if you want to reload the page?
                 // window.location.replace(url);
             }
