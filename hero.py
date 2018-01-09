@@ -12,6 +12,7 @@ from sqlalchemy.orm import validates
 from base_classes import Base
 from attributes import Attributes
 from abilities import Abilities
+from specializations import Specializations
 from proficiencies import Proficiencies
 from inventory import Inventory
 from journal import Journal
@@ -143,9 +144,9 @@ class Hero(Base):
 
         # Defaults will remain unchanged if no arguments are passed.
         self.age = 7
-        self.archetype = None
-        self.calling = None
-        self.pantheon = None
+        self.archetype = Specializations()
+        self.calling = Specializations()
+        self.pantheon = Specializations()
         self.house = None
 
         self.experience_percent = 0

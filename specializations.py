@@ -1,3 +1,14 @@
+from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+from sqlalchemy import orm
+from flask import render_template_string
+
+# !Important!: Base can only be defined in ONE location and ONE location ONLY!
+# Well ... ok, but for simplicity sake just pretend that that is true.
+from base_classes import Base
+import pdb
+
 # This is a list of specializations. Your hero can have one of each type active at any time. There are 4 types of specs.
 # You get one basic spec which defines your basic character stats. Then you further choose an archetype (eg. Scoundrel -> Thief,
 # or Ascetic -> Monk). Then you can also choose a calling, which is more like your career path. And lastly you choose a religion.
