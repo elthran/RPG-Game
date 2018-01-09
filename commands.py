@@ -234,7 +234,7 @@ class Command:
         spec = choice.split("_")
         spec_type, spec_name = spec[0], spec[1].title()
         specialization = database.get_object_by_name("Specialization", spec_name)
-        setattr(hero, spec_type, specialization)
+        setattr(hero.specializations, spec_type, specialization)
         return "success".format()
 
 
