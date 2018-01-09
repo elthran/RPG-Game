@@ -27,7 +27,7 @@ ALL_SPECIALIZATIONS = [
     ("PantheonTEST", "pantheon", "TEST CODE3", "TEST3")
 ]
 
-SPECIALIZATIONS_NAMES = [key[0] for key in ALL_SPECIALIZATIONS]
+SPECIALIZATION_NAMES = [key[0] for key in ALL_SPECIALIZATIONS]
 
 class Specializations(Base):
 
@@ -43,23 +43,23 @@ class Specializations(Base):
     # Relationships to a particular ability.
     Brute = relationship(
         "BasicSpecialization",
-        primaryjoin="and_(Specializations.id==Specializations.specializations_id, "
-                    "Specializations.name=='Brute')",
+        primaryjoin="and_(Specializations.id==Specialization.specializations_id, "
+                    "Specialization.name=='Brute')",
         back_populates="Specializations", uselist=False)
     ArchetypeTEST = relationship(
         "ArchetypeSpecialization",
-        primaryjoin="and_(Specializations.id==Specializations.specializations_id, "
-                    "Specializations.name=='ArchetypeTEST')",
+        primaryjoin="and_(Specializations.id==Specialization.specializations_id, "
+                    "Specialization.name=='ArchetypeTEST')",
         back_populates="Specializations", uselist=False)
     CallingTEST = relationship(
         "CallingSpecialization",
-        primaryjoin="and_(Specializations.id==Specializations.specializations_id, "
-                    "Specializations.name=='CallingTEST')",
+        primaryjoin="and_(Specializations.id==Specialization.specializations_id, "
+                    "Specialization.name=='CallingTEST')",
         back_populates="Specializations", uselist=False)
     PantheonTEST = relationship(
         "PantheonSpecialization",
-        primaryjoin="and_(Specializations.id==Specializations.specializations_id, "
-                    "Specializations.name=='PantheonTEST')",
+        primaryjoin="and_(Specializations.id==Specialization.specializations_id, "
+                    "Specialization.name=='PantheonTEST')",
         back_populates="Specializations", uselist=False)
 
     def __init__(self):
@@ -70,10 +70,10 @@ class Specializations(Base):
         self.PantheonTEST = PantheonSpecialization('PantheonTEST', 'pantheon', 'TEST CODE3', 'TEST3')
 
     def items(self):
-        return ((key, getattr(self, key)) for key in SPECIALIZATIONS_NAMES)
+        return ((key, getattr(self, key)) for key in SPECIALIZATION_NAMES)
 
     def __iter__(self):
-        return (getattr(self, key) for key in SPECIALIZATIONS_NAMES)
+        return (getattr(self, key) for key in SPECIALIZATION_NAMES)
 
 class Specialization(Base):
 
@@ -84,6 +84,8 @@ class Specialization(Base):
     type = Column(String)
     description = Column(String)
     requirements = Column(String)
+
+    ability_type = orm.synonym('type')
 
     # Relationships.
     # Specialization to specializations. Specializations is a list of specialization objects.

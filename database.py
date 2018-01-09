@@ -33,6 +33,7 @@ from game import User
 from inbox import Inbox, Message
 from hero import Hero
 from abilities import Abilities, Ability
+from specializations import Specializations, Specialization
 from locations import Location  # , WorldMap, Town, Cave
 from items import ItemTemplate, Item
 from quests import Quest, QuestPath

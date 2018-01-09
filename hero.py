@@ -30,9 +30,6 @@ class Hero(Base):
     character_name = orm.synonym('name')
 
     age = Column(Integer)
-    archetype = Column(String)
-    calling = Column(String)
-    pantheon = Column(String)
     house = Column(String)
     experience = Column(Integer)
     experience_maximum = Column(Integer)
@@ -40,6 +37,9 @@ class Hero(Base):
     virtue = Column(Integer)  # How good/evil you are
     devotion = Column(Integer)  # How religious you are
     gold = Column(Integer)
+
+    calling = Column(String)
+    pantheon = Column(String)
 
     basic_ability_points = Column(Integer)
     archetype_ability_points = Column(Integer)
@@ -89,6 +89,8 @@ class Hero(Base):
 
     # Each hero can have one set of Abilities. (bidirectional, One to One).
     abilities = relationship("Abilities", uselist=False, back_populates='hero')
+
+    archetype = relationship("Specializations", uselist=False, back_populates='hero')
 
     # User to Hero. One to many. Ordered!
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -145,8 +147,8 @@ class Hero(Base):
         # Defaults will remain unchanged if no arguments are passed.
         self.age = 7
         self.archetype = Specializations()
-        self.calling = Specializations()
-        self.pantheon = Specializations()
+        self.calling = None
+        self.pantheon = None
         self.house = None
 
         self.experience_percent = 0
