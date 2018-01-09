@@ -248,7 +248,8 @@ meet_the_blacksmith_path = QuestPath(
 learn_about_your_inventory_path = QuestPath(
     "Learn how your inventory works",
     "Practice equipping an unequipping.",
-    quests=[inventory_quest_stage1, inventory_quest_stage2]
+    quests=[inventory_quest_stage1, inventory_quest_stage2],
+    is_default=True
 )
 
 default_quest_paths = [

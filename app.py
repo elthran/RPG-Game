@@ -496,7 +496,7 @@ def display_user_page(page_type, page_detail, hero=None):
     if page_type == "display":
         sorted_heroes = database.fetch_sorted_heroes(page_detail, descending)
         return render_template(
-            'users.html', page_title="Users", myHero=hero,
+            'users.html', page_title="Users", hero=hero,
             page_detail=page_detail, all_heroes=sorted_heroes)
     elif page_type == "see_user":
         this_user = database.get_user_by_username(page_detail)
@@ -509,11 +509,11 @@ def display_user_page(page_type, page_detail, hero=None):
                 confirmation_message = "Message sent!"
             else:
                 confirmation_message = "Please type your message"
-            return render_template('user_page.html', myHero=hero, page_title=str(this_user.username),
+            return render_template('user_page.html', hero=hero, page_title=str(this_user.username),
                                    enemy_hero=this_hero, confirmation=confirmation_message)
         # Above this is inbox nonsense
         return render_template(
-            'user_page.html', myHero=hero, page_title=str(this_user.username),
+            'user_page.html', hero=hero, page_title=str(this_user.username),
             enemy_hero=this_hero)
 
 
@@ -546,8 +546,8 @@ def global_chat(hero=None):
                                  message))  # Currently it just appends tuples to the chat list, containing the hero's name and the message
         if len(game.global_chat) > 25:  # After it reaches 5 messages, more messages will delete theoldest ones
             game.global_chat = game.global_chat[1:]
-        return render_template('global_chat.html', myHero=hero, chat=game.global_chat, users_in_chat=game.global_chat_user_list)
-    return render_template('global_chat.html', page_title="Chat", myHero=hero, chat=game.global_chat, users_in_chat=game.global_chat_user_list)
+        return render_template('global_chat.html', hero=hero, chat=game.global_chat, users_in_chat=game.global_chat_user_list)
+    return render_template('global_chat.html', page_title="Chat", hero=hero, chat=game.global_chat, users_in_chat=game.global_chat_user_list)
 
 
 @app.route('/inbox/<outbox>', methods=['GET', 'POST'])
@@ -591,7 +591,7 @@ def inbox(outbox, hero=None):
 @app.route('/spellbook')
 @uses_hero
 def spellbook(hero=None):
-    return render_template('spellbook.html', page_title="Spellbook", myHero=hero)
+    return render_template('spellbook.html', page_title="Spellbook", hero=hero)
 
 
 
@@ -613,11 +613,11 @@ def home(hero=None):
     # Sets up initial valid moves on the map.
     # Should be a list of urls ...
     # session['valid_moves'] \
-    #  = myHero.current_world.show_directions(myHero.current_location)
-    # session['valid_moves'].append(myHero.current_location.id)
+    #  = hero.current_world.show_directions(hero.current_location)
+    # session['valid_moves'].append(hero.current_location.id)
 
     return render_template(
-        'profile_home.html', page_title="Profile", myHero=hero, profile=True)
+        'profile_home.html', page_title="Profile", hero=hero, profile=True)
 
 
 # This gets called anytime you have  attribute points to spend
@@ -720,7 +720,7 @@ def bestiary(current_monster_id, hero=None):
                 break
     page_title = "Bestiary"
     return render_template(
-        'journal.html', myHero=hero, bestiary=True, page_title=page_title,
+        'journal.html', hero=hero, bestiary=True, page_title=page_title,
         bestiary_data=bestiary_data, current_monster=current_monster)
 
 
@@ -736,7 +736,7 @@ def people_log(current_npc, hero=None):
                 current_npc = npc
                 break
     page_title = "People"
-    return render_template('journal.html', myHero=hero, people_log=True, page_title=page_title, npc_data=npc_data,
+    return render_template('journal.html', hero=hero, people_log=True, page_title=page_title, npc_data=npc_data,
                            current_npc=current_npc)  # return a string
 
 @app.route('/map_log')
@@ -744,15 +744,16 @@ def people_log(current_npc, hero=None):
 @uses_hero
 def map_log(hero=None):
     page_title = "Map"
-    return render_template('journal.html', myHero=hero, map_log=True, page_title=page_title)  # return a string
+    return render_template('journal.html', hero=hero, map_log=True, page_title=page_title)  # return a string
 
 @app.route('/achievement_log')
 @login_required
 @uses_hero
 def achievement_log(hero=None):
     page_title = "Achievements"
-    return render_template('journal.html', myHero=hero, achievement_log=True,
+    return render_template('journal.html', hero=hero, achievement_log=True,
                            completed_achievements=hero.completed_achievements, page_title=page_title)  # return a string
+
 
 @app.route('/under_construction')
 @login_required
@@ -761,35 +762,55 @@ def under_construction(hero=None):
     page_title = "Under Construction"
     return render_template('layout.html', page_title=page_title, hero=hero)  # return a string
 
-@app.route('/map/<location_name>')
-@app.route('/town/<location_name>')
-@app.route('/dungeon/<location_name>')
-@app.route('/explorable/<location_name>')
-@app.route('/building/<location_name>')
+
+@app.route('/building/<name>')
 @login_required
 @uses_hero
-@url_protect  # TODO: this should implement @update_current_location?
-def move(location_name, hero=None):
+@update_current_location
+def building(name='', hero=None, location=None):
+    other_heroes = hero.get_other_heroes_at_current_location()
+    if name == "Old Man's Hut":
+        blacksmith_path_name = "Get Acquainted with the Blacksmith"
+        if not database.hero_has_quest_path_named(hero, blacksmith_path_name):
+            print("Adding new quests!")
+            blacksmith_path = database.get_quest_path_template(blacksmith_path_name)
+            hero.journal.quest_paths.append(blacksmith_path)
+        else:
+            print("Hero has path of that name, ignoring ..")
+
+    return render_template(
+        'move.html', hero=hero,
+        page_title=location.display.page_title,
+        page_heading=location.display.page_heading,
+        page_image=location.display.page_image,
+        paragraph=location.display.paragraph,
+        people_of_interest=other_heroes,
+        places_of_interest=location.places_of_interest)
+
+
+@app.route('/map/<name>')
+@app.route('/town/<name>')
+@app.route('/dungeon/<name>')
+@app.route('/explorable/<name>')
+@login_required
+@uses_hero
+@update_current_location
+@url_protect
+def move(name='', hero=None, location=None):
     """Set up a directory for the hero to move to.
 
     Arguments are in the form of a url and are sent by the data that can be
     found with the 'view page source' command in the browser window.
     """
-    location = database.get_object_by_name('Location', location_name)
     # pdb.set_trace()
-    if location.type == 'town': # So the game remembers your last visited city
-        hero.last_city = location
     if location.type == 'map':
-        hero.current_world = location
         print(location)
         other_heroes = []
     else:
-        hero.current_location = location
-        other_heroes = [other_hero for other_hero in hero.current_location.heroes_by_current_location if
-                        hero.id != other_hero.id]
+        other_heroes = hero.get_other_heroes_at_current_location()
 
     return render_template(
-        'move.html', myHero=hero,
+        'move.html', hero=hero,
         page_title=location.display.page_title,
         page_heading=location.display.page_heading,
         page_image=location.display.page_image,
@@ -969,7 +990,7 @@ def arena(name='', hero=None, location=None):
     return render_template(
         'building_default.html', page_title=location.display.page_title,
         page_heading=location.display.page_heading,
-        page_image=location.display.page_image, myHero=hero, game=game,
+        page_image=location.display.page_image, hero=hero, game=game,
         page_links=page_links, enemy_info=conversation, enemy=game.enemy)
 
 
@@ -1048,7 +1069,7 @@ def battle(this_user=None, hero=None):
     # Return an html page built from a Jinja2 form and the passed data.
     return render_template(
         'battle.html', page_title=page_title, page_heading=page_heading,
-        battle_log=battle_log, myHero=hero, enemy=game.enemy,
+        battle_log=battle_log, hero=hero, enemy=game.enemy,
         page_links=page_links)
 
 
@@ -1063,7 +1084,7 @@ def store(name, hero=None, location=None):
     items_for_sale = []
     if name == "Blacksmith":
         page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]
-        return render_template('store.html', myHero=hero, page_title=page_title, page_links=page_links)  # return a string
+        return render_template('store.html', hero=hero, page_title=page_title, page_links=page_links)  # return a string
     elif name == "armoury":
         page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
         for item in database.get_all_store_items():
@@ -1074,7 +1095,7 @@ def store(name, hero=None, location=None):
         for item in database.get_all_store_items():
             if item.weapon:
                 items_for_sale.append(item)
-    return render_template('store.html', myHero=hero, items_for_sale=items_for_sale, page_title=page_title,
+    return render_template('store.html', hero=hero, items_for_sale=items_for_sale, page_title=page_title,
                            page_links=page_links)  # return a string
 
 
@@ -1151,7 +1172,7 @@ def tavern(name='', hero=None):
                                    quest[0] != "Become an apprentice at the tavern."]
             hero.completed_quests.append("Become an apprentice at the tavern.")
             page_heading = "You are now my apprentice!"
-    return render_template('tavern.html', myHero=hero, page_title=page_title, page_heading=page_heading,
+    return render_template('tavern.html', hero=hero, page_title=page_title, page_heading=page_heading,
                            page_image=page_image, paragraph=paragraph, tavern=tavern,
                            dialogue_options=dialogue_options)  # return a string
 
@@ -1164,11 +1185,11 @@ def marketplace(inventory, hero=None):
     items_for_sale = []
     if inventory == "Marketplace":
         page_links = [("Take a look at our ", "/marketplace/general", "selection", "."), ("Return to ", hero.current_city.url, "town", ".")]
-        return render_template('store.html', myHero=hero, page_title=page_title, page_links=page_links)  # return a string
+        return render_template('store.html', hero=hero, page_title=page_title, page_links=page_links)  # return a string
     elif inventory == "general":
         page_links = [("Let me go back to the ", "/marketplace/Marketplace", "marketplace", " instead.")]
         items_for_sale = database.get_all_marketplace_items()
-    return render_template('store.html', myHero=hero, items_for_sale=items_for_sale, page_title=page_title,
+    return render_template('store.html', hero=hero, items_for_sale=items_for_sale, page_title=page_title,
                            page_links=page_links)  # return a string
 
 
@@ -1193,7 +1214,7 @@ def leave_town(name='', hero=None):
         ("City Guard: ", "You are too young to be out on your own.")]
     page_links = [
         ("Return to the ", "/Town/" + hero.current_city.name, "city", ".")]
-    return render_template('gate.html', myHero=hero,
+    return render_template('gate.html', hero=hero,
                            page_heading=location.display.page_heading,
                            conversation=conversation,
                            page_links=page_links)  # return a string
@@ -1271,7 +1292,7 @@ def command(cmd=None, hero=None):
 def about_page(hero=None):
     info = "The game is being created by Elthran and Haldon, with some help " \
            "from Gnahz. Any inquiries can be made to elthranRPG@gmail.com"
-    return render_template('about.html', myHero=hero, page_title="About",
+    return render_template('about.html', hero=hero, page_title="About",
                            gameVersion="0.00.02", about_info=info)
 
 

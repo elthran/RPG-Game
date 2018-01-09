@@ -1,9 +1,9 @@
 {% raw %}{% extends "profile_template.html" %}
-{% block block1 %}{% set hero = myHero %}
+{% block block1 %}
 <!-- Basic Skill Page -->
 <div class="profilePage">
     Points Remaining:
-    <div style="display: inline" id="points_remaining">{{ myHero.proficiency_points }}</div>
+    <div style="display: inline" id="points_remaining">{{ hero.proficiency_points }}</div>
 </div>
 <div style="clear: both;"></div>{% endraw %}
 <div class="proficiencyPage">{% for n in range(1, 4) %}
@@ -12,7 +12,7 @@
         <h1>
             <center>{{ attribute.name }}: {{attribute.level }}</center>
         </h1>
-        {% for proficiency in myHero.proficiencies %}
+        {% for proficiency in hero.proficiencies %}
         {% if proficiency.attribute_type == attribute.name %}
         <div class="tooltip">
             <ul>
@@ -31,7 +31,7 @@
                 <button data-py-function="update_proficiency"
                         data="{{ proficiency.id }}" id="proficiencyButton"
                         data-js-callback="updateProf" {% if
-                        myHero.proficiency_points
+                        hero.proficiency_points
                 <= 0 or proficiency.is_max_level() %} style="display: none"{% endif %}></button>
             </ul>
         </div>

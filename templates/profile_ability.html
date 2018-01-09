@@ -34,7 +34,7 @@
         {% for ability in all_abilities %}
             <li>
             <button class="proficiencyTooltipTrigger" data-py-function="change_ability_tooltip" data="{{ ability.id }}" data-js-callback="abilityTooltip">{{ ability.name }} <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>/{{ ability.max_level }}</button>
-            <button class="upgradeButton" data-py-function="update_ability" data="{{ ability.id }}" id="abilityButton-{{ ability.id }}" data-js-callback="updateAbility" {% if myHero.basic_ability_points <= 0 %}style="display: none"{% endif %}></button>
+            <button class="upgradeButton" data-py-function="update_ability" data="{{ ability.id }}" id="abilityButton-{{ ability.id }}" data-js-callback="updateAbility" {% if hero.basic_ability_points <= 0 %}style="display: none"{% endif %}></button>
             </li>
         {% endfor %}
         </ul>

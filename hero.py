@@ -321,4 +321,20 @@ class Hero(Base):
         """
         if location.type in ("cave", "town"):
             self.current_city = location
+
+        # So the game remembers your last visited city
+        if location.type == 'town':
+            self.last_city = location
+        if location.type == 'map':
+            self.current_world = location
         return location
+
+    def get_other_heroes_at_current_location(self):
+        """Return a list of heroes at the same location as this one.
+
+        Note including self.
+        This is probably inefficient ...
+        """
+        return [hero
+                for hero in self.current_location.heroes_by_current_location
+                if self.id != hero.id]

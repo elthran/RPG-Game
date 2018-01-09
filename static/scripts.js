@@ -331,8 +331,8 @@ function showGlobalModal(button) {
     }
 
     // Handle ESC key (key code 27) to close modal.
-    document.addEventListener('keyup', function(e) {
-        if (e.keyCode == 27) {
+    document.addEventListener('keyup', function(event) {
+        if (event.keyCode == 27) {
             modal.style.display = "none";
         }
     });
