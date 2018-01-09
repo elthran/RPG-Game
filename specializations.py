@@ -27,7 +27,7 @@ ALL_SPECIALIZATIONS = [
     ("PantheonTEST", "pantheon", "TEST CODE3", "TEST3")
 ]
 
-SPECIALIZATIONS_NAMES = [key[0] for key in ALL_SPECIALIZATIONS]
+SPECIALIZATION_NAMES = [key[0] for key in ALL_SPECIALIZATIONS]
 
 
 class SpecializationContainer(Base):
@@ -70,10 +70,10 @@ class SpecializationContainer(Base):
         # self.PantheonTEST = PantheonSpecialization('PantheonTEST', 'pantheon', 'TEST CODE3', 'TEST3')
 
     def items(self):
-        return ((key, getattr(self, key)) for key in SPECIALIZATIONS_NAMES)
+        return ((key, getattr(self, key)) for key in SPECIALIZATION_NAMES)
 
     def __iter__(self):
-        return (getattr(self, key) for key in SPECIALIZATIONS_NAMES)
+        return (getattr(self, key) for key in SPECIALIZATION_NAMES)
 
 class Specialization(Base):
 

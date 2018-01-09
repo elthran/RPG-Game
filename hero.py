@@ -30,9 +30,6 @@ class Hero(Base):
     character_name = orm.synonym('name')
 
     age = Column(Integer)
-    archetype = Column(String)
-    calling = Column(String)
-    pantheon = Column(String)
     house = Column(String)
     experience = Column(Integer)
     experience_maximum = Column(Integer)

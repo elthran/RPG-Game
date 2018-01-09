@@ -1,5 +1,6 @@
 from locations import Location
 from abilities import Ability
+from specializations import Specialization
 from game import User
 from hero import Hero
 from quests import Quest, QuestPath
