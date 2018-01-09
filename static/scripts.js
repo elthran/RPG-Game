@@ -316,7 +316,7 @@ function showGlobalModal(button) {
     // Get the button that opens the modal
     var clickedButton = document.getElementById("globalNotificationButton");
     // Get the <span> element that closes the modal
-    var span = document.getElementsByClassName("closeGlobalModal")[0];
+    var span = document.querySelector(".closeGlobalModal");
     // When the user clicks the button, open the modal
     modal.style.display = "block";
     // When the user clicks on <span> (x), close the modal
@@ -329,6 +329,14 @@ function showGlobalModal(button) {
             modal.style.display = "none";
         }
     }
+
+    // Handle ESC key (key code 27) to close modal.
+    document.addEventListener('keyup', function(e) {
+        if (e.keyCode == 27) {
+            modal.style.display = "none";
+        }
+    });
+
     clickedButton.style.display = "none";
 }
 
