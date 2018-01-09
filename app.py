@@ -652,8 +652,11 @@ def ability_tree(spec, hero=None):
         points_remaining = hero.basic_ability_points
     elif spec == "archetype":
         points_remaining = hero.archetype_ability_points
-        if hero.archetype == None:
+        if hero.specializations.archetype == None:
             becomeType = "archetype"
+
+            # all_specializations = database.get_all_specializations()
+            # see EZDB.get_all_users() -- maybe sort by name?
             all_type_choices = [("brute", "A character who uses strength and combat to solve problems. Proficient with many types of weapons."),
                                 ("scoundrel", "A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery."),
                                 ("ascetic", "A character who focuses on disciplining mind and body. They use a combination of combat and intellect."),

@@ -15,6 +15,7 @@ from abilities import Abilities
 from proficiencies import Proficiencies
 from inventory import Inventory
 from journal import Journal
+from specializations import SpecializationContainer
 
 
 class Hero(Base):
@@ -86,14 +87,11 @@ class Hero(Base):
     # Each hero can have one set of Abilities. (bidirectional, One to One).
     abilities = relationship("Abilities", uselist=False, back_populates='hero')
 
-    # Connect with SpecializationContainer
-    archetype = relationship("Specialization", back_populates="hero",
-                             uselist=False)
-
-    # calling = relationship("SpecializationContainer", uselist=False,
-    #                        back_populates='hero')
-    # pantheon = relationship("SpecializationContainer", uselist=False,
-    #                         back_populates='hero')
+    # Hero to specializations relationship
+    specializations_id = Column(Integer,
+                                ForeignKey('specialization_container.id'))
+    specializations = relationship(
+        "SpecializationContainer", back_populates="hero")
 
     # User to Hero. One to many. Ordered!
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -146,6 +144,7 @@ class Hero(Base):
         self.abilities = Abilities()
         self.inventory = Inventory()
         self.journal = Journal()
+        self.specializations = SpecializationContainer()
 
         # Defaults will remain unchanged if no arguments are passed.
         self.age = 7
