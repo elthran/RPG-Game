@@ -55,9 +55,9 @@
 		</div>
 		<div class="rightPageHalf textRight">
 			<ul>
-				{% if myHero.archetype %}<li>{{ myHero.archetype.title() }}</li>{% endif %}
-				{% if myHero.calling %}<li>{{ myHero.calling.title() }}</li>{% endif %}
-				{% if myHero.pantheon %}<li>{{ myHero.pantheon.title() }}</li>{% endif %}
+				{% if myHero.archetype %}<li>{{ myHero.archetype.name }}</li>{% endif %}
+				{% if myHero.calling %}<li>{{ myHero.calling.name }}</li>{% endif %}
+				{% if myHero.pantheon %}<li>{{ myHero.pantheon.name }}</li>{% endif %}
 				{% if myHero.house %}<li>{{ myHero.house.title() }}</li>{% endif %}
 				<li>{{ myHero.proficiencies.stealth.chance }}%</li>
 				<li>{{ myHero.proficiencies.pickpocketing.chance }}%</li>

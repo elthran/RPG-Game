@@ -1,6 +1,6 @@
 from locations import Location
 from abilities import Ability
-from specializations import Specialization
+from specializations import BasicSpecialization
 from game import User
 from hero import Hero
 from quests import Quest, QuestPath
@@ -313,4 +313,11 @@ all_marketplace_items = [
     Consumable("Major Health Potion", 6, healing_amount=50),
     Consumable("Major Faith Potion", 6, sanctity_amount=50),
     Consumable("Major Awesome Max Potion", 6000, sanctity_amount=50)
+]
+
+all_specializations = [
+    BasicSpecialization(
+        'Brute', 'A character who uses strength and combat to solve problems. '
+                 'Proficient with many types of weapons.',
+        'Brawn of 6, Any Weapon Talent ~ 10'),
 ]

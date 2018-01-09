@@ -29,54 +29,35 @@ ALL_SPECIALIZATIONS = [
 
 SPECIALIZATION_NAMES = [key[0] for key in ALL_SPECIALIZATIONS]
 
+# Relationships to a particular ability.
+# Brute = relationship(
+#     "BasicSpecialization",
+#     primaryjoin="and_(SpecializationContainer.id==Specialization.specialization_container_id, "
+#                 "Specialization.name=='Brute')",
+#     back_populates="specialization_container", uselist=False)
+# ArchetypeTEST = relationship(
+#     "ArchetypeSpecialization",
+#     primaryjoin="and_(Specializations.id==Specializations.specializations_id, "
+#                 "Specializations.name=='ArchetypeTEST')",
+#     back_populates="Specializations", uselist=False)
+# CallingTEST = relationship(
+#     "CallingSpecialization",
+#     primaryjoin="and_(Specializations.id==Specializations.specializations_id, "
+#                 "Specializations.name=='CallingTEST')",
+#     back_populates="Specializations", uselist=False)
+# PantheonTEST = relationship(
+#     "PantheonSpecialization",
+#     primaryjoin="and_(Specializations.id==Specializations.specializations_id, "
+#                 "Specializations.name=='PantheonTEST')",
+#     back_populates="Specializations", uselist=False)
 
-class SpecializationContainer(Base):
-    __tablename__ = 'specialization_container'
+# def __init__(self):
+    # self.ArchetypeTEST = ArchetypeSpecialization('ArchetypeTEST', 'archetype', 'TEST CODE1', 'TEST1')
+    # self.CallingTEST = CallingSpecialization('CallingTEST', 'calling', 'TEST CODE2', 'TEST2')
+    # self.PantheonTEST = PantheonSpecialization('PantheonTEST', 'pantheon', 'TEST CODE3', 'TEST3')
 
-    id = Column(Integer, primary_key=True)
-
-    # Relationships
-    # Each hero can have one list of abilities (bi, one to one)
-    hero_id = Column(Integer, ForeignKey('hero.id'))
-    hero = relationship("Hero")
-
-    # Relationships to a particular ability.
-    Brute = relationship(
-        "BasicSpecialization",
-        primaryjoin="and_(SpecializationContainer.id==Specialization.specialization_container_id, "
-                    "Specialization.name=='Brute')",
-        back_populates="specialization_container", uselist=False)
-    # ArchetypeTEST = relationship(
-    #     "ArchetypeSpecialization",
-    #     primaryjoin="and_(Specializations.id==Specializations.specializations_id, "
-    #                 "Specializations.name=='ArchetypeTEST')",
-    #     back_populates="Specializations", uselist=False)
-    # CallingTEST = relationship(
-    #     "CallingSpecialization",
-    #     primaryjoin="and_(Specializations.id==Specializations.specializations_id, "
-    #                 "Specializations.name=='CallingTEST')",
-    #     back_populates="Specializations", uselist=False)
-    # PantheonTEST = relationship(
-    #     "PantheonSpecialization",
-    #     primaryjoin="and_(Specializations.id==Specializations.specializations_id, "
-    #                 "Specializations.name=='PantheonTEST')",
-    #     back_populates="Specializations", uselist=False)
-
-    def __init__(self):
-        self.Brute = BasicSpecialization('Brute', 'A character who uses strength and combat to solve problems. Proficient with many types of weapons.',
-                                         'Brawn of 6, Any Weapon Talent ~ 10')
-        # self.ArchetypeTEST = ArchetypeSpecialization('ArchetypeTEST', 'archetype', 'TEST CODE1', 'TEST1')
-        # self.CallingTEST = CallingSpecialization('CallingTEST', 'calling', 'TEST CODE2', 'TEST2')
-        # self.PantheonTEST = PantheonSpecialization('PantheonTEST', 'pantheon', 'TEST CODE3', 'TEST3')
-
-    def items(self):
-        return ((key, getattr(self, key)) for key in SPECIALIZATION_NAMES)
-
-    def __iter__(self):
-        return (getattr(self, key) for key in SPECIALIZATION_NAMES)
 
 class Specialization(Base):
-
     __tablename__ = "specialization"
 
     id = Column(Integer, primary_key=True)
@@ -86,9 +67,10 @@ class Specialization(Base):
     requirements = Column(String)
 
     # Relationships.
-    # Specialization to specializations. Specializations is a list of specialization objects.
-    specialization_container_id = Column(Integer, ForeignKey('specialization_container.id'))
-    specialization_container = relationship("SpecializationContainer")
+    # Relationships
+    # Each hero can have one list of abilities (bi, one to one)
+    hero_id = Column(Integer, ForeignKey('hero.id'))
+    hero = relationship("Hero")
 
     # I DONT KNOW WHAT THIS DOES!!!?? :'( - Elthran
     __mapper_args__ = {
@@ -110,6 +92,7 @@ class BasicSpecialization(Specialization):
         'polymorphic_identity': 'BasicSpecialization',
     }
 
+
 class ArchetypeSpecialization(Specialization):
     __mapper_args__ = {
         'polymorphic_identity': 'ArchetypeSpecialization',
@@ -120,6 +103,7 @@ class CallingSpecialization(Specialization):
     __mapper_args__ = {
         'polymorphic_identity': 'CallingSpecialization',
     }
+
 
 class PantheonSpecialization(Specialization):
     __mapper_args__ = {

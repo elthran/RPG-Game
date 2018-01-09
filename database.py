@@ -33,7 +33,7 @@ from game import User
 from inbox import Inbox, Message
 from hero import Hero
 from abilities import Abilities, Ability
-from specializations import Specializations, Specialization
+from specializations import Specialization
 from locations import Location  # , WorldMap, Town, Cave
 from items import ItemTemplate, Item
 from quests import Quest, QuestPath
@@ -104,7 +104,8 @@ class EZDB:
                 # prebuilt_objects.all_abilities,
                 prebuilt_objects.all_store_items,
                 prebuilt_objects.all_marketplace_items,
-                prebuilt_objects.all_quests]:
+                prebuilt_objects.all_quests,
+                prebuilt_objects.all_specializations]:
             for obj in obj_list:
                 try:
                     self.session.add(obj)

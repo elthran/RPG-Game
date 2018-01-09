@@ -238,11 +238,11 @@ class Command:
         choice = arg_dict.get('data', None, type=str)
         print(choice)
         spec = choice.split("_")
-        if spec[0] == "archetype":
-            hero.archetype = spec[1]
-            return "success".format()
-        else:
-            return "error: code not written for this choice".format()
+        spec_type, spec_name = spec[0], spec[1].title()
+        specialization = database.get_object_by_name("Specialization", spec_name)
+        setattr(hero, spec_type, specialization)
+        return "success".format()
+
 
     def become_archetype(hero, database, arg_dict, **kwargs):
         archetype = arg_dict.get('data', None, type=str)
