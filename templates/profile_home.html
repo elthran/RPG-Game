@@ -40,9 +40,9 @@
 		<h2>Skills</h2>
 		<div class="leftPageHalf">
 				<ul>
-					{% if hero.archetype %}<li>Archetype:</li>{% endif %}
-					{% if hero.calling %}<li>Calling:</li>{% endif %}
-					{% if hero.pantheon %}<li>Pantheon:</li>{% endif %}
+					{% if hero.specializations.archetype %}<li>Archetype:</li>{% endif %}
+					{% if hero.specializations.calling %}<li>Calling:</li>{% endif %}
+					{% if hero.specializations.pantheon %}<li>Pantheon:</li>{% endif %}
 					{% if hero.house %}<li>House:</li>{% endif %}
 					<li>Stealth:</li>
 					<li>Pickpocketing:</li>
@@ -55,9 +55,9 @@
 		</div>
 		<div class="rightPageHalf textRight">
 			<ul>
-				{% if hero.archetype %}<li>{{ hero.archetype.name }}</li>{% endif %}
-				{% if hero.calling %}<li>{{ hero.calling.name }}</li>{% endif %}
-				{% if hero.pantheon %}<li>{{ hero.pantheon.name }}</li>{% endif %}
+				<li>{{ hero.specializations.archetype.name }}</li>
+				<li>{{ hero.specializations.calling.name }}</li>
+				<!--{% if hero.pantheon %}<li>{{ hero.pantheon.name }}</li>{% endif %}-->
 				{% if hero.house %}<li>{{ hero.house.title() }}</li>{% endif %}
 				<li>{{ hero.proficiencies.stealth.chance }}%</li>
 				<li>{{ hero.proficiencies.pickpocketing.chance }}%</li>

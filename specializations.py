@@ -109,15 +109,6 @@ class Specialization(Base):
         self.requirements = requirements
 
 
-class BasicSpecialization(Specialization):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'BasicSpecialization',
-    }
-
-
 class ArchetypeSpecialization(Specialization):
     __mapper_args__ = {
         'polymorphic_identity': 'ArchetypeSpecialization',

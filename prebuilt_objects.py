@@ -1,6 +1,6 @@
 from locations import Location
 from abilities import Ability
-from specializations import BasicSpecialization
+from specializations import ArchetypeSpecialization
 from game import User
 from hero import Hero
 from quests import Quest, QuestPath
@@ -317,8 +317,22 @@ all_marketplace_items = [
 ]
 
 all_specializations = [
-    BasicSpecialization(
-        'Brute', 'A character who uses strength and combat to solve problems. '
-                 'Proficient with many types of weapons.',
+    ArchetypeSpecialization('Brute', 
+                            'A character who uses strength and combat to solve problems.  Proficient with many types of weapons.',
         'Brawn of 6, Any Weapon Talent ~ 10'),
+    ArchetypeSpecialization('Scoundrel', 
+                            'A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.', 
+                            'Dagger Talent of 6, Virtue of -100'),
+    ArchetypeSpecialization('Ascetic', 
+                            'A character who focuses on disciplining mind and body. They use a combination of combat and intellect.', 
+                            '10 Errands Complete, Virtue of 100, Willpower of 4'),
+    ArchetypeSpecialization('Survivalist', 
+                            'A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.', 
+                            '5 Locations Discovered, 10 Animals in Bestiary'),
+    ArchetypeSpecialization('Philosopher', 
+                            'A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.', 
+                            'Intellect of 7, Books Read of 10'),
+    ArchetypeSpecialization('Opportunist', 
+                            'A character who solves problems using speech and dialogue.', 
+                            'Charisma of 7, Fame of 200')
 ]

@@ -86,6 +86,7 @@ class Journal(Base):
         if quest_path.template:
             quest_path = quest_path.build_new_from_template()
         quest_path.activate(self.hero)
+        self.hero.quest_messsage = quest_path
         return quest_path
 
     # Each journal can have many entries

@@ -4,6 +4,10 @@
 
 <h1 style="text-align:center;">{{ ability_tree.title() }} Abilities</h1>
 
+{% for thing in hero.specializations %}
+    {{ thing }}
+    {% endfor %}
+
 {% if becomeType %} <!-- The hero hasn't chosen his type. So don't let him choose an ability. Only choose a type. -->
 <div style="clear: both;"></div>
 <div>
