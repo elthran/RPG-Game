@@ -172,11 +172,23 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
 
         This might be kind of confusing .. maybe I should just have 2 methods?
         """
+        class Data:
+            pass
+
+        data = Data()
+        data.name = self.name
+        data.total_reward = self.total_reward
 
         if self.completed:
-            return [self.name, self.total_reward]
-        return [self.stage, self.stages, self.current_quest.name, self.name,
-                self.current_quest.reward]
+            return data
+
+        data.total_reward = None
+        data.stage = self.stage + 1
+        data.stages = self.stages
+        data.current_quest = Data()
+        data.current_quest.name = self.current_quest.name
+        data.current_quest.reward = self.current_quest.reward_experience
+        return data
 
     def advance(self):
         """Advance this path to the next stage.
@@ -196,10 +208,6 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
             self.reward_hero()  # Reward must come before stage increase.
             self.stage += 1
 
-        # elthrans CODE
-        hero = self.journal.hero
-        hero.quest_messsage = self  # Or should this be self.current_quest ?
-
         # Potentially spawn a new path? or maybe that would be a trigger
         # in Quests?
         # QuestPath(quest, self.hero, stage=self.stage)
@@ -216,12 +224,9 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         quest = self.current_quest
         if final:
             hero.experience += quest.reward_experience + self.reward_experience
-            hero.quest_notification = (self.name, self.total_reward, 'quest '
-                                                                     'path')
         else:
             hero.experience += quest.reward_experience
-            hero.quest_notification = (quest.name, quest.reward_experience,
-                                       'quest stage')
+        self.journal.quest_notification = self.get_description()
 
     def activate(self, hero):
         """Run super's activate using locations of local variables."""

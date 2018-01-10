@@ -804,7 +804,7 @@ def move(name='', hero=None, location=None):
     """
     # pdb.set_trace()
     if location.type == 'map':
-        print(location)
+        location.pprint()
         other_heroes = []
     else:
         other_heroes = hero.get_other_heroes_at_current_location()

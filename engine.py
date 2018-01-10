@@ -48,6 +48,9 @@ class Engine:
         triggers = self.db.get_all_triggers_by(event_name, hero.id)
         for trigger in triggers:
             trigger.evaluate()
+            if trigger.completed:
+                print("Trigger completed!")
+                trigger.pprint()
 
         handlers = self.db.get_all_handlers_with_completed_triggers(hero)
         # return the "Blacksmith" quest object ...
@@ -55,4 +58,6 @@ class Engine:
         # It is now completed. Run the method that you run when trigger
         # completes.
         for handler in handlers:
+            print("A handler with a completed trigger!")
+            handler.pprint()
             handler.run()  # This should be overridden by the subclass.

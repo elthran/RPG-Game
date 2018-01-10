@@ -63,21 +63,35 @@
         {% block nav_bar %}{% endblock %}
         <div style="clear:both;"></div>
         <!-- This calls a notification script to run if the Hero has any new quests completed -->
-        {% if hero.quest_messsage %}
+        {% if hero.journal.quest_notification %}
+        {% set quest_notification = hero.journal.quest_notification %}
         <button id="globalNotificationButton"  data-py-function="clearQuestNotification" data="None" data-js-callback="showGlobalModal">Achievement Progress!</button>
         <div class="globalMessageModal" id="globalMessage">
             <div class="globalMessageModalContent">
                 <div class="globalMessageModalHeader">
                     <span class="closeGlobalModal">&times;</span>
-                    <h1>{{ hero.quest_messsage.name }}</h1><h2>Stage: {{ hero.quest_messsage.stage+1 }} / {{ hero.quest_messsage.stages }}</h2>
+                    {% if quest_notification.total_reward %}
+                    <h1>{{ quest_notification.name }}</h1>
+                    {% else %}
+                    <h1>{{ quest_notification.name }}</h1>
+                    <h2>Stage: {{ quest_notification.stage }} / {{ quest_notification.stages }}</h2>
+                    {% endif %}
                 </div>
                 <div class="globalMessageModalBody">
-                    <h2>Next Step:</h2>
-                    <h3>{{ hero.quest_messsage.current_quest.name }}</h3>
+                    {% if quest_notification.total_reward %}
+                    <h2>Completed!</h2>
+                    {% else %}
+                    <h2>Current Step:</h2>
+                    <h3>{{ quest_notification.current_quest.name }}</h3>
+                    {% endif %}
                     <!-- The code above needs to be tweaked -->
                 </div>
                 <div class="globalMessageModalFooter">
-                    <h3>Reward: {% if hero.quest_messsage.reward %}{{ hero.quest_messsage.reward }}xp{% else %}None{% endif %}</h3>
+                    {% if quest_notification.total_reward %}
+                    <h3>Total reward: {{ quest_notification.total_reward }}xp</h3>
+                    {% else %}
+                    <h3>Reward: {{ quest_notification.current_quest.reward }}xp</h3>
+                    {% endif %}
                 </div>
             </div>
         </div>

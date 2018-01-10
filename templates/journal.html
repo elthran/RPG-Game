@@ -24,8 +24,8 @@
 {% if quest_log %}
     <h1>Current Quests</h1>
     {% for path in hero.journal.quest_paths if not path.completed %}
-        <h2>{{ path.name }} {{ path.stage+1 }}/{{ path.stages }}</h2>
-           {{ path.current_quest.name }}
+        <h2>{{ path.name }}</h2>
+           {{ path.current_quest.name }}: {{ path.current_quest.reward_experience }}xp - stage {{ path.stage + 1 }}/{{ path.stages }}
     {% else %}
         No current quests
     {% endfor %}

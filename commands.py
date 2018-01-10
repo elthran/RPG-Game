@@ -337,7 +337,7 @@ class Command:
     @staticmethod
     def clearQuestNotification(hero, database, arg_dict, **kwargs):
         id = arg_dict.get('data', None, type=int)
-        hero.quest_messsage = None
+        hero.journal.quest_notification = None
         return "success".format()
 
     @staticmethod
