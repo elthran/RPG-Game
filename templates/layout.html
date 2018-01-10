@@ -72,10 +72,8 @@
                     <h1>{{ hero.quest_messsage.name }}</h1><h2>Stage: {{ hero.quest_messsage.stage+1 }} / {{ hero.quest_messsage.stages }}</h2>
                 </div>
                 <div class="globalMessageModalBody">
-                    <h2>Finished:</h2>
-                    <h3>{{ hero.quest_messsage.description }}</h3>
                     <h2>Next Step:</h2>
-                    <h3>{{ hero.quest_messsage.current_quest.description }}</h3>
+                    <h3>{{ hero.quest_messsage.current_quest.name }}</h3>
                     <!-- The code above needs to be tweaked -->
                 </div>
                 <div class="globalMessageModalFooter">

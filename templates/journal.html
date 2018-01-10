@@ -22,10 +22,10 @@
 {% block block1 %}
 <!-- This shows the quest log within the journal -->
 {% if quest_log %}
-    <h2>Current Quests</h2>
+    <h1>Current Quests</h1>
     {% for path in hero.journal.quest_paths if not path.completed %}
-        <p>Stage: {{ path.stage+1 }}/{{ path.stages }} ->
-            Quest: {{ path.current_quest.name }} -> Path: {{ path.name }}</p>
+        <h2>{{ path.name }} {{ path.stage+1 }}/{{ path.stages }}</h2>
+           {{ path.current_quest.name }}
     {% else %}
         No current quests
     {% endfor %}
