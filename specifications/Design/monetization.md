@@ -10,3 +10,6 @@ It would encourage people to create cool content for the game. And thus bring in
 Would could build this content creation architecture right into the game. Allowing player to create items,
 locations, maps, art, etc. We would be essestially running and "art gallery" with a clean and
 interesting viewing mechanism.
+
+Ideas:
+I really like the idea of subscribing for automated notifications of new content by a given artist.
