@@ -3,94 +3,24 @@
 
 <!-- Basic Skill Page -->
 
-<script type="text/javascript">
-function changeAttributeBox(new_name, new_content) {
-    "use strict";
-    document.getElementById("attributeText").innerHTML = new_content;
-    document.getElementById("attributeName").innerHTML = new_name;
-}
-
-var remainingPoints = {{ myHero.attribute_points }};
-
-// Mixed Jinja2 with JS ... kind of hard to read.
-// If you want the pure code go to the web page and view page source.
-// This is only possible because of the clean and symetric code written before.
-{% for attribute, attributeValue in myHero.attributes.items() %}
-var {{ attribute }}Value = {{ attributeValue.level }};
-function {{ attribute }}Modifier(modifier) {
-    "use strict";
-    {{ attribute }}Value = isNaN({{ attribute }}Value)
-        ? 0
-        : {{ attribute }}Value;
-    if (modifier === "increase" && remainingPoints > 0) {
-        {{ attribute }}Value += 1;
-        document.getElementById("new{{ attribute.capitalize() }}Value").style.color = "green";
-        remainingPoints -= 1;
-    } else if (modifier === "decrease" && {{ attribute }}Value > {{ attributeValue.level }}) {
-        {{ attribute }}Value -= 1;
-        remainingPoints += 1;
-        if ({{ attribute }}Value === {{ attributeValue.level }}) {
-            document.getElementById("new{{ attribute.capitalize() }}Value").style.color = "white";
-        }
-    }
-    // This updates the value sent to python
-    document.getElementById("{{ attribute }}Value").value = {{ attribute }}Value;
-    // This updates the value that the user sees in HTML
-    document.getElementById("new{{ attribute.capitalize() }}Value").value = {{ attribute }}Value;
-    document.getElementById("pointsRemaining").value = remainingPoints;
-}
-{% endfor %}
-
-</script>
-
-<form method="post">
-    <div class="profilePage">
-        Points Remaining:
-        <output type="text" name="total" id="pointsRemaining" value="{{ myHero.attribute_points }}"/>
-        {{ myHero.attribute_points }}</output>
+<h1 style="text-align:center;">Attributes</h1>
+<div class="stickyPointsRemainingBar">Points Remaining: <div style="display: inline" id="points_remaining">{{ hero.attribute_points }}</div></div>
+<div style="clear: both;"></div>
+<div>
+	<div class="leftPageHalf" style="width:65%;">
+        <ul>
+        {% for attribute in all_attributes %}
+            <li>
+            <button class="proficiencyTooltipTrigger" data-py-function="change_attribute_tooltip" data="{{ attribute.description }}" data-js-callback="attributeTooltip">{{ attribute.name }} (Current level: <div style="display: inline" id="attribute-{{ attribute.id }}">{{ attribute.level }}</div>)</button>
+            <button class="upgradeButton" data-py-function="update_attribute" data="{{ attribute.id }}" id="attributeButton-{{ attribute.id }}" data-js-callback="updateAttribute" {% if hero.attribute_points <= 0 %}style="display: none"{% endif %}></button>
+            </li>
+        {% endfor %}
+        </ul>
     </div>
-    {% if myHero.attribute_points %}
-    <input class="btn btn-default submitButton" type="submit" value="Save" id="level_button">
-    {% endif %}
-    <div style="clear: both;"></div>
-    <div class="profilePage">
-        <div class="profilePageAttributes">
-            <ul>
-                {% for attribute in attribute_information %}
-                <li>
-                    <button type="button" class="profileText"
-                            onclick="changeAttributeBox('{{ attribute[0] }}', '{{ attribute[1] | safe }}')">{{
-                        attribute[0] }}:
-                    </button>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="profilePageValues">
-            <ul>
-                {% for attribute, value in myHero.attributes.items() %}
-                <li>
-                    <input type="button" onclick="{{ attribute }}Modifier('decrease')"
-                           class="abilityButton abilityButtonMinus">
-                    <input id="{{ attribute }}Value" type="hidden" name="{{ attribute }}Input"
-                           value="{{ value.level }}">
-                    <output name="{{ attribute }}Output" id="new{{ attribute.capitalize() }}Value">{{ value.level }}
-                    </output>
-                    <input type="button" onclick="{{ attribute }}Modifier('increase')"
-                           class="abilityButton abilityButtonPlus">
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
+    <div class="attributeTooltip">
+        <div><span id="attributeTooltip">Click on an attribute to see more information.</span></div>
+        <div class="tooltipImage"><span id="attributeImage"><img src="/static/images/ability_pic.jpg"></span></div>
     </div>
-    <div class="profilePage profilePageInfo">
-        <h1>
-            <div id="attributeName">Attribute</div>
-        </h1>
-        <p>
-        <div id="attributeText">Description.</div>
-        </p>
-    </div>
-</form>
+</div>
 
 {% endblock %}

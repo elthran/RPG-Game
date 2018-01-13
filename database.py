@@ -24,18 +24,19 @@ from sqlalchemy import desc
 # Base is the initialize SQLAlchemy base class. It is used to set up the
 # table metadata.
 # Used like so in the __init__ method: Base.metadata.create_all(engine)
-# What this actually means or does I have no idea but it is necessary.
+# What this actually means or does I have no idea but it is neccessary.
 # And I know how to use it.
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 import base_classes
 # Internal game modules
 from game import User
-# from inbox import Inbox, Message
+from inbox import Inbox, Message
 from hero import Hero
-from abilities import Ability
-from locations import Location
+from abilities import Abilities, Ability
+from specializations import Specialization
+from locations import Location  # , WorldMap, Town, Cave
 from items import Item
-from quests import QuestPath
+from quests import Quest, QuestPath
 from proficiencies import Proficiency
 from events import Trigger
 import prebuilt_objects
@@ -103,7 +104,8 @@ class EZDB:
                 # prebuilt_objects.all_abilities,
                 prebuilt_objects.all_store_items,
                 prebuilt_objects.all_marketplace_items,
-                prebuilt_objects.all_quests]:
+                prebuilt_objects.all_quests,
+                prebuilt_objects.all_specializations]:
             for obj in obj_list:
                 try:
                     self.session.add(obj)
@@ -114,9 +116,11 @@ class EZDB:
                     self.update()
                 except sqlalchemy.exc.IntegrityError as ex:
                     print(ex)
-                    print("Please debug database setup -> "
-                          "prebuilt object loading.")
+                    print("Please debug database setup -> prebuilt object loading.")
                     pass  # rollback is now handled by 'update()'
+                finally:
+                    self.session.close()
+                    self.session = EZDB.Session()
         default_quest_paths = self.get_default_quest_paths()
         for hero in self.session.query(Hero).all():
             hero.journal.quest_paths = default_quest_paths
@@ -244,7 +248,9 @@ class EZDB:
         NOTE: This is a placeholder! The implementation should probably have
         a "is_default" flag for QuestPath objects.
         """
-        return self.session.query(QuestPath).filter(QuestPath.id < 3).all()
+        return self.session.query(
+            QuestPath).filter_by(
+            is_default=True, template=True).all()
 
     def get_user_id(self, username):
         """Return the id of the user by username from the User's table.
@@ -383,6 +389,24 @@ class EZDB:
         return self.session.query(
             Trigger).filter_by(
             event_name=event_name, hero_id=hero_id).all()
+
+    def hero_has_quest_path_named(self, hero, name):
+        """Returns True if hero has a ques_path of the given name.
+
+        If hero has 2 quest_paths of the same name it throws an error.
+        """
+        quest = self.session.query(
+            QuestPath).filter_by(
+            name=name, journal_id=hero.journal.id).one_or_none()
+
+        if quest:
+            return True
+        return False
+
+    def get_quest_path_template(self, name):
+        """Return the quest path template of the given name."""
+        return self.session.query(
+            QuestPath).filter_by(name=name, template=True).one()
 
     @staticmethod
     def now():

@@ -2,27 +2,29 @@
 
 {% extends "layout.html" %}
 {% block block1 %}
-    <h1>I am at {{ myHero.current_location.name }}</h1>
+    <h1>{{ page_heading }}</h1>
     {% if page_image %}
-    <img src="/static/images/{{ page_image }}" alt="{{ page_image }}">
+    <img class="location_page_image" src="/static/images/{{ page_image }}" alt="{{ page_image }}">
     {% endif %}
-    <h3>Explore this location</h3>
+    <p>{{ paragraph }}</p>
+    <h2>Things to do here:</h2>
     {% for place in places_of_interest['children'] %}
-     	<h2><a href="{{ place.url }}">{{ place.name }}</a>: {{ place.type }}</h2>
+     	<h3><a href="{{ place.url }}">{{ place.name }}</a>: {{ place.type }}</h3>
     {% endfor %}
-    <h3>People of Interest</h3>
+    <h2>Other people here:</h2>
     {% for person in people_of_interest %}
-        <a href=/display_users/see_user/{{ person.user.username }}>{{ person.name }}</a>
+        <h3><a href=/display_users/see_user/{{ person.user.username }}>{{ person.name }}</a></h3>
     {% endfor %}
-    <h3>Explore nearby locations</h3>
+    <h2>Explore nearby locations</h2>
     {% for place in places_of_interest['adjacent'] %}
-     	<h2><a href="{{ place.url }}">{{ place.name }}</a>: {{ place.type }}</h2>
+     	<h3><a href="{{ place.url }}">{{ place.name }}</a>: {{ place.type }}</h3>
     {% endfor %}
-    <h3>Explore a higher level :P (needs better wording)</h3>
+    <h2>Look at the map:</h2>
     {% if places_of_interest['parent'] %}
-        <h2><a href="{{ places_of_interest['parent'].url }}"
-        >{{ places_of_interest['parent'].name }}</a
-        >: {{ places_of_interest['parent'].type }}</h2>
+        <h3>
+            <a href="{{ places_of_interest['parent'].url }}">{{ places_of_interest['parent'].name }}</a>
+            : {{ places_of_interest['parent'].type }}
+        </h3>
     {% endif %}
 {% endblock %}
 

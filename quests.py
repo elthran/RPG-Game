@@ -10,7 +10,7 @@ We will really need a quest editor.
 To connect a hero to a given quest (only connect to the first quest in the
 quest path).
 for quest in database.get_default_quests():
-    quest.add_hero(myHero)
+    quest.add_hero(hero)
 
 To trigger a quest to advance to the next stage or complete.
 for path in hero.journal.quest_paths:
@@ -119,6 +119,7 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
     description = Column(String)
     reward_experience = Column(Integer)
     stage = Column(Integer)
+    is_default = Column(Boolean)
 
     # Relationships
     # QuestPath to Journal is Many to One.
@@ -137,12 +138,13 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
     )
 
     def __init__(self, name, description=name, reward_experience=5, stage=0,
-                 quests=[], template=True):
+                 quests=[], is_default=False, template=True):
         self.name = name
         self.description = description
         self.reward_experience = reward_experience
         self.stage = stage
         self.quests = quests
+        self.is_default = is_default
         self.template = template  # See TemplateMixin?
 
     def build_new_from_template(self):
@@ -170,11 +172,23 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
 
         This might be kind of confusing .. maybe I should just have 2 methods?
         """
+        class Data:
+            pass
+
+        data = Data()
+        data.name = self.name
+        data.total_reward = self.total_reward
 
         if self.completed:
-            return [self.name, self.total_reward]
-        return [self.stage, self.stages, self.current_quest.name, self.name,
-                self.current_quest.reward]
+            return data
+
+        data.total_reward = None
+        data.stage = self.stage + 1
+        data.stages = self.stages
+        data.current_quest = Data()
+        data.current_quest.name = self.current_quest.name
+        data.current_quest.reward = self.current_quest.reward_experience
+        return data
 
     def advance(self):
         """Advance this path to the next stage.
@@ -210,12 +224,9 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         quest = self.current_quest
         if final:
             hero.experience += quest.reward_experience + self.reward_experience
-            hero.quest_notification = (self.name, self.total_reward, 'quest '
-                                                                     'path')
         else:
             hero.experience += quest.reward_experience
-            hero.quest_notification = (quest.name, quest.reward_experience,
-                                       'quest stage')
+        self.journal.quest_notification = self.get_description()
 
     def activate(self, hero):
         """Run super's activate using locations of local variables."""

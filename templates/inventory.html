@@ -2,167 +2,80 @@
 
 {% extends "layout.html" %}
 {% block block1 %}
-<img src="/static/images/inventory_template.jpg" alt="Sample">
 
-<!-- This is the inventory page and displays everything your character wears/owns and gives you CMD buttons to equip/unequip -->
-{% set inventory = hero.inventory %}
-<h1>Equipped:</h1>
-<table id="equipped_items">
-    <tr id="HeadArmour">
-        <td><h2>Helmet:</h2></td>
-    </tr>
-    {% if inventory.helmet %}{%set item = inventory.helmet %}
-    <tr id="{{ item.id }}">
-        <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font
-                style="color:red">broken</font>{% endif %}
-        </td>
-        <td>
-            <button data-py-function="unequip" data="{{ item.id }}"
-                    data-js-callback="toggleEquip">Unequip</button>
-        </td>
-    </tr>
-    {% endif %}
-    <tr id="ChestArmour">
-        <td><h2>Shirt:</h2></td>
-    </tr>
-    {% if inventory.shirt %}{%set item = inventory.shirt %}
-    <tr id="{{ item.id }}">
-        <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font
-                style="color:red">broken</font>{% endif %}
-        </td>
-        <td>
-            <button data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">Unequip</button>
-        </td>
-    </tr>
-    {% endif %}
-    <tr id="OneHandedWeapon">
-        <td><h2>Right Hand:</h2></td>
-    </tr>
-    {% if inventory.right_hand %}{%set item = inventory.right_hand %}
-    <tr id="{{ item.id }}">
-        <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font
-                style="color:red">broken</font>{% endif %}
-        </td>
-        <td>
-            <button data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">Unequip</button>
-        </td>
-    </tr>
-    {% endif %}
-    <tr id="Shield">
-        <td><h2>Left Hand:</h2></td>
-    </tr>
-    {% if inventory.left_hand %}{%set item = inventory.left_hand %}
-    <tr id="{{ item.id }}">
-        <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font
-                style="color:red">broken</font>{% endif %}
-        </td>
-        <td>
-            <button data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">Unequip</button>
-        </td>
-    </tr>
-    {% endif %}
-    <tr id="TwoHandedWeapon">
-        <td><h2>Both Hands:</h2></td>
-    </tr>
-    {% if inventory.both_hands %}{%set item = inventory.both_hands %}
-    <tr id="{{ item.id }}">
-        <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font
-                style="color:red">broken</font>{% endif %}
-        </td>
-        <td>
-            <button data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">Unequip</button>
-        </td>
-    </tr>
-    {% endif %}
-    <tr id="ArmArmour">
-        <td><h2>Sleeves:</h2></td>
-    </tr>
-    {% if inventory.sleeves %}{%set item = inventory.sleeves %}
-    <tr id="{{ item.id }}">
-        <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font
-                style="color:red">broken</font>{% endif %}
-        </td>
-        <td>
-            <button data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">Unequip</button>
-        </td>
-    </tr>
-    {% endif %}
-    <tr id="HandArmour">
-        <td><h2>Gloves:</h2></td>
-    </tr>
-    {% if inventory.gloves %}{%set item = inventory.gloves %}
-    <tr id="{{ item.id }}">
-        <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font
-                style="color:red">broken</font>{% endif %}
-        </td>
-        <td>
-            <button data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">Unequip</button>
-        </td>
-    </tr>
-    {% endif %}
-    <tr id="Ring">
-        <td><h2>Rings:</h2></td>
-    </tr>
-    {% if inventory.rings %}{%for item in inventory.rings %}
-    <tr id="{{ item.id }}">
-        <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font
-                style="color:red">broken</font>{% endif %}
-        </td>
-        <td>
-            <button data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">Unequip</button>
-        </td>
-    </tr>
-    {% endfor %}{% endif %}
-    <tr id="LegArmour">
-        <td><h2>Pants:</h2></td>
-    </tr>
-    {% if inventory.legs %}{%set item = inventory.legs %}
-    <tr id="{{ item.id }}">
-        <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font
-                style="color:red">broken</font>{% endif %}
-        </td>
-        <td>
-            <button data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">Unequip</button>
-        </td>
-    </tr>
-    {% endif %}
-    <tr id="FeetArmour">
-        <td><h2>Shoes:</h2></td>
-    </tr>
-    {% if inventory.feet %}{%set item = inventory.feet %}
-    <tr id="{{ item.id }}">
-        <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font
-                style="color:red">broken</font>{% endif %}
-        </td>
-        <td>
-            <button data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">Unequip</button>
-        </td>
-    </tr>
-    {% endif %}
-</table>
-<h1>Inventory:</h1>
-<table id="non_equipped_items">
-    {% for item in hero.non_equipped_items() %}
-    {% if item.wearable %}
-    <tr id="{{ item.id }}">
-        <td>{{ item.name }} -- Durability: {{ item.durability }}/{{ item.max_durability }} {% if item.broken %}<font
-                style="color:red">broken</font>{% endif %}
-        </td>
-        <td>
-            <button data-py-function="equip" data="{{ item.id }}" data-js-callback="toggleEquip">Equip</button>
-        </td>
-    </tr>
-    {% elif item.consumable %}
-    <tr id="{{ item.id }}">
-        <td>{{ item.amount_owned }} {{ item.name }} {% if item.broken %}<font style="color:red">broken</font>{% endif %}
-        </td>
-        <td>
-            <button data-py-function="consume" data="{{ item.id }}"
-                    onClick="removeRow(this)">Consume</button>
-        </td>
-    </tr>
-    {% endif %}
-    {% endfor %}
-</table>
+        <!-- This is the inventory page and displays everything your character wears/owns and gives you CMD buttons to equip/unequip -->
+        {% set inventory = hero.inventory %}
+        CURRENT ARMOUR VALUE = {{ test_value }}
+        <div class="inventory_equipped_outer" id="equipped">
+            <img id="inventory-body-outline" src="/static/images/body.jpg" alt="body.jpg" />
+            <!--Nice for loop of inventory slots-->
+            {% for js_slot, slot in inventory.js_single_slots %}
+            <div class="inventory-equipped inventory-item" id="inventory-{{ js_slot }}">
+                <img src="/static/images/items/inventory_{{ slot }}.jpg" alt="{{ slot }}.jpg" id="inventory-{{ js_slot }}-empty" {% if getattr(inventory, slot) %}{% set item = getattr(inventory, slot) %} style="display: none;" />
+                <div class="inventory-tooltip" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">
+                    <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
+                    <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
+                </div>
+                {% else %}/>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <!--Not yet for looped inventory slots-->
+            <div class="inventory-equipped inventory-item" id="inventory-shoulder">
+                <img src="/static/images/items/inventory_shoulder.jpg" alt="shoulder.jpg" id="inventory-shoulder-empty" {% if inventory.shoulder %}{% set item = inventory.shoulder %} style="display: none;" />
+                <div class="inventory-tooltip" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">
+                    <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
+                    <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
+                </div>
+                {% else %}/>{% endif %}
+            </div>
+            <div class="inventory-equipped inventory-item" id="inventory-neck">
+                <img src="/static/images/items/inventory_neck.jpg" alt="neck.jpg" id="inventory-neck-empty" {% if inventory.neck %}{% set item = inventory.neck %} style="display: none;" />
+                <div class="inventory-tooltip" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">
+                    <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
+                    <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
+                </div>
+                {% else %}/>
+                {% endif %}
+            </div>
+            <div class="inventory-equipped inventory-item" id="inventory-waist">
+                <img src="/static/images/items/inventory_waist.jpg" alt="waist.jpg" id="inventory-waist-empty" {% if inventory.waist %}{% set item = inventory.waist %} style="display: none;" />
+                <div class="inventory-tooltip" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">
+                    <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
+                    <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
+                </div>
+                {% else %}/>
+                {% endif %}
+            </div>
+            <div class="inventory-equipped inventory-item" id="inventory-right-finger">
+                <img src="/static/images/items/inventory_right_finger.jpg" alt="right_finger.jpg" id="inventory-right-finger-empty" {% if inventory.right_finger %}{% set item = inventory.right_finger %} style="display:none;" />
+                <div class="inventory-tooltip" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">
+                    <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
+                    <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
+                </div>
+                {% else %}/>
+                {% endif %}
+            </div>
+            <div class="inventory-equipped inventory-item" id="inventory-left-finger">
+                <img src="/static/images/items/inventory_left_finger.jpg" alt="left_finger.jpg" id="inventory-left-finger-empty" {% if inventory.left_finger %}{% set item = inventory.left_finger %} style="display:none;" />
+                <div class="inventory-tooltip" data-py-function="unequip" data="{{ item.id }}" data-js-callback="toggleEquip">
+                    <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
+                    <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
+                </div>
+                {% else %}/>
+                {% endif %}
+            </div>
+        </div>
+        <div></div>
+        <div class="inventory_unequipped_outer" id="unequipped">
+            <h1>Inventory:</h1>
+            {% for item in hero.non_equipped_items() %}
+            <div class="inventory-unequipped inventory-item">
+                <div class="inventory-tooltip" data-py-function="equip" data="{{ item.id }}" data-js-callback="toggleEquip">
+                    <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
+                    <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
 {% endblock %}
-

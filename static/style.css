@@ -38,7 +38,11 @@ div.row > * {
 
 /* End Marlen's CSS */
 
-/* Body and Basics */
+/* Basic Content throughout the game */
+/* NOTE: All html files are default id='content'. This is passed in through layout.html */
+.content {
+	margin-left: 175px; /* This needs to match the sidebars width, so all content is pushed away from the sidebar */
+}
 
 body {
 	font-family: "Source Sans Pro", Helvetica, sans-serif;
@@ -54,10 +58,6 @@ h1 {
 	line-height: 100%; 
 }
 
-h1.indented {
-	margin-left: 5%;
-}
-
 h2 { 
 	color: Black; 
 	font-family: 'Open Sans', sans-serif; 
@@ -65,238 +65,226 @@ h2 {
 	font-weight: 600;
 	line-height: 100%;  
 }
-/* Commented out by Marlen because it overrides _all_ format tags inside
-of <p> tag.
-i.e.
-<p><strong>Should be bold</strong></p> doesn't work.
-p { 
-	color: Black; 
-	font-family: 'Helvetica Neue', sans-serif; 
-	font-size: 14px; 
-	font-weight: 300;
-	line-height: 100%;   
+
+h3 {
+    font-size: 20px;
 }
-*/
+
+p {
+    font-size: 15px;
+}
+
+a {
+    color: Blue;
+}
+
+a:hover {
+    color: Yellow;
+}
 
 ul {
 	list-style-type: none;
-	margin-top: 1em;
-	margin-bottom: 1em;
-	margin-left: 0;
-	margin-right: 0;
-	padding-left: 5px;
 }
 
+/* Sidebar used for all pages and called in the layout.html */
+.sidebar {
+    font-size: 15px; /* Shrinks font on all generic text in the sidebar */
+    font-weight: 600;
+	width:175px; /* The bar fills 12% of the screen horizontally */
+	height: 100%; /* Makes it fill the page vertically */
+	position: fixed; /* Position is oriented with browser window */
+	overflow: auto; /* Will add a scrollbar only if the screen is too small */
+	background-color: Gray;
+	top: 0px; /* Removes margin on top */
+	left: 0px; /* Removes margin on the left side */
+	line-height: 20px;
+	z-index: 100;
+}
 
-/* Basic Content throughout the game */
+.sidebar img { /* Used for the profile picture in the sidebar */
+    width: 175px;
+    height: 100px;
+}
 
-#content {
-	width: 85%;
-	padding-top: 60px;
+.sideBarProgressDiv {
+    width: 175px;
+    height: 25px;
+    line-height: 25px; /* Makes the text fill the DIV to match the bar's height */
+    margin-top: 5px; /* Distance it drops below the text above it */
+    clear: both; /* Makes sure the next bar sits below it*/
+}
+
+.sideBarProgressMeter {
+	height: 10px;
+	width: 70px;
+	background: #555;
+	border-radius: 25px; /* Makes the bar rounded */
+	padding: 10px; /* How big the shaded region extends past the color region */
+	box-shadow: inset 0 -1px 1px rgba(255,255,255,0.3); /* Creates a gap between the bars, similar to a margin? */
 	float: right;
 }
 
-#content img {
-	opacity:1;
-	border-radius: 50%;
-
-}
-
-.nav ul {
-	list-style: none;
-	background-color: #333;
-	padding-left: 0;
-	margin: 0;
-	display:inline-block;
-	width:125px;
-  }
-
- .nav li a {
-	display:block;
-	text-decoration: none;
-	padding:14px 16px;
-	color: #fff;
-	transition: .3s background-color;
-}
-
-.nav a:hover {
-	background-color: #005f5f;
-}
- 
-.nav a.active {
-	background-color: #fff;
-	color: #444;
-	cursor: default;
-}
-
-.rightside {
-	float:right;
-	overflow-y: scroll;
-}
-
-/* Sidebar used for all pages */
-
-#sidebar {
-    font-size: 12px;
-	width:12%;
-	position: fixed;
-	overflow: auto;
-	height:100%;
-	background-color: Gray;
-}
-
-#sidebartop {           /* The top pictures */
+.sideBarProgressMeter > span {
+	display: block;
+	height: 100%;
+	border-radius: 25px;
+	background-image: linear-gradient(to bottom, Green, Lime); /* Sets the filled in color */
+	box-shadow: inset 0 2px 9px  rgba(255,255,255,0.3), inset 0 -2px 6px rgba(0,0,0,0.4);
+	position: relative;
 	overflow: hidden;
 }
 
-#sidebartop img {
-	margin-right: 15px;
-	float: left;
+.sidebarSanctity > span {
+	background-image: linear-gradient(to bottom, Blue, Pink);
 }
 
-#sidebarmiddle li {     /* The 4 color progress bars */
-	line-height: 30px;
+.sidebarEndurance > span {
+	background-image: linear-gradient(to bottom, Red, Yellow);
 }
 
-#sidebar ul{
-	overflow: hidden; 
-	list-style: none;
-	line-height: 15px;
-	color: Black;
+.sidebarProgress > span {
+	background-image: linear-gradient(to bottom, Pink, Purple);
 }
 
-#sidebar li{
-	list-style-type: none;
-	padding-bottom: 3px;
-}
-
-#sidebarbottom ul {     /* The menu list */
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
+.sidebar ul {
+    clear: both; /* Forces it to drop below the progress bars */
+    margin-top: 20px; /* How far below progress bars it sits */
+    padding-left: 0px; /* Makes it sit flush to the left of the screen */
 	background-color: Gray;
-	text-align: center;
-	line-height: 15px;
-	padding-bottom: 0px;
+	text-align: center; /* Forces text bubbles to center horizontally */
+	line-height: 18px; /* How big each item in the list is */
+	font-size: 18px; /* Font used in sidebar items */
 }
 
-#sidebarbottom li a {
-	display: block;
-	border: 1px outset Black;
-	border-radius: 5px;
-	color: Black;
+.sidebar a {
+    color: Black; /* Color of unhighlighted text */
+    text-decoration: none; /* Removes underlining of links */
+}
+
+.sidebar li {
+	border: 1px outset Black; /* Makes each item have a border */
+	border-radius: 5px; /* Rounds out the borders */
 	padding: 5px 16px;
 	text-decoration: none;
 }
 
-#sidebarbottom li a:hover {
-	background-color: Brown;
+.sidebar li a:hover {
 	color: white;
 }
 
-/* Topbar used in profile_template */
+/* General content */
+.globalMessageModal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    width: 90%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
 
+.globalMessageModalContent {
+    position: relative;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 80%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s
+}
+
+@-webkit-keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
+
+.closeGlobalModal {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.closeGlobalModal:hover,.closeGlobalModal:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.globalMessageModalHeader {
+    padding: 2px 16px;
+    background-color: #5cb85c;
+    color: white;
+}
+
+.globalMessageModalBody {
+    padding: 2px 16px;
+}
+
+.globalMessageModalFooter {
+    padding: 2px 16px;
+    background-color: #5cb85c;
+    color: white;
+}
+
+.location_page_image {
+    position: relative;
+    height: 300px;
+    width: 300px;
+    }
+
+.button {
+	font-size: 30px;
+}
+
+/* Topbar that runs horizontal to any page */
 .topbar {
-	float: right;
-	width: 40%;
+	float: left;
+	width: auto;
+	margin-top: -25px; /* Pushes it right to the top of the page */
 }
 
 .topbar ul {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-	overflow: hidden;
+	overflow: hidden; /* Makes the background visible */
 	background: Black;
+	padding: 0px; /* Need this or there is a rectangle to the left? */
 }
 
 .topbar li {
-	float: left;
+	float: left; /* Makes each item float beside the other */
 }
 
 .topbar li a {
-	display: block;
+	display: block; /* Each item starts a new segment and takes the full width */
 	color: white;
 	text-align: center;
-	padding: 14px 16px;
-	text-decoration: none;
+	padding: 14px 16px; /* Decides how big each box is */
+	text-decoration: none; /* Removes underlining of links */
 }
 
 .topbar li a:hover:not(.active) {
 	background-color: Green;
 }
 
-.topbarActive {
-	background-color: Red;
-}
-
-.topbarGlowing {
-	background-color: Blue;
-}
-
-/* Top bar added drop-down portion (used on Ability section) */
-
-.topbarDropLink li a {
-	display: inline-block;
-	color: Black;
-	text-align: center;
-	padding: 14px 16px;
-	text-decoration: none;
-}
-
-.topbarDropdownOuter li {
-	display: inline-block;
-}
-
+/* Top bar optionally added drop-down portion */
 .topbarDropdownInner {
-	display: none;
+	display: none; /* Makes it invisible by default */
 	position: absolute;
-	min-width: 160px;       /* Not Sure what it does */
-	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);   /* Not Sure what it does */
-    z-index: 1;   /* Not Sure what it does */
 	background-color: Black;
 }
 
-.topbarDropdownInner a {
-	color: Black;
-	padding: 12px 16px;
-	text-decoration: none;
-	display: block;
-	text-align: left;
-}
-
 .topbarDropdownOuter:hover .topbarDropdownInner {
-	display: block;
-}
-
-/* Topbar used in inbox */
-
-.inboxTopbar {
-	float: left;
-	width: auto;
-}
-
-.inboxTopbar ul {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-	overflow: hidden;
-	background: Black;
-}
-
-.inboxTopbar li {
-	float: left;
-}
-
-.inboxTopbar li a {
-	display: block;
-	color: white;
-	text-align: center;
-	padding: 14px 16px;
-	text-decoration: none;
-}
-
-.inboxTopbar li a:hover:not(.active) {
-	background-color: Green;
+	display: block; /* Makes it visible on hover */
 }
 
 /* INBOX CODE */
@@ -323,166 +311,290 @@ ul {
     width: 3%;
 }
 
-/* Attribute Page */
-
-.profilePage {
-	float: left;
-	text-align: left;
-	font-family: arial;
-	font-size: 30px;
-	padding: 5px;
-	margin: 30px;
-	border: 5px Double Black;  
-	width: 40%;
-	background-color: Gray;
-	color: white;
-	line-height: 35px;
+#inboxTableUnreadMessage {
+outline: 2px solid black;
 }
 
-.submitButton {
-	float: left;
-	font-size: 30px;
-	margin: 30px;
+/* Custom containers */
+.leftPageHalf {
+    float: left;
 }
 
-.profilePageAttributes {
-	float: left;
-	padding-left: 10px;
-} 
-
-.profilePageValues {
-	float: right;
-	padding-right: 10px;
-} 
-
-.profilePageAttributes .profilePageValues ul {
-	margin-top: 0px;
-	margin-bottom: 0px;
+.rightPageHalf {
+    float: right;
+    padding: 0px 20px 0px 0px; /* Usually this class inherits .leftPageHalf, so make sure to set left padding to 0 */
 }
 
-.profilePageInfo { /* This page shows the description for each attribute */
-	float: right;
-	height: 350px;
+.leftPageHalf,.rightPageHalf { /* This sets the width to 45% if the class is either .leftPageHalf or .rightPageHalf */
+    width: 45%;
 }
 
-.profilePageInfo h1 {
-	text-align: center;
+.leftPageHalf > .textRight,.rightPageHalf > .textRight {
+    text-align: right;
 }
 
-button.profileText {
-	background:none;
-	border:none;
-	margin:0;
-	padding:0;
-	width: 100%;
-	text-align: left;
-	font-family: arial;
-	font-size: 30px;
-	text-transform: uppercase;
-}
+/* Profile Pages */
 
-.profilePageAttributes li:hover {
-	background-color: lightGrey;
-}
-
-input.abilityButton {
-	background-color: transparent; /* make the button transparent */
-	background-repeat: no-repeat;  /* make the background image appear only once */
-	background-position: 0px 0px;  /* equivalent to 'top left' */
-	border: none;           /* assuming we don't want any borders */
-	cursor: pointer;        /* make the cursor like hovering over an <a> element */
-	height: 20px;           /* make this the size of your image */
-	padding-left: 15px;     /* make text start to the right of the image */
-	vertical-align: middle; /* align the text vertically centered */
-}
-
-input.abilityButtonPlus {
-	background-image: url(/static/images/plus_button.jpg); /* Image size needs to match abilityButton (about 16px x 16px) */
-	float: right;
-}
-
-input.abilityButtonMinus {
-	background-image: url(/static/images/minus_button.jpg); /* Image size needs to match abilityButton (about 16px x 16px) */
-	float: left;
-}
-
-/* Proficiency Page */
-
-.proficiencyPage {
-	font-family: arial;
-	font-size: 20px;
-	margin: 5px;
-	width: 1100px;
-	height: 1000px;
-	color: white;
-	line-height: 55px;
-	overflow-x: auto;  /* Makes sure that if the screen is too small, you can scroll to the right instead of chopping up the page */
-}
-
-.proficiencyPage h1 {
-	font-size: 30px;
-}
-
-.proficiencyPageInner {
-	width: 350px;
-	height: auto;
+.stickyPointsRemainingBar {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    width: 200px;
+    padding: 5px;
+    text-align: center;
 	border: 5px Double Black;
-	margin: 0;
-	padding: 0;
-	float: left;
-	background-color: Darkgray;
+	background-color: Gray;
+	color: White;
 }
 
-#proficiencyButton {
-	background-color: transparent; /* make the button transparent */
-	background-repeat: no-repeat;  /* make the background image appear only once */
-	background-position: 0px 0px;  /* equivalent to 'top left' */
-	border: none;           /* assuming we don't want any borders */
+.proficiencyAccordion { /* The giant box which contains the 12 attributes on the proficiency page */
+    background-color: Grey;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    font-size: 20px;
+    color: Black;
+    transition: 0.4s;
+    outline: double;
+}
+
+.active, .proficiencyAccordion:hover {
+    background-color: White;
+}
+
+.proficiencyAccordionPanel { /* The 12 individual panels which open up on the accordion bar */
+    display: none;
+    background-color: Silver;
+}
+
+.proficiencyTooltipTrigger { /* Each individual attribute which can change the tooltip */
+    background-color: Grey;
+    cursor: pointer;
+    width: 90%;
+    height: 30px;
+    outline: double;
+    transition: 0.4s;
+}
+
+.proficiencyTooltip { /* The tooltip box on the right side of the page */
+    float: right;
+    width: 30%;
+}
+
+.proficiencyTooltip li {
+    list-style-type: circle;
+}
+
+.upgradeButton {
 	cursor: pointer;        /* make the cursor like hovering over an <a> element */
-	height: 20px;           /* make this the size of your image */
-	padding-left: 15px;     /* make text start to the right of the image */
-	vertical-align: middle; /* align the text vertically centered */
+	height: 30px;           /* make this the size of your image */
+	width: 30px;
 	background-image: url(/static/images/prof_button.jpg); /* Image size needs to match abilityButton (about 16px x 16px) */
 }
 
-.tooltip {
-	outline:none; 
+.tooltipImage img {
+    display: block;
+    margin: 0 auto; /* Centers the image */
+	height: 250px;  /* make this the size of your image */
+	width: 250px;
 }
 
-.tooltip:hover {
-	text-decoration:none;
-} 
+/* Inventory Page Code */
+.inventory_equipped_outer {
+    border: 5px solid;
+    height: 800px;
+    min-width: 650px;
+    z-index: 50;
+    position: relative;  /* Allows children to use position: absolute */
+}
 
-.tooltip span {
+.inventory_unequipped_outer {
+    border: 5px solid;
+    min-width: 650px;
+    z-index: 50;
+}
+
+.inventory-equipped {
+    position: absolute;
+    height: 100px;
+    width: 100px;
+}
+
+.inventory-unequipped {
+    height: 125px;
+    width: 125px;
+    display: inline-block;
+    margin: 5px;
+}
+
+.inventory-item img {
+    border: 5px solid;
+    height: 100%;
+    width: 100%;
+    border-radius: 10%;
+}
+
+/* Content is based on deflection from center.
+The body-outline is slightly warped so I compensated with some padding.
+Centered margin is 275px left/right.
+*/
+
+#inventory-body-outline {
+    height: 100%;
+    position: absolute;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding-left: 35px;
+}
+
+#inventory-head {
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 650px;
+    left: 0;
+}
+
+#inventory-chest {
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 350px;
+    left: 0;
+    height: 150px;
+}
+
+#inventory-shoulder {
+    margin: auto;
+    top: 0;
+    right: 260px;
+    bottom: 475px;
+    left: 0;
+    height: 125px;
+}
+
+#inventory-neck {
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 475px;  /* This could be 500 if you want them on the same level */
+    left: 260px;
+}
+
+#inventory-arm {
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 200px;
+    left: 400px;
+}
+
+#inventory-hand {
+    margin: auto;
+    top: 0;
+    right: 400px;
+    bottom: 200px;
+    left: 0;
+}
+
+#inventory-left-finger {
+    margin: auto;
+    top: 50px;
+    right: 300px;
+    bottom: 0;
+    left: 0;
+}
+
+#inventory-right-finger {
+    margin: auto;
+    top: 50px;
+    right: 0;
+    bottom: 0;
+    left: 300px;
+}
+
+#inventory-waist {
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 100px;
+    left: 0;
+    height: 50px;
+}
+
+#inventory-leg {
+    margin: auto;
+    top: 150px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 150px;
+}
+
+#inventory-foot {
+    margin: auto;
+    top: 525px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 125px;
+}
+
+#inventory-left-hand {
+    margin: auto;
+    top: 350px;
+    right: 400px;
+    bottom: 0;
+    left: 0;
+    height: 150px;
+}
+
+#inventory-right-hand {
+    margin: auto;
+    top: 350px;
+    right: 0;
+    bottom: 0;
+    left: 400px;
+    height: 150px;
+}
+
+.inventory-tooltip {
+    height: inherit;
+    width: inherit;
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.inventory-tooltip .inventory-tooltip-text {
+    visibility: hidden;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 6px;
+
+    /* position the tooltip */
+    position: absolute;
     z-index: 1;
-    display: none; 
-    padding: 25px 25px; /* Padding inside the tooltip */
-    margin-top:-50px; /* Moves the tooltip relative to the text you are hovering over */
-    margin-left: 28px;    /* How far to the right of your text the display box will show */
-    width: auto; 
-    line-height: 35px;
+    top: 50%;
+    width: inherit;
 }
 
-.tooltipLeft span {   /* Add this if you want the tooltip to display to the left of what you are hovering over */
-	margin-left: -500px;
+.inventory-tooltip:hover .inventory-tooltip-text {
+    visibility: visible;
 }
+/* End of Inventory Page Code */
 
-.tooltip:hover span {
-    display:inline; 
-    position:absolute; 
-    color:White;
-    border:1px 
-    solid #DCA;
-    background-color: Black;
-}
 
-.tooltip span {
-    border-radius:4px;
-    box-shadow: 5px 5px 8px #CCC;
-}
 
 /* Ability Pages */
-
     /* Religion Individual Containers */
 .religioncontainer {
     width: 14%;
@@ -491,39 +603,6 @@ input.abilityButtonMinus {
     padding: 10px;
     background-image: url("/static/images/grayscale.jpg");
     border: 1px dotted gray;
-}
-
-    /* Container for the 6 archetype fields */
-.popuparchetypecontainer {
-	display: inline;
-	float: left;
-	cursor: pointer;
-	height: 350px;
-	width: 16%;
-	border: 1px dotted gray;
-}
-
-    /* {TAGGED FOR DELETION ONCE REPLACED} The popup message you get if you click on an archetype container*/
-.popuparchetypechangingmessage {
-	visibility: hidden;
-	max-width: 100px;
-	height: 50px;
-	background-color: #555;
-	color: #fff;
-	text-align: center;
-	border-radius: 6px;
-	position: static;
-	z-index: 1;
-	margin: auto;
-}
-
-    /* {REPLACING CONTENT DIRECTLY ABOVE} The popup message that should show up below the 6 archetypes */
-.popuparchetypemessage {
-    text-align: center;
-}
-
-.popuparchetypemessage li {
-    color: red;
 }
 
     /* The toggle of the popup message of the archetype containers */
@@ -537,85 +616,15 @@ input.abilityButtonMinus {
     display: none;
 }
 
-/* The % full bars used in the game */
-
-.progressBar { 
-	height: 10px; 
-	width: 70px;
-	position: relative;
-	background: #555;
-	-moz-border-radius: 25px;
-	-webkit-border-radius: 25px;
-	border-radius: 25px;
-	padding: 10px;
-	box-shadow: inset 0 -1px 1px rgba(255,255,255,0.3);
-	float: right;
-}
-
-.progressBar > span {
-	display: block;
-	height: 100%;
-	border-top-right-radius: 8px;
-	border-bottom-right-radius: 8px;
-	border-top-left-radius: 20px;
-	border-bottom-left-radius: 20px;
-	background-color: rgb(43,194,83);
-	background-image: linear-gradient(to bottom, Green, Lime);
-	box-shadow: inset 0 2px 9px  rgba(255,255,255,0.3), inset 0 -2px 6px rgba(0,0,0,0.4);
-	position: relative;
-	overflow: hidden;
-}
-
-.progressBar.sanctity > span {
-	background-image: linear-gradient(to bottom, Blue, Pink);
-}
-
-.progressBar.endurance > span {
-	background-image: linear-gradient(to bottom, Red, Yellow);
-}
-
-.progressBar.progress > span {
-	background-image: linear-gradient(to bottom, Orange, Yellow);
-}
-
 /* Profile Page */
-
-img.profileImage {
-	width: 20%;
-	height: auto;
-	padding-left: 100px;
-}
-
-.profileContainer {
-	width: 100%;
-	margin: 0 auto;
-}
-
-.profileContainer h1 {
-	padding-left: 40px;
-}
-
-.profileContainer li {
-	font-size: 20px;
-}
-
-.profileColumn {
-	float: left;
-	width: 40%;
-	margin: 20px;
-}
-
 .archetypeImages {
     width: 175px;
     height: 325px;
     }
 
 /***** Jacob's messing around *******/
-
 /* Attribute Page Container to split page into 2 vertical halves using absolute positioning technique
     temporary because absolute positioning requires set height and will mess up display below it */
-
-
 /* Ability button design */
 
 .button_ability {
@@ -624,45 +633,6 @@ img.profileImage {
 	height: 700px;
 	background-repeat: no-repeat;
 	box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-}
-
-/* Popup container for achievement pop up - can be anything you want */
-.popup {
-	position: relative;
-	display: inline-block;
-	cursor: pointer;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
-
-/* The actual popup */
-.popup .popupachievement {
-	visibility: hidden;
-	width: 160px;
-	background-color: #555;
-	color: #fff;
-	text-align: center;
-	border-radius: 6px;
-	padding: 8px 0;
-	position: absolute;
-	z-index: 1;
-	bottom: 125%;
-	left: 50%;
-	margin-left: -80px;
-}
-
-/* Popup arrow */
-.popup .popupachievement::after {
-	content: "";
-	position: absolute;
-	top: 100%;
-	left: 50%;
-	margin-left: -5px;
-	border-width: 5px;
-	border-style: solid;
-	border-color: #555 transparent transparent transparent;
 }
 
 /* Toggle this class - hide and show the popup */
@@ -733,56 +703,4 @@ img.profileImage {
     color: #000;
     text-decoration: none;
     cursor: pointer;
-}
-
-.inventory {
-    border: 5px solid;
-    position: absolute;
-    height: 125px;
-    width: 125px;
-}
-
-#inventory-helmet {
-    left: 50%;
-    top: 10%;
-}
-
-#inventory-chest {
-    left: 50%;
-    top: 30%;
-}
-
-#inventory-shoulders {
-    left: 40%;
-    top: 20%;
-}
-
-#inventory-sleeves {
-    left: 65%;
-    top: 40%;
-}
-
-#inventory-gloves {
-    left: 35%;
-    top: 45%;
-}
-
-#inventory-legs {
-    left: 50%;
-    top: 50%;
-}
-
-#inventory-feet {
-    left: 50%;
-    top: 70%;
-}
-
-#inventory-left-hand {
-    left: 70%;
-    top: 65%;
-}
-
-#inventory-right-hand {
-    left: 30%;
-    top: 65%;
 }

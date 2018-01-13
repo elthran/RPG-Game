@@ -30,6 +30,11 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
 
             var clickedButton = e.target;
+            // Bubbles Event until it hits py call
+            // This is useful for using a div as the sender.
+            while (!clickedButton.getAttribute("data-py-function")) {
+                clickedButton = clickedButton.parentElement;
+            }
 
             // Build a handler to a function named in data-js-callback if one
             // exists.
@@ -108,12 +113,6 @@ function refreshPage() {
     location.reload();
 }
 
-// This is for the quest pop-up window. When the user clicks on div, open/close the popup
-function quest_popup() {
-    var popup = document.getElementById('js_popupachievement');
-    popup.classList.toggle('show');
-}
-
 function show(element) {
     element.classList.remove('hide')
     element.classList.add('show')
@@ -122,36 +121,6 @@ function show(element) {
 function hide(element) {
     element.classList.remove('show')
     element.classList.add('hide')
-}
-
-function archetype_popup(archetype) {
-    var brute_popup = document.getElementById('js_popupbrute');
-    var scoundrel_popup = document.getElementById('js_popupscoundrel');
-    var ascetic_popup = document.getElementById('js_popupascetic');
-    var survivalist_popup = document.getElementById('js_popupsurvivalist');
-    var philosopher_popup = document.getElementById('js_popupphilosopher');
-    var opportunist_popup = document.getElementById('js_popupopportunist');
-
-    hide(brute_popup)
-    hide(scoundrel_popup)
-    hide(ascetic_popup)
-    hide(survivalist_popup)
-    hide(philosopher_popup)
-    hide(opportunist_popup)
-
-    if (archetype === 'brute') {
-    show(brute_popup)
-    } else if (archetype === 'scoundrel') {
-    show(scoundrel_popup)
-    } else if (archetype === 'ascetic') {
-    show(ascetic_popup)
-    } else if (archetype === 'survivalist') {
-    show(survivalist_popup)
-    } else if (archetype === 'philosopher') {
-    show(philosopher_popup)
-    } else if (archetype === 'opportunist') {
-    show(opportunist_popup)
-    }
 }
 
 // This toggles whether or not you can see the battle log after a fight.
@@ -167,125 +136,220 @@ function battle_popup() {
 /* 
 Scrips for inventory page.
 
-A script to hide the row in a table.
-The element is hidden based on the button clicked having the same data value
-as the id value of the table row id. These should both be unique.
+Currently handles unequip and equipping one item at at time.
+The current approach is not very flexible.
 */
-function removeRow(button) {
+function toggleEquip(clicked, slot_type, idsArrayStr) {
     "use strict";
-    var tr = document.getElementById(button.getAttribute("data"));
-    // console.log(tr);
-    tr.style.display = "none";
-    // button.style.display = 'none';
-}
+//    log("toggleEquip function");
+//    console.log(clicked);
+//    console.log(slot_type);
+//    console.log(idsArrayStr);
+    var tooltipDiv = clicked;
+    var inventoryItemDiv = tooltipDiv.parentElement;
+    var empty_slot = document.getElementById("inventory-" + slot_type + "-empty");
+//    console.log(empty_slot);
 
-function toggleEquip(button, itemType, idsArrayStr) {
-    "use strict";
-    //console.log(button);
-    //console.log(itemType);
-    //console.log(idsArray);
-    var slot = document.getElementById(itemType);
-    var tr = document.getElementById(button.getAttribute("data"));
-    if (button.innerHTML === "Equip") {
-        button.innerHTML = "Unequip";
+    var command = tooltipDiv.getAttribute("data-py-function");
 
-        var idsArray = JSON.parse(idsArrayStr);
-        idsArray.forEach(function (id) {
-            //console.log("id: " + id);
-            button = document.getElementById(id).querySelector("button");
-            //console.log("Buttons to replace: " + button);
-            //console.log("If button is real, data: " + button.getAttribute("data"))
-            toggleEquip(button);
-        });
-        slot.insertAdjacentElement("afterend", tr);
-    } else if (button.innerHTML === "Unequip") {
-        slot = document.getElementById("non_equipped_items");
-        button.innerHTML = "Equip";
-        slot.appendChild(tr);
+    // When you are Unequipping an Item.
+    if (command === "unequip") {
+        inventoryItemDiv.removeChild(tooltipDiv);
+        empty_slot.style.display = "inline";
+
+        tooltipDiv.setAttribute("data-py-function", "equip");
+
+        var unequippedItemDiv = document.createElement("div");
+        unequippedItemDiv.classList.add("inventory-unequipped", "inventory-item");
+        unequippedItemDiv.appendChild(tooltipDiv);
+
+        var unequippedGeneralDiv = document.getElementById("unequipped");
+        unequippedGeneralDiv.appendChild(unequippedItemDiv);
+
+    // When you are Equipping and Item.
+    } else if (command === "equip") {
+        inventoryItemDiv.parentElement.removeChild(inventoryItemDiv);
+        empty_slot.style.display = "none";
+
+        tooltipDiv.setAttribute("data-py-function", "unequip");
+        var slotDiv = document.getElementById("inventory-" + slot_type);
+        slotDiv.appendChild(tooltipDiv);
     }
 }
 
 /*
 Scripts for store to provide feedback when user buys something.
 */
-function itemPurchasedPopup(button, message, heroGold) {
+function itemPurchasedPopup(response) {
+    "use strict";
+
+    var message;
+    if (response.error) {
+        message = response.error;
+    } else {
+        message = response.message;
+        // Update hero gold
+        var span = document.getElementById("heroGold");
+        span.innerHTML = response.heroGold;
+    }
+
     var div = document.getElementById("purchaseLog");
 
     var para = document.createElement("p");
     var node = document.createTextNode(message);
     para.appendChild(node);
     div.insertBefore(para, div.firstChild);
-
-    // Update hero gold
-    var span = document.getElementById("heroGold");
-    span.innerHTML = heroGold
 }
 
 // This function is used in the profile_proficiencies.html
 // This function only runs if command code return successfully from Python.
 // Could be updated to just rerender all html for tooltip :P
-function updateProf(button, status, newTooltip) {
-    "use strict";
+function attributeTooltip(button, tooltip) {
+    var newTooltip = {};
+    newTooltip = document.getElementById("attributeTooltip");
+    newTooltip.innerHTML = tooltip;
+}
 
+function updateAttribute(button, status) {
+    "use strict";
     var id = 0;
     var i = 0;
-    var heroProfPointsDiv = {};
-    var profCurrentLvDiv = {};
-    var tooltipPopupSpan = {};
+    var heroAtrPointsDiv = {};
+    var atrCurrentLvDiv = {};
     var buttonsNodeList = {};
-    var errorDivNodeList = {};
-
     id = button.getAttribute("data");
-    profCurrentLvDiv = document.getElementById("proficiency-" + id);
-    heroProfPointsDiv = document.getElementById("points_remaining");
-    tooltipPopupSpan = document.getElementById("tooltipPopup-" + id);
-
-    profCurrentLvDiv.innerHTML = parseInt(profCurrentLvDiv.innerHTML) + 1;
-    heroProfPointsDiv.innerHTML = parseInt(heroProfPointsDiv.innerHTML) - 1;
-    tooltipPopupSpan.innerHTML = newTooltip;
-
-    //hide this button
-    if (status === "hide_this") {
-        button.style.display = "none";
-    //hide all buttons
-    //show all errors
-    } else if (status === "hide_all") {
-        buttonsNodeList = document.querySelectorAll("button[id=proficiencyButton]");
-        errorDivNodeList = document.querySelectorAll("div[id^=error-]");
-        for (i = 0; i < buttonsNodeList.length; i += 1) {
+    atrCurrentLvDiv = document.getElementById("attribute-" + id);
+    heroAtrPointsDiv = document.getElementById("points_remaining");
+    atrCurrentLvDiv.innerHTML = parseInt(atrCurrentLvDiv.innerHTML) + 1;
+    heroAtrPointsDiv.innerHTML = parseInt(heroAtrPointsDiv.innerHTML) - 1;
+    if (status === "hide_all") { //hide all buttons
+        buttonsNodeList = document.querySelectorAll("button[class=upgradeButton]");
+        for (i = 0; i < buttonsNodeList.length; i++) {
             buttonsNodeList[i].style.display = "none";
-            errorDivNodeList[i].style.display = "inline";
         }
     }
 }
 
-function updateAbility(button, id, ability_level, max_level, tree, description) {
+function proficiencyTooltip(button, tooltip) {
+    var newTooltip = {};
+    newTooltip = document.getElementById("proficiencyTooltip");
+    newTooltip.innerHTML = tooltip;
+}
+
+function updateProficiency(button, status, tooltip) {
     "use strict";
-
-    var heroAbilityCurrentLvDiv = {};
-    var heroBasicPointsDiv = {};
-    var heroArchetypePointsDiv = {};
-    var abilityDescriptionDiv = {};
-
-    abilityDescriptionDiv = document.getElementById("ability-" + id + "-description");
-    heroAbilityCurrentLvDiv = document.getElementById("ability-" + id);
-    if (tree === "basic") {
-        heroBasicPointsDiv = document.getElementById("basic_points_remaining");
-        heroBasicPointsDiv.innerHTML = parseInt(heroBasicPointsDiv.innerHTML) - 1;
-    } else if (tree === "archetype") {
-        heroArchetypePointsDiv = document.getElementById("archetype_points_remaining");
-        heroArchetypePointsDiv.innerHTML = parseInt(heroArchetypePointsDiv.innerHTML) - 1;
-    }
-    heroAbilityCurrentLvDiv.innerHTML = parseInt(heroAbilityCurrentLvDiv.innerHTML) + 1;
-    abilityDescriptionDiv.innerHTML = description;
-    //if parseInt(heroAbilityCurrentLvDiv.innerHTML) === max_level:
-    //    gray it out
-
-    if (status === "no ability points") {
-    // make all buttons grayed out
+    proficiencyTooltip(button, tooltip);
+    var id = 0;
+    var i = 0;
+    var heroProfPointsDiv = {};
+    var profCurrentLvDiv = {};
+    var buttonsNodeList = {};
+    id = button.getAttribute("data");
+    profCurrentLvDiv = document.getElementById("proficiency-" + id);
+    heroProfPointsDiv = document.getElementById("points_remaining");
+    profCurrentLvDiv.innerHTML = parseInt(profCurrentLvDiv.innerHTML) + 1;
+    heroProfPointsDiv.innerHTML = parseInt(heroProfPointsDiv.innerHTML) - 1;
+    if (status === "hide_this") { //hide this button
+        button.style.display = "none";
+    } else if (status === "hide_all") { //hide all buttons
+        buttonsNodeList = document.querySelectorAll("button[class=upgradeButton]");
+        for (i = 0; i < buttonsNodeList.length; i++) {
+            buttonsNodeList[i].style.display = "none";
+        }
     }
 }
 
+function abilityTooltip(button, tooltip, image) {
+    var newTooltip = {};
+    var newImage = {};
+    var startImage = '<img src="/static/images/';
+    var endImage = '.jpg" alt="none">';
+    newTooltip = document.getElementById("attributeTooltip");
+    newTooltip.innerHTML = tooltip;
+    newImage = document.getElementById("attributeImage");
+    newImage.innerHTML = startImage + image + endImage;
+}
+
+function updateAbility(button, status, tooltip) {
+    "use strict";
+    var id = 0;
+    var i = 0;
+    var heroAbiPointsDiv = {};
+    var abiCurrentLvDiv = {};
+    var buttonsNodeList = {};
+    var newTooltip = {};
+    newTooltip = document.getElementById("attributeTooltip");
+    newTooltip.innerHTML = tooltip;
+    id = button.getAttribute("data");
+    abiCurrentLvDiv = document.getElementById("ability-" + id);
+    heroAbiPointsDiv = document.getElementById("points_remaining");
+    abiCurrentLvDiv.innerHTML = parseInt(abiCurrentLvDiv.innerHTML) + 1;
+    heroAbiPointsDiv.innerHTML = parseInt(heroAbiPointsDiv.innerHTML) - 1;
+    if (status === "hide_this") { //hide this button
+        button.style.display = "none";
+    } else if (status === "hide_all") { //hide all buttons
+        buttonsNodeList = document.querySelectorAll("button[class=upgradeButton]");
+        for (i = 0; i < buttonsNodeList.length; i++) {
+            buttonsNodeList[i].style.display = "none";
+        }
+    }
+}
+
+function abilityChoiceTooltip(button, description, image) {
+    var newTooltip = {};
+    var newImage = {};
+    var startImage = '<img src="/static/images/';
+    var endImage = '.jpg" alt="none">';
+    newTooltip = document.getElementById("abilityChoiceTooltip");
+    newTooltip.innerHTML = description;
+    newImage = document.getElementById("choiceImage");
+    newImage.innerHTML = startImage + image + endImage;
+}
+
+function questTooltip(button, description, image) {
+    var newTooltip = {};
+    var newImage = {};
+    var startImage = '<img src="/static/images/';
+    var endImage = '.jpg" alt="none">';
+    newTooltip = document.getElementById("questTooltip");
+    newTooltip.innerHTML = description;
+    newImage = document.getElementById("choiceImage");
+    newImage.innerHTML = startImage + image + endImage;
+}
+
+function pageReload(button) {
+    location.reload();
+}
+
+function showGlobalModal(button) {
+    // Get the modal
+    var modal = document.getElementById('globalMessage');
+    // Get the button that opens the modal
+    var clickedButton = document.getElementById("globalNotificationButton");
+    // Get the <span> element that closes the modal
+    var span = document.querySelector(".closeGlobalModal");
+    // When the user clicks the button, open the modal
+    modal.style.display = "block";
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // Handle ESC key (key code 27) to close modal.
+    document.addEventListener('keyup', function(event) {
+        if (event.keyCode == 27) {
+            modal.style.display = "none";
+        }
+    });
+
+    clickedButton.style.display = "none";
+}
 
 // Choose character page, confirms user choice of hero.
 function confirmHeroSelection(element) {
@@ -305,6 +369,7 @@ function confirmHeroSelection(element) {
 
 //Function To Display Popup
 function popupReplyBox(button, messageContent, messageSender) {
+    // Here we need to add some JS to make the message no longer bold, as it is no longer unread
     document.getElementById('inboxPopupWindow').style.display = "block";
 
     var contentInput = document.querySelector("[name=content]");
@@ -396,10 +461,10 @@ function getIdsFromCheckboxes(element) {
     };
 }
 
-function updateMessageTable(response, data) {
+function updateMessageTable(xhttp, oldData) {
     "use strict";
-    if (response.responseText == "success") {
-        var ids = data.ids;
+    if (xhttp.responseText == "success") {
+        var ids = oldData.ids;
         var box;
         var i;
         for (i=0; i < ids.length; i++) {
@@ -417,24 +482,41 @@ Usage:
     <button onclick="sendToPy(event, someCallBack, somePreprocess, someUrl);"></button>
 
 NOTE: Form must have a return method too.
-NOTE: url defaults to current page unless specified.
+NOTE: url defaults to current page if unspecified.
+NOTE: if data is a string window location isn't passed.
+If the data is (preferably) a JSON object the page location is passed along.
 */
-function sendToPy(event, callback, pre_process, url) {
+function sendToPy(event, callback, cmd, data, preProcess, url) {
     "use strict";
     var element = event.target;
-    var data;
 
-    if (!url) { // if url is blank use url of page
+    if (cmd && url) {
+        throw "Use a cmd or a url not both!";
+    }
+    if (data && preProcess) {
+        throw "Use preProcess or data not both!";
+    }
+
+    if (cmd) {
+        url = "/command/" + cmd;
+    } else if (!cmd && !url) {
+        // if url is blank use url of page
         url = window.location.pathname;
     }
 
     // Normal data processing is object form.
-    // auto-converts to JSON.
-    if (pre_process) {
-        data = pre_process(element);
-    } else {
-        data = element.getAttribute('data');
+    // Must return a JSON object - no I can't check for this.
+    if (preProcess) {
+        data = preProcess(element);
     }
+
+    // If you send a simple string location won't be added.
+    // If you send (hopefully) some JSON the location parameter will be added.
+    if (typeof data !== "string") {
+        // If there is some (JSON type data) add in the location variable.
+        data.location = window.location.pathname;
+    }
+
     postJSON(url, data, callback);
 
     // For normal event suppression.
@@ -447,26 +529,34 @@ function sendToPy(event, callback, pre_process, url) {
 
 // Send the data via POST to the server. Run callback if it exists.
 // Sends data as JSON. Customizable.
-function postJSON(url, data, callback) {
+// Pre-parses responseText if the ResponseHeader is JSON type.
+function postJSON(url, oldData, callback) {
     "use strict";
     var xhttp;
     xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
+    xhttp.onreadystatechange = function () {
+        if (xhttp.readyState === 4 && xhttp.status === 200) {
             if (callback) {
-                callback(this, data);
+                if (xhttp.getResponseHeader("Content-Type") === "application/json") {
+                    var response = JSON.parse(xhttp.responseText);
+                    callback(response, oldData)
+                } else {
+                    callback(xhttp, oldData);
+                }
+                // if you want to reload the page?
                 // window.location.replace(url);
             }
         }
     };
     xhttp.open("POST", url, true);
-    var JSONdata = JSON.stringify(data);
+    var JSONdata = JSON.stringify(oldData);
     console.log("Data to be sent: " + JSONdata);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send(JSONdata);
 }
 
 // Get a valid function handler (if one exists) for a given function string.
+// Probably no longer relevant now that I can pass function names directly.
 function getFunc(element, funcName) {
     "use strict";
     func =  window[element.getAttribute(funcName)];

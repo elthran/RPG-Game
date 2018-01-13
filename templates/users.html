@@ -7,6 +7,7 @@
 <table style="width:75%" border="1">
     <tr>
         <th><a href=/display_users/display/user.id>User ID</a></th>
+        <th>Prestige</th>
         <th><a href=/display_users/display/user.username>Username</a></th>
         <th><a href=/display_users/display/name>Character Name:</a></th>
         <th><a href=/display_users/display/age>Age:</a></th>
@@ -17,11 +18,12 @@
     {% for hero in all_heroes %} <!-- Works great for now unless some fields are None. So needs to be addressed later. -->
     <tr>
         <td>{{ hero.user.id }}</td>
+        <td>{{ hero.user.prestige }}{% if hero.user.prestige > 50 %}<img src="/static/images/star.jpg">{% endif %}</td>
         <td><a href=/display_users/see_user/{{ hero.user.username }}>{{ hero.user.username }}</a> {% if hero.user.is_admin %}[ADMIN]{% endif %}</td>
         <td>{{ hero.character_name }}</td>
         <td>{{ hero.age }}</td>
-        <td>{{ hero.deepest_cave_floor }}</td>
-        <td>{{ hero.archetype }}</td>
+        <td>{{ hero.deepest_dungeon_floor }}</td>
+        <td>{% if hero.archetype %}{{ hero.archetype.title() }}{% endif %}</td>
         <td>{{ hero.last_login }}</td>
     </tr>
     {% else %}

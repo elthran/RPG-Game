@@ -2,147 +2,53 @@
 {% block block1 %}
 <!-- This is the ability page. It let's you learn/upgrade abilities -->
 
-{% if ability_tree == "basic" %}
-    <h1 style="text-align:center;">Basic Abilities</h1>
-    Basic Ability Points:
-    <div style="display: inline" id="basic_points_remaining">{{ myHero.basic_ability_points }}</div>
-    <h2 style="text-align:left;">Basic Abilities</h2>
-    {% for ability in myHero.abilities if ability.tree == ability_tree and ability.hidden == False  %}
-    <div class="tooltip" style="float:left">
-            <img class="archetypeImages" src="/static/images/ability_icon_{{ ability.name.lower() }}.jpg" data="{{ ability.id }}, {{ ability.tree }}" data-js-callback="updateAbility" data-py-function="update_ability">
-        <div style="display: inline">
-            <span>
-                <h3>{{ ability.name.title() }}</h3>
-                {{ ability.get_description() }}<br>
-                Current Level: <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>/{{ ability.max_level }}<br>
-                Cost: {{ ability.cost }}
-            </span>
-        </div>
-    </div>
-{% else %}
-    No Abilities Available
-{% endfor %}
+<h1 style="text-align:center;">{{ ability_tree.title() }} Abilities</h1>
 
-{% elif ability_tree == "archetype" %}
-    {% if hero.archetype == None %}
+{% for thing in hero.specializations %}
+    {{ thing }}
+    {% endfor %}
+
+{% if becomeType %} <!-- The hero hasn't chosen his type. So don't let him choose an ability. Only choose a type. -->
+<div style="clear: both;"></div>
 <div>
-    <div class="popuparchetypecontainer" onclick="archetype_popup('brute')"><img class="archetypeImages" src="/static/images/archetype_brute.jpg">
-    </div>
-    <div class="popuparchetypecontainer" onclick="archetype_popup('scoundrel')"><img class="archetypeImages" src="/static/images/archetype_scoundrel.jpg">
-    </div>
-    <div class="popuparchetypecontainer" onclick="archetype_popup('ascetic')"><img class="archetypeImages" src="/static/images/archetype_ascetic.jpg">
-    </div>
-    <div class="popuparchetypecontainer" onclick="archetype_popup('survivalist')"><img class="archetypeImages" src="/static/images/archetype_survivalist.jpg">
-    </div>
-    <div class="popuparchetypecontainer" onclick="archetype_popup('philosopher')"><img class="archetypeImages" src="/static/images/archetype_philosopher.jpg">
-    </div>
-    <div class="popuparchetypecontainer" onclick="archetype_popup('opportunist')"><img class="archetypeImages" src="/static/images/archetype_opportunist.jpg">
-    </div>
-</div>
-<div>
-    <span class="popuparchetypemessage" id="popuparchetype">
-        <span class="popuparchetypechangingmessage" id="js_popupbrute">
-            <h1>Brute</h1>
-            <p>A character who uses strength and combat to solve problems. Proficient with many types of weapons.</p>
-            <ul style="color:red">Requirements:
-                <li>Brawn ~ 6</li>
-                <li>Any Weapon Talent ~ 10</li>
-                <li><button data="Brute" data-js-callback="refreshPage" data-py-function="become_archetype">Become Brute</button></li>
-            </ul>
-        </span>
-        <span class="popuparchetypechangingmessage" id="js_popupscoundrel">
-            <h1>Scoundrel</h1>
-            <p>A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.</p>
-            <ul style="color:red">Requirements:
-                <li>Dagger Talent ~ 6</li>
-                <li>Virtue ~ -100</li>
-                <li><button data="Scoundrel" data-js-callback="refreshPage" data-py-function="become_archetype">Become Scoundrel</button></li>
-            </ul>
-        </span>
-        <span class="popuparchetypechangingmessage" id="js_popupascetic">
-          <h1>Ascetic</h1>
-          <p>A character who focuses on disciplining mind and body. They use a combination of combat and intellect.</p>
-            <ul style="color:red">Requirements:
-                <li>Errands Completed ~ 10</li>
-                <li>Virtue ~ +100</li>
-                <li>Willpower ~ 4</li>
-                <li><button data="Ascetic" data-js-callback="refreshPage" data-py-function="become_archetype">Become Ascetic</button></li>
-            </ul>
-        </span>
-        <span class="popuparchetypechangingmessage" id="js_popupsurvivalist">
-          <h1>Survivalist</h1>
-          <p>A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.</p>
-            <ul style="color:red">Requirements:
-                <li>Locations Discovered ~ 5</li>
-                <li>Animals in Bestiary ~ 10</li>
-                <li><button data="Survivalist" data-js-callback="refreshPage" data-py-function="become_archetype">Become Survivalist</button></li>
-            </ul>
-        </span>
-        <span class="popuparchetypechangingmessage" id="js_popupphilosopher">
-          <h1>Philosopher</h1>
-          <p>A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.</p>
-            <ul style="color:red">Requirements:
-                <li>Intellect ~ 7</li>
-                <li>Books Read ~ 10</li>
-                <li><button data="Philosopher" data-js-callback="refreshPage" data-py-function="become_archetype">Become Philosopher</button></li>
-            </ul>
-        </span>
-        <span class="popuparchetypechangingmessage" id="js_popupopportunist">
-          <h1>Opportunist</h1>
-          <p>A character who solves problems using speech and dialogue.</p>
-            <ul style="color:red">Requirements:
-                <li>Charisma ~ 7</li>
-                <li>Fame ~ +200</li>
-                <li><button data="Opportunist" data-js-callback="refreshPage" data-py-function="become_archetype">Become Opportunist</button></li>
-            </ul>
-        </span>
-    </span>
-</div>
-    {% else %}
-        <h1 style="text-align:center;">{{myHero.archetype }} Abilities</h1>
-        Archetype Points:
-        <div style="display: inline" id="archetype_points_remaining">{{ myHero.archetype_ability_points }}</div>
-        <h2 style="text-align:left;">Archetype Abilities</h2>
-        {% for ability in myHero.abilities if ability.tree == ability_tree and ability.hidden == False  %}
-            <h3>{{ ability.name }}</h3>
-            <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>/{{ ability.max_level }}</b>
-            <span id="tooltipPopup-{{ ability.id }}">
-                <div style="display: inline" id="ability-{{ ability.id }}-description">{{ ability.get_description() }}</div>
-                {% for name in ability.requirements %}
-                    <br>&bull; {{ name | title }} {{ ability[name] }}
-                {% else %}
-                    <br>Cost: 1 Skill Point
-                {% endfor %}
-            </span>
-            <button data="{{ ability.id }}, {{ ability.tree }}" data-js-callback="updateAbility" data-py-function="update_ability">Learn</button>
-        {% else %}
-            No Abilities Available
+	<div class="leftPageHalf" style="width:65%;">
+        <h2>You have yet to choose a {{ ability_tree }}. After you choose, you will be able to learn abilities related to that {{ ability_tree }}.</h2>
+        <ul>
+        {% for choice in all_type_choices %}
+            <li>
+            <button class="proficiencyTooltipTrigger" data-py-function="change_ability_choice_tooltip" data="{{ ability_tree }}_{{ choice[0] }}-{{ choice[1] }}" data-js-callback="abilityChoiceTooltip">{{ choice[0].title() }}</button>
+            <button class="upgradeButton" data-py-function="update_specialization" data="{{ ability_tree }}_{{ choice[0] }}" data-js-callback="pageReload"></button>
+            </li>
         {% endfor %}
-    {% endif %}
-{% elif ability_tree == "calling" %}
-Under Construction
-{% elif ability_tree == "religious" %}
-    {% if hero.religion == None %}
-        <div>
-            <div class="religioncontainer"><h1>Unknown</h1></div>
-            <div class="religioncontainer"><h1>Unknown</h1></div>
-            <div class="religioncontainer"><h1>Unknown</h1></div>
-            <div class="religioncontainer"><h1>Unknown</h1></div>
-            <div class="religioncontainer"><h1>Unknown</h1></div>
-            <div class="religioncontainer"><h1>Unknown</h1></div>
-        </div>
-        <div>
-            <div class="religioncontainer"><h1>Unknown</h1></div>
-            <div class="religioncontainer"><h1>Unknown</h1></div>
-            <div class="religioncontainer"><h1>Unknown</h1></div>
-            <div class="religioncontainer"><h1>Unknown</h1></div>
-            <div class="religioncontainer"><h1>Unknown</h1></div>
-            <div class="religioncontainer"><h1>Unknown</h1></div>
-        </div>
-    {% else %}
-        <div style="display: inline" id="religion_points_remaining">{{ myHero.religion_ability_points }}</div>
-        Current Religion: {{ myHero.religion }}
-    {% endif %}
+        </ul>
+    </div>
+    <div class="attributeTooltip">
+        <div><span id="abilityChoiceTooltip">Click on an attribute to see more information.</span></div>
+        <div class="tooltipImage"><span id="choiceImage"></span></div>
+    </div>
+</div>
+<div style="clear:both;"></div>
+
+{% else %} <!-- Hero has a chosen type. Let him choose their abilities! -->
+<div class="stickyPointsRemainingBar">Points Remaining: <div style="display: inline" id="points_remaining">{{ points_remaining }}</div></div>
+<div style="clear: both;"></div>
+<div>
+	<div class="leftPageHalf" style="width:65%;">
+        <ul>
+        {% for ability in all_abilities %}
+            <li>
+            <button class="proficiencyTooltipTrigger" data-py-function="change_ability_tooltip" data="{{ ability.id }}" data-js-callback="abilityTooltip">{{ ability.name }} <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>/{{ ability.max_level }}</button>
+            <button class="upgradeButton" data-py-function="update_ability" data="{{ ability.id }}" id="abilityButton-{{ ability.id }}" data-js-callback="updateAbility" {% if hero.basic_ability_points <= 0 %}style="display: none"{% endif %}></button>
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+    <div class="attributeTooltip">
+        <div><span id="attributeTooltip">Click on an attribute to see more information.</span></div>
+        <div class="tooltipImage"><span id="attributeImage"></span></div>
+    </div>
+</div>
+<div style="clear:both;"></div>
 {% endif %}
 
 {% endblock %}

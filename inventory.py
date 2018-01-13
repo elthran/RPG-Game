@@ -36,14 +36,14 @@ class Inventory(Base):
 
     # Item relationships
     # One to One
-    helmet_item_id = Column(Integer, ForeignKey('item.id'))
-    helmet = relationship("Item", foreign_keys="[Inventory.helmet_item_id]")
+    head_item_id = Column(Integer, ForeignKey('item.id'))
+    head = relationship("Item", foreign_keys="[Inventory.head_item_id]")
 
-    shirt_item_id = Column(Integer, ForeignKey('item.id'))
-    shirt = relationship("Item",
-                         backref=backref("inventory_shirt",
+    chest_item_id = Column(Integer, ForeignKey('item.id'))
+    chest = relationship("Item",
+                         backref=backref("inventory_chest",
                                          uselist=False),
-                         foreign_keys="[Inventory.shirt_item_id]")
+                         foreign_keys="[Inventory.chest_item_id]")
     left_hand_item_id = Column(Integer, ForeignKey('item.id'))
     left_hand = relationship("Item", backref=backref(
         "inventory_left_hand",
@@ -56,25 +56,25 @@ class Inventory(Base):
     both_hands = relationship("Item", backref=backref(
         "inventory_both_hands",
         uselist=False), foreign_keys="[Inventory.both_hands_item_id]")
-    sleeves_item_id = Column(Integer, ForeignKey('item.id'))
-    sleeves = relationship("Item",
-                           backref=backref("inventory_sleeves",
+    arm_item_id = Column(Integer, ForeignKey('item.id'))
+    arm = relationship("Item",
+                           backref=backref("inventory_arm",
                                            uselist=False),
-                           foreign_keys="[Inventory.sleeves_item_id]")
-    gloves_item_id = Column(Integer, ForeignKey('item.id'))
-    gloves = relationship("Item", backref=backref(
-        "inventory_gloves",
-        uselist=False), foreign_keys="[Inventory.gloves_item_id]")
-    legs_item_id = Column(Integer, ForeignKey('item.id'))
-    legs = relationship("Item",
-                        backref=backref("inventory_legs",
+                           foreign_keys="[Inventory.arm_item_id]")
+    hand_item_id = Column(Integer, ForeignKey('item.id'))
+    hand = relationship("Item", backref=backref(
+        "inventory_hand",
+        uselist=False), foreign_keys="[Inventory.hand_item_id]")
+    leg_item_id = Column(Integer, ForeignKey('item.id'))
+    leg = relationship("Item",
+                        backref=backref("inventory_leg",
                                         uselist=False),
-                        foreign_keys="[Inventory.legs_item_id]")
-    feet_item_id = Column(Integer, ForeignKey('item.id'))
-    feet = relationship("Item",
-                        backref=backref("inventory_feet",
+                        foreign_keys="[Inventory.leg_item_id]")
+    foot_item_id = Column(Integer, ForeignKey('item.id'))
+    foot = relationship("Item",
+                        backref=backref("inventory_foot",
                                         uselist=False),
-                        foreign_keys="[Inventory.feet_item_id]")
+                        foreign_keys="[Inventory.foot_item_id]")
     # One to many
     rings = relationship("Item",
                          order_by="Item.rings_position",
@@ -95,26 +95,30 @@ class Inventory(Base):
         "TwoHandedWeapon": {"primary": "both_hands", "secondary": ["left_hand", "right_hand"]},
         "OneHandedWeapon": {"primary": "right_hand", "secondary": ["both_hands"]},
         "Shield": {"primary": "left_hand", "secondary": ["both_hands"]},
-        "ChestArmour": {"primary": "shirt", "secondary": []},
-        "HeadArmour": {"primary": "helmet", "secondary": []},
-        "LegArmour": {"primary": "legs", "secondary": []},
-        "FeetArmour": {"primary": "feet", "secondary": []},
-        "ArmArmour": {"primary": "sleeves", "secondary": []},
-        "HandArmour": {"primary": "gloves", "secondary": []},
+        "ChestArmour": {"primary": "chest", "secondary": []},
+        "HeadArmour": {"primary": "head", "secondary": []},
+        "LegArmour": {"primary": "leg", "secondary": []},
+        "FootArmour": {"primary": "foot", "secondary": []},
+        "ArmArmour": {"primary": "arm", "secondary": []},
+        "HandArmour": {"primary": "hand", "secondary": []},
         "Ring": {"primary": "rings", "secondary": []},
 
     }
 
     single_slots = [
-        "helmet",
-        "shirt",
+        "head",
+        "chest",
+        # "shoulder",
+        # "neck",
+        "arm",
+        "hand",
+        # rings?? left-finger, right-finger
+        # "waist",
+        "leg",
+        "foot",
         "left_hand",
         "right_hand",
         "both_hands",
-        "sleeves",
-        "gloves",
-        "legs",
-        "feet",
     ]
 
     multiple_slots = [
@@ -123,6 +127,8 @@ class Inventory(Base):
     ]
 
     all_slot_names = single_slots + multiple_slots
+    js_single_slots = [(slot.replace('_', '-'), slot) for slot in single_slots
+                       if slot != 'both_hands']
 
     def equip_all(self, equipped_items):
         """Equip all passed items.

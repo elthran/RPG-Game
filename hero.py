@@ -15,6 +15,7 @@ from abilities import Abilities
 from proficiencies import Proficiencies
 from inventory import Inventory
 from journal import Journal
+from specializations import SpecializationContainer
 
 
 class Hero(Base):
@@ -29,9 +30,6 @@ class Hero(Base):
     character_name = orm.synonym('name')
 
     age = Column(Integer)
-    archetype = Column(String)
-    calling = Column(String)
-    religion = Column(String)
     house = Column(String)
     experience = Column(Integer)
     experience_maximum = Column(Integer)
@@ -43,13 +41,13 @@ class Hero(Base):
     basic_ability_points = Column(Integer)
     archetype_ability_points = Column(Integer)
     calling_ability_points = Column(Integer)
-    pantheonic_ability_points = Column(Integer)
+    pantheon_ability_points = Column(Integer)
     attribute_points = Column(Integer)
     proficiency_points = Column(Integer)
 
-    deepest_cave_floor = Column(Integer)  # High score for dungeon runs
-    current_cave_floor = Column(Integer)  # Which floor of cave your on
-    current_cave_floor_progress = Column(
+    deepest_dungeon_floor = Column(Integer)  # High score for dungeon runs
+    current_dungeon_floor = Column(Integer)  # Which floor of dungeon your on
+    current_dungeon_floor_progress = Column(
         Integer)  # Current progress in current cave floor
     random_encounter_monster = Column(
         Boolean)  # Checks if you are currently about to fight a monster
@@ -88,6 +86,12 @@ class Hero(Base):
 
     # Each hero can have one set of Abilities. (bidirectional, One to One).
     abilities = relationship("Abilities", uselist=False, back_populates='hero')
+
+    # Hero to specializations relationship
+    specializations_id = Column(Integer,
+                                ForeignKey('specialization_container.id'))
+    specializations = relationship(
+        "SpecializationContainer", back_populates="hero")
 
     # User to Hero. One to many. Ordered!
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -140,12 +144,13 @@ class Hero(Base):
         self.abilities = Abilities()
         self.inventory = Inventory()
         self.journal = Journal()
+        self.specializations = SpecializationContainer()
 
         # Defaults will remain unchanged if no arguments are passed.
         self.age = 7
-        self.archetype = None
-        self.calling = None
-        self.religion = None
+        # self.archetype = None
+        # self.calling = SpecializationContainer()
+        # self.pantheon = SpecializationContainer()
         self.house = None
 
         self.experience_percent = 0
@@ -160,14 +165,14 @@ class Hero(Base):
         self.basic_ability_points = 5
         self.archetype_ability_points = 0
         self.calling_ability_points = 0
-        self.pantheonic_ability_points = 0
+        self.pantheon_ability_points = 0
 
         self.attribute_points = 0
         self.proficiency_points = 0
 
-        self.deepest_cave_floor = 0
-        self.current_cave_floor = 0
-        self.current_cave_floor_progress = 0
+        self.deepest_dungeon_floor = 0
+        self.current_dungeon_floor = 0
+        self.current_dungeon_floor_progress = 0
         self.random_encounter_monster = None
 
         # Time code
@@ -270,12 +275,6 @@ class Hero(Base):
     def non_equipped_items(self):
         return self.inventory.unequipped or []
 
-    # Can we renamed this? I don't really get what it is from the name
-    # (elthran) It's just temporary code while I amtesting notifications.
-    # It will be scrapped soon.
-    def page_refresh_character(self):
-        self.quest_notification = None
-
     def consume_item(self, item_name):
         for my_item in self.inventory:
             if my_item.name == item_name:
@@ -322,4 +321,20 @@ class Hero(Base):
         """
         if location.type in ("cave", "town"):
             self.current_city = location
+
+        # So the game remembers your last visited city
+        if location.type == 'town':
+            self.last_city = location
+        if location.type == 'map':
+            self.current_world = location
         return location
+
+    def get_other_heroes_at_current_location(self):
+        """Return a list of heroes at the same location as this one.
+
+        Note including self.
+        This is probably inefficient ...
+        """
+        return [hero
+                for hero in self.current_location.heroes_by_current_location
+                if self.id != hero.id]

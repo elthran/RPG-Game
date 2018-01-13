@@ -430,7 +430,7 @@ def reset_character(stat_type, hero=None):
     hero.basic_ability_points = 5
     hero.archetype_ability_points = 5
     hero.calling_ability_points = 5
-    hero.pantheonic_ability_points = 5
+    hero.pantheon_ability_points = 5
     hero.attribute_points = 10
     hero.proficiency_points = 10
     return redirect(url_for('home'))  # return a string
@@ -454,7 +454,7 @@ def admin(myself=None, hero=None):
         hero.basic_ability_points = int(request.form["Basic_ability_points"])
         hero.archetype_ability_points = int(request.form["Archetype_ability_points"])
         hero.calling_ability_points = int(request.form["Calling_ability_points"])
-        hero.pantheonic_ability_points = int(request.form["Pantheonic_ability_points"])
+        hero.pantheon_ability_points = int(request.form["Pantheon_ability_points"])
         hero.attribute_points = int(request.form["Attribute_points"])
         hero.proficiency_points = int(request.form['Proficiency_Points'])
         hero.refresh_character(full=True)
@@ -471,7 +471,7 @@ def admin(myself=None, hero=None):
         ("Basic_ability_points", hero.basic_ability_points),
         ("Archetype_ability_points", hero.archetype_ability_points),
         ("Calling_ability_points", hero.calling_ability_points),
-        ("Pantheonic_ability_points", hero.pantheonic_ability_points),
+        ("Pantheonic_ability_points", hero.pantheon_ability_points),
         ("Attribute_points", hero.attribute_points),
         ("Proficiency_Points", hero.proficiency_points)]
     return render_template('admin.html', page_title=page_title, hero=hero,
@@ -496,7 +496,7 @@ def display_user_page(page_type, page_detail, hero=None):
     if page_type == "display":
         sorted_heroes = database.fetch_sorted_heroes(page_detail, descending)
         return render_template(
-            'users.html', page_title="Users", myHero=hero,
+            'users.html', page_title="Users", hero=hero,
             page_detail=page_detail, all_heroes=sorted_heroes)
     elif page_type == "see_user":
         this_user = database.get_user_by_username(page_detail)
@@ -509,11 +509,11 @@ def display_user_page(page_type, page_detail, hero=None):
                 confirmation_message = "Message sent!"
             else:
                 confirmation_message = "Please type your message"
-            return render_template('user_page.html', myHero=hero, page_title=str(this_user.username),
+            return render_template('user_page.html', hero=hero, page_title=str(this_user.username),
                                    enemy_hero=this_hero, confirmation=confirmation_message)
         # Above this is inbox nonsense
         return render_template(
-            'user_page.html', myHero=hero, page_title=str(this_user.username),
+            'user_page.html', hero=hero, page_title=str(this_user.username),
             enemy_hero=this_hero)
 
 
@@ -546,14 +546,14 @@ def global_chat(hero=None):
                                  message))  # Currently it just appends tuples to the chat list, containing the hero's name and the message
         if len(game.global_chat) > 25:  # After it reaches 5 messages, more messages will delete theoldest ones
             game.global_chat = game.global_chat[1:]
-        return render_template('global_chat.html', myHero=hero, chat=game.global_chat, users_in_chat=game.global_chat_user_list)
-    return render_template('global_chat.html', page_title="Chat", myHero=hero, chat=game.global_chat, users_in_chat=game.global_chat_user_list)
+        return render_template('global_chat.html', hero=hero, chat=game.global_chat, users_in_chat=game.global_chat_user_list)
+    return render_template('global_chat.html', page_title="Chat", hero=hero, chat=game.global_chat, users_in_chat=game.global_chat_user_list)
 
 
 @app.route('/inbox/<outbox>', methods=['GET', 'POST'])
 @uses_hero
 def inbox(outbox, hero=None):
-    hero.user.inbox_alert = False
+    hero.user.inbox_alert = False # Your inbox alert will no longer glow until a new message is sent to you, even if you dont open all your letters
     if outbox == "outbox":
         outbox = True
     else:
@@ -591,7 +591,7 @@ def inbox(outbox, hero=None):
 @app.route('/spellbook')
 @uses_hero
 def spellbook(hero=None):
-    return render_template('spellbook.html', page_title="Spellbook", myHero=hero)
+    return render_template('spellbook.html', page_title="Spellbook", hero=hero)
 
 
 
@@ -613,11 +613,11 @@ def home(hero=None):
     # Sets up initial valid moves on the map.
     # Should be a list of urls ...
     # session['valid_moves'] \
-    #  = myHero.current_world.show_directions(myHero.current_location)
-    # session['valid_moves'].append(myHero.current_location.id)
+    #  = hero.current_world.show_directions(hero.current_location)
+    # session['valid_moves'].append(hero.current_location.id)
 
     return render_template(
-        'profile_home.html', page_title="Profile", myHero=hero, profile=True)
+        'profile_home.html', page_title="Profile", hero=hero, profile=True)
 
 
 # This gets called anytime you have  attribute points to spend
@@ -627,27 +627,7 @@ def home(hero=None):
 @login_required
 @uses_hero
 def attributes(hero=None):
-    # (Elthran) ATTRIBUTE_INFORMATION is currently being imported from attributes.py  This is because I was getting a hard to track down bug where I was modifying that file
-    # but you had hand typed the info here and that was causing my bug. Maybelater we can store it all in an html file or something?
-    # Fix single quotes in string bug when converting from JS to HTML
-    # Python to Jinja to HTML to JS needs separate fix.
-    for index, data in enumerate(ATTRIBUTE_INFORMATION):
-        attribute, description = data
-        ATTRIBUTE_INFORMATION[index] = attribute, description.replace("'", "\\'")
-
-    if request.method == 'POST':
-        points_spent = 0
-        for element in request.form:
-            form_value = int(request.form[element])
-            attribute = getattr(hero.attributes, element[0:-5])  # Convert name e.g. agilityInput becomes agility.
-            points_spent += form_value - attribute.level
-            attribute.level = form_value
-        hero.attribute_points -= points_spent
-        hero.refresh_character()
-        return render_template('profile_attributes.html', page_title="Attributes", myHero=hero,
-                               attribute_information=ATTRIBUTE_INFORMATION)
-    return render_template('profile_attributes.html', page_title="Attributes", myHero=hero,
-                           attribute_information=ATTRIBUTE_INFORMATION)
+    return render_template('profile_attributes.html', page_title="Attributes", hero=hero, all_attributes=hero.attributes)
 
 # This gets called anytime you have secondary attribute points to spend
 # Currently I send "proficiencies=True" so that the html knows to highlight
@@ -656,23 +636,49 @@ def attributes(hero=None):
 @login_required
 @uses_hero
 def proficiencies(hero=None):
-    profs1 = [hero.attributes.agility, hero.attributes.brawn, hero.attributes.charisma, hero.attributes.divinity]
-    profs2 = [hero.attributes.fortuity, hero.attributes.intellect, hero.attributes.pathfinding,
-              hero.attributes.quickness]
-    profs3 = [hero.attributes.resilience, hero.attributes.survivalism, hero.attributes.vitality,
-              hero.attributes.willpower]
     # This page is literally just a html page with tooltips and proficiency level up buttons. No python code is needed. Python only tells html which page to load.
-    return render_template('profile_proficiencies.html', page_title="Proficiencies", myHero=hero, profs1=profs1,
-                           profs2=profs2, profs3=profs3)
+    return render_template('profile_proficiencies.html', page_title="Proficiencies", hero=hero, all_attributes=hero.attributes
+                           ,all_proficiencies=hero.proficiencies)
 
 
 @app.route('/ability_tree/<spec>')
 @login_required
 @uses_hero
 def ability_tree(spec, hero=None):
-    page_title = "Abilities"
-    return render_template(
-        'profile_ability.html', myHero=hero, ability_tree=spec, page_title=page_title)
+    all_abilities = []
+    becomeType = None
+    all_type_choices = []
+    if spec == "basic":
+        points_remaining = hero.basic_ability_points
+    elif spec == "archetype":
+        points_remaining = hero.archetype_ability_points
+        if hero.specializations.archetype == None:
+            becomeType = "archetype"
+
+            # all_specializations = database.get_all_specializations()
+            # see EZDB.get_all_users() -- maybe sort by name?
+            all_type_choices = [("brute", "A character who uses strength and combat to solve problems. Proficient with many types of weapons."),
+                                ("scoundrel", "A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery."),
+                                ("ascetic", "A character who focuses on disciplining mind and body. They use a combination of combat and intellect."),
+                                ("survivalist", "A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration."),
+                                ("philosopher", "A character who uses intellect to solve problems. Excels at any task requiring powers of the mind."),
+                                ("opportunist", "A character who solves problems using speech and dialogue.")]
+    elif spec == "calling":
+        points_remaining = hero.calling_ability_points
+        if hero.calling == None:
+            becomeType = "archetype"
+            all_type_choices = [("thief", "A character who specializes in thievery and stealth.")]
+    elif spec == "pantheon":
+        points_remaining = hero.pantheon_ability_points
+        if hero.pantheon == None:
+            becomeType = "pantheon"
+            all_type_choices = [("ashari'", "Goddess of the sun")]
+    for ability in hero.abilities:
+        if ability.hidden == False and ability.tree == spec:
+            all_abilities.append(ability)
+    return render_template('profile_ability.html', page_title="Abilities", hero=hero, ability_tree=spec,
+                           all_abilities=all_abilities, points_remaining=points_remaining, becomeType=becomeType,
+                           all_type_choices=all_type_choices)
 
 
 @app.route('/inventory_page')
@@ -680,21 +686,26 @@ def ability_tree(spec, hero=None):
 @uses_hero
 def inventory_page(hero=None):
     page_title = "Inventory"
+    total_armour = 0
+    for armour in hero.inventory:
+        if armour.inventory_unequipped == None:
+            total_armour += armour.armour_value
+            print(armour)
+       # if not armour.unequipped:
+      #      total_armour += armour.armour_value
     # for item in hero.inventory:
     #     if item.wearable:
     #         item.check_if_improvement()
     return render_template(
-        'inventory2.html', hero=hero, page_title=page_title,
-        isinstance=isinstance)
+        'inventory.html', hero=hero, page_title=page_title,
+        isinstance=isinstance, getattr=getattr, test_value=total_armour)
 
 @app.route('/quest_log')
 @login_required
 @uses_hero
 def quest_log(hero=None):
-    hero.page_refresh_character()
     page_title = "Quest Log"
-    return render_template(
-        'journal.html', hero=hero, quest_log=True, page_title=page_title)
+    return render_template('journal.html', hero=hero, quest_log=True, page_title=page_title)
 
 @app.route('/bestiary/<current_monster_id>')
 @login_required
@@ -709,7 +720,7 @@ def bestiary(current_monster_id, hero=None):
                 break
     page_title = "Bestiary"
     return render_template(
-        'journal.html', myHero=hero, bestiary=True, page_title=page_title,
+        'journal.html', hero=hero, bestiary=True, page_title=page_title,
         bestiary_data=bestiary_data, current_monster=current_monster)
 
 
@@ -725,7 +736,7 @@ def people_log(current_npc, hero=None):
                 current_npc = npc
                 break
     page_title = "People"
-    return render_template('journal.html', myHero=hero, people_log=True, page_title=page_title, npc_data=npc_data,
+    return render_template('journal.html', hero=hero, people_log=True, page_title=page_title, npc_data=npc_data,
                            current_npc=current_npc)  # return a string
 
 @app.route('/map_log')
@@ -733,15 +744,16 @@ def people_log(current_npc, hero=None):
 @uses_hero
 def map_log(hero=None):
     page_title = "Map"
-    return render_template('journal.html', myHero=hero, map_log=True, page_title=page_title)  # return a string
+    return render_template('journal.html', hero=hero, map_log=True, page_title=page_title)  # return a string
 
 @app.route('/achievement_log')
 @login_required
 @uses_hero
 def achievement_log(hero=None):
     page_title = "Achievements"
-    return render_template('journal.html', myHero=hero, achievement_log=True,
+    return render_template('journal.html', hero=hero, achievement_log=True,
                            completed_achievements=hero.completed_achievements, page_title=page_title)  # return a string
+
 
 @app.route('/under_construction')
 @login_required
@@ -750,32 +762,24 @@ def under_construction(hero=None):
     page_title = "Under Construction"
     return render_template('layout.html', page_title=page_title, hero=hero)  # return a string
 
-@app.route('/map/<location_name>')
-@app.route('/town/<location_name>')
-@app.route('/cave/<location_name>')
-@app.route('/explorable/<location_name>')
+
+@app.route('/building/<name>')
 @login_required
 @uses_hero
-@url_protect  # TODO: this should implement @update_current_location?
-def move(location_name, hero=None):
-    """Set up a directory for the hero to move to.
-
-    Arguments are in the form of a url and are sent by the data that can be
-    found with the 'view page source' command in the browser window.
-    """
-    location = database.get_object_by_name('Location', location_name)
-    # pdb.set_trace()
-    if location.type == 'town': # So the game remembers your last visited city
-        hero.last_city = location
-    if location.type == 'map':
-        hero.current_world = location
-    else:
-        hero.current_location = location
-        other_heroes = [other_hero for other_hero in hero.current_location.heroes_by_current_location if
-                        hero.id != other_hero.id]
+@update_current_location
+def building(name='', hero=None, location=None):
+    other_heroes = hero.get_other_heroes_at_current_location()
+    if name == "Old Man's Hut":
+        blacksmith_path_name = "Get Acquainted with the Blacksmith"
+        if not database.hero_has_quest_path_named(hero, blacksmith_path_name):
+            print("Adding new quests!")
+            blacksmith_path = database.get_quest_path_template(blacksmith_path_name)
+            hero.journal.quest_paths.append(blacksmith_path)
+        else:
+            print("Hero has path of that name, ignoring ..")
 
     return render_template(
-        'move.html', myHero=hero,
+        'move.html', hero=hero,
         page_title=location.display.page_title,
         page_heading=location.display.page_heading,
         page_image=location.display.page_image,
@@ -783,6 +787,36 @@ def move(location_name, hero=None):
         people_of_interest=other_heroes,
         places_of_interest=location.places_of_interest)
 
+
+@app.route('/map/<name>')
+@app.route('/town/<name>')
+@app.route('/dungeon/<name>')
+@app.route('/explorable/<name>')
+@login_required
+@uses_hero
+@update_current_location
+@url_protect
+def move(name='', hero=None, location=None):
+    """Set up a directory for the hero to move to.
+
+    Arguments are in the form of a url and are sent by the data that can be
+    found with the 'view page source' command in the browser window.
+    """
+    # pdb.set_trace()
+    if location.type == 'map':
+        location.pprint()
+        other_heroes = []
+    else:
+        other_heroes = hero.get_other_heroes_at_current_location()
+
+    return render_template(
+        'move.html', hero=hero,
+        page_title=location.display.page_title,
+        page_heading=location.display.page_heading,
+        page_image=location.display.page_image,
+        paragraph=location.display.paragraph,
+        people_of_interest=other_heroes,
+        places_of_interest=location.places_of_interest)
 
 @app.route('/barracks/<name>')
 @login_required
@@ -810,78 +844,74 @@ def barracks(name='', hero=None, location=None):
 
     return render_template('generic.html', hero=hero)
 
-# From /cave
-@app.route('/cave_entrance/<name>')
+# From /dungeon
+@app.route('/dungeon_entrance/<name>')
 @login_required
 @uses_hero
 @update_current_location
-def cave_entrance(name='', hero=None, location=None):
-    location.display.page_heading = " You are in the cave and exploring!"
-    hero.current_cave_floor = 0
-    hero.current_cave_progress = 0
+def dungeon_entrance(name='', hero=None, location=None):
+    location.display.page_heading = " You are in the dungeon and exploring!"
+    hero.current_dungeon_floor = 0
+    hero.current_dungeon_progress = 0
     hero.random_encounter_monster = False
-
-    explore_cave = database.get_object_by_name('Location', 'Explore Cave')
-    explore_cave.display.paragraph = "Take a step into the cave."
-
-    location.children = [explore_cave]
-
+    explore_dungeon = database.get_object_by_name('Location', 'Explore Dungeon')
+    explore_dungeon.display.paragraph = "Take a step into the dungeon."
+    location.children = [explore_dungeon]
     return render_template('generic.html', hero=hero, game=game)  # return a string
 
-# From /inside_cave
-@app.route('/explore_cave/<name>/<extra_data>')
+# From /inside_dungeon
+@app.route('/explore_dungeon/<name>/<extra_data>')
 @login_required
 @uses_hero
 @update_current_location
-def explore_cave(name='', hero=None, location=None, extra_data=None):
+def explore_dungeon(name='', hero=None, location=None, extra_data=None):
     # For convenience
-
-    location.display.page_heading = "Current Floor of Cave: " + str(hero.current_cave_floor)
-    if extra_data == "Entering": # You just arrived into the cave
-        location.display.page_heading += "You explore deeper into the cave!"
-        page_links = [("Walk deeper into the", "/explore_cave/Explore%20Cave/None", "cave", ".")]
-        return render_template('cave_exploring.html', hero=hero, game=game, page_links=page_links)
+    location.display.page_heading = "Current Floor of dungeon: " + str(hero.current_dungeon_floor)
+    if extra_data == "Entering": # You just arrived into the dungeon
+        location.display.page_heading += "You explore deeper into the dungeon!"
+        page_links = [("Walk deeper into the", "/explore_dungeon/Explore%20Dungeon/None", "dungeon", ".")]
+        return render_template('dungeon_exploring.html', hero=hero, game=game, page_links=page_links)
     if extra_data == "Item":
         # The problem here is that when you see an item .. you have already
         # picked it up.
         # I think you need to use a different order of operations.
         # Like put the "add item" after the "pick up item" part
         discovered_item = database.get_random_item()
-        location.display.page_heading = "You find an item in the cave! It's a " + discovered_item.name
+        location.display.page_heading = "You find an item in the dungeon! It's a " + discovered_item.name
         hero.inventory.add_item(discovered_item)
-        page_links = [("Pick up the ", "/explore_cave/Explore%20Cave/None", "item", ".")]
-        return render_template('cave_exploring.html', hero=hero, game=game, page_links=page_links)
+        page_links = [("Pick up the ", "/explore_dungeon/Explore%20Dungeon/None", "item", ".")]
+        return render_template('dungeon_exploring.html', hero=hero, game=game, page_links=page_links)
     encounter_chance = randint(0, 100)
     if hero.random_encounter_monster == True: # You have a monster waiting for you from before
         location.display.page_heading += "The monster paces in front of you."
-        enemy = monster_generator(hero.current_cave_floor + 1) # This should be a saved monster and not re-generated :(
+        enemy = monster_generator(hero.current_dungeon_floor + 1) # This should be a saved monster and not re-generated :(
         game.set_enemy(enemy)
         page_links = [("Attack the ", "/battle/monster", "monster", "."),
-                      ("Attempt to ", "/cave_entrance/Cave%20Entrance", "flee", ".")]
+                      ("Attempt to ", "/dungeon_entrance/Dungeon%20Entrance", "flee", ".")]
     else: # You continue exploring
-        hero.current_cave_floor_progress += 1
-        if encounter_chance > (100 - (hero.current_cave_floor_progress*4)):
-            hero.current_cave_floor += 1
-            if hero.current_cave_floor > hero.deepest_cave_floor:
-                hero.deepest_cave_floor = hero.current_cave_floor
-            hero.current_cave_floor_progress = 0
-            location.display.page_heading = "You descend to a deeper level of the cave!! Current Floor of Cave: " + str(hero.current_cave_floor)
-            page_links = [("Start ", "/explore_cave/Explore%20Cave/None", "exploring", " this level of the cave.")]
+        hero.current_dungeon_floor_progress += 1
+        if encounter_chance > (100 - (hero.current_dungeon_floor_progress*4)):
+            hero.current_dungeon_floor += 1
+            if hero.current_dungeon_floor > hero.deepest_dungeon_floor:
+                hero.deepest_dungeon_floor = hero.current_dungeon_floor
+            hero.current_dungeon_floor_progress = 0
+            location.display.page_heading = "You descend to a deeper level of the dungeon!! Current Floor of dungeon: " + str(hero.current_dungeon_floor)
+            page_links = [("Start ", "/explore_dungeon/Explore%20Dungeon/None", "exploring", " this level of the dungeon.")]
         elif encounter_chance > 35: # You find a monster! Oh no!
             location.display.page_heading += "You come across a terrifying monster lurking in the shadows."
-            enemy = monster_generator(hero.current_cave_floor+1)
-            hero.current_cave_monster = True
+            enemy = monster_generator(hero.current_dungeon_floor+1)
+            hero.current_dungeon_monster = True
             game.set_enemy(enemy)
             page_links = [("Attack the ", "/battle/monster", "monster", "."),
-                          ("Attempt to ", "/cave_entrance/Cave%20Entrance", "flee", ".")]
+                          ("Attempt to ", "/dungeon_entrance/Dungeon%20Entrance", "flee", ".")]
         elif encounter_chance > 15: # You find an item!
-            location.display.page_heading += "You find something shiny in a corner of the cave."
-            page_links = [("", "/explore_cave/Explore%20Cave/Item", "Investigate", " the light's source.")]
+            location.display.page_heading += "You find something shiny in a corner of the dungeon."
+            page_links = [("", "/explore_dungeon/Explore%20Dungeon/Item", "Investigate", " the light's source.")]
         else:
-            location.display.page_heading += " You explore deeper into the cave!"
-            page_links = [("Walk deeper into the", "/explore_cave/Explore%20Cave/None", "cave", ".")]
-    location.display.page_heading += " Current progress on this floor: " + str(hero.current_cave_floor_progress)
-    return render_template('cave_exploring.html', hero=hero, game=game, page_links=page_links)  # return a string
+            location.display.page_heading += " You explore deeper into the dungeon!"
+            page_links = [("Walk deeper into the", "/explore_dungeon/Explore%20Dungeon/None", "dungeon", ".")]
+    location.display.page_heading += " Current progress on this floor: " + str(hero.current_dungeon_floor_progress)
+    return render_template('dungeon_exploring.html', hero=hero, game=game, page_links=page_links)  # return a string
 
 # From /barracks
 @app.route('/spar/<name>')
@@ -960,7 +990,7 @@ def arena(name='', hero=None, location=None):
     return render_template(
         'building_default.html', page_title=location.display.page_title,
         page_heading=location.display.page_heading,
-        page_image=location.display.page_image, myHero=hero, game=game,
+        page_image=location.display.page_image, hero=hero, game=game,
         page_links=page_links, enemy_info=conversation, enemy=game.enemy)
 
 
@@ -988,7 +1018,7 @@ def battle(this_user=None, hero=None):
         page_heading = "You have died."
         location = database.get_object_by_name('Location', hero.last_city.name)
         hero.current_location = location
-        hero.current_cave_monster = False
+        hero.current_dungeon_monster = False
     else:
         """
         for item in hero.equipped_items:
@@ -1030,16 +1060,16 @@ def battle(this_user=None, hero=None):
         page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(
             experience_gained) + " experience!"
         page_links = [("Return to where you ", hero.current_location.url, "were", ".")]
-        hero.current_cave_monster = False
+        hero.current_dungeon_monster = False
         if level_up:
             page_heading += " You have leveled up! You should return to your profile page to advance in skill."
             page_links = [("Return to your ", "/home", "profile", " page and distribute your new attribute points."),
-                          ("Return to where you ", "/explore_cave/Explore%20Cave/Entering", "were", ".")]
+                          ("Return to where you ", "/explore_dungeon/Explore%20Dungeon/Entering", "were", ".")]
 
     # Return an html page built from a Jinja2 form and the passed data.
     return render_template(
         'battle.html', page_title=page_title, page_heading=page_heading,
-        battle_log=battle_log, myHero=hero, enemy=game.enemy,
+        battle_log=battle_log, hero=hero, enemy=game.enemy,
         page_links=page_links)
 
 
@@ -1054,7 +1084,7 @@ def store(name, hero=None, location=None):
     items_for_sale = []
     if name == "Blacksmith":
         page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]
-        return render_template('store.html', myHero=hero, page_title=page_title, page_links=page_links)  # return a string
+        return render_template('store.html', hero=hero, page_title=page_title, page_links=page_links)  # return a string
     elif name == "armoury":
         page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
         for item in database.get_all_store_items():
@@ -1065,7 +1095,7 @@ def store(name, hero=None, location=None):
         for item in database.get_all_store_items():
             if item.weapon:
                 items_for_sale.append(item)
-    return render_template('store.html', myHero=hero, items_for_sale=items_for_sale, page_title=page_title,
+    return render_template('store.html', hero=hero, items_for_sale=items_for_sale, page_title=page_title,
                            page_links=page_links)  # return a string
 
 
@@ -1142,7 +1172,7 @@ def tavern(name='', hero=None):
                                    quest[0] != "Become an apprentice at the tavern."]
             hero.completed_quests.append("Become an apprentice at the tavern.")
             page_heading = "You are now my apprentice!"
-    return render_template('tavern.html', myHero=hero, page_title=page_title, page_heading=page_heading,
+    return render_template('tavern.html', hero=hero, page_title=page_title, page_heading=page_heading,
                            page_image=page_image, paragraph=paragraph, tavern=tavern,
                            dialogue_options=dialogue_options)  # return a string
 
@@ -1155,11 +1185,11 @@ def marketplace(inventory, hero=None):
     items_for_sale = []
     if inventory == "Marketplace":
         page_links = [("Take a look at our ", "/marketplace/general", "selection", "."), ("Return to ", hero.current_city.url, "town", ".")]
-        return render_template('store.html', myHero=hero, page_title=page_title, page_links=page_links)  # return a string
+        return render_template('store.html', hero=hero, page_title=page_title, page_links=page_links)  # return a string
     elif inventory == "general":
         page_links = [("Let me go back to the ", "/marketplace/Marketplace", "marketplace", " instead.")]
         items_for_sale = database.get_all_marketplace_items()
-    return render_template('store.html', myHero=hero, items_for_sale=items_for_sale, page_title=page_title,
+    return render_template('store.html', hero=hero, items_for_sale=items_for_sale, page_title=page_title,
                            page_links=page_links)  # return a string
 
 
@@ -1184,7 +1214,7 @@ def leave_town(name='', hero=None):
         ("City Guard: ", "You are too young to be out on your own.")]
     page_links = [
         ("Return to the ", "/Town/" + hero.current_city.name, "city", ".")]
-    return render_template('gate.html', myHero=hero,
+    return render_template('gate.html', hero=hero,
                            page_heading=location.display.page_heading,
                            conversation=conversation,
                            page_links=page_links)  # return a string
@@ -1194,12 +1224,13 @@ def leave_town(name='', hero=None):
 # This gets called anytime a button gets clicked in html using
 # <button class="command", value="foo">. "foo" is what gets sent to this
 # Python code.
-@app.route('/command/<cmd>')  # need to make sure this doesn't conflict with other routes
+# need to make sure this doesn't conflict with other routes
+@app.route('/command/<cmd>', methods=['GET', 'POST'])
 @uses_hero
 def command(cmd=None, hero=None):
     """Accept a string from HTML button code -> send back a response.
 
-    The respose must be in the form: "key=value" (at this time.)
+    The response must be in the form: "key=value" (at this time.)
     See the Command class in the commands.py module.
     cmd is equal to the value of the value field in the html code
     i.e. <button value='foo'> -> cmd == 'foo'
@@ -1215,7 +1246,7 @@ def command(cmd=None, hero=None):
     than I need right now.
     """
 
-    testing = False  # True
+    testing = False  # True/False
     if testing:
         print('request is:', repr(request))
         # print('request data:', repr(request.data))
@@ -1228,13 +1259,19 @@ def command(cmd=None, hero=None):
     # event.add["hero"] = hero
     # event.add["database"] = database
 
+    response = None
     try:
         # command_function = getattr(Command, <cmd>)
         # response = command_function(hero, database,
         #   javascript_kwargs_from_html)
         command_function = Command.cmd_functions(cmd)
         try:
-            response = command_function(hero, database=database,
+            if request.method == 'POST' and request.is_json:
+                data = request.get_json()
+                response = command_function(hero, database, data=data,
+                                            engine=engine)
+            else:
+                response = command_function(hero, database=database,
                                         arg_dict=request.args, engine=engine)
             # pdb.set_trace()
             return response
@@ -1243,7 +1280,6 @@ def command(cmd=None, hero=None):
     except AttributeError as ex:
         if str(ex) == "type object 'Command' has no attribute '{}'".format(
                 cmd):
-            print("Warning: Using old code for command: '{}'".format(cmd))
             print("You need to write a static function called '{}' in "
                   "commands.py in the Command class.".format(cmd))
             raise ex
@@ -1256,7 +1292,7 @@ def command(cmd=None, hero=None):
 def about_page(hero=None):
     info = "The game is being created by Elthran and Haldon, with some help " \
            "from Gnahz. Any inquiries can be made to elthranRPG@gmail.com"
-    return render_template('about.html', myHero=hero, page_title="About",
+    return render_template('about.html', hero=hero, page_title="About",
                            gameVersion="0.00.02", about_info=info)
 
 

@@ -1,16 +1,92 @@
 import pdb
 
-from flask import render_template_string
+from flask import render_template_string, jsonify
 
+#TODO: update documentation!
 class Command:
     """Run a list of html update commands based on the string cmd.
     
     Usage:
-    in app.py
-    
+    # 'app.py'
     from commands import Command
-    
-    @app.route('/<cmd>')
+    NEW STYLE
+    @app.route('/command/<cmd>')
+    command_function = Command.cmd_functions(cmd)
+        if request.method == 'POST' and request.is_json:
+            data = request.get_json()
+            response = command_function(hero, database, data=data,
+                                            engine=engine)
+        return response
+
+    # 'commands.py'
+    @staticmethod
+    def buy(hero, database, data, engine):
+        item_id = data['id']
+        location = data['location']
+        item = database.create_item(item_id)
+        if hero.gold >= item.buy_price:
+            hero.inventory.add_item(item)
+            hero.gold -= item.buy_price
+            engine.spawn(
+                'buy_event',
+                hero,
+                description="{} buys a/an {}.".format(hero.name, item.name)
+            )
+            return jsonify(
+                message="Purchased: {}: id={}".format(item.name, item.id),
+                heroGold=hero.gold)
+        return jsonify(error="Not enough gold to buy '{}'!".format(item.name))
+
+    # 'store.html'
+    <button onclick="sendToPy(
+        event,
+        itemPurchasedPopup, 'buy', {'id': {{ item.id }}});">Buy</button>
+    NOTE: the data is sent as JSON
+
+    # 'script.js'
+    See:
+    function sendToPy(event, callback, cmd, data, preProcess, url) {
+    "use strict";
+    var element = event.target;
+    ...
+    if (cmd) {
+        url = "/command/" + cmd;
+    } else if (!cmd && !url) {
+        // if url is blank use url of page
+        url = window.location.pathname;
+    }
+
+    // Normal data processing is object form.
+    // Must return a JSON object - no I can't check for this.
+    if (preProcess) {
+        data = preProcess(element);
+    }
+
+    // If you send a simple string location won't be added.
+    // If you send (hopefully) some JSON the location parameter will be added.
+    if (typeof data !== "string") {
+        // If there is some (JSON type data) add in the location variable.
+        data.location = window.location.pathname;
+    }
+
+    postJSON(url, data, callback);
+    ...
+    }
+
+    #NOTES:
+        Go to the real code for most up to date documentation and examples.
+
+    -preProcess is the name of whatever JS function you want to use
+    to extract the data from the HTML. See 'scripts.js > getIdsFromCheckboxes'
+    See: 'inbox.html'
+    <input type="submit" name="delete" form="messageForm" value="DELETE"
+    onclick="return sendToPy(
+        event, updateMessageTable, null, null, getIdsFromCheckboxes);"/>
+
+
+
+    OLD STYLE
+    @app.route('/command/<cmd>')
     def command(cmd=None):
         try:
             # command_function = getattr(Command, <cmd>)
@@ -69,33 +145,26 @@ class Command:
     """
 
     @staticmethod
-    def buy(hero, database, arg_dict, engine):
+    def buy(hero, database, data, engine):
         """Allow the user to buy items from the Blacksmith.
 
         Returns an error if the character doesn't have enough gold.
         """
-        item_id = arg_dict.get('data', None, type=int)
-        location = arg_dict.get('location', None, type=str)
+        item_id = data['id']
+        location = data['location']
         item = database.create_item(item_id)
         if hero.gold >= item.buy_price:
             hero.inventory.add_item(item)
             hero.gold -= item.buy_price
-            # return buy success event.
-            # Test event later against posible quest events conditions.
-            # for path in hero.journal.quest_paths:
-            #     if (path.active and
-            #         path.quest.name == "Get Acquainted with the Blacksmith" and
-            #         path.stage == 2 and
-            #         location in ["/store/armoury", "/store/weaponry"]):
-            #         path.advance()
             engine.spawn(
                 'buy_event',
                 hero,
                 description="{} buys a/an {}.".format(hero.name, item.name)
             )
-
-            return "{}: id={}&&{}".format(item.name, item.id, hero.gold)
-        return "error: not enough gold!"
+            return jsonify(
+                message="Purchased: {}: id={}".format(item.name, item.id),
+                heroGold=hero.gold)
+        return jsonify(error="Not enough gold to buy '{}'!".format(item.name))
 
     @staticmethod
     def consume(hero, database, arg_dict, **kwargs):
@@ -120,7 +189,9 @@ class Command:
             hero,
             description="{} equips a/an {}.".format(hero.name, item.name)
         )
-        return item.type + "&&" + str(ids_to_unequip)
+        slot = hero.inventory.slots_used_by_item_type[item.type]["primary"]
+        slot = slot.replace('_', "-")
+        return slot + "&&" + str(ids_to_unequip)
 
     @staticmethod
     def unequip(hero, database, arg_dict, engine):
@@ -133,51 +204,8 @@ class Command:
             hero,
             description="{} unequips a/an {}.".format(hero.name, item.name)
         )
-        return item.type
-
-    def update_ability(hero, database, arg_dict, **kwargs):
-        # Format of data in html button is: data = "{{ ability.id }}, {{ ability.tree }}"
-        data = arg_dict.get('data', "").split(", ")
-        if data:
-            ability_id = int(data[0])
-            ability_tree = data[1]
-        else:
-            ability_id = None
-            ability_tree = None
-            return "error: button came back with an empty string for data"
-        print(ability_tree)
-        if ability_tree == "basic":
-            if hero.basic_ability_points == 0:
-                return "error: not enough points, should have been grayed out"
-            hero.basic_ability_points -= 1
-        elif ability_tree == "archetype":
-            if hero.archetype_ability_points == 0:
-                return "error: not enough points, should have been grayed out"
-            hero.archetype_ability_points -= 1
-        ability = database.get_ability_by_id(ability_id)
-        if ability.is_max_level():
-            return "error: this ability should have been grayed out as it's at max level"
-        print("running learn_ability command:" + ability.name)
-        ability.level += 1
-        new_description = ability.get_description()
-        status = ""
-        hero.refresh_character()
-        if ability.is_max_level():
-            status = "max level"
-        return "{}&&{}&&{}&&{}&&{}".format(ability_id, ability.level, status, ability_tree, new_description)
-
-    def become_archetype(hero, database, arg_dict, **kwargs):
-        archetype = arg_dict.get('data', None, type=str)
-        hero.archetype = archetype
-        for ability in hero.abilities:
-            if ability.tree == "archetype":
-                if ability.tree_type != hero.archetype.lower():
-                    ability.hidden = True
-                    ability.level = 0
-                else:
-                    ability.hidden = False
-                    ability.learnable = True
-        return "success"
+        slot = hero.inventory.slots_used_by_item_type[item.type]["primary"]
+        return slot
 
     def cast_spell(hero, database, arg_dict, **kwargs):
         ability_id = arg_dict.get('data', None, type=int)
@@ -186,39 +214,54 @@ class Command:
         return "success"
 
     @staticmethod
+    def change_attribute_tooltip(hero, database, arg_dict, **kwargs):
+        # I want to pass in the actual attribute here instead of the description. That way I can assign the attribute name and description to the tooltip.
+        # Unfortunately, I don't know how to pull the attribute object from the database. I need a get_attribute_by_name() function in database.py
+        tooltip = arg_dict.get('data', None, type=str)
+        return "{}".format(tooltip)
+
+    @staticmethod
+    def update_attribute(hero, database, arg_dict, **kwargs):
+        attribute_id = arg_dict.get('data', None, type=int)
+        if hero.attribute_points <= 0:
+            return "error: no attribute points"
+        for attribute in hero.attributes:
+            if attribute.id == attribute_id:
+                attribute.level += 1
+        hero.attribute_points -= 1
+        if hero.attribute_points == 0:
+            return "hide_all".format()
+        return "success".format()
+
+    @staticmethod
+    def change_proficiency_tooltip(hero, database, arg_dict, **kwargs):
+        tooltip_id = arg_dict.get('data', None, type=int)
+        proficiency = database.get_proficiency_by_id(tooltip_id)
+        tooltip = proficiency.tooltip.replace(";", "</li><li>")
+        tooltip = "<h2>" + proficiency.name + "</h2>" + proficiency.description + "<ul><li>" + tooltip + "</li></ul>"
+        return "{}".format(tooltip)
+
+    @staticmethod
     def update_proficiency(hero, database, arg_dict, **kwargs):
         """Raise proficiency level, decrement proficiency_points.
 
         Return status of: success, hide_all, hide_this.
         "success" means hide none ... maybe I should call it that instead?
         """
-
-        tooltip_template = """{{ proficiency.description }}:
-{% set proficiency_tooltip = proficiency.tooltip.split(';') %}
-{% for tooltip in proficiency_tooltip %}
-<br>&bull; {{ tooltip }}
-{% endfor %}
-<div id="error-{{ proficiency.id }}" style="display:
-{% if proficiency.is_max_level() %} inline{% else %} none
-{% endif %}"><br>{{ proficiency.error }}</div>"""
-
         id = arg_dict.get('data', None, type=int)
         proficiency = database.get_proficiency_by_id(id)
-
-
+        #tooltip = change_proficiency_tooltip(hero, database, arg_dict, **kwargs)
+        #print(tooltip)
         # Defensive coding: command buttons should be hidden by JavaScript
         # when no longer valid due to the return values of this function.
         # If for some reason they are still clickable return error to JS console.
         if hero.proficiency_points <= 0 or proficiency.is_max_level():
             return "error: no proficiency_points or proficiency is at max level."
-
         hero.proficiency_points -= 1
         proficiency.level_up()
         proficiency.update(hero)
-
-        tooltip = render_template_string(tooltip_template,
-            proficiency=proficiency, hero=hero)
-
+        tooltip = proficiency.tooltip.replace(";", "</li><li>")
+        tooltip = "<h2>" + proficiency.name + "</h2>" + proficiency.description + "<ul><li>" + tooltip + "</li></ul>"
         if hero.proficiency_points == 0:
             return "hide_all&&{}".format(tooltip)
         elif proficiency.is_max_level():
@@ -226,11 +269,67 @@ class Command:
         return "success&&{}".format(tooltip)
 
     @staticmethod
+    def change_ability_tooltip(hero, database, arg_dict, **kwargs):
+        # I want to pass in the actual attribute here instead of the description. That way I can assign the attribute name and description to the tooltip.
+        # Unfortunately, I don't know how to pull the attribute object from the database. I need a get_attribute_by_name() function in database.py
+        ability_id = arg_dict.get('data', None, type=int)
+        ability = database.get_ability_by_id(ability_id)
+        tooltip = ability.get_description()
+        return "{}&&{}".format(tooltip, ability.image)
+
+    @staticmethod
+    def update_ability(hero, database, arg_dict, **kwargs):
+        ability_id = arg_dict.get('data', None, type=int)
+        if hero.basic_ability_points <= 0:
+            return "error: no attribute points"
+        for ability in hero.abilities:
+            if ability.id == ability_id: # This code terminates as soon as it finds the ability which matches the id
+                ability.level += 1
+                tooltip = ability.get_description()
+                hero.basic_ability_points -= 1
+                if hero.basic_ability_points == 0:
+                    return "hide_all&&{}".format(tooltip)
+                if ability.level >= ability.max_level:
+                    return "hide_this&&{}".format(tooltip)
+                return "success&&{}".format(tooltip)
+
+    @staticmethod
+    def change_ability_choice_tooltip(hero, database, arg_dict, **kwargs):
+        choice = arg_dict.get('data', None, type=str)
+        choice = choice.split("-")
+        image = choice[0]
+        description = choice[1]
+        return "{}&&{}".format(description, image)
+
+    @staticmethod
+    def update_specialization(hero, database, arg_dict, **kwargs):
+        print(arg_dict)
+        choice = arg_dict.get('data', None, type=str)
+        print(choice)
+        spec = choice.split("_")
+        spec_type, spec_name = spec[0], spec[1].title()
+        specialization = database.get_object_by_name("Specialization", spec_name)
+        setattr(hero.specializations, spec_type, specialization)
+        return "success".format()
+
+    @staticmethod
+    def change_quest_tooltip(hero, database, arg_dict, **kwargs):
+        choice = arg_dict.get('data', None, type=str)
+        return "{}&&{}".format(choice, "k")
+
+    @staticmethod
     def get_message_content_and_sender_by_id(hero, database, arg_dict, **kwargs):
         """Return the content of a message based on its id."""
         id = arg_dict.get('data', None, type=int)
         message = database.get_object_by_id("Message", id)
+        message.unread = False #Marks the message as having been seen by the receiver
         return "{}&&{}".format(message.content, message.sender.user.username)
+
+    @staticmethod
+    def clearQuestNotification(hero, database, arg_dict, **kwargs):
+        id = arg_dict.get('data', None, type=int)
+        hero.journal.quest_notification = None
+        return "success".format()
 
     @staticmethod
     def temp_temp(hero, database, arg_dict, **kwargs):

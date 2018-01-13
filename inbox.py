@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
@@ -64,6 +64,7 @@ class Message(Base):
 
     id = Column(Integer, primary_key=True)
     content = Column(String)
+    unread = Column(Boolean)
 
     # Relationships
     # Each user can send or receive multiple messages. One to Many (bi).

@@ -16,15 +16,10 @@ alert("Form Submitted Successfully...");
 </script>
 
 
-    <div class="inboxTopbar">
+    <div class="topbar">
         <ul>
-            {% if outbox %}
-                <li><a href="/inbox/inbox">Inbox</a></li>
-                <li><a class="topbarActive" href="/inbox/outbox">Outbox</a></li>
-            {% else %}
-                <li><a class="topbarActive" href="/inbox/inbox">Inbox</a></li>
-                <li><a href="/inbox/outbox">Outbox</a></li>
-            {% endif %}
+            <li><a href="/inbox/inbox" {% if not outbox %}style="background-color:Red;"{% endif %}>Inbox</a></li>
+            <li><a href="/inbox/outbox" {% if outbox %}style="background-color:Red;"{% endif %}>Outbox</a></li>
         </ul>
     </div>
     <div style="clear: both;"></div>
@@ -33,7 +28,7 @@ alert("Form Submitted Successfully...");
         Compose Message
     </button>
     <br><br>
-    <button type="button" form="messageForm" onclick="toggleSelectAll(this);">SELECT ALL</button><input type="submit" name="delete" form="messageForm" value="DELETE" onclick="return sendToPy(event, updateMessageTable, getIdsFromCheckboxes);"/>
+    <button type="button" form="messageForm" onclick="toggleSelectAll(this);">SELECT ALL</button><input type="submit" name="delete" form="messageForm" value="DELETE" onclick="return sendToPy(event, updateMessageTable, null, null, getIdsFromCheckboxes);"/>
     <form id="messageForm">
     <table id="inboxTable">
         <tr>
@@ -49,13 +44,14 @@ alert("Form Submitted Successfully...");
         </tr>
         {% macro message_list(message) %}
         <tr id="messageID-{{ message.id }}">
-            <td><input id="selectableCheckbox" type="checkbox" value="{{ message.id }}" /></td>
+            <td><input id="selectableCheckbox" type="checkbox" value="{{ message.id }}" />{% if message.unread %}NEW{% else %}OLD{% endif %}</td>
             {% if outbox %}
             <td><a href=/display_users/see_user/{{ message.receiver.user.username }}>{{ message.receiver.user.username }}</a></td>
             {% else %}
             <td><a href=/display_users/see_user/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
             {% endif %}
-            <td>
+            {% if message.unread %}<td id="inboxTableUnreadMessage"> <!-- Makes the box bold -->
+            {% else %}<td>{% endif %}
                 <!-- Trigger/Open The Modal -->
                 <button data="{{ message.id }}" data-py-function="get_message_content_and_sender_by_id" data-js-callback="popupReplyBox">
                     {{ message.content[0:7] }}...

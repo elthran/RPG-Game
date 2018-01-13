@@ -402,14 +402,14 @@ class StaticMixin(object):
         subclass.
 
         Usage does:
-            for item in myHero.equipped_items():
+            for item in hero.equipped_items():
                 self.efficiency += item.recovery_efficiency
-            for ability in myHero.abilities:
+            for ability in hero.abilities:
                 self.efficiency += ability.recovery_efficiency * ability.level
         OR
-            for item in myHero.equipped_items():
+            for item in hero.equipped_items():
                 self.speed += item.regeneration_speed
-            for ability in myHero.abilities:
+            for ability in hero.abilities:
                 self.speed += ability.regeneration_speed * ability.level
 
         Also sets the tooltip variable. Which will probably get moved to JS.

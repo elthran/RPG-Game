@@ -3,38 +3,18 @@
 
 <div class="topbar">
 	<ul>
-		{% if profile %}
-			<li><a class="topbarActive" href="/home">Profile</a></li>
-		{% else %}
-			<li><a href="/home">Profile</a></li>
-		{% endif %}
-		{% if attribute_information %}
-			<li><a class="topbarActive" href="/attributes">Attributes</a></li>
-		{% elif myHero.attribute_points %}
-			<li><a class="topbarGlowing" href="/attributes">Level Up!</a></li>
-		{% else %}
-			<li><a href="/attributes">Attributes</a></li>
-		{% endif %}
-		{% if page_title == "Proficiencies" %}
-			<li><a class="topbarActive" href="/proficiencies">Proficiencies</a></li>
-		{% elif myHero.proficiency_points %}
-			<li><a class="topbarGlowing" href="/proficiencies">Upgrade!</a></li>
-		{% else %}
-			<li><a href="/proficiencies">Proficiencies</a></li>
-		{% endif %}
-		{% if ability_tree %}
-			<li class="topbarDropdownOuter topbarActive">
-		{% else %}
-			<li class="topbarDropdownOuter">
-		{% endif %}
-				<a href="/ability_tree/basic" class="topbarDropLink">Abilities</a>
-				<div class="topbarDropdownInner">
-					<a href="/ability_tree/basic">Basic</a>
-					<a href="/ability_tree/archetype">Archetype</a>
-					<a href="/ability_tree/calling">Calling</a>
-					<a href="/ability_tree/religious">Religious</a>
-				</div>
-			</li>
+		<li><a {% if profile %}style="background-color:Red;"{% endif %} href="/home">General</a></li>
+		<li><a {% if page_title == "Attributes" %}style="background-color:Red;" {% elif hero.attribute_points %}style="background-color:Blue;"{% endif %} href="/attributes">{% if hero.attribute_points %}Level Up!{% else %}Attributes{% endif %}</a></li>
+		<li><a {% if page_title == "Proficiencies" %}style="background-color:Red;"{% elif hero.proficiency_points %}style="background-color:Blue;"{% endif %} href="/proficiencies">{% if hero.proficiency_points %}Upgrade!{% else %}Proficiencies{% endif %}</a></li>
+		<li class="topbarDropdownOuter" {% if ability_tree %}style="background-color:Red;"{% endif %}>
+			<a href="/ability_tree/basic" style="display:inline-block;">Abilities</a>
+			<div class="topbarDropdownInner">
+				<a href="/ability_tree/basic">Basic</a>
+				<a href="/ability_tree/archetype">Archetype</a>
+				<a href="/ability_tree/calling">Calling</a>
+				<a href="/ability_tree/pantheon">Pantheon</a>
+			</div>
+		</li>
 	</ul>
 </div>
 

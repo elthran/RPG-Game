@@ -1,9 +1,4 @@
 <!DOCTYPE html>
-{% if hero %}
-    {% set myHero = hero %}
-{% elif myHero %}
-    {% set hero = myHero %}
-{% endif %}
 <html lang="en">
 
 <head>
@@ -15,83 +10,102 @@
 </head>
 
 <body>
-<div id="sidebar">
-    <div id="sidebartop">
-        <h1>{{ myHero.name }}</h1>
-        <h3><img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px">
-            Age: {{ myHero.age }}<br>
-            Gold: <span id="heroGold">{{ myHero.gold }}</span></h3>
+    <div class="sidebar">
+        <div>
+            <h1>{{ hero.name }}</h1>
+            <img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px" />
+            Age: {{ hero.age }}
+            <br>Gold: <span id="heroGold">{{ hero.gold }}</span>
+        </div>
+        <div class="sideBarProgressDiv">Health:
+            <div class="sideBarProgressMeter">
+                <span style="width:{{ hero.proficiencies.health.percent }}%"></span>
+            </div>
+        </div>
+        {% if hero.proficiencies.sanctity.maximum %}
+        <div class="sideBarProgressDiv">Sanctity:
+            <div class="sideBarProgressMeter sidebarSanctity">
+                <span style="width:{{ hero.proficiencies.sanctity.percent }}%"></span>
+            </div>
+        </div>
+        {% endif %}
+        <div class="sideBarProgressDiv">Endurance:
+            <div class="sideBarProgressMeter sidebarEndurance">
+                <span style="width:{{ hero.proficiencies.endurance.percent }}%"></span>
+            </div>
+        </div>
+        <div class="sideBarProgressDiv">Progress:
+            <div class="sideBarProgressMeter sidebarProgress">
+                <span style="width:{{ hero.experience_percent }}%"></span>
+            </div>
+        </div>
+        <div>
+            <ul>
+                <li><a href=/home>Profile</a></li>
+                <li><a href=/inventory_page>Inventory</a></li>
+                <li><a href=/spellbook>Spellbook</a></li>
+                <li><a href={{ hero.current_location.url }}>{{ hero.current_location.name }}</a></li>
+                <li><a href=/quest_log>Journal</a></li>
+                {% if hero.user.is_admin %}<li><a href=/admin>Admin</a></li>{% endif %}
+                <li><a href=/display_users/display/id>Users</a></li>
+                <li><a href=/about>About</a></li>
+                {% if hero.user.inbox_alert %}<li><a href=/inbox/inbox><font color="blue">New Message</font></a></li>
+                {% else %}<li><a href=/inbox/inbox>Mailbox</a></li>{% endif %}
+                <li><a href=/global_chat>Chat</a></li>
+                <li><a href=/logout>Logout</a></li>
+            </ul>
+        </div>
     </div>
-    <div id="sidebarmiddle">
-        <ul>
-            <li>Health:
-                <div class="progressBar"><span style="width:{{ myHero.proficiencies.health.percent }}%"></span></div>
-            </li>
-            {% if myHero.proficiencies.sanctity.maximum %}
-            <li>Sanctity:
-                <div class="progressBar sanctity"><span
-                        style="width:{{ myHero.proficiencies.sanctity.percent }}%"></span></div>
-            </li>
-            {% endif %}
-            <li>Endurance:
-                <div class="progressBar endurance"><span
-                        style="width:{{ myHero.proficiencies.endurance.percent }}%"></span></div>
-            </li>
-            <li>Progress:
-                <div class="progressBar progress"><span style="width:{{ myHero.experience_percent }}%"></span></div>
-            </li>
-        </ul>
+    <!-- This is where you want to add HTML that will not be contained within the main body of the page -->
+    <!-- Here you can add a navigation bar at the top of the page -->
+    <!-- This is for content that is displayed on the main page -->
+    <div class="content">
+        {% block nav_bar %}{% endblock %}
+        <div style="clear:both;"></div>
+        <!-- This calls a notification script to run if the Hero has any new quests completed -->
+        {% if hero.journal.quest_notification %}
+        {% set quest_notification = hero.journal.quest_notification %}
+        <button id="globalNotificationButton"  data-py-function="clearQuestNotification" data="None" data-js-callback="showGlobalModal">Achievement Progress!</button>
+        <div class="globalMessageModal" id="globalMessage">
+            <div class="globalMessageModalContent">
+                <div class="globalMessageModalHeader">
+                    <span class="closeGlobalModal">&times;</span>
+                    {% if quest_notification.total_reward %}
+                    <h1>{{ quest_notification.name }}</h1>
+                    {% else %}
+                    <h1>{{ quest_notification.name }}</h1>
+                    <h2>Stage: {{ quest_notification.stage }} / {{ quest_notification.stages }}</h2>
+                    {% endif %}
+                </div>
+                <div class="globalMessageModalBody">
+                    {% if quest_notification.total_reward %}
+                    <h2>Completed!</h2>
+                    {% else %}
+                    <h2>Current Step:</h2>
+                    <h3>{{ quest_notification.current_quest.name }}</h3>
+                    {% endif %}
+                    <!-- The code above needs to be tweaked -->
+                </div>
+                <div class="globalMessageModalFooter">
+                    {% if quest_notification.total_reward %}
+                    <h3>Total reward: {{ quest_notification.total_reward }}xp</h3>
+                    {% else %}
+                    <h3>Reward: {{ quest_notification.current_quest.reward }}xp</h3>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div style="clear:both;"></div>
+        {% endif %}
+        <!-- This displays notifications at the top of the page -->
+        {% for notice in notifications %}
+            {{ notice }}
+        {% endfor %}
+        <!-- This is info pulled from other html files -->
+        {% block block1 %}{% endblock %}
+        {% block block2 %}{% endblock %}
+        <!-- This ends the main body container of the page -->
     </div>
-    <div id="sidebarbottom">
-        <ul>
-            <li><a href=/home>Profile</a></li>
-            <li><a href=/inventory_page>Inventory</a></li>
-            <li><a href=/spellbook>Spellbook</a></li>
-            <li><a href={{ myHero.current_location.url }}>{{ myHero.current_location.name }}</a></li>
-            <li><a href=/quest_log>Journal</a></li>
-            {% if hero.user.is_admin %}
-            <li><a href=/admin>Admin</a></li>
-            {% endif %}
-            <li><a href=/display_users/display/id>Users</a></li>
-            <li><a href=/about>About</a></li>
-            {% if hero.user.inbox_alert %}
-            <li><a href=/inbox/inbox><font color="blue">New Message</font></a></li>
-            {% else %}
-            <li><a href=/inbox/inbox>Inbox</a></li>
-            {% endif %}
-            <li><a href=/global_chat>Chat</a></li>
-            <li><a href=/logout>Logout</a></li>
-        </ul>
-    </div>
-    </div>
-
-<!-- This is where you want to add HTML that will not be contained within the main body of the page -->
-<!-- Here you can add a navigation bar at the top of the page -->
-{% block nav_bar %}{% endblock %}
-
-<!-- This is for content that is displayed on the main page -->
-<div id="content">
-    <!-- This calls a notification script to run if the Hero has any new quests completed -->
-    {% if myHero.quest_notification %}
-    <div class="popup" onclick="quest_popup()" style="color:red"
-    >You have completed a {{ hero.quest_notification[2] }}! (+{{
-        myHero.quest_notification[1] }}xp)
-        <span class="popupachievement" id="js_popupachievement"
-        >{{ myHero.quest_notification[0] }}</span>
-    </div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
-    {% endif %}
-
-    <!-- This displays notifications at the top of the page -->
-    {% for notice in notifications %}
-        {{ notice }}
-    {% endfor %}
-
-    <!-- This is info pulled from other html files -->
-    {% block block1 %}{% endblock %}
-    {% block block2 %}{% endblock %}
-
-    <!-- This ends the main body container of the page -->
-</div>
 </body>
 </html>
 
