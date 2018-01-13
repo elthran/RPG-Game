@@ -5,22 +5,81 @@
 {% block nav_bar %}
 <div class="topbar">
     <ul>
-        <li><a {% if quest_log %}class="topbarActive" {% endif %}
-            href=/quest_log>Quests</a></li>
-        <li><a {% if bestiary %}class="topbarActive" {% endif %}
-               href=/bestiary/default>Bestiary</a></li>
-        <li><a {% if people_log %}class="topbarActive" {% endif %}
-               href=/people_log/default>People</a></li>
-        <li><a {% if map_log %}class="topbarActive" {% endif %}
-               href=/map_log>Map</a></li>
-        <li><a {% if achievement_log %}class="topbarActive" {% endif %}
-               href=/quest_log>Achievements</a></li>
+        <li><a {% if quest_log %}style="background-color:Red;"{% endif %} href=/quest_log>Quests</a></li>
+        <li><a {% if bestiary %}style="background-color:Red;"{% endif %} href=/bestiary/default>Bestiary</a></li>
+        <li><a {% if people_log %}style="background-color:Red;"{% endif %} href=/people_log/default>People</a></li>
+        <li><a {% if map_log %}style="background-color:Red;"{% endif %} href=/map_log>Map</a></li>
+        <li><a {% if achievement_log %}style="background-color:Red;"{% endif %} href=/quest_log>Achievements</a></li>
     </ul>
 </div>
 {% endblock %}
 
 {% block block1 %}
 <!-- This shows the quest log within the journal -->
+{% if quest_log %}
+<h1 style="text-align:center;">Quests</h1>
+<div style="clear: both;"></div>
+<div>
+	<div class="leftPageHalf" style="width:65%;">
+        <h2>Current Quests</h2>
+        {% for path in hero.journal.quest_paths if not path.completed %}
+            <button class="proficiencyAccordion" data-py-function="change_quest_tooltip" data="{{ path.description }}" data-js-callback="questTooltip">{{ path.name.title() }} (Progress: {{ path.stage }} / {{ path.stages }})</button>
+            <div class="proficiencyAccordionPanel">
+                <ul>
+                    {% for i in range(path.stage + 1) %} <!-- This should iterate over all completed+current stages, but not stages you haven't reached yet -->
+                            <li>
+                                <button class="proficiencyTooltipTrigger" data-py-function="change_quest_tooltip" data="{{ path.current_quest.description }}" data-js-callback="questTooltip">
+                                    {{ path.current_quest.name }} (Stage: {{ i+1 }})
+                                </button>
+                            </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+        <h2>Completed Quests</h2>
+        {% for path in hero.journal.quest_paths if path.completed %}
+            <button class="proficiencyAccordion" data-py-function="change_quest_tooltip" data="{{ path.description }}" data-js-callback="questTooltip">{{ path.name.title() }} (Progress: {{ path.stage }} / {{ path.stages }})</button>
+            <div class="proficiencyAccordionPanel">
+                <ul>
+                    {% for i in range(path.stages) %} <!-- This should iterate over all completed+current stages, but not stages you haven't reached yet -->
+                            <li>
+                                <button class="proficiencyTooltipTrigger" data-py-function="change_quest_tooltip" data="{{ path.current_quest.description }}" data-js-callback="questTooltip">
+                                    {{ path.current_quest.name }} (Stage: {{ i+1 }})
+                                </button>
+                            </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="proficiencyTooltip">
+        <div><span id="questTooltip">Click on a quest to see more information.</span></div>
+    </div>
+</div>
+{% endif %}
+
+<!-- I don't know why this needs to be below my code and not above it -->
+<script>
+var allProfs = document.getElementsByClassName("proficiencyAccordion");
+var index;
+for (index = 0; index < allProfs.length; index++) {
+    allProfs[index].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var panel = this.nextElementSibling;
+        if (panel.style.display === "block") {
+            panel.style.display = "none";
+        } else {
+            panel.style.display = "block";
+        }
+    });
+}
+</script>
+
+
+<!--
+<br><br><br><br><br>
+<div style=""clear:both;"></div>
+
 {% if quest_log %}
     <h1>Current Quests</h1>
     {% for path in hero.journal.quest_paths if not path.completed %}
@@ -36,7 +95,7 @@
         No completed quests
     {% endfor %}
 {% endif %}
-
+-->
 <!-- This shows the bestiary within the journal -->
 {% if bestiary %}
     <div style="float:right;">

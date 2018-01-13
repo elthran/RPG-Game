@@ -306,6 +306,17 @@ function abilityChoiceTooltip(button, description, image) {
     newImage.innerHTML = startImage + image + endImage;
 }
 
+function questTooltip(button, description, image) {
+    var newTooltip = {};
+    var newImage = {};
+    var startImage = '<img src="/static/images/';
+    var endImage = '.jpg" alt="none">';
+    newTooltip = document.getElementById("questTooltip");
+    newTooltip.innerHTML = description;
+    newImage = document.getElementById("choiceImage");
+    newImage.innerHTML = startImage + image + endImage;
+}
+
 function pageReload(button) {
     location.reload();
 }

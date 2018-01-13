@@ -355,9 +355,10 @@ outline: 2px solid black;
     width: 100%;
     border: none;
     text-align: left;
-    outline: none;
+    font-size: 20px;
+    color: Black;
     transition: 0.4s;
-    outline: dotted;
+    outline: double;
 }
 
 .active, .proficiencyAccordion:hover {

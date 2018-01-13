@@ -312,19 +312,10 @@ class Command:
         setattr(hero.specializations, spec_type, specialization)
         return "success".format()
 
-
-    def become_archetype(hero, database, arg_dict, **kwargs):
-        archetype = arg_dict.get('data', None, type=str)
-        hero.archetype = archetype
-        for ability in hero.abilities:
-            if ability.tree == "archetype":
-                if ability.tree_type != hero.archetype.lower():
-                    ability.hidden = True
-                    ability.level = 0
-                else:
-                    ability.hidden = False
-                    ability.learnable = True
-        return "success"
+    @staticmethod
+    def change_quest_tooltip(hero, database, arg_dict, **kwargs):
+        choice = arg_dict.get('data', None, type=str)
+        return "{}&&{}".format(choice, "k")
 
     @staticmethod
     def get_message_content_and_sender_by_id(hero, database, arg_dict, **kwargs):
