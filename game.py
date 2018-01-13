@@ -48,6 +48,7 @@ class User(Base):
     timestamp = Column(DateTime)
     is_admin = Column(Boolean)
     inbox_alert = Column(Boolean)
+    prestige = Column(Integer)
 
     # Relationships
     # Each user can have one inbox. One to One (bidirectional).
@@ -72,3 +73,4 @@ class User(Base):
         self.timestamp = timestamp
         self.is_admin = is_admin
         self.inbox_alert = False
+        self.prestige = 0

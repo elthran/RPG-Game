@@ -264,10 +264,12 @@ when prebuilt_objects are preloaded into the database.
 """
 ##########
 admin = User(username="admin", password="admin", is_admin=True)
+admin.prestige = 371
 adminHero = Hero(name="Admin", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
 admin.heroes = [adminHero]
 
 marlen = User(username="marlen", password="brunner", is_admin=True)
+marlen.prestige = 309
 haldon = Hero(name="Haldon", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
 marlen.heroes = [haldon]
 users = [marlen, admin]
