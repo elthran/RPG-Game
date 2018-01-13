@@ -26,10 +26,11 @@
             <button class="proficiencyAccordion" data-py-function="change_quest_tooltip" data="{{ path.description }}" data-js-callback="questTooltip">{{ path.name.title() }} (Progress: {{ path.stage }} / {{ path.stages }})</button>
             <div class="proficiencyAccordionPanel">
                 <ul>
-                    {% for i in range(path.stage + 1) %} <!-- This should iterate over all completed+current stages, but not stages you haven't reached yet -->
+                    {% for i in range(path.stage + 1) %} <!-- This sgithould iterate over all completed+current stages, but not stages you haven't reached yet -->
+                    {% set quest = path.quests[i] %}
                             <li>
-                                <button class="proficiencyTooltipTrigger" data-py-function="change_quest_tooltip" data="{{ path.current_quest.description }}" data-js-callback="questTooltip">
-                                    {{ path.current_quest.name }} (Stage: {{ i+1 }})
+                                <button class="proficiencyTooltipTrigger" data-py-function="change_quest_tooltip" data="{{ quest.description }}" data-js-callback="questTooltip">
+                                    {{ quest.name }} (Stage: {{ i+1 }})
                                 </button>
                             </li>
                     {% endfor %}
@@ -41,10 +42,11 @@
             <button class="proficiencyAccordion" data-py-function="change_quest_tooltip" data="{{ path.description }}" data-js-callback="questTooltip">{{ path.name.title() }} (Progress: {{ path.stage }} / {{ path.stages }})</button>
             <div class="proficiencyAccordionPanel">
                 <ul>
-                    {% for i in range(path.stages) %} <!-- This should iterate over all completed+current stages, but not stages you haven't reached yet -->
+                    {% for quest in path.quests %} <!-- This should iterate over all completed+current stages, but not stages you haven't reached yet -->
+
                             <li>
-                                <button class="proficiencyTooltipTrigger" data-py-function="change_quest_tooltip" data="{{ path.current_quest.description }}" data-js-callback="questTooltip">
-                                    {{ path.current_quest.name }} (Stage: {{ i+1 }})
+                                <button class="proficiencyTooltipTrigger" data-py-function="change_quest_tooltip" data="{{ quest.description }}" data-js-callback="questTooltip">
+                                    {{ quest.name }} (Stage: {{ loop.index }})
                                 </button>
                             </li>
                     {% endfor %}
