@@ -17,7 +17,8 @@ Item Specification:
         -durability (item)
         -amount_owned (inventory)
         -broken (item)
-        -consumed (unless consumable just removes the item) (item, may cause two columns in inventory)
+        -consumed (unless consumable just removes the item) 
+            (item, may cause two columns in inventory)
         -equipped true/false
 """
 
@@ -40,15 +41,19 @@ class Item(TemplateMixin, Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     image = Column(String)
-
     buy_price = Column(Integer)
-    wearable = Column(Boolean)
-    consumable = Column(Boolean)
-
     type = Column(String)
-    durability = Column(Integer)
+
     broken = Column(Boolean)
+    consumable = Column(Boolean)
     consumed = Column(Boolean)
+    item_rating = Column(Integer)
+    garment = Column(Boolean)
+    weapon = Column(Boolean)
+    jewelry = Column(Boolean)
+    max_durability = Column(Integer)
+    wearable = Column(Boolean)
+
 
     # Relationships
     # Inventory
@@ -67,28 +72,21 @@ class Item(TemplateMixin, Base):
     def __init__(self, name, buy_price, template=True):
         self.name = name
         self.buy_price = buy_price
-        self.wearable = False
-        self.consumable = False
-        # Should be a current_durability value as well?
-        try:
-            self.durability = self.max_durability
-        except AttributeError:
-            pass
-        self.broken = False
-        self.consumed = False
         self.template = template
 
     def build_new_from_template(self):
+        if not self.template:
+            raise Exception("Only use this method if obj.template == True.")
         keys = self.__class__.__table__.columns.keys()
         keys.remove('id')
         keys.remove('template')
 
-        # relationship_keys = [
-        #     'rings_inventory_id', 'rings_position', 'unequipped_inventory_id',
-        #     'unequipped_position'
-        # ]
-        # for relationship_key in relationship_keys:
-        #     keys.remove(relationship_key)
+        relationship_keys = [
+            'rings_inventory_id', 'rings_position', 'unequipped_inventory_id',
+            'unequipped_position'
+        ]
+        for relationship_key in relationship_keys:
+            keys.remove(relationship_key)
         item = self.__class__(self.name, self.buy_price, template=False)
         for key in keys:
             try:
@@ -110,28 +108,25 @@ class Item(TemplateMixin, Base):
             return None
         hero.refresh_proficiencies()
 
-    def check_if_improvement(self):
-        # warnings.warn("Not implemented yet!", RuntimeWarning)
-        # return # Do nothing
-        self.improvement = True
-        for equipped_item in self.inventory.hero.equipped_items:
-            if equipped_item.type is self.type:
-                if equipped_item.item_rating > self.item_rating:
-                    self.improvement = False
-                break
-
-    def update_owner(self, hero):
-        self.inventory.hero = hero
+    # Both of these need to be modified. I am not sure how to make
+    # Each item in an inventory set the correct inventory id ... while
+    # having and individual slot.
+    # def check_if_improvement(self):
+    #     # warnings.warn("Not implemented yet!", RuntimeWarning)
+    #     # return # Do nothing
+    #     self.improvement = True
+    #     for equipped_item in self.inventory.hero.equipped_items:
+    #         if equipped_item.type is self.type:
+    #             if equipped_item.item_rating > self.item_rating:
+    #                 self.improvement = False
+    #             break
+    #
+    # def update_owner(self, hero):
+    #     self.inventory.hero = hero
 
 
 # Subclass of Item
 class Wearable(Item):
-    max_durability = Column(Integer)
-    item_rating = Column(Integer)
-    garment = Column(Boolean)
-    weapon = Column(Boolean)
-    jewelry = Column(Boolean)
-
     style = Column(String)
 
     # Modifiable proficiencies
@@ -256,7 +251,6 @@ class Wearable(Item):
         self.weapon = False
         self.jewelry = False
         self.style = "leather"
-
         self.max_durability = max_durability
         self.item_rating = item_rating
 
@@ -345,6 +339,7 @@ class OneHandedWeapon(Weapon):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+
 class Shield(Weapon):
     __mapper_args__ = {
         'polymorphic_identity': "Shield",
@@ -353,6 +348,7 @@ class Shield(Weapon):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.shield = True
+
 
 class TwoHandedWeapon(Weapon):
     __mapper_args__ = {
@@ -377,6 +373,7 @@ class Garment(Wearable):
         self.garment = True
         self.armour_value = armour_value
 
+
 class HeadArmour(Garment):
     head_armour = Column(Boolean)
 
@@ -388,6 +385,7 @@ class HeadArmour(Garment):
         super().__init__(*args, **kwargs)
         self.head_armour = True
 
+
 class ShoulderArmour(Garment):
     shoulder_armour = Column(Boolean)
     __mapper_args__ = {
@@ -398,6 +396,7 @@ class ShoulderArmour(Garment):
         super().__init__(*args, **kwargs)
         self.shoulder_armour = True
 
+
 class ChestArmour(Garment):
     chest_armour = Column(Boolean)
     __mapper_args__ = {
@@ -407,6 +406,7 @@ class ChestArmour(Garment):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.chest_armour = True
+
 
 class LegArmour(Garment):
     leg_armour = Column(Boolean)
@@ -419,6 +419,7 @@ class LegArmour(Garment):
         super().__init__(*args, **kwargs)
         self.leg_armour = True
 
+
 class FootArmour(Garment):
     foot_armour = Column(Boolean)
     __mapper_args__ = {
@@ -428,6 +429,7 @@ class FootArmour(Garment):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.foot_armour = True
+
 
 class ArmArmour(Garment):
     arm_armour = Column(Boolean)
@@ -440,6 +442,7 @@ class ArmArmour(Garment):
         super().__init__(*args, **kwargs)
         self.arm_armour = True
 
+
 class HandArmour(Garment):
     hand_armour = Column(Boolean)
 
@@ -450,6 +453,7 @@ class HandArmour(Garment):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.hand_armour = True
+
 
 # New Class
 class Jewelry(Wearable):
@@ -491,6 +495,7 @@ class Consumable(Item):
         self.healing_amount = healing_amount
         self.sanctity_amount = sanctity_amount
         self.consumable = True
+        self.consumed = False
 
     def apply_effect(self, hero):
         # hero.health += self.healing_amount
