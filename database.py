@@ -34,7 +34,7 @@ from inbox import Inbox, Message
 from hero import Hero
 from abilities import Abilities, Ability
 from specializations import Specialization
-from locations import Location  # , WorldMap, Town, Cave
+from locations import Location
 from items import Item
 from quests import Quest, QuestPath
 from proficiencies import Proficiency
@@ -107,20 +107,12 @@ class EZDB:
                 prebuilt_objects.all_quests,
                 prebuilt_objects.all_specializations]:
             for obj in obj_list:
-                try:
-                    self.session.add(obj)
-                    if isinstance(obj, User):
-                        obj.password = hashlib.md5(
-                            obj.password.encode()).hexdigest()
-                        obj.timestamp = EZDB.now()
-                    self.update()
-                except sqlalchemy.exc.IntegrityError as ex:
-                    print(ex)
-                    print("Please debug database setup -> prebuilt object loading.")
-                    pass  # rollback is now handled by 'update()'
-                finally:
-                    self.session.close()
-                    self.session = EZDB.Session()
+                self.session.add(obj)
+                if isinstance(obj, User):
+                    obj.password = hashlib.md5(
+                        obj.password.encode()).hexdigest()
+                    obj.timestamp = EZDB.now()
+                self.update()
         default_quest_paths = self.get_default_quest_paths()
         for hero in self.session.query(Hero).all():
             hero.journal.quest_paths = default_quest_paths
@@ -352,14 +344,19 @@ class EZDB:
                             " does not accommodate.")
 
     def update(self):
-        """Commit current session.
-        
-        NOTE: update function is now mostly redundant!
-        Only use on program exit or logout.
-        When you edit the hero ... he stays edited!
-        Using any of the other methods will push him to database.
+        """Provide a context manager type behavior for the session.
+
+        Commit current session. Or rollback or raise ..
+        Starts a new one!
         """
-        self.session.commit()
+        try:
+            self.session.commit()
+        except:
+            self.session.rollback()
+            raise
+        finally:
+            self.session.close()
+            self.session = EZDB.Session()
 
     def add_object(self, obj):
         """Add an object to the database.
