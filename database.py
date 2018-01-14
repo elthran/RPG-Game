@@ -442,7 +442,7 @@ class EZDB:
         should update all heroes?
         """
         timestamp = hero.timestamp
-        time_diff = (EZDB.now() timestamp).total_seconds()
+        time_diff = (EZDB.now() - timestamp).total_seconds()
         endurance_increment = int(time_diff / SECOND_PER_ENDURANCE)
         hero.proficiencies.endurance.current += endurance_increment
             
