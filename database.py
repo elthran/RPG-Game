@@ -344,10 +344,21 @@ class EZDB:
                             " does not accommodate.")
 
     def update(self):
-        """Provide a context manager type behavior for the session.
+        """Commit, handle errors, close the session, open a new one.
 
-        Commit current session. Or rollback or raise ..
-        Starts a new one!
+        NOTE: This may not totally work and maybe should use:
+        NOTE: update function is now mostly redundant!
+        from contextlib import contextmanager
+        Only use on program exit or logout.
+
+        When you edit the hero ... he stays edited!
+        @contextmanager
+        Using any of the other methods will push him to database.
+        def session_scope(self):
+           pass
+
+        See:
+        http://docs.sqlalchemy.org/en/latest/orm/session_basics.html#when-do-i-construct-a-session-when-do-i-commit-it-and-when-do-i-close-it
         """
         try:
             self.session.commit()
@@ -431,7 +442,7 @@ class EZDB:
         should update all heroes?
         """
         timestamp = hero.timestamp
-        time_diff = (EZDB.now() - timestamp).total_seconds()
+        time_diff = (EZDB.now() timestamp).total_seconds()
         endurance_increment = int(time_diff / SECOND_PER_ENDURANCE)
         hero.proficiencies.endurance.current += endurance_increment
             
