@@ -83,12 +83,12 @@ class Item(TemplateMixin, Base):
         keys.remove('id')
         keys.remove('template')
 
-        relationship_keys = [
-            'rings_inventory_id', 'rings_position', 'unequipped_inventory_id',
-            'unequipped_position'
-        ]
-        for relationship_key in relationship_keys:
-            keys.remove(relationship_key)
+        # relationship_keys = [
+        #     'rings_inventory_id', 'rings_position', 'unequipped_inventory_id',
+        #     'unequipped_position'
+        # ]
+        # for relationship_key in relationship_keys:
+        #     keys.remove(relationship_key)
         item = self.__class__(self.name, self.buy_price, template=False)
         for key in keys:
             try:
