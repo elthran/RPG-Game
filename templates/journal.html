@@ -45,7 +45,7 @@
                     {% for quest in path.quests %} <!-- This should iterate over all completed+current stages, but not stages you haven't reached yet -->
 
                             <li>
-                                <button class="genericTooltipTrigger" data-py-function="change_quest_tooltip" data="{{ quest.description }}" data-js-callback="questTooltip">
+                                <button class="genericTooltipTrigger" data-py-function="change_quest_tooltip" data="{{ quest.id }}" data-js-callback="questTooltip">
                                     {{ quest.name }} (Stage: {{ loop.index }})
                                 </button>
                             </li>
