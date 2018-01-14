@@ -34,7 +34,7 @@ from inbox import Inbox, Message
 from hero import Hero
 from abilities import Abilities, Ability
 from specializations import Specialization
-from locations import Location  # , WorldMap, Town, Cave
+from locations import Location
 from items import ItemTemplate, Item
 from quests import Quest, QuestPath
 from proficiencies import Proficiency
@@ -107,20 +107,12 @@ class EZDB:
                 prebuilt_objects.all_quests,
                 prebuilt_objects.all_specializations]:
             for obj in obj_list:
-                try:
-                    self.session.add(obj)
-                    if isinstance(obj, User):
-                        obj.password = hashlib.md5(
-                            obj.password.encode()).hexdigest()
-                        obj.timestamp = EZDB.now()
-                    self.update()
-                except sqlalchemy.exc.IntegrityError as ex:
-                    print(ex)
-                    print("Please debug database setup -> prebuilt object loading.")
-                    pass  # rollback is now handled by 'update()'
-                finally:
-                    self.session.close()
-                    self.session = EZDB.Session()
+                self.session.add(obj)
+                if isinstance(obj, User):
+                    obj.password = hashlib.md5(
+                        obj.password.encode()).hexdigest()
+                    obj.timestamp = EZDB.now()
+                self.update()
         default_quest_paths = self.get_default_quest_paths()
         for hero in self.session.query(Hero).all():
             hero.journal.quest_paths = default_quest_paths
@@ -239,7 +231,8 @@ class EZDB:
     def get_default_location(self):
         """Get the default location for starting heroes.
         """
-        return self.session.query(Location).filter_by(name="Thornwall", type="town").first()
+        return self.session.query(
+            Location).filter_by(name="Thornwall", type="town").first()
 
     def get_default_quest_paths(self):
         """Return the quest that are applied to starting heroes.
@@ -308,11 +301,12 @@ class EZDB:
     def fetch_hero_by_id(self, hero_id):
         return self.session.query(Hero).get(hero_id)
 
-    def fetch_sorted_heroes(self, attribute, descending = False):
+    def fetch_sorted_heroes(self, attribute, descending=False):
         """Return a list of all heroes sorted by attribute.
 
         :param attribute: an attribute of the Hero object.
-        :param descending: the desired direction for the sorted list ascending/descending
+        :param descending: the desired direction for the sorted list
+            ascending/descending
         :return: list sorted by attribute.
 
         NOTE: this code is not very flexible. If you tried to access
@@ -340,22 +334,29 @@ class EZDB:
         elif attribute.startswith('user'):
             _, attribute = attribute.split('.')
             if descending:
-                return self.session.query(Hero).join(Hero.user).order_by(desc(attribute)).all()
+                return self.session.query(
+                    Hero).join(Hero.user).order_by(desc(attribute)).all()
             else:
-                return self.session.query(Hero).join(Hero.user).order_by(attribute).all()
+                return self.session.query(
+                    Hero).join(Hero.user).order_by(attribute).all()
         else:
             raise Exception("Trying to access an attribute that this code"
                             " does not accommodate.")
 
     def update(self):
-        """Commit current session.
-        
-        NOTE: update function is now mostly redundant!
-        Only use on program exit or logout.
-        When you edit the hero ... he stays edited!
-        Using any of the other methods will push him to database.
+        """Provide a context manager type behavior for the session.
+
+        Commit current session. Or rollback or raise ..
+        Starts a new one!
         """
-        self.session.commit()
+        try:
+            self.session.commit()
+        except:
+            self.session.rollback()
+            raise
+        finally:
+            self.session.close()
+            self.session = EZDB.Session()
 
     def add_object(self, obj):
         """Add an object to the database.
@@ -382,8 +383,9 @@ class EZDB:
     def get_all_triggers_by(self, event_name, hero_id):
         """Return all triggers for this hero that fit a given event."""
 
-        return self.session.query(Trigger).filter_by(event_name=event_name,
-                                              hero_id=hero_id).all()
+        return self.session.query(
+            Trigger).filter_by(
+            event_name=event_name, hero_id=hero_id).all()
 
     def hero_has_quest_path_named(self, hero, name):
         """Returns True if hero has a ques_path of the given name.
