@@ -23,13 +23,13 @@
 	<div class="leftPageHalf" style="width:65%;">
         <h2>Current Quests</h2>
         {% for path in hero.journal.quest_paths if not path.completed %}
-            <button class="proficiencyAccordion" data-py-function="change_quest_tooltip" data="{{ path.description }}" data-js-callback="questTooltip">{{ path.name.title() }} (Progress: {{ path.stage }} / {{ path.stages }})</button>
-            <div class="proficiencyAccordionPanel">
+            <button class="genericAccordion" data-py-function="change_path_tooltip" data="{{ path.description }}" data-js-callback="questTooltip">{{ path.name.title() }} (Progress: {{ path.stage }} / {{ path.stages }})</button>
+            <div class="genericAccordionPanel">
                 <ul>
                     {% for i in range(path.stage + 1) %} <!-- This sgithould iterate over all completed+current stages, but not stages you haven't reached yet -->
                     {% set quest = path.quests[i] %}
                             <li>
-                                <button class="proficiencyTooltipTrigger" data-py-function="change_quest_tooltip" data="{{ quest.description }}" data-js-callback="questTooltip">
+                                <button class="genericTooltipTrigger" data-py-function="change_quest_tooltip" data="{{ quest.id }}" data-js-callback="questTooltip">
                                     {{ quest.name }} (Stage: {{ i+1 }})
                                 </button>
                             </li>
@@ -39,13 +39,13 @@
         {% endfor %}
         <h2>Completed Quests</h2>
         {% for path in hero.journal.quest_paths if path.completed %}
-            <button class="proficiencyAccordion" data-py-function="change_quest_tooltip" data="{{ path.description }}" data-js-callback="questTooltip">{{ path.name.title() }} (Progress: {{ path.stage }} / {{ path.stages }})</button>
-            <div class="proficiencyAccordionPanel">
+            <button class="genericAccordion" data-py-function="change_path_tooltip" data="{{ path.description }}" data-js-callback="questTooltip">{{ path.name.title() }} (Progress: {{ path.stage }} / {{ path.stages }})</button>
+            <div class="genericAccordionPanel">
                 <ul>
                     {% for quest in path.quests %} <!-- This should iterate over all completed+current stages, but not stages you haven't reached yet -->
 
                             <li>
-                                <button class="proficiencyTooltipTrigger" data-py-function="change_quest_tooltip" data="{{ quest.description }}" data-js-callback="questTooltip">
+                                <button class="genericTooltipTrigger" data-py-function="change_quest_tooltip" data="{{ quest.description }}" data-js-callback="questTooltip">
                                     {{ quest.name }} (Stage: {{ loop.index }})
                                 </button>
                             </li>
@@ -54,15 +54,16 @@
             </div>
         {% endfor %}
     </div>
-    <div class="proficiencyTooltip">
+    <div class="genericTooltip">
         <div><span id="questTooltip">Click on a quest to see more information.</span></div>
+        <div><span id="questReward"></span></div>
     </div>
 </div>
 {% endif %}
 
 <!-- I don't know why this needs to be below my code and not above it -->
 <script>
-var allProfs = document.getElementsByClassName("proficiencyAccordion");
+var allProfs = document.getElementsByClassName("genericAccordion");
 var index;
 for (index = 0; index < allProfs.length; index++) {
     allProfs[index].addEventListener("click", function() {

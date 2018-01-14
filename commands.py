@@ -312,10 +312,17 @@ class Command:
         setattr(hero.specializations, spec_type, specialization)
         return "success".format()
 
+    # This should be combined with function below when I know how to pass a path.id
+    @staticmethod
+    def change_path_tooltip(hero, database, arg_dict, **kwargs):
+        choice = arg_dict.get('data', None, type=str)
+        return "{}&&{}".format(choice, "50gold")
+
     @staticmethod
     def change_quest_tooltip(hero, database, arg_dict, **kwargs):
-        choice = arg_dict.get('data', None, type=str)
-        return "{}&&{}".format(choice, "k")
+        quest_id = arg_dict.get('data', None, type=int)
+        quest = database.get_object_by_id("Quest", quest_id)
+        return "{}&&{}".format(quest.description, quest.reward)
 
     @staticmethod
     def get_message_content_and_sender_by_id(hero, database, arg_dict, **kwargs):

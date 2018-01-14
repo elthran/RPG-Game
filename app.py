@@ -823,15 +823,14 @@ def move(name='', hero=None, location=None):
 @uses_hero
 @update_current_location
 def barracks(name='', hero=None, location=None):
+    # This will be removed soon. Dead heros wont be able to move on the map and will immediately get moved to ahospital until they heal. So locations won't need to factor in the "if"of the hero being dead
     if hero.proficiencies.health.current <= 0:
         location.display.page_heading = "Your hero is currently dead."
         location.display.page_image = "dead.jpg"
-
         location.children = None
         location.display.paragraph = "You have no health."
     else:
-        location.display.page_heading = "Welcome to the barracks {}!".format(
-            hero.name)
+        location.display.page_heading = "Welcome to the barracks {}!".format(hero.name)
         location.display.page_image = "barracks.jpg"
         location.display.paragraph = "Battle another player."
 

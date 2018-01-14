@@ -232,7 +232,7 @@ class EZDB:
         """Get the default location for starting heroes.
         """
         return self.session.query(
-            Location).filter_by(name="Thornwall", type="town").first()
+            Location).filter_by(name="Old Man's Hut", type="building").first()
 
     def get_default_quest_paths(self):
         """Return the quest that are applied to starting heroes.

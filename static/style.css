@@ -347,7 +347,7 @@ outline: 2px solid black;
 	color: White;
 }
 
-.proficiencyAccordion { /* The giant box which contains the 12 attributes on the proficiency page */
+.genericAccordion { /* The giant box which contains the 12 attributes on the proficiency page */
     background-color: Grey;
     color: #444;
     cursor: pointer;
@@ -361,16 +361,16 @@ outline: 2px solid black;
     outline: double;
 }
 
-.active, .proficiencyAccordion:hover {
+.active, .genericAccordion:hover {
     background-color: White;
 }
 
-.proficiencyAccordionPanel { /* The 12 individual panels which open up on the accordion bar */
+.genericAccordionPanel { /* The individual panels which open up on the accordion bar */
     display: none;
     background-color: Silver;
 }
 
-.proficiencyTooltipTrigger { /* Each individual attribute which can change the tooltip */
+.genericTooltipTrigger { /* Each individual attribute which can change the tooltip */
     background-color: Grey;
     cursor: pointer;
     width: 90%;
@@ -379,12 +379,12 @@ outline: 2px solid black;
     transition: 0.4s;
 }
 
-.proficiencyTooltip { /* The tooltip box on the right side of the page */
+.genericTooltip { /* The tooltip box on the right side of the page */
     float: right;
     width: 30%;
 }
 
-.proficiencyTooltip li {
+.genericTooltip li {
     list-style-type: circle;
 }
 
