@@ -1108,6 +1108,7 @@ def tavern(name='', hero=None):
     page_title = "Tavern"
     page_heading = "You enter the Red Dragon Inn."
     page_image = "bartender"
+    """
     if "Become an apprentice at the tavern." in hero.completed_quests:
         paragraph = "Welcome, my apprentice!"
     else:
@@ -1171,9 +1172,13 @@ def tavern(name='', hero=None):
                                    quest[0] != "Become an apprentice at the tavern."]
             hero.completed_quests.append("Become an apprentice at the tavern.")
             page_heading = "You are now my apprentice!"
-    return render_template('tavern.html', hero=hero, page_title=page_title, page_heading=page_heading,
-                           page_image=page_image, paragraph=paragraph, tavern=tavern,
-                           dialogue_options=dialogue_options)  # return a string
+            """
+    return render_template('generic.html', hero=hero, page_title=page_title, page_heading=page_heading,
+                           #page_image=page_image,
+                           # paragraph=paragraph,
+                           # tavern=tavern,
+                           #dialogue_options=dialogue_options
+                           )  # return a string
 
 
 @app.route('/marketplace/<inventory>')

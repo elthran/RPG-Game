@@ -19,7 +19,7 @@
     {% if places_of_interest['children'] %}
         <h3>Explore this location</h3>
         {% for place in places_of_interest['children'] %}
-           <button class="genericAccordion">{{ place.name }}</button>
+           <button class="genericAccordion" data-py-function="temp_temp" data="" data-js-callback="genericAccordion">{{ place.name }}</button>
                 <div class="genericAccordionPanel">
                     <h2>{{ place.display.paragraph }} <a href="{{ place.url }}">Choose</a></h2>
                 </div>
@@ -31,7 +31,7 @@
     {% if places_of_interest['siblings'] %}
         <h3>Explore nearby locations</h3>
         {% for place in places_of_interest['siblings'] %}
-           <button class="genericAccordion">{{ place.name }}</button>
+           <button class="genericAccordion" data-py-function="temp_temp" data="" data-js-callback="genericAccordion">{{ place.name }}</button>
                 <div class="genericAccordionPanel">
                     <h2>{{ place.display.paragraph }} <a href="{{ place.url }}">Choose</a></h2>
                 </div>
@@ -48,21 +48,6 @@
     {% endif %}
 </div>
 
-<script>
-var allProfs = document.getElementsByClassName("genericAccordion");
-var index;
-for (index = 0; index < allProfs.length; index++) {
-    allProfs[index].addEventListener("click", function() {
-        this.classList.toggle("active");
-        var panel = this.nextElementSibling;
-        if (panel.style.display === "block") {
-            panel.style.display = "none";
-        } else {
-            panel.style.display = "block";
-        }
-    });
-}
-</script>
 
 {% endblock %}
 

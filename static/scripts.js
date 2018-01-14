@@ -204,6 +204,25 @@ function itemPurchasedPopup(response) {
 // This function is used in the profile_proficiencies.html
 // This function only runs if command code return successfully from Python.
 // Could be updated to just rerender all html for tooltip :P
+
+// I moved this function here instead of putting it at the bottom of each page which uses my accordion. BUT for some reason if I put it here
+// it becomes glitchy. I need to click the element twice for it to work now. I need to solve it before I move them all here.
+function genericAccordion(button) {
+    var allProfs = document.getElementsByClassName("genericAccordion");
+    var index;
+    for (index = 0; index < allProfs.length; index++) {
+        allProfs[index].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.display === "block") {
+                panel.style.display = "none";
+            } else {
+                panel.style.display = "block";
+            }
+        });
+    }
+}
+
 function attributeTooltip(button, tooltip) {
     var newTooltip = {};
     newTooltip = document.getElementById("attributeTooltip");

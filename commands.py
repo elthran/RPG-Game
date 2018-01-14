@@ -340,7 +340,7 @@ class Command:
 
     @staticmethod
     def temp_temp(hero, database, arg_dict, **kwargs):
-        """Return the content of a message based on its id."""
+        """Jacobs function which does nothing. I seem to need to have A function, so sometimes I run this blank function."""
         return "success"
 
     # @staticmethod
