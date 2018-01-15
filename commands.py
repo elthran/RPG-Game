@@ -322,7 +322,7 @@ class Command:
     def change_quest_tooltip(hero, database, arg_dict, **kwargs):
         quest_id = arg_dict.get('data', None, type=int)
         quest = database.get_object_by_id("Quest", quest_id)
-        return "{}&&{}".format(quest.description, quest.reward)
+        return "{}&&{}".format(quest.description, quest.reward_experience)
 
     @staticmethod
     def get_message_content_and_sender_by_id(hero, database, arg_dict, **kwargs):
