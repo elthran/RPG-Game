@@ -689,8 +689,10 @@ def inventory_page(hero=None):
     total_armour = 0
     for armour in hero.inventory:
         if armour.inventory_unequipped == None:
-            total_armour += armour.armour_value
-            print(armour)
+            try:
+                total_armour += armour.armour_value
+            except AttributeError:
+                pass  # item might not have an armour value.
        # if not armour.unequipped:
       #      total_armour += armour.armour_value
     # for item in hero.inventory:
