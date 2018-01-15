@@ -144,6 +144,22 @@ ul {
   text-decoration: none;
 }
 
+.loginDiv .register-form {
+  display: none;
+}
+
+.loginAlternateButton {
+    background: none;
+    color:blue;
+    border: none;
+    padding:0;
+    margin: 0;
+    width: auto;
+    font-family: "Roboto", sans-serif;
+    text-transform: uppercase;
+
+}
+
 .loginBody {
   background: Green; /* fallback for old browsers */
   font-family: "Roboto", sans-serif;

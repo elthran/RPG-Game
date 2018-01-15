@@ -105,10 +105,27 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 }, true);
 
-
-
 function refreshPage() {
     location.reload();
+}
+
+function toggleLoginRegister(button) {
+    var registerForm = document.getElementById('register-form');
+    var loginForm = document.getElementById('login-form');
+    var alternateLoginSentence = document.getElementById('alternateLoginSentence');
+    var alternateLoginButton = document.getElementById('alternateLoginButton');
+    if (registerForm.style.display == 'none') {
+        registerForm.style.display = 'block';
+        loginForm.style.display = 'none';
+        alternateLoginSentence.innerHTML = 'Already have an account?';
+        alternateLoginButton.innerHTML = 'Login';
+
+    } else {
+        registerForm.style.display = 'none';
+        loginForm.style.display = 'block';
+        alternateLoginSentence.innerHTML = 'New user?';
+        alternateLoginButton.innerHTML = 'Create account';
+    }
 }
 
 function show(element) {

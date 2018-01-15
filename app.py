@@ -243,35 +243,42 @@ def update_current_location(f):
 
 # use decorators to link the function to a url
 # route for handling the login page logic
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login/', methods=['GET', 'POST'])
 def login():
-    """Allow user to login if username and password match.
-
-    Access data from the static/user.db using the EasyDatabase class.
-    """
-    # Testing:
+    error = None
     # Should prevent contamination between logging in with 2 different
     # accounts.
     session.clear()
 
-    error = None
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        if database.validate(username, password):
-            session['logged_in'] = True
-            flash("LOG IN SUCCESSFUL")
-            user = database.get_user_by_username(username)
-            session['id'] = user.id
-            # Will barely pause her if only one character exists.
-            # Maybe should just go directly to home page.
-            return redirect(url_for('choose_character'))
-        # Marked for upgrade, consider checking if user exists
-        # and redirect to account creation page.
-        else:
-            error = 'Invalid Credentials. Please try again.'
-
-    return render_template('index.html', error=error, login=True)
+        try:
+            # See if new_username has a valid input. This only works if they are creating an account
+            username = request.form['new_username']
+            password = request.form['new_password']
+            if database.get_user_id(username):
+                error = "Username already exists!"
+            else:
+                user = database.add_new_user(username, password)
+                database.add_new_hero_to_user(user)
+                # database.add_world_map_to_hero() maybe?
+                return redirect(url_for('login'))
+        except:
+            # Otherwise, we are just logging in normally
+            username = request.form['returning_username']
+            password = request.form['returning_password']
+            if database.validate(username, password):
+                session['logged_in'] = True
+                flash("LOG IN SUCCESSFUL")
+                user = database.get_user_by_username(username)
+                session['id'] = user.id
+                # Will barely pause her if only one character exists.
+                # Maybe should just go directly to home page.
+                return redirect(url_for('choose_character'))
+            # Marked for upgrade, consider checking if user exists
+            # and redirect to account creation page.
+            else:
+                error = 'Invalid Credentials. Please try again.'
+    return render_template('index.html', error=error)
 
 
 # route for handling the account creation page logic
@@ -297,6 +304,7 @@ def login():
 
 
 # route for handling the account creation page logic
+"""
 @app.route('/create_account', methods=['GET', 'POST'])
 def create_account():
     error = None
@@ -311,6 +319,7 @@ def create_account():
             # database.add_world_map_to_hero() maybe?
             return redirect(url_for('login'))
     return render_template('index.html', error=error, create_account=True)
+    """
 
 
 @app.route('/add_new_character')
