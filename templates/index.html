@@ -48,6 +48,7 @@
           request.form.username }}">
         <input class="btn btn-default" type="submit" value="Submit">
       </form>
+{% endif %}
 
       {% for message in get_flashed_messages() %}
         {{ message }}
