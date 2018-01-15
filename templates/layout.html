@@ -44,7 +44,7 @@
                 <li><a href=/home>Profile</a></li>
                 <li><a href=/inventory_page>Inventory</a></li>
                 <li><a href=/spellbook>Spellbook</a></li>
-                <li><a href={{ hero.current_location.url }}>{{ hero.current_location.name }}</a></li>
+                <li><a href={{ hero.current_location.url }}>{{ hero.current_location.name.title() }}</a></li>
                 <li><a href=/quest_log>Journal</a></li>
                 {% if hero.user.is_admin %}<li><a href=/admin>Admin</a></li>{% endif %}
                 <li><a href=/display_users/display/id>Users</a></li>

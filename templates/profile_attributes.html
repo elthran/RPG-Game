@@ -11,7 +11,7 @@
         <ul>
         {% for attribute in all_attributes %}
             <li>
-            <button class="proficiencyTooltipTrigger" data-py-function="change_attribute_tooltip" data="{{ attribute.description }}" data-js-callback="attributeTooltip">{{ attribute.name }} (Current level: <div style="display: inline" id="attribute-{{ attribute.id }}">{{ attribute.level }}</div>)</button>
+            <button class="genericTooltipTrigger" data-py-function="change_attribute_tooltip" data="{{ attribute.description }}" data-js-callback="attributeTooltip">{{ attribute.name }} (Current level: <div style="display: inline" id="attribute-{{ attribute.id }}">{{ attribute.level }}</div>)</button>
             <button class="upgradeButton" data-py-function="update_attribute" data="{{ attribute.id }}" id="attributeButton-{{ attribute.id }}" data-js-callback="updateAttribute" {% if hero.attribute_points <= 0 %}style="display: none"{% endif %}></button>
             </li>
         {% endfor %}

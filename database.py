@@ -232,7 +232,7 @@ class EZDB:
         """Get the default location for starting heroes.
         """
         return self.session.query(
-            Location).filter_by(name="Thornwall", type="town").first()
+            Location).filter_by(name="Old Man's Hut", type="building").first()
 
     def get_default_quest_paths(self):
         """Return the quest that are applied to starting heroes.
@@ -346,17 +346,7 @@ class EZDB:
     def update(self):
         """Commit, handle errors, close the session, open a new one.
 
-        NOTE: This may not totally work and maybe should use:
-        NOTE: update function is now mostly redundant!
-        from contextlib import contextmanager
-        Only use on program exit or logout.
-
-        When you edit the hero ... he stays edited!
-        @contextmanager
-        Using any of the other methods will push him to database.
-        def session_scope(self):
-           pass
-
+        Provide a context manager type behavior for the session.
         See:
         http://docs.sqlalchemy.org/en/latest/orm/session_basics.html#when-do-i-construct-a-session-when-do-i-commit-it-and-when-do-i-close-it
         """

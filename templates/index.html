@@ -1,44 +1,44 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Create a New Account</title>
+<head lang="en">
+    <title>Login</title>
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="static/style.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='style.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-  </head>
-  <body>
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
+</head>
 
-{% if create_account %}
-    <div class="container">
-      <h1>Please create a new account</h1>
-      <br>
-      <form action="" method="post">
-        <input type="text" placeholder="Username" name="username" value="{{
-          request.form.username }}" autofocus tabindex=1 />
-         <input type="password" placeholder="Password" name="password" value="{{
-          request.form.password }}" tabindex=2 />
-        <input class="btn btn-default" type="submit" value="Create" tabindex=3 />
-      </form>
-<br><br><br>
-<li><a href=/login>Login</a></li>
-
-
-{% elif login %}
-    <div class="container">
-      <h1>Please login</h1>
-      <br>
-      <form action="" method="post">
-        <input type="text" placeholder="Username" name="username" value="{{
-          request.form.username }}" autofocus tabindex=1 />
-         <input type="password" placeholder="Password" name="password" value="{{
-          request.form.password }}" tabindex=2 />
-        <input class="btn btn-default" type="submit" value="Login" tabindex=3 />
-</form>
-<br><br><br>
+<body class="loginBody">
+    <div class="loginPage">
+        <div class="loginDiv">
+            <form id="register-form" class="register-form" action="" method="post">
+                <input class="hide" type="text" name="type" value="register" />
+                <input type="text" placeholder="username" name="username" autofocus tabindex=1 />
+                <input type="password" placeholder="password" name="password" tabindex=2 />
+                <button tabindex=3>create account</button>
+                <br>
+                <p>Already have an account? <a class="loginAlternateButton" title="Switch to login" href="#" onclick="toggleLoginRegister();return false;" >Login</a></p>
+            </form>
+            <form id="login-form" class="login-form" action="" method="post">
+                <input class="hide" type="text" name="type" value="login" />
+                <input type="text" placeholder="username" name="username" autofocus tabindex=1 />
+                <input type="password" placeholder="password" name="password" tabindex=2 />
+                <button tabindex=3>login</button>
+                <br>
+                <p>New user? <a class="loginAlternateButton" title="Switch to register" href="#" onclick="toggleLoginRegister();return false;" >Create account</a></p>
+            </form>
+            {% if error %}
+            <p class="error"><strong>Error:</strong> {{ error }}
+            {% endif %}
+      </div>
+    </div>
+</body>
+<!--
 <li><a href=/create_account>Create Account</a></li>
 <li><a href=/password_recovery>Forgot Your Password</a></li>
 
-{% elif password_recovery %}
+{% if password_recovery %}
     <div class="container">
       <h1>You Must Not Forget Your Password</h1>
       <br>
@@ -48,27 +48,12 @@
           request.form.username }}">
         <input class="btn btn-default" type="submit" value="Submit">
       </form>
-<br><br><br>
-<li><a href=/login>Login</a></li>
-
-
-{% else %}
-      <h1>Thank you for playing today!</h1>
-      <br>
-
-      <p>Click <a href="/">here</a> to go home.</p>
-
-
 {% endif %}
 
-
-
-      {% if error %}
-        <p class="error"><strong>Error:</strong> {{ error }}
-      {% endif %}
       {% for message in get_flashed_messages() %}
         {{ message }}
       {% endfor %}
     </div>
   </body>
+  -->
 </html>

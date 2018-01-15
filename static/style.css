@@ -86,6 +86,86 @@ ul {
 	list-style-type: none;
 }
 
+/* Login Page */
+.login-page {
+  width: 360px;
+  padding: 8% 0 0;
+  margin: auto;
+}
+
+.loginDiv {
+  position: relative;
+  z-index: 1;
+  background: #FFFFFF;
+  max-width: 360px;
+  margin: 200px auto 100px;
+  padding: 45px;
+  text-align: center;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+
+.loginDiv input {
+  font-family: "Roboto", sans-serif;
+  outline: 0;
+  background: #f2f2f2;
+  width: 100%;
+  border: 0;
+  margin: 0 0 15px;
+  padding: 15px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+.loginDiv button {
+  font-family: "Roboto", sans-serif;
+  text-transform: uppercase;
+  outline: 0;
+  background: #4CAF50;
+  width: 100%;
+  border: 0;
+  padding: 15px;
+  color: #FFFFFF;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.loginDiv button:hover,.loginDiv button:active,.loginDiv button:focus {
+  background: #43A047;
+}
+
+.loginDiv .message {
+  margin: 15px 0 0;
+  color: #b3b3b3;
+  font-size: 12px;
+}
+
+.loginDiv .message a {
+  color: #4CAF50;
+  text-decoration: none;
+}
+
+.loginDiv .register-form {
+  display: none;
+}
+
+.loginAlternateButton {
+    background: none;
+    color:blue;
+    border: none;
+    padding:0;
+    margin: 0;
+    width: auto;
+    font-family: "Roboto", sans-serif;
+    text-transform: uppercase;
+
+}
+
+.loginBody {
+  background: Green; /* fallback for old browsers */
+  font-family: "Roboto", sans-serif;
+}
+
+
 /* Sidebar used for all pages and called in the layout.html */
 .sidebar {
     font-size: 15px; /* Shrinks font on all generic text in the sidebar */
@@ -347,7 +427,7 @@ outline: 2px solid black;
 	color: White;
 }
 
-.proficiencyAccordion { /* The giant box which contains the 12 attributes on the proficiency page */
+.genericAccordion { /* The giant box which contains the 12 attributes on the proficiency page */
     background-color: Grey;
     color: #444;
     cursor: pointer;
@@ -361,16 +441,16 @@ outline: 2px solid black;
     outline: double;
 }
 
-.active, .proficiencyAccordion:hover {
+.active, .genericAccordion:hover {
     background-color: White;
 }
 
-.proficiencyAccordionPanel { /* The 12 individual panels which open up on the accordion bar */
+.genericAccordionPanel { /* The individual panels which open up on the accordion bar */
     display: none;
     background-color: Silver;
 }
 
-.proficiencyTooltipTrigger { /* Each individual attribute which can change the tooltip */
+.genericTooltipTrigger { /* Each individual attribute which can change the tooltip */
     background-color: Grey;
     cursor: pointer;
     width: 90%;
@@ -379,12 +459,12 @@ outline: 2px solid black;
     transition: 0.4s;
 }
 
-.proficiencyTooltip { /* The tooltip box on the right side of the page */
+.genericTooltip { /* The tooltip box on the right side of the page */
     float: right;
     width: 30%;
 }
 
-.proficiencyTooltip li {
+.genericTooltip li {
     list-style-type: circle;
 }
 

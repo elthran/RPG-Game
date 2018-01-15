@@ -105,12 +105,21 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 }, true);
 
-/*
-Unknown scripts (Marlen)
-*/
-
 function refreshPage() {
     location.reload();
+}
+
+// Allows the user to switch between the register and login forms.
+function toggleLoginRegister(button) {
+    var registerForm = document.getElementById("register-form");
+    var loginForm = document.getElementById("login-form");
+    if (window.getComputedStyle(registerForm).display === "none") {
+        registerForm.style.display = "block";
+        loginForm.style.display = "none";
+    } else {
+        registerForm.style.display = "none";
+        loginForm.style.display = "block";
+    }
 }
 
 function show(element) {
@@ -204,6 +213,25 @@ function itemPurchasedPopup(response) {
 // This function is used in the profile_proficiencies.html
 // This function only runs if command code return successfully from Python.
 // Could be updated to just rerender all html for tooltip :P
+
+// I moved this function here instead of putting it at the bottom of each page which uses my accordion. BUT for some reason if I put it here
+// it becomes glitchy. I need to click the element twice for it to work now. I need to solve it before I move them all here.
+function genericAccordion(button) {
+    var allProfs = document.getElementsByClassName("genericAccordion");
+    var index;
+    for (index = 0; index < allProfs.length; index++) {
+        allProfs[index].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.display === "block") {
+                panel.style.display = "none";
+            } else {
+                panel.style.display = "block";
+            }
+        });
+    }
+}
+
 function attributeTooltip(button, tooltip) {
     var newTooltip = {};
     newTooltip = document.getElementById("attributeTooltip");
@@ -306,15 +334,13 @@ function abilityChoiceTooltip(button, description, image) {
     newImage.innerHTML = startImage + image + endImage;
 }
 
-function questTooltip(button, description, image) {
+function questTooltip(button, description, reward) {
     var newTooltip = {};
-    var newImage = {};
-    var startImage = '<img src="/static/images/';
-    var endImage = '.jpg" alt="none">';
+    var tooltipReward = {};
     newTooltip = document.getElementById("questTooltip");
     newTooltip.innerHTML = description;
-    newImage = document.getElementById("choiceImage");
-    newImage.innerHTML = startImage + image + endImage;
+    tooltipReward = document.getElementById("questReward");
+    tooltipReward.innerHTML = "<h3>Your reward for completing the quest is: " + reward +"</h3>";
 }
 
 function pageReload(button) {

@@ -7,13 +7,13 @@
 <div>
 	<div class="leftPageHalf" style="width:65%;">
         {% for attribute in all_attributes %}
-            <button class="proficiencyAccordion">{{ attribute.name }} (Current level: {{ attribute.level }})</button>
-            <div class="proficiencyAccordionPanel">
+            <button class="genericAccordion">{{ attribute.name }} (Current level: {{ attribute.level }})</button>
+            <div class="genericAccordionPanel">
                 <ul>
                     {% for proficiency in all_proficiencies %}
                         {% if proficiency.attribute_type == attribute.name %}
                             <li>
-                                <button class="proficiencyTooltipTrigger" data-py-function="change_proficiency_tooltip" data="{{ proficiency.id }}" data-js-callback="proficiencyTooltip">
+                                <button class="genericTooltipTrigger" data-py-function="change_proficiency_tooltip" data="{{ proficiency.id }}" data-js-callback="proficiencyTooltip">
                                     {{ proficiency.name}} (Current Level: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>)
                                     <button class="upgradeButton" data-py-function="update_proficiency" data="{{ proficiency.id }}" id="proficiencyButton" data-js-callback="updateProficiency" {% if hero.proficiency_points <= 0 or proficiency.is_max_level() %}style="display: none"{% endif %}>
                                     </button>
@@ -25,7 +25,7 @@
             </div>
         {% endfor %}
     </div>
-    <div class="proficiencyTooltip">
+    <div class="genericTooltip">
         <div><span id="proficiencyTooltip">Click on a proficiency to see more information.</span></div>
         <div class="tooltipImage"><span id="attributeImage"><img src="/static/images/ability_pic.jpg"></span></div>
     </div>
@@ -33,7 +33,7 @@
 
 <!-- I don't know why this needs to be below my code and not above it -->
 <script>
-var allProfs = document.getElementsByClassName("proficiencyAccordion");
+var allProfs = document.getElementsByClassName("genericAccordion");
 var index;
 for (index = 0; index < allProfs.length; index++) {
     allProfs[index].addEventListener("click", function() {
