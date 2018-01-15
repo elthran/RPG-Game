@@ -15,15 +15,16 @@
                 <input type="text" placeholder="username" name="new_username" value="{{ request.form.new_username }}" autofocus tabindex=1 />
                 <input type="password" placeholder="password" name="new_password" value="{{ request.form.new_password }}" tabindex=2 />
                 <button tabindex=3>create account</button>
+                <br>
+                <p id="alternateLoginSentence">Already have an account? <a class="loginAlternateButton" title="Toggle user forms" href="#" onclick="toggleLoginRegister();return false;" >Login</a></p>
             </form>
             <form id="login-form" class="login-form" action="" method="post">
                 <input type="text" placeholder="username" name="returning_username" value="{{ request.form.returning_username }}" autofocus tabindex=1 />
                 <input type="password" placeholder="password" name="returning_password" value="{{ request.form.returning_password }}" tabindex=2 />
                 <button tabindex=3>login</button>
+                <br>
+                <p id="alternateLoginSentence">New user? <a class="loginAlternateButton" title="Toggle user forms" href="#" onclick="toggleLoginRegister();return false;" >Create account</a></p>
             </form>
-            <br>
-            <span id="alternateLoginSentence">New user?</span>
-            <button class="loginAlternateButton" data-py-function="temp_temp" data="" data-js-callback="toggleLoginRegister"><span id="alternateLoginButton">Create account</span></button>
       </div>
     </div>
 </body>

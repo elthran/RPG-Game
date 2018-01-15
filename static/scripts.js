@@ -109,22 +109,16 @@ function refreshPage() {
     location.reload();
 }
 
+// Allows the user to switch between the register and login forms.
 function toggleLoginRegister(button) {
-    var registerForm = document.getElementById('register-form');
-    var loginForm = document.getElementById('login-form');
-    var alternateLoginSentence = document.getElementById('alternateLoginSentence');
-    var alternateLoginButton = document.getElementById('alternateLoginButton');
-    if (registerForm.style.display == 'none') {
-        registerForm.style.display = 'block';
-        loginForm.style.display = 'none';
-        alternateLoginSentence.innerHTML = 'Already have an account?';
-        alternateLoginButton.innerHTML = 'Login';
-
+    var registerForm = document.getElementById("register-form");
+    var loginForm = document.getElementById("login-form");
+    if (window.getComputedStyle(registerForm).display === "none") {
+        registerForm.style.display = "block";
+        loginForm.style.display = "none";
     } else {
-        registerForm.style.display = 'none';
-        loginForm.style.display = 'block';
-        alternateLoginSentence.innerHTML = 'New user?';
-        alternateLoginButton.innerHTML = 'Create account';
+        registerForm.style.display = "none";
+        loginForm.style.display = "block";
     }
 }
 
