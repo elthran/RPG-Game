@@ -121,7 +121,7 @@
 		<div class="rightPageHalf textRight">
 			<ul>
 				<li>{{ hero.proficiencies.defence.modifier }}</li>
-				<li>{% if hero.proficiencies.block.chance %}{{ hero.proficiencies.block.chance }}%{% else %}<font color="red">You need a shield</font>{% endif %}</li>
+				<li>{% if hero.inventory.hero.inventory.left_hand.type == "Shield"%}{{ hero.proficiencies.block.chance }}%{% else %}<font color="red">You need a shield</font>{% endif %}</li>
 				<li>{{ hero.proficiencies.fatigue.current }}</li>
 				<li>{{ hero.proficiencies.resist_frost.modifier }}%</li>
 				<li>{{ hero.proficiencies.resist_flame.modifier }}%</li>

@@ -701,8 +701,10 @@ def inventory_page(hero=None):
     total_armour = 0
     for armour in hero.inventory:
         if armour.inventory_unequipped == None:
-            total_armour += armour.armour_value
-            print(armour)
+            try:
+                total_armour += armour.armour_value
+            except AttributeError:
+                pass  # item might not have an armour value.
        # if not armour.unequipped:
       #      total_armour += armour.armour_value
     # for item in hero.inventory:
@@ -835,14 +837,18 @@ def move(name='', hero=None, location=None):
 @uses_hero
 @update_current_location
 def barracks(name='', hero=None, location=None):
-    # This will be removed soon. Dead heros wont be able to move on the map and will immediately get moved to ahospital until they heal. So locations won't need to factor in the "if"of the hero being dead
+    # This will be removed soon.
+    # Dead heros wont be able to move on the map and will immediately get
+    # moved to ahospital until they heal. So locations won't need to factor
+    # in the "if"of the hero being dead
     if hero.proficiencies.health.current <= 0:
         location.display.page_heading = "Your hero is currently dead."
         location.display.page_image = "dead.jpg"
         location.children = None
         location.display.paragraph = "You have no health."
     else:
-        location.display.page_heading = "Welcome to the barracks {}!".format(hero.name)
+        location.display.page_heading = "Welcome to the barracks {}!".format(
+            hero.name)
         location.display.page_image = "barracks.jpg"
         location.display.paragraph = "Battle another player."
 
@@ -1120,6 +1126,8 @@ def tavern(name='', hero=None):
     page_title = "Tavern"
     page_heading = "You enter the Red Dragon Inn."
     page_image = "bartender"
+    paragraph = None
+    dialogue_options = None
     """
     if "Become an apprentice at the tavern." in hero.completed_quests:
         paragraph = "Welcome, my apprentice!"
@@ -1185,8 +1193,10 @@ def tavern(name='', hero=None):
             hero.completed_quests.append("Become an apprentice at the tavern.")
             page_heading = "You are now my apprentice!"
             """
-    return render_template('tavern.html', hero=hero, page_title=page_title, page_heading=page_heading,
-                           page_image=page_image, paragraph=paragraph, tavern=tavern,                           dialogue_options=dialogue_options)  # return a string
+    return render_template(
+        'tavern.html', hero=hero, page_title=page_title,
+        page_heading=page_heading, page_image=page_image, paragraph=paragraph,
+        tavern=tavern, dialogue_options=dialogue_options)  # return a string
 
 
 @app.route('/marketplace/<inventory>')

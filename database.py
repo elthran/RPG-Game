@@ -35,7 +35,7 @@ from hero import Hero
 from abilities import Abilities, Ability
 from specializations import Specialization
 from locations import Location
-from items import ItemTemplate, Item
+from items import Item
 from quests import Quest, QuestPath
 from proficiencies import Proficiency
 from events import Trigger
@@ -188,13 +188,13 @@ class EZDB:
     def create_item(self, item_id):
         """Create a new item from a given template name.
         """
-        template = self.session.query(ItemTemplate).get(item_id)
-        item = Item(template)
+        template = self.session.query(Item).get(item_id)
+        item = template.build_new_from_template()
         return item
 
     def get_random_item(self):
         """Return a new random item."""
-        num_rows = self.session.query(ItemTemplate).count()
+        num_rows = self.session.query(Item).count()
         item_id = random.randint(1, num_rows)
         item = self.create_item(item_id)
         return item
@@ -212,15 +212,15 @@ class EZDB:
         """Return all items in the database ordered by name.
         """
         return self.session.query(
-            ItemTemplate).filter(
-            ItemTemplate.type != "Consumable").order_by(
-            ItemTemplate.name).all()
+            Item).filter_by(template=True).filter(
+            Item.type != "Consumable").order_by(
+            Item.name).all()
         
     def get_all_marketplace_items(self):
-        """Not Implemented!
+        """Return a list of all consumables in the marketplace.
         """
         return self.session.query(
-            ItemTemplate).filter_by(type="Consumable").all()
+            Item).filter_by(template=True).filter_by(type="Consumable").all()
 
     def get_default_world(self):
         """Get the default world for starting heroes.
@@ -344,10 +344,11 @@ class EZDB:
                             " does not accommodate.")
 
     def update(self):
-        """Provide a context manager type behavior for the session.
+        """Commit, handle errors, close the session, open a new one.
 
-        Commit current session. Or rollback or raise ..
-        Starts a new one!
+        Provide a context manager type behavior for the session.
+        See:
+        http://docs.sqlalchemy.org/en/latest/orm/session_basics.html#when-do-i-construct-a-session-when-do-i-commit-it-and-when-do-i-close-it
         """
         try:
             self.session.commit()

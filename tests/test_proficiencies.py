@@ -1,7 +1,7 @@
-import pytest
+# import pytest
 
 from database import EZDB
-from game import Hero
+# from hero import Hero
 
 from proficiencies import Proficiencies, Health, Regeneration
 
