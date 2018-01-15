@@ -105,9 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 }, true);
 
-/*
-Unknown scripts (Marlen)
-*/
+
 
 function refreshPage() {
     location.reload();
