@@ -246,7 +246,6 @@ def update_current_location(f):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
-    success = False
     # Should prevent contamination between logging in with 2 different
     # accounts.
     session.clear()
@@ -257,7 +256,7 @@ def login():
         if request.form['type'] == "login":
             # Otherwise, we are just logging in normally
             if database.validate(username, password):
-                success = True
+                session['logged_in'] = True
             # Marked for upgrade, consider checking if user exists
             # and redirect to account creation page.
             else:
@@ -270,12 +269,11 @@ def login():
             else:
                 user = database.add_new_user(username, password)
                 database.add_new_hero_to_user(user)
-                success = True
+                session['logged_in'] = True
         else:
             raise Exception("The form of this 'type' doesn't exist!")
 
-        if success:
-            session['logged_in'] = True
+        if session['logged_in']:
             flash("LOG IN SUCCESSFUL")
             user = database.get_user_by_username(username)
             session['id'] = user.id
