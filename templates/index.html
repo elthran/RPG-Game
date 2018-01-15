@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
-<head>
+<head lang="en">
     <title>Login</title>
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='style.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
@@ -12,19 +13,24 @@
     <div class="loginPage">
         <div class="loginDiv">
             <form id="register-form" class="register-form" action="" method="post">
-                <input type="text" placeholder="username" name="new_username" value="{{ request.form.new_username }}" autofocus tabindex=1 />
-                <input type="password" placeholder="password" name="new_password" value="{{ request.form.new_password }}" tabindex=2 />
+                <input class="hide" type="text" name="type" value="register" />
+                <input type="text" placeholder="username" name="username" autofocus tabindex=1 />
+                <input type="password" placeholder="password" name="password" tabindex=2 />
                 <button tabindex=3>create account</button>
                 <br>
-                <p id="alternateLoginSentence">Already have an account? <a class="loginAlternateButton" title="Toggle user forms" href="#" onclick="toggleLoginRegister();return false;" >Login</a></p>
+                <p>Already have an account? <a class="loginAlternateButton" title="Switch to login" href="#" onclick="toggleLoginRegister();return false;" >Login</a></p>
             </form>
             <form id="login-form" class="login-form" action="" method="post">
-                <input type="text" placeholder="username" name="returning_username" value="{{ request.form.returning_username }}" autofocus tabindex=1 />
-                <input type="password" placeholder="password" name="returning_password" value="{{ request.form.returning_password }}" tabindex=2 />
+                <input class="hide" type="text" name="type" value="login" />
+                <input type="text" placeholder="username" name="username" autofocus tabindex=1 />
+                <input type="password" placeholder="password" name="password" tabindex=2 />
                 <button tabindex=3>login</button>
                 <br>
-                <p id="alternateLoginSentence">New user? <a class="loginAlternateButton" title="Toggle user forms" href="#" onclick="toggleLoginRegister();return false;" >Create account</a></p>
+                <p>New user? <a class="loginAlternateButton" title="Switch to register" href="#" onclick="toggleLoginRegister();return false;" >Create account</a></p>
             </form>
+            {% if error %}
+            <p class="error"><strong>Error:</strong> {{ error }}
+            {% endif %}
       </div>
     </div>
 </body>

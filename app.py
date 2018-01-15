@@ -243,7 +243,7 @@ def update_current_location(f):
 
 # use decorators to link the function to a url
 # route for handling the login page logic
-@app.route('/login/', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
     # Should prevent contamination between logging in with 2 different
@@ -251,33 +251,40 @@ def login():
     session.clear()
 
     if request.method == 'POST':
-        try:
-            # See if new_username has a valid input. This only works if they are creating an account
-            username = request.form['new_username']
-            password = request.form['new_password']
-            if database.get_user_id(username):
-                error = "Username already exists!"
-            else:
-                user = database.add_new_user(username, password)
-                database.add_new_hero_to_user(user)
-                # database.add_world_map_to_hero() maybe?
-                return redirect(url_for('login'))
-        except:
+        username = request.form['username']
+        password = request.form['password']
+        if request.form['type'] == "login":
             # Otherwise, we are just logging in normally
-            username = request.form['returning_username']
-            password = request.form['returning_password']
             if database.validate(username, password):
                 session['logged_in'] = True
                 flash("LOG IN SUCCESSFUL")
                 user = database.get_user_by_username(username)
                 session['id'] = user.id
-                # Will barely pause her if only one character exists.
+                # Will barely pause here if only one character exists.
                 # Maybe should just go directly to home page.
                 return redirect(url_for('choose_character'))
             # Marked for upgrade, consider checking if user exists
             # and redirect to account creation page.
             else:
                 error = 'Invalid Credentials. Please try again.'
+        elif request.form['type'] == "register":
+            # See if new_username has a valid input.
+            # This only works if they are creating an account
+            if database.get_user_id(username):
+                error = "Username already exists!"
+            else:
+                user = database.add_new_user(username, password)
+                database.add_new_hero_to_user(user)
+                session['logged_in'] = True
+                flash("LOG IN SUCCESSFUL")
+                user = database.get_user_by_username(username)
+                session['id'] = user.id
+                # Will barely pause here if only one character exists.
+                # Maybe should just go directly to home page.
+                return redirect(url_for('choose_character'))
+        else:
+            raise Exception("The form of this 'type' doesn't exist!")
+
     return render_template('index.html', error=error)
 
 
