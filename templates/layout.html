@@ -63,7 +63,7 @@
         {% block nav_bar %}{% endblock %}
         <div style="clear:both;"></div>
         <!-- This calls a notification script to run if the Hero has any new quests completed -->
-        <button id="globalNotificationButton" onclick="sendToPy(event, showGlobalModal, 'send_notification_data', null, getElementData);" data="None">Achievement Progress!</button>
+        <button class="hide" id="globalNotificationButton" onclick="sendToPy(event, showGlobalModal, 'send_notification_data');" {% if hero.journal.notification %}style="display: initial"{% endif %}>Achievement Progress!</button>
         <!--Global Notification modal-->
         <!--
         It starts out invisible but is activated using the button above.

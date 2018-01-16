@@ -348,9 +348,6 @@ function pageReload(button) {
 }
 
 function showGlobalModal(response, oldData) {
-    log("Testing showGlobalModal!")
-    log(response);
-    log(oldData);
     // Add content data to modal
     header = document.getElementById("globalMessageModalHeaderContent");
     header.innerHTML = response["header"];
@@ -528,6 +525,16 @@ If the data is (preferably) a JSON object the page location is passed along.
 */
 function sendToPy(event, callback, cmd, data, preProcess, url) {
     "use strict";
+    // Default arguments [equivalent to "def f(data='')" in python]
+    // If data is undefined it will cause the python code to throw
+    // as 400 (bad response) server error when it tries to decode the
+    // JSON data. If the server can't decode the data it now loudly
+    // throws a 400 error. I hope this is a good idea.
+    // The data sent _must_ be valid JSON data.
+    if (data === undefined) {
+        data = ""
+    }
+
     var element = event.target;
 
     if (cmd && url) {

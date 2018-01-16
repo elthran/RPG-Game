@@ -344,23 +344,29 @@ class Command:
         function and data on the end of any Json capable response?
         """
 
-        header_template = """{% if quest_notification.total_reward %}
-                    <h1>{{ quest_notification.name }}</h1>
-                    {% else %}
-                    <h1>{{ quest_notification.name }}</h1>
-                    <h2>Stage: {{ quest_notification.stage }} / {{ quest_notification.stages }}</h2>
-                    {% endif %}"""
-        body_template = """{% if quest_notification.total_reward %}
-                    <h2>Completed!</h2>
-                    {% else %}
-                    <h2>Current Step:</h2>
-                    <h3>{{ quest_notification.current_quest.name }}</h3>
-                    {% endif %}"""
-        footer_template = """{% if quest_notification.total_reward %}
-                    <h3>Total reward: {{ quest_notification.total_reward }}xp</h3>
-                    {% else %}
-                    <h3>Reward: {{ quest_notification.current_quest.reward }}xp</h3>
-                    {% endif %}"""
+        header_template = """
+            {% if quest_notification.total_reward %}
+                <h1>{{ quest_notification.name }}</h1>
+            {% else %}
+                <h1>{{ quest_notification.name }}</h1>
+                <h2>Stage: {{ quest_notification.stage }} / {{ quest_notification.stages }}</h2>
+            {% endif %}
+        """
+        body_template = """
+            {% if quest_notification.total_reward %}
+                <h2>Completed!</h2>
+            {% else %}
+                <h2>Current Step:</h2>
+                <h3>{{ quest_notification.current_quest.name }}</h3>
+            {% endif %}
+        """
+        footer_template = """
+            {% if quest_notification.total_reward %}
+                <h3>Total reward: {{ quest_notification.total_reward }}xp</h3>
+            {% else %}
+                <h3>Reward: {{ quest_notification.current_quest.reward }}xp</h3>
+            {% endif %}
+        """
 
         # notice = hero.journal.quest_notification
         notice = hero.journal.quest_paths[0].get_description()
@@ -370,9 +376,11 @@ class Command:
         body = render_template_string(body_template,
                                       quest_notification=notice)
         footer = render_template_string(footer_template,
-                                      quest_notification=notice)
+                                        quest_notification=notice)
 
         data = jsonify(header=header, body=body, footer=footer)
+
+        print("Sending Notice content to JS.")
         pprint(data)
 
         # Clear quest notification
