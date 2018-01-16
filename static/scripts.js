@@ -347,7 +347,18 @@ function pageReload(button) {
     location.reload();
 }
 
-function showGlobalModal(button) {
+function showGlobalModal(response, oldData) {
+    log("Testing showGlobalModal!")
+    log(response);
+    log(oldData);
+    // Add content data to modal
+    header = document.getElementById("globalMessageModalHeaderContent");
+    header.innerHTML = response["header"];
+    body = document.getElementById("globalMessageModalBodyContent");
+    body.innerHTML = response["body"];
+    footer = document.getElementById("globalMessageModalFooterContent");
+    footer.innerHTML = response["footer"];
+
     // Get the modal
     var modal = document.getElementById('globalMessage');
     // Get the button that opens the modal
@@ -503,9 +514,12 @@ function updateMessageTable(xhttp, oldData) {
 
 /* Server communication v2
 Usage:
-    <form onsubmit="return sendToPy(event, updateMessageTable, getIdsFromCheckboxes);></form>
+    <form onsubmit="return sendToPy(
+        event, updateMessageTable, null, null, getIdsFromCheckboxes);></form>
     OR
-    <button onclick="sendToPy(event, someCallBack, somePreprocess, someUrl);"></button>
+    <button onclick="sendToPy(
+        event, someCallBack, "some_python_command_func", null,
+        somePreprocess);"></button>
 
 NOTE: Form must have a return method too.
 NOTE: url defaults to current page if unspecified.
@@ -579,6 +593,11 @@ function postJSON(url, oldData, callback) {
     console.log("Data to be sent: " + JSONdata);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send(JSONdata);
+}
+
+// A preProcessor function to extract old style data from a clicked element
+function getElementData(element) {
+    return element.getAttribute('data');
 }
 
 // Get a valid function handler (if one exists) for a given function string.

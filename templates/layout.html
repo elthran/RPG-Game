@@ -63,40 +63,34 @@
         {% block nav_bar %}{% endblock %}
         <div style="clear:both;"></div>
         <!-- This calls a notification script to run if the Hero has any new quests completed -->
-        {% if hero.journal.quest_notification %}
-        {% set quest_notification = hero.journal.quest_notification %}
-        <button id="globalNotificationButton"  data-py-function="clearQuestNotification" data="None" data-js-callback="showGlobalModal">Achievement Progress!</button>
+        <button id="globalNotificationButton" onclick="sendToPy(event, showGlobalModal, 'send_notification_data', null, getElementData);" data="None">Achievement Progress!</button>
+        <!--Global Notification modal-->
+        <!--
+        It starts out invisible but is activated using the button above.
+        Said button gets its data from python
+        -->
         <div class="globalMessageModal" id="globalMessage">
             <div class="globalMessageModalContent">
                 <div class="globalMessageModalHeader">
                     <span class="closeGlobalModal">&times;</span>
-                    {% if quest_notification.total_reward %}
-                    <h1>{{ quest_notification.name }}</h1>
-                    {% else %}
-                    <h1>{{ quest_notification.name }}</h1>
-                    <h2>Stage: {{ quest_notification.stage }} / {{ quest_notification.stages }}</h2>
-                    {% endif %}
+                    <span id="globalMessageModalHeaderContent">
+                        <!--Header content sent from Python-->
+                    </span>
                 </div>
                 <div class="globalMessageModalBody">
-                    {% if quest_notification.total_reward %}
-                    <h2>Completed!</h2>
-                    {% else %}
-                    <h2>Current Step:</h2>
-                    <h3>{{ quest_notification.current_quest.name }}</h3>
-                    {% endif %}
+                    <span id="globalMessageModalBodyContent">
+                        <!--Body content sent from Python-->
+                    </span>
                     <!-- The code above needs to be tweaked -->
                 </div>
                 <div class="globalMessageModalFooter">
-                    {% if quest_notification.total_reward %}
-                    <h3>Total reward: {{ quest_notification.total_reward }}xp</h3>
-                    {% else %}
-                    <h3>Reward: {{ quest_notification.current_quest.reward }}xp</h3>
-                    {% endif %}
+                    <span id="globalMessageModalFooterContent">
+                        <!--Footer content sent from Python-->
+                    </span>
                 </div>
             </div>
         </div>
         <div style="clear:both;"></div>
-        {% endif %}
         <!-- This displays notifications at the top of the page -->
         {% for notice in notifications %}
             {{ notice }}

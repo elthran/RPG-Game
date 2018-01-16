@@ -1,8 +1,11 @@
 import pdb
+from pprint import pprint
 
+from functools import wraps
 from flask import render_template_string, jsonify
 
-#TODO: update documentation!
+
+# TODO: update documentation!
 class Command:
     """Run a list of html update commands based on the string cmd.
     
@@ -333,10 +336,73 @@ class Command:
         return "{}&&{}".format(message.content, message.sender.user.username)
 
     @staticmethod
-    def clearQuestNotification(hero, database, arg_dict, **kwargs):
-        id = arg_dict.get('data', None, type=int)
+    def send_notification_data(hero, database, data, *args, **kwargs):
+        """Return the quest notification data as a JSON
+
+        Maybe this should be a decorator?
+        It would wrap any function and tack the "activate notification button"
+        function and data on the end of any Json capable response?
+        """
+
+        header_template = """{% if quest_notification.total_reward %}
+                    <h1>{{ quest_notification.name }}</h1>
+                    {% else %}
+                    <h1>{{ quest_notification.name }}</h1>
+                    <h2>Stage: {{ quest_notification.stage }} / {{ quest_notification.stages }}</h2>
+                    {% endif %}"""
+        body_template = """{% if quest_notification.total_reward %}
+                    <h2>Completed!</h2>
+                    {% else %}
+                    <h2>Current Step:</h2>
+                    <h3>{{ quest_notification.current_quest.name }}</h3>
+                    {% endif %}"""
+        footer_template = """{% if quest_notification.total_reward %}
+                    <h3>Total reward: {{ quest_notification.total_reward }}xp</h3>
+                    {% else %}
+                    <h3>Reward: {{ quest_notification.current_quest.reward }}xp</h3>
+                    {% endif %}"""
+
+        # notice = hero.journal.quest_notification
+        notice = hero.journal.quest_paths[0].get_description()
+
+        header = render_template_string(header_template,
+                                        quest_notification=notice)
+        body = render_template_string(body_template,
+                                      quest_notification=notice)
+        footer = render_template_string(footer_template,
+                                      quest_notification=notice)
+
+        data = jsonify(header=header, body=body, footer=footer)
+        pprint(data)
+
+        # Clear quest notification
         hero.journal.quest_notification = None
-        return "success".format()
+        return data
+
+    @staticmethod
+    def set_notification_active(f):
+        """Tack data onto a response that activates the notification button.
+
+        This should be a decorator that sets the data attribute of the
+        globalNotificationButton?
+
+        I might need a 3 level decorator ..
+        """
+
+        @wraps(f)
+        def wrap_set_notice_active(*args, **kwargs):
+            result = f(*args, **kwargs)
+            # tack the notication=Active onto result based on function
+            # type
+            pprint(result)
+            return result
+        return wrap_set_notice_active
+
+    # @staticmethod
+    # def clear_quest_notification(hero, database, arg_dict, **kwargs):
+    #     id = arg_dict.get('data', None, type=int)
+    #     hero.journal.quest_notification = None
+    #     return "success"
 
     @staticmethod
     def temp_temp(hero, database, arg_dict, **kwargs):
