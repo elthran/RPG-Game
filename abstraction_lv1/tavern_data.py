@@ -29,20 +29,15 @@ path_3 = [
     "You feel very refreshed!",
 ]
 
-path_4 = [
-    "Ask if there are any jobs you can do.",
-    "The bartender has asked you to find 2 wolf pelts!",
-]
-
 # Can be asked after any quest stage? I think that is implement correctly here.
-path_5 = [
+path_4 = [
     "Ask if there are any jobs you can do.",
     "The bartender has asked you to {quest_stage_name}",
     "I'm still working on {quest_stage_name}",
     "Don't take too long!",
 ]
 
-path_6 = [
+path_5 = [
     "Ask if there are any jobs you can do.",
     "The bartender has asked you to find 2 wolf pelts!",
     "Collect 2 Wolf Pelts for the Bartender",
