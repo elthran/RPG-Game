@@ -256,7 +256,7 @@ ul {
 .globalMessageModal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    z-index: 150; /* Sit on top */
     padding-top: 100px; /* Location of the box */
     width: 90%; /* Full width */
     height: 100%; /* Full height */

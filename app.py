@@ -667,7 +667,7 @@ def ability_tree(spec, hero=None):
         points_remaining = hero.basic_ability_points
     elif spec == "archetype":
         points_remaining = hero.archetype_ability_points
-        if hero.specializations.archetype == None:
+        if hero.specializations.archetype is None:
             becomeType = "archetype"
 
             # all_specializations = database.get_all_specializations()

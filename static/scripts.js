@@ -76,6 +76,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         // I will put some error checking in to make sure that this happens at some point.
                         var requestArray = xhttp.responseText.split("&&");
                         requestArray.unshift(clickedButton);
+                        // Send the last element to check if we should show a
+                        // notification.
+                        showGlobalNotificationButton(requestArray[requestArray.length-1]);
                         jsFunction.apply(document, requestArray);
                     }
                 }
@@ -156,7 +159,13 @@ function toggleEquip(clicked, slot_type, idsArrayStr) {
 //    console.log(idsArrayStr);
     var tooltipDiv = clicked;
     var inventoryItemDiv = tooltipDiv.parentElement;
-    var empty_slot = document.getElementById("inventory-" + slot_type + "-empty");
+
+    if (slot_type === "both-hands") {
+        throw "You need to build code to deal with equipping a 2 handed weapon!";
+    } else {
+        var empty_slot = document.getElementById("inventory-" + slot_type + "-empty");
+    }
+//    log("inventory-" + slot_type + "-empty");
 //    console.log(empty_slot);
 
     var command = tooltipDiv.getAttribute("data-py-function");
@@ -347,6 +356,34 @@ function pageReload(button) {
     location.reload();
 }
 
+// Show the global notification button
+// This function handles the possibility of passing in invalid data.
+// Returns the invalid data. Returns nothing if data is valid.
+function showGlobalNotificationButton(isNotice, isJSON) {
+    if (!isJSON && typeof isNotice === "string") {
+        // It might be the right kind of data.
+        if (isNotice.search("isNotice") === 0) {
+            // Yay! The right kind of data!
+            isNotice = isNotice.split('=')[1];
+            isNotice = eval(isNotice);
+        } else {
+            // I guess it wasn't the right kind after all that ...
+            return isNotice;
+        }
+    } else if (isJSON){
+        ; // Good data! Continue to other code!
+    } else {
+        // if not JSON or string it definitely isn't the right kind of data.
+        return isNotice;
+    }
+
+    if (isNotice) {
+        button = document.getElementById("globalNotificationButton");
+        button.style.visibility = "visible";
+    }
+    return null; // If this variable was a valid isNotice return nothing.
+}
+
 function showGlobalModal(response, oldData) {
     // Add content data to modal
     header = document.getElementById("globalMessageModalHeaderContent");
@@ -382,7 +419,7 @@ function showGlobalModal(response, oldData) {
         }
     });
 
-    clickedButton.style.display = "none";
+    clickedButton.style.visibility = "hidden";
 }
 
 // Choose character page, confirms user choice of hero.
@@ -430,29 +467,31 @@ document.addEventListener("DOMContentLoaded", function () {
     // Get the modal
     var modal = document.getElementById('inboxPopupWindow');
 
-    // Get the <span> element that closes the modal
-    var span = document.querySelector(".close");
+    if (modal) {
+        // Get the <span> element that closes the modal
+        var span = document.querySelector(".close");
 
-    // When the user clicks on <span> (x), close the modal
-    if (span) {
-        span.onclick = function() {
-            modal.style.display = "none";
+        // When the user clicks on <span> (x), close the modal
+        if (span) {
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
         }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Handle ESC key (key code 27)
+        document.addEventListener('keyup', function(e) {
+            if (e.keyCode == 27) {
+                modal.style.display = "none";
+            }
+        });
     }
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-
-    // Handle ESC key (key code 27)
-    document.addEventListener('keyup', function(e) {
-        if (e.keyCode == 27) {
-            modal.style.display = "none";
-        }
-    });
 }, true);
 
 // Inbox toggle select all messags
@@ -586,7 +625,8 @@ function postJSON(url, oldData, callback) {
             if (callback) {
                 if (xhttp.getResponseHeader("Content-Type") === "application/json") {
                     var response = JSON.parse(xhttp.responseText);
-                    callback(response, oldData)
+                    showGlobalNotificationButton(response["isNotice"], true);
+                    callback(response, oldData);
                 } else {
                     callback(xhttp, oldData);
                 }
