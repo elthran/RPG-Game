@@ -76,6 +76,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         // I will put some error checking in to make sure that this happens at some point.
                         var requestArray = xhttp.responseText.split("&&");
                         requestArray.unshift(clickedButton);
+                        // Send the last element to check if we should show a
+                        // notification.
+                        showGlobalNotificationButton(requestArray[requestArray.length-1]);
                         jsFunction.apply(document, requestArray);
                     }
                 }
@@ -156,7 +159,13 @@ function toggleEquip(clicked, slot_type, idsArrayStr) {
 //    console.log(idsArrayStr);
     var tooltipDiv = clicked;
     var inventoryItemDiv = tooltipDiv.parentElement;
-    var empty_slot = document.getElementById("inventory-" + slot_type + "-empty");
+
+    if (slot_type === "both-hands") {
+        throw "You need to build code to deal with equipping a 2 handed weapon!";
+    } else {
+        var empty_slot = document.getElementById("inventory-" + slot_type + "-empty");
+    }
+//    log("inventory-" + slot_type + "-empty");
 //    console.log(empty_slot);
 
     var command = tooltipDiv.getAttribute("data-py-function");
@@ -347,7 +356,43 @@ function pageReload(button) {
     location.reload();
 }
 
-function showGlobalModal(button) {
+// Show the global notification button
+// This function handles the possibility of passing in invalid data.
+// Returns the invalid data. Returns nothing if data is valid.
+function showGlobalNotificationButton(isNotice, isJSON) {
+    if (!isJSON && typeof isNotice === "string") {
+        // It might be the right kind of data.
+        if (isNotice.search("isNotice") === 0) {
+            // Yay! The right kind of data!
+            isNotice = isNotice.split('=')[1];
+            isNotice = eval(isNotice);
+        } else {
+            // I guess it wasn't the right kind after all that ...
+            return isNotice;
+        }
+    } else if (isJSON){
+        ; // Good data! Continue to other code!
+    } else {
+        // if not JSON or string it definitely isn't the right kind of data.
+        return isNotice;
+    }
+
+    if (isNotice) {
+        button = document.getElementById("globalNotificationButton");
+        button.style.visibility = "visible";
+    }
+    return null; // If this variable was a valid isNotice return nothing.
+}
+
+function showGlobalModal(response, oldData) {
+    // Add content data to modal
+    header = document.getElementById("globalMessageModalHeaderContent");
+    header.innerHTML = response["header"];
+    body = document.getElementById("globalMessageModalBodyContent");
+    body.innerHTML = response["body"];
+    footer = document.getElementById("globalMessageModalFooterContent");
+    footer.innerHTML = response["footer"];
+
     // Get the modal
     var modal = document.getElementById('globalMessage');
     // Get the button that opens the modal
@@ -374,7 +419,7 @@ function showGlobalModal(button) {
         }
     });
 
-    clickedButton.style.display = "none";
+    clickedButton.style.visibility = "hidden";
 }
 
 // Choose character page, confirms user choice of hero.
@@ -422,29 +467,31 @@ document.addEventListener("DOMContentLoaded", function () {
     // Get the modal
     var modal = document.getElementById('inboxPopupWindow');
 
-    // Get the <span> element that closes the modal
-    var span = document.querySelector(".close");
+    if (modal) {
+        // Get the <span> element that closes the modal
+        var span = document.querySelector(".close");
 
-    // When the user clicks on <span> (x), close the modal
-    if (span) {
-        span.onclick = function() {
-            modal.style.display = "none";
+        // When the user clicks on <span> (x), close the modal
+        if (span) {
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
         }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Handle ESC key (key code 27)
+        document.addEventListener('keyup', function(e) {
+            if (e.keyCode == 27) {
+                modal.style.display = "none";
+            }
+        });
     }
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-
-    // Handle ESC key (key code 27)
-    document.addEventListener('keyup', function(e) {
-        if (e.keyCode == 27) {
-            modal.style.display = "none";
-        }
-    });
 }, true);
 
 // Inbox toggle select all messags
@@ -503,9 +550,12 @@ function updateMessageTable(xhttp, oldData) {
 
 /* Server communication v2
 Usage:
-    <form onsubmit="return sendToPy(event, updateMessageTable, getIdsFromCheckboxes);></form>
+    <form onsubmit="return sendToPy(
+        event, updateMessageTable, null, null, getIdsFromCheckboxes);></form>
     OR
-    <button onclick="sendToPy(event, someCallBack, somePreprocess, someUrl);"></button>
+    <button onclick="sendToPy(
+        event, someCallBack, "some_python_command_func", null,
+        somePreprocess);"></button>
 
 NOTE: Form must have a return method too.
 NOTE: url defaults to current page if unspecified.
@@ -514,6 +564,16 @@ If the data is (preferably) a JSON object the page location is passed along.
 */
 function sendToPy(event, callback, cmd, data, preProcess, url) {
     "use strict";
+    // Default arguments [equivalent to "def f(data='')" in python]
+    // If data is undefined it will cause the python code to throw
+    // as 400 (bad response) server error when it tries to decode the
+    // JSON data. If the server can't decode the data it now loudly
+    // throws a 400 error. I hope this is a good idea.
+    // The data sent _must_ be valid JSON data.
+    if (data === undefined) {
+        data = ""
+    }
+
     var element = event.target;
 
     if (cmd && url) {
@@ -565,7 +625,8 @@ function postJSON(url, oldData, callback) {
             if (callback) {
                 if (xhttp.getResponseHeader("Content-Type") === "application/json") {
                     var response = JSON.parse(xhttp.responseText);
-                    callback(response, oldData)
+                    showGlobalNotificationButton(response["isNotice"], true);
+                    callback(response, oldData);
                 } else {
                     callback(xhttp, oldData);
                 }
@@ -579,6 +640,11 @@ function postJSON(url, oldData, callback) {
     console.log("Data to be sent: " + JSONdata);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send(JSONdata);
+}
+
+// A preProcessor function to extract old style data from a clicked element
+function getElementData(element) {
+    return element.getAttribute('data');
 }
 
 // Get a valid function handler (if one exists) for a given function string.

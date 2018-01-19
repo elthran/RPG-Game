@@ -49,7 +49,7 @@ Project breakdown:
 """
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import validates
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -74,7 +74,16 @@ class Journal(Base):
 
     # Journal to QuestPath is One to Many
     # QuestPath provides many special methods.
-    quest_paths = relationship("QuestPath", back_populates='journal')
+    quest_paths = relationship("QuestPath", back_populates='journal',
+                               foreign_keys="[QuestPath.journal_id]")
+
+    notification = relationship("QuestPath",
+                                foreign_keys="[QuestPath.notification_id]",
+                                uselist=False)
+
+    # @property
+    # def quest_notification(self):
+    #     return self.notification.get_description()
 
     @validates('quest_paths')
     def validate_quest_path(self, key, quest_path):
@@ -86,7 +95,7 @@ class Journal(Base):
         if quest_path.template:
             quest_path = quest_path.build_new_from_template()
         quest_path.activate(self.hero)
-        self.quest_notification = quest_path.get_description()
+        self.notification = quest_path
         return quest_path
 
     # Each journal can have many entries

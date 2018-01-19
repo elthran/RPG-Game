@@ -23,7 +23,7 @@
 	<div class="leftPageHalf" style="width:65%;">
         <h2>Current Quests</h2>
         {% for path in hero.journal.quest_paths if not path.completed %}
-            <button class="genericAccordion" data-py-function="change_path_tooltip" data="{{ path.description }}" data-js-callback="questTooltip">{{ path.name.title() }} (Progress: {{ path.stage }} / {{ path.stages }})</button>
+            <button class="genericAccordion" data-py-function="change_path_tooltip" data="{{ path.description }}" data-js-callback="questTooltip">{{ path.name.title() }} (Progress: {{ path.stage+1 }} / {{ path.stages }})</button>
             <div class="genericAccordionPanel">
                 <ul>
                     {% for i in range(path.stage + 1) %} <!-- This sgithould iterate over all completed+current stages, but not stages you haven't reached yet -->
@@ -39,7 +39,7 @@
         {% endfor %}
         <h2>Completed Quests</h2>
         {% for path in hero.journal.quest_paths if path.completed %}
-            <button class="genericAccordion" data-py-function="change_path_tooltip" data="{{ path.description }}" data-js-callback="questTooltip">{{ path.name.title() }} (Progress: {{ path.stage }} / {{ path.stages }})</button>
+            <button class="genericAccordion" data-py-function="change_path_tooltip" data="{{ path.description }}" data-js-callback="questTooltip">{{ path.name.title() }} (Progress: {{ path.stage+1 }} / {{ path.stages }})</button>
             <div class="genericAccordionPanel">
                 <ul>
                     {% for quest in path.quests %} <!-- This should iterate over all completed+current stages, but not stages you haven't reached yet -->

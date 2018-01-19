@@ -15,6 +15,8 @@ from flask import (
     Flask, render_template, redirect, url_for, request, session,
     flash, send_from_directory)
 
+import werkzeug
+
 from game import Game
 import combat_simulator
 from attributes import \
@@ -172,6 +174,7 @@ def login_required(f):
 def update_after_request(response):
     database.update()
     # print("Database updated.")
+    # print(response.data)
     return response
 
 
@@ -664,7 +667,7 @@ def ability_tree(spec, hero=None):
         points_remaining = hero.basic_ability_points
     elif spec == "archetype":
         points_remaining = hero.archetype_ability_points
-        if hero.specializations.archetype == None:
+        if hero.specializations.archetype is None:
             becomeType = "archetype"
 
             # all_specializations = database.get_all_specializations()
@@ -1287,26 +1290,30 @@ def command(cmd=None, hero=None):
         # response = command_function(hero, database,
         #   javascript_kwargs_from_html)
         command_function = Command.cmd_functions(cmd)
-        try:
-            if request.method == 'POST' and request.is_json:
-                data = request.get_json()
-                response = command_function(hero, database, data=data,
-                                            engine=engine)
-            else:
-                response = command_function(hero, database=database,
-                                        arg_dict=request.args, engine=engine)
-            # pdb.set_trace()
-            return response
-        except Exception as ex:
-            raise ex
     except AttributeError as ex:
         if str(ex) == "type object 'Command' has no attribute '{}'".format(
                 cmd):
             print("You need to write a static function called '{}' in "
                   "commands.py in the Command class.".format(cmd))
             raise ex
-        else:
-            raise ex
+        raise ex
+
+    if request.method == 'POST' and request.is_json:
+        try:
+            data = request.get_json()
+        except werkzeug.exceptions.BadRequest as ex:
+            # This might be a terrible idea as maybe it lets people crash
+            # the server by sending invalid data?
+            # I figure that this error shouldn't pass silently with no idea
+            # what caused it.
+            raise Exception(str(ex))
+        response = command_function(hero, database, data=data,
+                                    engine=engine)
+    else:
+        response = command_function(hero, database=database,
+                                arg_dict=request.args, engine=engine)
+    # pdb.set_trace()
+    return response
 
 
 @app.route('/about')

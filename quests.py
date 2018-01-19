@@ -124,7 +124,10 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
     # Relationships
     # QuestPath to Journal is Many to One.
     journal_id = Column(Integer, ForeignKey('journal.id'))
-    journal = relationship("Journal", back_populates='quest_paths')
+    journal = relationship("Journal", back_populates='quest_paths',
+                           foreign_keys="[QuestPath.journal_id]")
+
+    notification_id = Column(Integer, ForeignKey("journal.id"))
 
     # Each Path can be connected to any quest.
     # Each Quest can be connected to multiple paths.
@@ -226,7 +229,7 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
             hero.experience += quest.reward_experience + self.reward_experience
         else:
             hero.experience += quest.reward_experience
-        self.journal.quest_notification = self.get_description()
+        self.journal.notification = self
 
     def activate(self, hero):
         """Run super's activate using locations of local variables."""
