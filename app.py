@@ -350,23 +350,51 @@ def logout(hero=None):
 @login_required
 @uses_hero
 def create_character(hero=None):
-    display = True
-    fathers_job = None
-    page_title = "Create Character"
-    page_heading = "A New Beginning"
-    page_image = "beached"
-    paragraph = """You awake to great pain and confusion as you hear footsteps
-approaching in the sand. Unsure of where you are, you quickly look
-around for something to defend yourself. A firm and inquisitive voice
-pierces the air.""".replace('\n', ' ').replace('\r', '')
-    conversation = [("Stranger: ", "Who are you and what are you doing here?")]
-
     if len(hero.journal.quest_paths) == 0:
         hero.journal.quest_paths = database.get_default_quest_paths()
 
     if hero.current_world is None:
         hero.current_world = database.get_default_world()
         hero.current_location = database.get_default_location()
+
+    generic_text = ""
+    npc_text = ""
+    user_action = ""
+    user_response = ""
+    user_text_placeholder = ""
+    page_image = "old_man"
+
+    if hero.character_name is None:
+        generic_text =  "You awake to great pain and confusion as you hear footsteps " \
+                    "approaching in the sand. Unsure of where you are, you quickly look " \
+                    "around for something to defend yourself. A firm and inquisitive voice " \
+                    "pierces the air."
+        npc_text = [("Stranger", "Who are you and what are you doing here?")]
+        user_action = "get text"
+        user_response = "...I don't remember what happened. My name is"
+        user_text_placeholder = "Character Name"
+        print("Hero name is none running")
+        if request.method == 'POST':
+            hero.name = request.form["get_data"].title()
+            print("Your hero is being renamed in the database")
+    elif hero.background == "":
+        generic_text = ""
+        npc_text = [("Stranger", "Where do you come from, child?")]
+        user_action = "make choice"
+        user_response = [("My father was a great warlord from the north.", "Gain <ul><li>+1 Strength</li><li>+1 Vitality</li>"),
+                         ("My father was a great missionary traveling to the west.", "Gain <ul><li>+1 Intelligence</li><li>+1 Wisdom</li>")]
+        user_text_placeholder = ""
+        print("Now checking your background")
+        if request.method == 'POST':
+            hero.background = "bob"
+            print("Now changing your background in the database")
+    else:
+        print("Your hero is completely created. Redirecting you to the home page")
+        return redirect(url_for('home'))
+    return render_template('generic2.html', page_image=page_image,
+                           generic_text=generic_text, npc_text=npc_text, user_action=user_action, user_response=user_response,
+                           user_text_placeholder=user_text_placeholder)
+"""
 
     if request.method == 'POST' and hero.name is None:
         hero.name = request.form["name"].title()
@@ -394,10 +422,11 @@ pierces the air.""".replace('\n', ' ').replace('\r', '')
     else:
         # Builds a web page from a list of variables and a template file.
         return render_template(
-            'create_character.html', page_title=page_title,
+            'generic2.html', page_title=page_title,
             page_heading=page_heading, page_image=page_image,
-            paragraph=paragraph, conversation=conversation, display=display)
-
+            paragraph=paragraph, conversation=conversation, display=display,
+            generic_text=generic_text, npc_text=npc_text, user_action=user_action, user_response=user_response, user_text_placeholder=user_text_placeholder)
+"""
 @app.route('/choose_character', methods=['GET', 'POST'])
 @login_required
 def choose_character():

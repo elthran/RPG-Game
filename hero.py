@@ -29,6 +29,7 @@ class Hero(Base):
         String)  # Was nullable=False now it isn't. I hope that is a good idea.
     character_name = orm.synonym('name')
 
+    background = Column(String) # Temporary. It's replacing 'fathers job' for now
     age = Column(Integer)
     house = Column(String)
     experience = Column(Integer)
@@ -152,6 +153,7 @@ class Hero(Base):
         # self.calling = SpecializationContainer()
         # self.pantheon = SpecializationContainer()
         self.house = None
+        self.background = ""
 
         self.experience_percent = 0
         self.experience = 0
