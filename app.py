@@ -357,14 +357,11 @@ def create_character(hero=None):
         hero.current_world = database.get_default_world()
         hero.current_location = database.get_default_location()
 
-    generic_text = ""
-    npc_text = ""
-    user_action = ""
-    user_response = ""
-    user_text_placeholder = ""
-    page_image = "old_man"
+    if hero.background is not None:
+        hero.background = "Barbarian"
 
-    if hero.character_name is None:
+    if hero.name is None:
+        page_image = "beached"
         generic_text =  "You awake to great pain and confusion as you hear footsteps " \
                     "approaching in the sand. Unsure of where you are, you quickly look " \
                     "around for something to defend yourself. A firm and inquisitive voice " \
@@ -373,60 +370,26 @@ def create_character(hero=None):
         user_action = "get text"
         user_response = "...I don't remember what happened. My name is"
         user_text_placeholder = "Character Name"
-        print("Hero name is none running")
         if request.method == 'POST':
             hero.name = request.form["get_data"].title()
-            print("Your hero is being renamed in the database")
+            page_image = "blacksmith"
+            generic_text = ""
+            npc_text = [("Stranger", "Where do you come from, child?")]
+            user_action = "make choice"
+            user_response = [
+                ("My father was a great warlord from the north.", "Gain <ul><li>+1 Brawn</li></ul>", "Barbarian"),
+                ("My father was a great missionary traveling to the west.", "Gain <ul><li>+1 Intellect</li></ul>", "Missionary")]
+            user_text_placeholder = ""
     elif hero.background == "":
-        generic_text = ""
-        npc_text = [("Stranger", "Where do you come from, child?")]
-        user_action = "make choice"
-        user_response = [("My father was a great warlord from the north.", "Gain <ul><li>+1 Strength</li><li>+1 Vitality</li>"),
-                         ("My father was a great missionary traveling to the west.", "Gain <ul><li>+1 Intelligence</li><li>+1 Wisdom</li>")]
-        user_text_placeholder = ""
-        print("Now checking your background")
-        if request.method == 'POST':
-            hero.background = "bob"
-            print("Now changing your background in the database")
+        # This is needed if the user names there hero but leaves the page and returns later. But I will write it out later.
+        pass
     else:
-        print("Your hero is completely created. Redirecting you to the home page")
+        hero.refresh_character(full=True)
         return redirect(url_for('home'))
     return render_template('generic2.html', page_image=page_image,
                            generic_text=generic_text, npc_text=npc_text, user_action=user_action, user_response=user_response,
                            user_text_placeholder=user_text_placeholder)
-"""
 
-    if request.method == 'POST' and hero.name is None:
-        hero.name = request.form["name"].title()
-        page_image = "old_man"
-        paragraph = None
-        conversation = [("Stranger: ", "Where do you come from, child?")]
-        display = False
-    elif request.method == 'POST' and fathers_job is None:
-        fathers_job = request.form["archetype"]
-        if fathers_job == "Brute":
-            hero.attributes.brawn.level += 3
-        elif fathers_job == "Scholar":
-            hero.attributes.intellect.level += 3
-        elif fathers_job == "Hunter":
-            hero.attributes.survivalism.level += 3
-        elif fathers_job == "Merchant":
-            hero.attributes.charisma.level += 2
-            hero.gold += 50
-        elif fathers_job == "Priest":
-            hero.attributes.divinity.level += 3
-
-    if hero.character_name is not None and fathers_job is not None:
-        hero.refresh_character(full=True)
-        return redirect(url_for('home'))
-    else:
-        # Builds a web page from a list of variables and a template file.
-        return render_template(
-            'generic2.html', page_title=page_title,
-            page_heading=page_heading, page_image=page_image,
-            paragraph=paragraph, conversation=conversation, display=display,
-            generic_text=generic_text, npc_text=npc_text, user_action=user_action, user_response=user_response, user_text_placeholder=user_text_placeholder)
-"""
 @app.route('/choose_character', methods=['GET', 'POST'])
 @login_required
 def choose_character():
@@ -452,7 +415,7 @@ def choose_character():
     flash(hero.login_alerts)
     hero.login_alerts = ""
     # If it's a new character, send them to create_character url
-    if hero.character_name is None:
+    if hero.character_name is None: # Whats the difference between character_name and name?
         return redirect(url_for('create_character'))
     # If the character already exist go straight the main home page!
     return redirect(url_for('home'))

@@ -21,30 +21,28 @@
     {% endif %}
 
     <div>
-        {% if generic_text %}
+        <p>{{ generic_text }}</p>
 
-            <p>{{ generic_text }}</p>
+        {% for line in npc_text %}
+            <h3>{{ npc_text[0] }}:</h3> {{ npc_text[1] }}
+        {% endfor %}
 
-            {% for line in npc_text %}
-                <h3>{{ npc_text[0] }}:</h3> {{ npc_text[1] }}
+        {% if user_action == "get text" %}
+            <form action="" method="post">
+                {{ user_response }}
+                <input type="text" placeholder="{{ user_text_placeholder }}" name="get_data" value="{{ request.form.get_data }}" autofocus tabindex=1 />
+                <input class="btn btn-default" type="submit" value="Next" tabindex=2 />
+            </form>
+
+        {% elif user_action == "make choice" %}
+            {% for response in user_response %}
+            <button class="genericAccordion" data-py-function="temp_temp" data="" data-js-callback="genericAccordion">{{ response[0] }}</button>
+            <div class="genericAccordionPanel">
+                <h2>{{ response[1] }}<button class="upgradeButton" data-py-function="choose_background" data="{{ response[2] }}" id="backgroundResponse" data-js-callback="refreshPage">
+                </h2>
+            </div>
             {% endfor %}
 
-            {% if user_action == "get text" %}
-                <form action="" method="post">
-                    {{ user_rsponse }}
-                    <input type="text" placeholder={{ user_text_placeholder }} name="get_data" value="{{ request.form.get_data }}" autofocus tabindex=1 />
-                    <input class="btn btn-default" type="submit" value="Next" tabindex=2 />
-                </form>
-
-            {% elif user_action == "make choice" %}
-                {% for response in user_response %}
-                <button class="genericAccordion" data-py-function="temp_temp" data="" data-js-callback="genericAccordion">{{ response[0] }}</button>
-                <div class="genericAccordionPanel">
-                    <h2>{{ response[1] }} <a href="">Choose</a></h2>
-                </div>
-                {% endfor %}
-
-            {% endif %}
         {% endif %}
 
         <!--
@@ -91,5 +89,6 @@
           {% endfor %}
         </div>
         -->
+</div>
 </body>
 </html>
