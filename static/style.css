@@ -41,7 +41,10 @@ div.row > * {
 /* Basic Content throughout the game */
 /* NOTE: All html files are default id='content'. This is passed in through layout.html */
 .content {
-	margin-left: 175px; /* This needs to match the sidebars width, so all content is pushed away from the sidebar */
+	/* margin-left: 175px; */ /* This needs to match the sidebars width, so all content is pushed away from the sidebar */
+	position: absolute;
+	top: 20px;
+    left: 220px;
 }
 
 body {
@@ -170,20 +173,22 @@ ul {
 .sidebar {
     font-size: 15px; /* Shrinks font on all generic text in the sidebar */
     font-weight: 600;
-	width:175px; /* The bar fills 12% of the screen horizontally */
-	height: 100%; /* Makes it fill the page vertically */
-	position: fixed; /* Position is oriented with browser window */
-	overflow: auto; /* Will add a scrollbar only if the screen is too small */
+    line-height: 20px;
+    position: absolute; /* Position is positioned based on the user's scroll position. */
+	width:175px; /* The bar fills 175px of the screen horizontally */
+	padding: 10px;
+	/* height: 100%; */ /* Makes it fill the page vertically */
+	/* overflow: auto; */ /* Will add a scrollbar only if the screen is too small */
 	background-color: Gray;
-	top: 0px; /* Removes margin on top */
-	left: 0px; /* Removes margin on the left side */
-	line-height: 20px;
+	top: 10px; /* Set the top of the element 10px below the top of the window.*/
+	left: 10px; /* Set the left side 10px below the top of the window. */
 	z-index: 100;
 }
 
 .sidebar img { /* Used for the profile picture in the sidebar */
-    width: 175px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
+    display: block;
 }
 
 .sideBarProgressDiv {
@@ -192,6 +197,7 @@ ul {
     line-height: 25px; /* Makes the text fill the DIV to match the bar's height */
     margin-top: 5px; /* Distance it drops below the text above it */
     clear: both; /* Makes sure the next bar sits below it*/
+    z-index: 200
 }
 
 .sideBarProgressMeter {

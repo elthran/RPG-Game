@@ -135,6 +135,30 @@ function hide(element) {
     element.classList.add('hide')
 }
 
+// Allow the sidebar to be sticky its top and bottom to the display window.
+//var lastScrollTop = window.pageYOffset;
+function stickyTopAndBottom() {
+//    var lastScrollTop = window.pageYOffset;
+    var sidebarDiv = document.getElementById("sidebar");
+    log(sidebarDiv)
+    log("pageYOffset: " + window.pageYOffset);
+//    log("screenTop: " + window.screenTop);  // Doesn't work in Firefox.
+    log("innerHeight: " + window.innerHeight);
+    log(window);
+    log("scrollHeight: " + sidebarDiv.scrollHeight);
+    if (window.innerHeight + window.pageYOffset >= sidebarDiv.scrollHeight) {
+        log("Should be sticking to bottom now!")
+        var newOffset = window.innerHeight + window.pageYOffset - sidebarDiv.scrollHeight - 10;
+//        sidebarDiv.setAttribute("position", "fixed");
+        sidebarDiv.style.top = newOffset + "px";
+    } else if (window.innerHeight + window.pageYOffset <= sidebarDiv.scrollHeight) {
+//        var newOffset = window.innerHeight + window.pageYOffset - sidebarDiv.scrollHeight - 10;
+//        sidebarDiv.setAttribute("position", "fixed");
+        sidebarDiv.style.top = 10 + "px";
+    }
+}
+
+
 // This toggles whether or not you can see the battle log after a fight.
 function battle_popup() {
     var x = document.getElementById('battle_log_div_id');

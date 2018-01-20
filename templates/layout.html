@@ -9,8 +9,8 @@
     <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
 </head>
 
-<body>
-    <div class="sidebar">
+<body onscroll="stickyTopAndBottom();">
+    <div class="sidebar" id="sidebar">
         <div>
             <h1>{{ hero.name }}</h1>
             <img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px" />
