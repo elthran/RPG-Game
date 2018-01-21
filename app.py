@@ -444,45 +444,48 @@ def reset_character(stat_type, hero=None):
 
 
 # this is a temporary page that lets you modify any attributes for testing
-@app.route('/admin/<myself>', methods=['GET', 'POST'])
+@app.route('/admin/<path>', methods=['GET', 'POST'])
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 @uses_hero
-def admin(myself=None, hero=None):
-    page_title = "Admin"
-    if request.method == 'POST':
-        hero.age = int(request.form["Age"])
-        hero.experience = int(request.form["Experience"])
-        hero.experience_maximum = int(request.form["Experience_maximum"])
-        hero.renown = int(request.form["Renown"])
-        hero.virtue = int(request.form["Virtue"])
-        hero.devotion = int(request.form["Devotion"])
-        hero.gold = int(request.form["Gold"])
-        hero.basic_ability_points = int(request.form["Basic_ability_points"])
-        hero.archetype_ability_points = int(request.form["Archetype_ability_points"])
-        hero.calling_ability_points = int(request.form["Calling_ability_points"])
-        hero.pantheon_ability_points = int(request.form["Pantheon_ability_points"])
-        hero.attribute_points = int(request.form["Attribute_points"])
-        hero.proficiency_points = int(request.form['Proficiency_Points'])
-        hero.refresh_character(full=True)
-        return redirect(url_for('home'))
+def admin(path=None, hero=None):
+    admin = None
+    if path == "edit_database":
+        pass
+    elif path == "modify_self":
+        page_title = "Admin"
+        if request.method == 'POST':
+            hero.age = int(request.form["Age"])
+            hero.experience = int(request.form["Experience"])
+            hero.experience_maximum = int(request.form["Experience_maximum"])
+            hero.renown = int(request.form["Renown"])
+            hero.virtue = int(request.form["Virtue"])
+            hero.devotion = int(request.form["Devotion"])
+            hero.gold = int(request.form["Gold"])
+            hero.basic_ability_points = int(request.form["Basic_ability_points"])
+            hero.archetype_ability_points = int(request.form["Archetype_ability_points"])
+            hero.calling_ability_points = int(request.form["Calling_ability_points"])
+            hero.pantheon_ability_points = int(request.form["Pantheon_ability_points"])
+            hero.attribute_points = int(request.form["Attribute_points"])
+            hero.proficiency_points = int(request.form['Proficiency_Points'])
+            hero.refresh_character(full=True)
+            return redirect(url_for('home'))
 
-    admin = [
-        ("Age", hero.age),
-        ("Experience", hero.experience),
-        ("Experience_maximum", hero.experience_maximum),
-        ("Renown", hero.renown),
-        ("Virtue", hero.virtue),
-        ("Devotion", hero.devotion),
-        ("Gold", hero.gold),
-        ("Basic_ability_points", hero.basic_ability_points),
-        ("Archetype_ability_points", hero.archetype_ability_points),
-        ("Calling_ability_points", hero.calling_ability_points),
-        ("Pantheonic_ability_points", hero.pantheon_ability_points),
-        ("Attribute_points", hero.attribute_points),
-        ("Proficiency_Points", hero.proficiency_points)]
-    return render_template('admin.html', page_title=page_title, hero=hero,
-                           admin=admin, myself=myself)  # return a string
+        admin = [
+            ("Age", hero.age),
+            ("Experience", hero.experience),
+            ("Experience_maximum", hero.experience_maximum),
+            ("Renown", hero.renown),
+            ("Virtue", hero.virtue),
+            ("Devotion", hero.devotion),
+            ("Gold", hero.gold),
+            ("Basic_ability_points", hero.basic_ability_points),
+            ("Archetype_ability_points", hero.archetype_ability_points),
+            ("Calling_ability_points", hero.calling_ability_points),
+            ("Pantheonic_ability_points", hero.pantheon_ability_points),
+            ("Attribute_points", hero.attribute_points),
+            ("Proficiency_Points", hero.proficiency_points)]
+    return render_template('admin.html', hero=hero, admin=admin, path=path)  # return a string
 
 
 # The if statement works and displays the user page as normal. Now if you

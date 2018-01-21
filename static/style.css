@@ -432,12 +432,13 @@ outline: 2px solid black;
     color: #444;
     cursor: pointer;
     padding: 18px;
-    width: 100%;
+    width: 60%;
+    height: 50px;
     border: none;
     text-align: left;
-    font-size: 20px;
+    font-size: 17px;
     color: Black;
-    transition: 0.4s;
+    transition: 0.7s;
     outline: double;
 }
 
