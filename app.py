@@ -386,7 +386,7 @@ def create_character(hero=None):
     else:
         hero.refresh_character(full=True)
         return redirect(url_for('home'))
-    return render_template('generic2.html', page_image=page_image,
+    return render_template('generic_dialogue.html', page_image=page_image,
                            generic_text=generic_text, npc_text=npc_text, user_action=user_action, user_response=user_response,
                            user_text_placeholder=user_text_placeholder)
 
@@ -516,11 +516,11 @@ def display_user_page(page_type, page_detail, hero=None):
                 confirmation_message = "Message sent!"
             else:
                 confirmation_message = "Please type your message"
-            return render_template('user_page.html', hero=hero, page_title=str(this_user.username),
+            return render_template('profile_other_user.html', hero=hero, page_title=str(this_user.username),
                                    enemy_hero=this_hero, confirmation=confirmation_message)
         # Above this is inbox nonsense
         return render_template(
-            'user_page.html', hero=hero, page_title=str(this_user.username),
+            'profile_other_user.html', hero=hero, page_title=str(this_user.username),
             enemy_hero=this_hero)
 
 
@@ -854,7 +854,7 @@ def barracks(name='', hero=None, location=None):
         spar.display.paragraph = "Spar with the trainer."
         location.children = [arena, spar]
 
-    return render_template('generic.html', hero=hero)
+    return render_template('generic_location.html', hero=hero)
 
 # From /dungeon
 @app.route('/dungeon_entrance/<name>')
@@ -869,7 +869,7 @@ def dungeon_entrance(name='', hero=None, location=None):
     explore_dungeon = database.get_object_by_name('Location', 'Explore Dungeon')
     explore_dungeon.display.paragraph = "Take a step into the dungeon."
     location.children = [explore_dungeon]
-    return render_template('generic.html', hero=hero, game=game)  # return a string
+    return render_template('generic_location.html', hero=hero, game=game)  # return a string
 
 # From /inside_dungeon
 @app.route('/explore_dungeon/<name>/<extra_data>')
@@ -953,7 +953,7 @@ def spar(name='', hero=None, location=None):
     #     "Spar with the trainer.": "/spar",
     #     "Battle another player.": None
     # }
-    return render_template('generic.html', hero=hero, game=game)  # return a string
+    return render_template('generic_location.html', hero=hero, game=game)  # return a string
 
 
 # From /barracks
@@ -1031,6 +1031,7 @@ def battle(this_user=None, hero=None):
         location = database.get_object_by_name('Location', hero.last_city.name)
         hero.current_location = location
         hero.current_dungeon_monster = False
+        hero.deaths += 1
     else:
         """
         for item in hero.equipped_items:
@@ -1060,6 +1061,13 @@ def battle(this_user=None, hero=None):
             hero.experience += 5
         """
         experience_gained,level_up = hero.gain_experience(game.enemy.experience_rewarded)  # * hero.experience_gain_modifier  THIS IS CAUSING A WEIRD BUG? I don't know why
+        if this_user == "monster":
+            hero.monster_kills += 1
+        else:
+            hero.player_kills += 1
+            game.enemy.deaths += 1
+            location = database.get_object_by_name('Location', game.enemy.last_city.name)
+            game.enemy.current_location = location
         if len(game.enemy.items_rewarded) > 0:
             for item in game.enemy.items_rewarded:
                 if not any(items.name == item.name for items in hero.inventory):
@@ -1219,7 +1227,7 @@ def house(name='', hero=None):
     Returns a rendered html page.
     """
     location = database.get_object_by_name('Location', name)
-    return render_template('generic.html', hero=hero)
+    return render_template('generic_location.html', hero=hero)
 
 
 @app.route('/gate/<name>')

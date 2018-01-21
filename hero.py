@@ -52,6 +52,9 @@ class Hero(Base):
         Integer)  # Current progress in current cave floor
     random_encounter_monster = Column(
         Boolean)  # Checks if you are currently about to fight a monster
+    player_kills = Column(Integer)
+    monster_kills = Column(Integer)
+    deaths = Column(Integer)
 
     # Time code of when the (account?) was created
     timestamp = Column(DateTime)
@@ -140,6 +143,7 @@ class Hero(Base):
         max_exp should be assigned a value before current_exp.
         """
 
+        # Skills and abilities
         self.attributes = Attributes()
         self.proficiencies = Proficiencies()
         self.abilities = Abilities()
@@ -147,37 +151,39 @@ class Hero(Base):
         self.journal = Journal()
         self.specializations = SpecializationContainer()
 
-        # Defaults will remain unchanged if no arguments are passed.
+        # Data and statistics
         self.age = 7
         # self.archetype = None
         # self.calling = SpecializationContainer()
         # self.pantheon = SpecializationContainer()
         self.house = None
         self.background = ""
-
         self.experience_percent = 0
         self.experience = 0
         self.experience_maximum = 10
-
         self.renown = 0
         self.virtue = 0
         self.devotion = 0
         self.gold = 50
 
+        # Spendable points
         self.basic_ability_points = 5
         self.archetype_ability_points = 0
         self.calling_ability_points = 0
         self.pantheon_ability_points = 0
-
         self.attribute_points = 0
         self.proficiency_points = 0
 
+        # Achievements and statistics
         self.deepest_dungeon_floor = 0
         self.current_dungeon_floor = 0
         self.current_dungeon_floor_progress = 0
         self.random_encounter_monster = None
+        self.player_kills = 0
+        self.monster_kills = 0
+        self.deaths = 0
 
-        # Time code
+        # Time code and login alerts
         self.timestamp = datetime.datetime.utcnow()
         self.last_login = ""
         self.login_alerts = "testing"
