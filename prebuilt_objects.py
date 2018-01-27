@@ -10,6 +10,7 @@ from items import (
 )
 from events import Trigger, Condition
 from random import choice # To create pre-built adjectives
+from forum import Forum, Thread, Post
 
 # for testing
 import pdb
@@ -338,3 +339,11 @@ all_specializations = [
                             'A character who solves problems using speech and dialogue.', 
                             'Charisma of 7, Fame of 200')
 ]
+
+testing_forum = Forum()
+
+sample_thread = Thread("General Discussion")
+testing_forum.all_threads.append(sample_thread)
+
+first_post = Post("General Discussion", "testing post, please ignore")
+testing_forum.write_post(first_post.thread, first_post.content)

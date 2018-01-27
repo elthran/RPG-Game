@@ -29,6 +29,8 @@ from commands import Command
 # _before_ any of them are used.
 from database import EZDB
 from engine import Engine
+from prebuilt_objects import testing_forum
+from forum import Post
 
 
 # INIT AND LOGIN FUNCTIONS
@@ -766,6 +768,23 @@ def achievement_log(hero=None):
     return render_template('journal.html', hero=hero, achievement_log=True,
                            completed_achievements=hero.completed_achievements, page_title=page_title)  # return a string
 
+@app.route('/forum', methods=['GET', 'POST'])
+@login_required
+@uses_hero
+def forum(hero=None):
+    page_title = "Forum"
+    if request.method == 'POST':
+        thread_name = request.form["thread_name"]
+        post_content = request.form["post_content"]
+        old_thread = False
+        for post in testing_forum.all_posts:
+            if post[0] == thread_name:
+                old_thread = True
+        if old_thread == False:
+            testing_forum.all_threads.append(thread_name)
+        this_post = Post(thread_name, post_content)
+        testing_forum.write_post(this_post.thread, this_post.content)
+    return render_template('forum.html', hero=hero, forum=testing_forum, page_title=page_title)  # return a string
 
 @app.route('/under_construction')
 @login_required
