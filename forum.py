@@ -20,7 +20,19 @@ class Forum(Base):
         self.threads.append(thread)
 
 
-class Thread(Base):
+class HumanReadableMixin(object):
+    def human_readable_time(self):
+        """Human readable datetime string.
+
+        See https://docs.python.org/3.5/library/datetime.html#strftime-strptime-behavior
+
+        Currently returns formatted like:
+        Jan. 28 1:17pm
+        """
+        return self.timestamp.strftime("%b. %d %I:%M%p")
+
+
+class Thread(HumanReadableMixin, Base):
     __tablename__ = "thread"
 
     id = Column(Integer, primary_key=True)
@@ -46,7 +58,7 @@ class Thread(Base):
         self.posts.append(post)
 
 
-class Post(Base):
+class Post(HumanReadableMixin, Base):
     __tablename__ = "post"
 
     id = Column(Integer, primary_key=True)

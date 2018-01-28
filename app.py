@@ -787,14 +787,14 @@ def forum(hero=None, thread=""):
         if type == "new":
             thread_name = request.form["thread_name"]
             post_content = request.form["post_content"]
-            new_thread = Thread(thread_name, hero.user.username.title(), str(EZDB.now()))
+            new_thread = Thread(thread_name, hero.user.username)
             testing_forum.create_thread(new_thread)
-            new_post = Post(post_content)
+            new_post = Post(post_content, author=new_thread.creator)
             new_thread.write_post(new_post)
         # If repyling
         else:
             post_content = request.form["post_content"]
-            new_post = Post(post_content, hero.user.username, str(EZDB.now()))
+            new_post = Post(post_content, hero.user.username)
             current_thread.write_post(new_post)
 
     return render_template('forum.html', hero=hero, forum=current_forum, thread=current_thread, page_title=page_title)  # return a string
