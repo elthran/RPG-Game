@@ -8,23 +8,40 @@
 {{ forum.all_posts }}
 
 <!-- These should use things like thread.title and post.thread but I need to attach these objects to the database -->
-{% for thread in forum.all_threads %}
-    <h1>Thread Name: {{ thread }}</h1>
-    {% for post in forum.all_posts %}
-        {% if post[0] == thread %}
-            <h3>Post: {{ post[1] }}</h3>
-        {% endif %}
+{% if home %}
+<h1>Choose a thread to join</h1>
+    {% for thread in forum.all_threads %}
+        <a href="/forum/{{ thread }}" style="font-size:25px;">{{ thread }}</a><br><br><br>
+        <!--
+        {% for post in forum.all_posts %}
+            {% if post[0] == thread %}
+                <h3>Post: {{ post[1] }}</h3>
+            {% endif %}
+        {% endfor %}
+        -->
     {% endfor %}
-{% endfor %}
 
 <!-- Basic form to let you type a new post. You can type in any thread title andpost content.
-If the thread title already exists, it should place your post into that thread. -->
-<form action="" method="post">
-    Write new post.
-    Thread name: <input type="text" name="thread_name">
-    Post Content: <input type="text" name="post_content">
-    <input class="btn btn-default" type="submit" value="Next">
-</form>
+    If the thread title already exists, it should place your post into that thread. -->
+<h1>Create a new thread</h1>
+    <form action="" method="post">
+        Write new post.
+        Thread name: <input type="text" name="thread_name">
+        Post Content: <input type="text" name="post_content">
+        <input class="btn btn-default" type="submit" value="Next">
+    </form>
+
+{% else %}
+{{ forum }}
+{% for post in forum.all_posts %}
+                {% if post[0] == forum.title %}
+                <h3>Post: {{ post[1] }}</h3>
+            {% endif %}
+        {% endfor %}
+
+<br><br><br><a href="/forum/home" style="font-size:25px;">Return to forum home</a><br><br><br>
+
+{% endif %}
 
 {% endblock %}
 

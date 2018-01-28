@@ -768,11 +768,20 @@ def achievement_log(hero=None):
     return render_template('journal.html', hero=hero, achievement_log=True,
                            completed_achievements=hero.completed_achievements, page_title=page_title)  # return a string
 
-@app.route('/forum', methods=['GET', 'POST'])
+@app.route('/forum/<thread>', methods=['GET', 'POST'])
 @login_required
 @uses_hero
-def forum(hero=None):
+def forum(hero=None, thread="home"):
     page_title = "Forum"
+    if thread == "home":
+        home = True
+        forum = testing_forum
+    else:
+        home = False
+        for current_thread in testing_forum.all_threads:
+            print(current_thread, thread)
+            if current_thread == thread:
+                forum = current_thread
     if request.method == 'POST':
         thread_name = request.form["thread_name"]
         post_content = request.form["post_content"]
@@ -784,7 +793,7 @@ def forum(hero=None):
             testing_forum.all_threads.append(thread_name)
         this_post = Post(thread_name, post_content)
         testing_forum.write_post(this_post.thread, this_post.content)
-    return render_template('forum.html', hero=hero, forum=testing_forum, page_title=page_title)  # return a string
+    return render_template('forum.html', hero=hero, forum=testing_forum, home=home, page_title=page_title)  # return a string
 
 @app.route('/under_construction')
 @login_required
