@@ -771,20 +771,33 @@ def achievement_log(hero=None):
 @app.route('/forum/<thread>', methods=['GET', 'POST'])
 @login_required
 @uses_hero
-def forum(hero=None, thread="home"):
+def forum(hero=None, thread=""):
     page_title = "Forum"
+    # Checking current forum. Currently it's always on this forum as we only have 1
     current_forum = testing_forum
+    # Letting python/html know which thread you are reading. Will be simpler with database and get_thread_by_id ;)
+    current_thread = None
+    for each_thread in current_forum.threads:
+        if each_thread.title == thread:
+            current_thread = each_thread
+
     if request.method == 'POST':
-        thread_name = request.form["thread_name"]
-        post_content = request.form["post_content"]
+        type = request.form["thread_type"]
+        # If starting new thread
+        if type == "new":
+            thread_name = request.form["thread_name"]
+            post_content = request.form["post_content"]
+            new_thread = Thread(thread_name, hero.user.username.title(), str(EZDB.now()))
+            testing_forum.create_thread(new_thread)
+            new_post = Post(post_content)
+            new_thread.write_post(new_post)
+        # If repyling
+        else:
+            post_content = request.form["post_content"]
+            new_post = Post(post_content)
+            current_thread.write_post(new_post)
 
-        new_thread = Thread(thread_name)
-        testing_forum.create_thread(new_thread)
-
-        new_post = Post(post_content)
-        new_thread.write_post(new_post)
-
-    return render_template('forum.html', hero=hero, forum=current_forum, page_title=page_title)  # return a string
+    return render_template('forum.html', hero=hero, forum=current_forum, thread=current_thread, page_title=page_title)  # return a string
 
 @app.route('/under_construction')
 @login_required
