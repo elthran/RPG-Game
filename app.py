@@ -30,7 +30,7 @@ from commands import Command
 from database import EZDB
 from engine import Engine
 from prebuilt_objects import testing_forum
-from forum import Post
+from forum import Thread, Post
 
 
 # INIT AND LOGIN FUNCTIONS
@@ -773,27 +773,18 @@ def achievement_log(hero=None):
 @uses_hero
 def forum(hero=None, thread="home"):
     page_title = "Forum"
-    if thread == "home":
-        home = True
-        forum = testing_forum
-    else:
-        home = False
-        for current_thread in testing_forum.all_threads:
-            print(current_thread, thread)
-            if current_thread == thread:
-                forum = current_thread
+    current_forum = testing_forum
     if request.method == 'POST':
         thread_name = request.form["thread_name"]
         post_content = request.form["post_content"]
-        old_thread = False
-        for post in testing_forum.all_posts:
-            if post[0] == thread_name:
-                old_thread = True
-        if old_thread == False:
-            testing_forum.all_threads.append(thread_name)
-        this_post = Post(thread_name, post_content)
-        testing_forum.write_post(this_post.thread, this_post.content)
-    return render_template('forum.html', hero=hero, forum=testing_forum, home=home, page_title=page_title)  # return a string
+
+        new_thread = Thread(thread_name)
+        testing_forum.create_thread(new_thread)
+
+        new_post = Post(post_content)
+        new_thread.write_post(new_post)
+
+    return render_template('forum.html', hero=hero, forum=current_forum, page_title=page_title)  # return a string
 
 @app.route('/under_construction')
 @login_required

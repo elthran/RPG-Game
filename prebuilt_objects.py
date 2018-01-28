@@ -343,7 +343,7 @@ all_specializations = [
 testing_forum = Forum()
 
 sample_thread = Thread("General Discussion")
-testing_forum.all_threads.append(sample_thread)
+testing_forum.create_thread(sample_thread)
 
-first_post = Post("General Discussion", "testing post, please ignore")
-testing_forum.write_post(first_post.thread, first_post.content)
+first_post = Post("testing post, please ignore")
+sample_thread.write_post(first_post)
