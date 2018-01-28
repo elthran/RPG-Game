@@ -345,5 +345,5 @@ testing_forum = Forum()
 sample_thread = Thread("General Discussion", "Elthran")
 testing_forum.create_thread(sample_thread)
 
-first_post = Post("testing post, please ignore")
+first_post = Post("testing post, please ignore", "Elthran")
 sample_thread.write_post(first_post)

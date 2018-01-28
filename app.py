@@ -794,7 +794,7 @@ def forum(hero=None, thread=""):
         # If repyling
         else:
             post_content = request.form["post_content"]
-            new_post = Post(post_content)
+            new_post = Post(post_content, hero.user.username, str(EZDB.now()))
             current_thread.write_post(new_post)
 
     return render_template('forum.html', hero=hero, forum=current_forum, thread=current_thread, page_title=page_title)  # return a string

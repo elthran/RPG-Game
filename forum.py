@@ -36,6 +36,10 @@ class Post(Base):
 
     id = Column(Integer, primary_key=True)
     content = Column(String)
+    author = Column(String)
+    timestamp = Column(DateTime)
 
-    def __init__(self, content):
+    def __init__(self, content="Error: Content missing", author="Unknown author", timestamp="Unknown Time"):
         self.content = content
+        self.author = author
+        self.timestamp = timestamp
