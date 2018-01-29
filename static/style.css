@@ -45,6 +45,7 @@ div.row > * {
 	position: absolute;
 	top: 20px;
     left: 220px;
+    min-height: 750px; /* The size of the sidebar. */
 }
 
 body {
@@ -254,8 +255,8 @@ ul {
 	text-decoration: none;
 }
 
-.sidebar li a:hover {
-	color: white;
+.sidebar li:hover {
+	background-color: white;
 }
 
 /* General content */
