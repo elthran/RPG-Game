@@ -86,6 +86,10 @@ ul {
 	list-style-type: none;
 }
 
+.button {
+	font-size: 30px;
+}
+
 /* Login Page */
 .login-page {
   width: 360px;
@@ -322,8 +326,10 @@ ul {
     width: 300px;
     }
 
-.button {
-	font-size: 30px;
+/* Forum */
+.forumTable {
+    font-size: 25px;
+    line-height: 45px;
 }
 
 /* Topbar that runs horizontal to any page */

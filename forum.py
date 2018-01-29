@@ -53,6 +53,17 @@ class Board(Base):
     def create_thread(self, thread):
         self.threads.append(thread)
 
+    def get_post_count(self):
+        return sum((len(thread.posts) for thread in self.threads))
+
+    def get_most_recent_post(self):
+        # Should return a Post object. It should query the database for the most recent post
+        # which is a property of this board (ie.
+        # for thread in self.threads:
+        #      for post in thread.posts:
+        #           find most recent)
+        return "Elthran"
+
 
 class Thread(HumanReadableMixin, Base):
     __tablename__ = "thread"
@@ -82,7 +93,6 @@ class Thread(HumanReadableMixin, Base):
 
     def write_post(self, post):
         self.posts.append(post)
-
 
 class Post(HumanReadableMixin, Base):
     __tablename__ = "post"

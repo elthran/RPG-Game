@@ -7,7 +7,7 @@
     <!-- Next check if the user has selected a board yet. If he hasn't, here is a board selection -->
     {% if current_board == None %}
         <h1>Welcome to the Forum!</h1>
-        <table class="forum">
+        <table class="forumTable">
             <tr>
                 <th>Board</th>
                 <th>Threads</th>
@@ -16,20 +16,32 @@
             </tr>
             {% for board in current_forum.boards %}
                 <tr>
-                    <td><a href="/forum/{{ board.id }}/0"{{ board.title }}>{{ board.title }}</a></td>
-                    <td>{{ board.threads|length }}</td>
-                    <td>---</td>
-                    <td>---</td>
+                    <td style="width:500px;"><a href="/forum/{{ board.id }}/0"{{ board.title }}>{{ board.title }}</a></td>
+                    <td style="width:150px;text-align:center;">{{ board.threads|length }}</td>
+                    <td style="width:150px;text-align:center;">{{ board.get_post_count() }}</td>
+                    <td style="width:300px;text-align:center;">{{ board.get_most_recent_post() }}</td>
                 </tr>
             {% endfor %}
         </table>
     {% else %}
     <!-- He already has chosen a board. So show the threads on that board -->
         <h1>Current Board: {{ current_board.title }}</h1>
-        {% for thread in current_board.threads %}
-                <a href="/forum/{{ current_board.id }}/{{ thread.id }}" style="font-size:25px;">{{ thread.title }}</a> Created by: {{ thread.creator }} at {{ thread.human_readable_time() }}
-                <h3 style="padding-left:5em;">{{ thread.description }}</h3>
-        {% endfor %}
+        <table class="forumTable">
+            <tr>
+                <th>Thread</th>
+                <th>Description</th>
+                <th>Creator</th>
+                <th>Posts</th>
+            </tr>
+                {% for thread in current_board.threads %}
+                    <tr>
+                        <td style="width:300px;"><a href="/forum/{{ current_board.id }}/{{ thread.id }}" style="font-size:25px;">{{ thread.title }}</a></td>
+                        <td style="width:500px;">{{ thread.description }}</td>
+                        <td style="width:150px;text-align:center;">{{ thread.creator }}</td>
+                        <td style="width:100px;text-align:center;">{{ thread.posts|length }}</td>
+                    </tr>
+                {% endfor %}
+        </table>
         <br><br><br>
         <h3>Create a new thread</h3>
         <form action="" method="post">
@@ -42,6 +54,7 @@
                 <input type="text" name="thread_description">
             <input class="btn btn-default" type="submit" value="Next">
         </form>
+        <br><br><br><a href="/forum/0/0" style="font-size:25px;">Return to forum home</a><br><br><br>
     {% endif %}
 {% else %}
 <!-- The user has chosen a thread. Let them read the posts in the thread! -->
@@ -55,7 +68,9 @@
         Reply: <input type="text" name="post_content">
         <input class="btn btn-default" type="submit" value="Next">
     </form>
-    <br><br><br><a href="/forum/0/0" style="font-size:25px;">Return to forum home</a><br><br><br>
+    <br><br><br>
+    <a href="/forum/{{ current_board.id }}/0" style="font-size:25px;">Return to board</a><br><br><br>
+    <a href="/forum/0/0" style="font-size:25px;">Return to forum home</a><br><br><br>
 {% endif %}
 
 
