@@ -777,9 +777,9 @@ def forum(hero=None, thread=""):
     current_forum = testing_forum
     # Letting python/html know which thread you are reading. Will be simpler with database and get_thread_by_id ;)
     current_thread = None
-    for each_thread in current_forum.threads:
-        if each_thread.title == thread:
-            current_thread = each_thread
+    for each_board in current_forum.boards:
+        if each_board.title == thread:
+            current_thread = each_board
 
     if request.method == 'POST':
         type = request.form["thread_type"]

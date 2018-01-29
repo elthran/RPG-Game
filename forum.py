@@ -31,6 +31,7 @@ class HumanReadableMixin(object):
         """
         return self.timestamp.strftime("%b. %d %I:%M%p")
 
+
 class Board(Base):
     __tablename__ = "board"
 
@@ -46,8 +47,12 @@ class Board(Base):
 
     title = Column(String)
 
+    def __init__(self, title):
+        self.title = title
+
     def create_thread(self, thread):
         self.threads.append(thread)
+
 
 class Thread(HumanReadableMixin, Base):
     __tablename__ = "thread"
@@ -57,7 +62,7 @@ class Thread(HumanReadableMixin, Base):
     # Relationships
     # One to many with Forum
     board_id = Column(Integer, ForeignKey('board.id'))
-    board = relationship("Forum", back_populates="threads")
+    board = relationship("Board", back_populates="threads")
 
     # Many to One with Posts
     posts = relationship("Post", back_populates="thread")
