@@ -119,9 +119,11 @@ function toggleLoginRegister(button) {
     if (window.getComputedStyle(registerForm).display === "none") {
         registerForm.style.display = "block";
         loginForm.style.display = "none";
+        document.getElementById("registerFocus").focus();
     } else {
         registerForm.style.display = "none";
         loginForm.style.display = "block";
+        document.getElementById("loginFocus").focus();
     }
 }
 
