@@ -257,6 +257,7 @@ ul {
 
 .sidebar li:hover {
 	background-color: white;
+	cursor: pointer;
 }
 
 /* General content */
