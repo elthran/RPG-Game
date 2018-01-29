@@ -10,7 +10,7 @@ from items import (
 )
 from events import Trigger, Condition
 from random import choice # To create pre-built adjectives
-from forum import Forum, Thread, Post
+from forum import Forum, Board, Thread, Post
 
 # for testing
 import pdb
@@ -342,8 +342,11 @@ all_specializations = [
 
 testing_forum = Forum()
 
-sample_thread = Thread("General Discussion", "Elthran", "A place to discuss anything")
-testing_forum.create_thread(sample_thread)
+first_board = Board("General")
+testing_forum.create_board(first_board)
+
+sample_thread = Thread(title="General Discussion", creator="Elthran", description="A place to discuss anything")
+first_board.create_thread(sample_thread)
 
 first_post = Post("testing post, please ignore", "Elthran")
 sample_thread.write_post(first_post)
