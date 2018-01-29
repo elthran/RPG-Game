@@ -136,26 +136,33 @@ function hide(element) {
 }
 
 // Allow the sidebar to be sticky its top and bottom to the display window.
-//var lastScrollTop = window.pageYOffset;
+var lastYOffset = window.pageYOffset;
 function stickyTopAndBottom() {
-//    var lastScrollTop = window.pageYOffset;
+    "use strict";
+    var newOffset = window.pageYOffset;
     var sidebarDiv = document.getElementById("sidebar");
-    log(sidebarDiv)
-    log("pageYOffset: " + window.pageYOffset);
-//    log("screenTop: " + window.screenTop);  // Doesn't work in Firefox.
-    log("innerHeight: " + window.innerHeight);
-    log(window);
-    log("scrollHeight: " + sidebarDiv.scrollHeight);
-    if (window.innerHeight + window.pageYOffset >= sidebarDiv.scrollHeight) {
-        log("Should be sticking to bottom now!")
-        var newOffset = window.innerHeight + window.pageYOffset - sidebarDiv.scrollHeight - 10;
-//        sidebarDiv.setAttribute("position", "fixed");
-        sidebarDiv.style.top = newOffset + "px";
-    } else if (window.innerHeight + window.pageYOffset <= sidebarDiv.scrollHeight) {
-//        var newOffset = window.innerHeight + window.pageYOffset - sidebarDiv.scrollHeight - 10;
-//        sidebarDiv.setAttribute("position", "fixed");
-        sidebarDiv.style.top = 10 + "px";
+    var minOffset = 10;
+    // I don't know why * 3 but it works.
+    var maxOffset = sidebarDiv.scrollHeight - window.innerHeight + minOffset;
+    var currentOffset = parseInt(window.getComputedStyle(sidebarDiv, "style").top.slice(0, -2));
+    var scrollYDirection = (lastYOffset < newOffset
+        ? "down"
+        : "up");
+
+    if (scrollYDirection === "down") {
+        currentOffset = currentOffset - (newOffset - lastYOffset);
+        if (currentOffset <= -maxOffset) {
+            currentOffset = -maxOffset;
+        }
+    } else if (scrollYDirection === "up") {
+        currentOffset = currentOffset + (lastYOffset - newOffset);
+        if (currentOffset >= minOffset) {
+            currentOffset = minOffset;
+        }
     }
+
+    sidebarDiv.style.top = currentOffset + "px";
+    lastYOffset = newOffset;
 }
 
 

@@ -174,7 +174,7 @@ ul {
     font-size: 15px; /* Shrinks font on all generic text in the sidebar */
     font-weight: 600;
     line-height: 20px;
-    position: absolute; /* Position is positioned based on the user's scroll position. */
+    position: fixed; /* Position is positioned based on the user's scroll position. */
 	width:175px; /* The bar fills 175px of the screen horizontally */
 	padding: 10px;
 	/* height: 100%; */ /* Makes it fill the page vertically */
