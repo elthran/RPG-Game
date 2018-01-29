@@ -341,6 +341,7 @@ all_specializations = [
 ]
 
 testing_forum = Forum()
+all_forums = [testing_forum]
 
 first_board = Board("General")
 testing_forum.create_board(first_board)

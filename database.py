@@ -39,6 +39,7 @@ from items import Item
 from quests import Quest, QuestPath
 from proficiencies import Proficiency
 from events import Trigger
+from forum import Thread
 import prebuilt_objects
 
 
@@ -105,7 +106,8 @@ class EZDB:
                 prebuilt_objects.all_store_items,
                 prebuilt_objects.all_marketplace_items,
                 prebuilt_objects.all_quests,
-                prebuilt_objects.all_specializations]:
+                prebuilt_objects.all_specializations,
+                prebuilt_objects.all_forums]:
             for obj in obj_list:
                 self.session.add(obj)
                 if isinstance(obj, User):

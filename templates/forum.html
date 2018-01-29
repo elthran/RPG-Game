@@ -3,24 +3,39 @@
 {% extends "layout.html" %}
 {% block block1 %}
 
+Thread: {{ current_thread }}
 <!-- These should use things like thread.title and post.thread but I need to attach these objects to the database -->
-{% if thread == None %}
+{% if current_thread == None %}
     <h1>Choose a thread to join</h1>
-    {% for thread in forum.threads %}
-        <a href="/forum/{{ thread.title }}" style="font-size:25px;">{{ thread.title }}</a> Created by: {{ thread.creator }} at {{ thread.human_readable_time() }}
-        <h3 style="padding-left:5em;">{{ thread.description }}</h3>
+    {% for board in forum.boards %}
+        <h1>{{ board.title }}</h1>
+        {% for thread in board.threads %}
+            <a href="/forum/{{ thread.id }}" style="font-size:25px;">{{ thread.title }}</a> Created by: {{ thread.creator }} at {{ thread.human_readable_time() }}
+            <h3 style="padding-left:5em;">{{ thread.description }}</h3>
+        {% endfor %}
     {% endfor %}
 <!-- Basic form to let you type a new post. You can type in any thread title andpost content.
     If the thread title already exists, it should place your post into that thread. -->
     <h1>Create a new thread</h1>
     <form action="" method="post">
-        Write new post.
-        <input type="hidden" name="thread_type" value="new"> <!-- Tells python to run code for creating a new thread -->
-        Thread name: <input type="text" name="thread_name">
-        Description: <input type="text" name="thread_description">
-        First Post: <input type="text" name="post_content">
+            <input type="hidden" name="thread_type" value="new"> <!-- Tells python to run code for creating a new thread -->
+
+        Thread name:
+            <input type="text" name="thread_name">
+
+        Description:
+            <input type="text" name="thread_description">
+
+        Board:
+            <select>
+                {% for board in forum.boards %}
+                    <option name="board_id" value="{{ board.id }}">{{ board.title }}</option>
+                {% endfor %}
+            </select>
+
         <input class="btn btn-default" type="submit" value="Next">
     </form>
+
 {% else %}
     <h1>Read posts:</h1>
         {% for post in thread.posts %}
