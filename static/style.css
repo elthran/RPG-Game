@@ -165,7 +165,6 @@ ul {
   font-family: "Roboto", sans-serif;
 }
 
-
 /* Sidebar used for all pages and called in the layout.html */
 .sidebar {
     font-size: 15px; /* Shrinks font on all generic text in the sidebar */

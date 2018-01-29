@@ -767,20 +767,21 @@ def achievement_log(hero=None):
     return render_template('journal.html', hero=hero, achievement_log=True,
                            completed_achievements=hero.completed_achievements, page_title=page_title)  # return a string
 
-@app.route('/forum/<thread_id>', methods=['GET', 'POST'])
+@app.route('/forum/<board_id>/<thread_id>', methods=['GET', 'POST'])
 @login_required
 @uses_hero
-def forum(hero=None, thread_id=""):
+def forum(hero=None, board_id=0, thread_id=0):
     page_title = "Forum"
     # Checking current forum. Currently it's always on this forum as we only have 1
     current_forum = database.get_object_by_id("Forum", 1)
-    # Letting python/html know which thread you are reading. Will be simpler with database and get_thread_by_id ;)
+    # Letting python/html know which board/thread you are reading. Will be simpler with database and get_thread_by_id ;)
     try:
-        print("Loading thread with id ", thread_id)
-        current_thread = database.get_object_by_id("Thread", int(thread_id))
-        print("Load successful")
+        current_board = database.get_object_by_id("Board", int(board_id))
     except:
-        print("Load failed. Reverting to forum homepage")
+        current_board = None
+    try:
+        current_thread = database.get_object_by_id("Thread", int(thread_id))
+    except:
         current_thread = None
 
     if request.method == 'POST':
@@ -788,27 +789,17 @@ def forum(hero=None, thread_id=""):
         print("type:", type)
         # If starting new thread
         if type == "new":
-            print("at new")
-            print(request.form)
-            board_id = request.form["board_id"]
-            print("hjhgjhg",board_id)
-            board = database.get_object_by_id("Board", int(board_id))
-            print(board_id,board)
-
             thread_name = request.form["thread_name"]
             thread_description = request.form["thread_description"]
-            print(thread_name, thread_description)
-
             new_thread = Thread(thread_name, hero.user.username, thread_description)
-            board.create_thread(new_thread)
-            print(new_thread, board)
+            current_board.create_thread(new_thread)
         # If repyling
         else:
             post_content = request.form["post_content"]
             new_post = Post(post_content, hero.user.username)
             current_thread.write_post(new_post)
 
-    return render_template('forum.html', hero=hero, forum=current_forum, current_thread=current_thread, page_title=page_title)  # return a string
+    return render_template('forum.html', hero=hero, current_forum=current_forum, current_board=current_board, current_thread=current_thread, page_title=page_title)  # return a string
 
 @app.route('/under_construction')
 @login_required
