@@ -342,7 +342,7 @@ all_specializations = [
 
 testing_forum = Forum()
 
-sample_thread = Thread("General Discussion", "Elthran")
+sample_thread = Thread("General Discussion", "Elthran", "A place to discuss anything")
 testing_forum.create_thread(sample_thread)
 
 first_post = Post("testing post, please ignore", "Elthran")

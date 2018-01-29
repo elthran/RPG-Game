@@ -786,8 +786,9 @@ def forum(hero=None, thread=""):
         # If starting new thread
         if type == "new":
             thread_name = request.form["thread_name"]
+            thread_description = request.form["thread_description"]
             post_content = request.form["post_content"]
-            new_thread = Thread(thread_name, hero.user.username)
+            new_thread = Thread(thread_name, hero.user.username, thread_description)
             testing_forum.create_thread(new_thread)
             new_post = Post(post_content, author=new_thread.creator)
             new_thread.write_post(new_post)

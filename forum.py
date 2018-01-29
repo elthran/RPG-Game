@@ -46,12 +46,14 @@ class Thread(HumanReadableMixin, Base):
     posts = relationship("Post", back_populates="thread")
 
     title = Column(String)
+    description = Column(String)
     creator = Column(String)
     timestamp = Column(DateTime)
 
-    def __init__(self, title="unnamed thread", creator="None"):
+    def __init__(self, title="unnamed thread", creator="None", description=""):
         self.title = title
         self.creator = creator
+        self.description = description
         self.timestamp = datetime.datetime.utcnow()
 
     def write_post(self, post):

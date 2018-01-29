@@ -7,7 +7,8 @@
 {% if thread == None %}
     <h1>Choose a thread to join</h1>
     {% for thread in forum.threads %}
-        <a href="/forum/{{ thread.title }}" style="font-size:25px;">{{ thread.title }}</a> Created by: {{ thread.creator }} at {{ thread.human_readable_time() }}<br><br><br>
+        <a href="/forum/{{ thread.title }}" style="font-size:25px;">{{ thread.title }}</a> Created by: {{ thread.creator }} at {{ thread.human_readable_time() }}
+        <h3 style="padding-left:5em;">{{ thread.description }}</h3>
     {% endfor %}
 <!-- Basic form to let you type a new post. You can type in any thread title andpost content.
     If the thread title already exists, it should place your post into that thread. -->
@@ -16,6 +17,7 @@
         Write new post.
         <input type="hidden" name="thread_type" value="new"> <!-- Tells python to run code for creating a new thread -->
         Thread name: <input type="text" name="thread_name">
+        Description: <input type="text" name="thread_description">
         First Post: <input type="text" name="post_content">
         <input class="btn btn-default" type="submit" value="Next">
     </form>
