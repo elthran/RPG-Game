@@ -9,8 +9,8 @@
     <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
 </head>
 
-<body>
-    <div class="sidebar">
+<body onscroll="stickyTopAndBottom();">
+    <div class="sidebar" id="sidebar">
         <div>
             <h1>{{ hero.name }}</h1>
             <img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px" />
@@ -41,18 +41,23 @@
         </div>
         <div>
             <ul>
-                <li><a href=/home>Profile</a></li>
-                <li><a href=/inventory_page>Inventory</a></li>
-                <li><a href=/spellbook>Spellbook</a></li>
-                <li><a href={{ hero.current_location.url }}>{{ hero.current_location.name.title() }}</a></li>
-                <li><a href=/quest_log>Journal</a></li>
-                {% if hero.user.is_admin %}<li><a href=/admin>Admin</a></li>{% endif %}
-                <li><a href=/display_users/display/id>Users</a></li>
-                <li><a href=/about>About</a></li>
-                {% if hero.user.inbox_alert %}<li><a href=/inbox/inbox><font color="blue">New Message</font></a></li>
-                {% else %}<li><a href=/inbox/inbox>Mailbox</a></li>{% endif %}
-                <li><a href=/global_chat>Chat</a></li>
-                <li><a href=/logout>Logout</a></li>
+                <li onclick="this.firstChild.click();"><a href=/home>Profile</a></li>
+                <li onclick="this.firstChild.click();"><a href=/inventory_page>Inventory</a></li>
+                <li onclick="this.firstChild.click();"><a href=/spellbook>Spellbook</a></li>
+                <li onclick="this.firstChild.click();"><a href={{ hero.current_location.url }}>{{ hero.current_location.name.title() }}</a></li>
+                <li onclick="this.firstChild.click();"><a href=/quest_log>Journal</a></li>
+            {% if hero.user.is_admin %}
+                <li  onclick="this.firstChild.click();"><a href=/admin>Admin</a></li>
+            {% endif %}
+                <li onclick="this.firstChild.click();"><a href=/display_users/display/id>Users</a></li>
+                <li onclick="this.firstChild.click();"><a href=/about>About</a></li>
+            {% if hero.user.inbox_alert %}
+                <li onclick="this.firstChild.click();"><a href=/inbox/inbox><font color="blue">New Message</font></a></li>
+            {% else %}
+                <li onclick="this.firstChild.click();"><a href=/inbox/inbox>Mailbox</a></li>
+            {% endif %}
+                <li onclick="this.firstChild.click();"><a href=/global_chat>Chat</a></li>
+                <li onclick="this.firstChild.click();"><a href=/logout>Logout</a></li>
             </ul>
         </div>
     </div>
