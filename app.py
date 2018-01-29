@@ -29,7 +29,6 @@ from commands import Command
 # _before_ any of them are used.
 from database import EZDB
 from engine import Engine
-from prebuilt_objects import testing_forum
 from forum import Board, Thread, Post
 
 
@@ -774,7 +773,7 @@ def achievement_log(hero=None):
 def forum(hero=None, thread_id=""):
     page_title = "Forum"
     # Checking current forum. Currently it's always on this forum as we only have 1
-    current_forum = testing_forum
+    current_forum = database.get_object_by_id("Forum", 1)
     # Letting python/html know which thread you are reading. Will be simpler with database and get_thread_by_id ;)
     try:
         print("Loading thread with id ", thread_id)
@@ -786,16 +785,23 @@ def forum(hero=None, thread_id=""):
 
     if request.method == 'POST':
         type = request.form["thread_type"]
+        print("type:", type)
         # If starting new thread
         if type == "new":
+            print("at new")
+            print(request.form)
             board_id = request.form["board_id"]
+            print("hjhgjhg",board_id)
             board = database.get_object_by_id("Board", int(board_id))
+            print(board_id,board)
 
             thread_name = request.form["thread_name"]
             thread_description = request.form["thread_description"]
+            print(thread_name, thread_description)
 
             new_thread = Thread(thread_name, hero.user.username, thread_description)
             board.create_thread(new_thread)
+            print(new_thread, board)
         # If repyling
         else:
             post_content = request.form["post_content"]

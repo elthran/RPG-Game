@@ -346,8 +346,14 @@ all_forums = [testing_forum]
 first_board = Board("General")
 testing_forum.create_board(first_board)
 
+second_board = Board("Development")
+testing_forum.create_board(second_board)
+
 sample_thread = Thread(title="General Discussion", creator="Elthran", description="A place to discuss anything")
 first_board.create_thread(sample_thread)
+
+sample_thread2 = Thread(title="Bug Reports", creator="Elthran", description="Please post any bugs you find")
+second_board.create_thread(sample_thread2)
 
 first_post = Post("testing post, please ignore", "Elthran")
 sample_thread.write_post(first_post)

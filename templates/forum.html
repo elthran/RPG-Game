@@ -3,7 +3,6 @@
 {% extends "layout.html" %}
 {% block block1 %}
 
-Thread: {{ current_thread }}
 <!-- These should use things like thread.title and post.thread but I need to attach these objects to the database -->
 {% if current_thread == None %}
     <h1>Choose a thread to join</h1>
@@ -27,9 +26,9 @@ Thread: {{ current_thread }}
             <input type="text" name="thread_description">
 
         Board:
-            <select>
+            <select name="board_id">
                 {% for board in forum.boards %}
-                    <option name="board_id" value="{{ board.id }}">{{ board.title }}</option>
+                    <option value="{{ board.id }}">{{ board.title }}</option>
                 {% endfor %}
             </select>
 
@@ -38,7 +37,7 @@ Thread: {{ current_thread }}
 
 {% else %}
     <h1>Read posts:</h1>
-        {% for post in thread.posts %}
+        {% for post in current_thread.posts %}
 <h3>Written by {{ post.author }} at {{ post.human_readable_time() }}</h3>{{ post.content }}<br><br><br>
         {% endfor %}
     <h1>Reply to thread</h1>

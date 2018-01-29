@@ -39,7 +39,7 @@ from items import Item
 from quests import Quest, QuestPath
 from proficiencies import Proficiency
 from events import Trigger
-from forum import Thread
+from forum import Forum, Board, Thread
 import prebuilt_objects
 
 
@@ -157,7 +157,7 @@ class EZDB:
             obj = globals()[obj_name.capitalize()]
             # test if obj is a class.?
             return self.session.query(obj).get(obj_id)
-        except IndexError:
+        except KeyError:
             raise Exception(
                 "Object name: '{}' is not an "
                 "object, or has not been imported into "
