@@ -762,9 +762,14 @@ def map_log(hero=None):
 @login_required
 @uses_hero
 def achievement_log(hero=None):
+    achievements = hero.journal.achievements
     page_title = "Achievements"
-    return render_template('journal.html', hero=hero, achievement_log=True,
-                           completed_achievements=hero.completed_achievements, page_title=page_title)  # return a string
+    return render_template(
+        'journal.html', hero=hero, achievement_log=True,
+        completed_achievements=achievements.completed_achievements,
+        kill_achievements=achievements.kill_achievements,
+        kill_quests={},
+        page_title=page_title)  # return a string
 
 
 @app.route('/under_construction')

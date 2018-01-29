@@ -9,7 +9,7 @@
         <li><a {% if bestiary %}style="background-color:Red;"{% endif %} href=/bestiary/default>Bestiary</a></li>
         <li><a {% if people_log %}style="background-color:Red;"{% endif %} href=/people_log/default>People</a></li>
         <li><a {% if map_log %}style="background-color:Red;"{% endif %} href=/map_log>Map</a></li>
-        <li><a {% if achievement_log %}style="background-color:Red;"{% endif %} href=/quest_log>Achievements</a></li>
+        <li><a {% if achievement_log %}style="background-color:Red;"{% endif %} href=/achievement_log>Achievements</a></li>
     </ul>
 </div>
 {% endblock %}
@@ -62,6 +62,8 @@
 {% endif %}
 
 <!-- I don't know why this needs to be below my code and not above it -->
+<!-- Because when rendering ... the document Elements don't exist yet when it
+ runs and it is above them. This should move to the script.js file ..-->
 <script>
 var allProfs = document.getElementsByClassName("genericAccordion");
 var index;
@@ -155,7 +157,7 @@ No completed achievements.
 <h2><br><b>{{ achievement[0] }}</b></h2>
 {% endfor %}
 <h1> Current Kill Statistics </h1>
-{% for key, value in hero.kill_quests.items() %}
+{% for key, value in kill_quests.items() %}
 {{ key }}: {{ value }}<br>
 {% endfor %}
 {% endif %}

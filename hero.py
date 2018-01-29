@@ -46,15 +46,8 @@ class Hero(Base):
     attribute_points = Column(Integer)
     proficiency_points = Column(Integer)
 
-    deepest_dungeon_floor = Column(Integer)  # High score for dungeon runs
-    current_dungeon_floor = Column(Integer)  # Which floor of dungeon your on
-    current_dungeon_floor_progress = Column(
-        Integer)  # Current progress in current cave floor
-    random_encounter_monster = Column(
-        Boolean)  # Checks if you are currently about to fight a monster
-    player_kills = Column(Integer)
-    monster_kills = Column(Integer)
-    deaths = Column(Integer)
+    # Checks if you are currently about to fight a monster
+    random_encounter_monster = Column(Boolean)
 
     # Time code of when the (account?) was created
     timestamp = Column(DateTime)
@@ -174,14 +167,8 @@ class Hero(Base):
         self.attribute_points = 0
         self.proficiency_points = 0
 
-        # Achievements and statistics
-        self.deepest_dungeon_floor = 0
-        self.current_dungeon_floor = 0
-        self.current_dungeon_floor_progress = 0
+        # Generator info.
         self.random_encounter_monster = None
-        self.player_kills = 0
-        self.monster_kills = 0
-        self.deaths = 0
 
         # Time code and login alerts
         self.timestamp = datetime.datetime.utcnow()
@@ -214,15 +201,6 @@ class Hero(Base):
         except (TypeError, ZeroDivisionError):
             self.experience_percent = 0
         return max(current or 0, 0)
-
-    # def not_yet_implemented(self):
-    #     self.kill_quests = BaseDict()
-    #     self.chest_equipped = []
-    #     self.errands = []
-    #     self.completed_quests = []
-    #     self.completed_achievements = []
-    #     self.bestiary = []
-    #     self.wolf_kills = 0
 
     def refresh_proficiencies(self):
         for proficiency in self.proficiencies:
