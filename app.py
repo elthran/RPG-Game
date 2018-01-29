@@ -871,7 +871,7 @@ def barracks(name='', hero=None, location=None):
 @update_current_location
 def dungeon_entrance(name='', hero=None, location=None):
     location.display.page_heading = " You are in the dungeon and exploring!"
-    hero.current_dungeon_floor = 0
+    hero.journal.achievements.current_dungeon_floor = 0
     hero.current_dungeon_progress = 0
     hero.random_encounter_monster = False
     explore_dungeon = database.get_object_by_name('Location', 'Explore Dungeon')
@@ -886,7 +886,7 @@ def dungeon_entrance(name='', hero=None, location=None):
 @update_current_location
 def explore_dungeon(name='', hero=None, location=None, extra_data=None):
     # For convenience
-    location.display.page_heading = "Current Floor of dungeon: " + str(hero.current_dungeon_floor)
+    location.display.page_heading = "Current Floor of dungeon: " + str(hero.journal.achievements.current_dungeon_floor)
     if extra_data == "Entering": # You just arrived into the dungeon
         location.display.page_heading += "You explore deeper into the dungeon!"
         page_links = [("Walk deeper into the", "/explore_dungeon/Explore%20Dungeon/None", "dungeon", ".")]
@@ -904,22 +904,22 @@ def explore_dungeon(name='', hero=None, location=None, extra_data=None):
     encounter_chance = randint(0, 100)
     if hero.random_encounter_monster == True: # You have a monster waiting for you from before
         location.display.page_heading += "The monster paces in front of you."
-        enemy = monster_generator(hero.current_dungeon_floor + 1) # This should be a saved monster and not re-generated :(
+        enemy = monster_generator(hero.journal.achievements.current_dungeon_floor + 1) # This should be a saved monster and not re-generated :(
         game.set_enemy(enemy)
         page_links = [("Attack the ", "/battle/monster", "monster", "."),
                       ("Attempt to ", "/dungeon_entrance/Dungeon%20Entrance", "flee", ".")]
     else: # You continue exploring
-        hero.current_dungeon_floor_progress += 1
-        if encounter_chance > (100 - (hero.current_dungeon_floor_progress*4)):
-            hero.current_dungeon_floor += 1
-            if hero.current_dungeon_floor > hero.deepest_dungeon_floor:
-                hero.deepest_dungeon_floor = hero.current_dungeon_floor
-            hero.current_dungeon_floor_progress = 0
-            location.display.page_heading = "You descend to a deeper level of the dungeon!! Current Floor of dungeon: " + str(hero.current_dungeon_floor)
+        hero.journal.achievements.current_dungeon_floor_progress += 1
+        if encounter_chance > (100 - (hero.journal.achievements.current_dungeon_floor_progress*4)):
+            hero.journal.achievements.current_dungeon_floor += 1
+            if hero.journal.achievements.current_dungeon_floor > hero.journal.achievements.deepest_dungeon_floor:
+                hero.journal.achievements.deepest_dungeon_floor = hero.journal.achievements.current_dungeon_floor
+            hero.journal.achievements.current_dungeon_floor_progress = 0
+            location.display.page_heading = "You descend to a deeper level of the dungeon!! Current Floor of dungeon: " + str(hero.journal.achievements.current_dungeon_floor)
             page_links = [("Start ", "/explore_dungeon/Explore%20Dungeon/None", "exploring", " this level of the dungeon.")]
         elif encounter_chance > 35: # You find a monster! Oh no!
             location.display.page_heading += "You come across a terrifying monster lurking in the shadows."
-            enemy = monster_generator(hero.current_dungeon_floor+1)
+            enemy = monster_generator(hero.journal.achievements.current_dungeon_floor+1)
             hero.current_dungeon_monster = True
             game.set_enemy(enemy)
             page_links = [("Attack the ", "/battle/monster", "monster", "."),
@@ -930,7 +930,7 @@ def explore_dungeon(name='', hero=None, location=None, extra_data=None):
         else:
             location.display.page_heading += " You explore deeper into the dungeon!"
             page_links = [("Walk deeper into the", "/explore_dungeon/Explore%20Dungeon/None", "dungeon", ".")]
-    location.display.page_heading += " Current progress on this floor: " + str(hero.current_dungeon_floor_progress)
+    location.display.page_heading += " Current progress on this floor: " + str(hero.journal.achievements.current_dungeon_floor_progress)
     return render_template('dungeon_exploring.html', hero=hero, game=game, page_links=page_links)  # return a string
 
 # From /barracks
@@ -1039,7 +1039,7 @@ def battle(this_user=None, hero=None):
         location = database.get_object_by_name('Location', hero.last_city.name)
         hero.current_location = location
         hero.current_dungeon_monster = False
-        hero.deaths += 1
+        hero.journal.achievements.deaths += 1
     else:
         """
         for item in hero.equipped_items:
@@ -1070,10 +1070,10 @@ def battle(this_user=None, hero=None):
         """
         experience_gained,level_up = hero.gain_experience(game.enemy.experience_rewarded)  # * hero.experience_gain_modifier  THIS IS CAUSING A WEIRD BUG? I don't know why
         if this_user == "monster":
-            hero.monster_kills += 1
+            hero.journal.achievements.monster_kills += 1
         else:
-            hero.player_kills += 1
-            game.enemy.deaths += 1
+            hero.journal.achievements.player_kills += 1
+            game.enemy.journal.achievements.deaths += 1
             location = database.get_object_by_name('Location', game.enemy.last_city.name)
             game.enemy.current_location = location
         if len(game.enemy.items_rewarded) > 0:

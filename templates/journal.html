@@ -147,14 +147,14 @@ for (index = 0; index < allProfs.length; index++) {
 <h1>Achievements</h1>
 {% if completed_achievements %}
 {% for achievement in completed_achievements %}
-<h2><br><b>{{ achievement[0] }} &nbsp; &nbsp; &nbsp; (+{{ achievement[1] }} experience)</b></h2>
+<h2><br><b>{{ achievement.name }} &nbsp; &nbsp; &nbsp; (+{{ achievement.experience }} experience)</b></h2>
 {% endfor %}
 {% else %}
 No completed achievements.
 {% endif %}
 <h1>All Achievements</h1>
 {% for achievement in kill_achievements %}
-<h2><br><b>{{ achievement[0] }}</b></h2>
+<h2><br><b>{{ achievement.name }} -> Current level: {{ achievement.current_level }} -> Next level: {{ achievement.next_level }}</b></h2>
 {% endfor %}
 <h1> Current Kill Statistics </h1>
 {% for key, value in kill_quests.items() %}

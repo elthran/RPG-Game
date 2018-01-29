@@ -50,7 +50,7 @@ class Achievements(Base):
         self.deaths = 0
         self.wolf_kills = 0
 
-        self.achievements = [Achievement("Wolf kills")]
+        self.achievements = [Achievement("Wolf kills", experience=50)]
 
 
 class Achievement(Base):
@@ -66,9 +66,11 @@ class Achievement(Base):
     name = Column(String)
     current_level = Column(Integer)
     next_level = Column(Integer)
+    experience = Column(Integer)
 
-    def __init__(self, name):
+    def __init__(self, name, experience=0):
         self.name = name
+        self.experience = experience
         self.current_level = 0
         self.next_level = 1
 

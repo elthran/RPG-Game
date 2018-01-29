@@ -36,9 +36,9 @@
 				{% if hero.proficiencies.sanctity.maximum %}<li>{{ hero.proficiencies.sanctity.current }} / {{ hero.proficiencies.sanctity.maximum }}</li>{% endif %}
 				<li>{{ hero.proficiencies.storage.current }} / {{ hero.proficiencies.storage.maximum }}</li>
 				<li>{{ hero.proficiencies.endurance.current }} / {{ hero.proficiencies.endurance.maximum }}</li>
-				<li>{{ hero.player_kills }}</li>
-				<li>{{ hero.monster_kills }}</li>
-				<li>{{ hero.deaths }}</li>
+				<li>{{ hero.journal.achievements.player_kills }}</li>
+				<li>{{ hero.journal.achievements.monster_kills }}</li>
+				<li>{{ hero.journal.achievements.deaths }}</li>
 			</ul>
 		</div>
 	</div>
