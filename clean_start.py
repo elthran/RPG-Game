@@ -1,5 +1,5 @@
 import os
-os.system("del static\database.db")
+# os.system("del static\database.db")
 os.system("cls")
 try:
     os.system("app.py")
