@@ -357,3 +357,6 @@ second_board.create_thread(sample_thread2)
 
 first_post = Post("testing post, please ignore", "Elthran")
 sample_thread.write_post(first_post)
+
+second_post = Post("testing post, please ignore", "Elthran")
+sample_thread2.write_post(second_post)

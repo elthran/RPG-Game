@@ -33,7 +33,7 @@ class HumanReadableMixin(object):
         return self.timestamp.strftime("%b. %d %I:%M%p")
 
 
-class Board(Base):
+class Board(HumanReadableMixin, Base):
     __tablename__ = "board"
 
     id = Column(Integer, primary_key=True)

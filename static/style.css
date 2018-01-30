@@ -330,6 +330,17 @@ ul {
 .forumTable {
     font-size: 25px;
     line-height: 45px;
+    width: 100%;
+    border: solid;  /* Creates a border that surrounds the entire table */
+    border-collapse: collapse;  /* Collapses row/column borders so they can be properly edited with CSS in the class below */
+}
+
+.forumTable tr td { /* tr affects each row and td affects each column */
+    border: 1px solid DeepSkyBlue;
+}
+
+.forumTable th {    /* Affects the row of headers */
+    font-size: 35px;
 }
 
 /* Topbar that runs horizontal to any page */

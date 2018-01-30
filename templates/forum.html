@@ -16,13 +16,28 @@
             </tr>
             {% for board in current_forum.boards %}
                 <tr>
-                    <td style="width:500px;"><a href="/forum/{{ board.id }}/0"{{ board.title }}>{{ board.title }}</a></td>
-                    <td style="width:150px;text-align:center;">{{ board.threads|length }}</td>
-                    <td style="width:150px;text-align:center;">{{ board.get_post_count() }}</td>
-                    <td style="width:300px;text-align:center;">{{ board.get_most_recent_post() }}</td>
+                    <td style="width:50%;"><a href="/forum/{{ board.id }}/0"{{ board.title }}>{{ board.title }}</a></td>
+                    <td style="width:10%;text-align:center;">{{ board.threads|length }}</td>
+                    <td style="width:10%;text-align:center;">{{ board.get_post_count() }}</td>
+                    <td style="width:30%;text-align:center;">
+                        {% if board.threads|length > 0 %}
+                            by {{ board.get_most_recent_post().author }}<br>{{ board.get_most_recent_post().human_readable_time() }}
+                        {% else %}
+                            No Posts
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </table>
+        {% if hero.user.is_admin %}
+            <br><br><br><br>
+            <h1>As an admin, you are able to create new boards.</h1>
+            <form action="" method="post">
+                <input type="hidden" name="form_type" value="new_board"> <!-- Tells python to run code for an existing thread -->
+                Board Name: <input type="text" name="board_name">
+                <input type="submit" value="Create">
+            </form>
+        {% endif %}
     {% else %}
     <!-- He already has chosen a board. So show the threads on that board -->
         <h1>Current Board: {{ current_board.title }}</h1>
@@ -40,12 +55,20 @@
                         <td style="width:150px;text-align:center;">{{ thread.creator }}</td>
                         <td style="width:100px;text-align:center;">{{ thread.posts|length }}</td>
                     </tr>
+                {% else %}
+                    <tr>
+                        <td>No posts</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
                 {% endfor %}
         </table>
         <br><br><br>
+
         <h3>Create a new thread</h3>
         <form action="" method="post">
-                <input type="hidden" name="thread_type" value="new"> <!-- Tells python to run code for creating a new thread -->
+                <input type="hidden" name="form_type" value="new_thread"> <!-- Tells python to run code for creating a new thread -->
 
             Thread name:
                 <input type="text" name="thread_name">
@@ -64,7 +87,7 @@
     {% endfor %}
     <h1>Reply to thread</h1>
     <form action="" method="post">
-        <input type="hidden" name="thread_type" value="old"> <!-- Tells python to run code for an existing thread -->
+        <input type="hidden" name="form_type" value="viewing_old_thread"> <!-- Tells python to run code for an existing thread -->
         Reply: <input type="text" name="post_content">
         <input class="btn btn-default" type="submit" value="Next">
     </form>
@@ -72,13 +95,5 @@
     <a href="/forum/{{ current_board.id }}/0" style="font-size:25px;">Return to board</a><br><br><br>
     <a href="/forum/0/0" style="font-size:25px;">Return to forum home</a><br><br><br>
 {% endif %}
-
-
-
-<br><br><br><br><br><br><br><br><br><br><br><br>
-<h1>For testing purposes I am temporarily displaying this!</h1>
-Current board: {{ current_board }}
-<br><br>
-Current thread: {{ current_thread }}
 {% endblock %}
 
