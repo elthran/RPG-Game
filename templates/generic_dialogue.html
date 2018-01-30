@@ -34,7 +34,7 @@ or reply by choosing an option "make choice" -->
             <form action="" method="post">
                 {{ user_response }}
                 <input type="text" placeholder="{{ user_text_placeholder }}" name="get_data" value="{{ request.form.get_data }}" autofocus tabindex=1 />
-                <input class="btn btn-default" type="submit" value="Next" tabindex=2 />
+                <input type="submit" value="Next" tabindex=2 />
             </form>
 
         {% elif user_action == "make choice" %}
