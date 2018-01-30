@@ -45,16 +45,20 @@
             <tr>
                 <th>Thread</th>
                 <th>Description</th>
-                <th>Creator</th>
                 <th>Posts</th>
                 <th>Last Post</th>
             </tr>
                 {% for thread in current_board.threads %}
                     <tr>
-                        <td style="width:25%;"><a href="/forum/{{ current_board.id }}/{{ thread.id }}" style="font-size:25px;">{{ thread.title }}</a></td>
+                        <td style="width:30%;font-size:15px;">
+                            <a href="/forum/{{ current_board.id }}/{{ thread.id }}" style="font-size:25px;">{{ thread.title }}</a>
+                            <br>Created by: {{ thread.creator }}
+                        </td>
                         <td style="width:35%">{{ thread.description }}</td>
-                        <td style="width:10%;text-align:center;">{{ thread.creator }}</td>
-                        <td style="width:10%;text-align:center;">{{ thread.posts|length }}</td>
+                        <td style="width:15%;text-align:center;">
+                            {{ thread.posts|length }} Replies
+                            <br>5 Views
+                        </td>
                         <td style="width:20%;text-align:center;">
                             {% if thread.posts|length %}
                                 by {{ current_board.get_most_recent_post().author.title() }}<br>{{ current_board.get_most_recent_post().human_readable_time() }}
@@ -66,7 +70,6 @@
                 {% else %}
                     <tr>
                         <td>No posts</td>
-                        <td>-</td>
                         <td>-</td>
                         <td>-</td>
                     </tr>
@@ -87,9 +90,32 @@
     {% endif %}
 {% else %}
 <!-- The user has chosen a thread. Let them read the posts in the thread! -->
-    <h1>Read posts:</h1>
+    <h1>Topic: {{ current_thread.title }}</h1>
     {% for post in current_thread.posts %}
-        <h3>Written by {{ post.author }} at {{ post.human_readable_time() }}</h3>{{ post.content }}<br><br><br>
+        <div class="forumPostContainer">
+            <div class="forumPostAuthor">
+                {{ post.author.title() }}
+                <br><br>Author's Prestige Rank
+                <br><br><br><br>Author's Avatar
+            </div>
+            <div class="forumPostContent">
+                <div class="forumPostHeader">
+                {% if post.id == 1 %}
+                    <a href="/forum/{{ current_board.id }}/{{ current_thread.id }}" style="font-size:25px;">{{ current_thread.title }}</a>
+                    Original Post at {{ post.human_readable_time() }}
+                {% else %}
+                    <a href="/forum/{{ current_board.id }}/{{ current_thread.id }}" style="font-size:25px;">Re: {{ current_thread.title }}</a>
+                    Reply #{{ post.id - 1 }} at {{ post.human_readable_time() }}
+                {% endif %}
+                </div>
+                <div class="forumPostBody">
+                    {{ post.content }}
+                </div>
+                <div class="forumPostFooter">
+                    Author's Signature (not included yet)
+                </div>
+            </div>
+        </div>
     {% endfor %}
     <h1>Reply to thread</h1>
     <form action="" method="post">

@@ -343,6 +343,39 @@ ul {
     font-size: 35px;
 }
 
+.forumPostContainer {
+    width: 95%;
+    height: 200px;
+    border: 1px dotted;
+    margin: 10px;
+}
+
+.forumPostAuthor {
+    float: left;
+    width: 15%;
+}
+
+.forumPostContent {
+    float: right;
+    width: 85%;
+}
+
+.forumPostHeader {
+    font-size: 15px;
+    border-bottom: 1px solid Black;
+    padding: 0 0 25px 0;
+}
+
+.forumPostBody {
+    font-size: 25px;
+    border-bottom: 1px solid Black;
+    padding: 25px 0 25px 0;
+}
+
+.forumPostFooter {
+    padding: 25px 0 0 0;
+}
+
 /* Topbar that runs horizontal to any page */
 .topbar {
 	float: left;
