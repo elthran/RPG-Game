@@ -800,7 +800,7 @@ def forum(hero=None, board_id=0, thread_id=0):
         # If repyling
         else:
             post_content = request.form["post_content"]
-            new_post = Post(post_content, hero.user.username)
+            new_post = Post(post_content, hero.user)
             current_thread.write_post(new_post)
             hero.user.prestige += 1 # Give the user prestige. It's used to track meta activities and is unrelated to gameplay
 
