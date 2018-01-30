@@ -2,6 +2,7 @@ import datetime
 
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy import ForeignKey
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 from base_classes import Base
@@ -56,13 +57,25 @@ class Board(Base):
     def get_post_count(self):
         return sum((len(thread.posts) for thread in self.threads))
 
+    @hybrid_property
+    def most_recent_post(self):
+        return max((thread.most_recent_post
+                    for thread in self.threads
+                    if thread.most_recent_post),
+                   key=lambda p: p.timestamp, default=None)
+
     def get_most_recent_post(self):
-        # Should return a Post object. It should query the database for the most recent post
-        # which is a property of this board (ie.
-        # for thread in self.threads:
-        #      for post in thread.posts:
-        #           find most recent)
-        return "Elthran"
+        """Return a Post object that is the most recent among all threads.
+
+        Should return a Post object. It should query the database for the most
+        recent post which is a property of this board
+        ie.
+        for thread in self.threads:
+             for post in thread.posts:
+                  find most recent
+        """
+
+        return self.most_recent_post
 
 
 class Thread(HumanReadableMixin, Base):
@@ -77,6 +90,11 @@ class Thread(HumanReadableMixin, Base):
 
     # Many to One with Posts
     posts = relationship("Post", back_populates="thread")
+
+    @hybrid_property
+    def most_recent_post(self):
+        return max((post for post in self.posts), key=lambda p: p.timestamp,
+                   default=None)
 
     title = Column(String)
     creator = Column(String)
@@ -93,6 +111,7 @@ class Thread(HumanReadableMixin, Base):
 
     def write_post(self, post):
         self.posts.append(post)
+
 
 class Post(HumanReadableMixin, Base):
     __tablename__ = "post"
