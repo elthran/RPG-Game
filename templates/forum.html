@@ -96,6 +96,7 @@
             <div class="forumPostAuthor">
                 {{ post.author.title() }}
                 <br><br>Author's Prestige Rank
+                {# I want to run {{ get_user_by_username(post.author).prestige }} #}
                 <br><br><br><br>Author's Avatar
             </div>
             <div class="forumPostContent">
@@ -120,12 +121,12 @@
     <h1>Reply to thread</h1>
     <form action="" method="post">
         <input type="hidden" name="form_type" value="viewing_old_thread"> <!-- Tells python to run code for an existing thread -->
-        Reply: <input type="text" name="post_content">
-        <input type="submit" value="Next">
+        <textarea cols="100" rows="10" type="text" name="post_content"></textarea>
+        <br><input style="float:left;margin-left:700px;" type="submit" value="Post Reply">
     </form>
     <br><br><br>
-    <a href="/forum/{{ current_board.id }}/0" style="font-size:25px;">Return to board</a><br><br><br>
-    <a href="/forum/0/0" style="font-size:25px;">Return to forum home</a><br><br><br>
+    <a href="/forum/{{ current_board.id }}/0" style="font-size:25px;">Return to board</a><br><br>
+    <a href="/forum/0/0" style="font-size:25px;">Return to forum home</a>
 {% endif %}
 {% endblock %}
 

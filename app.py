@@ -791,9 +791,6 @@ def forum(hero=None, board_id=0, thread_id=0):
         if form_type == "new_board":
             board_name = request.form["board_name"]
             new_board = Board(board_name)
-            #new_thread = Thread("hi", "elthran", "ok")
-            #new_thread.write_post(Post("ji", "ki"))
-            #new_board.create_thread(new_thread)
             current_forum.create_board(new_board)
         elif form_type == "new_thread":
             thread_name = request.form["thread_name"]
@@ -805,6 +802,7 @@ def forum(hero=None, board_id=0, thread_id=0):
             post_content = request.form["post_content"]
             new_post = Post(post_content, hero.user.username)
             current_thread.write_post(new_post)
+            hero.user.prestige += 1 # Give the user prestige. It's used to track meta activities and is unrelated to gameplay
 
     return render_template('forum.html', hero=hero, current_forum=current_forum, current_board=current_board, current_thread=current_thread, page_title=page_title)  # return a string
 

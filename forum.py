@@ -131,3 +131,4 @@ class Post(HumanReadableMixin, Base):
         self.content = content
         self.author = author
         self.timestamp = datetime.datetime.utcnow()
+
