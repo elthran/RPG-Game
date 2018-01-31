@@ -119,9 +119,11 @@ function toggleLoginRegister(button) {
     if (window.getComputedStyle(registerForm).display === "none") {
         registerForm.style.display = "block";
         loginForm.style.display = "none";
+        document.getElementById("registerFocus").focus();
     } else {
         registerForm.style.display = "none";
         loginForm.style.display = "block";
+        document.getElementById("loginFocus").focus();
     }
 }
 
@@ -134,6 +136,37 @@ function hide(element) {
     element.classList.remove('show')
     element.classList.add('hide')
 }
+
+// Allow the sidebar to be sticky its top and bottom to the display window.
+var lastYOffset = window.pageYOffset;
+function stickyTopAndBottom() {
+    "use strict";
+    var newOffset = window.pageYOffset;
+    var sidebarDiv = document.getElementById("sidebar");
+    var minOffset = 10;
+    // I don't know why * 3 but it works.
+    var maxOffset = sidebarDiv.scrollHeight - window.innerHeight + minOffset;
+    var currentOffset = parseInt(window.getComputedStyle(sidebarDiv, "style").top.slice(0, -2));
+    var scrollYDirection = (lastYOffset < newOffset
+        ? "down"
+        : "up");
+
+    if (scrollYDirection === "down") {
+        currentOffset = currentOffset - (newOffset - lastYOffset);
+        if (currentOffset <= -maxOffset) {
+            currentOffset = -maxOffset;
+        }
+    } else if (scrollYDirection === "up") {
+        currentOffset = currentOffset + (lastYOffset - newOffset);
+        if (currentOffset >= minOffset) {
+            currentOffset = minOffset;
+        }
+    }
+
+    sidebarDiv.style.top = currentOffset + "px";
+    lastYOffset = newOffset;
+}
+
 
 // This toggles whether or not you can see the battle log after a fight.
 function battle_popup() {
