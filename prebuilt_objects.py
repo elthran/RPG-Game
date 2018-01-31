@@ -11,6 +11,7 @@ from items import (
 from events import Trigger, Condition
 from random import choice # To create pre-built adjectives
 from forum import Forum, Board, Thread, Post
+from bestiary2 import Monster
 
 # for testing
 import pdb
@@ -343,3 +344,9 @@ all_specializations = [
 basic_forum = Forum("Basic")  # Create the first forum
 all_forums = [basic_forum]  # Add it to the list of forums to be generated on game init
 basic_forum.create_board(Board("General"))  # Add a board to the forum so it doesn't seem so lonely
+
+all_monsters = [Monster(name="Sewer Rat", species="Rat", species_plural="Rats", level_max=10, experience_rewarded=1, level_modifier=0.5,
+                        agility=1.5, charisma=0, divinity=0.1, resilience=1.2, quickness=1.7, willpower=0.5, brawn=0.9, vitality=0.8, intellect=0),
+                Monster(name="Rabid Dog", species="Dog", species_plural="Dogs", level_max=20, experience_rewarded=2,
+                        agility=1.5, charisma=0, divinity=0.1, resilience=1.5, fortuity=1, quickness=1.7, willpower=0.5, brawn=1.5, vitality=0.8, intellect=0)
+                ]

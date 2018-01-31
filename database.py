@@ -40,6 +40,7 @@ from quests import Quest, QuestPath
 from proficiencies import Proficiency
 from events import Trigger
 from forum import Forum, Board, Thread
+from bestiary2 import Monster
 import prebuilt_objects
 
 
@@ -107,7 +108,8 @@ class EZDB:
                 prebuilt_objects.all_marketplace_items,
                 prebuilt_objects.all_quests,
                 prebuilt_objects.all_specializations,
-                prebuilt_objects.all_forums]:
+                prebuilt_objects.all_forums,
+                prebuilt_objects.all_monsters]:
             for obj in obj_list:
                 self.session.add(obj)
                 if isinstance(obj, User):
