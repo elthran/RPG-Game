@@ -340,8 +340,6 @@ all_specializations = [
                             'Charisma of 7, Fame of 200')
 ]
 
-testing_forum = Forum()
-all_forums = [testing_forum]
-
-first_board = Board("General")
-testing_forum.create_board(first_board)
+basic_forum = Forum("Basic")  # Create the first forum
+all_forums = [basic_forum]  # Add it to the list of forums to be generated on game init
+basic_forum.create_board(Board("General"))  # Add a board to the forum so it doesn't seem so lonely
