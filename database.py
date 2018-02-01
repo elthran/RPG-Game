@@ -179,10 +179,6 @@ class EZDB:
         """
         obj = globals()[obj_class_name]
         return self.session.query(obj).filter_by(name=obj_name).one()
-
-    def get_monsters_by_terrain(self, terrain):
-        """Retrieve a list of all monsters that can be found in a given terrain type"""
-        return self.session.query(MonsterTemplate).filter_by(forest=True).all()
         
     def get_proficiency_by_id(self, prof_id):
         """Return a proficiency object by id."""

@@ -31,7 +31,7 @@ from commands import Command
 from database import EZDB
 from engine import Engine
 from forum import Board, Thread, Post
-from bestiary2 import create_monster
+from bestiary2 import create_monster, MonsterTemplate
 
 # INIT AND LOGIN FUNCTIONS
 database = EZDB('sqlite:///static/database.db', debug=False)
@@ -772,10 +772,12 @@ def achievement_log(hero=None):
 @login_required
 @uses_hero
 def forum(hero=None, board_id=0, thread_id=0):
-    monsters = database.get_monsters_by_terrain("forest")
-    monster = create_monster(choice(monsters)) # Randomly create a monster from the list
-    print(monster)
-    print(monster.name, monster.forest, monster.cave)
+    # Not sure how to move the session query to the database as I need to pull the terrain attribute first
+    terrain = getattr(MonsterTemplate, "forest")
+    monsters = database.session.query(MonsterTemplate).filter(terrain == True).all()
+    monster_template = choice(monsters) # Randomly choose a monster from the list
+    monster = create_monster(name=monster_template.name, level=hero.age)
+
     page_title = "Forum"
     # Checking current forum. Currently it's always on this forum as we only have 1
     current_forum = database.get_object_by_id("Forum", 1)

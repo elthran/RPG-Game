@@ -73,8 +73,12 @@ class MonsterTemplate(Base):
         self.vitality = vitality
         self.intellect = intellect
 
+class Monster(object):
+    def __init__(self, name, level):
+        self.name = name
+        self.level = level
 
-def create_monster(self, **kwargs):
-    return MonsterTemplate(name=self.name)
+def create_monster(name, level):
+    return Monster(name=name, level=level)
 
 
