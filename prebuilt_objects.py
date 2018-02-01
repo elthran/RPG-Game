@@ -129,6 +129,7 @@ dungeon_entrance.children.append(explore_dungeon)
 cave = node_grid[2]
 cave.name = choice(adjective_list) + " Cave"
 cave.type = 'dungeon'
+cave.terrain = 'cave'
 cave.update()
 cave.display.page_heading = "You are outside {}".format(cave.name)
 cave.display.page_image = "generic_cave_entrance.jpg"
@@ -138,6 +139,7 @@ cave.children.append(dungeon_entrance)
 forest = node_grid[8]
 forest.name = choice(adjective_list) + " Forest"
 forest.type = 'dungeon'
+cave.terrain = 'forest'
 forest.update()
 forest.display.page_heading = "You are outside {}".format(forest.name)
 forest.display.page_image = "generic_forest_entrance.jpg"
@@ -346,7 +348,7 @@ all_forums = [basic_forum]  # Add it to the list of forums to be generated on ga
 basic_forum.create_board(Board("General"))  # Add a board to the forum so it doesn't seem so lonely
 
 all_monsters = [MonsterTemplate(name="Sewer Rat", species="Rat", species_plural="Rats", level_max=10, experience_rewarded=1, level_modifier=0.5,
-                        cave=True,
+                        cave=True, city=True,
                         agility=1.5, charisma=0, divinity=0.1, resilience=1.2, quickness=1.7, willpower=0.5, brawn=0.9, vitality=0.8, intellect=0),
                 MonsterTemplate(name="Rabid Dog", species="Dog", species_plural="Dogs", level_max=20, experience_rewarded=2,
                         forest=True,

@@ -46,6 +46,7 @@ class Hero(Base):
     attribute_points = Column(Integer)
     proficiency_points = Column(Integer)
 
+    current_terrain = Column(String)
     deepest_dungeon_floor = Column(Integer)  # High score for dungeon runs
     current_dungeon_floor = Column(Integer)  # Which floor of dungeon your on
     current_dungeon_floor_progress = Column(
@@ -175,6 +176,7 @@ class Hero(Base):
         self.proficiency_points = 0
 
         # Achievements and statistics
+        self.current_terrain = "city"
         self.deepest_dungeon_floor = 0
         self.current_dungeon_floor = 0
         self.current_dungeon_floor_progress = 0

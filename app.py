@@ -772,12 +772,6 @@ def achievement_log(hero=None):
 @login_required
 @uses_hero
 def forum(hero=None, board_id=0, thread_id=0):
-    # Not sure how to move the session query to the database as I need to pull the terrain attribute first
-    terrain = getattr(MonsterTemplate, "forest")
-    monsters = database.session.query(MonsterTemplate).filter(terrain == True).all()
-    monster_template = choice(monsters) # Randomly choose a monster from the list
-    monster = create_monster(name=monster_template.name, level=hero.age)
-
     page_title = "Forum"
     # Checking current forum. Currently it's always on this forum as we only have 1
     current_forum = database.get_object_by_id("Forum", 1)
@@ -923,6 +917,7 @@ def dungeon_entrance(name='', hero=None, location=None):
 @uses_hero
 @update_current_location
 def explore_dungeon(name='', hero=None, location=None, extra_data=None):
+    print(location.terrain, hero.current_location.terrain)
     # For convenience
     location.display.page_heading = "Current Floor of dungeon: " + str(hero.current_dungeon_floor)
     if extra_data == "Entering": # You just arrived into the dungeon
@@ -941,6 +936,12 @@ def explore_dungeon(name='', hero=None, location=None, extra_data=None):
         return render_template('dungeon_exploring.html', hero=hero, game=game, page_links=page_links)
     encounter_chance = randint(0, 100)
     if hero.random_encounter_monster == True: # You have a monster waiting for you from before
+        # Not sure how to move the session query to the database as I need to pull the terrain attribute first
+        terrain = getattr(MonsterTemplate, hero.current_terrain)
+        monsters = database.session.query(MonsterTemplate).filter(terrain == True).all()
+        monster_template = choice(monsters)  # Randomly choose a monster from the list
+        monster = create_monster(name=monster_template.name, level=hero.age)
+
         location.display.page_heading += "The monster paces in front of you."
         enemy = monster_generator(hero.current_dungeon_floor + 1) # This should be a saved monster and not re-generated :(
         game.set_enemy(enemy)

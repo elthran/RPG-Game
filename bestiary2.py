@@ -21,6 +21,7 @@ class MonsterTemplate(Base):
     experience_rewarded = Column(Integer)
 
     # Query requests which help determine which monster to pull for the occassion
+    city = Column(Boolean)
     forest = Column(Boolean)
     cave = Column(Boolean)
 
@@ -46,7 +47,7 @@ class MonsterTemplate(Base):
     intellect = Column(Integer)
 
     def __init__(self, name, species="None", species_plural="None", level_min=1, level_max=99, experience_rewarded=0, level_modifier=1,
-                 forest=False, cave=False,
+                 city=False, forest=False, cave=False,
                  agility=1, charisma=1, divinity=1, resilience=1, fortuity=1, pathfinding=1,
                  quickness=1, willpower=1, brawn=1, survivalism=1, vitality=1, intellect=1):
         self.name = name
@@ -57,6 +58,7 @@ class MonsterTemplate(Base):
         self.experience_rewarded = experience_rewarded
         self.level_modifier = level_modifier
 
+        self.city = city
         self.forest = forest
         self.cave = cave
 

@@ -206,18 +206,20 @@ class Location(Base):
     # Think a hex grid
 
     id = Column(Integer, primary_key=True)
-    parent_id = Column(Integer, ForeignKey('location.id'))
+    parent_id = Column(Integer, ForeignKey('location.id'))   # What does this do?
     name = Column(String, nullable=False, unique=True)
-    url = Column(String)
-    type = Column(String)
+    url = Column(String)   # What does this do?
+    type = Column(String)   # What does this do?
+
+    terrain = Column(String) # Tells the game what monsters to generate
 
     children = relationship("Location", back_populates="parent",
                             foreign_keys=[parent_id])
     parent = relationship("Location", remote_side=[id],
                           back_populates="children",
                           foreign_keys=[parent_id])
-    locations = orm.synonym('children')
-    encompassing_location = orm.synonym('parent')
+    locations = orm.synonym('children')   # What does this do?
+    encompassing_location = orm.synonym('parent')   # What does this do?
 
     _out_adjacent = relationship(
         "Location",
@@ -353,6 +355,7 @@ class Location(Base):
         self.type = location_type
         self.parent = parent
         self.children = children
+        self.terrain = "none"
         self.update()
 
     # @orm.reconstructor  # I uncommented this. I don't know why it was here.
