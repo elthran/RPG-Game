@@ -9,6 +9,7 @@
 import pdb  # For testing!
 from pprint import pprint  # For testing!
 from functools import wraps
+from random import choice
 import os
 
 from flask import (
@@ -30,7 +31,7 @@ from commands import Command
 from database import EZDB
 from engine import Engine
 from forum import Board, Thread, Post
-
+from bestiary2 import create_monster
 
 # INIT AND LOGIN FUNCTIONS
 database = EZDB('sqlite:///static/database.db', debug=False)
@@ -771,6 +772,10 @@ def achievement_log(hero=None):
 @login_required
 @uses_hero
 def forum(hero=None, board_id=0, thread_id=0):
+    monsters = database.get_monsters_by_terrain("forest")
+    monster = create_monster(choice(monsters)) # Randomly create a monster from the list
+    print(monster)
+    print(monster.name, monster.forest, monster.cave)
     page_title = "Forum"
     # Checking current forum. Currently it's always on this forum as we only have 1
     current_forum = database.get_object_by_id("Forum", 1)

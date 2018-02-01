@@ -4,12 +4,12 @@
 #  Email : jimmy.gnahz@gmail.com                                               #
 #                                                                              #
 #//////////////////////////////////////////////////////////////////////////////#
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean
 
 from base_classes import Base
 
-class Monster(Base):
-    __tablename__ = 'monster'
+class MonsterTemplate(Base):
+    __tablename__ = 'monster_template'
 
     id = Column(Integer, primary_key=True)
 
@@ -19,6 +19,10 @@ class Monster(Base):
     level_min = Column(Integer) # The lowest level it can ever be generated as. (So you can't generate a level 1 dragon for example)
     level_max = Column(Integer) # The highest level you can ever generate as. (So you can't generatea level 75 rat for example)
     experience_rewarded = Column(Integer)
+
+    # Query requests which help determine which monster to pull for the occassion
+    forest = Column(Boolean)
+    cave = Column(Boolean)
 
     # This is used to boost certain creatures. The stronger a creature would seem to be, the higher the boost it gets. For example, a rat
     # wouldn't seem to be as tough as a dog or human of the same level. So it would have a < 1 modifier. Default is 1.
@@ -41,7 +45,8 @@ class Monster(Base):
     vitality = Column(Integer)
     intellect = Column(Integer)
 
-    def __init__(self, name, species, species_plural, level_min=1, level_max=99, experience_rewarded=0, level_modifier=1,
+    def __init__(self, name, species="None", species_plural="None", level_min=1, level_max=99, experience_rewarded=0, level_modifier=1,
+                 forest=False, cave=False,
                  agility=1, charisma=1, divinity=1, resilience=1, fortuity=1, pathfinding=1,
                  quickness=1, willpower=1, brawn=1, survivalism=1, vitality=1, intellect=1):
         self.name = name
@@ -51,6 +56,9 @@ class Monster(Base):
         self.level_max = level_max
         self.experience_rewarded = experience_rewarded
         self.level_modifier = level_modifier
+
+        self.forest = forest
+        self.cave = cave
 
         self.agility = agility
         self.charisma = charisma
@@ -64,4 +72,9 @@ class Monster(Base):
         self.survivalism = survivalism
         self.vitality = vitality
         self.intellect = intellect
+
+
+def create_monster(self, **kwargs):
+    return MonsterTemplate(name=self.name)
+
 
