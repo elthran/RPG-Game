@@ -13,9 +13,14 @@ class Forum(Base):
 
     id = Column(Integer, primary_key=True)
 
+    title = Column(String)
+
     # Relationships
     # Many to One with Category
     boards = relationship("Board", back_populates="forum")
+
+    def __init__(self, title):
+        self.title = title
 
     def create_board(self, board):
         self.boards.append(board)

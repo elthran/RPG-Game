@@ -101,12 +101,12 @@
             </div>
             <div class="forumPostContent">
                 <div class="forumPostHeader">
-                {% if post.id == 1 %}
+                {% if loop.index == 1 %}
                     <a href="/forum/{{ current_board.id }}/{{ current_thread.id }}" style="font-size:25px;">{{ current_thread.title }}</a>
                     Original Post at {{ post.human_readable_time() }}
                 {% else %}
                     <a href="/forum/{{ current_board.id }}/{{ current_thread.id }}" style="font-size:25px;">Re: {{ current_thread.title }}</a>
-                    Reply #{{ post.id - 1 }} at {{ post.human_readable_time() }}
+                    Reply #{{ loop.index - 1 }} at {{ post.human_readable_time() }}
                 {% endif %}
                 </div>
                 <div class="forumPostBody">

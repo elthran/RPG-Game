@@ -786,19 +786,16 @@ def forum(hero=None, board_id=0, thread_id=0):
 
     if request.method == 'POST':
         form_type = request.form["form_type"]
-        print("type:", type)
-        # If starting new thread
-        if form_type == "new_board":
+        if form_type == "new_board": # If starting new board
             board_name = request.form["board_name"]
             new_board = Board(board_name)
             current_forum.create_board(new_board)
-        elif form_type == "new_thread":
+        elif form_type == "new_thread": # If starting new thread
             thread_name = request.form["thread_name"]
             thread_description = request.form["thread_description"]
             new_thread = Thread(thread_name, hero.user.username, thread_description)
             current_board.create_thread(new_thread)
-        # If repyling
-        else:
+        else: # If repyling
             post_content = request.form["post_content"]
             new_post = Post(post_content, hero.user)
             current_thread.write_post(new_post)
