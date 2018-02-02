@@ -59,6 +59,10 @@ class User(Base):
     heroes = relationship("Hero", order_by='Hero.character_name',
                           back_populates='user')
 
+    # Many to One with Posts
+    posts = relationship("Post", order_by="Post.timestamp.desc()",
+                         back_populates="user")
+
     def __init__(self, username, password, email='', timestamp=None, is_admin=False):
         """Create a new user object.
 

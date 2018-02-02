@@ -128,12 +128,20 @@ class Post(HumanReadableMixin, Base):
     thread_id = Column(Integer, ForeignKey('thread.id'))
     thread = relationship("Thread", back_populates="posts")
 
+    # One to Many with User class.
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship("User", back_populates="posts")
+
     content = Column(String)
-    author = Column(String)
+
+    @hybrid_property
+    def author(self):
+        return self.user.username
+
     timestamp = Column(DateTime)
 
-    def __init__(self, content="Error: Content missing", author="Unknown author"):
+    def __init__(self, content="Error: Content missing", user=None):
         self.content = content
-        self.author = author
+        self.user = user
         self.timestamp = datetime.datetime.utcnow()
 
