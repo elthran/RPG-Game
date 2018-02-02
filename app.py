@@ -936,12 +936,6 @@ def explore_dungeon(name='', hero=None, location=None, extra_data=None):
         return render_template('dungeon_exploring.html', hero=hero, game=game, page_links=page_links)
     encounter_chance = randint(0, 100)
     if hero.random_encounter_monster == True: # You have a monster waiting for you from before
-        # Not sure how to move the session query to the database as I need to pull the terrain attribute first
-        terrain = getattr(MonsterTemplate, hero.current_terrain)
-        monsters = database.session.query(MonsterTemplate).filter(terrain == True).all()
-        monster_template = choice(monsters)  # Randomly choose a monster from the list
-        monster = create_monster(name=monster_template.name, level=hero.age)
-
         location.display.page_heading += "The monster paces in front of you."
         enemy = monster_generator(hero.current_dungeon_floor + 1) # This should be a saved monster and not re-generated :(
         game.set_enemy(enemy)
@@ -957,6 +951,16 @@ def explore_dungeon(name='', hero=None, location=None, extra_data=None):
             location.display.page_heading = "You descend to a deeper level of the dungeon!! Current Floor of dungeon: " + str(hero.current_dungeon_floor)
             page_links = [("Start ", "/explore_dungeon/Explore%20Dungeon/None", "exploring", " this level of the dungeon.")]
         elif encounter_chance > 35: # You find a monster! Oh no!
+            # Not sure how to move the session query to the database as I need to pull the terrain attribute first
+            terrain = getattr(MonsterTemplate, hero.current_terrain)
+            monsters = database.session.query(MonsterTemplate).filter(terrain == True).all()
+            m = choice(monsters)  # Randomly choose a monster from the list
+            monster = create_monster(name=m.name, level=hero.age,
+                                     agility=m.agility, charisma=m.charisma, divinity=m.divinity, resilience=m.resilience,
+                                     fortuity=m.fortuity, pathfinding=m.pathfinding, quickness=m.quickness, willpower=m.willpower,
+                                     brawn=m.brawn, survivalism=m.survivalism, vitality=m.vitality, intellect=m.intellect)
+            print("If you were running the new bestiary code, you would be fighting a " + monster.name + " (level " + str(monster.level) + "), because you are in terrain type " + hero.current_terrain + ".")
+
             location.display.page_heading += "You come across a terrifying monster lurking in the shadows."
             enemy = monster_generator(hero.current_dungeon_floor+1)
             hero.current_dungeon_monster = True

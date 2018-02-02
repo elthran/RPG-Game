@@ -5,6 +5,7 @@
 #                                                                              #
 #//////////////////////////////////////////////////////////////////////////////#
 from sqlalchemy import Column, Integer, String, Boolean
+from random import randint, choice
 
 from base_classes import Base
 
@@ -76,11 +77,35 @@ class MonsterTemplate(Base):
         self.intellect = intellect
 
 class Monster(object):
-    def __init__(self, name, level):
+    def __init__(self, name, level, agility, charisma, divinity, resilience, fortuity, pathfinding,
+                 quickness, willpower, brawn, survivalism, vitality, intellect):
         self.name = name
         self.level = level
+        #self.proficiencies = MonsterProficiencies()
 
-def create_monster(name, level):
-    return Monster(name=name, level=level)
+        self.agility = agility
+        self.charisma = charisma
+        self.divinity = divinity
+        self.resilience = resilience
+        self.fortuity = fortuity
+        self.pathfinding = pathfinding
+        self.quickness = quickness
+        self.willpower = willpower
+        self.brawn = brawn
+        self.survivalism = survivalism
+        self.vitality = vitality
+        self.intellect = intellect
+
+    def __str__(self):
+        display = "Name: " + self.name + "\nLevel: " + str(self.level)
+        return display
+
+def create_monster(name, level, agility, charisma, divinity, resilience, fortuity, pathfinding,
+                 quickness, willpower, brawn, survivalism, vitality, intellect):
+    stat_points = level + 5
+    return Monster(name=name, level=level,
+                   agility=agility, charisma=charisma, divinity=divinity, resilience=resilience,
+                   fortuity=fortuity, pathfinding=pathfinding, quickness=quickness, willpower=willpower,
+                   brawn=brawn, survivalism=survivalism, vitality=vitality, intellect=intellect)
 
 
