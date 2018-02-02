@@ -134,7 +134,7 @@ class EZDB:
         commited/closed.
         """
         try:
-            obj = globals()[obj_name.capitalize()]
+            obj = globals()[obj_name]
         except IndexError:
             raise Exception(
                 "Object name: '{}' is not an "
@@ -156,14 +156,18 @@ class EZDB:
         Name can be capitalized or not e.g. "hero" or "Hero"
         """
         try:
-            obj = globals()[obj_name.capitalize()]
-            # test if obj is a class.?
-            return self.session.query(obj).get(obj_id)
-        except KeyError:
+            obj = globals()[obj_name]
+        except IndexError:
             raise Exception(
                 "Object name: '{}' is not an "
                 "object, or has not been imported into "
                 "'database' module yet.".format(obj_name))
+        db_obj = self.session.query(obj).get(obj_id)
+        if db_obj:
+            return db_obj
+        else:
+            raise IndexError(
+                "No '{}' with id '{}' exists.".format(obj_name, obj_id))
 
     def get_learnable_abilities(self, hero):
         """Get all learnable abilities of a given hero."""
