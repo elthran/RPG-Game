@@ -76,8 +76,8 @@ bestiary_data = [("Feral Dog", archetypes["wolf"]),
 """ Don't bother looking below here"""
 
 class NPC(object):
-    def __init__(self, npc_id, name, race, age):
-        self.npc_id = npc_id
+    def __init__(self, id, name, race, age):
+        self.id = id
         self.name = name
         self.race = race
         self.age = age

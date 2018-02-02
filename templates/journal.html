@@ -6,8 +6,8 @@
 <div class="topbar">
     <ul>
         <li><a {% if quest_log %}style="background-color:Red;"{% endif %} href=/quest_log>Quests</a></li>
-        <li><a {% if bestiary %}style="background-color:Red;"{% endif %} href=/bestiary/default>Bestiary</a></li>
-        <li><a {% if people_log %}style="background-color:Red;"{% endif %} href=/people_log/default>People</a></li>
+        <li><a {% if bestiary %}style="background-color:Red;"{% endif %} href=/bestiary/0>Bestiary</a></li>
+        <li><a {% if people_log %}style="background-color:Red;"{% endif %} href=/people_log/0>People</a></li>
         <li><a {% if map_log %}style="background-color:Red;"{% endif %} href=/map_log>Map</a></li>
         <li><a {% if achievement_log %}style="background-color:Red;"{% endif %} href=/quest_log>Achievements</a></li>
     </ul>
@@ -16,49 +16,122 @@
 
 {% block block1 %}
 <!-- This shows the quest log within the journal -->
+<h1 style="text-align:center;">{{ page_title }}</h1>
+<div style="clear:both"></div>
 {% if quest_log %}
-<h1 style="text-align:center;">Quests</h1>
-<div style="clear: both;"></div>
-<div>
-	<div class="leftPageHalf" style="width:65%;">
-        <h2>Current Quests</h2>
-        {% for path in hero.journal.quest_paths if not path.completed %}
-            <button class="genericAccordion" data-py-function="change_path_tooltip" data="{{ path.description }}" data-js-callback="questTooltip">{{ path.name.title() }} (Progress: {{ path.stage+1 }} / {{ path.stages }})</button>
-            <div class="genericAccordionPanel">
-                <ul>
-                    {% for i in range(path.stage + 1) %} <!-- This sgithould iterate over all completed+current stages, but not stages you haven't reached yet -->
-                    {% set quest = path.quests[i] %}
-                            <li>
-                                <button class="genericTooltipTrigger" data-py-function="change_quest_tooltip" data="{{ quest.id }}" data-js-callback="questTooltip">
-                                    {{ quest.name }} (Stage: {{ i+1 }})
-                                </button>
-                            </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endfor %}
-        <h2>Completed Quests</h2>
-        {% for path in hero.journal.quest_paths if path.completed %}
-            <button class="genericAccordion" data-py-function="change_path_tooltip" data="{{ path.description }}" data-js-callback="questTooltip">{{ path.name.title() }} (Progress: {{ path.stage+1 }} / {{ path.stages }})</button>
-            <div class="genericAccordionPanel">
-                <ul>
-                    {% for quest in path.quests %} <!-- This should iterate over all completed+current stages, but not stages you haven't reached yet -->
+    <div>
+        <div class="leftPageHalf" style="width:65%;">
+            <h2>Current Quests</h2>
+            {% for path in hero.journal.quest_paths if not path.completed %}
+                <button class="genericAccordion" data-py-function="change_path_tooltip" data="{{ path.description }}" data-js-callback="questTooltip">{{ path.name.title() }} (Progress: {{ path.stage+1 }} / {{ path.stages }})</button>
+                <div class="genericAccordionPanel">
+                    <ul>
+                        {% for i in range(path.stage + 1) %} <!-- This sgithould iterate over all completed+current stages, but not stages you haven't reached yet -->
+                        {% set quest = path.quests[i] %}
+                                <li>
+                                    <button class="genericTooltipTrigger" data-py-function="change_quest_tooltip" data="{{ quest.id }}" data-js-callback="questTooltip">
+                                        {{ quest.name }} (Stage: {{ i+1 }})
+                                    </button>
+                                </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+            <h2>Completed Quests</h2>
+            {% for path in hero.journal.quest_paths if path.completed %}
+                <button class="genericAccordion" data-py-function="change_path_tooltip" data="{{ path.description }}" data-js-callback="questTooltip">{{ path.name.title() }} (Progress: {{ path.stage+1 }} / {{ path.stages }})</button>
+                <div class="genericAccordionPanel">
+                    <ul>
+                        {% for quest in path.quests %} <!-- This should iterate over all completed+current stages, but not stages you haven't reached yet -->
 
-                            <li>
-                                <button class="genericTooltipTrigger" data-py-function="change_quest_tooltip" data="{{ quest.id }}" data-js-callback="questTooltip">
-                                    {{ quest.name }} (Stage: {{ loop.index }})
-                                </button>
-                            </li>
-                    {% endfor %}
-                </ul>
-            </div>
+                                <li>
+                                    <button class="genericTooltipTrigger" data-py-function="change_quest_tooltip" data="{{ quest.id }}" data-js-callback="questTooltip">
+                                        {{ quest.name }} (Stage: {{ loop.index }})
+                                    </button>
+                                </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="genericTooltip">
+            <div><span id="questTooltip">Click on a quest to see more information.</span></div>
+            <div><span id="questReward"></span></div>
+        </div>
+    </div>
+
+{% elif bestiary %}
+    <div style="float:left;width:75%">
+    {% if display_monster %}
+        <h2>Entry:</h2>
+        Name: {{ display_monster.name }}<br>
+        Age: {{ display_monster.level }}<br>
+        Species: {{ display_monster.species }}<br>
+        <img src="/static/images/{{ display_monster.name }}_display_picture.jpg" alt="{{ display_monster.name }} Picture" style="width:125px;height:125px;">
+    {% else %}
+        Here is a list of all of the beasts you have encountered. Click on any monster to see more information.
+    {% endif %}
+    </div>
+    <div style="float:right;width:20%">
+        {% for monster in all_monsters %}
+        <ul>
+            <li><a href=/bestiary/{{ monster.id }}>{{ monster.name }}</a></li>
+        </ul>
         {% endfor %}
     </div>
-    <div class="genericTooltip">
-        <div><span id="questTooltip">Click on a quest to see more information.</span></div>
-        <div><span id="questReward"></span></div>
+
+<!-- This shows the People Log within the journal-->
+{% elif people_log %}
+    <div>
+        <div style="float:left;width:75%">
+        {% if display_npc %}
+            <h2>Entry:</h2>
+            <ul>
+                <li>Name: {{ display_npc.name }}</li>
+                <li>Age: {{ display_npc.age }}</li>
+                <li>Race: {{ display_npc.race }}</li>
+                <li>
+                    <img src="/static/images/{{ display_npc.name }}_display_picture.jpg" alt="{{ display_npc.name }} Picture" style="width:125px;height:125px;">
+                </li>
+            </ul>
+        {% else %}
+            Here is a list of all of the notable people you have encountered. Click on any person to see more information.
+        {% endif %}
+        </div>
+        <div style="float:right;width:20%">
+            {% for npc in all_npcs %}
+            <ul>
+                <li><a href=/people_log/{{ npc.id }}>{{ npc.name }}</a></li>
+            </ul>
+            {% endfor %}
+        </div>
     </div>
-</div>
+
+<!-- This shows the achievement log within the journal -->
+{% elif achievement_log %}
+<h1>Achievements</h1>
+{% if completed_achievements %}
+{% for achievement in completed_achievements %}
+<h2><br><b>{{ achievement[0] }} &nbsp; &nbsp; &nbsp; (+{{ achievement[1] }} experience)</b></h2>
+{% endfor %}
+{% else %}
+No completed achievements.
+{% endif %}
+<h1>All Achievements</h1>
+{% for achievement in kill_achievements %}
+<h2><br><b>{{ achievement[0] }}</b></h2>
+{% endfor %}
+<h1> Current Kill Statistics </h1>
+{% for key, value in hero.kill_quests.items() %}
+{{ key }}: {{ value }}<br>
+{% endfor %}
+
+<!-- This shows the map log within the journal -->
+{% elif map_log %}
+<h1>Maps</h1>
+{% for map in hero.known_locations %}
+{{ map }}
+{% endfor %}
 {% endif %}
 
 <!-- I don't know why this needs to be below my code and not above it -->
@@ -78,94 +151,5 @@ for (index = 0; index < allProfs.length; index++) {
 }
 </script>
 
-
-<!--
-<br><br><br><br><br>
-<div style=""clear:both;"></div>
-
-{% if quest_log %}
-    <h1>Current Quests</h1>
-    {% for path in hero.journal.quest_paths if not path.completed %}
-        <h2>{{ path.name }}</h2>
-           {{ path.current_quest.name }}: {{ path.current_quest.reward_experience }}xp - stage {{ path.stage + 1 }}/{{ path.stages }}
-    {% else %}
-        No current quests
-    {% endfor %}
-    <h2>Completed Quests</h2>
-    {% for path in hero.journal.quest_paths if path.completed %}
-        <p>Path: <strong>{{ path.name }}</strong> -> Reward: {{ path.total_reward }}xp</p>
-    {% else %}
-        No completed quests
-    {% endfor %}
-{% endif %}
--->
-<!-- This shows the bestiary within the journal -->
-{% if bestiary %}
-    <div style="float:right;">
-        {% for monster in hero.bestiary %}
-        <ul>
-            <li><a href=/bestiary/{{ monster.monster_id }}>{{ monster.name }}</a></li>
-        </ul>
-        {% endfor %}
-    </div>
-    <h1>Bestiary</h1>
-    {% if current_monster %}
-        <h2>Entry:</h2>
-        Name: {{ current_monster.name }}<br>
-        Age: {{ current_monster.level }}<br>
-        Type: {{ current_monster.species }}<br>
-        <img src="/static/images/{{ current_monster.monster_id }}_display_picture.jpg" alt="{{ current_monster.name }} Picture" style="width:125px;height:125px;">
-    {% else %}
-        Here is a list of all of the beasts you have encountered!
-    {% endif %}
-{% endif %}
-
-<!-- This shows the People Log within the journal-->
-{% if people_log %}
-    <div style="float:right;">
-        {% for npc in npc_data %}
-        <ul>
-            <li><a href=/people_log/{{ npc.npc_id }}>{{ npc.name }}</a></li>
-        </ul>
-        {% endfor %}
-    </div>
-    <h1 style="text-align:center;">People Log</h1>
-    {% if current_npc %}
-        <h2>Entry:</h2><br>
-        Name: {{ current_npc.name }}<br><br>
-        Age: {{ current_npc.age }}<br><br>
-        Race: {{ current_npc.race }}
-    {% else %}
-        Here is a list of all of the notable people you have encountered!
-    {% endif %}
-{% endif %}
-
-<!-- This shows the achievement log within the journal -->
-{% if achievement_log %}
-<h1>Achievements</h1>
-{% if completed_achievements %}
-{% for achievement in completed_achievements %}
-<h2><br><b>{{ achievement[0] }} &nbsp; &nbsp; &nbsp; (+{{ achievement[1] }} experience)</b></h2>
-{% endfor %}
-{% else %}
-No completed achievements.
-{% endif %}
-<h1>All Achievements</h1>
-{% for achievement in kill_achievements %}
-<h2><br><b>{{ achievement[0] }}</b></h2>
-{% endfor %}
-<h1> Current Kill Statistics </h1>
-{% for key, value in hero.kill_quests.items() %}
-{{ key }}: {{ value }}<br>
-{% endfor %}
-{% endif %}
-
-<!-- This shows the map log within the journal -->
-{% if map_log %}
-<h1>Maps</h1>
-{% for map in hero.known_locations %}
-{{ map }}
-{% endfor %}
-{% endif %}
 {% endblock %}
 

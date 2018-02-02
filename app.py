@@ -721,37 +721,37 @@ def quest_log(hero=None):
     page_title = "Quest Log"
     return render_template('journal.html', hero=hero, quest_log=True, page_title=page_title)
 
-@app.route('/bestiary/<current_monster_id>')
+@app.route('/bestiary/<monster_id>')
 @login_required
 @uses_hero
-def bestiary(current_monster_id, hero=None):
-    if current_monster_id == "default":
-        current_monster = None
-    else:
-        for monster in bestiary_data:
-            if monster.monster_id == current_monster_id:
-                current_monster = monster
-                break
+def bestiary(hero=None, monster_id=0):
     page_title = "Bestiary"
-    return render_template(
-        'journal.html', hero=hero, bestiary=True, page_title=page_title,
-        bestiary_data=bestiary_data, current_monster=current_monster)
+    all_monsters = database.session.query(MonsterTemplate).filter().all()
+    try:
+        display_monster = database.get_object_by_id("MonsterTemplate", int(monster_id))
+    except:
+        display_monster = None
+    return render_template('journal.html', hero=hero, bestiary=True, page_title=page_title,
+        all_monsters=all_monsters, display_monster=display_monster)
 
 
-@app.route('/people_log/<current_npc>')
+@app.route('/people_log/<npc_id>')
 @login_required
 @uses_hero
-def people_log(current_npc, hero=None):
-    if current_npc == "default":
-        current_npc = None
-    else:
-        for npc in npc_data:
-            if npc.npc_id == current_npc:
-                current_npc = npc
-                break
+def people_log(hero=None, npc_id=0):
     page_title = "People"
-    return render_template('journal.html', hero=hero, people_log=True, page_title=page_title, npc_data=npc_data,
-                           current_npc=current_npc)  # return a string
+    all_npcs = [NPC(1, "Old Man", "Human", 87)] # Temp
+    #all_npcs = database.session.query(NPCS).filter().all()
+    try:
+        display_npc = database.get_object_by_id("NPCS", int(npc_id))
+    except:
+        display_npc = None
+    #BELOW IS JUST FOR TESTING
+    if npc_id == "1":
+        display_npc = all_npcs[0]
+    #ABOVEIS JUST FOR TESTING
+    return render_template('journal.html', hero=hero, people_log=True, page_title=page_title,
+                           all_npcs=all_npcs, display_npc=display_npc)  # return a string
 
 @app.route('/map_log')
 @login_required
