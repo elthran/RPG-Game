@@ -81,5 +81,3 @@ class NPC(object):
         self.name = name
         self.race = race
         self.age = age
-        
-npc_data = [NPC("01", "Old Man", "Human", 87)]

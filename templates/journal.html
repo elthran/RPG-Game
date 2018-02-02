@@ -61,48 +61,52 @@
     </div>
 
 {% elif bestiary %}
-    <div style="float:left;width:75%">
-    {% if display_monster %}
-        <h2>Entry:</h2>
-        Name: {{ display_monster.name }}<br>
-        Age: {{ display_monster.level }}<br>
-        Species: {{ display_monster.species }}<br>
-        <img src="/static/images/{{ display_monster.name }}_display_picture.jpg" alt="{{ display_monster.name }} Picture" style="width:125px;height:125px;">
-    {% else %}
-        Here is a list of all of the beasts you have encountered. Click on any monster to see more information.
-    {% endif %}
+    <div style="float:left;width:75%;">
+        {% if display_monster %}
+            <h2>Entry:</h2>
+            <ul>
+                <li>Name: {{ display_monster.name }}</li>>
+                <li>Age: {{ display_monster.level }}</li>>
+                <li>Species: {{ display_monster.species }}</li>>
+                <li>
+                    <img src="/static/images/{{ display_monster.name }}_display_picture.jpg" alt="{{ display_monster.name }} Picture" style="width:125px;height:125px;">
+                </li>
+            </ul>
+        {% else %}
+            Here is a list of all of the beasts you have encountered. Click on any monster to see more information.
+        {% endif %}
     </div>
-    <div style="float:right;width:20%">
+    <div style="float:right;width:20%;">
         {% for monster in all_monsters %}
-        <ul>
-            <li><a href=/bestiary/{{ monster.id }}>{{ monster.name }}</a></li>
-        </ul>
+            <ul>
+                <li><a href=/bestiary/{{ monster.id }}>{{ monster.name }}</a></li>
+            </ul>
         {% endfor %}
     </div>
 
 <!-- This shows the People Log within the journal-->
 {% elif people_log %}
     <div>
-        <div style="float:left;width:75%">
-        {% if display_npc %}
-            <h2>Entry:</h2>
-            <ul>
-                <li>Name: {{ display_npc.name }}</li>
-                <li>Age: {{ display_npc.age }}</li>
-                <li>Race: {{ display_npc.race }}</li>
-                <li>
-                    <img src="/static/images/{{ display_npc.name }}_display_picture.jpg" alt="{{ display_npc.name }} Picture" style="width:125px;height:125px;">
-                </li>
-            </ul>
-        {% else %}
-            Here is a list of all of the notable people you have encountered. Click on any person to see more information.
-        {% endif %}
+        <div style="float:left;width:75%;">
+            {% if display_npc %}
+                <h2>Entry:</h2>
+                <ul>
+                    <li>Name: {{ display_npc.name }}</li>
+                    <li>Age: {{ display_npc.age }}</li>
+                    <li>Race: {{ display_npc.race }}</li>
+                    <li>
+                        <img src="/static/images/{{ display_npc.name }}_display_picture.jpg" alt="{{ display_npc.name }} Picture" style="width:125px;height:125px;">
+                    </li>
+                </ul>
+            {% else %}
+                Here is a list of all of the notable people you have encountered. Click on any person to see more information.
+            {% endif %}
         </div>
-        <div style="float:right;width:20%">
+        <div style="float:right;width:20%;">
             {% for npc in all_npcs %}
-            <ul>
-                <li><a href=/people_log/{{ npc.id }}>{{ npc.name }}</a></li>
-            </ul>
+                <ul>
+                    <li><a href=/people_log/{{ npc.id }}>{{ npc.name }}</a></li>
+                </ul>
             {% endfor %}
         </div>
     </div>
