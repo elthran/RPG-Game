@@ -852,8 +852,9 @@ def move(name='', hero=None, location=None):
     found with the 'view page source' command in the browser window.
     """
     # pdb.set_trace()
+    hero.current_terrain = location.terrain # Set the hero's terrain to the terrain type of the place he just moved to.
     if location.type == 'map':
-        location.pprint()
+        location.pprint() # Why do we have this?
         other_heroes = []
     else:
         other_heroes = hero.get_other_heroes_at_current_location()
@@ -917,7 +918,6 @@ def dungeon_entrance(name='', hero=None, location=None):
 @uses_hero
 @update_current_location
 def explore_dungeon(name='', hero=None, location=None, extra_data=None):
-    print(location.terrain, hero.current_location.terrain)
     # For convenience
     location.display.page_heading = "Current Floor of dungeon: " + str(hero.current_dungeon_floor)
     if extra_data == "Entering": # You just arrived into the dungeon

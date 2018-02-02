@@ -75,6 +75,7 @@ starting_world.children = node_grid
 town = node_grid[5]
 town.name = "Thornwall"
 town.type = 'town'
+town.terrain = 'city'
 town.update()
 
 """
@@ -139,7 +140,7 @@ cave.children.append(dungeon_entrance)
 forest = node_grid[8]
 forest.name = choice(adjective_list) + " Forest"
 forest.type = 'dungeon'
-cave.terrain = 'forest'
+forest.terrain = 'forest'
 forest.update()
 forest.display.page_heading = "You are outside {}".format(forest.name)
 forest.display.page_image = "generic_forest_entrance.jpg"
