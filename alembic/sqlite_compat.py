@@ -43,24 +43,13 @@ class SQLiteCompat:
         url = context.config.get_main_option("sqlalchemy.url")
         self.engine = create_engine(url)
         self.metadata = MetaData(bind=self.engine)
-        raise "gets here"
+        # raise "gets here"
+        # op.create_table(
+        #     'forum',
+        #     sa.Column('id', sa.Integer, primary_key=True),
+        # )  # For testing
         self.metadata.reflect(self.engine)
         self.session = Session(bind=self.engine)
-
-    def login_required(f):
-        """Set certain pages as requiring a login to visit.
-
-        This should redirect you to the login page."""
-
-        @wraps(f)
-        def wrap_login(*args, **kwargs):
-            if 'logged_in' in session:
-                return f(*args, **kwargs)
-            else:
-                flash('You need to login first.')
-                return redirect(url_for('login'))
-
-        return wrap_login
 
     def copy_schema(self, source, dest, without_columns=[], force=False):
         """Copy the schema from an existing table to a new one.
@@ -82,9 +71,7 @@ class SQLiteCompat:
 
         # copy schema and create temp_table from source_table
         for column in source_table.columns:
-            print("Maybe dropped column: ", column.name)
             if column.name not in without_columns:
-                print("Valid column:", column.name)
                 dest_table.append_column(column.copy())
 
         # Create a Table from the cloned Metadata.
@@ -110,13 +97,7 @@ class SQLiteCompat:
             for name in dest_table.columns.keys():
                 setattr(temp_object, name, getattr(source, name))
             self.session.add(temp_object)
-            # self.session.commit()
 
-        # Kind of sloppy but close and rebuild session ...
-        # I would like to make a decorator for running a function in a
-        # discrete session.
-        # self.session.close()
-        # self.session.Session(bind=self.engine)
         return Temp
 
     def drop_column(self, table_name, column_name):
@@ -128,10 +109,10 @@ class SQLiteCompat:
         # Consider using a more complex error checking and name
         # choosing for temp table
         temporary_table_name = 'temp'
-        # source_table = self.metadata.tables[table_name]
-        # temp_table = self.copy_schema(table_name, temporary_table_name,
-        #                               force=True)
-        # self.clone_data(source_table, temp_table)
+        source_table = self.metadata.tables[table_name]
+        temp_table = self.copy_schema(table_name, temporary_table_name,
+                                      force=True)
+        self.clone_data(source_table, temp_table)
 
         # Then immediately recreate it without the offending 'title' column.
         # All that work just to replicate

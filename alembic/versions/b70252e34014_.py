@@ -40,7 +40,5 @@ def upgrade():
 
 
 def downgrade():
-    lite = SQLiteCompat()
-    exit("gets here")
-    lite.drop_column('forum', 'title')
-    exit("Testing SQLiteCompat")
+    compat = SQLiteCompat()
+    compat.drop_column('forum', 'title')
