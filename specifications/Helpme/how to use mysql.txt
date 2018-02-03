@@ -1,0 +1,4 @@
+# Dump all the data for a database.
+# Problem with $ sign in name requires quotes?
+mysqldump -h elthran.mysql.pythonanywhere-services.com -u elthran -p7ArQMuTUSoxXqEfzYfUR --no-create-info --databases 'elthran$rgp_database' > dump
+-data.sql

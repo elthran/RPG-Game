@@ -7,6 +7,7 @@ Mainly using the tutorial at:
     http://docs.sqlalchemy.org/en/latest/orm/tutorial.html
 
 """
+from functools import wraps
 import hashlib
 import importlib
 import os
@@ -44,8 +45,29 @@ from bestiary2 import MonsterTemplate
 import prebuilt_objects
 
 
+def scoped_session(f):
+    """Provide a transactional scope around a series of operations."""
+
+    @wraps(f)
+    def wrap_scoped_session(*args, **kwargs):
+        self = args[0]
+        self.session = EZDB.Session(bind=self.engine)
+        retval = f(*args, **kwargs)
+        try:
+            self.session.commit()
+        except:
+            self.session.rollback()
+            raise
+        finally:
+            self.session.close()
+        return retval
+
+    return wrap_scoped_session
+
+
 # Constants#
 SECOND_PER_ENDURANCE = 10
+
 
 class EZDB:
     """Basic frontend for SQLAlchemy.
@@ -260,16 +282,17 @@ class EZDB:
             QuestPath).filter_by(
             is_default=True, template=True).all()
 
+    @scoped_session
     def get_user_id(self, username):
         """Return the id of the user by username from the User's table.
 
         """
-        self.update()
         user = self.session.query(User).filter_by(username=username).first()
         if user is None:
             return None
         return user.id
 
+    @scoped_session
     def get_user_by_username(self, username):
         return self.session.query(User).filter_by(username=username).first()
 
@@ -293,6 +316,7 @@ class EZDB:
 
         self.session.add(Hero(user=user))
 
+    @scoped_session
     def validate(self, username, password):
         """Check if password if valid for user.
         """
