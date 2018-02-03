@@ -65,11 +65,11 @@ class Display(Base):
     __tablename__ = "display"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String)
+    name = Column(String(50))
     page_title = orm.synonym('name')
-    page_heading = Column(String)
-    page_image = Column(String)
-    paragraph = Column(String)
+    page_heading = Column(String(50))
+    page_image = Column(String(50))
+    paragraph = Column(String(200))
 
     """
     External relationships:
@@ -207,11 +207,11 @@ class Location(Base):
 
     id = Column(Integer, primary_key=True)
     parent_id = Column(Integer, ForeignKey('location.id'))   # What does this do?
-    name = Column(String, nullable=False, unique=True)
-    url = Column(String)   # What does this do?
-    type = Column(String)   # What does this do?
+    name = Column(String(50), nullable=False, unique=True)
+    url = Column(String(50))   # What does this do?
+    type = Column(String(50))   # What does this do?
 
-    terrain = Column(String) # Tells the game what monsters to generate
+    terrain = Column(String(50)) # Tells the game what monsters to generate
 
     children = relationship("Location", back_populates="parent",
                             foreign_keys=[parent_id])
@@ -449,10 +449,10 @@ class Location(Base):
 #     __tablename__ = "location"
 #
 #     id = Column(Integer, primary_key=True)
-#     name = Column(String, nullable=False)
-#     type = Column(String)
+#     name = Column(String(50), nullable=False)
+#     type = Column(String(50))
 #     location_type = orm.synonym('type')
-#     url = Column(String)
+#     url = Column(String(50))
 #
 #     map_id = Column(Integer, ForeignKey('map.id'))
 #     map = relationship("Map", foreign_keys=[map_id], back_populates="locations")
@@ -523,8 +523,8 @@ class Location(Base):
 #     __tablename__ = "map"
 #
 #     id = Column(Integer, primary_key=True)
-#     name = Column(String, nullable=False)
-#     type = Column(String)
+#     name = Column(String(50), nullable=False)
+#     type = Column(String(50))
 #     location_type = orm.synonym('type')
 #
 #     locations = relationship("Location", foreign_keys='[Location.map_id]', back_populates="map")

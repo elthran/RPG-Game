@@ -92,10 +92,10 @@ class Specialization(Base):
     __tablename__ = "specialization"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String)  # Maybe 'unique' is not necessary?
-    type = Column(String)
-    description = Column(String)
-    requirements = Column(String)
+    name = Column(String(50))  # Maybe 'unique' is not necessary?
+    type = Column(String(50))
+    description = Column(String(200))
+    requirements = Column(String(50))
 
     # I DONT KNOW WHAT THIS DOES!!!?? :'( - Elthran
     __mapper_args__ = {

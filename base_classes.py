@@ -236,7 +236,7 @@ class BaseListElement(Base):
     __tablename__ = "base_list"
     id = Column(Integer, primary_key=True)
     int_value = Column(Integer)
-    str_value = Column(String)    
+    str_value = Column(String(50))
     
     dict_id_keys = Column(Integer, ForeignKey('base_dict.id'))
     dict_id_values = Column(Integer, ForeignKey('base_dict.id'))
@@ -277,9 +277,9 @@ class BaseListElement(Base):
 class BaseItem(Base):
     __tablename__ = 'base_item'
     id = Column(Integer, primary_key=True)
-    str_key = Column(String)
+    str_key = Column(String(50))
     int_key = Column(Integer)
-    str_value = Column(String)
+    str_value = Column(String(50))
     int_value = Column(Integer)
     
     base_dict_id = Column(Integer, ForeignKey('base_dict.id'))

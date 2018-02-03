@@ -14,9 +14,9 @@ class MonsterTemplate(Base):
 
     id = Column(Integer, primary_key=True)
 
-    name = Column(String)
-    species = Column(String)
-    species_plural = Column(String)
+    name = Column(String(50))
+    species = Column(String(50))
+    species_plural = Column(String(50))
     level_min = Column(Integer) # The lowest level it can ever be generated as. (So you can't generate a level 1 dragon for example)
     level_max = Column(Integer) # The highest level you can ever generate as. (So you can't generatea level 75 rat for example)
     experience_rewarded = Column(Integer)

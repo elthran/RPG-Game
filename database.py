@@ -47,7 +47,6 @@ import prebuilt_objects
 # Constants#
 SECOND_PER_ENDURANCE = 10
 
-
 class EZDB:
     """Basic frontend for SQLAlchemy.
     
@@ -67,13 +66,22 @@ class EZDB:
         Hidden method: _delete_database is for testing and does what it
         sounds like it does :).
         """
-        first_run = True
-        engine = create_engine(database, echo=debug)
-        self.file_name = database[10:]
+        first_run = False
+        server = database[0:database.rindex('/')]
+        name = database.split('/').pop()
 
-        if os.path.isfile(self.file_name):
-            first_run = False
-        
+        engine = create_engine(server, pool_recycle=3600, echo=debug)
+
+        # Build a new database if this one doesn't exist.
+        # Also set first_run variable!
+        if not engine.execute("SHOW DATABASES LIKE '{}';".format(name)).first():
+            first_run = True
+            engine.execute("CREATE DATABASE IF NOT EXISTS {}".format(name))
+
+        # Select the database ... not sure if I need this.
+        # Or if I should create a new engine instead ..
+        engine.execute("USE {}".format(name))
+
         base_classes.Base.metadata.create_all(engine, checkfirst=True)
         EZDB.Session = sessionmaker(bind=engine)
 

@@ -42,9 +42,9 @@ class User(Base):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
-    username = Column(String, unique=True, nullable=False)
-    password = Column(String, nullable=False)
-    email = Column(String)
+    username = Column(String(50), unique=True, nullable=False)
+    password = Column(String(50), nullable=False)
+    email = Column(String(50))
     timestamp = Column(DateTime)
     is_admin = Column(Boolean)
     inbox_alert = Column(Boolean)
