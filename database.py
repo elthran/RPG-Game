@@ -46,7 +46,11 @@ import prebuilt_objects
 
 
 def scoped_session(f):
-    """Provide a transactional scope around a series of operations."""
+    """Provide a transactional scope around a series of operations.
+
+    NOTE: don't use this on any function that returns a database object as
+    you will get a detached instance error!
+    """
 
     @wraps(f)
     def wrap_scoped_session(*args, **kwargs):
@@ -292,7 +296,6 @@ class EZDB:
             return None
         return user.id
 
-    @scoped_session
     def get_user_by_username(self, username):
         return self.session.query(User).filter_by(username=username).first()
 
