@@ -256,6 +256,7 @@ def login():
     # Should prevent contamination between logging in with 2 different
     # accounts.
     session.clear()
+    session['logged_in'] = False
 
     if request.method == 'POST':
         username = request.form['username']
