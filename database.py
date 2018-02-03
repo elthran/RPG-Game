@@ -319,7 +319,6 @@ class EZDB:
 
         self.session.add(Hero(user=user))
 
-    @scoped_session
     def validate(self, username, password):
         """Check if password if valid for user.
         """
