@@ -81,21 +81,27 @@ def determine_riposte_chance(chance):
         return True
     return False
 
+def lower_fatigue(fatigue):
+    fatigue -= 1
+    if fatigue < 0:
+        fatigue = 0
+    return fatigue
+
 def battle_logic(active_player, inactive_player):
     """ Runs the entire battle simulator """
     combat_log = [active_player.name + " Health: " + str(active_player.proficiencies.health.current) + "  " + inactive_player.name + " Health: " + str(inactive_player.proficiencies.health.current)]
     while (active_player.proficiencies.health.current > 0) and (inactive_player.proficiencies.health.current > 0):
         attacker, defender = determine_attacker(active_player, inactive_player,
-                                                active_player.proficiencies.attack_speed.speed,inactive_player.proficiencies.attack_speed.speed,
-                                                active_player.proficiencies.first_strike.chance, inactive_player.proficiencies.first_strike.chance
+                                                active_player.proficiencies.speed.speed,inactive_player.proficiencies.speed.speed,
+                                                active_player.proficiencies.killshot.chance, inactive_player.proficiencies.killshot.chance
                                                 )
-        if determine_if_hits(attacker.proficiencies.attack_accuracy.accuracy):
-            damage = calculate_damage(attacker.proficiencies.attack_damage.minimum, attacker.proficiencies.attack_damage.maximum)
+        if determine_if_hits(attacker.proficiencies.accuracy.accuracy):
+            damage = calculate_damage(attacker.proficiencies.damage.minimum, attacker.proficiencies.damage.maximum)
         else:
             combat_log.append(attacker.name + " misses!")
             continue
-        if determine_if_critical_hit(attacker.proficiencies.critical_hit.chance):
-            damage = critical_hit_modifier(damage, attacker.proficiencies.critical_hit.modifier)
+        if determine_if_critical_hit(attacker.proficiencies.killshot.chance):
+            damage = critical_hit_modifier(damage, attacker.proficiencies.killshot.modifier)
         if determine_evade(defender.proficiencies.evade.chance):
             combat_log.append(str(defender.name) + " evaded!")
             continue
@@ -105,8 +111,10 @@ def battle_logic(active_player, inactive_player):
         if determine_parry_chance(defender.proficiencies.parry.chance):
             continue
         if determine_riposte_chance(defender.proficiencies.riposte.chance):
+            defender.proficiencies.fatigue.current = lower_fatigue(defender.proficiencies.fatigue.current)
             continue
         defender.proficiencies.health.current -= damage
+        attacker.proficiencies.fatigue.current = lower_fatigue(attacker.proficiencies.fatigue.current)
         combat_log.append("%s hits for %i. %s has %i health left.\n" % (attacker.name, damage, defender.name, defender.proficiencies.health.current))
     if active_player.proficiencies.health.current <= 0:
         active_player.proficiencies.health.current = 0

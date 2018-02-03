@@ -67,7 +67,7 @@ class Hero():
 
     age = 7
     archetype = ""
-    specialization = ""
+    calling = ""
     religion = ""
     house = ""
     experience = 10

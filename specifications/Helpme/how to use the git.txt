@@ -1,0 +1,70 @@
+My most used git commands:
+When my work is different than master and I have some work done ..
+
+https://longair.net/blog/2009/04/16/git-fetch-and-merge/
+Easy version:
+https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging
+
+1. git fetch ---> get/find latest shit
+
+or 1a. git pull origin master ---> gets the latest shit.
+
+1b. git merge ---> stick it in my stuff
+
+1c. git mergetool !!!!!!!!!!!!!!!!!!
+
+2. git status ---> check what's up.
+
+
+3. git add <somefile> ---> always do before a push/commit otherwize all your changes are forgotten
+4. git commit -v ---> opens text editor for commit message with differential of changes (if you have a text editor set up). Then you save and exit the program. Default save location is fine.
+	git commit -m "commit message goes here"---> short form of above.
+	git commit -a -m "message" ---> commits all modified files (won't add any new files though).
+
+SETUP git commit:
+
+git config --global core.editor "'C:/Program Files (x86)/Notepad++/notepad++.exe' -multiInst -notabbar -nosession -noPlugin"
+
+OR
+
+git config --global core.editor "'C:/Program Files/Notepad++/notepad++.exe' -multiInst -notabbar -nosession -noPlugin"
+
+5. git push --> sends your work to the source! Origin whatever.
+
+
+##fix my inevitable screwups
+git checkout master
+git reset --hard HEAD
+
+## A new commit to undo the previous commit.
+git revert HEAD  # HEAD~1 reverts the last 2 commits, HEAD~n reverts the last n+1 commits
+git push
+
+#BEST FIX GUIDE EVER!
+https://sethrobertson.github.io/GitFixUm/fixup.html
+
+And also: https://git-scm.com/book/en/v2/Git-Basics-Undoing-Things
+
+Delete branch:
+$ git push origin --delete <branch_name>
+$ git branch -d <branch_name>
+$ git fetch --all --prune
+
+Git Using Different Branches: http://stackoverflow.com/a/9210786
+
+Git create a branch from another branch
+$ git checkout -b <my_new_branch> <my_branch_base>
+## with default customization: git config --global push.default current
+$ git push -u
+OR (without default customization ...)
+$ git push --set-upstream origin <branch_name>
+
+
+Git save current work so you can change branch or test head without erasing work.
+$ git stash
+$ git stash list
+$ git stash pop -> reaply and drop stash.
+
+Merging
+How to pull a file from another branch
+$ git checkout <branch_name> -- <paths>

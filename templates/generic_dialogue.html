@@ -1,0 +1,97 @@
+<!-- This should be used anytime the user has a conversation with a character. Just let HTML know if you want the user to reply by typing "get text"
+or reply by choosing an option "make choice" -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>{{ page_title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
+</head>
+
+<body>
+<div class="container">
+
+    {% if page_heading %}
+    <h1>{{ page_heading }}</h1>
+    {% endif %}
+
+    {% if page_image %}
+    <img src="static/images/{{ page_image }}.jpg" alt="Image name should be: {{ page_image }}" style="width:304px;height:228px;">
+    {% endif %}
+
+    <div>
+        <p>{{ generic_text }}</p>
+
+        {% for line in npc_text %}
+            <h3>{{ npc_text[0] }}:</h3> {{ npc_text[1] }}
+        {% endfor %}
+
+        {% if user_action == "get text" %}
+            <form action="" method="post">
+                {{ user_response }}
+                <input type="text" placeholder="{{ user_text_placeholder }}" name="get_data" value="{{ request.form.get_data }}" autofocus tabindex=1 />
+                <input type="submit" value="Next" tabindex=2 />
+            </form>
+
+        {% elif user_action == "make choice" %}
+            {% for response in user_response %}
+            <button class="genericAccordion" data-py-function="temp_temp" data="" data-js-callback="genericAccordion">{{ response[0] }}</button>
+            <div class="genericAccordionPanel">
+                <h2>{{ response[1] }}<button class="upgradeButton" data-py-function="choose_background" data="{{ response[2] }}" id="backgroundResponse" data-js-callback="refreshPage">
+                </h2>
+            </div>
+            {% endfor %}
+
+        {% endif %}
+
+        <!--
+        {% for text in conversation %}
+           <button class="genericAccordion" data-py-function="temp_temp" data="" data-js-callback="genericAccordion">{{ text[0] }}</button>
+                <div class="genericAccordionPanel">
+                    <h2>{{ text }} <a href="">Choose</a></h2>
+                </div>
+        {% endfor %}
+        -->
+    </div>
+    <!--
+    {% if display %}
+    <br>
+          <form action="" method="post">
+    Me: ...I don't remember what happened. My name is
+            <input type="text" placeholder="Character Name" name="name"
+                value="{{ request.form.name }}" autofocus tabindex=1 />
+            <input class="btn btn-default" type="submit" value="Next" tabindex=2 />
+          </form>
+
+    {% else %}
+    <br>
+    <form action="" method="post">
+        <b>Me:</b> My father was a great
+            <select name="archetype" autofocus tabindex=1>
+        <option value="Brute" title="BE STRONG">Brute</option>
+        <option value="Scholar">Scholar</option>
+        <option value="Hunter">Hunter</option>
+            <option value="Merchant">Merchant</option>
+            <option value="Priest">Priest</option>
+        </select>
+    from the lands in the north.
+    <input class="btn btn-default" type="submit" value="Next" tabindex=2 />
+          </form>
+
+    {% endif %}
+    <br><br><br>
+          {% if error %}
+            <p class="error"><strong>Error:</strong> {{ error }}
+          {% endif %}
+          {% for message in get_flashed_messages() %}
+            {{ message }}
+          {% endfor %}
+        </div>
+        -->
+</div>
+</body>
+</html>

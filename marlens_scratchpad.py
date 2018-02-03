@@ -30,7 +30,7 @@ class Hero(object):
         self.name = "Admin"
         self.age = 7
         self.archetype = "Woodsman"
-        self.specialization = "Hunter"
+        self.calling = "Hunter"
         self.religion = "Dryarch"
         self.house = "Unknown"
         self.current_exp = 0
@@ -43,7 +43,7 @@ class Hero(object):
         self.ability_points = 3 #TEMP. Soon will use the 4 values below
         self.basic_ability_points = 0
         self.archetype_ability_points = 0
-        self.specialization_ability_points = 0
+        self.calling_ability_points = 0
         self.pantheonic_ability_points = 0
 
         self.attribute_points = 0

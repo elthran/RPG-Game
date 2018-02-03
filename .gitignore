@@ -3,5 +3,7 @@ __pycache__/
 .editorconfig
 static/database.db
 static/database.db-journal
-Design/
-Helpme/
+.idea/
+.cache/
+tests/test.db
+templates/desktop.ini

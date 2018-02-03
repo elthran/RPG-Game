@@ -1,20 +1,22 @@
-from database import EZDB
-from game import Hero, Inventory
-from items import Item, ItemTemplate
-import complex_relationships
-
 import unittest
-import pdb           
+import pdb
 import re
 
+from database import EZDB
+from hero import Hero
+from inventory import Inventory
+from items import Item
+
 ##########
-#Inventory: work in progress
+# Inventory: work in progress
 ##########
+
 
 class InventoryTestCase(unittest.TestCase):
     maxDiff = None
+
     def setUp(self):
-        #Testing=False loads prebuilt_objects.
+        # Testing=False loads prebuilt_objects.
         self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=False)
         self.db.session.commit()
         self.hero = self.db.session.query(Hero).filter_by(id=1).first()
@@ -45,14 +47,14 @@ class InventoryTestCase(unittest.TestCase):
     def test_inventory_init(self):
         """Check if object is created, storeable and retrievable.
         """
-        str_inventory = str(self.inv)
+        str_inventory = self.inv.pretty
 
         self.rebuild_instance()
-        self.assertEqual(str_inventory, str(self.inv))
+        self.assertEqual(str_inventory, self.inv.pretty)
     
-    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")    
+    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_add_item(self):
-        template = self.db.session.query(ItemTemplate).filter_by(name="Medium Helmet").first()
+        template = self.db.session.query(Item).filter_by(name="Medium Helmet").first()
         item = self.db.create_item(template.id)
         self.inv.add_item(item)
         
@@ -63,18 +65,18 @@ class InventoryTestCase(unittest.TestCase):
     
     # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")    
     def test_equip_helmet(self):
-        template = self.db.session.query(ItemTemplate).filter_by(name="Medium Helmet").first()
+        template = self.db.session.query(Item).filter_by(name="Medium Helmet").first()
         item = self.db.create_item(template.id)
         self.inv.add_item(item)
         
-        inv_str = self.inv.pretty_str()
-        item_str = item.pretty_str()
+        inv_str = self.inv.pretty
+        item_str = item.pretty
 
         ids_to_unequip = self.inv.equip(item)
         self.rebuild_instance()
         
-        inv_str2 = self.inv.pretty_str()
-        item_str2 = self.inv.helmet.pretty_str()
+        inv_str2 = self.inv.pretty
+        item_str2 = self.inv.helmet.pretty
 
         self.assertEqual(
             inv_str,
@@ -88,18 +90,18 @@ class InventoryTestCase(unittest.TestCase):
            
     # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_equip_both_hands(self):
-        template = self.db.session.query(ItemTemplate).filter_by(name="Medium Polearm").first()
+        template = self.db.session.query(Item).filter_by(name="Medium Polearm").first()
         item = self.db.create_item(template.id)
         self.inv.add_item(item)
         
-        inv_str = self.inv.pretty_str()
-        item_str = item.pretty_str()
+        inv_str = self.inv.pretty
+        item_str = item.pretty
 
         ids_to_unequip = self.inv.equip(item)
         self.rebuild_instance()
         
-        inv_str2 = self.inv.pretty_str()
-        item_str2 = self.inv.both_hands.pretty_str()
+        inv_str2 = self.inv.pretty
+        item_str2 = self.inv.both_hands.pretty
 
         self.assertEqual(
             inv_str,
@@ -111,21 +113,21 @@ class InventoryTestCase(unittest.TestCase):
             ).replace("inventory_unequipped=None", "inventory_unequipped='<Inventory(id=2)>'"
             ).replace("unequipped_inventory_id=None", "unequipped_inventory_id=2"))
             
-    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")        
+    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_equip_ring(self):
-        template = self.db.session.query(ItemTemplate).filter_by(name="Silver Ring").first()
+        template = self.db.session.query(Item).filter_by(name="Silver Ring").first()
         item = self.db.create_item(template.id)
         self.inv.add_item(item)
         
-        inv_str = self.inv.pretty_str()
-        item_str = item.pretty_str()
+        inv_str = self.inv.pretty
+        item_str = item.pretty
         
         ids_to_unequip = self.inv.equip(item, 7)
         
         self.rebuild_instance()
         
-        inv_str2 = self.inv.pretty_str()
-        item_str2 = self.inv.rings[0].pretty_str()
+        inv_str2 = self.inv.pretty
+        item_str2 = self.inv.rings[0].pretty
         
         self.assertEqual(
             inv_str,
@@ -138,23 +140,23 @@ class InventoryTestCase(unittest.TestCase):
             ).replace("unequipped_inventory_id=None", "unequipped_inventory_id=2"
             ).replace("rings_position=0", "rings_position=None"))
     
-    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")        
+    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_replace_helmet(self):
-        template = self.db.session.query(ItemTemplate).filter_by(name="Medium Helmet").first()
+        template = self.db.session.query(Item).filter_by(name="Medium Helmet").first()
         item = self.db.create_item(template.id)
         item2 = self.db.create_item(template.id)
         self.inv.add_item(item)
         self.inv.add_item(item2)
         
-        inv_str = self.inv.pretty_str()
-        item2_str = item2.pretty_str()
+        inv_str = self.inv.pretty
+        item2_str = item2.pretty
         
         self.inv.equip(item)
         ids_to_unequip = self.inv.equip(item2)
         self.rebuild_instance()
         
-        item2_str2 = self.inv.helmet.pretty_str()
-        inv_str2 = self.inv.pretty_str()
+        item2_str2 = self.inv.helmet.pretty
+        inv_str2 = self.inv.pretty
         self.assertEqual(inv_str,
             inv_str2.replace("helmet='<Item(id=2)>'", "helmet=None"
             ).replace("helmet_item_id=2", "helmet_item_id=None"
@@ -168,9 +170,9 @@ class InventoryTestCase(unittest.TestCase):
         
     # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_replace_both_hands(self):
-        polearm_template = self.db.session.query(ItemTemplate).filter_by(name="Medium Polearm").first()
-        shield_template = self.db.session.query(ItemTemplate).filter_by(name="Small Shield").first()
-        sword_template = self.db.session.query(ItemTemplate).filter_by(name="Big Dagger").first()
+        polearm_template = self.db.session.query(Item).filter_by(name="Medium Polearm").first()
+        shield_template = self.db.session.query(Item).filter_by(name="Small Shield").first()
+        sword_template = self.db.session.query(Item).filter_by(name="Big Dagger").first()
         
         shield = self.db.create_item(shield_template.id)
         sword = self.db.create_item(sword_template.id)
@@ -182,14 +184,14 @@ class InventoryTestCase(unittest.TestCase):
         self.inv.equip(sword)
         self.inv.equip(shield)
         
-        inv_str = self.inv.pretty_str()
-        polearm_str = polearm.pretty_str()       
+        inv_str = self.inv.pretty
+        polearm_str = polearm.pretty       
         
         ids_to_unequip = self.inv.equip(polearm)
         self.rebuild_instance()
         
-        polearm2_str = self.inv.both_hands.pretty_str()
-        inv_str2 = self.inv.pretty_str()
+        polearm2_str = self.inv.both_hands.pretty
+        inv_str2 = self.inv.pretty
         self.assertEqual(inv_str,
             inv_str2.replace("both_hands='<Item(id=3)>'", "both_hands=None"
             ).replace("both_hands_item_id=3", "both_hands_item_id=None"
@@ -200,9 +202,9 @@ class InventoryTestCase(unittest.TestCase):
             ).replace("unequipped='[Item.id=1, Item.id=2]'", "unequipped='[Item.id=3]'"))
         self.assertEqual(ids_to_unequip, [1, 2])
         
-    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")        
+    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_equip_lots_of_rings(self):
-        template = self.db.session.query(ItemTemplate).filter_by(name="Silver Ring").first()
+        template = self.db.session.query(Item).filter_by(name="Silver Ring").first()
         
         ids_to_unequip = []
         for i in range(12):
@@ -229,9 +231,9 @@ class InventoryTestCase(unittest.TestCase):
             ).replace("unequipped='[Item.id=11, Item.id=5]'", "unequipped='[Item.id=11, Item.id=12]'"))
         self.assertEqual(ids_to_unequip, [5])
         
-    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")            
+    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_unequip_legs(self):
-        pants_template = self.db.session.query(ItemTemplate).filter_by(name="Medium Pants").first()
+        pants_template = self.db.session.query(Item).filter_by(name="Medium Pants").first()
         
         pants = self.db.create_item(pants_template.id)
         self.inv.add_item(pants)
@@ -239,14 +241,14 @@ class InventoryTestCase(unittest.TestCase):
         self.inv.equip(pants)      
         self.rebuild_instance()
         
-        inv_str = self.inv.pretty_str()
-        pants_str = self.inv.legs.pretty_str()
+        inv_str = self.inv.pretty
+        pants_str = self.inv.legs.pretty
         
         self.inv.unequip(self.inv.legs)
         self.rebuild_instance()
         
-        inv_str2 = self.inv.pretty_str()
-        pants_str2 = self.inv.unequipped[0].pretty_str()
+        inv_str2 = self.inv.pretty
+        pants_str2 = self.inv.unequipped[0].pretty
         self.assertEqual(inv_str,
             inv_str2.replace("legs=None", "legs='<Item(id=1)>'"
             ).replace("legs_item_id=None", "legs_item_id=1"
@@ -255,9 +257,10 @@ class InventoryTestCase(unittest.TestCase):
             pants_str2.replace("inventory_legs=None", "inventory_legs='<Inventory(id=2)>'"
             ).replace("inventory_unequipped='<Inventory(id=2)>'", "inventory_unequipped=None"
             ).replace("unequipped_inventory_id=2", "unequipped_inventory_id=None"))
-            
+
+    # @unittest.skip("Temporarily disabled for speed of development -> re-enable before you trust :)")
     def test_unequip_ring(self):
-        template = self.db.session.query(ItemTemplate).filter_by(name="Silver Ring").first()
+        template = self.db.session.query(Item).filter_by(name="Silver Ring").first()
         
         ids_to_unequip = []
         for i in range(12):
@@ -271,16 +274,16 @@ class InventoryTestCase(unittest.TestCase):
         
         self.rebuild_instance()
         
-        inv_str = self.inv.pretty_str()
-        ring_string = self.inv.rings[4].pretty_str()
+        inv_str = self.inv.pretty
+        ring_string = self.inv.rings[4].pretty
         
         silver_ring5 = self.inv.rings[4]
         self.inv.unequip(silver_ring5)
         
         self.rebuild_instance()
         
-        inv_str2 = self.inv.pretty_str()
-        ring_string2 = self.inv.unequipped[2].pretty_str()
+        inv_str2 = self.inv.pretty
+        ring_string2 = self.inv.unequipped[2].pretty
 
         self.assertEqual(inv_str,
             inv_str2.replace("Item.id=4, Item.id=6", "Item.id=4, Item.id=5, Item.id=6"

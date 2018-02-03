@@ -1,0 +1,31 @@
+<!-- This page can be deleted and all usages of it can beswitched to generic_locations.html as soon as we solve the double
+ click bug on our accordion javascript-->
+
+{% extends "layout.html" %}
+{% block block1 %}
+    <h1>{{ page_heading }}</h1>
+    {% if page_image %}
+    <img class="location_page_image" src="/static/images/{{ page_image }}" alt="{{ page_image }}">
+    {% endif %}
+    <p>{{ paragraph }}</p>
+    <h2>Things to do here:</h2>
+    {% for place in places_of_interest['children'] %}
+     	<h3><a href="{{ place.url }}">{{ place.name }}</a>: {{ place.type }}</h3>
+    {% endfor %}
+    <h2>Other people here:</h2>
+    {% for person in people_of_interest %}
+        <h3><a href=/display_users/see_user/{{ person.user.username }}>{{ person.name }}</a></h3>
+    {% endfor %}
+    <h2>Explore nearby locations</h2>
+    {% for place in places_of_interest['adjacent'] %}
+     	<h3><a href="{{ place.url }}">{{ place.name }}</a>: {{ place.type }}</h3>
+    {% endfor %}
+    <h2>Look at the map:</h2>
+    {% if places_of_interest['parent'] %}
+        <h3>
+            <a href="{{ places_of_interest['parent'].url }}">{{ places_of_interest['parent'].name }}</a>
+            : {{ places_of_interest['parent'].type }}
+        </h3>
+    {% endif %}
+{% endblock %}
+

@@ -1,0 +1,70 @@
+<!-- This should be used anytime the user is navigating the map and choosing where to go. It will tell the user whats here,
+ whats nearby, and where they can go. -->
+
+{% extends "layout.html" %}
+{% set location = hero.current_location %}
+{% if page_title is not defined %}
+    {% set page_title = location.display.page_title %}
+{% endif %}
+{% if places_of_interest is not defined %}
+    {% set places_of_interest = location.places_of_interest %}
+{% endif %}
+{% block block1 %}
+
+<h1>I am at {{ location.name }}</h1>
+<h1>{{ location.display.page_heading }}</h1>
+<img src="/static/images/{{ location.display.page_image }}" alt="{{ location.display.page_image }}">
+<p>{{ location.display.paragraph }}</p>
+
+<div>
+    {% if places_of_interest['children'] %}
+        <h3>Explore this location</h3>
+        {% for place in places_of_interest['children'] %}
+                <a href="{{ place.url }}">Choose</a>
+            <button class="genericAccordion" data-py-function="temp_temp" data="" data-js-callback="genericAccordion">{{ place.name }}</button>
+            <div class="genericAccordionPanel">
+                <h2>{{ place.display.paragraph }} <a href="{{ place.url }}">Choose</a></h2>
+            </div><br>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<div>
+    {% if people_of_interest %}
+        <h3>Other Heroes</h3>
+        {% for hero in people_of_interest %}
+            <a href="{{ person.user.username }}">Choose</a>
+            <button class="genericAccordion" data-py-function="temp_temp" data="" data-js-callback="genericAccordion">{{ place.name }}</button>
+            <div class="genericAccordionPanel">
+                <h2><a href=/display_users/see_user/{{ person.user.username }}>{{ hero.name }}</h2>
+            </div><br>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<div>
+    {% if places_of_interest['siblings'] %}
+        <h3>Explore nearby locations</h3>
+        {% for place in places_of_interest['siblings'] %}
+            <a href="{{ place.url }}">Choose</a>
+           <button class="genericAccordion" data-py-function="temp_temp" data="" data-js-callback="genericAccordion">{{ place.name }}</button>
+                <div class="genericAccordionPanel">
+                    <h2>{{ place.display.paragraph }} <a href="{{ place.url }}">Choose</a></h2>
+                </div>
+                <br>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<div>
+    {% if location.parent %}
+        <h3>Return to <a href="{{ location.parent.url }}">
+            {{ location.parent.name }}</a>:
+            {{ location.parent.display.paragraph }}
+        </h3>
+    {% endif %}
+</div>
+
+
+{% endblock %}
+

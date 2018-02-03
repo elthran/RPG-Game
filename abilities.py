@@ -1,227 +1,410 @@
-#//////////////////////////////////////////////////////////////////////////////#
-#                                                                              #
-#  Author: Elthran B, Jimmy Zhang                                              #
-#  Email : jimmy.gnahz@gmail.com                                               #
-#                                                                              #
-#//////////////////////////////////////////////////////////////////////////////#
+# ////////////////////////////////////////////////////////////////////////////#
+#                                                                             #
+#  Author: Elthran B, Jimmy Zhang                                             #
+#  Email : jimmy.gnahz@gmail.com                                              #
+#                                                                             #
+# ////////////////////////////////////////////////////////////////////////////#
 
-try:
-    from sqlalchemy import Column, Integer, String, Boolean
-    from sqlalchemy import ForeignKey
-    from sqlalchemy.orm import relationship
-    from sqlalchemy import orm
-except ImportError as e:
-    exit("Open a command prompt and type: pip install sqlalchemy."), e
-    
-#!Important!: Base can only be defined in ONE location and ONE location ONLY!
-#Well ... ok, but for simplicity sake just pretend that that is true.
+from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+from sqlalchemy import orm
+from flask import render_template_string
+
+# !Important!: Base can only be defined in ONE location and ONE location ONLY!
+# Well ... ok, but for simplicity sake just pretend that that is true.
 from base_classes import Base
 import pdb
 
+"""
+
+Abilities spec goes:
+
+name, class, class arguments (not including name as it is added later).
+"""
+
+ALL_ABILITIES = [
+    ("Relentless", "AuraAbility", "5, 'Gain {{ level * 5 }} maximum health. Master this ability to unlock the Brute archetype.', learnable=True, health_maximum=5"),
+    ("Trickster", "AuraAbility", "5, 'Become {{ level * 5 }}% harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', learnable=True, stealth_chance=5"),
+    ("Discipline", "AuraAbility", "5, 'Gain devotion {{ level * 5 }}% faster. Master this ability to unlock the Ascetic archetype.', learnable=True"),
+    ("Explorer", "AuraAbility", "5, 'Reveal {{ level * 10 }}% more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', learnable=True"),
+    ("Arcanum", "AuraAbility", "5, 'Gain {{ level * 3 }} maximum sanctity. Master this ability to unlock the Philosopher archetype.', learnable=True, sanctity_maximum=3"),
+    ("Poet", "AuraAbility", "5, 'Gain fame {{ level * 5 }}% faster. Master this ability to unlock the Opportunist archetype.', learnable=True"),
+    ("Blackhearted", "AuraAbility", "3, 'Lose virtue {{ level * 5 }}% faster.', tree='archetype', tree_type='scoundrel'"),
+    ("Backstab", "AuraAbility", "3, 'You are {{ level * 15 }}% more likely to attack first in combat.', tree='archetype', tree_type='scoundrel', firststrike_chance=15"),
+    ("MartialArts", "AuraAbility", "3, 'You deal {{ level * 5 }}% more damage in combat.', tree='archetype', tree_type='ascetic'"),
+    ("Apprentice", "AuraAbility", "3, 'You are capable of learning level {{ level }} spells.', tree='archetype', tree_type='ascetic'"),
+    ("Meditation", "AuraAbility", "3, 'Regenerate {{ level }} sanctity per day.', tree='archetype', tree_type='ascetic', sanctity_regeneration=1"),
+    ("Bash", "AuraAbility", "3, 'You deal {{ level * 10 }}% more damage with blunt weapons.', tree='archetype', tree_type='brute'"),
+    ("Student", "AuraAbility", "3, 'You are capable of learning level {{ level }} spells.', tree='archetype', tree_type='philosopher'"),
+    ("Scholar", "AuraAbility", "3, 'Gain experience {{ level }}% faster.', learnable=True, tree='archetype', tree_type='philosopher', understanding_modifier=1"),
+    ("Vigilance", "AuraAbility", "3, 'You are {{ level * 10 }}% less likely to be ambushed.', tree='archetype', tree_type='survivalist'"),
+    ("Strider", "AuraAbility", "3, 'Traveling on the map requires {{ level * 10 }}% less endurance.', tree='archetype', tree_type='survivalist'"),
+    ("Skinner", "AuraAbility", "3, 'You have a {{ level * 5 }}% chance of obtaining a usable fur after kiling a beast.', tree='archetype', tree_type='survivalist'"),
+    ("Charm", "AuraAbility", "3, 'You are {{ level * 5 }}% more likely to succeed when choosing charm dialogues.', tree='archetype', tree_type='opportunist'"),
+    ("Haggler", "AuraAbility", "3, 'Prices at shops are {{ level * 3}}% cheaper.', tree='archetype', tree_type='opportunist'")
+]
+
+
+ABILITY_NAMES = [key[0] for key in ALL_ABILITIES]
+
+"""
+End of documentation.
+
+"""
+
+# "determination", 5, "Increases Endurance by 3 for each level."
+
+
+class Abilities(Base):
+    __tablename__ = 'abilities'
+
+    id = Column(Integer, primary_key=True)
+
+    # Relationships
+    # Each hero can have one list of abilities (bi, one to one)
+    hero_id = Column(Integer, ForeignKey('hero.id'))
+    hero = relationship("Hero", back_populates='abilities')
+
+    # Relationships to a particular ability.
+    Relentless = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Relentless')",
+        back_populates="abilities", uselist=False)
+    Trickster = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Trickster')",
+        back_populates="abilities", uselist=False)
+    Discipline = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Discipline')",
+        back_populates="abilities", uselist=False)
+    Explorer = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Explorer')",
+        back_populates="abilities", uselist=False)
+    Arcanum = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Arcanum')",
+        back_populates="abilities", uselist=False)
+    Poet = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Poet')",
+        back_populates="abilities", uselist=False)
+    Blackhearted = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Blackhearted')",
+        back_populates="abilities", uselist=False)
+    Backstab = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Backstab')",
+        back_populates="abilities", uselist=False)
+    MartialArts = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='MartialArts')",
+        back_populates="abilities", uselist=False)
+    Apprentice = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Apprentice')",
+        back_populates="abilities", uselist=False)
+    Meditation = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Meditation')",
+        back_populates="abilities", uselist=False)
+    Bash = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Bash')",
+        back_populates="abilities", uselist=False)
+    Student = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Student')",
+        back_populates="abilities", uselist=False)
+    Scholar = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Scholar')",
+        back_populates="abilities", uselist=False)
+    Vigilance = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Vigilance')",
+        back_populates="abilities", uselist=False)
+    Strider = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Strider')",
+        back_populates="abilities", uselist=False)
+    Skinner = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Skinner')",
+        back_populates="abilities", uselist=False)
+    Charm = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Charm')",
+        back_populates="abilities", uselist=False)
+    Haggler = relationship(
+        "AuraAbility",
+        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
+                    "Ability.name=='Haggler')",
+        back_populates="abilities", uselist=False)
+
+    def __init__(self):
+        self.Relentless = AuraAbility('Relentless', 5, 'Gain <font color="green">{{ (level+1) * 5 }}</font> maximum health. Master this ability to unlock the Brute archetype.', learnable=True, health_maximum=5)
+        self.Trickster = AuraAbility('Trickster', 5, 'Become <font color="green">{{ (level+1) * 5 }}</font>% harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', learnable=True, stealth_chance=5)
+        self.Discipline = AuraAbility('Discipline', 5, 'Gain devotion <font color="green">{{ (level+1) * 5 }}</font>% faster. Master this ability to unlock the Ascetic archetype.', learnable=True)
+        self.Explorer = AuraAbility('Explorer', 5, 'Reveal <font color="green">{{ (level+1) * 10 }}</font>% more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', learnable=True)
+        self.Arcanum = AuraAbility('Arcanum', 5, 'Gain <font color="green">{{ (level+1) * 3 }}</font> maximum sanctity. Master this ability to unlock the Philosopher archetype.', learnable=True, sanctity_maximum=3)
+        self.Poet = AuraAbility('Poet', 5, 'Gain fame <font color="green">{{ (level+1) * 5 }}</font>% faster. Master this ability to unlock the Opportunist archetype.', learnable=True)
+        self.Blackhearted = AuraAbility('Blackhearted', 3, 'Lose virtue {{ level * 5 }}% faster.', tree='archetype', tree_type='scoundrel')
+        self.Backstab = AuraAbility('Backstab', 3, 'You are {{ level * 15 }}% more likely to attack first in combat.', tree='archetype', tree_type='scoundrel', firststrike_chance=15)
+        self.MartialArts = AuraAbility('MartialArts', 3, 'You deal {{ level * 5 }}% more damage in combat.', tree='archetype', tree_type='ascetic')
+        self.Apprentice = AuraAbility('Apprentice', 3, 'You are capable of learning level {{ level }} spells.', tree='archetype', tree_type='ascetic')
+        self.Meditation = AuraAbility('Meditation', 3, 'Regenerate {{ level }} sanctity per day.', tree='archetype', tree_type='ascetic', sanctity_regeneration=1)
+        self.Bash = AuraAbility('Bash', 3, 'You deal {{ level * 10 }}% more damage with blunt weapons.', tree='archetype', tree_type='brute')
+        self.Student = AuraAbility('Student', 3, 'You are capable of learning level {{ level }} spells.', tree='archetype', tree_type='philosopher')
+        self.Scholar = AuraAbility('Scholar', 3, 'Gain experience {{ level }}% faster.', learnable=True, tree='archetype', tree_type='philosopher', understanding_modifier=1)
+        self.Vigilance = AuraAbility('Vigilance', 3, 'You are {{ level * 10 }}% less likely to be ambushed.', tree='archetype', tree_type='survivalist')
+        self.Strider = AuraAbility('Strider', 3, 'Traveling on the map requires {{ level * 10 }}% less endurance.', tree='archetype', tree_type='survivalist')
+        self.Skinner = AuraAbility('Skinner', 3, 'You have a {{ level * 5 }}% chance of obtaining a usable fur after kiling a beast.', tree='archetype', tree_type='survivalist')
+        self.Charm = AuraAbility('Charm', 3, 'You are {{ level * 5 }}% more likely to succeed when choosing charm dialogues.', tree='archetype', tree_type='opportunist')
+        self.Haggler = AuraAbility('Haggler', 3, 'Prices at shops are {{ level * 3}}% cheaper.', tree='archetype', tree_type='opportunist')
+
+    def items(self):
+        """Return each Ability and its name.
+
+        Returns a list of 2-tuples
+        Basically a dict.items() clone that looks like ([(key, value),
+            (key, value), ...])
+
+        Usage:
+        for name, ability in abilities.items():
+            name -- the name of the attribute
+            ability -- the object that corresponds to the named attribute.
+        """
+
+        return ((key, getattr(self, key)) for key in ABILITY_NAMES)
+
+    def __iter__(self):
+        """Allow this object to be used in a for call.
+
+        for ability in abilities:
+            ability -- where the ability is each of the attribute objects of
+                the abilities class.
+        """
+        return (getattr(self, key) for key in ABILITY_NAMES)
+
+
 class Ability(Base):
     """Ability object base class.
-    
-    A list of all abilities, the relationship to the Hero class is many to many.
-    Each hero can have many abilities and each abilities can be assigned multiple heros.
-    I think this is a good idea?
-    
+
+    Relates to the Abilities class which is a meta list of all Abilities ...
+    with maybe some extra functions to make it worth while? I guess so that
+    you can call the items by name.
+
     How to use:
     name : Name of the Item, e.x. "power bracelet"
-    hero : The Hero who owns the item
-	buy_price : Price to buy the item
-	level_req : level requirment
+    buy_price : Price to buy the item
+    level_req : level requirement
     """
     __tablename__ = "ability"
-    
+
     id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True) #Maybe not neccessary?
+    name = Column(String)  # Maybe 'unique' is not necessary?
     level = Column(Integer)
     max_level = Column(Integer)
-    description = Column(String) #Maybe description should be unique? use: unique=True as keyword.
-    
-    #Note: Original code used default of "Unknown"
-    #I chopped the BasicAbility class as redundant. Now I am going to have to add the fucker back in.
+    # Maybe description should be unique? use: unique=True as keyword.
+    description = Column(String)
+    cost = Column(String)
+
+    # Note: Original code used default of "Unknown"
+    # I chopped the BasicAbility class as redundant. Now I am going to
+    # have to add the fucker back in.
     type = Column(String)
     ability_type = orm.synonym('type')
-    
-    castable = Column(Boolean)
-    activated = orm.synonym('castable')
-    cost = Column(Integer)
-    
-    #Requirements is a One to Many relationship to self.
+
+    # This determines if the ability is hidden and can not be learned or seen by the player
+    hidden = Column(Boolean)
+    learnable = Column(Boolean)
+
+    # This decides which of the 4 types of abilities it is (default is basic)
+
+    tree = Column(String)
+    tree_type = Column(String)
+    image = Column(String)
+
+    # Relationships.
+    # Ability to abilities. Abilities is a list of ability objects.
+    abilities_id = Column(Integer, ForeignKey('abilities.id'))
+    abilities = relationship("Abilities")
+
+    # Requirements is a One to Many relationship to self.
     """
     Use (pseudo-code):
     hero.can_learn(ability)
     if all hero.abilities are in ability.requirements.
     """
-    ability_id = Column(Integer, ForeignKey('ability.id'))
-    requirements = relationship("Ability")
-    
+    # ability_id = Column(Integer, ForeignKey('ability.id'))
+    # requirements = relationship("Ability")
+
     __mapper_args__ = {
-        'polymorphic_identity':'Basic',
-        'polymorphic_on':type
+        'polymorphic_identity': 'Basic',
+        'polymorphic_on': type
     }
-    
-    
-    def __init__(self, name, max_level, description, hero=None, castable=False, cost=0):
+
+    def __init__(self, name, max_level, description, hero=None, hidden=True, learnable=False, tree="basic", tree_type="", cost=1):
         """Build a basic ability object.
-        
-        Castable=True/False denotes whether the Ability is a spell or not.
-        
-        Note: arguments (name, hero, max_level, etc.) that require input are the same as setting
-        nullable=False as a Column property.
+
+        Note: arguments (name, hero, max_level, etc.) that require input are
+        the same as setting nullable=False as a Column property.
         Note2: can't currently set 'level' attribute.
         Note3: Ability to Hero relationship is Many to Many. This will require
         some major restructuring.
-        
+
         Future:
-        add in 'toggleable'=True/False for abilities that can be turned on and off
-        add in active=True/False for wether the ability is turned on or off right now.
-        Or possibly extend the Ability class into a Spell Class and make a 
-        Toggleable Class that various Ablities could inherit from.
+        add in 'toggleable'=True/False for abilities that can be turned on and
+        off add in active=True/False for whether the ability is turned on or
+        off right now.
+        Or possibly extend the Ability class into a Spell Class and make a
+        Toggleable Class that various Abilities could inherit from.
         """
         self.name = name
-        self.level = 1
-        self.max_level = max_level
-        self.description = description
-        self.type = "Basic"
-        self.castable = castable
+        self.level = 0
+        self.max_level = max_level  # Highest level that this ability can get to
+        self.description = description  # Describe what it does
         self.cost = cost
-        
-        #Use internal method to properly add hero object to the
-        #self.heroes relationship.
-        self.add_hero(hero)
-        
+        if learnable == True:   # If the ability starts as a default of learnable, then it shouldn't start hidden to the player
+            self.hidden = False
+        else:
+            self.hidden = hidden    # If the player can see it
+        self.learnable = learnable  # If the player currently has the requirements to learn/upgrade it
+        self.tree = tree    # Which research tree it belongs to (basic, archetype, class, religious)
+        self.tree_type = tree_type  # Which specific tree (ie. if the tree is religious, then which religion is it)
+        self.image = "ability_icon_" + self.name
+
         self.init_on_load()
-        
+
         # On load ... not implemented.
+
     @orm.reconstructor
     def init_on_load(self):
-        self.adjective = ["I","II","III","IV", "V", "VI"]
+        self.adjective = ["I", "II", "III", "IV", "V", "VI"]
         self.display_name = self.adjective[self.level - 1]
         self.learn_name = self.adjective[self.level]
 
+    # @property
+    # def display_name(self):
+    #     return self.name.capitalize()
+
+    def get_description(self):
+        return render_template_string(self.description,
+            level=self.level)
+
+    def is_max_level(self):
+        """Return True if level is at max_level."""
+        return self.level >= self.max_level
+
     def update_stats(self, hero):
-        """Update a hero's stats to reflect them possessing this ability.
-        
-        Use: 
-        To update hero from inside hero class:
-        for ability in self.abilities:
-            ability.update_stats(self)
-        from outside hero class:
-        for ability in hero.abilities:
-            ability.update_stats(hero)
-        """
-        #Possibly use a dictionary + lambda function. Switch/Case
-        if self.name == "Determination":
-            hero.max_endurance += 3 * self.level
-        elif self.name == "Salubrity":
-            hero.max_health += 4 * self.level
+        hero.refresh_proficiencies()
 
     def activate(self, hero):
         return self.cast(hero)
-            
-    def cast(self, hero):
-        """Use the ability. Like casting a spell.
-        
-        use:
-        ability.activate(hero)
-        NOTE: returns False if spell is too expensive (cost > current_sanctity)
-        If cast is succesful then return value is True.
-        """
-        if hero.current_sanctity < self.cost:
-            return False
-        else:
-            hero.current_sanctity -= self.cost
-            if self.name == "Gain Gold to Test":
-                hero.gold += 3 * self.level
-            elif self.name == 'foo':
-                pass #Do some stuff.
-            return True
 
     def update_display(self):
         self.display_name = self.adjective[self.level - 1]
         if self.level < self.max_level:
             self.learn_name = self.adjective[self.level]
 
-    
     def update_owner(self, hero):
         print("Ability to Hero relationship is now Many to Many.")
         print("Instead of One Hero to Many Ablities.")
         exit("Removed in favor of add_hero and remove_hero")
         # self.heroes = [hero]
-        
-    def add_hero(self, hero):
-        """Give a hero this ability.
-        """
-        if hero is None:
-            return
-        if hero not in self.heroes:
-            self.heroes.append(hero)
-        else:
-            raise Exception("ValueError: Hero already has this ability.")
-        
-    def remove_hero(self, hero):
-        """Remove this ability from a hero.
-        """
-        try:
-            self.heroes.remove(hero)
-        except ValueError:
-            raise Exception("ValueError: Hero doesn't have this ability")
-        
 
-class Archetype_Ability(Ability):
-    __tablename__ = "archetype_ability"
-    
-    id = Column(Integer, ForeignKey('ability.id'), primary_key=True)
-    archetype = Column(String)
+
+class CastableAbility(Ability):
+    castable = Column(Boolean)
+    sanctity_cost = Column(Integer)
+    endurance_cost = Column(Integer)
+    heal_amount = Column(Integer)
+    gold_amount = Column(Integer)
 
     __mapper_args__ = {
-        'polymorphic_identity':'Archetype',
+        'polymorphic_identity': 'CastableAbility',
     }
-    
-    def __init__(self, *args, archetype="All", **kwargs):
-        """Build a new Archetype_Ability object.
-        
+
+    def __init__(self, *args, sanctity_cost=0, endurance_cost=0, heal_amount=0, gold_amount=0, **kwargs):
+        """Build a new ArchetypeAbility object.
+
         Note: self.type must be set in __init__ to polymorphic_identity.
         If no __init__ method then type gets set automagically.
         If type not set then call to 'super' overwrites type.
         """
-        if len(args) > 3:
-            raise TypeError("__init__() takes 3 positional arguments but {} were given.".format(len(args)))
         super().__init__(*args, **kwargs)
-        self.type = 'Archetype'
-        self.archetype = archetype
+        self.castable = True
+        self.sanctity_cost = sanctity_cost
+        self.endurance_cost = endurance_cost
+        self.heal_amount = heal_amount
+        self.gold_amount = gold_amount
 
-class Class_Ability(Ability):
-    __tablename__ = "class_ability"
-    
-    id = Column(Integer, ForeignKey('ability.id'), primary_key=True)
-    specialization = Column(String)
+    def cast(self, hero):
+        """Use the ability. Like casting a spell.
 
+        use:
+        ability.activate(hero)
+        NOTE: returns False if spell is too expensive (cost > proficiencies.sanctity.current)
+        If cast is succesful then return value is True.
+        """
+        if hero.proficiencies.sanctity.current < self.sanctity_cost or hero.proficiencies.endurance.current < self.endurance_cost:
+            return False
+        else:
+            hero.proficiencies.sanctity.current -= self.sanctity_cost
+            hero.proficiencies.endurance.current -= self.endurance_cost
+            hero.proficiencies.health.current += self.heal_amount
+            hero.gold += self.gold_amount
+            return True
+
+
+class AuraAbility(Ability):
     __mapper_args__ = {
-        'polymorphic_identity':'Class',
+        'polymorphic_identity': 'AuraAbility',
     }
-    def __init__(self, *args, specialization="All", **kwargs):
-        if len(args) > 3:
-            raise TypeError("__init__() takes 3 positional arguments but {} were given.".format(len(args)))
+
+    health_maximum = Column(Integer)
+    sanctity_maximum = Column(Integer)
+    damage_maximum = Column(Integer)
+    damage_minimum = Column(Integer)
+    understanding_modifier = Column(Integer)
+    stealth_chance = Column(Integer)
+    firststrike_chance = Column(Integer)
+
+    def __init__(self, *args, health_maximum=0, sanctity_maximum=0, damage_maximum=0, damage_minimum=0, understanding_modifier=0, stealth_chance=0, sanctity_regeneration=0, firststrike_chance=0, **kwargs):
+        """Build a new Archetype_Ability object.
+
+        Note: self.type must be set in __init__ to polymorphic identity.
+        If no __init__ method then type gets set automagically.
+        If type not set then call to 'super' overwrites type.
+        """
         super().__init__(*args, **kwargs)
-        self.type = 'Class'
-        self.specialization = specialization
 
-class Religious_Ability(Ability):
-    __tablename__ = "religious_ability"
-    
-    id = Column(Integer, ForeignKey('ability.id'), primary_key=True)
-    religion = Column(String)
-
-    __mapper_args__ = {
-        'polymorphic_identity':'Religious',
-    }
-    def __init__(self, *args, religion="All", **kwargs):
-        if len(args) > 3:
-            raise TypeError("__init__() takes 3 positional arguments but {} were given.".format(len(args)))
-        super().__init__(*args, **kwargs)
-        self.type = 'Religious'
-        self.religion = religion
-
+        self.health_maximum = health_maximum
+        self.sanctity_maximum = sanctity_maximum
+        self.damage_maximum = damage_maximum
+        self.damage_minimum = damage_minimum
+        self.understanding_modifier = understanding_modifier
+        self.stealth_chance = stealth_chance
+        self.firststrike_chance = firststrike_chance

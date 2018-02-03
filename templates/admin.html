@@ -2,21 +2,58 @@
 
 {% extends "layout.html" %}
 {% block block1 %}
-  <h1 style="text-align:center;">Primary Attributes</h1>
-  <form method="post" action="" autocomplete="off">
+
+<div class="topbar">
+        <ul>
+            <li><a href="/admin/modify_self" {% if path == "modify_self" %}style="background-color:Red;"{% endif %}>Modify My Hero</a></li>
+            <li><a href="/admin/edit_database" {% if path == "edit_database" %}style="background-color:Red;"{% endif %}>Edit Database</a></li>
+            <li><a href="/admin">Create New Character</a></li> <!-- Should be /add_new_character but disabled as it's very buggy at the moment -->
+        </ul>
+</div>
+<div style="clear: both;"></div>
+<br>
+
+{% if path == "edit_database" %}
+<div class="topbar">
+        <ul>
+            <li><a href="/admin/edit_database">Users</a></li>
+            <li><a href="/admin/edit_database">Heroes</a></li>
+            <li><a href="/admin/edit_database">Items</a></li>
+        </ul>
+</div>
+<div style="clear: both;"></div>
+<br>
+{% endif %}
+
+{% if path == "modify_self" %}
+<h1>
+    <center>Reset Character
+        <ul>
+            <li><a href=/reset_character/tough>Tough Guy</a></li>
+            <li><a href=/reset_character/rich>Rich Guy</a></li>
+            <li><a href=/reset_character/custom>Customizable</a></li>
+        </ul>
+    </center>
+</h1>
+<br><br>
+<h1 style="text-align:center;">Primary Attributes</h1>
+<form method="post" action="" autocomplete="off">
     <ul>
-      {%- for attribute in admin %}
+        {% for attribute in admin %}
         <li><label for="name">{{ attribute[0] }}: {{ attribute[1] }}</label>
-        <input type="number" name="{{ attribute[0] }}" min="0" title="Numbers only" value={{ attribute[1] }}><br></li>
-      {%- endfor %}
+            <input type="number" name="{{ attribute[0] }}" min="0" title="Numbers only" value={{ attribute[1] }}><br>
+        </li>
+        {% endfor %}
     </ul>
-    <input class="btn btn-default" type="submit" value="Save">
-  </form>
-  <h1 style="text-align:center;">Hidden Attributes</h1>
-  <ul>
+<input type="submit" value="Save">
+</form>
+<h1 style="text-align:center;">Hidden Attributes</h1>
+<ul>
     <li>Experience Modifier: {{ hero.experience_gain_modifier }}</li>
     <li>Gold Modifier: {{ hero.gold_gain_modifier }}</li>
-  </ul>
+</ul>
+{% endif %}
+
 {% endblock %}
 
 

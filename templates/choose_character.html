@@ -1,0 +1,28 @@
+<!-- Let's you choose which hero you want to play from all of the heros on your user account -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <title>Choose Hero</title>
+</head>
+<body>
+<div class="container">
+    <form action="" method="post">
+        <h1>Welcome {{ user.username }}!</h1>
+        <br>
+        <h3>Please choose the Hero you want to play as:</h3>
+        <input type="hidden" name="hero_id" value="" />
+        {% for hero in user.heroes %}
+        <span class="imageContainer">
+            <input type="image" id="{{ hero.id }}" src="/static/images/{{ hero | validate_hero_image }}" border="0" alt="{{ hero.name }}" {% if loop.first %}autofocus {% endif %}tabindex={{ loop.index }} onclick="return confirmHeroSelection(this);" />
+            <label class="label" for="{{ hero.id }}">{{ hero | validate_hero_name }}</label>
+        </span>
+        {% endfor %}
+    </form>
+</div>
+</body>
+</html>

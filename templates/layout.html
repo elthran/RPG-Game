@@ -1,88 +1,112 @@
 <!DOCTYPE html>
-{%- if hero %}
-    {%- set myHero = hero %}
-{%- elif myHero %}
-    {%- set hero = myHero %}
-{%- endif %}
 <html lang="en">
 
-  <head>
+<head>
     <title>{{ page_title }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
-  </head>
+</head>
 
-  <body>
-    <div id="sidebar">
-        <div id="sidebartop">
-			<h1>{{ myHero.name }}</h1>
-            <h3><img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px">
-            Age: {{ myHero.age }}<br>
-            Gold: <span id="heroGold">{{ myHero.gold }}</span></h3>
+<body onscroll="stickyTopAndBottom();">
+    <div class="sidebar" id="sidebar">
+        <div>
+            <h1>{{ hero.name }}</h1>
+            <img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px" />
+            Age: {{ hero.age }}
+            <br>Gold: <span id="heroGold">{{ hero.gold }}</span>
         </div>
-        <div id="sidebarmiddle">
+        <div class="sideBarProgressDiv">Health:
+            <div class="sideBarProgressMeter">
+                <span style="width:{{ hero.proficiencies.health.percent }}%"></span>
+            </div>
+        </div>
+        {% if hero.proficiencies.sanctity.maximum %}
+        <div class="sideBarProgressDiv">Sanctity:
+            <div class="sideBarProgressMeter sidebarSanctity">
+                <span style="width:{{ hero.proficiencies.sanctity.percent }}%"></span>
+            </div>
+        </div>
+        {% endif %}
+        <div class="sideBarProgressDiv">Endurance:
+            <div class="sideBarProgressMeter sidebarEndurance">
+                <span style="width:{{ hero.proficiencies.endurance.percent }}%"></span>
+            </div>
+        </div>
+        <div class="sideBarProgressDiv">Progress:
+            <div class="sideBarProgressMeter sidebarProgress">
+                <span style="width:{{ hero.experience_percent }}%"></span>
+            </div>
+        </div>
+        <div>
             <ul>
-                <li>Health: <div class="progressBar"><span style="width:{{ myHero.proficiencies.health.percent }}%"></span></div></li>
-				{% if myHero.proficiencies.sanctity.maximum %}
-                <li>Sanctity: <div class="progressBar sanctity"><span style="width:{{ myHero.proficiencies.sanctity.percent }}%"></span></div></li>
-				{% endif %}
-                <li>Endurance: <div class="progressBar endurance"><span style="width:{{ myHero.proficiencies.endurance.percent }}%"></span></div></li>
-                <li>Progress: <div class="progressBar progress"><span style="width:{{ myHero.experience_percent }}%"></span></div></li>
+                <li onclick="this.firstChild.click();"><a href=/home>Profile</a></li>
+                <li onclick="this.firstChild.click();"><a href=/inventory_page>Inventory</a></li>
+                <li onclick="this.firstChild.click();"><a href=/spellbook>Spellbook</a></li>
+                <li onclick="this.firstChild.click();"><a href={{ hero.current_location.url }}>{{ hero.current_location.name.title() }}</a></li>
+                <li onclick="this.firstChild.click();"><a href=/quest_log>Journal</a></li>
+            {% if hero.user.is_admin %}
+                <li  onclick="this.firstChild.click();"><a href=/admin>Admin</a></li>
+            {% endif %}
+                <li onclick="this.firstChild.click();"><a href=/display_users/display/id>Users</a></li>
+                <li onclick="this.firstChild.click();"><a href=/about>About</a></li>
+            {% if hero.user.inbox_alert %}
+                <li onclick="this.firstChild.click();"><a href=/inbox/inbox><font color="blue">New Message</font></a></li>
+            {% else %}
+                <li onclick="this.firstChild.click();"><a href=/inbox/inbox>Mailbox</a></li>
+            {% endif %}
+                <li onclick="this.firstChild.click();"><a href=/global_chat>Chat</a></li>
+                <li onclick="this.firstChild.click();"><a href=/forum/0/0>Forum</a></li>
+                <li onclick="this.firstChild.click();"><a href=/logout>Logout</a></li>
             </ul>
-         </div>
-         <div id="sidebarbottom">
-            <ul>
-				<li><a href=/home>Profile</a></li>
-                <li><a href=/inventory_page>Inventory</a></li>
-                {% if myHero.current_city %}
-                   <li><a href=/{{ myHero.current_city.location_type }}/{{ myHero.current_city.name }}>{{ myHero.current_city.name }}</a></li>
-                {% else %}
-                  <li><a href=/{{ myHero.current_world.location_type }}/{{ myHero.current_world.name }}/{{ myHero.current_location.id }}>{{ myHero.current_world.location_type }}</a></li>
-                {% endif %}
-                <li><a href=/quest_log>Journal</a></li>
-                <!-- Not sure if there is a way to access the user from the hero data?-->
-                <!--Marlen: try hero.user :) @Elthran-->
-                {% if hero.user.is_admin %}
-                <li><a href=/admin>Admin</a></li>
-                {% endif %}
-                <li><a href=/display_users/all>Users</a></li>
-				<li><a href=/about>About</a></li>
-				<li><a href=/inbox/inbox>Inbox</a></li>
-				<li><a href=/global_chat>Chat</a></li>
-                <li><a href=/logout>Logout</a></li>
-            </ul>
-         </div>
+        </div>
     </div>
-
-<!-- This is where you want to add HTML that will not be contained within the main body of the page -->
-<!-- Here you can add a navigation bar at the top of the page -->
-	{% block nav_bar %}{% endblock %}
-
-<!-- This is for content that is displayed on the main page -->
-	<div id="content">
-<!-- This calls a notification script to run if the Hero has any new quests completed -->
-	{% if myHero.quest_notification %}
-		<div class="popup" onclick="quest_popup()" style="color:red"
-        >You have completed a quest stage! (+{{ myHero.quest_notification[1] }}xp)
-        <span class="popupachievement" id="js_popupachievement"
-        >{{ myHero.quest_notification[0] }}</span>
-        </div> &nbsp; Click <a href=/quest_log>here</a> to go to your Quest Log
-              {% endif %}
-
-<!-- This is info pulled from other html files -->
-	{% block block1 %}{% endblock %}
+    <!-- This is where you want to add HTML that will not be contained within the main body of the page -->
+    <!-- Here you can add a navigation bar at the top of the page -->
+    <!-- This is for content that is displayed on the main page -->
+    <div class="content">
+        {% block nav_bar %}{% endblock %}
+        <div style="clear:both;"></div>
+        <!-- This calls a notification script to run if the Hero has any new quests completed -->
+        <button id="globalNotificationButton" onclick="sendToPy(event, showGlobalModal, 'send_notification_data');" style={% if hero.journal.notification %}"display: initial;"{% else %}"visibility: hidden;"{% endif %}>Achievement Progress!</button>
+        <!--Global Notification modal-->
+        <!--
+        It starts out invisible but is activated using the button above.
+        Said button gets its data from python
+        -->
+        <div class="globalMessageModal" id="globalMessage">
+            <div class="globalMessageModalContent">
+                <div class="globalMessageModalHeader">
+                    <span class="closeGlobalModal">&times;</span>
+                    <span id="globalMessageModalHeaderContent">
+                        <!--Header content sent from Python-->
+                    </span>
+                </div>
+                <div class="globalMessageModalBody">
+                    <span id="globalMessageModalBodyContent">
+                        <!--Body content sent from Python-->
+                    </span>
+                    <!-- The code above needs to be tweaked -->
+                </div>
+                <div class="globalMessageModalFooter">
+                    <span id="globalMessageModalFooterContent">
+                        <!--Footer content sent from Python-->
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div style="clear:both;"></div>
+        <!-- This displays notifications at the top of the page -->
+        {% for notice in notifications %}
+            {{ notice }}
+        {% endfor %}
+        <!-- This is info pulled from other html files -->
+        {% block block1 %}{% endblock %}
         {% block block2 %}{% endblock %}
-		
-
-<!-- You can pass Red Error messages through this variable -->
-	{% for message in get_flashed_messages() %}
-		{{ message }}
-	{% endfor %}
-
-<!-- This ends the main body container of the page -->
-	</div>
-  </body>
+        <!-- This ends the main body container of the page -->
+    </div>
+</body>
 </html>
 
 

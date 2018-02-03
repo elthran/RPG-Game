@@ -14,8 +14,7 @@
         <table>{% for item in items_for_sale %}
             <tr>
                 <td>{{ item.name }}</td>
-                <td><button class="command" data="{{ item.id }}"
-                data-function="itemPurchasedPopup">Buy</button>
+                <td><button onclick="sendToPy(event, itemPurchasedPopup, 'buy', {'id': {{ item.id }}});">Buy</button></td>
                 <td><b>{{ item.buy_price }}</b> gold</td>
             </tr>{% endfor %}  
         </table>
@@ -26,6 +25,10 @@
         <b>Purchase Log:</b>
         <div id="purchaseLog"></div>
     </div> 
-</div>   
+</div>
+<div>
+    Return to <a href="{{ hero.current_location.parent.url }}">
+    {{ hero.current_location.parent.name }}</a>
+</div>
 {% endblock %}
 
