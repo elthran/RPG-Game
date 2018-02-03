@@ -724,10 +724,13 @@ def quest_log(hero=None):
 @app.route('/bestiary/<monster_id>')
 @login_required
 @uses_hero
-def bestiary(hero=None, monster_id=1):
+def bestiary(hero=None, monster_id=0):
     page_title = "Bestiary"
     all_monsters = database.session.query(MonsterTemplate).filter().all()
-    display_monster = database.get_object_by_id("MonsterTemplate", int(monster_id))
+    if monster_id == "0":
+        display_monster = None
+    else:
+        display_monster = database.get_object_by_id("MonsterTemplate", int(monster_id))
     return render_template('journal.html', hero=hero, bestiary=True, page_title=page_title,
         all_monsters=all_monsters, display_monster=display_monster)
 
