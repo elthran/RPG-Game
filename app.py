@@ -769,13 +769,18 @@ def atlas(hero=None, map_id=0):
     return render_template('journal.html', hero=hero, atlas=True, page_title=page_title,
                            all_maps=all_maps, display_map=display_map)  # return a string
 
-@app.route('/achievement_log')
+@app.route('/achievements/<achievement_id>')
 @login_required
 @uses_hero
-def achievement_log(hero=None):
+def achievements(hero=None, achievement_id=0):
     page_title = "Achievements"
-    return render_template('journal.html', hero=hero, achievement_log=True,
-                           completed_achievements=hero.completed_achievements, page_title=page_title)  # return a string
+    all_achievements = [(1, "Kill 3 Wolves", 5)]
+    if achievement_id == "0":
+        display_achievement = None
+    else:
+        display_achievement = all_achievements[0]
+    return render_template('journal.html', hero=hero, achievement_log=True, page_title=page_title,
+                           all_achievements=all_achievements, display_achievement=display_achievement)  # return a string
 
 @app.route('/forum/<board_id>/<thread_id>', methods=['GET', 'POST'])
 @login_required

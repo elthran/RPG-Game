@@ -9,7 +9,7 @@
         <li><a {% if bestiary %}style="background-color:Red;"{% endif %} href=/bestiary/0>Bestiary</a></li>
         <li><a {% if people_log %}style="background-color:Red;"{% endif %} href=/people_log/0>People</a></li>
         <li><a {% if atlas %}style="background-color:Red;"{% endif %} href=/atlas/0>Atlas</a></li>
-        <li><a {% if achievement_log %}style="background-color:Red;"{% endif %} href=/quest_log>Achievements</a></li>
+        <li><a {% if achievement_log %}style="background-color:Red;"{% endif %} href=/achievements/0>Achievements</a></li>
     </ul>
 </div>
 {% endblock %}
@@ -115,25 +115,6 @@
         </div>
     </div>
 
-<!-- This shows the achievement log within the journal -->
-{% elif achievement_log %}
-<h1>Achievements</h1>
-{% if completed_achievements %}
-{% for achievement in completed_achievements %}
-<h2><br><b>{{ achievement[0] }} &nbsp; &nbsp; &nbsp; (+{{ achievement[1] }} experience)</b></h2>
-{% endfor %}
-{% else %}
-No completed achievements.
-{% endif %}
-<h1>All Achievements</h1>
-{% for achievement in kill_achievements %}
-<h2><br><b>{{ achievement[0] }}</b></h2>
-{% endfor %}
-<h1> Current Kill Statistics </h1>
-{% for key, value in hero.kill_quests.items() %}
-{{ key }}: {{ value }}<br>
-{% endfor %}
-
 <!-- This shows the map log within the journal -->
 {% elif atlas %}
     <div style="position:relative;border:dotted;width:800px;height:700px;padding:10px;scroll:auto;">
@@ -147,7 +128,7 @@ No completed achievements.
                     </li>
                 </ul>
             {% else %}
-                Here is a list of all the maps you have explored. Choose a from from the list to see more.
+                Here is a list of all the maps you have explored. Choose one from the list to see more.
             {% endif %}
         </div>
         <div style="position:relative;float:right;width:20%;height:100%;border:dotted;">
@@ -162,6 +143,31 @@ No completed achievements.
         {{ map }}
         <img src="/static/images/maps/world_{{ map.display.page_image }}"/>
     {% endfor %}
+
+<!-- This shows the achievement log within the journal -->
+{% elif achievement_log %}
+    <div style="position:relative;border:dotted;width:800px;height:300px;padding:10px;scroll:auto;">
+        <div style="position:relative;float:left;width:75%;">
+            {% if display_achievement %}
+                <h2>{{ display_achievement[1] }}</h2>
+                <p>Reward of {{ display_achievement[2] }} experience points.</p>
+            {% else %}
+                Here is a list of all the achievemets you have explored. Choose one from the list to see more.
+            {% endif %}
+        </div>
+        <div style="position:relative;float:right;width:20%;height:100%;border:dotted;">
+            {% for achievement in all_achievements %}
+                <ul>
+                    <li><a href=/achievements/{{ achievement[0] }}>{{ achievement[1] }}</a></li>
+                </ul>
+            {% endfor %}
+        </div>
+    </div>
+    {% for map in maps %}
+        {{ map }}
+        <img src="/static/images/maps/world_{{ map.display.page_image }}"/>
+    {% endfor %}
+
 {% endif %}
 
 <!-- I don't know why this needs to be below my code and not above it -->
