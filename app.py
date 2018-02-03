@@ -34,7 +34,7 @@ from forum import Board, Thread, Post
 from bestiary2 import create_monster, MonsterTemplate
 
 # INIT AND LOGIN FUNCTIONS
-database = EZDB('sqlite:///static/database.db', debug=False)
+database = EZDB("mysql+mysqldb://root:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database", debug=False)
 engine = Engine(database)
 
 # Disable will need to be restructured (Marlen)

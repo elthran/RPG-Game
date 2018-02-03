@@ -173,7 +173,7 @@ ALL_PROFICIENCY_COLUMNS = sorted({column[0].lower()
 ALL_PROFICIENCY_NAMES = [attrib[0] for attrib in PROFICIENCY_INFORMATION]
 
 # class ProficiencyMixin(object):
-#     name = Column(String, default=cls.__name__)
+#     name = Column(String(50), default=cls.__name__)
 
 
 class Proficiency(Base):
@@ -183,18 +183,18 @@ class Proficiency(Base):
     
     id = Column(Integer, primary_key=True)
 
-    name = Column(String)
-    description = Column(String)
-    tooltip = Column(String)
-    attribute_type = Column(String)
+    name = Column(String(50))
+    description = Column(String(200))
+    tooltip = Column(String(50))
+    attribute_type = Column(String(50))
     level = Column(Integer)
     next_value = Column(Integer)
     is_not_max_level = Column(Boolean)  # Maybe remove
-    reason_for_zero = Column(String)    # Maybe remove
+    reason_for_zero = Column(String(50))    # Maybe remove
 
     # Extra Ability columns
-    error = Column(String)
-    formatted_name = Column(String)
+    error = Column(String(50))
+    formatted_name = Column(String(50))
     ability = Column(Integer)
     accuracy = Column(Integer)
     amount = Column(Integer)

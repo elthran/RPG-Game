@@ -1,4 +1,4 @@
-"""Add new 'title' column to 'forum' table.
+"""Use SQLiteCompat module to drop a column.
 
 Also first revision, yay!
 

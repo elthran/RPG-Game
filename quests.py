@@ -115,8 +115,8 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
     
     id = Column(Integer, primary_key=True)
 
-    name = Column(String)
-    description = Column(String)
+    name = Column(String(50))
+    description = Column(String(200))
     reward_experience = Column(Integer)
     stage = Column(Integer)
     is_default = Column(Boolean)
@@ -259,8 +259,8 @@ class Quest(Base):
     __tablename__ = "quest"
     
     id = Column(Integer, primary_key=True)
-    name = Column(String)
-    description = Column(String)
+    name = Column(String(50))
+    description = Column(String(200))
     reward_experience = Column(Integer)
     position = Column(Integer)
 

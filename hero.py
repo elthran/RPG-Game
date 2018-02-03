@@ -25,13 +25,12 @@ class Hero(Base):
     __tablename__ = 'hero'
 
     id = Column(Integer, primary_key=True)
-    name = Column(
-        String)  # Was nullable=False now it isn't. I hope that is a good idea.
+    name = Column(String(50))  # Was nullable=False now it isn't. I hope that is a good idea.
     character_name = orm.synonym('name')
 
-    background = Column(String) # Temporary. It's replacing 'fathers job' for now
+    background = Column(String(50)) # Temporary. It's replacing 'fathers job' for now
     age = Column(Integer)
-    house = Column(String)
+    house = Column(String(50))
     experience = Column(Integer)
     experience_maximum = Column(Integer)
     renown = Column(Integer)  # How famous you are
@@ -46,7 +45,7 @@ class Hero(Base):
     attribute_points = Column(Integer)
     proficiency_points = Column(Integer)
 
-    current_terrain = Column(String)
+    current_terrain = Column(String(50))
     deepest_dungeon_floor = Column(Integer)  # High score for dungeon runs
     current_dungeon_floor = Column(Integer)  # Which floor of dungeon your on
     current_dungeon_floor_progress = Column(
@@ -60,10 +59,9 @@ class Hero(Base):
     # Time code of when the (account?) was created
     timestamp = Column(DateTime)
     # Date of last login
-    last_login = Column(String)
+    last_login = Column(String(50))
 
-    login_alerts = Column(
-        String)  # Testing messages when you are attacked or get a new message
+    login_alerts = Column(String(50))  # Testing messages when you are attacked or get a new message
 
     # Relationships
     # Many heroes -> one map/world. (bidirectional)

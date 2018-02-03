@@ -63,7 +63,7 @@ class Message(Base):
     __tablename__ = "message"
 
     id = Column(Integer, primary_key=True)
-    content = Column(String)
+    content = Column(String(50))
     unread = Column(Boolean)
 
     # Relationships
@@ -75,7 +75,7 @@ class Message(Base):
     receiver = relationship("Inbox", back_populates="received_messages",
                             foreign_keys="[Message.receiver_id]")
 
-    timestamp = Column(String)
+    timestamp = Column(String(50))
 
     def __init__(self, sender, receiver, content, time):
         """A message between two users with some content.

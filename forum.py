@@ -13,7 +13,7 @@ class Forum(Base):
 
     id = Column(Integer, primary_key=True)
 
-    title = Column(String)
+    title = Column(String(50))
 
     # Relationships
     # Many to One with Category
@@ -51,7 +51,7 @@ class Board(HumanReadableMixin, Base):
     # Many to One with Threads
     threads = relationship("Thread", back_populates="board")
 
-    title = Column(String)
+    title = Column(String(50))
 
     def __init__(self, title):
         self.title = title
@@ -101,10 +101,10 @@ class Thread(HumanReadableMixin, Base):
         return max((post for post in self.posts), key=lambda p: p.timestamp,
                    default=None)
 
-    title = Column(String)
-    creator = Column(String)
-    description = Column(String)
-    category = Column(String)
+    title = Column(String(50))
+    creator = Column(String(50))
+    description = Column(String(200))
+    category = Column(String(50))
     timestamp = Column(DateTime)
 
     def __init__(self, title="unnamed thread", creator="None", description="", category="General"):
@@ -132,7 +132,7 @@ class Post(HumanReadableMixin, Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship("User", back_populates="posts")
 
-    content = Column(String)
+    content = Column(String(50))
 
     @hybrid_property
     def author(self):

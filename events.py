@@ -22,8 +22,8 @@ class Event(Base):
     __tablename__ = 'event'
 
     id = Column(Integer, primary_key=True)
-    type = Column(String)
-    description = Column(String)
+    type = Column(String(50))
+    description = Column(String(200))
     when = Column(DateTime)
     hero_id = Column(Integer)
 
@@ -65,7 +65,7 @@ class Condition(Base):
     """
     __tablename__ = 'condition'
     id = Column(Integer, primary_key=True)
-    code = Column(String)
+    code = Column(String(200))
 
     # Relationships
     # Each trigger might have many conditions
@@ -97,8 +97,8 @@ class Trigger(TemplateMixin, Base):
     __tablename__ = 'trigger'
 
     id = Column(Integer, primary_key=True)
-    event_name = Column(String)
-    extra_info_for_humans = Column(String)
+    event_name = Column(String(50))
+    extra_info_for_humans = Column(String(200))
     completed = Column(Boolean)
 
     # relationships

@@ -39,10 +39,10 @@ class Item(TemplateMixin, Base):
     __tablename__ = "item"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String)
-    image = Column(String)
+    name = Column(String(50))
+    image = Column(String(50))
     buy_price = Column(Integer)
-    type = Column(String)
+    type = Column(String(50))
 
     broken = Column(Boolean)
     consumable = Column(Boolean)
@@ -127,7 +127,7 @@ class Item(TemplateMixin, Base):
 
 # Subclass of Item
 class Wearable(Item):
-    style = Column(String)
+    style = Column(String(50))
 
     # Modifiable proficiencies
     health_maximum = Column(Integer)

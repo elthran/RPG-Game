@@ -112,7 +112,7 @@ class Journal(Base):
 #     id = Column(Integer, primary_key=True)
 #
 #     timestamp = Column(DateTime)
-#     info = Column(String)
+#     info = Column(String(50))
 #
 #     # relationships
 #     journal_id = Column(Integer, ForeignKey('journal.id'))

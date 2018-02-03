@@ -85,18 +85,18 @@ class Ability(Base):
     __tablename__ = "ability"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String)  # Maybe 'unique' is not necessary?
+    name = Column(String(50))  # Maybe 'unique' is not necessary?
     level = Column(Integer)
     max_level = Column(Integer)
     # Maybe description should be unique? use: unique=True as keyword.
-    description = Column(String)
-    cost = Column(String)
-    image = Column(String)
+    description = Column(String(200))
+    cost = Column(String(50))
+    image = Column(String(50))
 
     # Note: Original code used default of "Unknown"
     # I chopped the BasicAbility class as redundant. Now I am going to
     # have to add the fucker back in.
-    type = Column(String)
+    type = Column(String(50))
     ability_type = orm.synonym('type')
 
     # This determines if the ability is hidden and can not be learned or seen by the player
@@ -105,8 +105,8 @@ class Ability(Base):
 
     # This decides which of the 4 types of abilities it is (default is basic)
 
-    tree = Column(String)
-    tree_type = Column(String)
+    tree = Column(String(50))
+    tree_type = Column(String(50))
 
     # Relationships.
     # Ability to abilities. Abilities is a list of ability objects.
