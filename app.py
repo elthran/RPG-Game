@@ -755,12 +755,19 @@ def people_log(hero=None, npc_id=0):
     return render_template('journal.html', hero=hero, people_log=True, page_title=page_title,
                            all_npcs=all_npcs, display_npc=display_npc)  # return a string
 
-@app.route('/map_log')
+@app.route('/atlas/<map_id>')
 @login_required
 @uses_hero
-def map_log(hero=None):
+def atlas(hero=None, map_id=0):
     page_title = "Map"
-    return render_template('journal.html', hero=hero, map_log=True, page_title=page_title)  # return a string
+    # Below is temporary map code as it's not currently set up
+    all_maps = [database.get_object_by_id("Location", 1)]
+    if map_id == "0":
+        display_map = None
+    else:
+        display_map = database.get_object_by_id("Location", int(map_id))
+    return render_template('journal.html', hero=hero, atlas=True, page_title=page_title,
+                           all_maps=all_maps, display_map=display_map)  # return a string
 
 @app.route('/achievement_log')
 @login_required

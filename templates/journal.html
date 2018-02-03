@@ -8,7 +8,7 @@
         <li><a {% if quest_log %}style="background-color:Red;"{% endif %} href=/quest_log>Quests</a></li>
         <li><a {% if bestiary %}style="background-color:Red;"{% endif %} href=/bestiary/0>Bestiary</a></li>
         <li><a {% if people_log %}style="background-color:Red;"{% endif %} href=/people_log/0>People</a></li>
-        <li><a {% if map_log %}style="background-color:Red;"{% endif %} href=/map_log>Map</a></li>
+        <li><a {% if atlas %}style="background-color:Red;"{% endif %} href=/atlas/0>Atlas</a></li>
         <li><a {% if achievement_log %}style="background-color:Red;"{% endif %} href=/quest_log>Achievements</a></li>
     </ul>
 </div>
@@ -61,7 +61,7 @@
     </div>
 
 {% elif bestiary %}
-    <div style="position:relative;border:dotted;width:800px;height:500px;padding:10px;">
+    <div style="position:relative;border:dotted;width:800px;height:700px;padding:10px;scroll:auto;">
         <div style="position:relative;float:left;width:75%;">
             {% if display_monster %}
                 <h2>{{ display_monster.name }}</h2>
@@ -88,7 +88,7 @@
 
 <!-- This shows the People Log within the journal-->
 {% elif people_log %}
-    <div style="position:relative;border:dotted;width:800px;height:500px;padding:10px;">
+    <div style="position:relative;border:dotted;width:800px;height:700px;padding:10px;scroll:auto;">
         <div style="position:relative;float:left;width:75%;">
             {% if display_npc %}
                 <h2>{{ display_npc.name }}</h2>
@@ -135,11 +135,33 @@ No completed achievements.
 {% endfor %}
 
 <!-- This shows the map log within the journal -->
-{% elif map_log %}
-<h1>Maps</h1>
-{% for map in hero.known_locations %}
-{{ map }}
-{% endfor %}
+{% elif atlas %}
+    <div style="position:relative;border:dotted;width:800px;height:700px;padding:10px;scroll:auto;">
+        <div style="position:relative;float:left;width:75%;">
+            {% if display_map %}
+                <h2>{{ display_map.name }}</h2>
+                <ul style="line-height:25px;">
+                    <li>Country: {{ display_map.parent }}</li>
+                    <li style="margin-top: 50px;">
+                        <img src="/static/images/maps/world_{{ display_map.display.page_image }}"/>
+                    </li>
+                </ul>
+            {% else %}
+                Here is a list of all the maps you have explored. Choose a from from the list to see more.
+            {% endif %}
+        </div>
+        <div style="position:relative;float:right;width:20%;height:100%;border:dotted;">
+            {% for map in all_maps %}
+                <ul>
+                    <li><a href=/atlas/{{ map.id }}>{{ map.name }}</a></li>
+                </ul>
+            {% endfor %}
+        </div>
+    </div>
+    {% for map in maps %}
+        {{ map }}
+        <img src="/static/images/maps/world_{{ map.display.page_image }}"/>
+    {% endfor %}
 {% endif %}
 
 <!-- I don't know why this needs to be below my code and not above it -->
