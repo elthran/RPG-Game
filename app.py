@@ -35,8 +35,8 @@ from bestiary2 import create_monster, MonsterTemplate
 
 # INIT AND LOGIN FUNCTIONS
 # for server code swap this over:
-database = EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@elthran.mysql.pythonanywhere-services.com/elthran$rpg_database", debug=False)
-# database = EZDB("mysql+mysqldb://root:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database", debug=False)
+# database = EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@elthran.mysql.pythonanywhere-services.com/elthran$rpg_database", debug=False)
+database = EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database", debug=False)
 engine = Engine(database)
 
 # Disable will need to be restructured (Marlen)
@@ -161,7 +161,7 @@ def login_required(f):
 
     @wraps(f)
     def wrap_login(*args, **kwargs):
-        if 'logged_in' in session:
+        if 'logged_in' in session and session['logged_in']:
             return f(*args, **kwargs)
         else:
             flash('You need to login first.')
@@ -256,6 +256,9 @@ def login():
     # Should prevent contamination between logging in with 2 different
     # accounts.
     session.clear()
+    # I might remove this later ...
+    # This fixed a bug in the server that I have now fixe with
+    # if 'logged_in' in session and session['logged_in']
     session['logged_in'] = False
 
     if request.method == 'POST':
@@ -281,7 +284,7 @@ def login():
         else:
             raise Exception("The form of this 'type' doesn't exist!")
 
-        if session['logged_in']:
+        if 'logged_in' in session and session['logged_in']:
             flash("LOG IN SUCCESSFUL")
             user = database.get_user_by_username(username)
             session['id'] = user.id

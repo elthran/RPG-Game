@@ -13,8 +13,8 @@ if __name__ == "__main__":
     os.system("cls")
     print("Take a look at Alembic (and 'clean_start.py' code) if you get database errors!")
     if args.f:
-        print("Database delete and rebuilt!")
-        os.system("mysql -u root -p7ArQMuTUSoxXqEfzYfUR rpg_database < rebuild_database.sql")
+        os.system('mysql -u elthran -p7ArQMuTUSoxXqEfzYfUR -e "DROP DATABASE IF EXISTS rpg_database;"')
+        print("Database deleted!")
 
     try:
         os.system("app.py")

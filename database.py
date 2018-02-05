@@ -64,8 +64,9 @@ def scoped_session(f):
             raise
         finally:
             self.session.close()
+        if hasattr(retval, '_sa_instance_state'):
+            raise Exception("Don't use scoped_session when you are returning a database object!")
         return retval
-
     return wrap_scoped_session
 
 
@@ -101,6 +102,7 @@ class EZDB:
         # Build a new database if this one doesn't exist.
         # Also set first_run variable!
         if not engine.execute("SHOW DATABASES LIKE '{}';".format(name)).first():
+            print("Building database for first time!")
             first_run = True
             engine.execute("CREATE DATABASE IF NOT EXISTS {}".format(name))
 
@@ -187,7 +189,7 @@ class EZDB:
         Return error if name doesn't exist in global scope.
         obj = getattr(globals(), name)
 
-        Name can be capitalized or not e.g. "hero" or "Hero"
+        Name must be properly capitalized!
         """
         try:
             obj = globals()[obj_name]
