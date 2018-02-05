@@ -35,8 +35,8 @@ from bestiary2 import create_monster, MonsterTemplate
 
 # INIT AND LOGIN FUNCTIONS
 # for server code swap this over:
-# database = EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@elthran.mysql.pythonanywhere-services.com/elthran$rgp_database", debug=False)
-database = EZDB("mysql+mysqldb://root:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database", debug=False)
+database = EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@elthran.mysql.pythonanywhere-services.com/elthran$rpg_database", debug=False)
+# database = EZDB("mysql+mysqldb://root:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database", debug=False)
 engine = Engine(database)
 
 # Disable will need to be restructured (Marlen)
@@ -256,6 +256,7 @@ def login():
     # Should prevent contamination between logging in with 2 different
     # accounts.
     session.clear()
+    session['logged_in'] = False
 
     if request.method == 'POST':
         username = request.form['username']

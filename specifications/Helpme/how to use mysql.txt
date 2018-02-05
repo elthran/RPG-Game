@@ -1,0 +1,22 @@
+# remove database;
+mysql> DROP DATABASE `elthran$rpg_database`;
+
+# use database;
+mysql> USE `elthran$rpg_database`;
+
+# Dump all the data for a database.
+# Problem with $ sign in name requires quotes!
+
+# To export to file (data only)
+$ mysqldump -h elthran.mysql.pythonanywhere-services.com -u elthran -p7ArQMuTUSoxXqEfzYfUR 'elthran$rgp_database' -t > mydb_data.sql
+
+# To export to file (structure only)
+# May require modification .. e.g.
+# USE `elthran$rpg_database`;
+$ mysqldump -u elthran -h elthran.mysql.pythonanywhere-services.com -p7ArQMuTUSoxXqEfzYfUR 'elthran$rpg_database' -d > mydb_structure.sql
+
+# Load structures back in!
+$ mysql -u elthran -h elthran.mysql.pythonanywhere-services.com -p7ArQMuTUSoxXqEfzYfUR < mysql_structures.sql
+
+# Load data back it!
+$ mysql -u elthran -h elthran.mysql.pythonanywhere-services.com -p7ArQMuTUSoxXqEfzYfUR < sqlite_dump.sql
