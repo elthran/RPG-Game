@@ -106,7 +106,7 @@ class EZDB:
 
         # Select the database ... not sure if I need this.
         # Or if I should create a new engine instead ..
-        engine.execute("USE {}".format(name))
+        engine = create_engine(database, pool_recycle=3600, echo=debug)
 
         base_classes.Base.metadata.create_all(engine, checkfirst=True)
         EZDB.Session = sessionmaker(bind=engine)
