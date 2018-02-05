@@ -45,6 +45,7 @@ class Hero(Base):
     attribute_points = Column(Integer)
     proficiency_points = Column(Integer)
 
+    # All elthran's new code for random stuff
     current_terrain = Column(String(50))
     deepest_dungeon_floor = Column(Integer)  # High score for dungeon runs
     current_dungeon_floor = Column(Integer)  # Which floor of dungeon your on
