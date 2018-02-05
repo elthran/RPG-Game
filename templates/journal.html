@@ -19,8 +19,8 @@
 <h1 style="text-align:center;">{{ page_title }}</h1>
 <div style="clear:both"></div>
 {% if quest_log %}
-    <div>
-        <div class="leftPageHalf" style="width:65%;">
+    <div style="position:relative;border:dotted;width:800px;height:700px;padding:10px;scroll:auto;">
+        <div class="leftPageHalf" style="width:75%;">
             <h2>Current Quests</h2>
             {% for path in hero.journal.quest_paths if not path.completed %}
                 <button class="genericAccordion" data-py-function="change_path_tooltip" data="{{ path.description }}" data-js-callback="questTooltip">{{ path.name.title() }} (Progress: {{ path.stage+1 }} / {{ path.stages }})</button>

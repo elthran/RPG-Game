@@ -489,8 +489,8 @@ outline: 2px solid black;
     color: #444;
     cursor: pointer;
     padding: 18px;
-    width: 60%;
-    height: 50px;
+    width: 80%;
+    height: auto;
     border: none;
     text-align: left;
     font-size: 17px;
@@ -519,7 +519,10 @@ outline: 2px solid black;
 
 .genericTooltip { /* The tooltip box on the right side of the page */
     float: right;
-    width: 30%;
+    width: 20%;
+    border: dotted;
+    height: 700px;
+    padding: 5px;
 }
 
 .genericTooltip li {
