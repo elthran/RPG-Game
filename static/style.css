@@ -429,25 +429,6 @@ ul {
     border: 0.5px dotted #000;
 }
 
-#inboxTable tr td:first-child {
-    width: 5%;
-}
-#inboxTable tr td:nth-child(2) {
-    width: 10%;
-}
-
-#inboxTable tr td:nth-child(3) {
-    width: 50%;
-}
-
-#inboxTable tr td:nth-child(4) {
-    width: 10%;
-}
-
-#inboxTable tr td:last-child {
-    width: 3%;
-}
-
 #inboxTableUnreadMessage {
 outline: 2px solid black;
 }
