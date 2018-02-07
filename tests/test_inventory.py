@@ -6,7 +6,7 @@ import re
 from database import EZDB
 from hero import Hero
 from inventory import Inventory
-from items import Item, OneHandedWeapon, HeadArmour
+from items import Item, OneHandedWeapon, HeadArmour, TwoHandedWeapon
 
 from generic_setup import GenericTestClass
 
@@ -31,18 +31,32 @@ class TestInventory(GenericTestClass):
         db = super().setup_class()
         hero = Hero(name="Haldon")
         db.session.add(hero)
+
+        # Add stock item/template combo - helmet/head armour.
         template = HeadArmour("Medium Helmet", 4, armour_value=3)
         db.session.add(template)
         db.session.commit()
         item = template.build_new_from_template()
         db.session.add(item)
+        db.session.commit()
+
+        # Add second stock item/template combo - 2 handed weapon.
+        template_2handed = TwoHandedWeapon("Medium Polearm", buy_price=5, damage_minimum=30,
+                    damage_maximum=60, speed_speed=1)
+        db.session.commit()
+        item_2handed = template_2handed.build_new_from_template()
+        db.session.add(item_2handed)
+
         db.update()
 
     def setup(self):
         super().setup()
         self.hero = self.db.session.query(Hero).get(1)
         self.inv = self.hero.inventory
-        self.item = self.db.session.query(Item).get(1)
+        self.item_helmet = self.db.session.query(
+            Item).filter_by(name="Medium Helmet").first()
+        self.item_polearm = self.db.session.query(
+            Item).filter_by(name="Medium Polearm").first()
 
     def test_init(self):
         """Check if object is created, storeable and retrievable.
@@ -58,9 +72,9 @@ class TestInventory(GenericTestClass):
 
         This should add the item to the unequipped slot.
         """
-        self.inv.add_item(self.item)
+        self.inv.add_item(self.item_helmet)
         str_inventory = self.inv.pretty
-        str_item = self.item.pretty
+        str_item = self.item_helmet.pretty
 
         self.rebuild_instance()
         str_unequipped = self.inv.unequipped[0].pretty
@@ -73,56 +87,49 @@ class TestInventory(GenericTestClass):
 
         And that it goes to the head slot.
         """
-        # self.db.session.commit()
         inv_str = self.inv.pretty
-        self.inv.pprint()
-        self.item.pprint()
-        item_str = self.item.pretty
-        ids_to_unequip = self.inv.equip(self.item)
+        item_str = self.item_helmet.pretty
+        ids_to_unequip = self.inv.equip(self.item_helmet)
 
         self.rebuild_instance()
         inv_str2 = self.inv.pretty
-        self.inv.head.pprint()
-        self.inv.pprint()
         helmet = self.inv.head.pretty
 
         assert inv_str.replace(
              "head=None", "head='<HeadArmour(id=1)>'").replace(
-            "head_item_id=None", "head_item_id=1").replace(
             "unequipped='[HeadArmour.id=1]'", "unequipped=[]") == inv_str2
 
-        assert item_str == helmet.replace(
-            "inventory_head='<Inventory(id=2)>'", "inventory_head=None").replace(
-            "inventory_unequipped=None", "inventory_unequipped='<Inventory(id=2)>'").replace(
-            "unequipped_inventory_id=None", "unequipped_inventory_id=2")
+        assert item_str.replace(
+            "equipped=False", "equipped=True").replace(
+            "unequipped_position=0", "unequipped_position=None") == helmet
            
-    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_equip_both_hands(self):
-        template = self.db.session.query(Item).filter_by(name="Medium Polearm").first()
-        item = self.db.create_item(template.id)
-        self.inv.add_item(item)
+        """Test if when you add a two handed weapon it equips in both hands.
+
+        The equip + replacement test comes later.
+        """
+
+        self.inv.add_item(self.item_polearm)
+        self.db.session.commit()
         
         inv_str = self.inv.pretty
-        item_str = item.pretty
+        item_str = self.item_polearm.pretty
 
-        ids_to_unequip = self.inv.equip(item)
+        ids_to_unequip = self.inv.equip(self.item_polearm)
         self.rebuild_instance()
         
         inv_str2 = self.inv.pretty
         item_str2 = self.inv.both_hands.pretty
 
-        self.assertEqual(
-            inv_str,
-            inv_str2.replace("both_hands='<Item(id=1)>'", "both_hands=None"
-            ).replace("both_hands_item_id=1", "both_hands_item_id=None"
-            ).replace("unequipped=[]", "unequipped='[Item.id=1]'"))
-        self.assertEqual(item_str, 
-            item_str2.replace("inventory_both_hands='<Inventory(id=2)>'", "inventory_both_hands=None"
-            ).replace("inventory_unequipped=None", "inventory_unequipped='<Inventory(id=2)>'"
-            ).replace("unequipped_inventory_id=None", "unequipped_inventory_id=2"))
+        assert inv_str.replace(
+            "both_hands=None", "both_hands='<TwoHandedWeapon(id=3)>'").replace(
+            "unequipped='[TwoHandedWeapon.id=3]'", "unequipped=[]") == inv_str2
+        assert item_str.replace(
+            "equipped=False", "equipped=True").replace(
+            "unequipped_position=0", "unequipped_position=None") == item_str2
             
-    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_equip_ring(self):
+        """Test if rings can be equipped safely"""
         template = self.db.session.query(Item).filter_by(name="Silver Ring").first()
         item = self.db.create_item(template.id)
         self.inv.add_item(item)

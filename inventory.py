@@ -138,7 +138,7 @@ class Inventory(Base):
     def equip_all(self, equipped_items):
         """Equip all passed items.
 
-        This is normally done on Inventory reload.
+        I don't know when this would be used ...
         NOTE: If there are slot conflicts they won't be resolved.
         """
         for item in equipped_items:
@@ -164,6 +164,8 @@ class Inventory(Base):
 
         item.equipped = True
         item.unequipped_position = None  # May not be needed.
+
+
         return
 
         if item.type == "Ring" and not 0 <= index <= 9:
