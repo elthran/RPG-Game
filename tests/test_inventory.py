@@ -1,4 +1,5 @@
-import unittest
+import pytest
+from pprint import pprint
 import pdb
 import re
 
@@ -7,52 +8,35 @@ from hero import Hero
 from inventory import Inventory
 from items import Item
 
+from generic_setup import GenericTestClass
+
 ##########
 # Inventory: work in progress
 ##########
 
+@pytest.mark.incremental
+class TestInventory(GenericTestClass):
+    @classmethod
+    def setup_class(cls):
+        db = super().setup_class()
+        hero = Hero(name="Haldon")
+        db.session.add(hero)
+        db.update()
 
-class InventoryTestCase(unittest.TestCase):
-    maxDiff = None
-
-    def setUp(self):
-        # Testing=False loads prebuilt_objects.
-        self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=False)
-        self.db.session.commit()
+    def setup(self):
+        super().setup()
         self.hero = self.db.session.query(Hero).filter_by(id=1).first()
         self.inv = self.hero.inventory
-        # print("setUp")
-    
-    def tearDown(self, delete=True):
-        self.db.session.close()
-        self.db.engine.dispose()
-        if delete:
-            self.db._delete_database()
-            # print("tearDown")
-            
-    def rebuild_instance(self):
-        """Tidy up and rebuild database instance.
 
-        ... otherwise you may not be retrieving the actual data
-        from the database only from memory.
-        """
-        
-        self.db.session.commit()
-        self.tearDown(delete=False)
-        self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
-        self.hero = self.db.session.query(Hero).filter_by(id=1).first()
-        self.inv = self.hero.inventory
-    
-    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
-    def test_inventory_init(self):
+    def test_init(self):
         """Check if object is created, storeable and retrievable.
         """
+
         str_inventory = self.inv.pretty
 
         self.rebuild_instance()
-        self.assertEqual(str_inventory, self.inv.pretty)
+        assert str_inventory == self.inv.pretty
     
-    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_add_item(self):
         template = self.db.session.query(Item).filter_by(name="Medium Helmet").first()
         item = self.db.create_item(template.id)

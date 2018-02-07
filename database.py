@@ -96,6 +96,7 @@ class EZDB:
         first_run = False
         server = database[0:database.rindex('/')]
         name = database.split('/').pop()
+        self.filename = name
 
         engine = create_engine(server, pool_recycle=3600, echo=debug)
 
@@ -500,10 +501,5 @@ class EZDB:
 
         Use with caution, mainly for testing.
         """
-        try:
-            os.remove(self.file_name)
-        except FileNotFoundError:
-            # Ignore because the file has already been deleted.
-            pass
-        except PermissionError:
-            pass
+        self.engine.execute(
+            "DROP DATABASE IF EXISTS {};".format(self.filename))

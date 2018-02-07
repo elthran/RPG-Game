@@ -46,6 +46,12 @@ Get all built in decorators with:
 Add new markers in the 'conftest.py'. I don't really understand the syntax yet.
 """
 
+import configparser
+config = configparser.ConfigParser()
+config.read('tests/test.ini')
+url = config['DEFAULT']['url']
+
+
 @pytest.mark.incremental
 class TestItem:
     @classmethod
@@ -55,7 +61,7 @@ class TestItem:
         usually contains tests).
         """
         # print("Setup class")
-        EZDB('sqlite:///tests/test.db', debug=False, testing=True)
+        EZDB(url, debug=False, testing=True)
         cls.template_id = 0
         cls.item_id = 0
 
@@ -63,12 +69,12 @@ class TestItem:
     def teardown_class(cls, delete=True):
         # print("Teardown class")
         if delete:
-            db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
+            db = EZDB(url, debug=False, testing=True)
             db._delete_database()
 
     def setup(self):
         # print("Setup")
-        self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
+        self.db = EZDB(url, debug=False, testing=True)
 
     def teardown(self, delete=False):
         # print("Teardown")
@@ -116,7 +122,3 @@ class TestItem:
         self.rebuild_instance()
         item2 = self.db.session.query(Item).get(TestItem.item_id)
         assert str_item == item2.pretty
-        
-
-if __name__ == '__main__':
-    pass
