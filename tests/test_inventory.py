@@ -6,13 +6,23 @@ import re
 from database import EZDB
 from hero import Hero
 from inventory import Inventory
-from items import Item
+from items import Item, OneHandedWeapon, HeadArmour
 
 from generic_setup import GenericTestClass
 
-##########
-# Inventory: work in progress
-##########
+"""
+Inventory: work in progress
+Useful: 
+
+$ pytest -x -vv -l
+
+s - no output capture (shows print statement output)
+x - exit after first failed test
+v - verbose
+vv - show full length output
+l - show local vars during traceback (when a test fails)
+"""
+
 
 @pytest.mark.incremental
 class TestInventory(GenericTestClass):
@@ -21,12 +31,18 @@ class TestInventory(GenericTestClass):
         db = super().setup_class()
         hero = Hero(name="Haldon")
         db.session.add(hero)
+        template = HeadArmour("Medium Helmet", 4, armour_value=3)
+        db.session.add(template)
+        db.session.commit()
+        item = template.build_new_from_template()
+        db.session.add(item)
         db.update()
 
     def setup(self):
         super().setup()
-        self.hero = self.db.session.query(Hero).filter_by(id=1).first()
+        self.hero = self.db.session.query(Hero).get(1)
         self.inv = self.hero.inventory
+        self.item = self.db.session.query(Item).get(1)
 
     def test_init(self):
         """Check if object is created, storeable and retrievable.
@@ -38,39 +54,47 @@ class TestInventory(GenericTestClass):
         assert str_inventory == self.inv.pretty
     
     def test_add_item(self):
-        template = self.db.session.query(Item).filter_by(name="Medium Helmet").first()
-        item = self.db.create_item(template.id)
-        self.inv.add_item(item)
-        
-        str_inventory = str(self.inv)
+        """Test if item is added successfully to inventory.
+
+        This should add the item to the unequipped slot.
+        """
+        self.inv.add_item(self.item)
+        str_inventory = self.inv.pretty
+        str_item = self.item.pretty
 
         self.rebuild_instance()
-        self.assertEqual(str_inventory, str(self.inv))
+        str_unequipped = self.inv.unequipped[0].pretty
+
+        assert str_inventory == self.inv.pretty
+        assert str_item == str_unequipped
     
-    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")    
     def test_equip_helmet(self):
-        template = self.db.session.query(Item).filter_by(name="Medium Helmet").first()
-        item = self.db.create_item(template.id)
-        self.inv.add_item(item)
-        
+        """Test if you can equip a helmet.
+
+        And that it goes to the head slot.
+        """
+        # self.db.session.commit()
         inv_str = self.inv.pretty
-        item_str = item.pretty
+        self.inv.pprint()
+        self.item.pprint()
+        item_str = self.item.pretty
+        ids_to_unequip = self.inv.equip(self.item)
 
-        ids_to_unequip = self.inv.equip(item)
         self.rebuild_instance()
-        
         inv_str2 = self.inv.pretty
-        item_str2 = self.inv.helmet.pretty
+        self.inv.head.pprint()
+        self.inv.pprint()
+        helmet = self.inv.head.pretty
 
-        self.assertEqual(
-            inv_str,
-            inv_str2.replace("helmet='<Item(id=1)>'", "helmet=None"
-            ).replace("helmet_item_id=1", "helmet_item_id=None"
-            ).replace("unequipped=[]", "unequipped='[Item.id=1]'"))
-        self.assertEqual(item_str, 
-            item_str2.replace("inventory_helmet='<Inventory(id=2)>'", "inventory_helmet=None"
-            ).replace("inventory_unequipped=None", "inventory_unequipped='<Inventory(id=2)>'"
-            ).replace("unequipped_inventory_id=None", "unequipped_inventory_id=2"))
+        assert inv_str.replace(
+             "head=None", "head='<HeadArmour(id=1)>'").replace(
+            "head_item_id=None", "head_item_id=1").replace(
+            "unequipped='[HeadArmour.id=1]'", "unequipped=[]") == inv_str2
+
+        assert item_str == helmet.replace(
+            "inventory_head='<Inventory(id=2)>'", "inventory_head=None").replace(
+            "inventory_unequipped=None", "inventory_unequipped='<Inventory(id=2)>'").replace(
+            "unequipped_inventory_id=None", "unequipped_inventory_id=2")
            
     # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_equip_both_hands(self):

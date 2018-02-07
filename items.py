@@ -4,6 +4,8 @@ import pdb
 
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+from sqlalchemy.orm import validates
 
 from base_classes import Base
 from factories import TemplateMixin
@@ -54,14 +56,29 @@ class Item(TemplateMixin, Base):
     max_durability = Column(Integer)
     wearable = Column(Boolean)
 
-
     # Relationships
-    # Inventory
-    # One to Many
-    rings_inventory_id = Column(Integer, ForeignKey('inventory.id'))
-    rings_position = Column(Integer)
+    # Each Item can have only one Inventory
+    inventory_id = Column(Integer, ForeignKey('inventory.id'))
+    inventory = relationship(
+        "Inventory", foreign_keys="[Item.inventory_id]")
 
-    unequipped_inventory_id = Column(Integer, ForeignKey('inventory.id'))
+    @validates('inventory_id')
+    def validate_inventory_id(self, key_name, current):
+        """Set equipped to None if inventory_id is set to None.
+
+        When first added to inventory default is to have equipped = False
+        Basically add the item to the unequipped slot in the inventory.
+        """
+
+        if current is None:
+            self.equipped = None
+        else:
+            self.equipped = False
+        return current
+
+    # One to Many
+    equipped = Column(Boolean)
+    rings_position = Column(Integer)
     unequipped_position = Column(Integer)
 
     __mapper_args__ = {
@@ -81,12 +98,14 @@ class Item(TemplateMixin, Base):
         keys.remove('id')
         keys.remove('template')
 
-        relationship_keys = [
-            'rings_inventory_id', 'rings_position', 'unequipped_inventory_id',
-            'unequipped_position'
-        ]
-        for relationship_key in relationship_keys:
-            keys.remove(relationship_key)
+        # I don't think these should have any value? So copying them
+        # shouldn't do anything ...
+        # relationship_keys = [
+        #     'rings_position',
+        #     'unequipped_position'
+        # ]
+        # for relationship_key in relationship_keys:
+        #     keys.remove(relationship_key)
         item = self.__class__(self.name, self.buy_price, template=False)
         for key in keys:
             try:
@@ -97,7 +116,8 @@ class Item(TemplateMixin, Base):
 
     def is_equipped(self):
         # Untested!
-        return self not in (self.inventory_unequipped or [])
+        return (self.unequipped_position is None
+                and self.inventory_id is not None)
 
     def update_stats(self, hero):
         """Update hero to reflect stat values with item equiped.

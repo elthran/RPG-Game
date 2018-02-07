@@ -1,9 +1,9 @@
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import backref
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.orm import relationship
 from sqlalchemy import ForeignKey
 from base_classes import Base
+from sqlalchemy.orm.session import object_session
 
 import pdb
 import warnings
@@ -36,60 +36,65 @@ class Inventory(Base):
 
     # Item relationships
     # One to One
-    head_item_id = Column(Integer, ForeignKey('item.id'))
-    head = relationship("Item", foreign_keys="[Inventory.head_item_id]")
+    head = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='HeadArmour')", uselist=False)
 
-    chest_item_id = Column(Integer, ForeignKey('item.id'))
-    chest = relationship("Item",
-                         backref=backref("inventory_chest",
-                                         uselist=False),
-                         foreign_keys="[Inventory.chest_item_id]")
-    left_hand_item_id = Column(Integer, ForeignKey('item.id'))
-    left_hand = relationship("Item", backref=backref(
-        "inventory_left_hand",
-        uselist=False), foreign_keys="[Inventory.left_hand_item_id]")
-    right_hand_item_id = Column(Integer, ForeignKey('item.id'))
-    right_hand = relationship("Item", backref=backref(
-        "inventory_right_hand",
-        uselist=False), foreign_keys="[Inventory.right_hand_item_id]")
-    both_hands_item_id = Column(Integer, ForeignKey('item.id'))
-    both_hands = relationship("Item", backref=backref(
-        "inventory_both_hands",
-        uselist=False), foreign_keys="[Inventory.both_hands_item_id]")
-    arm_item_id = Column(Integer, ForeignKey('item.id'))
-    arm = relationship("Item",
-                           backref=backref("inventory_arm",
-                                           uselist=False),
-                           foreign_keys="[Inventory.arm_item_id]")
-    hand_item_id = Column(Integer, ForeignKey('item.id'))
-    hand = relationship("Item", backref=backref(
-        "inventory_hand",
-        uselist=False), foreign_keys="[Inventory.hand_item_id]")
-    leg_item_id = Column(Integer, ForeignKey('item.id'))
-    leg = relationship("Item",
-                        backref=backref("inventory_leg",
-                                        uselist=False),
-                        foreign_keys="[Inventory.leg_item_id]")
-    foot_item_id = Column(Integer, ForeignKey('item.id'))
-    foot = relationship("Item",
-                        backref=backref("inventory_foot",
-                                        uselist=False),
-                        foreign_keys="[Inventory.foot_item_id]")
+    chest = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='ChestArmour')", uselist=False)
+
+    left_hand = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='Shield')", uselist=False)
+
+    right_hand = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='OneHandedWeapon')", uselist=False)
+
+    both_hands = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='TwoHandedWeapon')", uselist=False)
+
+    arm = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='ArmArmour')", uselist=False)
+
+    hand = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='HandArmour')", uselist=False)
+
+    leg = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='LegArmour')", uselist=False)
+
+    foot = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='FootArmour')", uselist=False)
+
     # One to many
-    rings = relationship("Item",
-                         order_by="Item.rings_position",
-                         collection_class=ordering_list(
-                             "rings_position"),
-                         backref=backref(
-                             "inventory_rings"),
-                         foreign_keys="[Item.rings_inventory_id]")
-    unequipped = relationship("Item",
-                              order_by="Item.unequipped_position",
-                              collection_class=ordering_list(
-                                  "unequipped_position"),
-                              backref=backref(
-                                  "inventory_unequipped"),
-                              foreign_keys="[Item.unequipped_inventory_id]")
+    rings = relationship(
+        "Item", order_by="Item.rings_position",
+        collection_class=ordering_list("rings_position"),
+        primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                    "Item.equipped,"
+                    "Item.type=='Ring')")
+
+    unequipped = relationship(
+        "Item", order_by="Item.unequipped_position",
+        collection_class=ordering_list("unequipped_position"),
+        back_populates='inventory',
+        primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                    "Item.equipped==False)")
 
     slots_used_by_item_type = {
         "TwoHandedWeapon": {"primary": "both_hands", "secondary": ["left_hand", "right_hand"]},
@@ -156,6 +161,10 @@ class Inventory(Base):
         NOTE: Id of the passed item is not returned ... maybe it should be?
         """
         # pdb.set_trace()
+
+        item.equipped = True
+        item.unequipped_position = None  # May not be needed.
+        return
 
         if item.type == "Ring" and not 0 <= index <= 9:
             raise IndexError("'Ring' index out of range. Index must be from 0 to 9.")
@@ -237,6 +246,8 @@ class Inventory(Base):
         """Add an item to the unequipped slot of this inventory.
         """
         self.unequipped.append(item)
+        session = object_session(self)
+        session.commit()
 
     def __iter__(self):
         """Return an iterator of _all_ items in this inventory.
