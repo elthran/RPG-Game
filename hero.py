@@ -274,12 +274,7 @@ class Hero(Base):
         return new_amount, level_up
 
     def equipped_items(self):
-        try:
-            return [item for item in self.inventory if item.is_equipped()]
-        except TypeError as ex:
-            if str(ex) == "'NoneType' object is not iterable":
-                return []
-            raise ex
+        return self.inventory.equipped or []  # Might work without OR.
 
     def non_equipped_items(self):
         return self.inventory.unequipped or []

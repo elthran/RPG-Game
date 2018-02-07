@@ -96,6 +96,11 @@ class Inventory(Base):
         primaryjoin="and_(Inventory.id==Item.inventory_id, "
                     "Item.equipped==False)")
 
+    equipped = relationship(
+        "Item",
+        primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                    "Item.equipped==True)")
+
     slots_used_by_item_type = {
         "TwoHandedWeapon": {"primary": "both_hands", "secondary": ["left_hand", "right_hand"]},
         "OneHandedWeapon": {"primary": "right_hand", "secondary": ["both_hands"]},
@@ -164,8 +169,8 @@ class Inventory(Base):
 
         item.equipped = True
         item.unequipped_position = None  # May not be needed.
-
-
+        session = object_session(self)
+        session.commit()
         return
 
         if item.type == "Ring" and not 0 <= index <= 9:

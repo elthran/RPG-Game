@@ -6,7 +6,7 @@ import re
 from database import EZDB
 from hero import Hero
 from inventory import Inventory
-from items import Item, OneHandedWeapon, HeadArmour, TwoHandedWeapon
+from items import Item, OneHandedWeapon, HeadArmour, TwoHandedWeapon, Ring
 
 from generic_setup import GenericTestClass
 
@@ -41,11 +41,17 @@ class TestInventory(GenericTestClass):
         db.session.commit()
 
         # Add second stock item/template combo - 2 handed weapon.
-        template_2handed = TwoHandedWeapon("Medium Polearm", buy_price=5, damage_minimum=30,
-                    damage_maximum=60, speed_speed=1)
+        template_2handed = TwoHandedWeapon(
+            "Medium Polearm", buy_price=5, damage_minimum=30,
+            damage_maximum=60, speed_speed=1)
         db.session.commit()
         item_2handed = template_2handed.build_new_from_template()
         db.session.add(item_2handed)
+        db.session.commit()
+
+        template_ring = Ring("Silver Ring", 8)
+        item_ring = template_ring.build_new_from_template()
+        db.session.add(item_ring)
 
         db.update()
 
@@ -57,6 +63,8 @@ class TestInventory(GenericTestClass):
             Item).filter_by(name="Medium Helmet").first()
         self.item_polearm = self.db.session.query(
             Item).filter_by(name="Medium Polearm").first()
+        self.item_ring = self.db.session.query(Item).filter_by(
+            name="Silver Ring").first()
 
     def test_init(self):
         """Check if object is created, storeable and retrievable.
@@ -97,6 +105,7 @@ class TestInventory(GenericTestClass):
 
         assert inv_str.replace(
              "head=None", "head='<HeadArmour(id=1)>'").replace(
+            "equipped=[]", "equipped='[HeadArmour.id=1]'").replace(
             "unequipped='[HeadArmour.id=1]'", "unequipped=[]") == inv_str2
 
         assert item_str.replace(
@@ -108,10 +117,7 @@ class TestInventory(GenericTestClass):
 
         The equip + replacement test comes later.
         """
-
         self.inv.add_item(self.item_polearm)
-        self.db.session.commit()
-        
         inv_str = self.inv.pretty
         item_str = self.item_polearm.pretty
 
@@ -123,65 +129,65 @@ class TestInventory(GenericTestClass):
 
         assert inv_str.replace(
             "both_hands=None", "both_hands='<TwoHandedWeapon(id=3)>'").replace(
+            "equipped='[HeadArmour.id=1]'",
+            "equipped='[HeadArmour.id=1, TwoHandedWeapon.id=3]'").replace(
             "unequipped='[TwoHandedWeapon.id=3]'", "unequipped=[]") == inv_str2
         assert item_str.replace(
             "equipped=False", "equipped=True").replace(
             "unequipped_position=0", "unequipped_position=None") == item_str2
             
     def test_equip_ring(self):
-        """Test if rings can be equipped safely"""
-        template = self.db.session.query(Item).filter_by(name="Silver Ring").first()
-        item = self.db.create_item(template.id)
-        self.inv.add_item(item)
-        
+        """Test if rings can be equipped safely."""
+
+        self.inv.add_item(self.item_ring)
         inv_str = self.inv.pretty
-        item_str = item.pretty
-        
-        ids_to_unequip = self.inv.equip(item, 7)
+        item_str = self.item_ring.pretty
+
+        ids_to_unequip = self.inv.equip(self.item_ring)
         
         self.rebuild_instance()
         
         inv_str2 = self.inv.pretty
         item_str2 = self.inv.rings[0].pretty
         
-        self.assertEqual(
-            inv_str,
-            inv_str2.replace("rings='[Item.id=1]'", "rings=[]"
-            ).replace("unequipped=[]", "unequipped='[Item.id=1]'"))
-        self.assertEqual(item_str, 
-            item_str2.replace("inventory_rings='<Inventory(id=2)>'", "inventory_rings=None"
-            ).replace("inventory_unequipped=None", "inventory_unequipped='<Inventory(id=2)>'"
-            ).replace("rings_inventory_id=2", "rings_inventory_id=None"
-            ).replace("unequipped_inventory_id=None", "unequipped_inventory_id=2"
-            ).replace("rings_position=0", "rings_position=None"))
+        assert inv_str.replace(
+            "rings=[]", "rings='[Ring.id=4]'").replace(
+            "equipped='[HeadArmour.id=1, TwoHandedWeapon.id=3]'",
+            "equipped='[HeadArmour.id=1, TwoHandedWeapon.id=3, Ring.id=4]'"
+        ).replace("unequipped='[Ring.id=4]'", "unequipped=[]") == inv_str2
+
+        assert item_str.replace(
+            "equipped=False", "equipped=True").replace(
+            "unequipped_position=0", "unequipped_position=None").replace(
+            "rings_position=None", "rings_position=0") == item_str2
     
-    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_replace_helmet(self):
-        template = self.db.session.query(Item).filter_by(name="Medium Helmet").first()
-        item = self.db.create_item(template.id)
-        item2 = self.db.create_item(template.id)
-        self.inv.add_item(item)
-        self.inv.add_item(item2)
-        
+        """Test if equipping second helmet replaces first."""
+
+        template_helmet = self.db.session.query(
+            Item).filter_by(name="Medium Helmet", template=True).first()
+        item_helmet2 = template_helmet.build_new_from_template()
+
+        self.inv.add_item(item_helmet2)
         inv_str = self.inv.pretty
-        item2_str = item2.pretty
+        item2_str = item_helmet2.pretty
         
-        self.inv.equip(item)
-        ids_to_unequip = self.inv.equip(item2)
+        self.inv.equip(item_helmet2)
+        ids_to_unequip = self.inv.equip(item_helmet2)
         self.rebuild_instance()
         
-        item2_str2 = self.inv.helmet.pretty
+        item2_str2 = self.inv.head.pretty
         inv_str2 = self.inv.pretty
-        self.assertEqual(inv_str,
-            inv_str2.replace("helmet='<Item(id=2)>'", "helmet=None"
-            ).replace("helmet_item_id=2", "helmet_item_id=None"
-            ).replace("unequipped='[Item.id=1]'", "unequipped='[Item.id=1, Item.id=2]'"))
-        self.assertEqual(item2_str, 
-            item2_str2.replace("inventory_helmet='<Inventory(id=2)>'", "inventory_helmet=None"
-            ).replace("inventory_unequipped=None", "inventory_unequipped='<Inventory(id=2)>'"
-            ).replace("unequipped_inventory_id=None", "unequipped_inventory_id=2"
-            ).replace("unequipped_position=0", "unequipped_position=1"))
-        self.assertEqual(ids_to_unequip, [1])
+        assert inv_str == inv_str2
+            # .replace("helmet='<Item(id=2)>'", "helmet=None"
+            # ).replace("helmet_item_id=2", "helmet_item_id=None"
+            # ).replace("unequipped='[Item.id=1]'", "unequipped='[Item.id=1, Item.id=2]'")
+        assert item2_str == item2_str2
+            # .replace("inventory_helmet='<Inventory(id=2)>'", "inventory_helmet=None"
+            # ).replace("inventory_unequipped=None", "inventory_unequipped='<Inventory(id=2)>'"
+            # ).replace("unequipped_inventory_id=None", "unequipped_inventory_id=2"
+            # ).replace("unequipped_position=0", "unequipped_position=1")
+        assert ids_to_unequip == [1]
         
     # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_replace_both_hands(self):
