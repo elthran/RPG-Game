@@ -21,9 +21,10 @@ class GenericTestClass:
     @classmethod
     def teardown_class(cls, delete=True):
         # print("Teardown class")
+        db = EZDB(url, debug=False, testing=True)
         if delete:
-            db = EZDB(url, debug=False, testing=True)
             db._delete_database()
+        return db
 
     def setup(self):
         # print("Setup")

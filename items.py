@@ -62,20 +62,6 @@ class Item(TemplateMixin, Base):
     inventory = relationship(
         "Inventory", foreign_keys="[Item.inventory_id]")
 
-    @validates('inventory_id')
-    def validate_inventory_id(self, key_name, current):
-        """Set equipped to None if inventory_id is set to None.
-
-        When first added to inventory default is to have equipped = False
-        Basically add the item to the unequipped slot in the inventory.
-        """
-
-        if current is None:
-            self.equipped = None
-        else:
-            self.equipped = False
-        return current
-
     # One to Many
     equipped = Column(Boolean)
     rings_position = Column(Integer)

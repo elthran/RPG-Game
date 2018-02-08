@@ -14,7 +14,8 @@ from generic_setup import GenericTestClass
 Inventory: work in progress
 Useful: 
 
-$ pytest -x -vv -l
+PS> clear;pytest -x -vv -l -s
+$ cls && pytest -x -vv -l -s
 
 s - no output capture (shows print statement output)
 x - exit after first failed test
@@ -54,6 +55,11 @@ class TestInventory(GenericTestClass):
         db.session.add(item_ring)
 
         db.update()
+
+    @classmethod
+    def teardown_class(cls, delete=True):
+        db = super().teardown_class(delete=False)
+        db.engine.execute("DROP TABLE `item`;")
 
     def setup(self):
         super().setup()
@@ -172,25 +178,27 @@ class TestInventory(GenericTestClass):
         inv_str = self.inv.pretty
         item2_str = item_helmet2.pretty
         
-        self.inv.equip(item_helmet2)
         ids_to_unequip = self.inv.equip(item_helmet2)
         self.rebuild_instance()
         
         item2_str2 = self.inv.head.pretty
         inv_str2 = self.inv.pretty
-        assert inv_str == inv_str2
-            # .replace("helmet='<Item(id=2)>'", "helmet=None"
-            # ).replace("helmet_item_id=2", "helmet_item_id=None"
-            # ).replace("unequipped='[Item.id=1]'", "unequipped='[Item.id=1, Item.id=2]'")
-        assert item2_str == item2_str2
-            # .replace("inventory_helmet='<Inventory(id=2)>'", "inventory_helmet=None"
-            # ).replace("inventory_unequipped=None", "inventory_unequipped='<Inventory(id=2)>'"
-            # ).replace("unequipped_inventory_id=None", "unequipped_inventory_id=2"
-            # ).replace("unequipped_position=0", "unequipped_position=1")
+        assert inv_str.replace(
+            "equipped='[HeadArmour.id=1, TwoHandedWeapon.id=3, Ring.id=4]'",
+            "equipped='[TwoHandedWeapon.id=3, Ring.id=4, HeadArmour.id=5]'"
+        ).replace(
+            "head='<HeadArmour(id=1)>'", "head='<HeadArmour(id=5)>'"
+        ).replace(
+            "unequipped='[HeadArmour.id=5]'",
+            "unequipped='[HeadArmour.id=1]'") == inv_str2
+        assert item2_str.replace(
+            "equipped=False", "equipped=True").replace(
+            "unequipped_position=0", "unequipped_position=None") == item2_str2
+
         assert ids_to_unequip == [1]
         
-    # @unittest.skip("Temporarily disabled for speed of developemnt -> renable before you trust :)")
     def test_replace_both_hands(self):
+        """See if equip code can handle multiple replacement."""
         polearm_template = self.db.session.query(Item).filter_by(name="Medium Polearm").first()
         shield_template = self.db.session.query(Item).filter_by(name="Small Shield").first()
         sword_template = self.db.session.query(Item).filter_by(name="Big Dagger").first()
