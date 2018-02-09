@@ -106,13 +106,27 @@ class TemplateMixin(object):
         if trigger.template:
             trigger = trigger.build_new_from_template()
         return trigger
+
+    !Important!
+    To set template creation order in subclass create the column in the
+    subclass. There is a better way but I can't get it to work.
+    see https://stackoverflow.com/a/3924814 Should be:
+
+    TemplateMixin.template._creation_order = 2
+
+    e.g.
+    class Item(TemplateMixin, Base):
+        id = etc
+        template = Column(Boolean, default=False)
     """
 
     id = Column(Integer, primary_key=True)
 
     @declared_attr
     def template(cls):
-        return Column(Boolean, default=False)
+        col = Column(Boolean, default=False)
+        col._creation_order = cls.id._creation_order + 0.5
+        return col
 
     def build_new_from_template(self):
         """Build a new object from a given template object.
@@ -125,4 +139,3 @@ class TemplateMixin(object):
             return self.__class__(self.arg1=arg1, self.arg2=arg2, etc)
         """
         raise Exception("You need to implement this in your code.")
-

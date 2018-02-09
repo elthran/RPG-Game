@@ -230,11 +230,15 @@ class EZDB:
         """
         return self.session.query(Item).get(item_id)
 
-    def create_item(self, item_id):
+    def create_item(self, template_id):
         """Create a new item from a given template name.
+
+        Add it to the current session.
+        Considering auto-commit of this method.
         """
-        template = self.session.query(Item).get(item_id)
+        template = self.session.query(Item).get(template_id)
         item = template.build_new_from_template()
+        self.session.add(item)
         return item
 
     def get_random_item(self):
@@ -242,6 +246,7 @@ class EZDB:
         num_rows = self.session.query(Item).count()
         item_id = random.randint(1, num_rows)
         item = self.create_item(item_id)
+        self.session.add(item)
         return item
 
     def get_all_users(self):
@@ -495,6 +500,16 @@ class EZDB:
     #     """Return WorldMap object from database using by name.
     #     """
     #     return self.session.query(WorldMap).filter_by(name=name).first()
+
+    @scoped_session
+    def add(self, objects=[]):
+        try:
+            self.session.add_all(objects)
+        except TypeError as ex:
+            if "object is not iterable" in str(ex):
+                self.session.add(objects)
+            else:
+                raise ex
 
     def _delete_database(self):
         """Deletes current database file.

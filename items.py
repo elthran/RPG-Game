@@ -72,7 +72,7 @@ class Item(TemplateMixin, Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, buy_price, template=True):
+    def __init__(self, name, buy_price, template=False):
         self.name = name
         self.buy_price = buy_price
         self.template = template

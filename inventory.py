@@ -18,6 +18,28 @@ class Inventory(Base):
     Considering:
         Move "slot" implementation to HTML and just have a list of equipped and unequipped
         items in inventory?
+
+    Items can have have 4 states.
+    1. Unequipped:
+        item.equipped = False
+        item.inventory_id = inventory.id
+        item.unequipped_position = x
+        item.rings_positions = None
+    2. Equipped:
+        item.equipped = True
+        item.inventory_id = inventory.id
+        item.unequipped_position = None
+        (possibly) item.rings_positions = x
+    3. Limbo (for items transitioning from one state to the next):
+        item.equipped = None
+        item.inventory_id = inventory.id
+        item.unequipped_position = x or None?
+        (possibly) item.rings_positions = x or None
+    4. Not in an inventory:
+        item.equipped = None
+        item.inventory_id = None
+        item.unequipped_position = None
+        item.rings_positions = None
     """
     __tablename__ = 'inventory'
 
@@ -102,15 +124,15 @@ class Inventory(Base):
                     "Item.equipped==True)")
 
     slots_used_by_item_type = {
-        "TwoHandedWeapon": {"both_hands", "left_hand", "right_hand"},
-        "OneHandedWeapon": {"right_hand", "both_hands"},
-        "Shield": {"left_hand", "both_hands"},
-        "ChestArmour": {"chest"},
-        "HeadArmour": {"head"},
-        "LegArmour": {"leg"},
-        "FootArmour": {"foot"},
-        "ArmArmour": {"arm"},
-        "HandArmour": {"hand"},
+        "TwoHandedWeapon": ["left_hand", "right_hand", "both_hands"],
+        "OneHandedWeapon": ["right_hand"],
+        "Shield": ["left_hand", "both_hands"],
+        "ChestArmour": ["chest"],
+        "HeadArmour": ["head"],
+        "LegArmour": ["leg"],
+        "FootArmour": ["foot"],
+        "ArmArmour": ["arm"],
+        "HandArmour": ["hand"],
         # "Ring": {"primary": "rings", "secondary": []},
 
     }
@@ -155,7 +177,8 @@ class Inventory(Base):
         Unequip the items in the slots used if any exist.
         NOTES:
             Max 10 rings are equipped at any given time
-            Some items take up multiple slots e.g. a TwoHandedWeapon takes up 3 slots.
+            Some items take up multiple slots e.g. a TwoHandedWeapon takes
+            up 3 slots.
 
         I must:
             1. remove and item from a slot.
@@ -163,11 +186,24 @@ class Inventory(Base):
             3. add new item to slot.
 
         NOTE: Id of the passed item is not returned.
+        NOTE2: if you equip an item ... that item is automatically added to
+        this inventory! You can equip without adding the item first.
+
+        Commits changes!
         """
 
         # This should never happen ... but prevent it if it does.
         if item.type == "Ring" and not 0 <= index <= 9:
             raise IndexError("'Ring' index out of range. Index must be from 0 to 9.")
+
+        # Use the 3rd item state. Not equipped and not unequipped.
+        # a.k.a. the 'limbo' state!
+        if item.equipped is not None:
+            # This allows you to equip an item that has not been added yet.
+            item.inventory_id = self.id
+            item.equipped = None
+            item.unequipped_position = None
+            object_session(self).commit()
 
         if item.type in Inventory.slots_used_by_item_type:
             slots_used = Inventory.slots_used_by_item_type[item.type]
@@ -175,12 +211,14 @@ class Inventory(Base):
         # Get reference to current item in this slot (if it exists).
         old_items = []
         if item.type == "Ring":
-            if len(self.rings) > index:
-                old_items = [self.rings[index]]
-                self.unequip(old_items[0])
-                item.rings_position = index
-            else:
-                item.rings_position = len(self.rings)
+            try:
+                old_item = self.rings.pop(index)
+            except IndexError:
+                old_item = None
+            if old_item:
+                old_items = [old_item]
+                self.unequip(old_item)
+            item.rings_position = index
         else:
             for slot in slots_used:
                 old_item = getattr(self, slot)
@@ -189,9 +227,8 @@ class Inventory(Base):
             for old_item in old_items:
                 self.unequip(old_item)
 
-        # Finally equip the item (or rather .. make it not unequipped :P)
+        # Finally move the item from Limbo to Equip state.
         item.equipped = True
-        item.unequipped_position = None  # May not be needed.
         object_session(self).commit()
 
         return [item.id for item in old_items]
@@ -199,27 +236,37 @@ class Inventory(Base):
     def unequip(self, item):
         """Move an item from its current slot to the 'unequipped' slot.
 
-        Does commit (via add_item).
+        Basically re-add this item as though it was never in this inventory.
+        Fixes lots of bugs even though the efficiencies might be poor.
+
+        Commits changes (via add_item).
         """
 
-        item.equipped = False  # Might not even need this.
-        item.rings_position = None
         self.add_item(item)
 
     def add_item(self, item):
         """Add an item to the unequipped slot of this inventory.
 
-        Does commit.
+        Adds item to the end of the unequipped list.
+        Commits changes.
         """
+
+        # First remove the current item from any inventories it might be in.
+        # And reset it to totally unequipped.
+        # Then commit, otherwise it might still have a handler in another
+        # location.
+        self.remove_item(item)
+
+        self.unequipped.reorder()  # Reorder might do a commit?
         self.unequipped.append(item)
-        item.equipped = False
-        item.rings_position = None
+        item.equipped = False  # Required to add this to the unequipped list.
         object_session(self).commit()
 
     def remove_item(self, item):
-        """Remove a given item from this inventory."""
+        """Remove a given item from any inventory it might be in."""
         item.rings_position = None
-        item.equipped = None  # Might be redundant.
+        item.equipped = None
+        item.unequipped_position = None
         item.inventory_id = None
         object_session(self).commit()
 

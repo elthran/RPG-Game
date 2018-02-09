@@ -283,44 +283,48 @@ users = [marlen, admin]
 # Items
 ##########
 all_store_items = [
-    LegArmour("Medium Pants", 7, armour_value=25),
-    ChestArmour("Medium Tunic", 2, armour_value=25),
-    ChestArmour("Strong Tunic", 5, armour_value=250),
-    HeadArmour("Weak Helmet", 2, armour_value=1),
-    HeadArmour("Medium Helmet", 4, armour_value=3),
-    FootArmour("Light Boots", 3, armour_value=3),
-    ArmArmour("Light Sleeves", 4, armour_value=5),
-    HandArmour("Light Gloves", 5, armour_value=7),
-    Ring("Silver Ring", 8),
+    LegArmour("Medium Pants", 7, armour_value=25, template=True),
+    ChestArmour("Medium Tunic", 2, armour_value=25, template=True),
+    ChestArmour("Strong Tunic", 5, armour_value=250, template=True),
+    HeadArmour("Weak Helmet", 2, armour_value=1, template=True),
+    HeadArmour("Medium Helmet", 4, armour_value=3, template=True),
+    FootArmour("Light Boots", 3, armour_value=3, template=True),
+    ArmArmour("Light Sleeves", 4, armour_value=5, template=True),
+    HandArmour("Light Gloves", 5, armour_value=7, template=True),
+    Ring("Silver Ring", 8, template=True),
     TwoHandedWeapon("Medium Polearm", buy_price=5, damage_minimum=30,
-                    damage_maximum=60, speed_speed=1),
+                    damage_maximum=60, speed_speed=1, template=True),
     TwoHandedWeapon("Small Polearm", buy_price=5, damage_minimum=30,
-                    damage_maximum=60, speed_speed=1),
-    Shield("Small Shield", buy_price=10),
+                    damage_maximum=60, speed_speed=1, template=True),
+    Shield("Small Shield", buy_price=10, template=True),
     OneHandedWeapon("Big Dagger", buy_price=10,
-                    damage_minimum=300, damage_maximum=600, speed_speed=2),
+                    damage_minimum=300, damage_maximum=600, speed_speed=2,
+                    template=True),
     OneHandedWeapon("Small Dagger", buy_price=5,
-                    damage_minimum=30, damage_maximum=60, speed_speed=1),
+                    damage_minimum=30, damage_maximum=60, speed_speed=1,
+                    template=True),
     OneHandedWeapon("Poisoned Dagger", buy_price=5,
                     damage_minimum=2, damage_maximum=10, damage_modifier=1,
-                    resist_poison_modifier=25),
+                    resist_poison_modifier=25, template=True),
     Shield("Ice Buckler", buy_price=100, max_durability=3,
            damage_minimum=2, damage_maximum=10, damage_modifier=1,
            block_chance=50, block_modifier=50,
-           resist_frost_modifier=30),
+           resist_frost_modifier=30, template=True),
     Shield("Rare Fire Buckler", buy_price=100, max_durability=3,
            damage_minimum=2, damage_maximum=10, damage_modifier=1,
            block_chance=50, block_modifier=50,
-           resist_frost_modifier=30),
+           resist_frost_modifier=30, template=True),
     TwoHandedWeapon("Simple Staff", buy_price=100, max_durability=3,
-                    damage_minimum=2, damage_maximum=10, damage_modifier=1)
+                    damage_minimum=2, damage_maximum=10, damage_modifier=1,
+                    template=True)
     ]
 
 all_marketplace_items = [
-    Consumable("Minor Health Potion", 3, healing_amount=10),
-    Consumable("Major Health Potion", 6, healing_amount=50),
-    Consumable("Major Faith Potion", 6, sanctity_amount=50),
-    Consumable("Major Awesome Max Potion", 6000, sanctity_amount=50)
+    Consumable("Minor Health Potion", 3, healing_amount=10, template=True),
+    Consumable("Major Health Potion", 6, healing_amount=50, template=True),
+    Consumable("Major Faith Potion", 6, sanctity_amount=50, template=True),
+    Consumable("Major Awesome Max Potion", 6000, sanctity_amount=50,
+               template=True)
 ]
 
 all_specializations = [
