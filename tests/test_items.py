@@ -54,6 +54,9 @@ class TestItem(GenericTestClass):
     @classmethod
     def setup_class(cls):
         db = super().setup_class()
+        # Might be better for testing? To allow post mortem analysis.
+        db.engine.execute("DROP TABLE `item`;")
+        db = super().setup_class()
 
         template = OneHandedWeapon(
             "Big Dagger", buy_price=10, damage_minimum=300, damage_maximum=600,
@@ -109,12 +112,9 @@ class TestItem(GenericTestClass):
         template = Ring("Silver Ring", 8, template=True)
         self.db.session.add(template)
         self.db.session.commit()
-        self.rebuild_instance()
 
-        template2 = self.db.session.query(
-            Item).filter_by(name="Silver Ring", template=True).first()
-        template_id = template2.id
-        item = self.db.create_item(template2.id)
+        template_id = template.id
+        item = self.db.create_item(template.id)
         self.db.session.commit()
         str_item = item.pretty
         self.rebuild_instance()

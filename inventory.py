@@ -194,16 +194,18 @@ class Inventory(Base):
 
         # This should never happen ... but prevent it if it does.
         if item.type == "Ring" and not 0 <= index <= 9:
+            self.unequip(item)  # Fail to unequipped items.
             raise IndexError("'Ring' index out of range. Index must be from 0 to 9.")
 
         # Use the 3rd item state. Not equipped and not unequipped.
         # a.k.a. the 'limbo' state!
-        if item.equipped is not None:
-            # This allows you to equip an item that has not been added yet.
-            item.inventory_id = self.id
-            item.equipped = None
-            item.unequipped_position = None
-            object_session(self).commit()
+        # This also allows you to equip an item that has not been added yet.
+        session = object_session(self)
+        session.add(item)
+        item.inventory_id = self.id
+        item.equipped = None
+        item.unequipped_position = None
+        session.commit()
 
         if item.type in Inventory.slots_used_by_item_type:
             slots_used = Inventory.slots_used_by_item_type[item.type]
@@ -211,6 +213,7 @@ class Inventory(Base):
         # Get reference to current item in this slot (if it exists).
         old_items = []
         if item.type == "Ring":
+            # pdb.set_trace()
             try:
                 old_item = self.rings.pop(index)
             except IndexError:
@@ -229,7 +232,7 @@ class Inventory(Base):
 
         # Finally move the item from Limbo to Equip state.
         item.equipped = True
-        object_session(self).commit()
+        session.commit()
 
         return [item.id for item in old_items]
 
@@ -255,12 +258,14 @@ class Inventory(Base):
         # And reset it to totally unequipped.
         # Then commit, otherwise it might still have a handler in another
         # location.
+        session = object_session(self)
+        session.add(item)
         self.remove_item(item)
 
         self.unequipped.reorder()  # Reorder might do a commit?
         self.unequipped.append(item)
         item.equipped = False  # Required to add this to the unequipped list.
-        object_session(self).commit()
+        session.commit()
 
     def remove_item(self, item):
         """Remove a given item from any inventory it might be in."""
@@ -269,6 +274,14 @@ class Inventory(Base):
         item.unequipped_position = None
         item.inventory_id = None
         object_session(self).commit()
+
+    def _clear_inventory(self):
+        """Disconnect all items from this inventory.
+
+        Internal method for running tests.
+        """
+        for item in self:
+            self.remove_item(item)
 
     def __iter__(self):
         """Return an iterator of _all_ items in this inventory.

@@ -70,6 +70,28 @@ def scoped_session(f):
     return wrap_scoped_session
 
 
+def safe_commit_session(f):
+    """Wrap a commit and rollback in one. Add and commit returned value.
+
+    I don't really know what happens if this crashes and rollsback ..
+    is the session clean or corrupt? Does it loose the data?
+    I guess it throws and exception .. so maybe that is ok.
+    """
+    @wraps(f)
+    def wrap_safe_commit_session(*args, **kwargs):
+        self = args[0]
+        retval = f(*args, **kwargs)
+        self.session.add(retval)
+        try:
+            self.session.commit()
+        except:
+            self.session.rollback()
+            raise
+        return retval
+
+    return wrap_safe_commit_session
+
+
 # Constants#
 SECOND_PER_ENDURANCE = 10
 
@@ -230,15 +252,14 @@ class EZDB:
         """
         return self.session.query(Item).get(item_id)
 
+    @safe_commit_session
     def create_item(self, template_id):
         """Create a new item from a given template name.
 
-        Add it to the current session.
-        Considering auto-commit of this method.
+        Autocommit using @safe_commit_session.
         """
         template = self.session.query(Item).get(template_id)
         item = template.build_new_from_template()
-        self.session.add(item)
         return item
 
     def get_random_item(self):
