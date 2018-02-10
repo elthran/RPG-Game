@@ -32,12 +32,13 @@ class Abilities(Base):
     hero = relationship("Hero", back_populates='abilities')
 
     # Relationships to a particular ability.
-    {% for value in ALL_ABILITIES %}
+    {%- for value in ALL_ABILITIES %}
     {{ value[0] }} = relationship(
         "{{ value[1] }}",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='{{ value[0] }}')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
     {% endfor %}
 
     def __init__(self):

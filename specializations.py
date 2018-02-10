@@ -39,7 +39,8 @@ class SpecializationContainer(Base):
 
     # Relationships
     # Each hero can have one list of abilities (bi, one to one)
-    hero = relationship("Hero", back_populates="specializations", uselist=False)
+    hero_id = Column(Integer, ForeignKey('hero.id'))
+    hero = relationship("Hero", back_populates="specializations")
 
     # Connect with SpecializationContainer
     archetype_id = Column(Integer, ForeignKey('specialization.id'))

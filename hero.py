@@ -88,23 +88,25 @@ class Hero(Base):
         "Location", back_populates='heroes_by_last_city',
         foreign_keys='[Hero.last_city_id]')
 
-    # Each hero can have one set of Abilities. (bidirectional, One to One).
-    abilities = relationship("Abilities", uselist=False, back_populates='hero')
-
-    # Hero to specializations relationship
-    specializations_id = Column(Integer,
-                                ForeignKey('specialization_container.id'))
-    specializations = relationship(
-        "SpecializationContainer", back_populates="hero")
-
     # User to Hero. One to many. Ordered!
+    # Note deleting the user deletes all their heroes!
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship("User", back_populates='heroes')
 
+    # Each hero can have one set of Abilities. (bidirectional, One to One).
+    # Deleting a Hero deletes all their Abilities.
+    abilities = relationship("Abilities", uselist=False, back_populates='hero',
+                             cascade="all, delete, delete-orphan")
+
+    # Hero to specializations relationship
+    specializations = relationship(
+        "SpecializationContainer", back_populates="hero", uselist=False,
+        cascade="all, delete, delete-orphan")
+
     # Each Hero has One inventory. (One to One -> bidirectional)
     # inventory is list of character's items.
-    inventory_id = Column(Integer, ForeignKey('inventory.id'))
-    inventory = relationship("Inventory", back_populates="hero")
+    inventory = relationship("Inventory", back_populates="hero", uselist=False,
+                             cascade="all, delete, delete-orphan")
 
     # Attributes One to One despite the name
     attributes_id = Column(Integer, ForeignKey('attributes.id'))

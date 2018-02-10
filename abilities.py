@@ -71,97 +71,134 @@ class Abilities(Base):
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Relentless')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     Trickster = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Trickster')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     Discipline = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Discipline')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     Explorer = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Explorer')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     Arcanum = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Arcanum')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     Poet = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Poet')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     Blackhearted = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Blackhearted')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     Backstab = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Backstab')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     MartialArts = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='MartialArts')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     Apprentice = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Apprentice')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     Meditation = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Meditation')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     Bash = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Bash')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     Student = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Student')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     Scholar = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Scholar')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     Vigilance = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Vigilance')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     Strider = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Strider')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     Skinner = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Skinner')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     Charm = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Charm')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
+    
     Haggler = relationship(
         "AuraAbility",
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='Haggler')",
-        back_populates="abilities", uselist=False)
+        back_populates="abilities", uselist=False,
+        cascade="all, delete, delete-orphan")
 
     def __init__(self):
         self.Relentless = AuraAbility('Relentless', 5, 'Gain <font color="green">{{ (level+1) * 5 }}</font> maximum health. Master this ability to unlock the Brute archetype.', learnable=True, health_maximum=5)

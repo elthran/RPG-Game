@@ -54,7 +54,8 @@ class Inventory(Base):
     # Relationships
     # Each Hero has One inventory. (One to One -> bidirectional)
     # inventory is list of character's items.
-    hero = relationship("Hero", back_populates='inventory', uselist=False)
+    hero_id = Column(Integer, ForeignKey('hero.id'))
+    hero = relationship("Hero", back_populates='inventory')
 
     # Item relationships
     # One to One
@@ -116,12 +117,15 @@ class Inventory(Base):
         collection_class=ordering_list("unequipped_position"),
         back_populates='inventory',
         primaryjoin="and_(Inventory.id==Item.inventory_id, "
-                    "Item.equipped==False)")
+                    "Item.equipped==False)",
+        cascade="all, delete, delete-orphan")
 
     equipped = relationship(
         "Item", order_by="Item.id",
+        back_populates='inventory',
         primaryjoin="and_(Inventory.id==Item.inventory_id, "
-                    "Item.equipped==True)")
+                    "Item.equipped==True)",
+        cascade="all, delete, delete-orphan")
 
     slots_used_by_item_type = {
         "TwoHandedWeapon": ["left_hand", "right_hand", "both_hands"],
