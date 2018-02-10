@@ -67,7 +67,7 @@ class TestItem(GenericTestClass):
     @classmethod
     def teardown_class(cls, delete=True):
         db = super().teardown_class(delete=False)
-        db.engine.execute("DROP TABLE `item`;")
+        # db.engine.execute("DROP TABLE `item`;")
 
     def setup(self):
         super().setup()

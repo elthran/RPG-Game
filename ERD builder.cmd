@@ -1,1 +1,1 @@
-eralchemy -i sqlite:///"static\database.db" -o "static\erd_from_sqlite.pdf"
+eralchemy -i "mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database" -o "static\erd_from_sqlite.pdf"

@@ -35,6 +35,8 @@ class TestInventory(GenericTestClass):
 
         # Might be better for testing? To allow post mortem analysis.
         db.engine.execute("DROP TABLE `item`;")
+        db.engine.execute("DROP TABLE `hero`;")
+        db.engine.execute("DROP TABLE `inventory`;")
         db = super().setup_class()
 
         hero = Hero(name="Haldon")
@@ -84,7 +86,7 @@ class TestInventory(GenericTestClass):
     @classmethod
     def teardown_class(cls, delete=True):
         db = super().teardown_class(delete=False)
-        db.engine.execute("DROP TABLE `item`;")
+        # db.engine.execute("DROP TABLE `item`;")
 
     def setup(self):
         super().setup()
