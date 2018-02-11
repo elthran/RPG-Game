@@ -70,7 +70,8 @@ class Journal(Base):
 
     # Relationships
     # Hero to Journal is One to One
-    hero = relationship("Hero", uselist=False, back_populates='journal')
+    hero_id = Column(Integer, ForeignKey('hero.id'))
+    hero = relationship("Hero", back_populates='journal')
 
     # Journal to QuestPath is One to Many
     # QuestPath provides many special methods.

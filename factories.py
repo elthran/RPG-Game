@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Boolean
+from sqlalchemy import Column, Integer, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 
@@ -51,8 +51,8 @@ def container_factory(cls_name, cls_name_singular, supers, names, namespace):
 
         # Relationships
         # Hero class, One -> One
-        'hero': relationship("Hero", back_populates=cls_name.lower(),
-                             uselist=False)
+        'hero_id': Column(Integer, ForeignKey('hero.id')),
+        'hero': relationship("Hero", back_populates=cls_name.lower())
     }
 
     def setup_init(self):

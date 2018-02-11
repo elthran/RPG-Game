@@ -109,19 +109,22 @@ class Hero(Base):
                              cascade="all, delete, delete-orphan")
 
     # Attributes One to One despite the name
-    attributes_id = Column(Integer, ForeignKey('attributes.id'))
-    attributes = relationship("Attributes", back_populates='hero')
+    attributes = relationship(
+        "Attributes", back_populates='hero', uselist=False,
+        cascade="all, delete, delete-orphan")
 
     # Proficiencies One to One despite the name
-    proficiencies_id = Column(Integer, ForeignKey('proficiencies.id'))
-    proficiencies = relationship("Proficiencies", back_populates='hero')
+    proficiencies = relationship(
+        "Proficiencies", back_populates='hero', uselist=False,
+        cascade="all, delete, delete-orphan")
 
     # Journal to Hero is One to One
-    journal_id = Column(Integer, ForeignKey('journal.id'))
-    journal = relationship('Journal', back_populates='hero')
+    journal = relationship('Journal', back_populates='hero', uselist=False,
+                           cascade="all, delete, delete-orphan")
 
     # Many to one with Triggers, Each hero has many triggers.
-    triggers = relationship('Trigger', back_populates='hero')
+    triggers = relationship('Trigger', back_populates='hero', uselist=False,
+                            cascade="all, delete, delete-orphan")
 
     # @eltran ... this probably won't work as the var will disappear on
     # database reload.

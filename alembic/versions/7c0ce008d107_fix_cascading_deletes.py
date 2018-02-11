@@ -41,11 +41,23 @@ def upgrade():
     ah.move_foreign_key_column('hero', 'inventory')
     ah.move_foreign_key_column('hero', 'specialization_container',
                                "specializations_id", "hero_id")
+    ah.move_foreign_key_column('specialization_container', 'specialization',
+                               'archetype_id', 'archetype_id')
+    ah.move_foreign_key_column('specialization_container', 'specialization',
+                               'calling_id', 'calling_id')
+    ah.move_foreign_key_column('hero', 'attributes')
+    ah.move_foreign_key_column('hero', 'proficiencies')
+    ah.move_foreign_key_column('hero', 'journal')
 
 
 def downgrade():
     ah.move_foreign_key_column('inventory', 'hero')
     ah.move_foreign_key_column('specialization_container', 'hero',
                                "hero_id", "specializations_id")
-    # exit("This is just a test so stop revising!")
-    # pass
+    ah.move_foreign_key_column('specialization', 'specialization_container',
+                               'archetype_id', 'archetype_id')
+    ah.move_foreign_key_column('specialization', 'specialization_container',
+                               'calling_id', 'calling_id')
+    ah.move_foreign_key_column('attributes', 'hero')
+    ah.move_foreign_key_column('proficiencies', 'hero')
+    ah.move_foreign_key_column('journal', 'hero')

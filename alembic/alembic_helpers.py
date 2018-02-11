@@ -70,9 +70,10 @@ class AlembicHelper:
 
         for obj in source_objs:
             fkey_id = getattr(obj, source_col_name)
-            dest_obj = session.query(Temp).get(fkey_id)
-            setattr(dest_obj, dest_col_name, obj.id)
-            session.commit()
+            if fkey_id:
+                dest_obj = session.query(Temp).get(fkey_id)
+                setattr(dest_obj, dest_col_name, obj.id)
+                session.commit()
         session.close()
         self.drop_foreign_key_constraint(source_col_name, source_table_name)
         op.drop_column(source_table_name, source_col_name)
