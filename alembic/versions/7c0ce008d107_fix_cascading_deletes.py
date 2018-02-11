@@ -38,34 +38,14 @@ ah = AlembicHelper(op, sa)
 
 
 def upgrade():
-    op.add_column(
-        "inventory",
-        sa.Column("hero_id", sa.Integer, sa.ForeignKey('hero.id'))
-    )
-
-    session = Session()
-
-    hero_table = metadata.tables['hero']
-    inv_table = metadata.tables['inventory']
-    heroes = session.query(hero_table).all()
-
-    class Temp(object):
-        pass
-
-    sa.orm.mapper(Temp, inv_table)
-
-    for hero in heroes:
-        inventory = session.query(Temp).get(hero.inventory_id)
-        inventory.hero_id = hero.id
-        session.commit()
-
-    pdb.set_trace()
-    ah.drop_constraint("inventory_id", "hero", type_='foreignkey')
+    ah.move_foreign_key_column('hero', 'inventory')
+    ah.move_foreign_key_column('hero', 'specialization_container',
+                               "specializations_id", "hero_id")
 
 
 def downgrade():
-    session = Session()
-
-    # ah.
-    op.drop_column("inventory", "hero_id")
-    exit("This is just a test so stop revising!")
+    ah.move_foreign_key_column('inventory', 'hero')
+    ah.move_foreign_key_column('specialization_container', 'hero',
+                               "hero_id", "specializations_id")
+    # exit("This is just a test so stop revising!")
+    # pass
