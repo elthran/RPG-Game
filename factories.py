@@ -51,7 +51,8 @@ def container_factory(cls_name, cls_name_singular, supers, names, namespace):
 
         # Relationships
         # Hero class, One -> One
-        'hero_id': Column(Integer, ForeignKey('hero.id')),
+        'hero_id': Column(Integer, ForeignKey('hero.id',
+                                              ondelete="CASCADE")),
         'hero': relationship("Hero", back_populates=cls_name.lower())
     }
 

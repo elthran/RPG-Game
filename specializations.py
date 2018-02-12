@@ -39,17 +39,17 @@ class SpecializationContainer(Base):
 
     # Relationships
     # Each hero can have one list of abilities (bi, one to one)
-    hero_id = Column(Integer, ForeignKey('hero.id'))
+    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
     hero = relationship("Hero", back_populates="specializations")
 
     # Connect with SpecializationContainer
     archetype = relationship(
         "Specialization", foreign_keys="[Specialization.archetype_id]",
-        uselist=False, cascade="all, delete, delete-orphan")
+        uselist=False, cascade="all, delete-orphan")
 
     calling = relationship(
         "Specialization",  foreign_keys="[Specialization.calling_id]",
-        uselist=False, cascade="all, delete, delete-orphan")
+        uselist=False, cascade="all, delete-orphan")
 
     # pantheon = relationship("SpecializationContainer", uselist=False,
     #                         back_populates='hero')
@@ -104,8 +104,10 @@ class Specialization(Base):
     # These might need to be on the subclasses? Or just totally reworked.
     # Only thing is sure is that they can't go on the Container side ...
     # or cascading deletes won't work.
-    archetype_id = Column(Integer, ForeignKey('specialization_container.id'))
-    calling_id = Column(Integer, ForeignKey('specialization_container.id'))
+    archetype_id = Column(Integer, ForeignKey('specialization_container.id',
+                                              ondelete="CASCADE"))
+    calling_id = Column(Integer, ForeignKey('specialization_container.id',
+                                            ondelete="CASCADE"))
 
     # I DONT KNOW WHAT THIS DOES!!!?? :'( - Elthran
     __mapper_args__ = {

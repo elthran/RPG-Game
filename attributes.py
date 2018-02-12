@@ -34,40 +34,27 @@ class Attributes(Base):
 
     # Relationships
     # Hero class is one to one.
-    hero_id = Column(Integer, ForeignKey('hero.id'))
+    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
 
     # Attribute class
-    agility_id = Column(Integer, ForeignKey('attribute.id'))
-    agility = relationship("Attribute", uselist=False, foreign_keys="[Attributes.agility_id]")
-    brawn_id = Column(Integer, ForeignKey('attribute.id'))
-    brawn = relationship("Attribute", uselist=False, foreign_keys="[Attributes.brawn_id]")
-    charisma_id = Column(Integer, ForeignKey('attribute.id'))
-    charisma = relationship("Attribute", uselist=False, foreign_keys="[Attributes.charisma_id]")
-    divinity_id = Column(Integer, ForeignKey('attribute.id'))
-    divinity = relationship("Attribute", uselist=False, foreign_keys="[Attributes.divinity_id]")
-    fortuity_id = Column(Integer, ForeignKey('attribute.id'))
-    fortuity = relationship("Attribute", uselist=False, foreign_keys="[Attributes.fortuity_id]")
-    intellect_id = Column(Integer, ForeignKey('attribute.id'))
-    intellect = relationship("Attribute", uselist=False, foreign_keys="[Attributes.intellect_id]")
-    pathfinding_id = Column(Integer, ForeignKey('attribute.id'))
-    pathfinding = relationship("Attribute", uselist=False, foreign_keys="[Attributes.pathfinding_id]")
-    quickness_id = Column(Integer, ForeignKey('attribute.id'))
-    quickness = relationship("Attribute", uselist=False, foreign_keys="[Attributes.quickness_id]")
-    resilience_id = Column(Integer, ForeignKey('attribute.id'))
-    resilience = relationship("Attribute", uselist=False, foreign_keys="[Attributes.resilience_id]")
-    survivalism_id = Column(Integer, ForeignKey('attribute.id'))
-    survivalism = relationship("Attribute", uselist=False, foreign_keys="[Attributes.survivalism_id]")
-    vitality_id = Column(Integer, ForeignKey('attribute.id'))
-    vitality = relationship("Attribute", uselist=False, foreign_keys="[Attributes.vitality_id]")
-    willpower_id = Column(Integer, ForeignKey('attribute.id'))
-    willpower = relationship("Attribute", uselist=False, foreign_keys="[Attributes.willpower_id]")
+    agility = relationship("Attribute", uselist=False, foreign_keys="[Attribute.agility_id]", cascade="all, delete-orphan")
+    brawn = relationship("Attribute", uselist=False, foreign_keys="[Attribute.brawn_id]", cascade="all, delete-orphan")
+    charisma = relationship("Attribute", uselist=False, foreign_keys="[Attribute.charisma_id]", cascade="all, delete-orphan")
+    divinity = relationship("Attribute", uselist=False, foreign_keys="[Attribute.divinity_id]", cascade="all, delete-orphan")
+    fortuity = relationship("Attribute", uselist=False, foreign_keys="[Attribute.fortuity_id]", cascade="all, delete-orphan")
+    intellect = relationship("Attribute", uselist=False, foreign_keys="[Attribute.intellect_id]", cascade="all, delete-orphan")
+    pathfinding = relationship("Attribute", uselist=False, foreign_keys="[Attribute.pathfinding_id]", cascade="all, delete-orphan")
+    quickness = relationship("Attribute", uselist=False, foreign_keys="[Attribute.quickness_id]", cascade="all, delete-orphan")
+    resilience = relationship("Attribute", uselist=False, foreign_keys="[Attribute.resilience_id]", cascade="all, delete-orphan")
+    survivalism = relationship("Attribute", uselist=False, foreign_keys="[Attribute.survivalism_id]", cascade="all, delete-orphan")
+    vitality = relationship("Attribute", uselist=False, foreign_keys="[Attribute.vitality_id]", cascade="all, delete-orphan")
+    willpower = relationship("Attribute", uselist=False, foreign_keys="[Attribute.willpower_id]", cascade="all, delete-orphan")
 
     # Hero class
     # One Hero -> one Attributes object
     hero = relationship("Hero", back_populates='attributes', uselist=False)
 
     def __init__(self):
-        
         self.agility = Attribute("Agility", "A measure of how skilfully you can move.")
         self.brawn = Attribute("Brawn", "A measure of how strong you are.")
         self.charisma = Attribute("Charisma", "A measure of how well you interact with other people")
@@ -80,7 +67,6 @@ class Attributes(Base):
         self.survivalism = Attribute("Survivalism", "A measure of how well you can adapt to your surroundings.")
         self.vitality = Attribute("Vitality", "A measure of how healthy you are.")
         self.willpower = Attribute("Willpower", "A measure of how disciplined you are.")
-        
 
     def items(self):
         """Returns a list of 2-tuples
@@ -88,8 +74,7 @@ class Attributes(Base):
         Basically a dict.items() clone that looks like ([(key, value), (key, value), ...])
         """
         return ((key, getattr(self, key)) for key in ALL_ATTRIBUTES)
-        
-        
+
     def __iter__(self):
         return (getattr(self, key) for key in ALL_ATTRIBUTES)
 
@@ -104,6 +89,32 @@ class Attribute(Base):
     name = Column(String(50))
     description = Column(String(100))
     level = Column(Integer)
+
+    # Relationships
+    agility_id = Column(
+        Integer, ForeignKey('attributes.id', ondelete="CASCADE"))
+    brawn_id = Column(
+        Integer, ForeignKey('attributes.id', ondelete="CASCADE"))
+    charisma_id = Column(
+        Integer, ForeignKey('attributes.id', ondelete="CASCADE"))
+    divinity_id = Column(
+        Integer, ForeignKey('attributes.id', ondelete="CASCADE"))
+    fortuity_id = Column(
+        Integer, ForeignKey('attributes.id', ondelete="CASCADE"))
+    intellect_id = Column(
+        Integer, ForeignKey('attributes.id', ondelete="CASCADE"))
+    pathfinding_id = Column(
+        Integer, ForeignKey('attributes.id', ondelete="CASCADE"))
+    quickness_id = Column(
+        Integer, ForeignKey('attributes.id', ondelete="CASCADE"))
+    resilience_id = Column(
+        Integer, ForeignKey('attributes.id', ondelete="CASCADE"))
+    survivalism_id = Column(
+        Integer, ForeignKey('attributes.id', ondelete="CASCADE"))
+    vitality_id = Column(
+        Integer, ForeignKey('attributes.id', ondelete="CASCADE"))
+    willpower_id = Column(
+        Integer, ForeignKey('attributes.id', ondelete="CASCADE"))
     
     def __init__(self, name, description):
         """Build the initial Attribute object.

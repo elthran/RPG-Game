@@ -50,7 +50,8 @@ class AlembicHelper:
             op.add_column(
                 dest_table_name,
                 sa.Column(dest_col_name, sa.Integer,
-                          sa.ForeignKey(source_table_name + ".id"))
+                          sa.ForeignKey(source_table_name + ".id",
+                                        ondelete="CASCADE"))
             )
         except sa.exc.OperationalError as ex:
             if "Duplicate column name" in str(ex):

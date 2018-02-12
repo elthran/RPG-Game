@@ -38,7 +38,7 @@ class Abilities(Base):
         primaryjoin="and_(Abilities.id==Ability.abilities_id, "
                     "Ability.name=='{{ value[0] }}')",
         back_populates="abilities", uselist=False,
-        cascade="all, delete, delete-orphan")
+        cascade="all, delete-orphan")
     {% endfor %}
 
     def __init__(self):

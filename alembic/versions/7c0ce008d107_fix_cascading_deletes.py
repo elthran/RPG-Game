@@ -48,6 +48,30 @@ def upgrade():
     ah.move_foreign_key_column('hero', 'attributes')
     ah.move_foreign_key_column('hero', 'proficiencies')
     ah.move_foreign_key_column('hero', 'journal')
+    ah.move_foreign_key_column('attributes', 'attribute',
+                               'agility_id', 'agility_id')
+    ah.move_foreign_key_column('attributes', 'attribute',
+                               'brawn_id', 'brawn_id')
+    ah.move_foreign_key_column('attributes', 'attribute',
+                               'charisma_id', 'charisma_id')
+    ah.move_foreign_key_column('attributes', 'attribute',
+                               'divinity_id', 'divinity_id')
+    ah.move_foreign_key_column('attributes', 'attribute',
+                               'fortuity_id', 'fortuity_id')
+    ah.move_foreign_key_column('attributes', 'attribute',
+                               'intellect_id', 'intellect_id')
+    ah.move_foreign_key_column('attributes', 'attribute',
+                               'pathfinding_id', 'pathfinding_id')
+    ah.move_foreign_key_column('attributes', 'attribute',
+                               'quickness_id', 'quickness_id')
+    ah.move_foreign_key_column('attributes', 'attribute',
+                               'resilience_id', 'resilience_id')
+    ah.move_foreign_key_column('attributes', 'attribute',
+                               'survivalism_id', 'survivalism_id')
+    ah.move_foreign_key_column('attributes', 'attribute',
+                               'vitality_id', 'vitality_id')
+    ah.move_foreign_key_column('attributes', 'attribute',
+                               'willpower_id', 'willpower_id')
 
 
 def downgrade():
@@ -61,3 +85,27 @@ def downgrade():
     ah.move_foreign_key_column('attributes', 'hero')
     ah.move_foreign_key_column('proficiencies', 'hero')
     ah.move_foreign_key_column('journal', 'hero')
+    ah.move_foreign_key_column('attribute', 'attributes',
+                               'agility_id', 'agility_id')
+    ah.move_foreign_key_column('attribute', 'attributes',
+                               'brawn_id', 'brawn_id')
+    ah.move_foreign_key_column('attribute', 'attributes',
+                               'charisma_id', 'charisma_id')
+    ah.move_foreign_key_column('attribute', 'attributes',
+                               'divinity_id', 'divinity_id')
+    ah.move_foreign_key_column('attribute', 'attributes',
+                               'fortuity_id', 'fortuity_id')
+    ah.move_foreign_key_column('attribute', 'attributes',
+                               'intellect_id', 'intellect_id')
+    ah.move_foreign_key_column('attribute', 'attributes',
+                               'pathfinding_id', 'pathfinding_id')
+    ah.move_foreign_key_column('attribute', 'attributes',
+                               'quickness_id', 'quickness_id')
+    ah.move_foreign_key_column('attribute', 'attributes',
+                               'resilience_id', 'resilience_id')
+    ah.move_foreign_key_column('attribute', 'attributes',
+                               'survivalism_id', 'survivalism_id')
+    ah.move_foreign_key_column('attribute', 'attributes',
+                               'vitality_id', 'vitality_id')
+    ah.move_foreign_key_column('attribute', 'attributes',
+                               'willpower_id', 'willpower_id')

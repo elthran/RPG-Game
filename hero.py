@@ -65,6 +65,11 @@ class Hero(Base):
     login_alerts = Column(String(50))  # Testing messages when you are attacked or get a new message
 
     # Relationships
+    # User to Hero. One to many. Ordered!
+    # Note deleting the user deletes all their heroes!
+    user_id = Column(Integer, ForeignKey('user.id', ondelete="CASCADE"))
+    user = relationship("User", back_populates='heroes')
+
     # Many heroes -> one map/world. (bidirectional)
     map_id = Column(Integer, ForeignKey('location.id'))
     current_world = relationship("Location", back_populates='heroes',
@@ -88,43 +93,38 @@ class Hero(Base):
         "Location", back_populates='heroes_by_last_city',
         foreign_keys='[Hero.last_city_id]')
 
-    # User to Hero. One to many. Ordered!
-    # Note deleting the user deletes all their heroes!
-    user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship("User", back_populates='heroes')
-
     # Each hero can have one set of Abilities. (bidirectional, One to One).
     # Deleting a Hero deletes all their Abilities.
     abilities = relationship("Abilities", uselist=False, back_populates='hero',
-                             cascade="all, delete, delete-orphan")
+                             cascade="all, delete-orphan")
 
     # Hero to specializations relationship
     specializations = relationship(
         "SpecializationContainer", back_populates="hero", uselist=False,
-        cascade="all, delete, delete-orphan")
+        cascade="all, delete-orphan")
 
     # Each Hero has One inventory. (One to One -> bidirectional)
     # inventory is list of character's items.
     inventory = relationship("Inventory", back_populates="hero", uselist=False,
-                             cascade="all, delete, delete-orphan")
+                             cascade="all, delete-orphan")
 
     # Attributes One to One despite the name
     attributes = relationship(
         "Attributes", back_populates='hero', uselist=False,
-        cascade="all, delete, delete-orphan")
+        cascade="all, delete-orphan")
 
     # Proficiencies One to One despite the name
     proficiencies = relationship(
         "Proficiencies", back_populates='hero', uselist=False,
-        cascade="all, delete, delete-orphan")
+        cascade="all, delete-orphan")
 
     # Journal to Hero is One to One
     journal = relationship('Journal', back_populates='hero', uselist=False,
-                           cascade="all, delete, delete-orphan")
+                           cascade="all, delete-orphan")
 
     # Many to one with Triggers, Each hero has many triggers.
-    triggers = relationship('Trigger', back_populates='hero', uselist=False,
-                            cascade="all, delete, delete-orphan")
+    triggers = relationship('Trigger', back_populates='hero',
+                            cascade="all, delete-orphan")
 
     # @eltran ... this probably won't work as the var will disappear on
     # database reload.

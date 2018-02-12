@@ -103,7 +103,7 @@ class Trigger(TemplateMixin, Base):
 
     # relationships
     # One to Many with Heroes?
-    hero_id = Column(Integer, ForeignKey('hero.id'))
+    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
     hero = relationship('Hero', back_populates='triggers')
 
     # One to many with Conditions. Each trigger might have many conditions.

@@ -58,7 +58,8 @@ class Item(TemplateMixin, Base):
 
     # Relationships
     # Each Item can have only one Inventory
-    inventory_id = Column(Integer, ForeignKey('inventory.id'))
+    inventory_id = Column(Integer, ForeignKey('inventory.id',
+                                              ondelete="CASCADE"))
     inventory = relationship(
         "Inventory", foreign_keys="[Item.inventory_id]")
 

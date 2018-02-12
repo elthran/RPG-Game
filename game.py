@@ -58,7 +58,7 @@ class User(Base):
     # Many heroes -> one user
     heroes = relationship("Hero", order_by='Hero.character_name',
                           back_populates='user',
-                          cascade="all, delete, delete-orphan")
+                          cascade="all, delete-orphan")
 
     # Many to One with Posts
     posts = relationship("Post", order_by="Post.timestamp.desc()",

@@ -34,13 +34,16 @@ class TestInventory(GenericTestClass):
         db = super().setup_class()
 
         # Might be better for testing? To allow post mortem analysis.
-        db.engine.execute("DROP TABLE `item`;")
-        db.engine.execute("DROP TABLE `hero`;")
-        db.engine.execute("DROP TABLE `inventory`;")
+        # db.engine.execute("SET FOREIGN_KEY_CHECKS = 0;")
+        db.engine.execute("TRUNCATE TABLE `item`;")
+        # db.engine.execute("DROP TABLE `inventory`;")
+        # db.engine.execute("TRUNCATE TABLE `hero`;")
+        # db.engine.execute("SET FOREIGN_KEY_CHECKS = 0;")
         db = super().setup_class()
-
-        hero = Hero(name="Haldon")
-        db.session.add(hero)
+        if db.session.query(Hero).get(1) is None:
+            hero = Hero(name="Haldon")
+            db.session.add(hero)
+            db.session.commit()
 
         # Add stock item/template combo - helmet/head armour.
         template = HeadArmour("Medium Helmet", 4, armour_value=3,
