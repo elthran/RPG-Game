@@ -243,35 +243,22 @@ class Hero(Base):
     # I don't think I ever call this function and the bar seems
     # to be updating properly
     def update_experience_bar(self):
-        self.experience_percent = round(
-            self.experience / self.experience_maximum, 2) * 100
+        self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100
 
-    # updates field variables when hero levels up
-    def check_if_leveled_up(self):
+    def gain_experience(self, amount):
+        new_amount = amount * self.proficiencies.understanding.modifier
+        new_amount = int(new_amount) + (random.random() < new_amount - int(new_amount)) # This will round the number weighted by its decimal (so 1.2 has 20% chance of rounding up)
+        self.experience += new_amount
         if self.experience >= self.experience_maximum:
             self.experience -= self.experience_maximum
-            self.experience_maximum = math.floor(1.5 * self.experience_maximum)
+            self.experience_maximum += 5
             self.attribute_points += 1
             self.proficiency_points += 1
             self.basic_ability_points += 1
             self.archetype_ability_points += 1
             self.age += 1
             self.refresh_character(full=True)
-            return True
-        return False
-
-    def gain_experience(self, amount):
-        new_amount = amount * self.proficiencies.understanding.modifier
-        # This will round the number weighted by its decimal
-        # (so 1.2 has 20% chance of rounding up)
-        new_amount = int(new_amount) + (random.random() < new_amount - int(
-            new_amount))
-        self.experience += new_amount
-        level_up = self.check_if_leveled_up()
-
-        # Return a variable in case you want to know how much experience you
-        # just gained or if you leveled up
-        return new_amount, level_up
+        return new_amount
 
     def equipped_items(self):
         try:
@@ -314,8 +301,7 @@ class Hero(Base):
             reward = 3
             self.login_alerts += "Thanks for logging in today! You earn " + str(
                 reward) + " experience."
-            self.experience += reward
-            self.check_if_leveled_up()
+            self.gain_experience(reward)
             print("first time log in TODAY (printed from game.py)")
         else:
             print("you have already logged in today (printed from game.py)")

@@ -1005,19 +1005,12 @@ def spar(name='', hero=None, location=None):
 
         # This gives you experience and also returns how much
         # experience you gained
-        modified_spar_benefit, level_up = hero.gain_experience(spar_benefit)
+        modified_spar_benefit = hero.gain_experience(spar_benefit)
         hero.proficiencies.endurance.current -= 1
         location.display.page_heading = \
             "You spend some time sparring with the trainer at the barracks." \
             " You spend {} gold and gain {} experience.".format(
                 spar_cost, modified_spar_benefit)
-        if level_up:
-            location.display.page_heading += " You level up!"
-    # page_links = {
-    #     "Compete in the arena.": "/arena",
-    #     "Spar with the trainer.": "/spar",
-    #     "Battle another player.": None
-    # }
     return render_template('generic_location.html', hero=hero, game=game)  # return a string
 
 
@@ -1125,7 +1118,7 @@ def battle(this_user=None, hero=None):
                     hero.bestiary.append(monster)
             hero.experience += 5
         """
-        experience_gained,level_up = hero.gain_experience(game.enemy.experience_rewarded)  # * hero.experience_gain_modifier  THIS IS CAUSING A WEIRD BUG? I don't know why
+        experience_gained = hero.gain_experience(game.enemy.experience_rewarded)  # * hero.experience_gain_modifier  THIS IS CAUSING A WEIRD BUG? I don't know why
         if this_user == "monster":
             hero.monster_kills += 1
         else:
@@ -1142,16 +1135,9 @@ def battle(this_user=None, hero=None):
                         if items.name == item.name:
                             items.amount_owned += 1
         page_title = "Victory!"
-        page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(
-            experience_gained) + " experience!"
+        page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(experience_gained) + " experience!"
         page_links = [("Return to where you ", hero.current_location.url, "were", ".")]
         hero.current_dungeon_monster = False
-        if level_up:
-            page_heading += " You have leveled up! You should return to your profile page to advance in skill."
-            page_links = [("Return to your ", "/home", "profile", " page and distribute your new attribute points."),
-                          ("Return to where you ", "/explore_dungeon/Explore%20Dungeon/Entering", "were", ".")]
-
-    # Return an html page built from a Jinja2 form and the passed data.
     return render_template(
         'battle.html', page_title=page_title, page_heading=page_heading,
         battle_log=battle_log, hero=hero, enemy=game.enemy,
