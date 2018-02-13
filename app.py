@@ -1271,16 +1271,13 @@ def tavern(name='', hero=None):
 @login_required
 @uses_hero
 def marketplace(inventory, hero=None):
-    page_title = "Marketplace"
-    items_for_sale = []
-    if inventory == "Marketplace":
-        page_links = [("Take a look at our ", "/marketplace/general", "selection", "."), ("Return to ", hero.current_city.url, "town", ".")]
-        return render_template('store.html', hero=hero, page_title=page_title, page_links=page_links)  # return a string
-    elif inventory == "general":
-        page_links = [("Let me go back to the ", "/marketplace/Marketplace", "marketplace", " instead.")]
+    if inventory == "shopping":
         items_for_sale = database.get_all_marketplace_items()
-    return render_template('store.html', hero=hero, items_for_sale=items_for_sale, page_title=page_title,
-                           page_links=page_links)  # return a string
+        dialogue = "Anything catch your fancy?"
+    else:
+        items_for_sale = []
+        dialogue = "Welcome to the Thornwall market. We have goods from all over the eastern coast. Come in and take a look."
+    return render_template('store.html', hero=hero, items_for_sale=items_for_sale, dialogue=dialogue)  # return a string
 
 
 @app.route('/house/<name>')
