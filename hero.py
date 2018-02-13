@@ -211,9 +211,7 @@ class Hero(Base):
     def validate_experience(self, key_name, current):
         # Update experience percent on experience change.
         try:
-            self.experience_percent = round(
-                current / self.experience_maximum, 2
-            ) * 100
+            self.experience_percent = min(round(current / self.experience_maximum, 2) * 100, 100)
         except (TypeError, ZeroDivisionError):
             self.experience_percent = 0
         return max(current or 0, 0)
