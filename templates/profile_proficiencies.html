@@ -5,7 +5,7 @@
 <div class="stickyPointsRemainingBar">Points Remaining: <div style="display: inline" id="points_remaining">{{ hero.proficiency_points }}</div></div>
 <div style="clear: both;"></div>
 <div>
-	<div class="leftPageHalf" style="width:65%;">
+	<div class="leftPageHalf" style="width:700px;">
         {% for attribute in all_attributes %}
             <button class="genericAccordion">{{ attribute.name }} (Current level: {{ attribute.level }})</button>
             <div class="genericAccordionPanel">
@@ -25,9 +25,9 @@
             </div>
         {% endfor %}
     </div>
-    <div class="genericTooltip">
+    <div style="float: right;width: 350px;border: dotted;height:auto;padding: 5px;">
         <div><span id="proficiencyTooltip">Click on a proficiency to see more information.</span></div>
-        <div class="tooltipImage"><span id="attributeImage"><img src="/static/images/ability_pic.jpg"></span></div>
+        <div class="tooltipImage"><span id="attributeImage"></span></div>
     </div>
 </div>
 

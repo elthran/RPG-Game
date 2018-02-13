@@ -6,8 +6,8 @@
 <h1 style="text-align:center;">Attributes</h1>
 <div class="stickyPointsRemainingBar">Points Remaining: <div style="display: inline" id="points_remaining">{{ hero.attribute_points }}</div></div>
 <div style="clear: both;"></div>
-<div>
-	<div class="leftPageHalf" style="width:65%;">
+<div style="width:1100px;height:500px;">
+	<div style="float:left;width:500px;">
         <ul>
         {% for attribute in all_attributes %}
             <li>
@@ -17,9 +17,9 @@
         {% endfor %}
         </ul>
     </div>
-    <div class="attributeTooltip">
+    <div style="float:left;width:300px;border:dotted;height:auto;padding:5px;margin-left:50px;">
         <div><span id="attributeTooltip">Click on an attribute to see more information.</span></div>
-        <div class="tooltipImage"><span id="attributeImage"><img src="/static/images/ability_pic.jpg"></span></div>
+        <div class="tooltipImage"><span id="attributeImage"></span></div>
     </div>
 </div>
 

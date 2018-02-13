@@ -1,17 +1,18 @@
 <!-- This shows the admin page -->
 
+<!-- Note: the url links to navigate around the store are hardcoded. This is because I don't know how it will work when there
+are 2 stores. It's possible they will all use the same navigation. They may not. I will take another look at it when we add
+the next town and store. Until then, this should be completely fine. -->
+
 {% extends "layout.html" %}
 {% block block1 %}
-        <div class="row">
-            <div class="col-12" style="text-align: center;"> <!-- 100% -->
-                <img src="/static/images/blacksmith.jpg" alt="Sample">
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-4"> <!-- 33.33% -->
-                <h2>Here is our list of items:</h2>
-                <table>
+<h1 style="text-align:center;">Store</h1>
+<h3>{{ dialogue }}</h3>
+{% if items_for_sale %}
+    <div style="position:relative;border:dotted;width:800px;height:600px;padding:10px;scroll:auto;">
+        <div style="position:relative;float:left;width:75%;">
+            <h2>For Sale</h2>
+            <table>
                 {% for item in items_for_sale %}
                     <tr>
                         <td>{{ item.name }}</td>
@@ -19,18 +20,17 @@
                         <td><b>{{ item.buy_price }}</b> gold</td>
                     </tr>
                 {% endfor %}
-                </table>
-                <p>{% for link in page_links %}
-                {{ link[0] }} <a href="{{ link[1] }}"> {{ link[2] }} </a><br>{% endfor %}
-            </div>
-            <div class="col-8" valign="top"> <!-- 66.66% -->
-                <b>Purchase Log:</b>
-                <div id="purchaseLog"></div>
-            </div>
+            </table>
         </div>
         <div>
-            Return to <a href="{{ hero.current_location.parent.url }}">
-            {{ hero.current_location.parent.name }}</a>
+            <b>Purchase Log:</b>
+            <div id="purchaseLog" style="position:relative;float:right;width:20%;height:575px;border:dotted;"></div>
         </div>
+    </div>
+    <a href="/marketplace/entrance">Talk</a> to shopkeeper.
+{% else %}
+    Take a look at our <a href="/marketplace/shopping">selection</a>.
+{% endif %}
+<br>Return to <a href="/town/{{ hero.current_location.name }}">{{ hero.current_location.name }}</a>
 {% endblock %}
 

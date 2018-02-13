@@ -429,25 +429,6 @@ ul {
     border: 0.5px dotted #000;
 }
 
-#inboxTable tr td:first-child {
-    width: 5%;
-}
-#inboxTable tr td:nth-child(2) {
-    width: 10%;
-}
-
-#inboxTable tr td:nth-child(3) {
-    width: 50%;
-}
-
-#inboxTable tr td:nth-child(4) {
-    width: 10%;
-}
-
-#inboxTable tr td:last-child {
-    width: 3%;
-}
-
 #inboxTableUnreadMessage {
 outline: 2px solid black;
 }
@@ -489,8 +470,8 @@ outline: 2px solid black;
     color: #444;
     cursor: pointer;
     padding: 18px;
-    width: 60%;
-    height: 50px;
+    width: 80%;
+    height: auto;
     border: none;
     text-align: left;
     font-size: 17px;
@@ -519,7 +500,10 @@ outline: 2px solid black;
 
 .genericTooltip { /* The tooltip box on the right side of the page */
     float: right;
-    width: 30%;
+    width: 20%;
+    border: dotted;
+    height: 700px;
+    padding: 5px;
 }
 
 .genericTooltip li {
@@ -533,11 +517,10 @@ outline: 2px solid black;
 	background-image: url(/static/images/prof_button.jpg); /* Image size needs to match abilityButton (about 16px x 16px) */
 }
 
-.tooltipImage img {
-    display: block;
+.tooltipImage {
     margin: 0 auto; /* Centers the image */
-	height: 250px;  /* make this the size of your image */
-	width: 250px;
+	height: 100px;  /* make this the size of your image */
+	width: 100px;
 }
 
 /* Inventory Page Code */
