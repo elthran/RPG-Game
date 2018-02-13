@@ -30,6 +30,12 @@ class Hero(Base):
 
     background = Column(String(50)) # Temporary. It's replacing 'fathers job' for now
     age = Column(Integer)
+
+    # You should only modify the dominant hand. The offhand will be set
+    # automagically.
+    dominant_hand = Column(String(10), default="right_hand")
+    _off_hand = Column(String(10), default="left_hand")
+
     house = Column(String(50))
     experience = Column(Integer)
     experience_maximum = Column(Integer)
@@ -137,6 +143,12 @@ class Hero(Base):
             return value
         raise Exception("'current_world' Location type must be 'map' not '{}'."
                         "".format(value.type))
+
+    @orm.validates('dominant_hand')
+    def validate_dominant_hand(self, key, value):
+        assert value in ['left_hand', 'right_hand']
+        self._off_hand = 'left_hand' if value == "right_hand" else "right_hand"
+        return value
 
     def __init__(self, **kwargs):
         """Initialize the Hero object.
