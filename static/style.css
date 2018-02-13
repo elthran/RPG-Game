@@ -544,14 +544,14 @@ outline: 2px solid black;
 .inventory_equipped_outer {
     border: 5px solid;
     height: 800px;
-    min-width: 650px;
+    min-width: 850px;
     z-index: 50;
     position: relative;  /* Allows children to use position: absolute */
 }
 
 .inventory_unequipped_outer {
     border: 5px solid;
-    min-width: 650px;
+    min-width: 850px;
     z-index: 50;
 }
 
@@ -641,20 +641,83 @@ Centered margin is 275px left/right.
     left: 0;
 }
 
-#inventory-left-finger {
+#inventory-finger-0 {
     margin: auto;
-    top: 50px;
-    right: 300px;
-    bottom: 0;
-    left: 0;
+    top: 0px;
+    right: 0px;
+    bottom: 500px;
+    left: 700px;
 }
 
-#inventory-right-finger {
+#inventory-finger-1 {
     margin: auto;
-    top: 50px;
-    right: 0;
-    bottom: 0;
-    left: 300px;
+    top: 0px;
+    right: 0px;
+    bottom: 250px;
+    left: 700px;
+}
+#inventory-finger-2 {
+    margin: auto;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 700px;
+}
+
+#inventory-finger-3 {
+    margin: auto;
+    top: 250px;
+    right: 0px;
+    bottom: 0px;
+    left: 700px;
+}
+
+#inventory-finger-4 {
+    margin: auto;
+    top: 500px;
+    right: 0px;
+    bottom: 0px;
+    left: 700px;
+}
+
+#inventory-finger-5 {
+    margin: auto;
+    top: 0px;
+    right: 700px;
+    bottom: 500px;
+    left: 0px;
+}
+
+#inventory-finger-6 {
+    margin: auto;
+    top: 0px;
+    right: 700px;
+    bottom: 250px;
+    left: 0px;
+}
+
+#inventory-finger-7 {
+    margin: auto;
+    top: 0px;
+    right: 700px;
+    bottom: 0px;
+    left: 0px;
+}
+
+#inventory-finger-8 {
+    margin: auto;
+    top: 250px;
+    right: 700px;
+    bottom: 0px;
+    left: 0px;
+}
+
+#inventory-finger-9 {
+    margin: auto;
+    top: 500px;
+    right: 700px;
+    bottom: 0px;
+    left: 0px;
 }
 
 #inventory-waist {

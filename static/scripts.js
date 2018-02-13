@@ -186,11 +186,11 @@ The current approach is not very flexible.
 */
 function toggleEquip(response, oldData) {
     "use strict";
-    log("toggleEquip function");
-    log("Response:")
-    console.log(response);
-    log("oldData:")
-    console.log(oldData);
+//    log("toggleEquip function");
+//    log("Response:")
+//    console.log(response);
+//    log("oldData:")
+//    console.log(oldData);
     // For readability.
     // tooltipDiv is the location of the specific item that is being moved.
     // inventoryItemDiv is the container that the item is in.
@@ -211,7 +211,7 @@ function toggleEquip(response, oldData) {
     if (command === "unequip") {
         tooltipDiv = document.getElementById("item-" + oldData.id);
         inventoryItemDiv = tooltipDiv.parentElement;
-        log("iventoryItemDiv.id: " + inventoryItemDiv.id)
+//        log("iventoryItemDiv.id: " + inventoryItemDiv.id)
         emptySlotDiv = document.getElementById(inventoryItemDiv.id + "-empty");
         unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv, primarySlotType);
 
@@ -226,10 +226,10 @@ function toggleEquip(response, oldData) {
         var idsLength = idsToUnequip.length
         for (i=0; i< idsLength; i++) {
             itemId = idsToUnequip[i];
-            log("id: " + itemId)
+//            log("id: " + itemId)
             tooltipDiv = document.getElementById("item-" + itemId)
             inventoryItemDiv = tooltipDiv.parentElement;
-            log("iventoryItemDiv.id: " + inventoryItemDiv.id)
+//            log("iventoryItemDiv.id: " + inventoryItemDiv.id)
             emptySlotDiv = document.getElementById(inventoryItemDiv.id + "-empty");
             unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv, primarySlotType);
         }
@@ -268,9 +268,9 @@ function equip(tooltipDiv, primarySlotType) {
         slotType = "left-hand";
         emptyLeftHandDiv = document.getElementById("inventory-" + slotType + "-empty");
         emptyLeftHandDiv.src = tooltipDiv.firstElementChild.src;
-        log(tooltipDiv);
-        log(emptyLeftHandDiv);
-        log(emptyLeftHandDiv.src);
+//        log(tooltipDiv);
+//        log(emptyLeftHandDiv);
+//        log(emptyLeftHandDiv.src);
         emptyLeftHandDiv.style.filter = "grayscale(100%) opacity(50%)"
     } else if (["left-hand", "right-hand"].indexOf(primarySlotType) != -1) {
         slotType = "both-hands";
@@ -288,14 +288,15 @@ function unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv, primarySlotType) {
     var unequippedGeneralDiv;
     var emptyLeftHandDiv;
     var rightHandDiv;
+    var bothHandsDiv;
     var slotType;
 
     // Reset left hand div.
     // Lame check if element is in array.
-    log("primary slot type unequip");
-    log(primarySlotType);
+//    log("primary slot type unequip");
+//    log(primarySlotType);
     if (["both-hands", "left-hand", "right-hand"].indexOf(primarySlotType) != -1) {
-        log("Should be reseting left-hand image!")
+//        log("Should be reseting left-hand image!")
         slotType = "left-hand";
         emptyLeftHandDiv = document.getElementById("inventory-" + slotType + "-empty");
         emptyLeftHandDiv.src = "static/images/items/inventory_left_hand.jpg";
@@ -303,6 +304,9 @@ function unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv, primarySlotType) {
         slotType = "right-hand";
         rightHandDiv = document.getElementById("inventory-" + slotType);
         rightHandDiv.style.display = "";
+        slotType = "both-hands";
+        bothHandsDiv = document.getElementById("inventory-" + slotType);
+        bothHandsDiv.style.display = "none";
     }
     inventoryItemDiv.removeChild(tooltipDiv);
     emptySlotDiv.style.display = "inline";

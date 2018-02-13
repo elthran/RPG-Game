@@ -47,8 +47,10 @@
                 {% else %}/>
                 {% endif %}
             </div>
-            <div class="inventory-equipped inventory-item" id="inventory-right-finger">
-                <img src="/static/images/items/inventory_right_finger.jpg" alt="right_finger.jpg" id="inventory-right-finger-empty" {% if inventory.right_finger %}{% set item = inventory.right_finger %} style="display:none;" />
+            <!--Inventory Ring slots!-->
+            {% for n in range(10) %}
+            <div class="inventory-equipped inventory-item" id="inventory-finger-{{n}}">
+                <img src="/static/images/items/inventory_finger.jpg" alt="finger {{n}}.jpg" id="inventory-finger-{{n}}-empty" {% if inventory.get_ring_at_pos(n) %}{% set item = inventory.get_ring_at_pos(n) %} style="display:none;" />
                 <div id="item-{{ item.id }}" class="inventory-tooltip" onclick="sendToPy(event, toggleEquip, 'toggle_equip', {'id': {{ item.id }}});">
                     <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
                     <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
@@ -56,15 +58,7 @@
                 {% else %}/>
                 {% endif %}
             </div>
-            <div class="inventory-equipped inventory-item" id="inventory-left-finger">
-                <img src="/static/images/items/inventory_left_finger.jpg" alt="left_finger.jpg" id="inventory-left-finger-empty" {% if inventory.left_finger %}{% set item = inventory.left_finger %} style="display:none;" />
-                <div id="item-{{ item.id }}" class="inventory-tooltip" onclick="sendToPy(event, toggleEquip, 'toggle_equip', {'id': {{ item.id }}});">
-                    <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
-                    <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
-                </div>
-                {% else %}/>
-                {% endif %}
-            </div>
+            {% endfor %}
         </div>
         <div></div>
         <div class="inventory_unequipped_outer" id="unequipped">

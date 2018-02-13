@@ -215,8 +215,18 @@ class Command:
     def toggle_equip(hero, database, data, engine):
         item_id = data['id']
         item = database.get_item_by_id(item_id)
-        primary_slot_type = hero.inventory.\
-            js_slots_used_by_item_type[item.type][0]
+        len_rings = None
+        if item.type == "Ring":
+            print([ring.rings_position for ring in hero.inventory.rings])
+            # Defaults to last position ..
+            # I will need to accomodate a full set.
+            # Should return 0 when there are no equiped rings and
+            # 9 when there is a full set of equiped rings ... ?
+            lowest_empty_slot = hero.inventory.get_lowest_empty_ring_pos()
+            primary_slot_type = "finger-{}".format(lowest_empty_slot)
+        else:
+            primary_slot_type = hero.inventory.\
+                js_slots_used_by_item_type[item.type][0]
         if item.equipped:
             hero.inventory.unequip(item)
             hero.refresh_character()

@@ -291,7 +291,7 @@ all_store_items = [
     FootArmour("Light Boots", 3, armour_value=3, template=True),
     ArmArmour("Light Sleeves", 4, armour_value=5, template=True),
     HandArmour("Light Gloves", 5, armour_value=7, template=True),
-    Ring("Silver Ring", 8, template=True),
+    Ring("Silver Ring", 8, template=True, style="silver"),
     TwoHandedWeapon("Medium Polearm", buy_price=5, damage_minimum=30,
                     damage_maximum=60, speed_speed=1, template=True),
     TwoHandedWeapon("Small Polearm", buy_price=5, damage_minimum=30,

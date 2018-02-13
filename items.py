@@ -250,14 +250,15 @@ class Wearable(Item):
                  resist_slashing_modifier=0,
                  resist_piercing_modifier=0,
                  courage_skill=0,
-                 sanity_skill=0, **kwargs):
+                 sanity_skill=0,
+                 style="leather", **kwargs):
         super().__init__(*args, **kwargs)
         self.wearable = True
         self.broken = False
         self.garment = False
         self.weapon = False
         self.jewelry = False
-        self.style = "leather"
+        self.style = style
         self.max_durability = max_durability
         self.item_rating = item_rating
 

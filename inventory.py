@@ -179,7 +179,7 @@ class Inventory(Base):
     #     for item in equipped_items:
     #         self.equip(item)
 
-    def equip(self, item, index=0):
+    def equip(self, item, index=None):
         """Equip the an item in the correct slot -> Return ids of items replaced.
 
         Unequip the items in the slots used if any exist.
@@ -201,7 +201,7 @@ class Inventory(Base):
         """
 
         # This should never happen ... but prevent it if it does.
-        if item.type == "Ring" and not 0 <= index <= 9:
+        if item.type == "Ring" and index and not 0 <= index <= 9:
             self.unequip(item)  # Fail to unequipped items.
             raise IndexError("'Ring' index out of range. Index must be from 0 to 9.")
 
@@ -222,6 +222,9 @@ class Inventory(Base):
         old_items = []
         if item.type == "Ring":
             # pdb.set_trace()
+            # Get lowest empty slot.
+            if not index:
+                index = self.get_lowest_empty_ring_pos()
             try:
                 old_item = self.rings.pop(index)
             except IndexError:
@@ -282,6 +285,27 @@ class Inventory(Base):
         item.unequipped_position = None
         item.inventory_id = None
         object_session(self).commit()
+
+    def get_ring_at_pos(self, n):
+        for ring in self.rings:
+            if ring.rings_position == n:
+                return ring
+        return None
+
+    def get_lowest_empty_ring_pos(self):
+        """If there is an empty slot in the ring list return it.
+
+        Ring list isn't a real list so it has no gaps ... but it should :P
+        Returns last position if there are no gaps.
+        """
+
+        # If the ring position of the last ring is higher than the length
+        # of self.rings there must be a gap.
+        if self.rings and self.rings[-1].rings_position != len(self.rings) - 1:
+            for n in range(len(self.rings)):
+                if self.rings[n].rings_position != n:
+                    return n
+        return max(len(self.rings), 9)
 
     def _clear_inventory(self):
         """Disconnect all items from this inventory.
