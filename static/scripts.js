@@ -200,8 +200,12 @@ function toggleEquip(response, oldData) {
     var inventoryItemDiv;
     var emptySlotDiv;
     var command;
+    var primarySlotType;
 
     command = response.command;
+    // primarySlotType is the location in the inventory that the item
+    // will be equipped into.
+    primarySlotType = response.primarySlotType;
 
     // When you are Unequipping an Item.
     if (command === "unequip") {
@@ -209,11 +213,10 @@ function toggleEquip(response, oldData) {
         inventoryItemDiv = tooltipDiv.parentElement;
         log("iventoryItemDiv.id: " + inventoryItemDiv.id)
         emptySlotDiv = document.getElementById(inventoryItemDiv.id + "-empty");
-        unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv);
+        unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv, primarySlotType);
 
     // When you are Equipping and Item.
     } else if (command === "equip") {
-        var primarySlotType;
         var slotDiv;
         var idsToUnequip;
 
@@ -228,34 +231,79 @@ function toggleEquip(response, oldData) {
             inventoryItemDiv = tooltipDiv.parentElement;
             log("iventoryItemDiv.id: " + inventoryItemDiv.id)
             emptySlotDiv = document.getElementById(inventoryItemDiv.id + "-empty");
-            unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv);
+            unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv, primarySlotType);
         }
-
-        // primarySlotType is the location in the inventory that the item
-        // will be equipped into.
-        primarySlotType = response.primarySlotType;
         tooltipDiv = document.getElementById("item-" + oldData.id);
-        inventoryItemDiv = tooltipDiv.parentElement;
-        slotDiv = document.getElementById("inventory-" + primarySlotType);
-        emptySlotDiv = document.getElementById("inventory-" + primarySlotType + "-empty");
+        equip(tooltipDiv, primarySlotType)
+    }
+}
 
-        // Delete the inventoryItemDiv
-        // Hide the emptySlot Div.
-        // Move the tooltipDiv
-        inventoryItemDiv.parentElement.removeChild(inventoryItemDiv);
-        emptySlotDiv.style.display = "none";
-        slotDiv.appendChild(tooltipDiv);
+// Equip a given item into the correct slot on the inventory diagram.
+function equip(tooltipDiv, primarySlotType) {
+    "use strict";
+    var inventoryItemDiv;
+    var slotDiv;
+    var emptySlotDiv;
+    var slotType;
+    var rightHandDiv;
+    var emptyLeftHandDiv;
+
+    inventoryItemDiv = tooltipDiv.parentElement;
+    slotDiv = document.getElementById("inventory-" + primarySlotType);
+    emptySlotDiv = document.getElementById("inventory-" + primarySlotType + "-empty");
+
+    // Delete the inventoryItemDiv
+    // Hide the emptySlot Div.
+    // Move the tooltipDiv
+    inventoryItemDiv.parentElement.removeChild(inventoryItemDiv);
+    emptySlotDiv.style.display = "none";
+    slotDiv.appendChild(tooltipDiv);
+    slotDiv.style.display = "";
+
+    // Make the alternate overlapping slot invisible.
+    if (primarySlotType === "both-hands") {
+        slotType = "right-hand";
+        rightHandDiv = document.getElementById("inventory-" + slotType);
+        rightHandDiv.style.display = "none";
+        slotType = "left-hand";
+        emptyLeftHandDiv = document.getElementById("inventory-" + slotType + "-empty");
+        emptyLeftHandDiv.src = tooltipDiv.firstElementChild.src;
+        log(tooltipDiv);
+        log(emptyLeftHandDiv);
+        log(emptyLeftHandDiv.src);
+        emptyLeftHandDiv.style.filter = "grayscale(100%) opacity(50%)"
+    } else if (["left-hand", "right-hand"].indexOf(primarySlotType) != -1) {
+        slotType = "both-hands";
+        slotDiv = document.getElementById("inventory-" + slotType);
+        slotDiv.style.display = "none";
     }
 }
 
 // Unequip an item from its current location.
 // Put it at the back of the inventory
-function unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv) {
+function unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv, primarySlotType) {
     "use strict";
 
     var unequippedItemDiv;
     var unequippedGeneralDiv;
+    var emptyLeftHandDiv;
+    var rightHandDiv;
+    var slotType;
 
+    // Reset left hand div.
+    // Lame check if element is in array.
+    log("primary slot type unequip");
+    log(primarySlotType);
+    if (["both-hands", "left-hand", "right-hand"].indexOf(primarySlotType) != -1) {
+        log("Should be reseting left-hand image!")
+        slotType = "left-hand";
+        emptyLeftHandDiv = document.getElementById("inventory-" + slotType + "-empty");
+        emptyLeftHandDiv.src = "static/images/items/inventory_left_hand.jpg";
+        emptyLeftHandDiv.style.filter = "";
+        slotType = "right-hand";
+        rightHandDiv = document.getElementById("inventory-" + slotType);
+        rightHandDiv.style.display = "";
+    }
     inventoryItemDiv.removeChild(tooltipDiv);
     emptySlotDiv.style.display = "inline";
 

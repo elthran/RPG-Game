@@ -165,8 +165,10 @@ class Inventory(Base):
     ]
 
     all_slot_names = single_slots + multiple_slots
-    js_single_slots = [(slot.replace('_', '-'), slot) for slot in single_slots
-                       if slot != 'both_hands']
+    js_single_slots = [(slot.replace('_', '-'), slot) for slot in single_slots]
+                       # if slot != 'both_hands']
+    js_slots_used_by_item_type = {k: [v.replace('_', '-') for v in l]
+                                  for k, l in slots_used_by_item_type.items()}
 
     # def equip_all(self, equipped_items):
     #     """Equip all passed items.

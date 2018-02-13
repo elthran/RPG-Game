@@ -7,3 +7,4 @@ static/database.db-journal
 .cache/
 tests/test.db
 templates/desktop.ini
+.pytest_cache/

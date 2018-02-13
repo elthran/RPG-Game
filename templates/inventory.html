@@ -6,12 +6,12 @@
         <!-- This is the inventory page and displays everything your character wears/owns and gives you CMD buttons to equip/unequip -->
         {% set inventory = hero.inventory %}
         CURRENT ARMOUR VALUE = {{ test_value }}
-<div class="inventory_equipped_outer" id="equipped">
+        <div class="inventory_equipped_outer" id="equipped">
             <img id="inventory-body-outline" src="/static/images/body.jpg" alt="body.jpg" />
             <!--Nice for loop of inventory slots-->
             {% for js_slot, slot in inventory.js_single_slots %}
-            <div class="inventory-equipped inventory-item" id="inventory-{{ js_slot }}">
-                <img src="/static/images/items/inventory_{{ slot }}.jpg" alt="{{ slot }}.jpg" id="inventory-{{ js_slot }}-empty" {% if getattr(inventory, slot) %}{% set item = getattr(inventory, slot) %} style="display: none;" />
+            <div class="inventory-equipped inventory-item" id="inventory-{{ js_slot }}"{% if slot == "right_hand" and inventory.both_hands %} style="display: none;"{% elif slot == "both_hands" and not inventory.both_hands %} style="display: none;"{% endif %}>
+                <img {% if slot == "left_hand" and inventory.both_hands %}src="/static/images/items/{{ inventory.both_hands.style }}_{{ inventory.both_hands.type }}.jpg" style="filter: grayscale(100%) opacity(50%)"{% else %}src="/static/images/items/inventory_{{ slot }}.jpg"{% endif %} alt="{{ slot }}.jpg" id="inventory-{{ js_slot }}-empty" {% if getattr(inventory, slot) %}{% set item = getattr(inventory, slot) %} style="display: none;" />
                 <div id="item-{{ item.id }}" class="inventory-tooltip" onclick="sendToPy(event, toggleEquip, 'toggle_equip', {'id': {{ item.id }}});">
                     <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
                     <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>

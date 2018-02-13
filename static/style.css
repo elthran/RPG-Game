@@ -702,12 +702,22 @@ Centered margin is 275px left/right.
     height: 150px;
 }
 
+#inventory-both-hands {
+    margin: auto;
+    top: 350px;
+    right: 0;
+    bottom: 0;
+    left: 400px;
+    height: 150px;
+}
+
 .inventory-tooltip {
     height: inherit;
     width: inherit;
     position: relative;
     display: inline-block;
     border-bottom: 1px dotted black;
+    cursor: pointer;
 }
 
 .inventory-tooltip .inventory-tooltip-text {

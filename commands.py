@@ -215,6 +215,8 @@ class Command:
     def toggle_equip(hero, database, data, engine):
         item_id = data['id']
         item = database.get_item_by_id(item_id)
+        primary_slot_type = hero.inventory.\
+            js_slots_used_by_item_type[item.type][0]
         if item.equipped:
             hero.inventory.unequip(item)
             hero.refresh_character()
@@ -223,7 +225,8 @@ class Command:
                 hero,
                 description="{} unequips a/an {}.".format(hero.name, item.name)
             )
-            return jsonify(command="unequip")
+            return jsonify(primarySlotType=primary_slot_type,
+                           command="unequip")
         else:
             ids_to_unequip = hero.inventory.equip(item)
             hero.refresh_character()
@@ -232,15 +235,10 @@ class Command:
                 hero,
                 description="{} equips a/an {}.".format(hero.name, item.name)
             )
-            primary_slot_type = hero.inventory.slots_used_by_item_type[item.type][
-                0]
-
-            if primary_slot_type == "both_hands":
-                primary_slot_type = hero.dominant_hand
-            primary_slot_type = primary_slot_type.replace('_', "-")
             return jsonify(primarySlotType=primary_slot_type,
                            command="equip", idsToUnequip=ids_to_unequip)
 
+    @staticmethod
     def cast_spell(hero, database, arg_dict, **kwargs):
         ability_id = arg_dict.get('data', None, type=int)
         ability = database.get_ability_by_id(ability_id)
