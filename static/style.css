@@ -517,11 +517,10 @@ outline: 2px solid black;
 	background-image: url(/static/images/prof_button.jpg); /* Image size needs to match abilityButton (about 16px x 16px) */
 }
 
-.tooltipImage img {
-    display: block;
+.tooltipImage {
     margin: 0 auto; /* Centers the image */
-	height: 250px;  /* make this the size of your image */
-	width: 250px;
+	height: 100px;  /* make this the size of your image */
+	width: 100px;
 }
 
 /* Inventory Page Code */

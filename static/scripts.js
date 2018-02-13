@@ -333,7 +333,7 @@ function abilityTooltip(button, tooltip, image) {
     var newTooltip = {};
     var newImage = {};
     var startImage = '<img src="/static/images/';
-    var endImage = '.jpg" alt="none">';
+    var endImage = '.jpg" alt="none" style="display:block;margin-left:auto;margin-right:auto;height:200px;width:200px;">';
     newTooltip = document.getElementById("attributeTooltip");
     newTooltip.innerHTML = tooltip;
     newImage = document.getElementById("attributeImage");
@@ -369,7 +369,7 @@ function abilityChoiceTooltip(button, description, image) {
     var newTooltip = {};
     var newImage = {};
     var startImage = '<img src="/static/images/';
-    var endImage = '.jpg" alt="none">';
+    var endImage = '.jpg" alt="none"  style="display:block;margin-left:auto;margin-right:auto;height:200px;width:200px;">';
     newTooltip = document.getElementById("abilityChoiceTooltip");
     newTooltip.innerHTML = description;
     newImage = document.getElementById("choiceImage");
