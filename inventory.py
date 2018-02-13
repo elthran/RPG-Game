@@ -127,9 +127,11 @@ class Inventory(Base):
                     "Item.equipped==True)",
         cascade="all, delete-orphan")
 
+    # !Important! Put primary slot used as the first in the list!
+    # I should hav just left it as is with "primary" and "secondary" :P
     slots_used_by_item_type = {
-        "TwoHandedWeapon": ["left_hand", "right_hand", "both_hands"],
-        "OneHandedWeapon": ["right_hand"],
+        "TwoHandedWeapon": ["both_hands", "left_hand", "right_hand"],
+        "OneHandedWeapon": ["right_hand", "both_hands"],
         "Shield": ["left_hand", "both_hands"],
         "ChestArmour": ["chest"],
         "HeadArmour": ["head"],

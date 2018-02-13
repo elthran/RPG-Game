@@ -184,48 +184,87 @@ Scrips for inventory page.
 Currently handles unequip and equipping one item at at time.
 The current approach is not very flexible.
 */
-function toggleEquip(clicked, slot_type, idsArrayStr) {
+function toggleEquip(response, oldData) {
     "use strict";
-//    log("toggleEquip function");
-//    console.log(clicked);
-//    console.log(slot_type);
-//    console.log(idsArrayStr);
-    var tooltipDiv = clicked;
-    var inventoryItemDiv = tooltipDiv.parentElement;
+    log("toggleEquip function");
+    log("Response:")
+    console.log(response);
+    log("oldData:")
+    console.log(oldData);
+    // For readability.
+    // tooltipDiv is the location of the specific item that is being moved.
+    // inventoryItemDiv is the container that the item is in.
+    // emptySlotDiv is the picture that is displayed in a given inventory slot
+    // i.e. the head has an gray/gold helmet pic.
+    var tooltipDiv;
+    var inventoryItemDiv;
+    var emptySlotDiv;
+    var command;
 
-    if (slot_type === "both-hands") {
-        throw "You need to build code to deal with equipping a 2 handed weapon!";
-    } else {
-        var empty_slot = document.getElementById("inventory-" + slot_type + "-empty");
-    }
-//    log("inventory-" + slot_type + "-empty");
-//    console.log(empty_slot);
-
-    var command = tooltipDiv.getAttribute("data-py-function");
+    command = response.command;
 
     // When you are Unequipping an Item.
     if (command === "unequip") {
-        inventoryItemDiv.removeChild(tooltipDiv);
-        empty_slot.style.display = "inline";
-
-        tooltipDiv.setAttribute("data-py-function", "equip");
-
-        var unequippedItemDiv = document.createElement("div");
-        unequippedItemDiv.classList.add("inventory-unequipped", "inventory-item");
-        unequippedItemDiv.appendChild(tooltipDiv);
-
-        var unequippedGeneralDiv = document.getElementById("unequipped");
-        unequippedGeneralDiv.appendChild(unequippedItemDiv);
+        tooltipDiv = document.getElementById("item-" + oldData.id);
+        inventoryItemDiv = tooltipDiv.parentElement;
+        log("iventoryItemDiv.id: " + inventoryItemDiv.id)
+        emptySlotDiv = document.getElementById(inventoryItemDiv.id + "-empty");
+        unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv);
 
     // When you are Equipping and Item.
     } else if (command === "equip") {
-        inventoryItemDiv.parentElement.removeChild(inventoryItemDiv);
-        empty_slot.style.display = "none";
+        var primarySlotType;
+        var slotDiv;
+        var idsToUnequip;
 
-        tooltipDiv.setAttribute("data-py-function", "unequip");
-        var slotDiv = document.getElementById("inventory-" + slot_type);
+        idsToUnequip = response.idsToUnequip;
+        var itemId;
+        var i;
+        var idsLength = idsToUnequip.length
+        for (i=0; i< idsLength; i++) {
+            itemId = idsToUnequip[i];
+            log("id: " + itemId)
+            tooltipDiv = document.getElementById("item-" + itemId)
+            inventoryItemDiv = tooltipDiv.parentElement;
+            log("iventoryItemDiv.id: " + inventoryItemDiv.id)
+            emptySlotDiv = document.getElementById(inventoryItemDiv.id + "-empty");
+            unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv);
+        }
+
+        // primarySlotType is the location in the inventory that the item
+        // will be equipped into.
+        primarySlotType = response.primarySlotType;
+        tooltipDiv = document.getElementById("item-" + oldData.id);
+        inventoryItemDiv = tooltipDiv.parentElement;
+        slotDiv = document.getElementById("inventory-" + primarySlotType);
+        emptySlotDiv = document.getElementById("inventory-" + primarySlotType + "-empty");
+
+        // Delete the inventoryItemDiv
+        // Hide the emptySlot Div.
+        // Move the tooltipDiv
+        inventoryItemDiv.parentElement.removeChild(inventoryItemDiv);
+        emptySlotDiv.style.display = "none";
         slotDiv.appendChild(tooltipDiv);
     }
+}
+
+// Unequip an item from its current location.
+// Put it at the back of the inventory
+function unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv) {
+    "use strict";
+
+    var unequippedItemDiv;
+    var unequippedGeneralDiv;
+
+    inventoryItemDiv.removeChild(tooltipDiv);
+    emptySlotDiv.style.display = "inline";
+
+    unequippedItemDiv = document.createElement("div");
+    unequippedItemDiv.classList.add("inventory-unequipped", "inventory-item");
+    unequippedItemDiv.appendChild(tooltipDiv);
+
+    unequippedGeneralDiv = document.getElementById("unequipped");
+    unequippedGeneralDiv.appendChild(unequippedItemDiv);
 }
 
 /*
