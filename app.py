@@ -15,6 +15,7 @@ import os
 from flask import (
     Flask, render_template, redirect, url_for, request, session,
     flash, send_from_directory)
+from flask_sslify import SSLify
 
 import werkzeug
 
@@ -45,6 +46,7 @@ game = Game()
 
 # create the application object
 app = Flask(__name__)
+sslify = SSLify(app)
 app.secret_key = 'starcraft'
 
 ALWAYS_VALID_URLS = [
