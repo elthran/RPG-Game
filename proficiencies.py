@@ -208,7 +208,8 @@ class Proficiency(Base):
     speed = Column(Integer)
 
     # Relationships
-    proficiencies_id = Column(Integer, ForeignKey('proficiencies.id'))
+    proficiencies_id = Column(Integer, ForeignKey('proficiencies.id',
+                                                  ondelete="CASCADE"))
     proficiencies = relationship("Proficiencies")
 
     __mapper_args__ = {

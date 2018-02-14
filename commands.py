@@ -212,36 +212,38 @@ class Command:
 
     @staticmethod
     @set_notification_active
-    def equip(hero, database, arg_dict, engine):
-        item_id = arg_dict.get('data', None, type=int)
+    def toggle_equip(hero, database, data, engine):
+        item_id = data['id']
         item = database.get_item_by_id(item_id)
-        ids_to_unequip = hero.inventory.equip(item)
-        hero.refresh_character()
-        engine.spawn(
-            'equip_event',
-            hero,
-            description="{} equips a/an {}.".format(hero.name, item.name)
-        )
-        slot = hero.inventory.slots_used_by_item_type[item.type]["primary"]
-        slot = slot.replace('_', "-")
-        return slot + "&&" + str(ids_to_unequip)
+        len_rings = None
+        if item.type == "Ring":
+            lowest_empty_slot = hero.inventory.get_lowest_empty_ring_pos()
+            primary_slot_type = "finger-{}".format(lowest_empty_slot)
+        else:
+            primary_slot_type = hero.inventory.\
+                js_slots_used_by_item_type[item.type][0]
+        if item.equipped:
+            hero.inventory.unequip(item)
+            hero.refresh_character()
+            engine.spawn(
+                'unequip_event',
+                hero,
+                description="{} unequips a/an {}.".format(hero.name, item.name)
+            )
+            return jsonify(primarySlotType=primary_slot_type,
+                           command="unequip")
+        else:
+            ids_to_unequip = hero.inventory.equip(item)
+            hero.refresh_character()
+            engine.spawn(
+                'equip_event',
+                hero,
+                description="{} equips a/an {}.".format(hero.name, item.name)
+            )
+            return jsonify(primarySlotType=primary_slot_type,
+                           command="equip", idsToUnequip=ids_to_unequip)
 
     @staticmethod
-    @set_notification_active
-    def unequip(hero, database, arg_dict, engine):
-        item_id = arg_dict.get('data', None, type=int)
-        item = database.get_item_by_id(item_id)
-        hero.inventory.unequip(item)
-        hero.refresh_character()
-        engine.spawn(
-            'unequip_event',
-            hero,
-            description="{} unequips a/an {}.".format(hero.name, item.name)
-        )
-        slot = hero.inventory.slots_used_by_item_type[item.type]["primary"]
-        slot = slot.replace('_', "-")
-        return slot
-
     def cast_spell(hero, database, arg_dict, **kwargs):
         ability_id = arg_dict.get('data', None, type=int)
         ability = database.get_ability_by_id(ability_id)

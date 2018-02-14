@@ -1,4 +1,8 @@
 # import pytest
+import configparser
+config = configparser.ConfigParser()
+config.read('tests/test.ini')
+url = config['DEFAULT']['url']
 
 from database import EZDB
 # from hero import Hero
@@ -8,7 +12,7 @@ from proficiencies import Proficiencies, Health, Regeneration
 
 class TestProficiency:
     def setup(self):
-        self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
+        self.db = EZDB(url, debug=False, testing=True)
 
     def teardown(self, delete=False):
         self.db.session.close()

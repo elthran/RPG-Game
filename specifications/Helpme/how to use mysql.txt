@@ -20,3 +20,14 @@ $ mysql -u elthran -h elthran.mysql.pythonanywhere-services.com -p7ArQMuTUSoxXqE
 
 # Load data back it!
 $ mysql -u elthran -h elthran.mysql.pythonanywhere-services.com -p7ArQMuTUSoxXqEfzYfUR < sqlite_dump.sql
+
+# execute SQL from command line
+$ mysql -u USER -pPASSWORD -e "SQL_QUERY"
+
+
+# NOTE: powershell prevents you from using '<'
+# try using -e "souce path/to/file.sql" instead or switching to cmd.
+PS> cmd
+> mysql args < file.sql
+OR
+PS> mysql args -e "source file.sql"

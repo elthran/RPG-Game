@@ -36,8 +36,8 @@ from bestiary2 import create_monster, MonsterTemplate
 
 # INIT AND LOGIN FUNCTIONS
 # for server code swap this over:
-database = EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@elthran.mysql.pythonanywhere-services.com/elthran$rpg_database", debug=False)
-# database = EZDB("mysql+mysqldb://root:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database", debug=False)
+# database = EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@elthran.mysql.pythonanywhere-services.com/elthran$rpg_database", debug=False)
+database = EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database", debug=False)
 engine = Engine(database)
 
 # Disable will need to be restructured (Marlen)
@@ -163,7 +163,7 @@ def login_required(f):
 
     @wraps(f)
     def wrap_login(*args, **kwargs):
-        if 'logged_in' in session:
+        if 'logged_in' in session and session['logged_in']:
             return f(*args, **kwargs)
         else:
             flash('You need to login first.')
@@ -258,6 +258,9 @@ def login():
     # Should prevent contamination between logging in with 2 different
     # accounts.
     session.clear()
+    # I might remove this later ...
+    # This fixed a bug in the server that I have now fixe with
+    # if 'logged_in' in session and session['logged_in']
     session['logged_in'] = False
 
     if request.method == 'POST':
@@ -283,7 +286,7 @@ def login():
         else:
             raise Exception("The form of this 'type' doesn't exist!")
 
-        if session['logged_in']:
+        if 'logged_in' in session and session['logged_in']:
             flash("LOG IN SUCCESSFUL")
             user = database.get_user_by_username(username)
             session['id'] = user.id
@@ -704,14 +707,11 @@ def ability_tree(spec, hero=None):
 def inventory_page(hero=None):
     page_title = "Inventory"
     total_armour = 0
-    for armour in hero.inventory:
-        if armour.inventory_unequipped == None:
-            try:
-                total_armour += armour.armour_value
-            except AttributeError:
-                pass  # item might not have an armour value.
-       # if not armour.unequipped:
-      #      total_armour += armour.armour_value
+    for item in hero.inventory.equipped:
+        try:
+            total_armour += item.armour_value
+        except AttributeError:
+            pass  # item might not have an armour value so ignore.
     # for item in hero.inventory:
     #     if item.wearable:
     #         item.check_if_improvement()
@@ -729,10 +729,13 @@ def quest_log(hero=None):
 @app.route('/bestiary/<monster_id>')
 @login_required
 @uses_hero
-def bestiary(hero=None, monster_id=1):
+def bestiary(hero=None, monster_id=0):
     page_title = "Bestiary"
     all_monsters = database.session.query(MonsterTemplate).filter().all()
-    display_monster = database.get_object_by_id("MonsterTemplate", int(monster_id))
+    if monster_id == "0":
+        display_monster = None
+    else:
+        display_monster = database.get_object_by_id("MonsterTemplate", int(monster_id))
     return render_template('journal.html', hero=hero, bestiary=True, page_title=page_title,
         all_monsters=all_monsters, display_monster=display_monster)
 
@@ -757,20 +760,32 @@ def people_log(hero=None, npc_id=0):
     return render_template('journal.html', hero=hero, people_log=True, page_title=page_title,
                            all_npcs=all_npcs, display_npc=display_npc)  # return a string
 
-@app.route('/map_log')
+@app.route('/atlas/<map_id>')
 @login_required
 @uses_hero
-def map_log(hero=None):
+def atlas(hero=None, map_id=0):
     page_title = "Map"
-    return render_template('journal.html', hero=hero, map_log=True, page_title=page_title)  # return a string
+    # Below is temporary map code as it's not currently set up
+    all_maps = [database.get_object_by_id("Location", 1)]
+    if map_id == "0":
+        display_map = None
+    else:
+        display_map = database.get_object_by_id("Location", int(map_id))
+    return render_template('journal.html', hero=hero, atlas=True, page_title=page_title,
+                           all_maps=all_maps, display_map=display_map)  # return a string
 
-@app.route('/achievement_log')
+@app.route('/achievements/<achievement_id>')
 @login_required
 @uses_hero
-def achievement_log(hero=None):
+def achievements(hero=None, achievement_id=0):
     page_title = "Achievements"
-    return render_template('journal.html', hero=hero, achievement_log=True,
-                           completed_achievements=hero.completed_achievements, page_title=page_title)  # return a string
+    all_achievements = [(1, "Kill 3 Wolves", 5)]
+    if achievement_id == "0":
+        display_achievement = None
+    else:
+        display_achievement = all_achievements[0]
+    return render_template('journal.html', hero=hero, achievement_log=True, page_title=page_title,
+                           all_achievements=all_achievements, display_achievement=display_achievement)  # return a string
 
 @app.route('/forum/<board_id>/<thread_id>', methods=['GET', 'POST'])
 @login_required
@@ -995,19 +1010,12 @@ def spar(name='', hero=None, location=None):
 
         # This gives you experience and also returns how much
         # experience you gained
-        modified_spar_benefit, level_up = hero.gain_experience(spar_benefit)
+        modified_spar_benefit = hero.gain_experience(spar_benefit)
         hero.proficiencies.endurance.current -= 1
         location.display.page_heading = \
             "You spend some time sparring with the trainer at the barracks." \
             " You spend {} gold and gain {} experience.".format(
                 spar_cost, modified_spar_benefit)
-        if level_up:
-            location.display.page_heading += " You level up!"
-    # page_links = {
-    #     "Compete in the arena.": "/arena",
-    #     "Spar with the trainer.": "/spar",
-    #     "Battle another player.": None
-    # }
     return render_template('generic_location.html', hero=hero, game=game)  # return a string
 
 
@@ -1115,7 +1123,7 @@ def battle(this_user=None, hero=None):
                     hero.bestiary.append(monster)
             hero.experience += 5
         """
-        experience_gained,level_up = hero.gain_experience(game.enemy.experience_rewarded)  # * hero.experience_gain_modifier  THIS IS CAUSING A WEIRD BUG? I don't know why
+        experience_gained = hero.gain_experience(game.enemy.experience_rewarded)  # * hero.experience_gain_modifier  THIS IS CAUSING A WEIRD BUG? I don't know why
         if this_user == "monster":
             hero.monster_kills += 1
         else:
@@ -1132,16 +1140,9 @@ def battle(this_user=None, hero=None):
                         if items.name == item.name:
                             items.amount_owned += 1
         page_title = "Victory!"
-        page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(
-            experience_gained) + " experience!"
+        page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(experience_gained) + " experience!"
         page_links = [("Return to where you ", hero.current_location.url, "were", ".")]
         hero.current_dungeon_monster = False
-        if level_up:
-            page_heading += " You have leveled up! You should return to your profile page to advance in skill."
-            page_links = [("Return to your ", "/home", "profile", " page and distribute your new attribute points."),
-                          ("Return to where you ", "/explore_dungeon/Explore%20Dungeon/Entering", "were", ".")]
-
-    # Return an html page built from a Jinja2 form and the passed data.
     return render_template(
         'battle.html', page_title=page_title, page_heading=page_heading,
         battle_log=battle_log, hero=hero, enemy=game.enemy,
@@ -1261,16 +1262,13 @@ def tavern(name='', hero=None):
 @login_required
 @uses_hero
 def marketplace(inventory, hero=None):
-    page_title = "Marketplace"
-    items_for_sale = []
-    if inventory == "Marketplace":
-        page_links = [("Take a look at our ", "/marketplace/general", "selection", "."), ("Return to ", hero.current_city.url, "town", ".")]
-        return render_template('store.html', hero=hero, page_title=page_title, page_links=page_links)  # return a string
-    elif inventory == "general":
-        page_links = [("Let me go back to the ", "/marketplace/Marketplace", "marketplace", " instead.")]
+    if inventory == "shopping":
         items_for_sale = database.get_all_marketplace_items()
-    return render_template('store.html', hero=hero, items_for_sale=items_for_sale, page_title=page_title,
-                           page_links=page_links)  # return a string
+        dialogue = "Anything catch your fancy?"
+    else:
+        items_for_sale = []
+        dialogue = "Welcome to the Thornwall market. We have goods from all over the eastern coast. Come in and take a look."
+    return render_template('store.html', hero=hero, items_for_sale=items_for_sale, dialogue=dialogue)  # return a string
 
 
 @app.route('/house/<name>')

@@ -64,9 +64,32 @@ def scoped_session(f):
             raise
         finally:
             self.session.close()
+        if hasattr(retval, '_sa_instance_state'):
+            raise Exception("Don't use scoped_session when you are returning a database object!")
+        return retval
+    return wrap_scoped_session
+
+
+def safe_commit_session(f):
+    """Wrap a commit and rollback in one. Add and commit returned value.
+
+    I don't really know what happens if this crashes and rollsback ..
+    is the session clean or corrupt? Does it loose the data?
+    I guess it throws and exception .. so maybe that is ok.
+    """
+    @wraps(f)
+    def wrap_safe_commit_session(*args, **kwargs):
+        self = args[0]
+        retval = f(*args, **kwargs)
+        self.session.add(retval)
+        try:
+            self.session.commit()
+        except:
+            self.session.rollback()
+            raise
         return retval
 
-    return wrap_scoped_session
+    return wrap_safe_commit_session
 
 
 # Constants#
@@ -95,12 +118,14 @@ class EZDB:
         first_run = False
         server = database[0:database.rindex('/')]
         name = database.split('/').pop()
+        self.filename = name
 
         engine = create_engine(server, pool_recycle=3600, echo=debug)
 
         # Build a new database if this one doesn't exist.
         # Also set first_run variable!
         if not engine.execute("SHOW DATABASES LIKE '{}';".format(name)).first():
+            print("Building database for first time!")
             first_run = True
             engine.execute("CREATE DATABASE IF NOT EXISTS {}".format(name))
 
@@ -187,7 +212,7 @@ class EZDB:
         Return error if name doesn't exist in global scope.
         obj = getattr(globals(), name)
 
-        Name can be capitalized or not e.g. "hero" or "Hero"
+        Name must be properly capitalized!
         """
         try:
             obj = globals()[obj_name]
@@ -227,10 +252,13 @@ class EZDB:
         """
         return self.session.query(Item).get(item_id)
 
-    def create_item(self, item_id):
+    @safe_commit_session
+    def create_item(self, template_id):
         """Create a new item from a given template name.
+
+        Autocommit using @safe_commit_session.
         """
-        template = self.session.query(Item).get(item_id)
+        template = self.session.query(Item).get(template_id)
         item = template.build_new_from_template()
         return item
 
@@ -239,6 +267,7 @@ class EZDB:
         num_rows = self.session.query(Item).count()
         item_id = random.randint(1, num_rows)
         item = self.create_item(item_id)
+        self.session.add(item)
         return item
 
     def get_all_users(self):
@@ -493,15 +522,20 @@ class EZDB:
     #     """
     #     return self.session.query(WorldMap).filter_by(name=name).first()
 
+    @scoped_session
+    def add(self, objects=[]):
+        try:
+            self.session.add_all(objects)
+        except TypeError as ex:
+            if "object is not iterable" in str(ex):
+                self.session.add(objects)
+            else:
+                raise ex
+
     def _delete_database(self):
         """Deletes current database file.
 
         Use with caution, mainly for testing.
         """
-        try:
-            os.remove(self.file_name)
-        except FileNotFoundError:
-            # Ignore because the file has already been deleted.
-            pass
-        except PermissionError:
-            pass
+        self.engine.execute(
+            "DROP DATABASE IF EXISTS {};".format(self.filename))

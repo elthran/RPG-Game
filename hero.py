@@ -45,6 +45,7 @@ class Hero(Base):
     attribute_points = Column(Integer)
     proficiency_points = Column(Integer)
 
+    # All elthran's new code for random stuff
     current_terrain = Column(String(50))
     deepest_dungeon_floor = Column(Integer)  # High score for dungeon runs
     current_dungeon_floor = Column(Integer)  # Which floor of dungeon your on
@@ -64,6 +65,11 @@ class Hero(Base):
     login_alerts = Column(String(50))  # Testing messages when you are attacked or get a new message
 
     # Relationships
+    # User to Hero. One to many. Ordered!
+    # Note deleting the user deletes all their heroes!
+    user_id = Column(Integer, ForeignKey('user.id', ondelete="CASCADE"))
+    user = relationship("User", back_populates='heroes')
+
     # Many heroes -> one map/world. (bidirectional)
     map_id = Column(Integer, ForeignKey('location.id'))
     current_world = relationship("Location", back_populates='heroes',
@@ -88,37 +94,37 @@ class Hero(Base):
         foreign_keys='[Hero.last_city_id]')
 
     # Each hero can have one set of Abilities. (bidirectional, One to One).
-    abilities = relationship("Abilities", uselist=False, back_populates='hero')
+    # Deleting a Hero deletes all their Abilities.
+    abilities = relationship("Abilities", uselist=False, back_populates='hero',
+                             cascade="all, delete-orphan")
 
     # Hero to specializations relationship
-    specializations_id = Column(Integer,
-                                ForeignKey('specialization_container.id'))
     specializations = relationship(
-        "SpecializationContainer", back_populates="hero")
-
-    # User to Hero. One to many. Ordered!
-    user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship("User", back_populates='heroes')
+        "SpecializationContainer", back_populates="hero", uselist=False,
+        cascade="all, delete-orphan")
 
     # Each Hero has One inventory. (One to One -> bidirectional)
     # inventory is list of character's items.
-    inventory_id = Column(Integer, ForeignKey('inventory.id'))
-    inventory = relationship("Inventory", back_populates="hero")
+    inventory = relationship("Inventory", back_populates="hero", uselist=False,
+                             cascade="all, delete-orphan")
 
     # Attributes One to One despite the name
-    attributes_id = Column(Integer, ForeignKey('attributes.id'))
-    attributes = relationship("Attributes", back_populates='hero')
+    attributes = relationship(
+        "Attributes", back_populates='hero', uselist=False,
+        cascade="all, delete-orphan")
 
     # Proficiencies One to One despite the name
-    proficiencies_id = Column(Integer, ForeignKey('proficiencies.id'))
-    proficiencies = relationship("Proficiencies", back_populates='hero')
+    proficiencies = relationship(
+        "Proficiencies", back_populates='hero', uselist=False,
+        cascade="all, delete-orphan")
 
     # Journal to Hero is One to One
-    journal_id = Column(Integer, ForeignKey('journal.id'))
-    journal = relationship('Journal', back_populates='hero')
+    journal = relationship('Journal', back_populates='hero', uselist=False,
+                           cascade="all, delete-orphan")
 
     # Many to one with Triggers, Each hero has many triggers.
-    triggers = relationship('Trigger', back_populates='hero')
+    triggers = relationship('Trigger', back_populates='hero',
+                            cascade="all, delete-orphan")
 
     # @eltran ... this probably won't work as the var will disappear on
     # database reload.
@@ -208,9 +214,7 @@ class Hero(Base):
     def validate_experience(self, key_name, current):
         # Update experience percent on experience change.
         try:
-            self.experience_percent = round(
-                current / self.experience_maximum, 2
-            ) * 100
+            self.experience_percent = min(round(current / self.experience_maximum, 2) * 100, 100)
         except (TypeError, ZeroDivisionError):
             self.experience_percent = 0
         return max(current or 0, 0)
@@ -242,43 +246,25 @@ class Hero(Base):
     # I don't think I ever call this function and the bar seems
     # to be updating properly
     def update_experience_bar(self):
-        self.experience_percent = round(
-            self.experience / self.experience_maximum, 2) * 100
+        self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100
 
-    # updates field variables when hero levels up
-    def check_if_leveled_up(self):
+    def gain_experience(self, amount):
+        new_amount = amount * self.proficiencies.understanding.modifier
+        new_amount = int(new_amount) + (random.random() < new_amount - int(new_amount)) # This will round the number weighted by its decimal (so 1.2 has 20% chance of rounding up)
+        self.experience += new_amount
         if self.experience >= self.experience_maximum:
             self.experience -= self.experience_maximum
-            self.experience_maximum = math.floor(1.5 * self.experience_maximum)
+            self.experience_maximum += 5
             self.attribute_points += 1
             self.proficiency_points += 1
             self.basic_ability_points += 1
             self.archetype_ability_points += 1
             self.age += 1
             self.refresh_character(full=True)
-            return True
-        return False
-
-    def gain_experience(self, amount):
-        new_amount = amount * self.proficiencies.understanding.modifier
-        # This will round the number weighted by its decimal
-        # (so 1.2 has 20% chance of rounding up)
-        new_amount = int(new_amount) + (random.random() < new_amount - int(
-            new_amount))
-        self.experience += new_amount
-        level_up = self.check_if_leveled_up()
-
-        # Return a variable in case you want to know how much experience you
-        # just gained or if you leveled up
-        return new_amount, level_up
+        return new_amount
 
     def equipped_items(self):
-        try:
-            return [item for item in self.inventory if item.is_equipped()]
-        except TypeError as ex:
-            if str(ex) == "'NoneType' object is not iterable":
-                return []
-            raise ex
+        return self.inventory.equipped or []  # Might work without OR.
 
     def non_equipped_items(self):
         return self.inventory.unequipped or []
@@ -313,8 +299,7 @@ class Hero(Base):
             reward = 3
             self.login_alerts += "Thanks for logging in today! You earn " + str(
                 reward) + " experience."
-            self.experience += reward
-            self.check_if_leveled_up()
+            self.gain_experience(reward)
             print("first time log in TODAY (printed from game.py)")
         else:
             print("you have already logged in today (printed from game.py)")

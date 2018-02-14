@@ -226,9 +226,9 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         hero = self.journal.hero
         quest = self.current_quest
         if final:
-            hero.experience += quest.reward_experience + self.reward_experience
+            hero.gain_experience(quest.reward_experience + self.reward_experience)
         else:
-            hero.experience += quest.reward_experience
+            hero.gain_experience(quest.reward_experience)
         self.journal.notification = self
 
     def activate(self, hero):
