@@ -98,9 +98,12 @@ class Base(object):
                           type(value) ==
                           sqlalchemy.ext.orderinglist.OrderingList):
                 value = '[' + ', '.join(
-                    e.__class__.__name__ + '.id=' + str(e.id)
+                    "<{}(id={})>".format(e.__class__.__name__, e.id)
                     for e in value) + ']'
-
+            elif value and type(value) == orm.collections.MappedCollection:
+                value = "{" + ', '.join(
+                    "{}: <{}(id={})>".format(k, v.__class__.__name__, v.id)
+                    for k, v in value.items()) + '}'
             # This if/try is a way to print ONE to ONE relationship objects
             # without infinite recursion.
             elif value:

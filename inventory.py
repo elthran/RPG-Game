@@ -1,12 +1,13 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy.orm import relationship
-from sqlalchemy import ForeignKey
-from base_classes import Base
-from sqlalchemy.orm.session import object_session
-
 import pdb
 import warnings
+
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy.orm import relationship
+from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.orm.session import object_session
+
+from base_classes import Base
 
 
 class Inventory(Base):
@@ -24,22 +25,22 @@ class Inventory(Base):
         item.equipped = False
         item.inventory_id = inventory.id
         item.unequipped_position = x
-        item.rings_positions = None
+        item.ring_position = None
     2. Equipped:
         item.equipped = True
         item.inventory_id = inventory.id
         item.unequipped_position = None
-        (possibly) item.rings_positions = x
+        (possibly) item.ring_position = x
     3. Limbo (for items transitioning from one state to the next):
         item.equipped = None
         item.inventory_id = inventory.id
         item.unequipped_position = x or None?
-        (possibly) item.rings_positions = x or None
+        (possibly) item.ring_position = x or None
     4. Not in an inventory:
         item.equipped = None
         item.inventory_id = None
         item.unequipped_position = None
-        item.rings_positions = None
+        item.ring_position = None
     """
     __tablename__ = 'inventory'
 
@@ -106,8 +107,8 @@ class Inventory(Base):
 
     # One to many
     rings = relationship(
-        "Item", order_by="Item.rings_position",
-        collection_class=ordering_list("rings_position"),
+        "Item", order_by="Item.ring_position",
+        collection_class=attribute_mapped_collection('ring_position'),
         primaryjoin="and_(Inventory.id==Item.inventory_id, "
                     "Item.equipped,"
                     "Item.type=='Ring')")
@@ -166,25 +167,25 @@ class Inventory(Base):
 
     all_slot_names = single_slots + multiple_slots
     js_single_slots = [(slot.replace('_', '-'), slot) for slot in single_slots]
-                       # if slot != 'both_hands']
     js_slots_used_by_item_type = {k: [v.replace('_', '-') for v in l]
                                   for k, l in slots_used_by_item_type.items()}
 
-    # def equip_all(self, equipped_items):
-    #     """Equip all passed items.
-    #
-    #     I don't know when this would be used ...
-    #     NOTE: If there are slot conflicts they won't be resolved.
-    #     """
-    #     for item in equipped_items:
-    #         self.equip(item)
+    def equip_all(self, items):
+        """Equip all passed items.
+
+        I don't know when this would be used ...
+        NOTE: If there are slot conflicts The last item passed will take
+        precedence.
+        """
+        for item in items:
+            self.equip(item)
 
     def equip(self, item, index=None):
         """Equip the an item in the correct slot -> Return ids of items replaced.
 
         Unequip the items in the slots used if any exist.
         NOTES:
-            Max 10 rings are equipped at any given time
+            Max 10 rings are equippable at any given time
             Some items take up multiple slots e.g. a TwoHandedWeapon takes
             up 3 slots.
 
@@ -202,7 +203,7 @@ class Inventory(Base):
 
         # This should never happen ... but prevent it if it does.
         if item.type == "Ring" and index and not 0 <= index <= 9:
-            self.unequip(item)  # Fail to unequipped items.
+            self.unequip(item)  # Fail -> send ring to unequipped items.
             raise IndexError("'Ring' index out of range. Index must be from 0 to 9.")
 
         # Use the 3rd item state. Not equipped and not unequipped.
@@ -221,18 +222,17 @@ class Inventory(Base):
         # Get reference to current item in this slot (if it exists).
         old_items = []
         if item.type == "Ring":
-            # pdb.set_trace()
             # Get lowest empty slot.
             if not index:
                 index = self.get_lowest_empty_ring_pos()
-            try:
-                old_item = self.rings.pop(index)
-            except IndexError:
-                old_item = None
+                old_item = self.get_ring_at_pos(index)
             if old_item:
                 old_items = [old_item]
                 self.unequip(old_item)
-            item.rings_position = index
+            # Both of these operations are necessary for the synchronicity of
+            # the sacred attribute_mapped_collection to work properly
+            item.ring_position = index
+            self.rings[index] = item
         else:
             for slot in slots_used:
                 old_item = getattr(self, slot)
@@ -280,32 +280,36 @@ class Inventory(Base):
 
     def remove_item(self, item):
         """Remove a given item from any inventory it might be in."""
-        item.rings_position = None
+        item.ring_position = None
         item.equipped = None
         item.unequipped_position = None
         item.inventory_id = None
         object_session(self).commit()
 
     def get_ring_at_pos(self, n):
-        for ring in self.rings:
-            if ring.rings_position == n:
-                return ring
-        return None
+        """Return the ring on this finger or None if none there.
+
+        This is just an error handled version of:
+            self.rings[n] (rings is now a dictionary)
+        """
+        try:
+            return self.rings[n]
+        except KeyError:
+            return None
 
     def get_lowest_empty_ring_pos(self):
-        """If there is an empty slot in the ring list return it.
+        """If there is an empty slot in the ring dictionary return it.
 
-        Ring list isn't a real list so it has no gaps ... but it should :P
+        Returns the first position from 0-9 that has no ring in it.
         Returns last position if there are no gaps.
         """
 
-        # If the ring position of the last ring is higher than the length
-        # of self.rings there must be a gap.
-        if self.rings and self.rings[-1].rings_position != len(self.rings) - 1:
-            for n in range(len(self.rings)):
-                if self.rings[n].rings_position != n:
-                    return n
-        return max(len(self.rings), 9)
+        for n in range(len(self.rings)):
+            try:
+                self.rings[n]
+            except KeyError:
+                return n
+        return 9  # The highest ring.
 
     def _clear_inventory(self):
         """Disconnect all items from this inventory.

@@ -65,7 +65,7 @@ class Item(TemplateMixin, Base):
 
     # One to Many
     equipped = Column(Boolean)
-    rings_position = Column(Integer)
+    ring_position = Column(Integer)
     unequipped_position = Column(Integer)
 
     __mapper_args__ = {
@@ -88,7 +88,7 @@ class Item(TemplateMixin, Base):
         # I don't think these should have any value? So copying them
         # shouldn't do anything ...
         # relationship_keys = [
-        #     'rings_position',
+        #     'ring_position',
         #     'unequipped_position'
         # ]
         # for relationship_key in relationship_keys:
