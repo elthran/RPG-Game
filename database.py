@@ -120,18 +120,20 @@ class EZDB:
         name = database.split('/').pop()
         self.filename = name
 
-        engine = create_engine(server, pool_recycle=3600, echo=debug)
+        engine = create_engine(
+            server + "/?charset=utf8mb4", pool_recycle=3600, echo=debug)
 
         # Build a new database if this one doesn't exist.
         # Also set first_run variable!
         if not engine.execute("SHOW DATABASES LIKE '{}';".format(name)).first():
             print("Building database for first time!")
             first_run = True
-            engine.execute("CREATE DATABASE IF NOT EXISTS {}".format(name))
+            engine.execute("CREATE DATABASE IF NOT EXISTS {} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;".format(name))
 
         # Select the database ... not sure if I need this.
         # Or if I should create a new engine instead ..
-        engine = create_engine(database, pool_recycle=3600, echo=debug)
+        engine = create_engine(
+            database+ "?charset=utf8mb4", pool_recycle=3600, echo=debug)
 
         base_classes.Base.metadata.create_all(engine, checkfirst=True)
         EZDB.Session = sessionmaker(bind=engine)

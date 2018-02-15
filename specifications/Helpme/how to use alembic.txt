@@ -2,6 +2,7 @@ Most useful alembic commands to date:
 
 To indicate that the current state of the database represents the application of all migrations use:
 $ alembic stamp head
+$ alembic stamp base
 
 
 Reset everything

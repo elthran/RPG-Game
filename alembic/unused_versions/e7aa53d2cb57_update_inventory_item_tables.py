@@ -17,10 +17,14 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column(
-        'item',
-        sa.Column('inventory_id', sa.Integer, sa.ForeignKey('inventory.id'))
-    )
+    try:
+        op.add_column(
+            'item',
+            sa.Column('inventory_id', sa.Integer, sa.ForeignKey('inventory.id'))
+        )
+    except sa.exc.OperationalError as ex:
+        if "Duplicate column name 'inventory_id'" not in str(ex):
+            raise
 
 
 def downgrade():

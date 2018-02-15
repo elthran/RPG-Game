@@ -221,6 +221,7 @@ class Inventory(Base):
 
         # Get reference to current item in this slot (if it exists).
         old_items = []
+        old_item = None
         if item.type == "Ring":
             # Get lowest empty slot.
             if not index:

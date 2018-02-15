@@ -17,10 +17,14 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column(
-        'item',
-        sa.Column('equipped', sa.Boolean)
-    )
+    try:
+        op.add_column(
+            'item',
+            sa.Column('equipped', sa.Boolean)
+        )
+    except sa.exc.OperationalError as ex:
+        if "Duplicate column name 'equipped'" not in str(ex):
+            raise
 
 
 def downgrade():
