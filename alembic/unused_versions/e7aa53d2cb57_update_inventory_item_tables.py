@@ -20,7 +20,8 @@ def upgrade():
     try:
         op.add_column(
             'item',
-            sa.Column('inventory_id', sa.Integer, sa.ForeignKey('inventory.id'))
+            sa.Column('inventory_id', sa.Integer, sa.ForeignKey(
+                'inventory.id', ondelete="SET NULL"))
         )
     except sa.exc.OperationalError as ex:
         if "Duplicate column name 'inventory_id'" not in str(ex):

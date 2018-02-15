@@ -12,13 +12,16 @@ class Inbox(Base):
 
     # Relationships
     # Each inbox has a single user. One to One (bidirectional).
+    user_id = Column(Integer, ForeignKey("user.id", ondelete="CASCADE"))
     user = relationship("User", uselist=False, back_populates='inbox')
 
     # Each inbox can have many sent messages One to Many
     sent_messages = relationship("Message", back_populates='sender',
-                                 foreign_keys="[Message.sender_id]")
+                                 foreign_keys="[Message.sender_id]",
+                                 cascade="all, delete-orphan")
     received_messages = relationship("Message", back_populates='receiver',
-                                     foreign_keys="[Message.receiver_id]")
+                                     foreign_keys="[Message.receiver_id]",
+                                     cascade="all, delete-orphan")
 
     def get_sent_messages(self):
         """Return a list of all sent messages.
@@ -68,10 +71,10 @@ class Message(Base):
 
     # Relationships
     # Each user can send or receive multiple messages. One to Many (bi).
-    sender_id = Column(Integer, ForeignKey('inbox.id'))
+    sender_id = Column(Integer, ForeignKey('inbox.id', ondelete="CASCADE"))
     sender = relationship("Inbox", back_populates="sent_messages",
                           foreign_keys="[Message.sender_id]")
-    receiver_id = Column(Integer, ForeignKey('inbox.id'))
+    receiver_id = Column(Integer, ForeignKey('inbox.id', ondelete="CASCADE"))
     receiver = relationship("Inbox", back_populates="received_messages",
                             foreign_keys="[Message.receiver_id]")
 

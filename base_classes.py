@@ -241,8 +241,10 @@ class BaseListElement(Base):
     int_value = Column(Integer)
     str_value = Column(String(50))
     
-    dict_id_keys = Column(Integer, ForeignKey('base_dict.id'))
-    dict_id_values = Column(Integer, ForeignKey('base_dict.id'))
+    dict_id_keys = Column(Integer, ForeignKey('base_dict.id',
+                                              ondelete="CASCADE"))
+    dict_id_values = Column(Integer, ForeignKey('base_dict.id',
+                                                ondelete="CASCADE"))
     
     def __init__(self, value):
         """Build BaseListElement from value.
@@ -285,7 +287,8 @@ class BaseItem(Base):
     str_value = Column(String(50))
     int_value = Column(Integer)
     
-    base_dict_id = Column(Integer, ForeignKey('base_dict.id'))
+    base_dict_id = Column(Integer, ForeignKey('base_dict.id',
+                                              ondelete="CASCADE"))
     def __init__(self, key, value):
         self.key = key
         self.value = value
@@ -343,7 +346,7 @@ class BaseDict(Base):
     __tablename__ = "base_dict"
     id = Column(Integer, primary_key=True)
     
-    base_items = relationship("BaseItem")
+    base_items = relationship("BaseItem", cascade="all, delete-orphan")
     
     def __init__(self, d={}):
         """Build a list of items and a matching dictionary.

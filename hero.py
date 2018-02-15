@@ -71,24 +71,26 @@ class Hero(Base):
     user = relationship("User", back_populates='heroes')
 
     # Many heroes -> one map/world. (bidirectional)
-    map_id = Column(Integer, ForeignKey('location.id'))
+    map_id = Column(Integer, ForeignKey('location.id', ondelete="SET NULL"))
     current_world = relationship("Location", back_populates='heroes',
                                  foreign_keys='[Hero.map_id]')
     # Each current_location -> can be held by Many Heroes (bidirectional)
-    current_location_id = Column(Integer, ForeignKey('location.id'))
+    current_location_id = Column(Integer, ForeignKey('location.id',
+                                                     ondelete="SET NULL"))
     current_location = relationship(
         "Location", back_populates='heroes_by_current_location',
         foreign_keys='[Hero.current_location_id]')
 
     # Each current_city -> can be held by Many Heroes (bidirectional)
     # (Town or Cave)
-    city_id = Column(Integer, ForeignKey('location.id'))
+    city_id = Column(Integer, ForeignKey('location.id', ondelete="SET NULL"))
     current_city = relationship(
         "Location", back_populates='heroes_by_city',
         foreign_keys='[Hero.city_id]')
 
     # When you die, you should return to the last city you were at.
-    last_city_id = Column(Integer, ForeignKey('location.id'))
+    last_city_id = Column(Integer, ForeignKey('location.id',
+                                              ondelete="SET NULL"))
     last_city = relationship(
         "Location", back_populates='heroes_by_last_city',
         foreign_keys='[Hero.last_city_id]')

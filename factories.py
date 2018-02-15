@@ -23,12 +23,14 @@ def named_relationship_mixin_factory(container_name, cls_name, names):
     for false_name in names:
         attr_name = false_name.lower().replace(" ", "_")
         name = false_name.title().replace(" ", '')
-        dct[attr_name] = lambda cls, name=name: relationship(
-                name,
-                primaryjoin="and_({}.id=={}.{}_id, {}.name=='{}')".format(
-                    container_name, cls_name, container_name.lower(),
-                    cls_name, name),
-                back_populates=container_name.lower(), uselist=False)
+        dct[attr_name] = lambda cls, name_=name: relationship(
+            name_,
+            primaryjoin="and_({}.id=={}.{}_id, {}.name=='{}')".format(
+                container_name, cls_name, container_name.lower(),
+                cls_name, name_),
+            back_populates=container_name.lower(),
+            uselist=False,
+            cascade="all, delete-orphan")
 
         dct[attr_name] = declared_attr(dct[attr_name])
 

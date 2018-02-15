@@ -52,8 +52,8 @@ class User(Base):
 
     # Relationships
     # Each user can have one inbox. One to One (bidirectional).
-    inbox_id = Column(Integer, ForeignKey('inbox.id'))
-    inbox = relationship("Inbox", back_populates="user")
+    inbox = relationship("Inbox", back_populates="user", uselist=False,
+                         cascade="all, delete-orphan")
 
     # Many heroes -> one user
     heroes = relationship("Hero", order_by='Hero.character_name',
@@ -62,7 +62,7 @@ class User(Base):
 
     # Many to One with Posts
     posts = relationship("Post", order_by="Post.timestamp.desc()",
-                         back_populates="user")
+                         back_populates="user", cascade="all, delete-orphan")
 
     def __init__(self, username, password, email='', timestamp=None, is_admin=False):
         """Create a new user object.

@@ -10,14 +10,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
     # print(args)
 
-    os.system("cls")
+    os.system("clear")
     print("Take a look at Alembic (and 'clean_start.py' code) if you get database errors!")
     if args.f:
         os.system('mysql -u elthran -p7ArQMuTUSoxXqEfzYfUR -e "DROP DATABASE IF EXISTS rpg_database;"')
         print("Database deleted!")
 
     try:
-        os.system("app.py")
+        os.system("python3 app.py")
     except KeyboardInterrupt:
         pass  # Only raise error from the actual program
 
