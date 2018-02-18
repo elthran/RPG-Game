@@ -1,5 +1,6 @@
 import os
 import argparse
+import platform
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -10,7 +11,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
     # print(args)
 
-    os.system("clear")
+    # Mult-system clear screen.
+    if platform.system() == "Windows":
+        os.system("cls")
+    elif platform.system() == "Linux":
+        os.system("clear && printf '\033[3J'")
+
     print("Take a look at Alembic (and 'clean_start.py' code) if you get database errors!")
     if args.f:
         os.system('mysql -u elthran -p7ArQMuTUSoxXqEfzYfUR -e "DROP DATABASE IF EXISTS rpg_database;"')

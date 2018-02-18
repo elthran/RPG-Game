@@ -3,8 +3,6 @@ from pprint import pprint
 import pdb
 import re
 
-from database import EZDB
-from hero import Hero
 from inventory import Inventory
 from items import (Item, OneHandedWeapon, HeadArmour, TwoHandedWeapon, Ring,
                    Shield, LegArmour)
@@ -35,15 +33,14 @@ class TestInventory(GenericTestClass):
 
         # Might be better for testing? To allow post mortem analysis.
         # db.engine.execute("SET FOREIGN_KEY_CHECKS = 0;")
-        db.engine.execute("TRUNCATE TABLE `item`;")
-        # db.engine.execute("DROP TABLE `inventory`;")
-        # db.engine.execute("TRUNCATE TABLE `hero`;")
+        db.engine.execute("DROP TABLE `item`;")
+        db.engine.execute("DROP TABLE `inventory`;")
         # db.engine.execute("SET FOREIGN_KEY_CHECKS = 0;")
         db = super().setup_class()
-        if db.session.query(Hero).get(1) is None:
-            hero = Hero(name="Haldon")
-            db.session.add(hero)
-            db.session.commit()
+
+        inv = Inventory()
+        db.session.add(inv)
+        db.session.commit()
 
         # Add stock item/template combo - helmet/head armour.
         template = HeadArmour("Medium Helmet", 4, armour_value=3,
@@ -82,7 +79,7 @@ class TestInventory(GenericTestClass):
             speed_speed=2, template=True)
         db.session.add(template_sword)
         db.session.commit()
-        db.add(template_sword.build_new_from_template())
+        template_sword.build_new_from_template()
 
         db.update()
 
@@ -93,8 +90,7 @@ class TestInventory(GenericTestClass):
 
     def setup(self):
         super().setup()
-        self.hero = self.db.session.query(Hero).get(1)
-        self.inv = self.hero.inventory
+        self.inv = self.db.session.query(Inventory).get(1)
         self.item_helmet = self.db.session.query(
             Item).filter_by(name="Medium Helmet", template=False).first()
         self.item_polearm = self.db.session.query(
@@ -168,10 +164,10 @@ class TestInventory(GenericTestClass):
         item_str2 = self.inv.both_hands.pretty
 
         assert inv_str.replace(
-            "both_hands=None", "both_hands='<TwoHandedWeapon(id=4)>'").replace(
+            "both_hands=None", "both_hands='<TwoHandedWeapon(id=5)>'").replace(
             "equipped='[<HeadArmour(id=2)>]'",
-            "equipped='[<HeadArmour(id=2)>, <TwoHandedWeapon(id=4)>]'").replace(
-            "unequipped='[<TwoHandedWeapon(id=4)>]'", "unequipped=[]") == inv_str2
+            "equipped='[<HeadArmour(id=2)>, <TwoHandedWeapon(id=5)>]'").replace(
+            "unequipped='[<TwoHandedWeapon(id=5)>]'", "unequipped=[]") == inv_str2
         assert item_str.replace(
             "equipped=False", "equipped=True").replace(
             "unequipped_position=0", "unequipped_position=None") == item_str2
@@ -190,10 +186,10 @@ class TestInventory(GenericTestClass):
         item_str2 = self.inv.rings[7].pretty
         
         assert inv_str.replace(
-            "rings={}", "rings='{7: <Ring(id=6)>}'").replace(
-            "equipped='[<HeadArmour(id=2)>, <TwoHandedWeapon(id=4)>]'",
-            "equipped='[<HeadArmour(id=2)>, <TwoHandedWeapon(id=4)>, <Ring(id=6)>]'"
-        ).replace("unequipped='[<Ring(id=6)>]'", "unequipped=[]") == inv_str2
+            "rings={}", "rings='{7: <Ring(id=7)>}'").replace(
+            "equipped='[<HeadArmour(id=2)>, <TwoHandedWeapon(id=5)>]'",
+            "equipped='[<HeadArmour(id=2)>, <TwoHandedWeapon(id=5)>, <Ring(id=7)>]'"
+        ).replace("unequipped='[<Ring(id=7)>]'", "unequipped=[]") == inv_str2
 
         assert item_str.replace(
             "equipped=False", "equipped=True").replace(
@@ -220,12 +216,12 @@ class TestInventory(GenericTestClass):
         item2_str2 = self.inv.head.pretty
         inv_str2 = self.inv.pretty
         assert inv_str.replace(
-            "equipped='[<HeadArmour(id=2)>, <TwoHandedWeapon(id=4)>, <Ring(id=6)>]'",
-            "equipped='[<TwoHandedWeapon(id=4)>, <Ring(id=6)>, <HeadArmour(id=11)>]'"
+            "equipped='[<HeadArmour(id=2)>, <TwoHandedWeapon(id=5)>, <Ring(id=7)>]'",
+            "equipped='[<TwoHandedWeapon(id=5)>, <Ring(id=7)>, <HeadArmour(id=12)>]'"
         ).replace(
-            "head='<HeadArmour(id=2)>'", "head='<HeadArmour(id=11)>'"
+            "head='<HeadArmour(id=2)>'", "head='<HeadArmour(id=12)>'"
         ).replace(
-            "unequipped='[<HeadArmour(id=11)>]'",
+            "unequipped='[<HeadArmour(id=12)>]'",
             "unequipped='[<HeadArmour(id=2)>]'") == inv_str2
         assert item2_str.replace(
             "equipped=False", "equipped=True").replace(
@@ -253,23 +249,26 @@ class TestInventory(GenericTestClass):
         polearm2_str = self.inv.both_hands.pretty
         inv_str2 = self.inv.pretty
         assert inv_str.replace(
-            "both_hands=None", "both_hands='<TwoHandedWeapon(id=4)>'"
+            "both_hands=None", "both_hands='<TwoHandedWeapon(id=5)>'"
         ).replace(
-            "equipped='[<Ring(id=6)>, <Shield(id=8)>, <OneHandedWeapon(id=10)>, "
-            "<HeadArmour(id=11)>]'",
-            "equipped='[<TwoHandedWeapon(id=4)>, <Ring(id=6)>, <HeadArmour(id=11)>]'"
+            "equipped='[<Ring(id=7)>, <Shield(id=9)>, <OneHandedWeapon(id=11)>, "
+            "<HeadArmour(id=12)>]'",
+            "equipped='[<TwoHandedWeapon(id=5)>, <Ring(id=7)>, "
+            "<HeadArmour(id=12)>]'"
         ).replace(
-            "left_hand='<Shield(id=8)>'", "left_hand=None"
+            "left_hand='<Shield(id=9)>'", "left_hand=None"
         ).replace(
-            "right_hand='<OneHandedWeapon(id=10)>'", "right_hand=None"
+            "right_hand='<OneHandedWeapon(id=11)>'", "right_hand=None"
         ).replace(
-            "unequipped='[<HeadArmour(id=2)>, <TwoHandedWeapon(id=4)>]'",
-            "unequipped='[<HeadArmour(id=2)>, <Shield(id=8)>, "
-            "<OneHandedWeapon(id=10)>]'") == inv_str2
-        assert ids_to_unequip == [8, 10]
+            "unequipped='[<HeadArmour(id=2)>, <TwoHandedWeapon(id=5)>]'",
+            "unequipped='[<HeadArmour(id=2)>, <Shield(id=9)>, "
+            "<OneHandedWeapon(id=11)>]'") == inv_str2
+        assert ids_to_unequip == [9, 11]
         
     def test_equip_lots_of_rings(self):
         """Equip lots of rings ... see if that breaks anything :P"""
+
+        # I'm getting some bugs ... maybe a clean slate will help?
         template_ring = self.db.session.query(
             Item).filter_by(name="Silver Ring", template=True).first()
 
@@ -285,68 +284,51 @@ class TestInventory(GenericTestClass):
                                   "from 0 to 9."
             if i == 0:
                 assert str_inv.replace(
-                    "equipped='[<TwoHandedWeapon(id=4)>, <Ring(id=6)>, "
-                    "<HeadArmour(id=11)>]'",
-                    "equipped='[<TwoHandedWeapon(id=4)>, <Ring(id=6)>, "
-                    "<HeadArmour(id=11)>, <Ring(id=12)>]'"
+                    "equipped='[<TwoHandedWeapon(id=5)>, <Ring(id=7)>, "
+                    "<HeadArmour(id=12)>]'",
+                    "equipped='[<TwoHandedWeapon(id=5)>, <Ring(id=7)>, "
+                    "<HeadArmour(id=12)>, <Ring(id=13)>]'"
                 ).replace(
-                    "rings='{7: <Ring(id=6)>}'",
-                    "rings='{0: <Ring(id=12)>, 7: <Ring(id=6)>}'"
+                    "rings='{7: <Ring(id=7)>}'",
+                    "rings='{0: <Ring(id=13)>, 7: <Ring(id=7)>}'"
                 ).replace(
-                    "unequipped='[<HeadArmour(id=2)>, <Shield(id=8)>, "
-                    "<OneHandedWeapon(id=10)>, <Ring(id=6)>]'",
-                    "unequipped='[<HeadArmour(id=2)>, <Shield(id=8)>, "
-                    "<OneHandedWeapon(id=10)>]'") == self.inv.pretty
+                    "unequipped='[<HeadArmour(id=2)>, <Shield(id=9)>, "
+                    "<OneHandedWeapon(id=11)>, <Ring(id=7)>]'",
+                    "unequipped='[<HeadArmour(id=2)>, <Shield(id=9)>, "
+                    "<OneHandedWeapon(id=11)>]'") == self.inv.pretty
 
         str_inv2 = self.inv.pretty
         assert str_inv.replace(
-            "equipped='[<TwoHandedWeapon(id=4)>, <Ring(id=6)>, <HeadArmour(id=11)>]'",
-            "equipped='[<TwoHandedWeapon(id=4)>, <HeadArmour(id=11)>, <Ring(id=12)>, "
-            "<Ring(id=13)>, <Ring(id=14)>, <Ring(id=15)>, <Ring(id=16)>, <Ring(id=17)>, "
-            "<Ring(id=18)>, <Ring(id=19)>, <Ring(id=20)>, <Ring(id=21)>]'"
+            "equipped='[<TwoHandedWeapon(id=5)>, <Ring(id=7)>, <HeadArmour(id=12)>]'",
+            "equipped='[<TwoHandedWeapon(id=5)>, <HeadArmour(id=12)>, <Ring(id=13)>, <Ring(id=14)>, <Ring(id=15)>, <Ring(id=16)>, <Ring(id=17)>, <Ring(id=18)>, <Ring(id=19)>, <Ring(id=20)>, <Ring(id=21)>, <Ring(id=22)>]'"
         ).replace(
-            "rings='{7: <Ring(id=6)>}'",
-            "rings='{0: <Ring(id=12)>, 1: <Ring(id=13)>, 2: <Ring(id=14)>, "
-            "3: <Ring(id=15)>, 4: <Ring(id=16)>, 5: <Ring(id=17)>, "
-            "6: <Ring(id=18)>, 7: <Ring(id=19)>, 8: <Ring(id=20)>, "
-            "9: <Ring(id=21)>}'"
+            "rings='{7: <Ring(id=7)>}'",
+            "rings='{0: <Ring(id=13)>, 1: <Ring(id=14)>, 2: <Ring(id=15)>, 3: <Ring(id=16)>, 4: <Ring(id=17)>, 5: <Ring(id=18)>, 6: <Ring(id=19)>, 7: <Ring(id=20)>, 8: <Ring(id=21)>, 9: <Ring(id=22)>}'"
         ).replace(
-            "unequipped='[<HeadArmour(id=2)>, <Shield(id=8)>, "
-            "<OneHandedWeapon(id=10)>]'",
-            "unequipped='[<HeadArmour(id=2)>, <Shield(id=8)>, "
-            "<OneHandedWeapon(id=10)>, <Ring(id=6)>, <Ring(id=22)>, <Ring(id=23)>]'"
+            "unequipped='[<HeadArmour(id=2)>, <Shield(id=9)>, <OneHandedWeapon(id=11)>]'",
+            "unequipped='[<HeadArmour(id=2)>, <Shield(id=9)>, <OneHandedWeapon(id=11)>, <Ring(id=7)>, <Ring(id=23)>, <Ring(id=24)>]'"
         ) == str_inv2
 
-        silver_ring6 = self.inv.unequipped[3]
-        ids_to_unequip = self.inv.equip(silver_ring6, 4)
+        silver_ring7 = self.inv.unequipped[3]
+        assert silver_ring7.type == "Ring"
+        assert silver_ring7.id == 7
+        assert self.inv.rings[4].id == 17
+        ids_to_unequip = self.inv.equip(silver_ring7, 4)
         
         self.rebuild_instance()
         
         str_inv3 = self.inv.pretty
-
         assert str_inv2.replace(
-            "equipped='[<TwoHandedWeapon(id=4)>, <HeadArmour(id=11)>, <Ring(id=12)>, "
-            "<Ring(id=13)>, <Ring(id=14)>, <Ring(id=15)>, <Ring(id=16)>, <Ring(id=17)>, "
-            "<Ring(id=18)>, <Ring(id=19)>, <Ring(id=20)>, <Ring(id=21)>]'",
-            "equipped='[<TwoHandedWeapon(id=4)>, <Ring(id=6)>, <HeadArmour(id=11)>, "
-            "<Ring(id=12)>, <Ring(id=13)>, <Ring(id=14)>, <Ring(id=15)>, <Ring(id=17)>, "
-            "<Ring(id=18)>, <Ring(id=19)>, <Ring(id=20)>, <Ring(id=21)>]'"
+            "equipped='[<TwoHandedWeapon(id=5)>, <HeadArmour(id=12)>, <Ring(id=13)>, <Ring(id=14)>, <Ring(id=15)>, <Ring(id=16)>, <Ring(id=17)>, <Ring(id=18)>, <Ring(id=19)>, <Ring(id=20)>, <Ring(id=21)>, <Ring(id=22)>]'",
+            "equipped='[<TwoHandedWeapon(id=5)>, <Ring(id=7)>, <HeadArmour(id=12)>, <Ring(id=13)>, <Ring(id=14)>, <Ring(id=15)>, <Ring(id=16)>, <Ring(id=18)>, <Ring(id=19)>, <Ring(id=20)>, <Ring(id=21)>, <Ring(id=22)>]'"
         ).replace(
-            "rings='{0: <Ring(id=12)>, 1: <Ring(id=13)>, 2: <Ring(id=14)>, "
-            "3: <Ring(id=15)>, 4: <Ring(id=16)>, 5: <Ring(id=17)>, "
-            "6: <Ring(id=18)>, 7: <Ring(id=19)>, 8: <Ring(id=20)>, "
-            "9: <Ring(id=21)>}'",
-            "rings='{0: <Ring(id=12)>, 1: <Ring(id=13)>, 2: <Ring(id=14)>, "
-            "3: <Ring(id=15)>, 4: <Ring(id=6)>, 5: <Ring(id=17)>, "
-            "6: <Ring(id=18)>, 7: <Ring(id=19)>, 8: <Ring(id=20)>, "
-            "9: <Ring(id=21)>}'"
+            "rings='{0: <Ring(id=13)>, 1: <Ring(id=14)>, 2: <Ring(id=15)>, 3: <Ring(id=16)>, 4: <Ring(id=17)>, 5: <Ring(id=18)>, 6: <Ring(id=19)>, 7: <Ring(id=20)>, 8: <Ring(id=21)>, 9: <Ring(id=22)>}'",
+            "rings='{0: <Ring(id=13)>, 1: <Ring(id=14)>, 2: <Ring(id=15)>, 3: <Ring(id=16)>, 4: <Ring(id=7)>, 5: <Ring(id=18)>, 6: <Ring(id=19)>, 7: <Ring(id=20)>, 8: <Ring(id=21)>, 9: <Ring(id=22)>}'"
         ).replace(
-            "unequipped='[<HeadArmour(id=2)>, <Shield(id=8)>, "
-            "<OneHandedWeapon(id=10)>, <Ring(id=6)>, <Ring(id=22)>, <Ring(id=23)>]'",
-            "unequipped='[<HeadArmour(id=2)>, <Shield(id=8)>, "
-            "<OneHandedWeapon(id=10)>, <Ring(id=22)>, <Ring(id=23)>, <Ring(id=16)>]'"
+            "unequipped='[<HeadArmour(id=2)>, <Shield(id=9)>, <OneHandedWeapon(id=11)>, <Ring(id=7)>, <Ring(id=23)>, <Ring(id=24)>]'",
+            "unequipped='[<HeadArmour(id=2)>, <Shield(id=9)>, <OneHandedWeapon(id=11)>, <Ring(id=23)>, <Ring(id=24)>, <Ring(id=17)>]'"
         ) == str_inv3
-        assert ids_to_unequip == [16]
+        assert ids_to_unequip == [17]
         
     def test_unequip_legs(self):
         """See if you can unequip some pants!"""
@@ -371,9 +353,9 @@ class TestInventory(GenericTestClass):
         str_inv2 = self.inv.pretty
         str_pants2 = self.inv.unequipped[0].pretty
         assert str_inv.replace(
-            "equipped='[<LegArmour(id=25)>]'", "equipped=[]").replace(
-            "leg='<LegArmour(id=25)>'", "leg=None").replace(
-            "unequipped=[]", "unequipped='[<LegArmour(id=25)>]'") == str_inv2
+            "equipped='[<LegArmour(id=26)>]'", "equipped=[]").replace(
+            "leg='<LegArmour(id=26)>'", "leg=None").replace(
+            "unequipped=[]", "unequipped='[<LegArmour(id=26)>]'") == str_inv2
         assert str_pants.replace(
             "equipped=True", "equipped=False").replace(
             "unequipped_position=None", "unequipped_position=0") == str_pants2

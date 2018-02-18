@@ -5,10 +5,10 @@ import pdb
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.orm import validates
 
 from base_classes import Base
 from factories import TemplateMixin
+from session_helpers import SessionHoistMixin, safe_commit_session
 """
 Item Specification:
     All hero specific attributes must be moved from the Template classes.
@@ -25,7 +25,7 @@ Item Specification:
 """
 
 
-class Item(TemplateMixin, Base):
+class Item(TemplateMixin, SessionHoistMixin, Base):
     """Represent an unique version of an item or the template to create one.
 
     Each item exists in only one place.
@@ -78,6 +78,7 @@ class Item(TemplateMixin, Base):
         self.buy_price = buy_price
         self.template = template
 
+    @safe_commit_session
     def build_new_from_template(self):
         if not self.template:
             raise Exception("Only use this method if obj.template == True.")

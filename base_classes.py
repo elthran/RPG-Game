@@ -72,6 +72,10 @@ class Base(object):
 
         data |= hierarchy_keys
 
+        # Remove special hoisted variable that I add in Mixin.
+        # I don't know why it even exits in the MRO.
+        data.discard('session')
+
         # Remove weird SQLAlchemy var available to higher class but no
         # lower ones.
         keys_to_remove = set()
@@ -93,7 +97,6 @@ class Base(object):
     def data_to_string(self, data):
         for key in sorted(data):
             value = getattr(self, key)
-            # pdb.set_trace()
             if value and (type(value) == orm.collections.InstrumentedList or
                           type(value) ==
                           sqlalchemy.ext.orderinglist.OrderingList):

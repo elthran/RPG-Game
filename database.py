@@ -7,10 +7,8 @@ Mainly using the tutorial at:
     http://docs.sqlalchemy.org/en/latest/orm/tutorial.html
 
 """
-from functools import wraps
 import hashlib
 import importlib
-import os
 import datetime
 import random
 # Testing only
@@ -19,7 +17,6 @@ from pprint import pprint
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import sqlalchemy.exc
 from sqlalchemy import desc
 
 # Base is the initialize SQLAlchemy base class. It is used to set up the
@@ -44,56 +41,11 @@ from forum import Forum, Board, Thread
 from bestiary2 import MonsterTemplate
 import prebuilt_objects
 
-
-def scoped_session(f):
-    """Provide a transactional scope around a series of operations.
-
-    NOTE: don't use this on any function that returns a database object as
-    you will get a detached instance error!
-    """
-
-    @wraps(f)
-    def wrap_scoped_session(*args, **kwargs):
-        self = args[0]
-        self.session = EZDB.Session(bind=self.engine)
-        retval = f(*args, **kwargs)
-        try:
-            self.session.commit()
-        except:
-            self.session.rollback()
-            raise
-        finally:
-            self.session.close()
-        if hasattr(retval, '_sa_instance_state'):
-            raise Exception("Don't use scoped_session when you are returning a database object!")
-        return retval
-    return wrap_scoped_session
-
-
-def safe_commit_session(f):
-    """Wrap a commit and rollback in one. Add and commit returned value.
-
-    I don't really know what happens if this crashes and rollsback ..
-    is the session clean or corrupt? Does it loose the data?
-    I guess it throws and exception .. so maybe that is ok.
-    """
-    @wraps(f)
-    def wrap_safe_commit_session(*args, **kwargs):
-        self = args[0]
-        retval = f(*args, **kwargs)
-        self.session.add(retval)
-        try:
-            self.session.commit()
-        except:
-            self.session.rollback()
-            raise
-        return retval
-
-    return wrap_safe_commit_session
-
+from session_helpers import scoped_session, safe_commit_session
 
 # Constants#
 SECOND_PER_ENDURANCE = 10
+Session = sessionmaker()
 
 
 class EZDB:
@@ -104,8 +56,6 @@ class EZDB:
 
     All add_* methods should end with a commit!
     """
-    Session = None
-
     def __init__(self, database="sqlite:///:memory:", debug=True,
                  testing=False):
         """Create a basic SQLAlchemy engine and session.
@@ -136,10 +86,13 @@ class EZDB:
             database+ "?charset=utf8mb4", pool_recycle=3600, echo=debug)
 
         base_classes.Base.metadata.create_all(engine, checkfirst=True)
-        EZDB.Session = sessionmaker(bind=engine)
+
+        # Set up Session for this engine.
+        Session.configure(bind=engine)
+        self.Session = Session
 
         self.engine = engine
-        self.session = EZDB.Session()
+        self.session = self.Session()
         if first_run and not testing:
             self.add_prebuilt_objects()
 
@@ -432,7 +385,7 @@ class EZDB:
             raise
         finally:
             self.session.close()
-            self.session = EZDB.Session()
+            self.session = self.Session()
 
     def add_object(self, obj):
         """Add an object to the database.
