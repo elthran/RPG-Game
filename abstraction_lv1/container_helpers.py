@@ -45,24 +45,3 @@ class {{ container_name }}(Base):
         """Return all the attributes of this function as an iterator."""
         return (getattr(self, key) for key in ALL_ATTRIBUTE_NAMES)
 {% endmacro %}
-
-def named_relationship_mixin_factory(container_name, cls_name, names):
-    """Build a Mixin of relationships for the container class.
-
-    Example:
-        health = relationship(
-        "Health",
-        primaryjoin="and_(Proficiencies.id==Proficiency.proficiencies_id, "
-                    "Proficiency.name=='Heath')",
-        back_populates="proficiencies", uselist=False)
-    OR
-        scholar = relationship(
-        "AuraAbility",
-        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
-                    "Ability.name=='scholar')",
-        back_populates="abilities", uselist=False)
-    """
-    dct = {}
-
-
-    return type('NamedRelationshipMixin', (), dct)
