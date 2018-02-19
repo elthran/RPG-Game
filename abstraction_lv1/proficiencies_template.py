@@ -20,9 +20,7 @@ import pdb
 
 {% include "proficiencies_data.py" %}
 
-
-
-{{ container_helpers.build_container("Proficiency", "proficiencies", ALL_PROFICIENCY_NAMES) }}
+{{ container_helpers.build_container("Proficiency", "proficiencies", PROFICIENCY_INFORMATION) }}
 
 class Proficiency(Base):
     """Proficiency class that stores data about a hero object.
@@ -48,8 +46,8 @@ class Proficiency(Base):
     {% endfor %}
 
     # Relationships
-    proficiencies_id = Column(Integer, ForeignKey('proficiencies.id'))
-    proficiencies = relationship("Proficiencies")
+    proficiency_container_id = Column(
+        Integer, ForeignKey('proficiency_container.id', ondelete="CASCADE"))
 
     __mapper_args__ = {
         'polymorphic_identity': "Proficiency",

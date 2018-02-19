@@ -7,7 +7,7 @@ url = config['DEFAULT']['url']
 from database import EZDB
 # from hero import Hero
 
-from proficiencies import Proficiencies, Health, Regeneration
+from proficiencies import ProficiencyContainer, Health, Regeneration
 
 
 class TestProficiency:

@@ -12,7 +12,7 @@ from sqlalchemy.orm import validates
 from base_classes import Base
 from attributes import Attributes
 from abilities import Abilities
-from proficiencies import Proficiencies
+from proficiencies import ProficiencyContainer
 from inventory import Inventory
 from journal import Journal
 from specializations import SpecializationContainer
@@ -117,7 +117,7 @@ class Hero(Base):
 
     # Proficiencies One to One despite the name
     proficiencies = relationship(
-        "Proficiencies", back_populates='hero', uselist=False,
+        "ProficiencyContainer", back_populates='hero', uselist=False,
         cascade="all, delete-orphan")
 
     # Journal to Hero is One to One
@@ -152,7 +152,7 @@ class Hero(Base):
 
         # Skills and abilities
         self.attributes = Attributes()
-        self.proficiencies = Proficiencies()
+        self.proficiencies = ProficiencyContainer()
         self.abilities = Abilities()
         self.inventory = Inventory()
         self.journal = Journal()

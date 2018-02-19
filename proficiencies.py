@@ -2,7 +2,6 @@
 It has been set to read only so that you don't edit it without using
 build_code.py.
 """
-
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, validates
@@ -73,7 +72,7 @@ PROFICIENCY_INFORMATION = [
     ("Killshot", "Ability to hit enemies in their weak spot", "Agility",
         [("Chance", "root", (0, 0)),
          ("Modifier", "linear", (0.1, 1, 1))]),
-    ("Toughness", "Damage reduction", "Resilience",
+    ("Defence", "Damage reduction", "Resilience",
         [("Modifier", "root", (0, 0))]),
     ("Evade", "Chance to dodge", "Quickness",
         [("Chance", "root", (5, 0))]),
@@ -162,29 +161,352 @@ PROFICIENCY_INFORMATION = [
     ("Sanity", "Your ability to resist mind altering affects", "Willpower",
         [("Skill", "linear", (1, 0, 0))]),
 ]
-
-ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_")
-                     for attrib in PROFICIENCY_INFORMATION]
-
+# Work out how to get rid of this too. It is slow. And generates each time
+# this file is imported.
 ALL_PROFICIENCY_COLUMNS = sorted({column[0].lower()
                            for prof in PROFICIENCY_INFORMATION
                            for column in prof[3]})
-
-ALL_PROFICIENCY_NAMES = [attrib[0] for attrib in PROFICIENCY_INFORMATION]
-
-
-
-
+ALL_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'Damage', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'First strike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Regeneration', 'Renown', 'Resist blunt', 'Resist flame', 'Resist frost', 'Resist holy', 'Resist piercing', 'Resist poison', 'Resist shadow', 'Resist slashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stealth', 'Storage', 'Survivalist', 'Trustworthiness', 'Understanding', 'Woodsman']
+ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'bartering', 'block', 'caution', 'charm', 'climbing', 'courage', 'damage', 'defence', 'detection', 'encumbrance', 'endurance', 'evade', 'explorer', 'faith', 'fatigue', 'first_strike', 'flee', 'health', 'huntsman', 'killshot', 'knowledge', 'literacy', 'logistics', 'luckiness', 'mountaineering', 'navigator', 'oration', 'parry', 'pickpocketing', 'recovery', 'regeneration', 'renown', 'resist_blunt', 'resist_flame', 'resist_frost', 'resist_holy', 'resist_piercing', 'resist_poison', 'resist_shadow', 'resist_slashing', 'riposte', 'sanctity', 'sanity', 'speed', 'stealth', 'storage', 'survivalist', 'trustworthiness', 'understanding', 'woodsman']
 
 
 class ProficiencyContainer(Base):
     __tablename__ = "proficiency_container"
 
     id = Column(Integer, primary_key=True)
-    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE")),
+
+    # Relationships
+    # Hero to self is one to one.
+    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
     hero = relationship("Hero", back_populates="proficiencies")
 
+    # Container connections are one to one.
+    accuracy = relationship(
+        "Accuracy",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Accuracy')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    adventuring = relationship(
+        "Adventuring",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Adventuring')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    bartering = relationship(
+        "Bartering",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Bartering')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    block = relationship(
+        "Block",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Block')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    caution = relationship(
+        "Caution",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Caution')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    charm = relationship(
+        "Charm",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Charm')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    climbing = relationship(
+        "Climbing",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Climbing')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    courage = relationship(
+        "Courage",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Courage')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    damage = relationship(
+        "Damage",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Damage')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    defence = relationship(
+        "Defence",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Defence')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    detection = relationship(
+        "Detection",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Detection')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    encumbrance = relationship(
+        "Encumbrance",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Encumbrance')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    endurance = relationship(
+        "Endurance",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Endurance')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    evade = relationship(
+        "Evade",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Evade')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    explorer = relationship(
+        "Explorer",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Explorer')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    faith = relationship(
+        "Faith",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Faith')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    fatigue = relationship(
+        "Fatigue",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Fatigue')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    first_strike = relationship(
+        "FirstStrike",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='FirstStrike')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    flee = relationship(
+        "Flee",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Flee')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    health = relationship(
+        "Health",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Health')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    huntsman = relationship(
+        "Huntsman",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Huntsman')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    killshot = relationship(
+        "Killshot",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Killshot')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    knowledge = relationship(
+        "Knowledge",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Knowledge')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    literacy = relationship(
+        "Literacy",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Literacy')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    logistics = relationship(
+        "Logistics",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Logistics')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    luckiness = relationship(
+        "Luckiness",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Luckiness')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    mountaineering = relationship(
+        "Mountaineering",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Mountaineering')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    navigator = relationship(
+        "Navigator",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Navigator')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    oration = relationship(
+        "Oration",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Oration')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    parry = relationship(
+        "Parry",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Parry')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    pickpocketing = relationship(
+        "Pickpocketing",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Pickpocketing')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    recovery = relationship(
+        "Recovery",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Recovery')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    regeneration = relationship(
+        "Regeneration",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Regeneration')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    renown = relationship(
+        "Renown",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Renown')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    resist_blunt = relationship(
+        "ResistBlunt",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='ResistBlunt')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    resist_flame = relationship(
+        "ResistFlame",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='ResistFlame')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    resist_frost = relationship(
+        "ResistFrost",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='ResistFrost')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    resist_holy = relationship(
+        "ResistHoly",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='ResistHoly')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    resist_piercing = relationship(
+        "ResistPiercing",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='ResistPiercing')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    resist_poison = relationship(
+        "ResistPoison",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='ResistPoison')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    resist_shadow = relationship(
+        "ResistShadow",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='ResistShadow')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    resist_slashing = relationship(
+        "ResistSlashing",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='ResistSlashing')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    riposte = relationship(
+        "Riposte",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Riposte')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    sanctity = relationship(
+        "Sanctity",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Sanctity')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    sanity = relationship(
+        "Sanity",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Sanity')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    speed = relationship(
+        "Speed",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Speed')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    stealth = relationship(
+        "Stealth",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Stealth')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    storage = relationship(
+        "Storage",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Storage')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    survivalist = relationship(
+        "Survivalist",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Survivalist')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    trustworthiness = relationship(
+        "Trustworthiness",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Trustworthiness')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    understanding = relationship(
+        "Understanding",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Understanding')",
+        uselist=False,
+        cascade="all, delete-orphan")
+    woodsman = relationship(
+        "Woodsman",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Woodsman')",
+        uselist=False,
+        cascade="all, delete-orphan")
 
+    def __init__(self):
+        self.accuracy = Accuracy()
+        self.adventuring = Adventuring()
+        self.bartering = Bartering()
+        self.block = Block()
+        self.caution = Caution()
+        self.charm = Charm()
+        self.climbing = Climbing()
+        self.courage = Courage()
+        self.damage = Damage()
+        self.defence = Defence()
+        self.detection = Detection()
+        self.encumbrance = Encumbrance()
+        self.endurance = Endurance()
+        self.evade = Evade()
+        self.explorer = Explorer()
+        self.faith = Faith()
+        self.fatigue = Fatigue()
+        self.first_strike = FirstStrike()
+        self.flee = Flee()
+        self.health = Health()
+        self.huntsman = Huntsman()
+        self.killshot = Killshot()
+        self.knowledge = Knowledge()
+        self.literacy = Literacy()
+        self.logistics = Logistics()
+        self.luckiness = Luckiness()
+        self.mountaineering = Mountaineering()
+        self.navigator = Navigator()
+        self.oration = Oration()
+        self.parry = Parry()
+        self.pickpocketing = Pickpocketing()
+        self.recovery = Recovery()
+        self.regeneration = Regeneration()
+        self.renown = Renown()
+        self.resist_blunt = ResistBlunt()
+        self.resist_flame = ResistFlame()
+        self.resist_frost = ResistFrost()
+        self.resist_holy = ResistHoly()
+        self.resist_piercing = ResistPiercing()
+        self.resist_poison = ResistPoison()
+        self.resist_shadow = ResistShadow()
+        self.resist_slashing = ResistSlashing()
+        self.riposte = Riposte()
+        self.sanctity = Sanctity()
+        self.sanity = Sanity()
+        self.speed = Speed()
+        self.stealth = Stealth()
+        self.storage = Storage()
+        self.survivalist = Survivalist()
+        self.trustworthiness = Trustworthiness()
+        self.understanding = Understanding()
+        self.woodsman = Woodsman()
+
+    def items(self):
+        """Basically a dict.items() clone that looks like ((key, value),
+            (key, value), ...)
+
+        This is an iterator? Maybe it should be a list or a view?
+        """
+        return ((key, getattr(self, key)) for key in ALL_ATTRIBUTE_NAMES)
+
+    def __iter__(self):
+        """Return all the attributes of this function as an iterator."""
+        return (getattr(self, key) for key in ALL_ATTRIBUTE_NAMES)
 
 
 class Proficiency(Base):
@@ -206,33 +528,21 @@ class Proficiency(Base):
     # Extra Ability columns
     error = Column(String(50))
     formatted_name = Column(String(50))
-    
     ability = Column(Integer)
-    
     accuracy = Column(Integer)
-    
     amount = Column(Integer)
-    
     chance = Column(Integer)
-    
     current = Column(Integer)
-    
     efficiency = Column(Integer)
-    
     maximum = Column(Integer)
-    
     minimum = Column(Integer)
-    
     modifier = Column(Integer)
-    
     skill = Column(Integer)
-    
     speed = Column(Integer)
-    
 
     # Relationships
-    proficiencies_id = Column(Integer, ForeignKey('proficiencies.id'))
-    proficiencies = relationship("Proficiencies")
+    proficiency_container_id = Column(
+        Integer, ForeignKey('proficiency_container.id', ondelete="CASCADE"))
 
     __mapper_args__ = {
         'polymorphic_identity': "Proficiency",
@@ -485,9 +795,6 @@ class Regeneration(StaticMixin, Proficiency):
         self.speed = round((100 * self.level)**0.5 - (self.level / 4) + 1, 2)
         super().generic_update(hero)
 
-
-
-
 class Recovery(StaticMixin, Proficiency):
     @property
     def modifiable_on(self):
@@ -502,16 +809,8 @@ class Recovery(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Recovery's attributes and tooltip variable.
         """
-        
-        
         self.efficiency = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Climbing(StaticMixin, Proficiency):
     @property
@@ -527,16 +826,8 @@ class Climbing(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Climbing's attributes and tooltip variable.
         """
-        
-        
         self.ability = round(0.5 * self.level + 0.5, 1)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Encumbrance(StaticMixin, Proficiency):
     @property
@@ -552,16 +843,8 @@ class Encumbrance(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Encumbrance's attributes and tooltip variable.
         """
-        
-        
         self.amount = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Damage(StaticMixin, Proficiency):
     @property
@@ -577,24 +860,10 @@ class Damage(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Damage's attributes and tooltip variable.
         """
-        
-        
         self.minimum = round(1 * self.level + 0, 0)
-        
-        
-        
         self.maximum = round(1 * self.level + 1, 0)
-        
-        
-        
         self.modifier = round(0.1 * self.level + 1, 1)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Speed(StaticMixin, Proficiency):
     @property
@@ -610,16 +879,8 @@ class Speed(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Speed's attributes and tooltip variable.
         """
-        
-        
         self.speed = round(0.03 * self.level + 1, 2)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Accuracy(StaticMixin, Proficiency):
     @property
@@ -635,16 +896,8 @@ class Accuracy(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Accuracy's attributes and tooltip variable.
         """
-        
-        
         self.accuracy = round((100 * self.level)**0.5 - (self.level / 4) + 35, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class FirstStrike(StaticMixin, Proficiency):
     @property
@@ -660,16 +913,8 @@ class FirstStrike(StaticMixin, Proficiency):
     def update(self, hero):
         """Update FirstStrike's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Killshot(StaticMixin, Proficiency):
     @property
@@ -685,22 +930,11 @@ class Killshot(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Killshot's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         self.modifier = round(0.1 * self.level + 1, 1)
-        
-        
-        
         super().generic_update(hero)
 
-
-
-
-class Toughness(StaticMixin, Proficiency):
+class Defence(StaticMixin, Proficiency):
     @property
     def modifiable_on(self):
         return ['modifier', ]
@@ -712,18 +946,10 @@ class Toughness(StaticMixin, Proficiency):
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def update(self, hero):
-        """Update Toughness's attributes and tooltip variable.
+        """Update Defence's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Evade(StaticMixin, Proficiency):
     @property
@@ -739,16 +965,8 @@ class Evade(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Evade's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 5, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Parry(StaticMixin, Proficiency):
     @property
@@ -764,16 +982,8 @@ class Parry(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Parry's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 2, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Flee(StaticMixin, Proficiency):
     @property
@@ -789,16 +999,8 @@ class Flee(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Flee's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 7, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Riposte(StaticMixin, Proficiency):
     @property
@@ -814,16 +1016,8 @@ class Riposte(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Riposte's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Fatigue(StaticMixin, Proficiency):
     @property
@@ -839,20 +1033,9 @@ class Fatigue(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Fatigue's attributes and tooltip variable.
         """
-        
-        
         self.maximum = round(1 * self.level + 5, 0)
-        
-        
-        
         self.current = self.maximum
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Block(StaticMixin, Proficiency):
     @property
@@ -868,26 +1051,14 @@ class Block(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Block's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         if hero.inventory.left_hand is None or hero.inventory.left_hand.type != "Shield":
             self.chance = 0
             self.reason_for_zero = "You must have a shield equipped"
         else:
             self.reason_for_zero = ""
-        
         super().generic_update(hero)
-
-
-
 
 class Stealth(StaticMixin, Proficiency):
     @property
@@ -903,16 +1074,8 @@ class Stealth(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Stealth's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Pickpocketing(StaticMixin, Proficiency):
     @property
@@ -928,16 +1091,8 @@ class Pickpocketing(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Pickpocketing's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Faith(StaticMixin, Proficiency):
     @property
@@ -953,16 +1108,8 @@ class Faith(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Faith's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round(0.1 * self.level + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class ResistHoly(StaticMixin, Proficiency):
     @property
@@ -978,16 +1125,8 @@ class ResistHoly(StaticMixin, Proficiency):
     def update(self, hero):
         """Update ResistHoly's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Bartering(StaticMixin, Proficiency):
     @property
@@ -1003,16 +1142,8 @@ class Bartering(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Bartering's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round(-0.05 * self.level + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Oration(StaticMixin, Proficiency):
     @property
@@ -1028,16 +1159,8 @@ class Oration(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Oration's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 11, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Charm(StaticMixin, Proficiency):
     @property
@@ -1053,16 +1176,8 @@ class Charm(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Charm's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Trustworthiness(StaticMixin, Proficiency):
     @property
@@ -1078,16 +1193,8 @@ class Trustworthiness(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Trustworthiness's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Renown(StaticMixin, Proficiency):
     @property
@@ -1103,16 +1210,8 @@ class Renown(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Renown's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round(0.1 * self.level + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Knowledge(StaticMixin, Proficiency):
     @property
@@ -1128,16 +1227,8 @@ class Knowledge(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Knowledge's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 6, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Literacy(StaticMixin, Proficiency):
     @property
@@ -1153,16 +1244,8 @@ class Literacy(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Literacy's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Understanding(StaticMixin, Proficiency):
     @property
@@ -1178,16 +1261,8 @@ class Understanding(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Understanding's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round(0.05 * self.level + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Luckiness(StaticMixin, Proficiency):
     @property
@@ -1203,16 +1278,8 @@ class Luckiness(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Luckiness's attributes and tooltip variable.
         """
-        
-        
         self.chance = round(0.01 * self.level + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Adventuring(StaticMixin, Proficiency):
     @property
@@ -1228,16 +1295,8 @@ class Adventuring(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Adventuring's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Logistics(StaticMixin, Proficiency):
     @property
@@ -1253,16 +1312,8 @@ class Logistics(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Logistics's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round(0.2 * self.level + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Mountaineering(StaticMixin, Proficiency):
     @property
@@ -1278,16 +1329,8 @@ class Mountaineering(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Mountaineering's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round(0.5 * self.level + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Woodsman(StaticMixin, Proficiency):
     @property
@@ -1303,16 +1346,8 @@ class Woodsman(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Woodsman's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round(0.5 * self.level + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Navigator(StaticMixin, Proficiency):
     @property
@@ -1328,16 +1363,8 @@ class Navigator(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Navigator's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round(0.5 * self.level + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Detection(StaticMixin, Proficiency):
     @property
@@ -1353,16 +1380,8 @@ class Detection(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Detection's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Caution(StaticMixin, Proficiency):
     @property
@@ -1378,16 +1397,8 @@ class Caution(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Caution's attributes and tooltip variable.
         """
-        
-        
         self.ability = round(0.5 * self.level + 0.5, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Explorer(StaticMixin, Proficiency):
     @property
@@ -1403,16 +1414,8 @@ class Explorer(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Explorer's attributes and tooltip variable.
         """
-        
-        
         self.ability = round(0.5 * self.level + 0.5, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Huntsman(StaticMixin, Proficiency):
     @property
@@ -1428,16 +1431,8 @@ class Huntsman(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Huntsman's attributes and tooltip variable.
         """
-        
-        
         self.ability = round(0.5 * self.level + 0.5, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Survivalist(StaticMixin, Proficiency):
     @property
@@ -1453,16 +1448,8 @@ class Survivalist(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Survivalist's attributes and tooltip variable.
         """
-        
-        
         self.ability = round(0.5 * self.level + 0.5, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class ResistFrost(StaticMixin, Proficiency):
     @property
@@ -1478,16 +1465,8 @@ class ResistFrost(StaticMixin, Proficiency):
     def update(self, hero):
         """Update ResistFrost's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class ResistFlame(StaticMixin, Proficiency):
     @property
@@ -1503,16 +1482,8 @@ class ResistFlame(StaticMixin, Proficiency):
     def update(self, hero):
         """Update ResistFlame's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class ResistShadow(StaticMixin, Proficiency):
     @property
@@ -1528,16 +1499,8 @@ class ResistShadow(StaticMixin, Proficiency):
     def update(self, hero):
         """Update ResistShadow's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class ResistPoison(StaticMixin, Proficiency):
     @property
@@ -1553,16 +1516,8 @@ class ResistPoison(StaticMixin, Proficiency):
     def update(self, hero):
         """Update ResistPoison's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class ResistBlunt(StaticMixin, Proficiency):
     @property
@@ -1578,16 +1533,8 @@ class ResistBlunt(StaticMixin, Proficiency):
     def update(self, hero):
         """Update ResistBlunt's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class ResistSlashing(StaticMixin, Proficiency):
     @property
@@ -1603,16 +1550,8 @@ class ResistSlashing(StaticMixin, Proficiency):
     def update(self, hero):
         """Update ResistSlashing's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class ResistPiercing(StaticMixin, Proficiency):
     @property
@@ -1628,16 +1567,8 @@ class ResistPiercing(StaticMixin, Proficiency):
     def update(self, hero):
         """Update ResistPiercing's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Courage(StaticMixin, Proficiency):
     @property
@@ -1653,16 +1584,8 @@ class Courage(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Courage's attributes and tooltip variable.
         """
-        
-        
         self.skill = round(1 * self.level + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
-
 
 class Sanity(StaticMixin, Proficiency):
     @property
@@ -1678,12 +1601,6 @@ class Sanity(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Sanity's attributes and tooltip variable.
         """
-        
-        
         self.skill = round(1 * self.level + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
 

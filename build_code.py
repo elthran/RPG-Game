@@ -10,6 +10,11 @@ import hashlib
 # exit()
 
 
+def get_names(names):
+    """Pull the first item from a more complex list of data."""
+    return sorted([name[0] for name in names])
+
+
 def normalized_attrib_names(names):
     """Normalize names for columns."""
     return [name.lower().replace(" ", "_") for name in names]
@@ -98,6 +103,7 @@ def build_templates(filenames, extension):
         lstrip_blocks=True,
     )
 
+    env.globals['get_names'] = get_names
     env.globals['normalized_attrib_names'] = normalized_attrib_names
     env.globals['normalized_class_name'] = normalized_class_name
     env.globals['normalized_class_names'] = normalized_class_names
