@@ -2,7 +2,7 @@
 It has been set to read only so that you don't edit it without using
 build_code.py.
 """
-
+{% import 'container_helpers.py' as container_helpers %}
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, validates
@@ -20,9 +20,9 @@ import pdb
 
 {% include "proficiencies_data.py" %}
 
-# class ProficiencyMixin(object):
-#     name = Column(String(50), default=cls.__name__)
 
+
+{{ container_helpers.build_container("Proficiency", "proficiencies", ALL_PROFICIENCY_NAMES) }}
 
 class Proficiency(Base):
     """Proficiency class that stores data about a hero object.
@@ -342,8 +342,4 @@ class {{ prof_class }}(StaticMixin, Proficiency):
         super().generic_update(hero)
 
 {% endfor %}
-Proficiencies = container_factory(
-    "Proficiencies", "Proficiency", (Base,),
-    ALL_PROFICIENCY_NAMES, locals()
-)
 

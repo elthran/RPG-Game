@@ -10,6 +10,21 @@ import hashlib
 # exit()
 
 
+def normalized_attrib_names(names):
+    """Normalize names for columns."""
+    return [name.lower().replace(" ", "_") for name in names]
+
+
+def normalized_class_name(name):
+    """Normalized name for class."""
+    return name.title().replace(" ", "")
+
+
+def normalized_class_names(names):
+    """Normalized names for classes."""
+    return [normalized_class_name(name) for name in names]
+
+
 def get_hash(filename):
     """Return the hexdigest of the file at filename."""
     hasher = hashlib.md5()
@@ -78,8 +93,14 @@ def build_templates(filenames, extension):
 
     env = Environment(
         loader=FileSystemLoader(''),
-        autoescape=select_autoescape(default_for_string=False, default=False)
+        autoescape=select_autoescape(default_for_string=False, default=False),
+        trim_blocks=True,
+        lstrip_blocks=True,
     )
+
+    env.globals['normalized_attrib_names'] = normalized_attrib_names
+    env.globals['normalized_class_name'] = normalized_class_name
+    env.globals['normalized_class_names'] = normalized_class_names
 
     for name in filenames:
         temp_name = "../" + name + '.tmp'

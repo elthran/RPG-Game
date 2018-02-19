@@ -73,7 +73,7 @@ PROFICIENCY_INFORMATION = [
     ("Killshot", "Ability to hit enemies in their weak spot", "Agility",
         [("Chance", "root", (0, 0)),
          ("Modifier", "linear", (0.1, 1, 1))]),
-    ("Toughness", "Damage reduction", "Resilience",
+    ("Defence", "Damage reduction", "Resilience",
         [("Modifier", "root", (0, 0))]),
     ("Evade", "Chance to dodge", "Quickness",
         [("Chance", "root", (5, 0))]),
@@ -172,19 +172,8 @@ ALL_PROFICIENCY_COLUMNS = sorted({column[0].lower()
 
 ALL_PROFICIENCY_NAMES = [attrib[0] for attrib in PROFICIENCY_INFORMATION]
 
-
-
-
-
-
-class ProficiencyContainer(Base):
-    __tablename__ = "proficiency_container"
-
-    id = Column(Integer, primary_key=True)
-    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE")),
-    hero = relationship("Hero", back_populates="proficiencies")
-
-
+# class ProficiencyMixin(object):
+#     name = Column(String(50), default=cls.__name__)
 
 
 class Proficiency(Base):
@@ -206,32 +195,21 @@ class Proficiency(Base):
     # Extra Ability columns
     error = Column(String(50))
     formatted_name = Column(String(50))
-    
     ability = Column(Integer)
-    
     accuracy = Column(Integer)
-    
     amount = Column(Integer)
-    
     chance = Column(Integer)
-    
     current = Column(Integer)
-    
     efficiency = Column(Integer)
-    
     maximum = Column(Integer)
-    
     minimum = Column(Integer)
-    
     modifier = Column(Integer)
-    
     skill = Column(Integer)
-    
     speed = Column(Integer)
-    
 
     # Relationships
-    proficiencies_id = Column(Integer, ForeignKey('proficiencies.id'))
+    proficiencies_id = Column(Integer, ForeignKey('proficiencies.id',
+                                                  ondelete="CASCADE"))
     proficiencies = relationship("Proficiencies")
 
     __mapper_args__ = {
@@ -301,6 +279,9 @@ class DynamicMixin(object):
 
         for ability in hero.abilities:
             try:
+                this_name = self.name.lower() + "_maximum"
+                # Should be self.maximum += ability.this_name * ability.level
+                # Then it would work for all cases with just that code. Right now they all add to the health maximum.
                 self.maximum += ability.health_maximum * ability.level
             except AttributeError:
                 # If the item doesn't have this attribute, don't worry about
@@ -486,8 +467,6 @@ class Regeneration(StaticMixin, Proficiency):
         super().generic_update(hero)
 
 
-
-
 class Recovery(StaticMixin, Proficiency):
     @property
     def modifiable_on(self):
@@ -502,15 +481,8 @@ class Recovery(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Recovery's attributes and tooltip variable.
         """
-        
-        
         self.efficiency = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Climbing(StaticMixin, Proficiency):
@@ -527,15 +499,8 @@ class Climbing(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Climbing's attributes and tooltip variable.
         """
-        
-        
         self.ability = round(0.5 * self.level + 0.5, 1)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Encumbrance(StaticMixin, Proficiency):
@@ -552,15 +517,8 @@ class Encumbrance(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Encumbrance's attributes and tooltip variable.
         """
-        
-        
         self.amount = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Damage(StaticMixin, Proficiency):
@@ -577,23 +535,10 @@ class Damage(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Damage's attributes and tooltip variable.
         """
-        
-        
         self.minimum = round(1 * self.level + 0, 0)
-        
-        
-        
         self.maximum = round(1 * self.level + 1, 0)
-        
-        
-        
         self.modifier = round(0.1 * self.level + 1, 1)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Speed(StaticMixin, Proficiency):
@@ -610,15 +555,8 @@ class Speed(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Speed's attributes and tooltip variable.
         """
-        
-        
         self.speed = round(0.03 * self.level + 1, 2)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Accuracy(StaticMixin, Proficiency):
@@ -635,15 +573,8 @@ class Accuracy(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Accuracy's attributes and tooltip variable.
         """
-        
-        
         self.accuracy = round((100 * self.level)**0.5 - (self.level / 4) + 35, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class FirstStrike(StaticMixin, Proficiency):
@@ -660,15 +591,8 @@ class FirstStrike(StaticMixin, Proficiency):
     def update(self, hero):
         """Update FirstStrike's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Killshot(StaticMixin, Proficiency):
@@ -685,22 +609,12 @@ class Killshot(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Killshot's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         self.modifier = round(0.1 * self.level + 1, 1)
-        
-        
-        
         super().generic_update(hero)
 
 
-
-
-class Toughness(StaticMixin, Proficiency):
+class Defence(StaticMixin, Proficiency):
     @property
     def modifiable_on(self):
         return ['modifier', ]
@@ -712,17 +626,10 @@ class Toughness(StaticMixin, Proficiency):
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def update(self, hero):
-        """Update Toughness's attributes and tooltip variable.
+        """Update Defence's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Evade(StaticMixin, Proficiency):
@@ -739,15 +646,8 @@ class Evade(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Evade's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 5, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Parry(StaticMixin, Proficiency):
@@ -764,15 +664,8 @@ class Parry(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Parry's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 2, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Flee(StaticMixin, Proficiency):
@@ -789,15 +682,8 @@ class Flee(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Flee's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 7, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Riposte(StaticMixin, Proficiency):
@@ -814,15 +700,8 @@ class Riposte(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Riposte's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Fatigue(StaticMixin, Proficiency):
@@ -839,19 +718,9 @@ class Fatigue(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Fatigue's attributes and tooltip variable.
         """
-        
-        
         self.maximum = round(1 * self.level + 5, 0)
-        
-        
-        
         self.current = self.maximum
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Block(StaticMixin, Proficiency):
@@ -868,25 +737,14 @@ class Block(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Block's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         if hero.inventory.left_hand is None or hero.inventory.left_hand.type != "Shield":
             self.chance = 0
             self.reason_for_zero = "You must have a shield equipped"
         else:
             self.reason_for_zero = ""
-        
         super().generic_update(hero)
-
-
 
 
 class Stealth(StaticMixin, Proficiency):
@@ -903,15 +761,8 @@ class Stealth(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Stealth's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Pickpocketing(StaticMixin, Proficiency):
@@ -928,15 +779,8 @@ class Pickpocketing(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Pickpocketing's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Faith(StaticMixin, Proficiency):
@@ -953,15 +797,8 @@ class Faith(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Faith's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round(0.1 * self.level + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class ResistHoly(StaticMixin, Proficiency):
@@ -978,15 +815,8 @@ class ResistHoly(StaticMixin, Proficiency):
     def update(self, hero):
         """Update ResistHoly's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Bartering(StaticMixin, Proficiency):
@@ -1003,15 +833,8 @@ class Bartering(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Bartering's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round(-0.05 * self.level + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Oration(StaticMixin, Proficiency):
@@ -1028,15 +851,8 @@ class Oration(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Oration's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 11, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Charm(StaticMixin, Proficiency):
@@ -1053,15 +869,8 @@ class Charm(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Charm's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Trustworthiness(StaticMixin, Proficiency):
@@ -1078,15 +887,8 @@ class Trustworthiness(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Trustworthiness's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Renown(StaticMixin, Proficiency):
@@ -1103,15 +905,8 @@ class Renown(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Renown's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round(0.1 * self.level + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Knowledge(StaticMixin, Proficiency):
@@ -1128,15 +923,8 @@ class Knowledge(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Knowledge's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 6, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Literacy(StaticMixin, Proficiency):
@@ -1153,15 +941,8 @@ class Literacy(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Literacy's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Understanding(StaticMixin, Proficiency):
@@ -1178,15 +959,8 @@ class Understanding(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Understanding's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round(0.05 * self.level + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Luckiness(StaticMixin, Proficiency):
@@ -1203,15 +977,8 @@ class Luckiness(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Luckiness's attributes and tooltip variable.
         """
-        
-        
         self.chance = round(0.01 * self.level + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Adventuring(StaticMixin, Proficiency):
@@ -1228,15 +995,8 @@ class Adventuring(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Adventuring's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Logistics(StaticMixin, Proficiency):
@@ -1253,15 +1013,8 @@ class Logistics(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Logistics's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round(0.2 * self.level + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Mountaineering(StaticMixin, Proficiency):
@@ -1278,15 +1031,8 @@ class Mountaineering(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Mountaineering's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round(0.5 * self.level + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Woodsman(StaticMixin, Proficiency):
@@ -1303,15 +1049,8 @@ class Woodsman(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Woodsman's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round(0.5 * self.level + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Navigator(StaticMixin, Proficiency):
@@ -1328,15 +1067,8 @@ class Navigator(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Navigator's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round(0.5 * self.level + 1, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Detection(StaticMixin, Proficiency):
@@ -1353,15 +1085,8 @@ class Detection(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Detection's attributes and tooltip variable.
         """
-        
-        
         self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Caution(StaticMixin, Proficiency):
@@ -1378,15 +1103,8 @@ class Caution(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Caution's attributes and tooltip variable.
         """
-        
-        
         self.ability = round(0.5 * self.level + 0.5, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Explorer(StaticMixin, Proficiency):
@@ -1403,15 +1121,8 @@ class Explorer(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Explorer's attributes and tooltip variable.
         """
-        
-        
         self.ability = round(0.5 * self.level + 0.5, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Huntsman(StaticMixin, Proficiency):
@@ -1428,15 +1139,8 @@ class Huntsman(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Huntsman's attributes and tooltip variable.
         """
-        
-        
         self.ability = round(0.5 * self.level + 0.5, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Survivalist(StaticMixin, Proficiency):
@@ -1453,15 +1157,8 @@ class Survivalist(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Survivalist's attributes and tooltip variable.
         """
-        
-        
         self.ability = round(0.5 * self.level + 0.5, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class ResistFrost(StaticMixin, Proficiency):
@@ -1478,15 +1175,8 @@ class ResistFrost(StaticMixin, Proficiency):
     def update(self, hero):
         """Update ResistFrost's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class ResistFlame(StaticMixin, Proficiency):
@@ -1503,15 +1193,8 @@ class ResistFlame(StaticMixin, Proficiency):
     def update(self, hero):
         """Update ResistFlame's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class ResistShadow(StaticMixin, Proficiency):
@@ -1528,15 +1211,8 @@ class ResistShadow(StaticMixin, Proficiency):
     def update(self, hero):
         """Update ResistShadow's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class ResistPoison(StaticMixin, Proficiency):
@@ -1553,15 +1229,8 @@ class ResistPoison(StaticMixin, Proficiency):
     def update(self, hero):
         """Update ResistPoison's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class ResistBlunt(StaticMixin, Proficiency):
@@ -1578,15 +1247,8 @@ class ResistBlunt(StaticMixin, Proficiency):
     def update(self, hero):
         """Update ResistBlunt's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class ResistSlashing(StaticMixin, Proficiency):
@@ -1603,15 +1265,8 @@ class ResistSlashing(StaticMixin, Proficiency):
     def update(self, hero):
         """Update ResistSlashing's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class ResistPiercing(StaticMixin, Proficiency):
@@ -1628,15 +1283,8 @@ class ResistPiercing(StaticMixin, Proficiency):
     def update(self, hero):
         """Update ResistPiercing's attributes and tooltip variable.
         """
-        
-        
         self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Courage(StaticMixin, Proficiency):
@@ -1653,15 +1301,8 @@ class Courage(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Courage's attributes and tooltip variable.
         """
-        
-        
         self.skill = round(1 * self.level + 0, 0)
-        
-        
-        
         super().generic_update(hero)
-
-
 
 
 class Sanity(StaticMixin, Proficiency):
@@ -1678,12 +1319,11 @@ class Sanity(StaticMixin, Proficiency):
     def update(self, hero):
         """Update Sanity's attributes and tooltip variable.
         """
-        
-        
         self.skill = round(1 * self.level + 0, 0)
-        
-        
-        
         super().generic_update(hero)
 
 
+Proficiencies = container_factory(
+    "Proficiencies", "Proficiency", (Base,),
+    ALL_PROFICIENCY_NAMES, locals()
+)
