@@ -10,7 +10,7 @@ from sqlalchemy import orm
 from sqlalchemy.orm import validates
 
 from base_classes import Base
-from attributes import Attributes
+from attributes import AttributeContainer
 from abilities import AbilityContainer
 from proficiencies import ProficiencyContainer
 from inventory import Inventory
@@ -113,7 +113,7 @@ class Hero(Base):
 
     # Attributes One to One despite the name
     attributes = relationship(
-        "Attributes", back_populates='hero', uselist=False,
+        "AttributeContainer", back_populates='hero', uselist=False,
         cascade="all, delete-orphan")
 
     # Proficiencies One to One despite the name
@@ -152,7 +152,7 @@ class Hero(Base):
         """
 
         # Skills and abilities
-        self.attributes = Attributes()
+        self.attributes = AttributeContainer()
         self.proficiencies = ProficiencyContainer()
         self.abilities = AbilityContainer()
         self.inventory = Inventory()
