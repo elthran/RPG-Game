@@ -183,262 +183,314 @@ class ProficiencyContainer(Base):
     # Container connections are one to one.
     accuracy = relationship(
         "Accuracy",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Accuracy')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Accuracy')",
         uselist=False,
         cascade="all, delete-orphan")
     adventuring = relationship(
         "Adventuring",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Adventuring')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Adventuring')",
         uselist=False,
         cascade="all, delete-orphan")
     bartering = relationship(
         "Bartering",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Bartering')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Bartering')",
         uselist=False,
         cascade="all, delete-orphan")
     block = relationship(
         "Block",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Block')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Block')",
         uselist=False,
         cascade="all, delete-orphan")
     caution = relationship(
         "Caution",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Caution')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Caution')",
         uselist=False,
         cascade="all, delete-orphan")
     charm = relationship(
         "Charm",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Charm')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Charm')",
         uselist=False,
         cascade="all, delete-orphan")
     climbing = relationship(
         "Climbing",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Climbing')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Climbing')",
         uselist=False,
         cascade="all, delete-orphan")
     courage = relationship(
         "Courage",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Courage')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Courage')",
         uselist=False,
         cascade="all, delete-orphan")
     damage = relationship(
         "Damage",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Damage')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Damage')",
         uselist=False,
         cascade="all, delete-orphan")
     defence = relationship(
         "Defence",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Defence')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Defence')",
         uselist=False,
         cascade="all, delete-orphan")
     detection = relationship(
         "Detection",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Detection')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Detection')",
         uselist=False,
         cascade="all, delete-orphan")
     encumbrance = relationship(
         "Encumbrance",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Encumbrance')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Encumbrance')",
         uselist=False,
         cascade="all, delete-orphan")
     endurance = relationship(
         "Endurance",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Endurance')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Endurance')",
         uselist=False,
         cascade="all, delete-orphan")
     evade = relationship(
         "Evade",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Evade')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Evade')",
         uselist=False,
         cascade="all, delete-orphan")
     explorer = relationship(
         "Explorer",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Explorer')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Explorer')",
         uselist=False,
         cascade="all, delete-orphan")
     faith = relationship(
         "Faith",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Faith')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Faith')",
         uselist=False,
         cascade="all, delete-orphan")
     fatigue = relationship(
         "Fatigue",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Fatigue')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Fatigue')",
         uselist=False,
         cascade="all, delete-orphan")
     first_strike = relationship(
         "FirstStrike",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='FirstStrike')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='FirstStrike')",
         uselist=False,
         cascade="all, delete-orphan")
     flee = relationship(
         "Flee",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Flee')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Flee')",
         uselist=False,
         cascade="all, delete-orphan")
     health = relationship(
         "Health",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Health')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Health')",
         uselist=False,
         cascade="all, delete-orphan")
     huntsman = relationship(
         "Huntsman",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Huntsman')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Huntsman')",
         uselist=False,
         cascade="all, delete-orphan")
     killshot = relationship(
         "Killshot",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Killshot')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Killshot')",
         uselist=False,
         cascade="all, delete-orphan")
     knowledge = relationship(
         "Knowledge",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Knowledge')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Knowledge')",
         uselist=False,
         cascade="all, delete-orphan")
     literacy = relationship(
         "Literacy",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Literacy')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Literacy')",
         uselist=False,
         cascade="all, delete-orphan")
     logistics = relationship(
         "Logistics",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Logistics')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Logistics')",
         uselist=False,
         cascade="all, delete-orphan")
     luckiness = relationship(
         "Luckiness",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Luckiness')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Luckiness')",
         uselist=False,
         cascade="all, delete-orphan")
     mountaineering = relationship(
         "Mountaineering",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Mountaineering')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Mountaineering')",
         uselist=False,
         cascade="all, delete-orphan")
     navigator = relationship(
         "Navigator",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Navigator')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Navigator')",
         uselist=False,
         cascade="all, delete-orphan")
     oration = relationship(
         "Oration",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Oration')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Oration')",
         uselist=False,
         cascade="all, delete-orphan")
     parry = relationship(
         "Parry",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Parry')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Parry')",
         uselist=False,
         cascade="all, delete-orphan")
     pickpocketing = relationship(
         "Pickpocketing",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Pickpocketing')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Pickpocketing')",
         uselist=False,
         cascade="all, delete-orphan")
     recovery = relationship(
         "Recovery",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Recovery')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Recovery')",
         uselist=False,
         cascade="all, delete-orphan")
     regeneration = relationship(
         "Regeneration",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Regeneration')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Regeneration')",
         uselist=False,
         cascade="all, delete-orphan")
     renown = relationship(
         "Renown",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Renown')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Renown')",
         uselist=False,
         cascade="all, delete-orphan")
     resist_blunt = relationship(
         "ResistBlunt",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='ResistBlunt')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='ResistBlunt')",
         uselist=False,
         cascade="all, delete-orphan")
     resist_flame = relationship(
         "ResistFlame",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='ResistFlame')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='ResistFlame')",
         uselist=False,
         cascade="all, delete-orphan")
     resist_frost = relationship(
         "ResistFrost",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='ResistFrost')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='ResistFrost')",
         uselist=False,
         cascade="all, delete-orphan")
     resist_holy = relationship(
         "ResistHoly",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='ResistHoly')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='ResistHoly')",
         uselist=False,
         cascade="all, delete-orphan")
     resist_piercing = relationship(
         "ResistPiercing",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='ResistPiercing')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='ResistPiercing')",
         uselist=False,
         cascade="all, delete-orphan")
     resist_poison = relationship(
         "ResistPoison",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='ResistPoison')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='ResistPoison')",
         uselist=False,
         cascade="all, delete-orphan")
     resist_shadow = relationship(
         "ResistShadow",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='ResistShadow')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='ResistShadow')",
         uselist=False,
         cascade="all, delete-orphan")
     resist_slashing = relationship(
         "ResistSlashing",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='ResistSlashing')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='ResistSlashing')",
         uselist=False,
         cascade="all, delete-orphan")
     riposte = relationship(
         "Riposte",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Riposte')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Riposte')",
         uselist=False,
         cascade="all, delete-orphan")
     sanctity = relationship(
         "Sanctity",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Sanctity')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Sanctity')",
         uselist=False,
         cascade="all, delete-orphan")
     sanity = relationship(
         "Sanity",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Sanity')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Sanity')",
         uselist=False,
         cascade="all, delete-orphan")
     speed = relationship(
         "Speed",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Speed')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Speed')",
         uselist=False,
         cascade="all, delete-orphan")
     stealth = relationship(
         "Stealth",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Stealth')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Stealth')",
         uselist=False,
         cascade="all, delete-orphan")
     storage = relationship(
         "Storage",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Storage')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Storage')",
         uselist=False,
         cascade="all, delete-orphan")
     survivalist = relationship(
         "Survivalist",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Survivalist')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Survivalist')",
         uselist=False,
         cascade="all, delete-orphan")
     trustworthiness = relationship(
         "Trustworthiness",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Trustworthiness')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Trustworthiness')",
         uselist=False,
         cascade="all, delete-orphan")
     understanding = relationship(
         "Understanding",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Understanding')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Understanding')",
         uselist=False,
         cascade="all, delete-orphan")
     woodsman = relationship(
         "Woodsman",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, Proficiency.name=='Woodsman')",
+        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
+                    "Proficiency.name=='Woodsman')",
         uselist=False,
         cascade="all, delete-orphan")
 

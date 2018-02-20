@@ -18,58 +18,8 @@ import pdb
 
 {% include "abilities_data.py" %}
 
-# "determination", 5, "Increases Endurance by 3 for each level."
-
-
-class Abilities(Base):
-    __tablename__ = 'abilities'
-
-    id = Column(Integer, primary_key=True)
-
-    # Relationships
-    # Each hero can have one list of abilities (bi, one to one)
-    hero_id = Column(Integer, ForeignKey('hero.id'))
-    hero = relationship("Hero", back_populates='abilities')
-
-    # Relationships to a particular ability.
-    {%- for value in ALL_ABILITIES %}
-    {{ value[0] }} = relationship(
-        "{{ value[1] }}",
-        primaryjoin="and_(Abilities.id==Ability.abilities_id, "
-                    "Ability.name=='{{ value[0] }}')",
-        back_populates="abilities", uselist=False,
-        cascade="all, delete-orphan")
-    {% endfor %}
-
-    def __init__(self):
-        {% for value in ALL_ABILITIES %}
-        self.{{ value[0] }} = {{ value[1] }}('{{ value[0] }}', {{ value[2] }})
-        {% endfor %}
-
-    def items(self):
-        """Return each Ability and its name.
-
-        Returns a list of 2-tuples
-        Basically a dict.items() clone that looks like ([(key, value),
-            (key, value), ...])
-
-        Usage:
-        for name, ability in abilities.items():
-            name -- the name of the attribute
-            ability -- the object that corresponds to the named attribute.
-        """
-
-        return ((key, getattr(self, key)) for key in ABILITY_NAMES)
-
-    def __iter__(self):
-        """Allow this object to be used in a for call.
-
-        for ability in abilities:
-            ability -- where the ability is each of the attribute objects of
-                the abilities class.
-        """
-        return (getattr(self, key) for key in ABILITY_NAMES)
-
+{% import 'container_helpers.py' as container_helpers %}
+{{ container_helpers.build_container("Ability", "abilities", ALL_ABILITIES) }}
 
 class Ability(Base):
     """Ability object base class.
@@ -92,7 +42,6 @@ class Ability(Base):
     # Maybe description should be unique? use: unique=True as keyword.
     description = Column(String(200))
     cost = Column(String(50))
-    image = Column(String(50))
 
     # Note: Original code used default of "Unknown"
     # I chopped the BasicAbility class as redundant. Now I am going to
@@ -108,11 +57,13 @@ class Ability(Base):
 
     tree = Column(String(50))
     tree_type = Column(String(50))
+    image = Column(String(50))
 
     # Relationships.
     # Ability to abilities. Abilities is a list of ability objects.
-    abilities_id = Column(Integer, ForeignKey('abilities.id'))
-    abilities = relationship("Abilities")
+    ability_container_id = Column(Integer, ForeignKey('ability_container.id',
+                                              ondelete="CASCADE"))
+    abilities = relationship("AbilityContainer")
 
     # Requirements is a One to Many relationship to self.
     """
@@ -154,9 +105,9 @@ class Ability(Base):
         else:
             self.hidden = hidden    # If the player can see it
         self.learnable = learnable  # If the player currently has the requirements to learn/upgrade it
-        self.tree = tree    # Which research tre it belongs to (basic, archetype, class, religious)
+        self.tree = tree  # Which research tree it belongs to (basic, archetype, class, religious)
         self.tree_type = tree_type  # Which specific tree (ie. if the tree is religious, then which religion is it)
-        self.image = "ability_pic"
+        self.image = "ability_icon_" + self.name
 
         self.init_on_load()
 
@@ -270,3 +221,22 @@ class AuraAbility(Ability):
         self.understanding_modifier = understanding_modifier
         self.stealth_chance = stealth_chance
         self.firststrike_chance = firststrike_chance
+
+
+{% for value in ALL_ABILITIES %}
+class {{ value[0] }}({{ value[1] }}):
+    __mapper_args__ = {
+        'polymorphic_identity': '{{ value[0] }}',
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__('{{ value[0] }}', {{ value[2] }})
+
+        for key, value in kwargs:
+            setattr(self, key, value)
+{% if loop.last %}
+{% else %}
+
+
+{% endif %}
+{% endfor %}

@@ -2,7 +2,6 @@
 It has been set to read only so that you don't edit it without using
 build_code.py.
 """
-{% import 'container_helpers.py' as container_helpers %}
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, validates
@@ -20,6 +19,7 @@ import pdb
 
 {% include "proficiencies_data.py" %}
 
+{% import 'container_helpers.py' as container_helpers %}
 {{ container_helpers.build_container("Proficiency", "proficiencies", PROFICIENCY_INFORMATION) }}
 
 class Proficiency(Base):

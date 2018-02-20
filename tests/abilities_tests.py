@@ -4,7 +4,7 @@ import pdb
 from database import EZDB
 from game import Hero
 from abilities import (
-    Abilities, Ability, Archetype_Ability, Class_Ability, Religious_Ability
+    AbilityContainer, Ability, Archetype_Ability, Class_Ability, Religious_Ability
 )
 # I don't know why it says this is unused ... maybe we can make it
 # obsolete? I mean you did say it made so of the variables hard to understand.
@@ -36,14 +36,14 @@ class AbilitiesTestCase(unittest.TestCase):
         """Check if object is created, storeable and retrievable.
         """
 
-        abilities = Abilities()
+        abilities = AbilityContainer()
         self.db.session.add(abilities)
         self.db.session.commit()
         str_abilities = abilities.pretty
 
         self.rebuild_instance()
         abilities2 = self.db.session.query(
-            Abilities).filter_by(id=1).first()
+            AbilityContainer).filter_by(id=1).first()
         self.assertEqual(str_abilities, abilities2.pretty)
 
     @unittest.skip("Not built")

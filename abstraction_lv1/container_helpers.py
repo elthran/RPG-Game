@@ -23,7 +23,8 @@ class {{ container_name }}(Base):
     {% set class_name = class_names[loop.index0] %}
     {{ name }} = relationship(
         "{{ class_name }}",
-        primaryjoin="and_({{ container_name }}.id=={{ cls_name }}.{{ container_table_name }}_id, {{ cls_name }}.name=='{{ class_name }}')",
+        primaryjoin="and_({{ container_name }}.id=={{ cls_name }}.{{ container_table_name }}_id, "
+                    "{{ cls_name }}.name=='{{ class_name }}')",
         uselist=False,
         cascade="all, delete-orphan")
     {% endfor %}

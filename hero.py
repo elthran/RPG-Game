@@ -11,7 +11,7 @@ from sqlalchemy.orm import validates
 
 from base_classes import Base
 from attributes import Attributes
-from abilities import Abilities
+from abilities import AbilityContainer
 from proficiencies import ProficiencyContainer
 from inventory import Inventory
 from journal import Journal
@@ -97,7 +97,8 @@ class Hero(Base):
 
     # Each hero can have one set of Abilities. (bidirectional, One to One).
     # Deleting a Hero deletes all their Abilities.
-    abilities = relationship("Abilities", uselist=False, back_populates='hero',
+    abilities = relationship("AbilityContainer",
+                             uselist=False, back_populates='hero',
                              cascade="all, delete-orphan")
 
     # Hero to specializations relationship
@@ -153,7 +154,7 @@ class Hero(Base):
         # Skills and abilities
         self.attributes = Attributes()
         self.proficiencies = ProficiencyContainer()
-        self.abilities = Abilities()
+        self.abilities = AbilityContainer()
         self.inventory = Inventory()
         self.journal = Journal()
         self.specializations = SpecializationContainer()

@@ -10,9 +10,29 @@ import hashlib
 # exit()
 
 
+def fix_camel_case(name):
+    """Detect and fix camel case names.
+
+    Otherwise these names will be lost when converting to 'title()'.
+    """
+    if name[0].isupper() and name[1:].islower():
+        return name
+    print("Bad name:", name)
+    fixed_name = name[0] + ''.join([" " + letter.lower()
+                                    if (index > 0 and letter.isupper())
+                                    else letter
+                                    for index, letter in enumerate(name[1:])])
+    print("Fixed name:", fixed_name)
+    return fixed_name
+
+
 def get_names(names):
-    """Pull the first item from a more complex list of data."""
-    return sorted([name[0] for name in names])
+    """Pull the first item from a more complex list of data.
+
+    Fix the naming scheme if it use camel case an use human readable instead.
+    """
+    sorted_names = sorted([name[0] for name in names])
+    return [fix_camel_case(name) for name in sorted_names]
 
 
 def normalized_attrib_names(names):
@@ -62,6 +82,7 @@ def maybe_backup(temp_name, final_name, extension):
         # so no backup is required
         # but file should be updated!
         print("No backup required for '{}', updating!".format(final_name))
+        os.chmod(final_name, stat.S_IWRITE)
         os.remove(final_name)
         os.rename(temp_name, final_name)
     elif os.path.exists(backup_name):
