@@ -10,9 +10,9 @@ from sqlalchemy import orm
 from sqlalchemy.orm import validates
 
 from base_classes import Base
-from attributes import Attributes
-from abilities import Abilities
-from proficiencies import Proficiencies
+from attributes import AttributeContainer
+from abilities import AbilityContainer
+from proficiencies import ProficiencyContainer
 from inventory import Inventory
 from journal import Journal
 from specializations import SpecializationContainer
@@ -25,13 +25,12 @@ class Hero(Base):
     __tablename__ = 'hero'
 
     id = Column(Integer, primary_key=True)
-    name = Column(
-        String)  # Was nullable=False now it isn't. I hope that is a good idea.
+    name = Column(String(50))  # Was nullable=False now it isn't. I hope that is a good idea.
     character_name = orm.synonym('name')
 
-    background = Column(String) # Temporary. It's replacing 'fathers job' for now
+    background = Column(String(50)) # Temporary. It's replacing 'fathers job' for now
     age = Column(Integer)
-    house = Column(String)
+    house = Column(String(50))
     experience = Column(Integer)
     experience_maximum = Column(Integer)
     renown = Column(Integer)  # How famous you are
@@ -47,7 +46,7 @@ class Hero(Base):
     proficiency_points = Column(Integer)
 
     # All elthran's new code for random stuff
-    current_terrain = Column(String)
+    current_terrain = Column(String(50))
     deepest_dungeon_floor = Column(Integer)  # High score for dungeon runs
     current_dungeon_floor = Column(Integer)  # Which floor of dungeon your on
     current_dungeon_floor_progress = Column(
@@ -61,67 +60,74 @@ class Hero(Base):
     # Time code of when the (account?) was created
     timestamp = Column(DateTime)
     # Date of last login
-    last_login = Column(String)
+    last_login = Column(String(50))
 
-    login_alerts = Column(
-        String)  # Testing messages when you are attacked or get a new message
+    login_alerts = Column(String(50))  # Testing messages when you are attacked or get a new message
 
     # Relationships
+    # User to Hero. One to many. Ordered!
+    # Note deleting the user deletes all their heroes!
+    user_id = Column(Integer, ForeignKey('user.id', ondelete="CASCADE"))
+    user = relationship("User", back_populates='heroes')
+
     # Many heroes -> one map/world. (bidirectional)
-    map_id = Column(Integer, ForeignKey('location.id'))
+    map_id = Column(Integer, ForeignKey('location.id', ondelete="SET NULL"))
     current_world = relationship("Location", back_populates='heroes',
                                  foreign_keys='[Hero.map_id]')
     # Each current_location -> can be held by Many Heroes (bidirectional)
-    current_location_id = Column(Integer, ForeignKey('location.id'))
+    current_location_id = Column(Integer, ForeignKey('location.id',
+                                                     ondelete="SET NULL"))
     current_location = relationship(
         "Location", back_populates='heroes_by_current_location',
         foreign_keys='[Hero.current_location_id]')
 
     # Each current_city -> can be held by Many Heroes (bidirectional)
     # (Town or Cave)
-    city_id = Column(Integer, ForeignKey('location.id'))
+    city_id = Column(Integer, ForeignKey('location.id', ondelete="SET NULL"))
     current_city = relationship(
         "Location", back_populates='heroes_by_city',
         foreign_keys='[Hero.city_id]')
 
     # When you die, you should return to the last city you were at.
-    last_city_id = Column(Integer, ForeignKey('location.id'))
+    last_city_id = Column(Integer, ForeignKey('location.id',
+                                              ondelete="SET NULL"))
     last_city = relationship(
         "Location", back_populates='heroes_by_last_city',
         foreign_keys='[Hero.last_city_id]')
 
     # Each hero can have one set of Abilities. (bidirectional, One to One).
-    abilities = relationship("Abilities", uselist=False, back_populates='hero')
+    # Deleting a Hero deletes all their Abilities.
+    abilities = relationship("AbilityContainer",
+                             uselist=False, back_populates='hero',
+                             cascade="all, delete-orphan")
 
     # Hero to specializations relationship
-    specializations_id = Column(Integer,
-                                ForeignKey('specialization_container.id'))
     specializations = relationship(
-        "SpecializationContainer", back_populates="hero")
-
-    # User to Hero. One to many. Ordered!
-    user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship("User", back_populates='heroes')
+        "SpecializationContainer", back_populates="hero", uselist=False,
+        cascade="all, delete-orphan")
 
     # Each Hero has One inventory. (One to One -> bidirectional)
     # inventory is list of character's items.
-    inventory_id = Column(Integer, ForeignKey('inventory.id'))
-    inventory = relationship("Inventory", back_populates="hero")
+    inventory = relationship("Inventory", back_populates="hero", uselist=False,
+                             cascade="all, delete-orphan")
 
     # Attributes One to One despite the name
-    attributes_id = Column(Integer, ForeignKey('attributes.id'))
-    attributes = relationship("Attributes", back_populates='hero')
+    attributes = relationship(
+        "AttributeContainer", back_populates='hero', uselist=False,
+        cascade="all, delete-orphan")
 
     # Proficiencies One to One despite the name
-    proficiencies_id = Column(Integer, ForeignKey('proficiencies.id'))
-    proficiencies = relationship("Proficiencies", back_populates='hero')
+    proficiencies = relationship(
+        "ProficiencyContainer", back_populates='hero', uselist=False,
+        cascade="all, delete-orphan")
 
     # Journal to Hero is One to One
-    journal_id = Column(Integer, ForeignKey('journal.id'))
-    journal = relationship('Journal', back_populates='hero')
+    journal = relationship('Journal', back_populates='hero', uselist=False,
+                           cascade="all, delete-orphan")
 
     # Many to one with Triggers, Each hero has many triggers.
-    triggers = relationship('Trigger', back_populates='hero')
+    triggers = relationship('Trigger', back_populates='hero',
+                            cascade="all, delete-orphan")
 
     # @eltran ... this probably won't work as the var will disappear on
     # database reload.
@@ -146,9 +152,9 @@ class Hero(Base):
         """
 
         # Skills and abilities
-        self.attributes = Attributes()
-        self.proficiencies = Proficiencies()
-        self.abilities = Abilities()
+        self.attributes = AttributeContainer()
+        self.proficiencies = ProficiencyContainer()
+        self.abilities = AbilityContainer()
         self.inventory = Inventory()
         self.journal = Journal()
         self.specializations = SpecializationContainer()
@@ -261,12 +267,7 @@ class Hero(Base):
         return new_amount
 
     def equipped_items(self):
-        try:
-            return [item for item in self.inventory if item.is_equipped()]
-        except TypeError as ex:
-            if str(ex) == "'NoneType' object is not iterable":
-                return []
-            raise ex
+        return self.inventory.equipped or []  # Might work without OR.
 
     def non_equipped_items(self):
         return self.inventory.unequipped or []

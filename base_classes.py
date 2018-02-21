@@ -72,6 +72,10 @@ class Base(object):
 
         data |= hierarchy_keys
 
+        # Remove special hoisted variable that I add in Mixin.
+        # I don't know why it even exits in the MRO.
+        data.discard('session')
+
         # Remove weird SQLAlchemy var available to higher class but no
         # lower ones.
         keys_to_remove = set()
@@ -93,14 +97,16 @@ class Base(object):
     def data_to_string(self, data):
         for key in sorted(data):
             value = getattr(self, key)
-            # pdb.set_trace()
             if value and (type(value) == orm.collections.InstrumentedList or
                           type(value) ==
                           sqlalchemy.ext.orderinglist.OrderingList):
                 value = '[' + ', '.join(
-                    e.__class__.__name__ + '.id=' + str(e.id)
+                    "<{}(id={})>".format(e.__class__.__name__, e.id)
                     for e in value) + ']'
-
+            elif value and type(value) == orm.collections.MappedCollection:
+                value = "{" + ', '.join(
+                    "{}: <{}(id={})>".format(k, v.__class__.__name__, v.id)
+                    for k, v in value.items()) + '}'
             # This if/try is a way to print ONE to ONE relationship objects
             # without infinite recursion.
             elif value:
@@ -236,10 +242,12 @@ class BaseListElement(Base):
     __tablename__ = "base_list"
     id = Column(Integer, primary_key=True)
     int_value = Column(Integer)
-    str_value = Column(String)    
+    str_value = Column(String(50))
     
-    dict_id_keys = Column(Integer, ForeignKey('base_dict.id'))
-    dict_id_values = Column(Integer, ForeignKey('base_dict.id'))
+    dict_id_keys = Column(Integer, ForeignKey('base_dict.id',
+                                              ondelete="CASCADE"))
+    dict_id_values = Column(Integer, ForeignKey('base_dict.id',
+                                                ondelete="CASCADE"))
     
     def __init__(self, value):
         """Build BaseListElement from value.
@@ -277,12 +285,13 @@ class BaseListElement(Base):
 class BaseItem(Base):
     __tablename__ = 'base_item'
     id = Column(Integer, primary_key=True)
-    str_key = Column(String)
+    str_key = Column(String(50))
     int_key = Column(Integer)
-    str_value = Column(String)
+    str_value = Column(String(50))
     int_value = Column(Integer)
     
-    base_dict_id = Column(Integer, ForeignKey('base_dict.id'))
+    base_dict_id = Column(Integer, ForeignKey('base_dict.id',
+                                              ondelete="CASCADE"))
     def __init__(self, key, value):
         self.key = key
         self.value = value
@@ -340,7 +349,7 @@ class BaseDict(Base):
     __tablename__ = "base_dict"
     id = Column(Integer, primary_key=True)
     
-    base_items = relationship("BaseItem")
+    base_items = relationship("BaseItem", cascade="all, delete-orphan")
     
     def __init__(self, d={}):
         """Build a list of items and a matching dictionary.

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Boolean
+from sqlalchemy import Column, Integer, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 
@@ -23,12 +23,14 @@ def named_relationship_mixin_factory(container_name, cls_name, names):
     for false_name in names:
         attr_name = false_name.lower().replace(" ", "_")
         name = false_name.title().replace(" ", '')
-        dct[attr_name] = lambda cls, name=name: relationship(
-                name,
-                primaryjoin="and_({}.id=={}.{}_id, {}.name=='{}')".format(
-                    container_name, cls_name, container_name.lower(),
-                    cls_name, name),
-                back_populates=container_name.lower(), uselist=False)
+        dct[attr_name] = lambda cls, name_=name: relationship(
+            name_,
+            primaryjoin="and_({}.id=={}.{}_id, {}.name=='{}')".format(
+                container_name, cls_name, container_name.lower(),
+                cls_name, name_),
+            back_populates=container_name.lower(),
+            uselist=False,
+            cascade="all, delete-orphan")
 
         dct[attr_name] = declared_attr(dct[attr_name])
 
@@ -51,8 +53,9 @@ def container_factory(cls_name, cls_name_singular, supers, names, namespace):
 
         # Relationships
         # Hero class, One -> One
-        'hero': relationship("Hero", back_populates=cls_name.lower(),
-                             uselist=False)
+        'hero_id': Column(Integer, ForeignKey('hero.id',
+                                              ondelete="CASCADE")),
+        'hero': relationship("Hero", back_populates=cls_name.lower())
     }
 
     def setup_init(self):
@@ -106,13 +109,27 @@ class TemplateMixin(object):
         if trigger.template:
             trigger = trigger.build_new_from_template()
         return trigger
+
+    !Important!
+    To set template creation order in subclass create the column in the
+    subclass. There is a better way but I can't get it to work.
+    see https://stackoverflow.com/a/3924814 Should be:
+
+    TemplateMixin.template._creation_order = 2
+
+    e.g.
+    class Item(TemplateMixin, Base):
+        id = etc
+        template = Column(Boolean, default=False)
     """
 
     id = Column(Integer, primary_key=True)
 
     @declared_attr
     def template(cls):
-        return Column(Boolean, default=False)
+        col = Column(Boolean, default=False)
+        col._creation_order = cls.id._creation_order + 0.5
+        return col
 
     def build_new_from_template(self):
         """Build a new object from a given template object.
@@ -125,4 +142,3 @@ class TemplateMixin(object):
             return self.__class__(self.arg1=arg1, self.arg2=arg2, etc)
         """
         raise Exception("You need to implement this in your code.")
-

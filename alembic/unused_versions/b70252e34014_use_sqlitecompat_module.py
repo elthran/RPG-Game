@@ -1,4 +1,4 @@
-"""Add new 'title' column to 'forum' table.
+"""Use SQLiteCompat module to drop a column.
 
 Also first revision, yay!
 
@@ -20,8 +20,8 @@ import sys
 import os
 
 # Get the name of the current directory for this file and split it.
-old_path = os.path.dirname(os.path.abspath(__file__)).split('\\')
-new_path = '\\'.join(old_path[:-1])
+old_path = os.path.dirname(os.path.abspath(__file__)).split(os.sep)
+new_path = os.sep.join(old_path[:-1])
 # -1 refers to how many levels of directory to go up
 sys.path.insert(0, new_path)
 from sqlite_compat import SQLiteCompat

@@ -1,5 +1,20 @@
-C:\Python27\Scripts\pip.exe install --global-option=build_ext --global-option="-IC:/Program Files (x86)/Graphviz2.38/include" --global-option="-LC:/Program Files (x86)/Graphviz2.38/lib/release/lib" pygraphviz 
+Install Bash on Windows.
 
-pip install pygraphviz
+Install all requirements for eralachemy
+via python + pip (these run python2.7)
+also needs mysql? (I can't remember)
 
-eralchemy -i sqlite:///"D:\Dropbox\The Written Word\Programming\pythgrams\jacobs_game\flask-intro\static\database.db" -o "D:\Dropbox\The Written Word\Programming\pythgrams\jacobs_game\flask-intro\static\erd_from_sqlite.pdf"
+Then install all requirements for RPG-Game
+using python3 + pip3 (running python3.5 or so).
+definitely needs mysql (but special py3k vesrion)
+
+Then debug the shit out of MySQL because it doesn't work.
+Lots of user setup and server debug and other shit.
+
+Then make a nice link in the bash home folder to the game
+and run:
+$ python3 app.py
+
+Then run
+$ eralchemy -i "mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database" -o "static/er
+d_from_sqlite.pdf"

@@ -13,11 +13,12 @@ class Forum(Base):
 
     id = Column(Integer, primary_key=True)
 
-    title = Column(String)
+    title = Column(String(50))
 
     # Relationships
     # Many to One with Category
-    boards = relationship("Board", back_populates="forum")
+    boards = relationship("Board", back_populates="forum",
+                          cascade="all, delete-orphan")
 
     def __init__(self, title):
         self.title = title
@@ -45,13 +46,14 @@ class Board(HumanReadableMixin, Base):
 
     # Relationships
     # One to many with Forum
-    forum_id = Column(Integer, ForeignKey('forum.id'))
+    forum_id = Column(Integer, ForeignKey('forum.id', ondelete="CASCADE"))
     forum = relationship("Forum", back_populates="boards")
 
     # Many to One with Threads
-    threads = relationship("Thread", back_populates="board")
+    threads = relationship("Thread", back_populates="board",
+                           cascade="all, delete-orphan")
 
-    title = Column(String)
+    title = Column(String(50))
 
     def __init__(self, title):
         self.title = title
@@ -90,21 +92,22 @@ class Thread(HumanReadableMixin, Base):
 
     # Relationships
     # One to many with Forum
-    board_id = Column(Integer, ForeignKey('board.id'))
+    board_id = Column(Integer, ForeignKey('board.id', ondelete="CASCADE"))
     board = relationship("Board", back_populates="threads")
 
     # Many to One with Posts
-    posts = relationship("Post", back_populates="thread")
+    posts = relationship("Post", back_populates="thread",
+                         cascade="all, delete-orphan")
 
     @hybrid_property
     def most_recent_post(self):
         return max((post for post in self.posts), key=lambda p: p.timestamp,
                    default=None)
 
-    title = Column(String)
-    creator = Column(String)
-    description = Column(String)
-    category = Column(String)
+    title = Column(String(50))
+    creator = Column(String(50))
+    description = Column(String(200))
+    category = Column(String(50))
     timestamp = Column(DateTime)
 
     def __init__(self, title="unnamed thread", creator="None", description="", category="General"):
@@ -125,14 +128,14 @@ class Post(HumanReadableMixin, Base):
 
     # Relationships
     # One to Many with Thread.
-    thread_id = Column(Integer, ForeignKey('thread.id'))
+    thread_id = Column(Integer, ForeignKey('thread.id', ondelete="CASCADE"))
     thread = relationship("Thread", back_populates="posts")
 
     # One to Many with User class.
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('user.id', ondelete="CASCADE"))
     user = relationship("User", back_populates="posts")
 
-    content = Column(String)
+    content = Column(String(50))
 
     @hybrid_property
     def author(self):

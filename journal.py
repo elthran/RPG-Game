@@ -49,7 +49,9 @@ Project breakdown:
 """
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
+from sqlalchemy import (
+    Column, Integer, String, DateTime, ForeignKey, Boolean, Table
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import validates
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -58,6 +60,15 @@ from base_classes import Base
 
 # For testing
 import pdb
+
+# journal_quest_path_association_table = Table(
+#     'journal_quest_path_association',
+#     Base.metadata,
+#     Column('journal_id', Integer, ForeignKey('journal.id',
+#                                              ondelete="SET NULL")),
+#     Column('quest_path_id', Integer, ForeignKey('quest_path.id',
+#                                                 ondelete="SET NULL"))
+# )
 
 
 # I think I can combine the entry and Journal.
@@ -70,16 +81,20 @@ class Journal(Base):
 
     # Relationships
     # Hero to Journal is One to One
-    hero = relationship("Hero", uselist=False, back_populates='journal')
+    hero_id = Column(Integer, ForeignKey('hero.id',
+                                         ondelete="CASCADE"))
+    hero = relationship("Hero", back_populates='journal')
 
     # Journal to QuestPath is One to Many
     # QuestPath provides many special methods.
     quest_paths = relationship("QuestPath", back_populates='journal',
+                               cascade="all, delete-orphan",
                                foreign_keys="[QuestPath.journal_id]")
 
     notification = relationship("QuestPath",
                                 foreign_keys="[QuestPath.notification_id]",
-                                uselist=False)
+                                uselist=False,
+                                cascade="all, delete-orphan")
 
     # @property
     # def quest_notification(self):
@@ -112,7 +127,7 @@ class Journal(Base):
 #     id = Column(Integer, primary_key=True)
 #
 #     timestamp = Column(DateTime)
-#     info = Column(String)
+#     info = Column(String(50))
 #
 #     # relationships
 #     journal_id = Column(Integer, ForeignKey('journal.id'))

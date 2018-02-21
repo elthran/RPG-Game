@@ -53,7 +53,7 @@ PROFICIENCY_INFORMATION = [
     ("Killshot", "Ability to hit enemies in their weak spot", "Agility",
         [("Chance", "root", (0, 0)),
          ("Modifier", "linear", (0.1, 1, 1))]),
-    ("Toughness", "Damage reduction", "Resilience",
+    ("Defence", "Damage reduction", "Resilience",
         [("Modifier", "root", (0, 0))]),
     ("Evade", "Chance to dodge", "Quickness",
         [("Chance", "root", (5, 0))]),
@@ -142,12 +142,8 @@ PROFICIENCY_INFORMATION = [
     ("Sanity", "Your ability to resist mind altering affects", "Willpower",
         [("Skill", "linear", (1, 0, 0))]),
 ]
-
-ALL_PROFICIENCIES = [attrib[0].lower().replace(" ", "_")
-                     for attrib in PROFICIENCY_INFORMATION]
-
+# Work out how to get rid of this too. It is slow. And generates each time
+# this file is imported.
 ALL_PROFICIENCY_COLUMNS = sorted({column[0].lower()
                            for prof in PROFICIENCY_INFORMATION
                            for column in prof[3]})
-
-ALL_PROFICIENCY_NAMES = [attrib[0] for attrib in PROFICIENCY_INFORMATION]

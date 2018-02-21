@@ -1,15 +1,16 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import backref
-from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy.orm import relationship
-from sqlalchemy import ForeignKey
-from base_classes import Base
-
 import pdb
 import warnings
 
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy.orm import relationship
+from sqlalchemy.orm.collections import attribute_mapped_collection
+from base_classes import Base
 
-class Inventory(Base):
+from session_helpers import SessionHoistMixin, safe_commit_session
+
+
+class Inventory(SessionHoistMixin, Base):
     """Store a list of items for the hero.
 
     This is a special class that will allow me to do more natural pythonic operations
@@ -18,6 +19,28 @@ class Inventory(Base):
     Considering:
         Move "slot" implementation to HTML and just have a list of equipped and unequipped
         items in inventory?
+
+    Items can have have 4 states.
+    1. Unequipped:
+        item.equipped = False
+        item.inventory_id = inventory.id
+        item.unequipped_position = x
+        item.ring_position = None
+    2. Equipped:
+        item.equipped = True
+        item.inventory_id = inventory.id
+        item.unequipped_position = None
+        (possibly) item.ring_position = x
+    3. Limbo (for items transitioning from one state to the next):
+        item.equipped = None
+        item.inventory_id = inventory.id
+        item.unequipped_position = x or None?
+        (possibly) item.ring_position = x or None
+    4. Not in an inventory:
+        item.equipped = None
+        item.inventory_id = None
+        item.unequipped_position = None
+        item.ring_position = None
     """
     __tablename__ = 'inventory'
 
@@ -32,76 +55,92 @@ class Inventory(Base):
     # Relationships
     # Each Hero has One inventory. (One to One -> bidirectional)
     # inventory is list of character's items.
-    hero = relationship("Hero", back_populates='inventory', uselist=False)
+    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
+    hero = relationship("Hero", back_populates='inventory')
 
     # Item relationships
     # One to One
-    head_item_id = Column(Integer, ForeignKey('item.id'))
-    head = relationship("Item", foreign_keys="[Inventory.head_item_id]")
+    head = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='HeadArmour')", uselist=False)
 
-    chest_item_id = Column(Integer, ForeignKey('item.id'))
-    chest = relationship("Item",
-                         backref=backref("inventory_chest",
-                                         uselist=False),
-                         foreign_keys="[Inventory.chest_item_id]")
-    left_hand_item_id = Column(Integer, ForeignKey('item.id'))
-    left_hand = relationship("Item", backref=backref(
-        "inventory_left_hand",
-        uselist=False), foreign_keys="[Inventory.left_hand_item_id]")
-    right_hand_item_id = Column(Integer, ForeignKey('item.id'))
-    right_hand = relationship("Item", backref=backref(
-        "inventory_right_hand",
-        uselist=False), foreign_keys="[Inventory.right_hand_item_id]")
-    both_hands_item_id = Column(Integer, ForeignKey('item.id'))
-    both_hands = relationship("Item", backref=backref(
-        "inventory_both_hands",
-        uselist=False), foreign_keys="[Inventory.both_hands_item_id]")
-    arm_item_id = Column(Integer, ForeignKey('item.id'))
-    arm = relationship("Item",
-                           backref=backref("inventory_arm",
-                                           uselist=False),
-                           foreign_keys="[Inventory.arm_item_id]")
-    hand_item_id = Column(Integer, ForeignKey('item.id'))
-    hand = relationship("Item", backref=backref(
-        "inventory_hand",
-        uselist=False), foreign_keys="[Inventory.hand_item_id]")
-    leg_item_id = Column(Integer, ForeignKey('item.id'))
-    leg = relationship("Item",
-                        backref=backref("inventory_leg",
-                                        uselist=False),
-                        foreign_keys="[Inventory.leg_item_id]")
-    foot_item_id = Column(Integer, ForeignKey('item.id'))
-    foot = relationship("Item",
-                        backref=backref("inventory_foot",
-                                        uselist=False),
-                        foreign_keys="[Inventory.foot_item_id]")
+    chest = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='ChestArmour')", uselist=False)
+
+    left_hand = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='Shield')", uselist=False)
+
+    right_hand = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='OneHandedWeapon')", uselist=False)
+
+    both_hands = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='TwoHandedWeapon')", uselist=False)
+
+    arm = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='ArmArmour')", uselist=False)
+
+    hand = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='HandArmour')", uselist=False)
+
+    leg = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='LegArmour')", uselist=False)
+
+    foot = relationship(
+        "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                            "Item.equipped, "
+                            "Item.type=='FootArmour')", uselist=False)
+
     # One to many
-    rings = relationship("Item",
-                         order_by="Item.rings_position",
-                         collection_class=ordering_list(
-                             "rings_position"),
-                         backref=backref(
-                             "inventory_rings"),
-                         foreign_keys="[Item.rings_inventory_id]")
-    unequipped = relationship("Item",
-                              order_by="Item.unequipped_position",
-                              collection_class=ordering_list(
-                                  "unequipped_position"),
-                              backref=backref(
-                                  "inventory_unequipped"),
-                              foreign_keys="[Item.unequipped_inventory_id]")
+    rings = relationship(
+        "Item", order_by="Item.ring_position",
+        collection_class=attribute_mapped_collection('ring_position'),
+        primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                    "Item.equipped,"
+                    "Item.type=='Ring')")
 
+    unequipped = relationship(
+        "Item", order_by="Item.unequipped_position",
+        collection_class=ordering_list("unequipped_position"),
+        back_populates='inventory',
+        primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                    "Item.equipped==False)",
+        cascade="all, delete-orphan")
+
+    equipped = relationship(
+        "Item", order_by="Item.id",
+        back_populates='inventory',
+        primaryjoin="and_(Inventory.id==Item.inventory_id, "
+                    "Item.equipped==True)",
+        cascade="all, delete-orphan")
+
+    # !Important! Put primary slot used as the first in the list!
+    # I should hav just left it as is with "primary" and "secondary" :P
     slots_used_by_item_type = {
-        "TwoHandedWeapon": {"primary": "both_hands", "secondary": ["left_hand", "right_hand"]},
-        "OneHandedWeapon": {"primary": "right_hand", "secondary": ["both_hands"]},
-        "Shield": {"primary": "left_hand", "secondary": ["both_hands"]},
-        "ChestArmour": {"primary": "chest", "secondary": []},
-        "HeadArmour": {"primary": "head", "secondary": []},
-        "LegArmour": {"primary": "leg", "secondary": []},
-        "FootArmour": {"primary": "foot", "secondary": []},
-        "ArmArmour": {"primary": "arm", "secondary": []},
-        "HandArmour": {"primary": "hand", "secondary": []},
-        "Ring": {"primary": "rings", "secondary": []},
+        "TwoHandedWeapon": ["both_hands", "left_hand", "right_hand"],
+        "OneHandedWeapon": ["right_hand", "both_hands"],
+        "Shield": ["left_hand", "both_hands"],
+        "ChestArmour": ["chest"],
+        "HeadArmour": ["head"],
+        "LegArmour": ["leg"],
+        "FootArmour": ["foot"],
+        "ArmArmour": ["arm"],
+        "HandArmour": ["hand"],
+        # "Ring": {"primary": "rings", "secondary": []},
 
     }
 
@@ -127,116 +166,158 @@ class Inventory(Base):
     ]
 
     all_slot_names = single_slots + multiple_slots
-    js_single_slots = [(slot.replace('_', '-'), slot) for slot in single_slots
-                       if slot != 'both_hands']
+    js_single_slots = [(slot.replace('_', '-'), slot) for slot in single_slots]
+    js_slots_used_by_item_type = {k: [v.replace('_', '-') for v in l]
+                                  for k, l in slots_used_by_item_type.items()}
 
-    def equip_all(self, equipped_items):
+    def equip_all(self, items):
         """Equip all passed items.
 
-        This is normally done on Inventory reload.
-        NOTE: If there are slot conflicts they won't be resolved.
+        I don't know when this would be used ...
+        NOTE: If there are slot conflicts The last item passed will take
+        precedence.
         """
-        for item in equipped_items:
+        for item in items:
             self.equip(item)
 
-    def equip(self, item, index=0):
-        """Equip the an item in the correct slot -> Return ids of items manipulated.
+    @safe_commit_session
+    def equip(self, item, index=None):
+        """Equip the an item in the correct slot -> Return ids of items replaced.
 
-        Unequip the item it the currently in the slot if one exists.
+        Unequip the items in the slots used if any exist.
         NOTES:
-            Max 10 rings are equipped at any given time
-            Some items take up multiple slots e.g. a TwoHandedWeapon takes up 3 slots.
+            Max 10 rings are equippable at any given time
+            Some items take up multiple slots e.g. a TwoHandedWeapon takes
+            up 3 slots.
 
-        Do to problems in my implementation and understanding of SQLAlchemy
         I must:
             1. remove and item from a slot.
-            2. commit the change (Black magic method that I shouldn't be using)
-            3. add to a new slot.
-        I should be able to do a "move" command instead but can't.
-        NOTE: Id of the passed item is not returned ... maybe it should be?
+            2. commit the change (using @safe_commit_session)
+            3. add new item to slot.
+
+        NOTE: Id of the passed item is not returned.
+        NOTE2: if you equip an item ... that item is automatically added to
+        this inventory! You can equip without adding the item first.
+
+        Commits changes!
         """
-        # pdb.set_trace()
 
-        if item.type == "Ring" and not 0 <= index <= 9:
+        # This should never happen ... but prevent it if it does.
+        if item.type == "Ring" and index and not 0 <= index <= 9:
+            self.unequip(item)  # Fail -> send ring to unequipped items.
             raise IndexError("'Ring' index out of range. Index must be from 0 to 9.")
-        slots_used = Inventory.slots_used_by_item_type[item.type]
 
-        # Remove item from current location (currently in unequipped)
-        self.unequipped.remove(item)
-        # Need commit here .. or some kind of auto-flush/update/cascade?
-        self._sa_instance_state.session.commit()  # -> black magic.
+        # Use the 3rd item state. Not equipped and not unequipped.
+        # a.k.a. the 'limbo' state!
+        # This also allows you to equip an item that has not been added yet.
+        self.session.add(item)
+        item.inventory_id = self.id
+        item.equipped = None
+        item.unequipped_position = None
+        self.session.commit()
+
+        if item.type in Inventory.slots_used_by_item_type:
+            slots_used = Inventory.slots_used_by_item_type[item.type]
 
         # Get reference to current item in this slot (if it exists).
+        old_items = []
         old_item = None
-        if slots_used["primary"] == "rings":
-            try:
-                old_item = self.rings[index]
-                self.rings[index] = item
-            except IndexError:
-                self.rings.append(item)
+        if item.type == "Ring":
+            # Get lowest empty slot.
+            if not index:
+                index = self.get_lowest_empty_ring_pos()
+            old_item = self.get_ring_at_pos(index)
+            if old_item:
+                old_items = [old_item]
+                self.unequip(old_item)
+            # Both of these operations are necessary for the synchronicity of
+            # the sacred attribute_mapped_collection to work properly
+            item.ring_position = index
+            self.rings[index] = item
         else:
-            old_item = getattr(self, slots_used["primary"])
+            for slot in slots_used:
+                old_item = getattr(self, slot)
+                if old_item:
+                    old_items.append(old_item)
+            for old_item in old_items:
+                self.unequip(old_item)
 
-            # Asign new value to slot.
-            setattr(self, slots_used["primary"], item)
+        # Finally move the item from Limbo to Equip state.
+        item.equipped = True
+        self.session.commit()
 
-        # Need commit here .. or some kind of auto-flush/update/cascade?
-        self._sa_instance_state.session.commit()  # -> black magic.
-
-        # State should now read -> item in slot ... old item not in slot.
-        # I need to check that the old item hasn't be deleted or overwritten.
-
-        # This action should commit naturally.
-        ids_of_items_to_be_moved = []
-        if old_item:
-            if self.unequipped:
-                old_item.unequipped_position = self.unequipped[-1].unequipped_position + 1
-            self.unequipped.append(old_item)
-
-            ids_of_items_to_be_moved = [old_item.id]
-        ids_of_items_to_be_moved += self.unequip_secondary(slots_used["secondary"])
-
-        return ids_of_items_to_be_moved
-
-    def unequip_secondary(self, secondary_slots):
-        """Unequip the item located in slot name.
-
-        Rings has no secondary so it should never be sent here. This allows me
-        to ignore the whole index thing.
-        """
-        if "rings" in secondary_slots:
-            warnings.warn('Inventory.equip -> unequip_secondary does not accomodate rings yet!')
-        ids = []
-        for slot in secondary_slots:
-            item = getattr(self, slot)
-            if item:
-                setattr(self, slot, None)
-                self._sa_instance_state.session.commit()
-
-                self.unequipped.append(item)
-                ids.append(item.id)
-        return ids
+        return [item.id for item in old_items]
 
     def unequip(self, item):
         """Move an item from its current slot to the 'unequipped' slot.
+
+        Basically re-add this item as though it was never in this inventory.
+        Fixes lots of bugs even though the efficiencies might be poor.
+
+        Commits changes (via add_item).
         """
 
-        slot = Inventory.slots_used_by_item_type[item.type]["primary"]
-        if slot == "rings":
-            self.rings.remove(item)
-        else:
-            setattr(self, slot, None)
+        self.add_item(item)
 
-        if self.unequipped:
-            item.unequipped_position = self.unequipped[-1].unequipped_position + 1
-        self._sa_instance_state.session.commit()
-
-        self.unequipped.append(item)
-
+    @safe_commit_session
     def add_item(self, item):
         """Add an item to the unequipped slot of this inventory.
+
+        Adds item to the end of the unequipped list.
+        Commits changes.
         """
+
+        # First remove the current item from any inventories it might be in.
+        # And reset it to totally unequipped.
+        # Then commit, otherwise it might still have a handler in another
+        # location.
+        self.session.add(item)
+        self.remove_item(item)
+
+        self.unequipped.reorder()  # Reorder might do a commit?
         self.unequipped.append(item)
+        item.equipped = False  # Required to add this to the unequipped list.
+
+    @safe_commit_session
+    def remove_item(self, item):
+        """Remove a given item from any inventory it might be in."""
+        item.ring_position = None
+        item.equipped = None
+        item.unequipped_position = None
+        item.inventory_id = None
+
+    def get_ring_at_pos(self, n):
+        """Return the ring on this finger or None if none there.
+
+        This is just an error handled version of:
+            self.rings[n] (rings is now a dictionary)
+        """
+        try:
+            return self.rings[n]
+        except KeyError:
+            return None
+
+    def get_lowest_empty_ring_pos(self):
+        """If there is an empty slot in the ring dictionary return it.
+
+        Returns the first position from 0-9 that has no ring in it.
+        Returns last position if there are no gaps.
+        """
+
+        for n in range(len(self.rings)):
+            try:
+                self.rings[n]
+            except KeyError:
+                return n
+        return 9  # The highest ring.
+
+    def _clear_inventory(self):
+        """Disconnect all items from this inventory.
+
+        Internal method for running tests.
+        """
+        for item in self:
+            self.remove_item(item)
 
     def __iter__(self):
         """Return an iterator of _all_ items in this inventory.
@@ -247,15 +328,5 @@ class Inventory(Base):
         for item in inventory:
             print(item)
         """
-
-        all_items = [getattr(self, name) for name in Inventory.single_slots
-                     if getattr(self, name)]
-
-        multi_items = [getattr(self, name) for name in Inventory.multiple_slots
-                       if getattr(self, name)]
-
-        for item_list in multi_items:
-            all_items += item_list
-
+        all_items = self.unequipped + self.equipped
         return (item for item in all_items)
-

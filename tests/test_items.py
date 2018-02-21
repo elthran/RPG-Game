@@ -5,7 +5,7 @@ from pprint import pprint
 from database import EZDB
 # from hero import Hero
 # from inventory import Inventory
-from items import Item, OneHandedWeapon
+from items import Item, OneHandedWeapon, Ring
 
 
 """
@@ -46,77 +46,80 @@ Get all built in decorators with:
 Add new markers in the 'conftest.py'. I don't really understand the syntax yet.
 """
 
+from generic_setup import GenericTestClass
+
+
 @pytest.mark.incremental
-class TestItem:
+class TestItem(GenericTestClass):
     @classmethod
     def setup_class(cls):
-        """Setup any state specific to the execution of the given class (which
+        db = super().setup_class()
+        # Might be better for testing? To allow post mortem analysis.
+        db.engine.execute("DROP TABLE `item`;")
+        db = super().setup_class()
 
-        usually contains tests).
-        """
-        # print("Setup class")
-        EZDB('sqlite:///tests/test.db', debug=False, testing=True)
-        cls.template_id = 0
-        cls.item_id = 0
+        template = OneHandedWeapon(
+            "Big Dagger", buy_price=10, damage_minimum=300, damage_maximum=600,
+            speed_speed=2, template=True)
+        db.session.add(template)
+        db.update()
 
     @classmethod
     def teardown_class(cls, delete=True):
-        # print("Teardown class")
-        if delete:
-            db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
-            db._delete_database()
+        db = super().teardown_class(delete=False)
+        # db.engine.execute("DROP TABLE `item`;")
 
     def setup(self):
-        # print("Setup")
-        self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
-
-    def teardown(self, delete=False):
-        # print("Teardown")
-        self.db.session.close()
-        self.db.engine.dispose()
-        if delete:
-            self.db._delete_database()
-
-    def rebuild_instance(self):
-        """Tidy up and rebuild database instance.
-
-        ... otherwise you may not be retrieving the actual data
-        from the database only from memory.
-        """
-
-        # print("Rebuild instance")
-        self.db.update()
-        self.teardown(delete=False)
-        self.setup()
+        super().setup()
+        self.template = self.db.session.query(
+            Item).filter_by(name="Big Dagger", template=True).first()
 
     def test_init(self):
         """Check if object is created, storeable and retrievable.
         """
-        template = OneHandedWeapon(
-            "Small Dagger", buy_price=5, damage_minimum=30, damage_maximum=60,
-            speed_speed=1)
-        self.db.session.add(template)
-        self.db.session.commit()
-        TestItem.template_id = template.id
+        template = self.template
         str_template = template.pretty
 
         self.rebuild_instance()
-        template2 = self.db.session.query(Item).get(TestItem.template_id)
+        template2 = self.template
         assert str_template == template2.pretty
 
-    # @pytest.mark.skip("Not built.")
     def test_build_from_template(self):
-        template = self.db.session.query(Item).get(TestItem.template_id)
+        template = self.template
         item = template.build_new_from_template()
         self.db.session.add(item)
         self.db.session.commit()
-        TestItem.item_id = item.id
         str_item = item.pretty
+        item_id = item.id
         
         self.rebuild_instance()
-        item2 = self.db.session.query(Item).get(TestItem.item_id)
+        item2 = self.db.session.query(Item).get(item_id)
         assert str_item == item2.pretty
-        
 
-if __name__ == '__main__':
-    pass
+    def test_create_item(self):
+        template = self.template
+        item = self.db.create_item(template.id)
+        self.db.session.add(item)
+        self.db.session.commit()
+        item_id = item.id
+        str_item = item.pretty
+
+        self.rebuild_instance()
+        item2 = self.db.session.query(Item).get(item_id)
+        assert str_item == item2.pretty
+
+    def test_ring(self):
+        template = Ring("Silver Ring", 8, template=True)
+        self.db.session.add(template)
+        self.db.session.commit()
+
+        template_id = template.id
+        item = self.db.create_item(template.id)
+        self.db.session.commit()
+        str_item = item.pretty
+        self.rebuild_instance()
+
+        item2 = self.db.session.query(
+            Item).filter_by(name="Silver Ring", template=False).first()
+        assert str_item == item2.pretty
+        assert template_id != item2.id

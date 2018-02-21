@@ -15,6 +15,7 @@ import os
 from flask import (
     Flask, render_template, redirect, url_for, request, session,
     flash, send_from_directory)
+from flask_sslify import SSLify
 
 import werkzeug
 
@@ -34,7 +35,9 @@ from forum import Board, Thread, Post
 from bestiary2 import create_monster, MonsterTemplate
 
 # INIT AND LOGIN FUNCTIONS
-database = EZDB('sqlite:///static/database.db', debug=False)
+# for server code swap this over:
+# database = EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@elthran.mysql.pythonanywhere-services.com/elthran$rpg_database", debug=False)
+database = EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database", debug=False)
 engine = Engine(database)
 
 # Disable will need to be restructured (Marlen)
@@ -43,6 +46,7 @@ game = Game()
 
 # create the application object
 app = Flask(__name__)
+sslify = SSLify(app)
 app.secret_key = 'starcraft'
 
 ALWAYS_VALID_URLS = [
@@ -159,7 +163,7 @@ def login_required(f):
 
     @wraps(f)
     def wrap_login(*args, **kwargs):
-        if 'logged_in' in session:
+        if 'logged_in' in session and session['logged_in']:
             return f(*args, **kwargs)
         else:
             flash('You need to login first.')
@@ -254,6 +258,10 @@ def login():
     # Should prevent contamination between logging in with 2 different
     # accounts.
     session.clear()
+    # I might remove this later ...
+    # This fixed a bug in the server that I have now fixe with
+    # if 'logged_in' in session and session['logged_in']
+    session['logged_in'] = False
 
     if request.method == 'POST':
         username = request.form['username']
@@ -278,7 +286,7 @@ def login():
         else:
             raise Exception("The form of this 'type' doesn't exist!")
 
-        if session['logged_in']:
+        if 'logged_in' in session and session['logged_in']:
             flash("LOG IN SUCCESSFUL")
             user = database.get_user_by_username(username)
             session['id'] = user.id
@@ -699,14 +707,11 @@ def ability_tree(spec, hero=None):
 def inventory_page(hero=None):
     page_title = "Inventory"
     total_armour = 0
-    for armour in hero.inventory:
-        if armour.inventory_unequipped == None:
-            try:
-                total_armour += armour.armour_value
-            except AttributeError:
-                pass  # item might not have an armour value.
-       # if not armour.unequipped:
-      #      total_armour += armour.armour_value
+    for item in hero.inventory.equipped:
+        try:
+            total_armour += item.armour_value
+        except AttributeError:
+            pass  # item might not have an armour value so ignore.
     # for item in hero.inventory:
     #     if item.wearable:
     #         item.check_if_improvement()

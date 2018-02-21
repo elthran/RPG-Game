@@ -4,9 +4,11 @@ import pdb
 
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 
 from base_classes import Base
 from factories import TemplateMixin
+from session_helpers import SessionHoistMixin, safe_commit_session
 """
 Item Specification:
     All hero specific attributes must be moved from the Template classes.
@@ -23,7 +25,7 @@ Item Specification:
 """
 
 
-class Item(TemplateMixin, Base):
+class Item(TemplateMixin, SessionHoistMixin, Base):
     """Represent an unique version of an item or the template to create one.
 
     Each item exists in only one place.
@@ -39,10 +41,10 @@ class Item(TemplateMixin, Base):
     __tablename__ = "item"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String)
-    image = Column(String)
+    name = Column(String(50))
+    image = Column(String(50))
     buy_price = Column(Integer)
-    type = Column(String)
+    type = Column(String(50))
 
     broken = Column(Boolean)
     consumable = Column(Boolean)
@@ -54,14 +56,16 @@ class Item(TemplateMixin, Base):
     max_durability = Column(Integer)
     wearable = Column(Boolean)
 
-
     # Relationships
-    # Inventory
-    # One to Many
-    rings_inventory_id = Column(Integer, ForeignKey('inventory.id'))
-    rings_position = Column(Integer)
+    # Each Item can have only one Inventory
+    inventory_id = Column(Integer, ForeignKey('inventory.id',
+                                              ondelete="CASCADE"))
+    inventory = relationship(
+        "Inventory", foreign_keys="[Item.inventory_id]")
 
-    unequipped_inventory_id = Column(Integer, ForeignKey('inventory.id'))
+    # One to Many
+    equipped = Column(Boolean)
+    ring_position = Column(Integer)
     unequipped_position = Column(Integer)
 
     __mapper_args__ = {
@@ -69,11 +73,12 @@ class Item(TemplateMixin, Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, buy_price, template=True):
+    def __init__(self, name, buy_price, template=False):
         self.name = name
         self.buy_price = buy_price
         self.template = template
 
+    @safe_commit_session
     def build_new_from_template(self):
         if not self.template:
             raise Exception("Only use this method if obj.template == True.")
@@ -81,12 +86,14 @@ class Item(TemplateMixin, Base):
         keys.remove('id')
         keys.remove('template')
 
-        relationship_keys = [
-            'rings_inventory_id', 'rings_position', 'unequipped_inventory_id',
-            'unequipped_position'
-        ]
-        for relationship_key in relationship_keys:
-            keys.remove(relationship_key)
+        # I don't think these should have any value? So copying them
+        # shouldn't do anything ...
+        # relationship_keys = [
+        #     'ring_position',
+        #     'unequipped_position'
+        # ]
+        # for relationship_key in relationship_keys:
+        #     keys.remove(relationship_key)
         item = self.__class__(self.name, self.buy_price, template=False)
         for key in keys:
             try:
@@ -97,7 +104,8 @@ class Item(TemplateMixin, Base):
 
     def is_equipped(self):
         # Untested!
-        return self not in (self.inventory_unequipped or [])
+        return (self.unequipped_position is None
+                and self.inventory_id is not None)
 
     def update_stats(self, hero):
         """Update hero to reflect stat values with item equiped.
@@ -127,7 +135,7 @@ class Item(TemplateMixin, Base):
 
 # Subclass of Item
 class Wearable(Item):
-    style = Column(String)
+    style = Column(String(50))
 
     # Modifiable proficiencies
     health_maximum = Column(Integer)
@@ -243,14 +251,15 @@ class Wearable(Item):
                  resist_slashing_modifier=0,
                  resist_piercing_modifier=0,
                  courage_skill=0,
-                 sanity_skill=0, **kwargs):
+                 sanity_skill=0,
+                 style="leather", **kwargs):
         super().__init__(*args, **kwargs)
         self.wearable = True
         self.broken = False
         self.garment = False
         self.weapon = False
         self.jewelry = False
-        self.style = "leather"
+        self.style = style
         self.max_durability = max_durability
         self.item_rating = item_rating
 
