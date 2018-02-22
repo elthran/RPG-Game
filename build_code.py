@@ -5,10 +5,12 @@ import hashlib
 from contextlib import contextmanager
 import sys
 import re
+
+from pprint import pprint
 import pdb
 
 import jinja2
-from jinja2 import Environment, select_autoescape
+from jinja2 import Environment
 
 LANGUAGES = {
     '.html': {
@@ -30,6 +32,21 @@ LANGUAGES = {
 # of the template blocks so that the output is correctly indented
 # Compliments of https://blog.kangz.net/posts/2016/08/31/code-generation-the-easier-way/
 class PrependIndentLoader(jinja2.BaseLoader):
+    """A class to remove the indent added by template blocks code.
+
+    This occurs before the code is processed by Jinja regular.
+    Usage:
+        env = Environment(
+        loader=PrependIndentLoader(''),
+        trim_blocks=True,
+        lstrip_blocks=True,
+        )
+
+    NOTE: trim_blocks=True and lstrip_blocks=True are also required!
+    """
+    blockstart = re.compile('{%-?\s*(if|for|block)[^}]*%}')
+    blockend = re.compile('{%-?\s*end(if|for|block)[^}]*%}')
+
     def __init__(self, path):
         self.path = path
 
@@ -42,32 +59,41 @@ class PrependIndentLoader(jinja2.BaseLoader):
             source = self.preprocess(f.read())
         return source, path, lambda: mtime == os.path.getmtime(path)
 
-    blockstart = re.compile('{%-?\s*(if|for|block)[^}]*%}')
-    blockend = re.compile('{%-?\s*end(if|for|block)[^}]*%}')
-
     def preprocess(self, source):
-        pdb.set_trace()
         lines = source.split('\n')
 
         # Compute the current indentation level of the template blocks and remove their indentation
         result = []
-        indentation_level = 0
+        end_match, start_match = None, None
+        indent_level = 0
 
         for line in lines:
-            # The capture in the regex adds one element per block start or end so we divide by two
-            # there is also an extra line chunk corresponding to the line end, so we substract it.
-            numends = (len(self.blockend.split(line)) - 1) // 2
-            indentation_level -= numends
+            # We don't want to remove quite as much indent from the end
+            # tag so we subtract 1 indent level
+            end_match = self.blockend.search(line)
+            if end_match:
+                indent_level -= 1
+                # indent_level = self.blockend.search(line).start() // 4 - 1
 
-            result.append(self.remove_indentation(line, indentation_level))
+            result.append(self.remove_indentation(line, indent_level))
 
-            numstarts = (len(self.blockstart.split(line)) - 1) // 2
-            indentation_level += numstarts
+            # The reverse order (searching for blockstart at the bottom of
+            # the loop) is essentially to simulate a 'do while loop'.
+            # The assumption is that the main content will never be indented
+            # before at least one template tag is found ... so the first
+            # iteration of the loop will only ever execute this last line.
+            start_match = self.blockstart.search(line)
+            if start_match:
+                indent_level += 1
+                # indent_level = self.blockstart.search(line).start() // 4 - 1
 
+        # print('\n'.join(result))
+        # pdb.set_trace()
         return '\n'.join(result)
 
     def remove_indentation(self, line, n):
         for _ in range(n):
+            # pdb.set_trace()
             if line.startswith(' '):
                 line = line[4:]
             elif line.startswith('\t'):
@@ -138,9 +164,17 @@ def maybe_backup(temp_name, final_name, extension):
     code) or not _readonly_ (modified by the user).
     """
     backup_name = final_name[:-len(extension)] + '.bak'
+    first_run = False
 
-    fileAtt = os.stat(final_name)[0]
-    if hash_match(final_name, temp_name):
+    try:
+        fileAtt = os.stat(final_name)[0]
+    except FileNotFoundError:
+        first_run = True
+
+    if first_run:
+        os.rename(temp_name, final_name)
+        print("New file '{}' created!".format(final_name))
+    elif hash_match(final_name, temp_name):
         # Template has not been changed.
         os.remove(temp_name)
         print("Template unmodified for '{}'.".format(final_name))
@@ -190,7 +224,6 @@ def build_templates(filenames, extension):
 
     env = Environment(
         loader=PrependIndentLoader(''),
-        autoescape=select_autoescape(default_for_string=False, default=False),
         trim_blocks=True,
         lstrip_blocks=True,
     )
@@ -205,15 +238,19 @@ def build_templates(filenames, extension):
         final_name = "../" + name + extension
         template_name = name + "_template" + extension
 
+        template = env.get_template(template_name)
+
         # Note this is an import name so the file type is left off.
         # e.g. import profile_proficiencies_data
         data_name = name + "_data"
-
-        data_module = importlib.import_module(data_name)
-        template = env.get_template(template_name)
-
-        data = {key: getattr(data_module, key) for key in dir(data_module) if
-                key[:2] != '__'}
+        data = {}
+        try:
+            data_module = importlib.import_module(data_name)
+            data = {key: getattr(data_module, key)
+                    for key in dir(data_module)
+                    if key[:2] != '__'}
+        except ImportError:
+            print("No data module named {}".format(data_name + '.py'))
 
         # Output a header.
         comment = LANGUAGES[extension]['multi_line_comment']
@@ -222,7 +259,7 @@ def build_templates(filenames, extension):
 This file is generated by 'build_code.py'.
 It has been set to read only so that you don't edit it without using
 'build_code.py'. Thought that may change in the future.
-{}\n
+{}\n\n
 '''.format(comment['start'], comment['end']))
         # Save the newly built code.
         with open(temp_name, 'a') as file:
