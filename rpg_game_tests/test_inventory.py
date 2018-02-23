@@ -7,7 +7,7 @@ from inventory import Inventory
 from items import (Item, OneHandedWeapon, HeadArmour, TwoHandedWeapon, Ring,
                    Shield, LegArmour)
 
-from generic_setup import GenericTestClass
+from test_setup import GenericTestCase
 
 """
 Inventory: work in progress
@@ -26,7 +26,7 @@ l - show local vars during traceback (when a test fails)
 
 # @pytest.mark.skip("Some message ...")
 @pytest.mark.incremental
-class TestInventory(GenericTestClass):
+class TestInventory(GenericTestCase):
     @classmethod
     def setup_class(cls):
         db = super().setup_class()

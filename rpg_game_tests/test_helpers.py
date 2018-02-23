@@ -2,11 +2,11 @@ import configparser
 from database import EZDB
 
 config = configparser.ConfigParser()
-config.read('tests/test.ini')
+config.read('rpg_game_tests/test.ini')
 url = config['DEFAULT']['url']
 
 
-class GenericTestClass:
+class GenericTestCase:
     url = url
 
     @classmethod
@@ -48,3 +48,21 @@ class GenericTestClass:
         self.db.update()
         self.teardown(delete=False)
         self.setup()
+
+
+def db_execute_script(path, ezdb):
+    """Execute the sql script file located at path.
+
+    Error handling is poor ...
+
+    ezdb can be any database like thing that has an attached
+    'engine'.
+
+    NOTE: this can't handle comments and can only handle files
+    that are one line long.
+    """
+
+    with open(path, 'r') as file:
+        for line in file:
+            if line != '\n':
+                ezdb.engine.execute(line)
