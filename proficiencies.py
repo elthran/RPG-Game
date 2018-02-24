@@ -655,6 +655,16 @@ class DynamicMixin(object):
         # This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips)
 
+        """
+        for item in hero.inventory.equipped:
+            for attrib in self:
+               setattr(self, attrib, getattr(item, attrib))
+        
+        for attrib in self:
+            for item in hero.inventory.equipped:
+                setattr(self, attrib, getattr(item, attrib))
+        """
+
         for item in hero.equipped_items():
             try:
                 self.maximum += item.health_maximum
