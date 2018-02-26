@@ -9,7 +9,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import orm
 from sqlalchemy.orm import validates
 
-from base_classes import Base
+from base_classes import Base, Map
 from attributes import AttributeContainer
 from abilities import AbilityContainer
 from proficiencies import ProficiencyContainer
@@ -117,7 +117,7 @@ class Hero(Base):
         cascade="all, delete-orphan")
 
     # Proficiencies One to One despite the name
-    proficiencies = relationship(
+    base_proficiencies = relationship(
         "ProficiencyContainer", back_populates='hero', uselist=False,
         cascade="all, delete-orphan")
 
@@ -141,6 +141,24 @@ class Hero(Base):
         raise Exception("'current_world' Location type must be 'map' not '{}'."
                         "".format(value.type))
 
+    @property
+    def proficiencies(self):
+        """Summed value of all derivative proficiency objects.
+
+        Should allow you to do this:
+            print(hero.proficiencies['defence'].level)
+            print(hero.proficiencies['defence'].value)
+        """
+        summed_proficiencies = Map(all_names=self.base_proficiencies.all_names)
+        for prof in zip(self.base_proficiencies,
+                        self.attributes.proficiencies):
+            # pdb.set_trace()
+            # print(sum(prof))
+            # print(prof)
+            # exit("testing hero summed proficiencies")
+            summed_proficiencies[prof[0].formatted_name] = sum(prof)
+        return summed_proficiencies
+
     def __init__(self, **kwargs):
         """Initialize the Hero object.
 
@@ -152,8 +170,8 @@ class Hero(Base):
         """
 
         # Skills and abilities
+        self.base_proficiencies = ProficiencyContainer()
         self.attributes = AttributeContainer()
-        self.proficiencies = ProficiencyContainer()
         self.abilities = AbilityContainer()
         self.inventory = Inventory()
         self.journal = Journal()

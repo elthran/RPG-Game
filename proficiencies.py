@@ -177,10 +177,17 @@ class ProficiencyContainer(Base):
 
     id = Column(Integer, primary_key=True)
 
+    # Class level all attrib names
+    all_names = ALL_ATTRIBUTE_NAMES
+
     # Relationships
     # Hero to self is one to one.
     hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
-    hero = relationship("Hero", back_populates="proficiencies")
+    hero = relationship("Hero", back_populates="base_proficiencies")
+
+    # Attributes One to One
+    attribute_id = Column(Integer, ForeignKey('attribute.id',
+                                              ondelete="CASCADE"))
 
     # Container connections are one to one.
     accuracy = relationship(
@@ -605,7 +612,8 @@ class Proficiency(Base):
 
     def __init__(self):
         self.name = self.__class__.__name__
-        self.formatted_name = self.name.lower().replace(" ", "_")
+        from build_code import fix_camel_case
+        self.formatted_name = fix_camel_case(self.name).lower().replace(" ", "_")
         self.tooltip = ""
         # self.reason_for_zero = ""
         self.level = 0
@@ -628,6 +636,38 @@ class Proficiency(Base):
 
     def level_up(self):
         self.level += 1
+
+    def __add__(self, other):
+        """Allow you to add 2 proficiencies (with the same name) together.
+
+        hero.summed_proficiencies = sum([prof for prof in self.proficiencies])
+        OR
+        hero.summed_proficiencies = {}
+        for prof, ability_prof in zip(self.proficiencies,
+                                   self.abilities.summed_proficiencies):
+            new_prof = prof + ability_prof
+            self.summed_proficiencies[new_prof.formatted_name] = new_prof
+        OR
+        hero.summed_proficiencies = {
+            prof.formatted_name: prof + attrib_prof + ability_prof + active_item_profs
+            for prof, attrib_prof, ability_prof, active_item_profs in zip(
+                self.proficiencies,
+                self.attributes.base_proficiencies,
+                self.abilities.summed_proficiencies,
+                self.activated_items.summed_proficiencies)
+            }
+        """
+
+        assert self.name == other.name
+        # pdb.set_trace()
+        obj = globals()[self.name]()  # Make a new object of class name
+        obj.level = self.level + other.level
+        return obj
+
+    def __radd__(self, other):
+        if not other:
+            return self
+        return self + other
 
 
 class DynamicMixin(object):
@@ -691,6 +731,10 @@ class DynamicMixin(object):
         """
         attrib_names = ['maximum']
         return [getattr(self, key) for key in attrib_names]
+
+    @property
+    def modifiable_on(self):
+        return ['maximum']
 
 
 class Health(DynamicMixin, Proficiency):

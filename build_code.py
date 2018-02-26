@@ -30,12 +30,12 @@ def fix_camel_case(name):
     """
     if name[0].isupper() and name[1:].islower():
         return name
-    print("Bad name:", name)
+    # print("Bad name:", name)
     fixed_name = name[0] + ''.join([" " + letter.lower()
                                     if (index > 0 and letter.isupper())
                                     else letter
                                     for index, letter in enumerate(name[1:])])
-    print("Fixed name:", fixed_name)
+    # print("Fixed name:", fixed_name)
     return fixed_name
 
 
