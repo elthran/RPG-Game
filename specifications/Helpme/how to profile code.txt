@@ -10,4 +10,6 @@ The resulting .png can be interpreted like so:
     -On the fourth line: the number of calls made
 
 https://www.airpair.com/python/posts/optimizing-python-code
+https://zapier.com/engineering/profiling-python-boss/
+http://www.techbeamers.com/python-code-optimization-tips-tricks/
 
