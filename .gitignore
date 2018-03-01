@@ -1,5 +1,6 @@
 __pycache__/
 *.pyc
+*.pyo
 .editorconfig
 static/database.db
 static/database.db-journal

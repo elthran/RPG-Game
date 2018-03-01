@@ -2,8 +2,8 @@
 {% set names = get_names(data) %}
 {% set container_name = cls_name + "Container" %}
 {% set container_table_name = cls_name.lower() + "_container" %}
-{% set attrib_names = normalized_attrib_names(names) %}
-{% set class_names = normalized_class_names(names) %}
+{% set attrib_names = normalize_attrib_names(names) %}
+{% set class_names = normalize_class_names(names) %}
 ALL_NAMES = {{ names }}
 ALL_ATTRIBUTE_NAMES = {{ attrib_names }}
 

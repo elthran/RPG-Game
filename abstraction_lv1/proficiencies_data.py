@@ -19,10 +19,13 @@ Percent: ???
 Empty: Sets this value to take on the value of "maximum". Must be placed after
     "Maximum" in the list of variables
 """
+
+from build_code import normalize_attrib_name
+
 PROFICIENCY_INFORMATION = [
     ("Health", "How much you can take before you die", "Vitality",
         [("Maximum", "linear", (2, 5, 0)),
-         ("Current", "empty")]),
+         ("Current", "percent")]),
     ("Regeneration", "How quickly your wounds heal", "Vitality",
         [("Speed", "root", (1, 2))]),
     ("Recovery", "How quickly you recover from poisons and negative effects",
@@ -32,13 +35,13 @@ PROFICIENCY_INFORMATION = [
         [("Ability", "linear", (0.5, 0.5, 1))]),
     ("Storage", "Your carrying capacity", "Brawn",
         [("Maximum", "linear", (2, 10, 0)),
-         ("Current", "empty")]),
+         ("Current", "percent")]),
     ("Encumbrance", "How much your are slowed down in combat by your "
                     "equipment", "Brawn",
         [("Amount", "root", (0, 0))]),
     ("Endurance", "Actions performed each day", "Resilience",
         [("Maximum", "linear", (1, 3, 0)),
-         ("Current", "empty")]),
+         ("Current", "percent")]),
     ("Damage", "How much damage you do on each hit", "Brawn",
         [("Minimum", "linear", (1, 0, 0)),
          ("Maximum", "linear", (1, 1, 0)),
@@ -65,7 +68,7 @@ PROFICIENCY_INFORMATION = [
         [("Chance", "root", (0, 0))]),
     ("Fatigue", "How quickly you tire in combat", "Resilience",
         [("Maximum", "linear", (1, 5, 0)),
-         ("Current", "empty")]),
+         ("Current", "percent")]),
     ("Block", "Ability to block if a shield is equipped", "Resilience",
         [("Chance", "root", (0, 0)),
          ("Modifier", "root", (0, 0))]),
@@ -77,7 +80,7 @@ PROFICIENCY_INFORMATION = [
         [("Modifier", "linear", (0.1, 1, 0))]),
     ("Sanctity", "Amount of sanctity you can have", "Divinity",
         [("Maximum", "linear", (3, 0, 0)),
-         ("Current", "empty")]),
+         ("Current", "percent")]),
     ("Resist holy", "Ability to resist holy damage", "Divinity",
         [("Modifier", "root", (0, 0))]),
     ("Bartering", "Discount from negotiating prices", "Charisma",
@@ -144,6 +147,6 @@ PROFICIENCY_INFORMATION = [
 ]
 # Work out how to get rid of this too. It is slow. And generates each time
 # this file is imported.
-ALL_PROFICIENCY_COLUMNS = sorted({column[0].lower()
-                           for prof in PROFICIENCY_INFORMATION
-                           for column in prof[3]})
+ALL_PROFICIENCY_COLUMNS = sorted({normalize_attrib_name(column[0])
+                                  for prof in PROFICIENCY_INFORMATION
+                                  for column in prof[3]})

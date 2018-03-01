@@ -48,19 +48,25 @@ def get_names(names):
     return [fix_camel_case(name) for name in sorted_names]
 
 
-def normalized_attrib_names(names):
+def normalize_attrib_name(name):
+    """Normalize name to Python attribute style."""
+
+    return fix_camel_case(name).lower().replace(" ", "_")
+
+
+def normalize_attrib_names(names):
     """Normalize names for columns."""
-    return [name.lower().replace(" ", "_") for name in names]
+    return [normalize_attrib_name(name) for name in names]
 
 
-def normalized_class_name(name):
+def normalize_class_name(name):
     """Normalized name for class."""
-    return name.title().replace(" ", "")
+    return fix_camel_case(name).title().replace(" ", "")
 
 
-def normalized_class_names(names):
+def normalize_class_names(names):
     """Normalized names for classes."""
-    return [normalized_class_name(name) for name in names]
+    return [normalize_class_name(name) for name in names]
 
 
 def get_hash(filename):
@@ -142,9 +148,10 @@ def build_templates(filenames, extension):
     )
 
     env.globals['get_names'] = get_names
-    env.globals['normalized_attrib_names'] = normalized_attrib_names
-    env.globals['normalized_class_name'] = normalized_class_name
-    env.globals['normalized_class_names'] = normalized_class_names
+    env.globals['normalize_attrib_name'] = normalize_attrib_name
+    env.globals['normalize_attrib_names'] = normalize_attrib_names
+    env.globals['normalize_class_name'] = normalize_class_name
+    env.globals['normalize_class_names'] = normalize_class_names
 
     for name in filenames:
         temp_name = "../" + name + '.tmp'

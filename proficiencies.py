@@ -660,14 +660,25 @@ class Proficiency(Base):
 
         assert self.name == other.name
         # pdb.set_trace()
-        obj = globals()[self.name]()  # Make a new object of class name
+        obj = self.__init__()  # Make a new object of class name
         obj.level = self.level + other.level
         return obj
 
     def __radd__(self, other):
+        """Run when adding object of different types.
+
+        A better way when using sum() is to set the 'start' keyword.
+        i.e.
+            sum([prof2, prof3, ..], start=prof1)
+        Then this method will never be called and the default add will be
+        used.
+        """
         if not other:
-            return self
-        return self + other
+            obj = self.__init__()
+            obj = self.level
+            return obj
+        other.level += self.level
+        return other
 
 
 class DynamicMixin(object):
