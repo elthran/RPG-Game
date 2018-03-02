@@ -26,11 +26,7 @@ ALL_ABILITIES = [
     ("Charmer", "AuraAbility", "3, 'You are {{ level * 5 }}% more likely to succeed when choosing charm dialogues.', tree='archetype', tree_type='opportunist'"),
     ("Haggler", "AuraAbility", "3, 'Prices at shops are {{ level * 3}}% cheaper.', tree='archetype', tree_type='opportunist'")
 ]
-
-
-ABILITY_NAMES = [key[0] for key in ALL_ABILITIES]
-
 """
-End of documentation.
+End of abilities_data.py.
 {% endraw %}
 """

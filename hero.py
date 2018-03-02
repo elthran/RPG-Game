@@ -117,7 +117,7 @@ class Hero(Base):
         "AttributeContainer", back_populates='hero', uselist=False,
         cascade="all, delete-orphan")
 
-    # Proficiencies One to One despite the name
+    # Hero to Proficiency is One to Many
     base_proficiencies = relationship(
         "Proficiency",
         collection_class=attribute_mapped_collection('name'),
@@ -156,18 +156,23 @@ class Hero(Base):
 
         for key in self.base_proficiencies:
             prof = self.base_proficiencies[key]
-            summed[prof.type_] = [prof.level, prof.modifier]
+            summed[prof.name] = [prof.level, prof.modifier, prof.type_]
 
-        for obj in self.equipped_items() + self.abilities:
+        for obj in self.equipped_items() + [obj for obj in self.abilities]:
             for key in obj.proficiencies:
                 prof = obj.proficiencies[key]
-                if prof.type_ in summed:
-                    current_level, current_modifier = summed[prof.type_]
-                    summed[prof.type_] = [current_level + prof.level,
-                                         current_modifier + prof.modifier]
+                if prof.name in summed:
+                    current_level, current_modifier, type_ = summed[prof.name]
+                    summed[prof.name] = [current_level + prof.level,
+                                         current_modifier + prof.modifier,
+                                         type_]
+                else:
+                    summed[prof.name] = [prof.level, prof.modifier, prof.type_]
+
         for key in summed:
-            lvl, mod = summed[key]
-            Class = getattr(proficiencies, key)
+            lvl, mod, type_ = summed[key]
+
+            Class = getattr(proficiencies, type_)
             summed[key] = Class(level=lvl, modifier=mod)
         return summed
 
@@ -187,6 +192,7 @@ class Hero(Base):
             Class = getattr(proficiencies, cls_name)
             obj = Class()
             obj.hero = self
+            # OR
             # self.base_proficiencies[obj.name] = obj
 
         self.attributes = AttributeContainer()

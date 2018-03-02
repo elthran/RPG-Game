@@ -15,8 +15,10 @@ from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
+from sqlalchemy.orm.collections import attribute_mapped_collection
 from flask import render_template_string
 
+import proficiencies
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 # Well ... ok, but for simplicity sake just pretend that that is true.
 from base_classes import Base
@@ -50,12 +52,8 @@ ALL_ABILITIES = [
     ("Charmer", "AuraAbility", "3, 'You are {{ level * 5 }}% more likely to succeed when choosing charm dialogues.', tree='archetype', tree_type='opportunist'"),
     ("Haggler", "AuraAbility", "3, 'Prices at shops are {{ level * 3}}% cheaper.', tree='archetype', tree_type='opportunist'")
 ]
-
-
-ABILITY_NAMES = [key[0] for key in ALL_ABILITIES]
-
 """
-End of documentation.
+End of abilities_data.py.
 """
 ALL_NAMES = ['Apprentice', 'Arcanum', 'Backstab', 'Bash', 'Blackhearted', 'Charmer', 'Discipline', 'Haggler', 'Martial arts', 'Meditation', 'Poet', 'Relentless', 'Scholar', 'Skinner', 'Strider', 'Student', 'Traveler', 'Trickster', 'Vigilance']
 ALL_ATTRIBUTE_NAMES = ['apprentice', 'arcanum', 'backstab', 'bash', 'blackhearted', 'charmer', 'discipline', 'haggler', 'martial_arts', 'meditation', 'poet', 'relentless', 'scholar', 'skinner', 'strider', 'student', 'traveler', 'trickster', 'vigilance']
@@ -266,6 +264,13 @@ class Ability(Base):
                                               ondelete="CASCADE"))
     abilities = relationship("AbilityContainer")
 
+    # Ability to Proficiencies is One to Many
+    proficiencies = relationship(
+        "Proficiency",
+        collection_class=attribute_mapped_collection('name'),
+        back_populates='ability',
+        cascade="all, delete-orphan")
+
     # Requirements is a One to Many relationship to self.
     """
     Use (pseudo-code):
@@ -310,9 +315,14 @@ class Ability(Base):
         self.tree_type = tree_type  # Which specific tree (ie. if the tree is religious, then which religion is it)
         self.image = "ability_icon_" + self.name
 
-        self.init_on_load()
+        # Initialize proficiencies
+        # Currently doesn't add any proficiencies.
+        for cls_name in []:
+            Class = getattr(proficiencies, cls_name)
+            obj = Class()
+            self.proficiencies[obj.name] = obj
 
-        # On load ... not implemented.
+        self.init_on_load()
 
     @orm.reconstructor
     def init_on_load(self):

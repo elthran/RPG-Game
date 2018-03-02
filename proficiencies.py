@@ -181,6 +181,10 @@ class Proficiency(Base):
     hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
     hero = relationship("Hero", back_populates="base_proficiencies")
 
+    # Ability to Proficiency is One to many?
+    ability_id = Column(Integer, ForeignKey('ability.id', ondelete="CASCADE"))
+    ability = relationship("Ability", back_populates="proficiencies")
+
     type_ = Column(String(50))
     description = Column(String(200))
     tooltip = Column(String(50))
