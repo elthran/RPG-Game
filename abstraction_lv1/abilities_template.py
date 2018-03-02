@@ -182,12 +182,12 @@ class CastableAbility(Ability):
         NOTE: returns False if spell is too expensive (cost > proficiencies.sanctity.current)
         If cast is succesful then return value is True.
         """
-        if hero.proficiencies.sanctity.current < self.sanctity_cost or hero.proficiencies.endurance.current < self.endurance_cost:
+        if hero.get_summed_proficiencies()['sanctity'].current < self.sanctity_cost or hero.get_summed_proficiencies()['endurance'].current < self.endurance_cost:
             return False
         else:
-            hero.proficiencies.sanctity.current -= self.sanctity_cost
-            hero.proficiencies.endurance.current -= self.endurance_cost
-            hero.proficiencies.health.current += self.heal_amount
+            hero.get_summed_proficiencies()['sanctity'].current -= self.sanctity_cost
+            hero.get_summed_proficiencies()['endurance'].current -= self.endurance_cost
+            hero.get_summed_proficiencies()['health'].current += self.heal_amount
             hero.gold += self.gold_amount
             return True
 

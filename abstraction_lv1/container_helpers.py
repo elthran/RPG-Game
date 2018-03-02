@@ -9,6 +9,8 @@ ALL_ATTRIBUTE_NAMES = {{ attrib_names }}
 ALL_CLASS_NAMES = {{ class_names }}
 {% if no_container %}
 {% else %}
+
+
 class {{ container_name }}(Base):
     __tablename__ = "{{ container_table_name }}"
 

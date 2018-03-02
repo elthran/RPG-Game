@@ -103,6 +103,7 @@ class {{ prof_class }}(Proficiency):
         return super().get_base()
     {% endif %}
     {% if prof[0] == "Block" %}
+
     def check_shield(self, hero):
         if hero.inventory.left_hand is None or hero.inventory.left_hand.type != "Shield":
             self.chance = 0
@@ -116,7 +117,8 @@ class {{ prof_class }}(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -128,3 +130,23 @@ class {{ prof_class }}(Proficiency):
 
 {% endfor %}
 
+
+'''{% raw %}
+Old code that might need to be readded at some point.
+@staticmethod
+    def keys():
+        return [{% for value in prof[3] %}'{{ normalize_attrib_name(value[0]) }}'{% if not loop.last %}, {% endif %}{% endfor %}]
+
+    def items(self):
+        """Basically a dict.items() clone that looks like ((key, value),
+            (key, value), ...)
+
+        This is an iterator? Maybe it should be a list or a view?
+        """
+        return ((key, getattr(self, key)) for key in self.keys())
+
+    def __iter__(self):
+        """Return all the attributes of this object as an iterator."""
+        return (key for key in self.keys())
+{% endraw %}
+'''

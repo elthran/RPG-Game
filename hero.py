@@ -119,8 +119,8 @@ class Hero(Base):
 
     # Proficiencies One to One despite the name
     base_proficiencies = relationship(
-        "ProficiencyContainer",
-        collection_class=attribute_mapped_collection('type_'),
+        "Proficiency",
+        collection_class=attribute_mapped_collection('name'),
         back_populates='hero',
         cascade="all, delete-orphan")
 
@@ -148,17 +148,19 @@ class Hero(Base):
         """Summed value of all derivative proficiency objects.
 
         Should allow you to do this:
-            hero.get_summed_proficiencies()['defence'].modifier
-            hero.get_summed_proficiencies()['defence'].get_final_value()
-            hero.get_suumed_proficiencies()['defence'].get_percent()
+            hero.get_summed_proficiencies()['Defence'].modifier
+            hero.get_summed_proficiencies()['Defence'].get_final_value()
+            hero.get_suumed_proficiencies()['Defence'].get_percent()
         """
         summed = {}
 
-        for prof in self.base_proficiencies:
+        for key in self.base_proficiencies:
+            prof = self.base_proficiencies[key]
             summed[prof.type_] = [prof.level, prof.modifier]
 
         for obj in self.equipped_items() + self.abilities:
-            for prof in obj.proficiencies:
+            for key in obj.proficiencies:
+                prof = obj.proficiencies[key]
                 if prof.type_ in summed:
                     current_level, current_modifier = summed[prof.type_]
                     summed[prof.type_] = [current_level + prof.level,
@@ -184,7 +186,8 @@ class Hero(Base):
         for cls_name in proficiencies.ALL_CLASS_NAMES:
             Class = getattr(proficiencies, cls_name)
             obj = Class()
-            self.base_proficiencies[obj.type_] = obj
+            obj.hero = self
+            # self.base_proficiencies[obj.name] = obj
 
         self.attributes = AttributeContainer()
         self.abilities = AbilityContainer()
@@ -265,18 +268,19 @@ class Hero(Base):
     #     self.wolf_kills = 0
 
     def refresh_proficiencies(self):
-        for proficiency in self.proficiencies:
-            proficiency.update(self)
+        pass
+        # for proficiency in self.proficiencies:
+        #     proficiency.update(self)
 
     def refresh_character(self, full=False):
-        self.refresh_proficiencies()
+        # self.refresh_proficiencies()
         if full:
-            self.proficiencies.health.current = \
-                self.proficiencies.health.maximum
-            self.proficiencies.sanctity.current = \
-                self.proficiencies.sanctity.maximum
-            self.proficiencies.endurance.current = \
-                self.proficiencies.endurance.maximum
+            self.base_proficiencies['health'].current = \
+                self.base_proficiencies['health'].get_final()
+            self.base_proficiencies['sanctity'].current = \
+                self.base_proficiencies['sanctity'].get_final()
+            self.base_proficiencies['endurance'].current = \
+                self.base_proficiencies['endurance'].get_final()
 
     # I dont think this is needed if the validators are working?
     # I don't think I ever call this function and the bar seems
@@ -285,7 +289,7 @@ class Hero(Base):
         self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100
 
     def gain_experience(self, amount):
-        new_amount = amount * self.proficiencies.understanding.modifier
+        new_amount = amount * self.get_summed_proficiencies()['understanding'].modifier
         new_amount = int(new_amount) + (random.random() < new_amount - int(new_amount)) # This will round the number weighted by its decimal (so 1.2 has 20% chance of rounding up)
         self.experience += new_amount
         if self.experience >= self.experience_maximum:

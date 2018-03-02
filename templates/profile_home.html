@@ -16,7 +16,7 @@
 				{% if hero.virtue %}}<li>Virtue:</li>{% endif %}
 				<li>Experience:</li>
 				<li>Health:</li>
-				{% if hero.proficiencies.sanctity.maximum %}<li>Sanctity:</li>{% endif %}
+				{% if hero.get_summed_proficiencies()['sanctity'].get_final() %}<li>Sanctity:</li>{% endif %}
 				<li>Storage:</li>
 				<li>Endurance:</li>
 				<li>Other players killed:</li>
@@ -32,10 +32,10 @@
 				{% if hero.devotion %}}<li>Devotion: {{ hero.age }}</li>{% endif %}
 				{% if hero.virtue %}}<li>{{ hero.virtue }}</li>{% endif %}
 				<li>{{ hero.experience }} / {{ hero.experience_maximum }}</li>
-				<li>{{ hero.proficiencies.health.current }} / {{ hero.proficiencies.health.maximum }}</li>
-				{% if hero.proficiencies.sanctity.maximum %}<li>{{ hero.proficiencies.sanctity.current }} / {{ hero.proficiencies.sanctity.maximum }}</li>{% endif %}
-				<li>{{ hero.proficiencies.storage.current }} / {{ hero.proficiencies.storage.maximum }}</li>
-				<li>{{ hero.proficiencies.endurance.current }} / {{ hero.proficiencies.endurance.maximum }}</li>
+				<li>{{ hero.get_summed_proficiencies()['health'].current }} / {{ hero.get_summed_proficiencies()['health'].get_final() }}</li>
+				{% if hero.get_summed_proficiencies()['sanctity'].get_final() %}<li>{{ hero.get_summed_proficiencies()['sanctity'].current }} / {{ hero.get_summed_proficiencies()['sanctity'].get_final() }}</li>{% endif %}
+				<li>{{ hero.get_summed_proficiencies()['storage'].current }} / {{ hero.get_summed_proficiencies()['storage'].get_final() }}</li>
+				<li>{{ hero.get_summed_proficiencies()['endurance'].current }} / {{ hero.get_summed_proficiencies()['endurance'].get_final() }}</li>
 				<li>{{ hero.player_kills }}</li>
 				<li>{{ hero.monster_kills }}</li>
 				<li>{{ hero.deaths }}</li>
@@ -65,13 +65,13 @@
 				<li>{{ hero.specializations.calling.name }}</li>
 				<!--{% if hero.pantheon %}<li>{{ hero.pantheon.name }}</li>{% endif %}-->
 				{% if hero.house %}<li>{{ hero.house.title() }}</li>{% endif %}
-				<li>{{ hero.proficiencies.stealth.chance }}%</li>
-				<li>{{ hero.proficiencies.pickpocketing.chance }}%</li>
-				<li>{{ hero.proficiencies.faith.modifier }}%</li>
-				<li>{{ hero.proficiencies.bartering.chance }}%</li>
-				<li>{{ hero.proficiencies.oration.modifier }}%</li>
-				<li>{{ hero.proficiencies.literacy.modifier }}%</li>
-				<li>{{ hero.proficiencies.luckiness.chance }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['stealth'].chance }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['pickpocketing'].chance }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['faith'].modifier }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['bartering'].chance }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['oration'].modifier }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['literacy'].modifier }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['luckiness'].chance }}%</li>
 			</ul>
 		</div>
 	</div>
@@ -95,15 +95,15 @@
 		</div>
 		<div class="rightPageHalf textRight">
 			<ul>
-				<li>{{ hero.proficiencies.damage.minimum }}-{{ hero.proficiencies.damage.maximum }}</li>
-				<li>{{ hero.proficiencies.speed.speed }}</li>
-				<li>{{ hero.proficiencies.accuracy.accuracy }}%</li>
-				<li>{{ hero.proficiencies.first_strike.chance }}%</li>
-				<li>{{ hero.proficiencies.killshot.chance }}% (Modifier: {{ hero.proficiencies.killshot.modifier }}%)</li>
-				<li>{{ hero.proficiencies.defence.modifier }}%</li>
-				<li>{{ hero.proficiencies.evade.chance }}%</li>
-				<li>{{ hero.proficiencies.parry.chance }}%</li>
-				<li>{{ hero.proficiencies.riposte.chance }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['damage'].minimum }}-{{ hero.get_summed_proficiencies()['damage'].get_final() }}</li>
+				<li>{{ hero.get_summed_proficiencies()['speed'].speed }}</li>
+				<li>{{ hero.get_summed_proficiencies()['accuracy'].accuracy }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['first_strike'].chance }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['killshot'].chance }}% (Modifier: {{ hero.get_summed_proficiencies()['killshot'].modifier }}%)</li>
+				<li>{{ hero.get_summed_proficiencies()['defence'].modifier }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['evade'].chance }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['parry'].chance }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['riposte'].chance }}%</li>
 			</ul>
 		</div>
 	</div>
@@ -126,17 +126,17 @@
 		</div>
 		<div class="rightPageHalf textRight">
 			<ul>
-				<li>{{ hero.proficiencies.defence.modifier }}</li>
-				<li>{% if hero.inventory.hero.inventory.left_hand.type == "Shield"%}{{ hero.proficiencies.block.chance }}%{% else %}<font color="red">You need a shield</font>{% endif %}</li>
-				<li>{{ hero.proficiencies.fatigue.current }}</li>
-				<li>{{ hero.proficiencies.resist_frost.modifier }}%</li>
-				<li>{{ hero.proficiencies.resist_flame.modifier }}%</li>
-				<li>{{ hero.proficiencies.resist_shadow.modifier }}%</li>
-				<li>{{ hero.proficiencies.resist_holy.modifier }}%</li>
-				<li>{{ hero.proficiencies.resist_poison.modifier }}%</li>
-				<li>{{ hero.proficiencies.resist_blunt.modifier }}%</li>
-				<li>{{ hero.proficiencies.resist_slashing.modifier }}%</li>
-				<li>{{ hero.proficiencies.resist_piercing.modifier }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['defence'].modifier }}</li>
+				<li>{% if hero.inventory.hero.inventory.left_hand.type == "Shield"%}{{ hero.get_summed_proficiencies()['block'].chance }}%{% else %}<font color="red">You need a shield</font>{% endif %}</li>
+				<li>{{ hero.get_summed_proficiencies()['fatigue'].current }}</li>
+				<li>{{ hero.get_summed_proficiencies()['resist_frost'].modifier }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['resist_flame'].modifier }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['resist_shadow'].modifier }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['resist_holy'].modifier }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['resist_poison'].modifier }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['resist_blunt'].modifier }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['resist_slashing'].modifier }}%</li>
+				<li>{{ hero.get_summed_proficiencies()['resist_piercing'].modifier }}%</li>
 			</ul>
 		</div>
 	</div>

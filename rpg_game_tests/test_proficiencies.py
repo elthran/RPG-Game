@@ -2,7 +2,7 @@ from . import GenericTestCase
 
 # from hero import Hero
 
-from proficiencies import ProficiencyContainer, Health, Regeneration
+from proficiencies import Proficiency, Health, Regeneration
 
 """
 To add current directory to sys.path run like this:

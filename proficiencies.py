@@ -164,11 +164,6 @@ PROFICIENCY_INFORMATION = [
     ("Sanity", "Your ability to resist mind altering affects", "Willpower",
         [("Skill", "linear", (1, 0, 0))]),
 ]
-# Work out how to get rid of this too. It is slow. And generates each time
-# this file is imported.
-ALL_PROFICIENCY_COLUMNS = sorted({normalize_attrib_name(column[0])
-                                  for prof in PROFICIENCY_INFORMATION
-                                  for column in prof[3]})
 ALL_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'Damage', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'First strike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Regeneration', 'Renown', 'Resist blunt', 'Resist flame', 'Resist frost', 'Resist holy', 'Resist piercing', 'Resist poison', 'Resist shadow', 'Resist slashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stealth', 'Storage', 'Survivalist', 'Trustworthiness', 'Understanding', 'Woodsman']
 ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'bartering', 'block', 'caution', 'charm', 'climbing', 'courage', 'damage', 'defence', 'detection', 'encumbrance', 'endurance', 'evade', 'explorer', 'faith', 'fatigue', 'first_strike', 'flee', 'health', 'huntsman', 'killshot', 'knowledge', 'literacy', 'logistics', 'luckiness', 'mountaineering', 'navigator', 'oration', 'parry', 'pickpocketing', 'recovery', 'regeneration', 'renown', 'resist_blunt', 'resist_flame', 'resist_frost', 'resist_holy', 'resist_piercing', 'resist_poison', 'resist_shadow', 'resist_slashing', 'riposte', 'sanctity', 'sanity', 'speed', 'stealth', 'storage', 'survivalist', 'trustworthiness', 'understanding', 'woodsman']
 ALL_CLASS_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'Damage', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'FirstStrike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Regeneration', 'Renown', 'ResistBlunt', 'ResistFlame', 'ResistFrost', 'ResistHoly', 'ResistPiercing', 'ResistPoison', 'ResistShadow', 'ResistSlashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stealth', 'Storage', 'Survivalist', 'Trustworthiness', 'Understanding', 'Woodsman']
@@ -256,7 +251,8 @@ class Health(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -288,7 +284,8 @@ class Regeneration(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -320,7 +317,8 @@ class Recovery(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -352,7 +350,8 @@ class Climbing(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -384,7 +383,8 @@ class Storage(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -416,7 +416,8 @@ class Encumbrance(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -448,7 +449,8 @@ class Endurance(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -480,7 +482,8 @@ class Damage(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -512,7 +515,8 @@ class Speed(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -544,7 +548,8 @@ class Accuracy(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -576,7 +581,8 @@ class FirstStrike(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -608,7 +614,8 @@ class Killshot(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -640,7 +647,8 @@ class Defence(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -672,7 +680,8 @@ class Evade(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -704,7 +713,8 @@ class Parry(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -736,7 +746,8 @@ class Flee(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -768,7 +779,8 @@ class Riposte(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -800,7 +812,8 @@ class Fatigue(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -826,6 +839,7 @@ class Block(Proficiency):
         """
 
         return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     def check_shield(self, hero):
         if hero.inventory.left_hand is None or hero.inventory.left_hand.type != "Shield":
             self.chance = 0
@@ -838,7 +852,8 @@ class Block(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -870,7 +885,8 @@ class Stealth(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -902,7 +918,8 @@ class Pickpocketing(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -934,7 +951,8 @@ class Faith(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -966,7 +984,8 @@ class Sanctity(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -998,7 +1017,8 @@ class ResistHoly(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1030,7 +1050,8 @@ class Bartering(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1062,7 +1083,8 @@ class Oration(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1094,7 +1116,8 @@ class Charm(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1126,7 +1149,8 @@ class Trustworthiness(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1158,7 +1182,8 @@ class Renown(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1190,7 +1215,8 @@ class Knowledge(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1222,7 +1248,8 @@ class Literacy(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1254,7 +1281,8 @@ class Understanding(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1286,7 +1314,8 @@ class Luckiness(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1318,7 +1347,8 @@ class Adventuring(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1350,7 +1380,8 @@ class Logistics(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1382,7 +1413,8 @@ class Mountaineering(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1414,7 +1446,8 @@ class Woodsman(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1446,7 +1479,8 @@ class Navigator(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1478,7 +1512,8 @@ class Detection(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1510,7 +1545,8 @@ class Caution(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1542,7 +1578,8 @@ class Explorer(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1574,7 +1611,8 @@ class Huntsman(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1606,7 +1644,8 @@ class Survivalist(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1638,7 +1677,8 @@ class ResistFrost(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1670,7 +1710,8 @@ class ResistFlame(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1702,7 +1743,8 @@ class ResistShadow(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1734,7 +1776,8 @@ class ResistPoison(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1766,7 +1809,8 @@ class ResistBlunt(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1798,7 +1842,8 @@ class ResistSlashing(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1830,7 +1875,8 @@ class ResistPiercing(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1862,7 +1908,8 @@ class Courage(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1894,7 +1941,8 @@ class Sanity(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in self.modifiable_on:
+        for attrib in ['get_base()', 'modifier', 'get_final()',
+                       'current', 'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1904,3 +1952,23 @@ class Sanity(Proficiency):
         return ';'.join(tooltips)
 
 
+
+
+'''
+Old code that might need to be readded at some point.
+@staticmethod
+    def keys():
+        return [{% for value in prof[3] %}'{{ normalize_attrib_name(value[0]) }}'{% if not loop.last %}, {% endif %}{% endfor %}]
+
+    def items(self):
+        """Basically a dict.items() clone that looks like ((key, value),
+            (key, value), ...)
+
+        This is an iterator? Maybe it should be a list or a view?
+        """
+        return ((key, getattr(self, key)) for key in self.keys())
+
+    def __iter__(self):
+        """Return all the attributes of this object as an iterator."""
+        return (key for key in self.keys())
+'''

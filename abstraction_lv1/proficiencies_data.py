@@ -145,8 +145,3 @@ PROFICIENCY_INFORMATION = [
     ("Sanity", "Your ability to resist mind altering affects", "Willpower",
         [("Skill", "linear", (1, 0, 0))]),
 ]
-# Work out how to get rid of this too. It is slow. And generates each time
-# this file is imported.
-ALL_PROFICIENCY_COLUMNS = sorted({normalize_attrib_name(column[0])
-                                  for prof in PROFICIENCY_INFORMATION
-                                  for column in prof[3]})

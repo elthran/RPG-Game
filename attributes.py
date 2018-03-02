@@ -8,7 +8,6 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
-from proficiencies import ProficiencyContainer
 from base_classes import Base
 
 ATTRIBUTE_INFORMATION = [
@@ -29,6 +28,7 @@ ATTRIBUTE_INFORMATION = [
 ALL_ATTRIBUTES = [attrib[0].lower() for attrib in ATTRIBUTE_INFORMATION]
 ALL_NAMES = ['Agility', 'Brawn', 'Charisma', 'Divinity', 'Fortuity', 'Intellect', 'Pathfinding', 'Quickness', 'Resilience', 'Survivalism', 'Vitality', 'Willpower']
 ALL_ATTRIBUTE_NAMES = ['agility', 'brawn', 'charisma', 'divinity', 'fortuity', 'intellect', 'pathfinding', 'quickness', 'resilience', 'survivalism', 'vitality', 'willpower']
+ALL_CLASS_NAMES = ['Agility', 'Brawn', 'Charisma', 'Divinity', 'Fortuity', 'Intellect', 'Pathfinding', 'Quickness', 'Resilience', 'Survivalism', 'Vitality', 'Willpower']
 
 
 class AttributeContainer(Base):
@@ -115,21 +115,6 @@ class AttributeContainer(Base):
         uselist=False,
         cascade="all, delete-orphan")
 
-    @property
-    def proficiencies(self):
-        summed_proficiencies = []
-        for atrib in self:
-            profs = atrib.proficiencies
-            for index, prof in enumerate(profs):
-                try:
-                    summed_proficiencies[index] += prof
-                except IndexError:
-                    summed_proficiencies.append(prof)
-        # print(sorted(summed_proficiencies.values(),
-        #               key=lambda x: x.formatted_name))
-        # exit()
-        return summed_proficiencies
-
     def __init__(self):
         self.agility = Agility()
         self.brawn = Brawn()
@@ -173,10 +158,6 @@ class Attribute(Base):
     attribute_container_id = Column(
         Integer, ForeignKey('attribute_container.id', ondelete="CASCADE"))
 
-    # Proficiencies container
-    proficiencies = relationship(
-        "ProficiencyContainer", uselist=False, cascade="all, delete-orphan")
-
     __mapper_args__ = {
         'polymorphic_identity': 'Attribute',
         'polymorphic_on': name
@@ -191,8 +172,6 @@ class Attribute(Base):
         self.name = name
         self.description = description
         self.level = 1
-
-        self.proficiencies = ProficiencyContainer()
 
 
 class Agility(Attribute):

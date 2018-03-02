@@ -59,6 +59,7 @@ End of documentation.
 """
 ALL_NAMES = ['Apprentice', 'Arcanum', 'Backstab', 'Bash', 'Blackhearted', 'Charmer', 'Discipline', 'Haggler', 'Martial arts', 'Meditation', 'Poet', 'Relentless', 'Scholar', 'Skinner', 'Strider', 'Student', 'Traveler', 'Trickster', 'Vigilance']
 ALL_ATTRIBUTE_NAMES = ['apprentice', 'arcanum', 'backstab', 'bash', 'blackhearted', 'charmer', 'discipline', 'haggler', 'martial_arts', 'meditation', 'poet', 'relentless', 'scholar', 'skinner', 'strider', 'student', 'traveler', 'trickster', 'vigilance']
+ALL_CLASS_NAMES = ['Apprentice', 'Arcanum', 'Backstab', 'Bash', 'Blackhearted', 'Charmer', 'Discipline', 'Haggler', 'MartialArts', 'Meditation', 'Poet', 'Relentless', 'Scholar', 'Skinner', 'Strider', 'Student', 'Traveler', 'Trickster', 'Vigilance']
 
 
 class AbilityContainer(Base):
@@ -382,12 +383,12 @@ class CastableAbility(Ability):
         NOTE: returns False if spell is too expensive (cost > proficiencies.sanctity.current)
         If cast is succesful then return value is True.
         """
-        if hero.proficiencies.sanctity.current < self.sanctity_cost or hero.proficiencies.endurance.current < self.endurance_cost:
+        if hero.get_summed_proficiencies()['sanctity'].current < self.sanctity_cost or hero.get_summed_proficiencies()['endurance'].current < self.endurance_cost:
             return False
         else:
-            hero.proficiencies.sanctity.current -= self.sanctity_cost
-            hero.proficiencies.endurance.current -= self.endurance_cost
-            hero.proficiencies.health.current += self.heal_amount
+            hero.get_summed_proficiencies()['sanctity'].current -= self.sanctity_cost
+            hero.get_summed_proficiencies()['endurance'].current -= self.endurance_cost
+            hero.get_summed_proficiencies()['health'].current += self.heal_amount
             hero.gold += self.gold_amount
             return True
 
