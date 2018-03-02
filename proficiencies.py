@@ -4,19 +4,17 @@ It has been set to read only so that you don't edit it without using
 'build_code.py'. Thought that may change in the future.
 """
 
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, Float
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship, validates
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 
-from factories import container_factory
 from base_classes import Base
 
 from math import sin, floor
 
 # For testing
 from pprint import pprint
-from inspect import signature
 import pdb
 
 """
@@ -40,10 +38,13 @@ Percent: ???
 Empty: Sets this value to take on the value of "maximum". Must be placed after
     "Maximum" in the list of variables
 """
+
+from build_code import normalize_attrib_name
+
 PROFICIENCY_INFORMATION = [
     ("Health", "How much you can take before you die", "Vitality",
         [("Maximum", "linear", (2, 5, 0)),
-         ("Current", "empty")]),
+         ("Current", "percent")]),
     ("Regeneration", "How quickly your wounds heal", "Vitality",
         [("Speed", "root", (1, 2))]),
     ("Recovery", "How quickly you recover from poisons and negative effects",
@@ -53,13 +54,13 @@ PROFICIENCY_INFORMATION = [
         [("Ability", "linear", (0.5, 0.5, 1))]),
     ("Storage", "Your carrying capacity", "Brawn",
         [("Maximum", "linear", (2, 10, 0)),
-         ("Current", "empty")]),
+         ("Current", "percent")]),
     ("Encumbrance", "How much your are slowed down in combat by your "
                     "equipment", "Brawn",
         [("Amount", "root", (0, 0))]),
     ("Endurance", "Actions performed each day", "Resilience",
         [("Maximum", "linear", (1, 3, 0)),
-         ("Current", "empty")]),
+         ("Current", "percent")]),
     ("Damage", "How much damage you do on each hit", "Brawn",
         [("Minimum", "linear", (1, 0, 0)),
          ("Maximum", "linear", (1, 1, 0)),
@@ -86,7 +87,7 @@ PROFICIENCY_INFORMATION = [
         [("Chance", "root", (0, 0))]),
     ("Fatigue", "How quickly you tire in combat", "Resilience",
         [("Maximum", "linear", (1, 5, 0)),
-         ("Current", "empty")]),
+         ("Current", "percent")]),
     ("Block", "Ability to block if a shield is equipped", "Resilience",
         [("Chance", "root", (0, 0)),
          ("Modifier", "root", (0, 0))]),
@@ -98,7 +99,7 @@ PROFICIENCY_INFORMATION = [
         [("Modifier", "linear", (0.1, 1, 0))]),
     ("Sanctity", "Amount of sanctity you can have", "Divinity",
         [("Maximum", "linear", (3, 0, 0)),
-         ("Current", "empty")]),
+         ("Current", "percent")]),
     ("Resist holy", "Ability to resist holy damage", "Divinity",
         [("Modifier", "root", (0, 0))]),
     ("Bartering", "Discount from negotiating prices", "Charisma",
@@ -165,409 +166,12 @@ PROFICIENCY_INFORMATION = [
 ]
 # Work out how to get rid of this too. It is slow. And generates each time
 # this file is imported.
-ALL_PROFICIENCY_COLUMNS = sorted({column[0].lower()
-                           for prof in PROFICIENCY_INFORMATION
-                           for column in prof[3]})
+ALL_PROFICIENCY_COLUMNS = sorted({normalize_attrib_name(column[0])
+                                  for prof in PROFICIENCY_INFORMATION
+                                  for column in prof[3]})
 ALL_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'Damage', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'First strike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Regeneration', 'Renown', 'Resist blunt', 'Resist flame', 'Resist frost', 'Resist holy', 'Resist piercing', 'Resist poison', 'Resist shadow', 'Resist slashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stealth', 'Storage', 'Survivalist', 'Trustworthiness', 'Understanding', 'Woodsman']
 ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'bartering', 'block', 'caution', 'charm', 'climbing', 'courage', 'damage', 'defence', 'detection', 'encumbrance', 'endurance', 'evade', 'explorer', 'faith', 'fatigue', 'first_strike', 'flee', 'health', 'huntsman', 'killshot', 'knowledge', 'literacy', 'logistics', 'luckiness', 'mountaineering', 'navigator', 'oration', 'parry', 'pickpocketing', 'recovery', 'regeneration', 'renown', 'resist_blunt', 'resist_flame', 'resist_frost', 'resist_holy', 'resist_piercing', 'resist_poison', 'resist_shadow', 'resist_slashing', 'riposte', 'sanctity', 'sanity', 'speed', 'stealth', 'storage', 'survivalist', 'trustworthiness', 'understanding', 'woodsman']
-
-
-class ProficiencyContainer(Base):
-    __tablename__ = "proficiency_container"
-
-    id = Column(Integer, primary_key=True)
-
-    # Class level all attrib names
-    all_names = ALL_ATTRIBUTE_NAMES
-
-    # Relationships
-    # Hero to self is one to one.
-    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
-    hero = relationship("Hero", back_populates="base_proficiencies")
-
-    # Attributes One to One
-    attribute_id = Column(Integer, ForeignKey('attribute.id',
-                                              ondelete="CASCADE"))
-
-    # Container connections are one to one.
-    accuracy = relationship(
-        "Accuracy",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Accuracy')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    adventuring = relationship(
-        "Adventuring",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Adventuring')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    bartering = relationship(
-        "Bartering",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Bartering')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    block = relationship(
-        "Block",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Block')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    caution = relationship(
-        "Caution",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Caution')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    charm = relationship(
-        "Charm",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Charm')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    climbing = relationship(
-        "Climbing",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Climbing')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    courage = relationship(
-        "Courage",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Courage')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    damage = relationship(
-        "Damage",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Damage')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    defence = relationship(
-        "Defence",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Defence')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    detection = relationship(
-        "Detection",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Detection')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    encumbrance = relationship(
-        "Encumbrance",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Encumbrance')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    endurance = relationship(
-        "Endurance",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Endurance')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    evade = relationship(
-        "Evade",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Evade')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    explorer = relationship(
-        "Explorer",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Explorer')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    faith = relationship(
-        "Faith",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Faith')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    fatigue = relationship(
-        "Fatigue",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Fatigue')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    first_strike = relationship(
-        "FirstStrike",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='FirstStrike')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    flee = relationship(
-        "Flee",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Flee')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    health = relationship(
-        "Health",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Health')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    huntsman = relationship(
-        "Huntsman",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Huntsman')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    killshot = relationship(
-        "Killshot",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Killshot')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    knowledge = relationship(
-        "Knowledge",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Knowledge')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    literacy = relationship(
-        "Literacy",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Literacy')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    logistics = relationship(
-        "Logistics",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Logistics')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    luckiness = relationship(
-        "Luckiness",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Luckiness')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    mountaineering = relationship(
-        "Mountaineering",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Mountaineering')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    navigator = relationship(
-        "Navigator",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Navigator')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    oration = relationship(
-        "Oration",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Oration')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    parry = relationship(
-        "Parry",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Parry')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    pickpocketing = relationship(
-        "Pickpocketing",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Pickpocketing')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    recovery = relationship(
-        "Recovery",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Recovery')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    regeneration = relationship(
-        "Regeneration",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Regeneration')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    renown = relationship(
-        "Renown",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Renown')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    resist_blunt = relationship(
-        "ResistBlunt",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='ResistBlunt')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    resist_flame = relationship(
-        "ResistFlame",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='ResistFlame')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    resist_frost = relationship(
-        "ResistFrost",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='ResistFrost')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    resist_holy = relationship(
-        "ResistHoly",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='ResistHoly')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    resist_piercing = relationship(
-        "ResistPiercing",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='ResistPiercing')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    resist_poison = relationship(
-        "ResistPoison",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='ResistPoison')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    resist_shadow = relationship(
-        "ResistShadow",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='ResistShadow')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    resist_slashing = relationship(
-        "ResistSlashing",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='ResistSlashing')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    riposte = relationship(
-        "Riposte",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Riposte')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    sanctity = relationship(
-        "Sanctity",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Sanctity')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    sanity = relationship(
-        "Sanity",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Sanity')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    speed = relationship(
-        "Speed",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Speed')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    stealth = relationship(
-        "Stealth",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Stealth')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    storage = relationship(
-        "Storage",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Storage')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    survivalist = relationship(
-        "Survivalist",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Survivalist')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    trustworthiness = relationship(
-        "Trustworthiness",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Trustworthiness')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    understanding = relationship(
-        "Understanding",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Understanding')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    woodsman = relationship(
-        "Woodsman",
-        primaryjoin="and_(ProficiencyContainer.id==Proficiency.proficiency_container_id, "
-                    "Proficiency.name=='Woodsman')",
-        uselist=False,
-        cascade="all, delete-orphan")
-
-    def __init__(self):
-        self.accuracy = Accuracy()
-        self.adventuring = Adventuring()
-        self.bartering = Bartering()
-        self.block = Block()
-        self.caution = Caution()
-        self.charm = Charm()
-        self.climbing = Climbing()
-        self.courage = Courage()
-        self.damage = Damage()
-        self.defence = Defence()
-        self.detection = Detection()
-        self.encumbrance = Encumbrance()
-        self.endurance = Endurance()
-        self.evade = Evade()
-        self.explorer = Explorer()
-        self.faith = Faith()
-        self.fatigue = Fatigue()
-        self.first_strike = FirstStrike()
-        self.flee = Flee()
-        self.health = Health()
-        self.huntsman = Huntsman()
-        self.killshot = Killshot()
-        self.knowledge = Knowledge()
-        self.literacy = Literacy()
-        self.logistics = Logistics()
-        self.luckiness = Luckiness()
-        self.mountaineering = Mountaineering()
-        self.navigator = Navigator()
-        self.oration = Oration()
-        self.parry = Parry()
-        self.pickpocketing = Pickpocketing()
-        self.recovery = Recovery()
-        self.regeneration = Regeneration()
-        self.renown = Renown()
-        self.resist_blunt = ResistBlunt()
-        self.resist_flame = ResistFlame()
-        self.resist_frost = ResistFrost()
-        self.resist_holy = ResistHoly()
-        self.resist_piercing = ResistPiercing()
-        self.resist_poison = ResistPoison()
-        self.resist_shadow = ResistShadow()
-        self.resist_slashing = ResistSlashing()
-        self.riposte = Riposte()
-        self.sanctity = Sanctity()
-        self.sanity = Sanity()
-        self.speed = Speed()
-        self.stealth = Stealth()
-        self.storage = Storage()
-        self.survivalist = Survivalist()
-        self.trustworthiness = Trustworthiness()
-        self.understanding = Understanding()
-        self.woodsman = Woodsman()
-
-    def items(self):
-        """Basically a dict.items() clone that looks like ((key, value),
-            (key, value), ...)
-
-        This is an iterator? Maybe it should be a list or a view?
-        """
-        return ((key, getattr(self, key)) for key in ALL_ATTRIBUTE_NAMES)
-
-    def __iter__(self):
-        """Return all the attributes of this function as an iterator."""
-        return (getattr(self, key) for key in ALL_ATTRIBUTE_NAMES)
+ALL_CLASS_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'Damage', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'FirstStrike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Regeneration', 'Renown', 'ResistBlunt', 'ResistFlame', 'ResistFrost', 'ResistHoly', 'ResistPiercing', 'ResistPoison', 'ResistShadow', 'ResistSlashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stealth', 'Storage', 'Survivalist', 'Trustworthiness', 'Understanding', 'Woodsman']
 
 
 class Proficiency(Base):
@@ -577,291 +181,79 @@ class Proficiency(Base):
     
     id = Column(Integer, primary_key=True)
 
-    name = Column(String(50))
+    # Relationships
+    # Hero to Proficiencies is One to many?
+    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
+    hero = relationship("Hero", back_populates="base_proficiencies")
+
+    type_ = Column(String(50))
     description = Column(String(200))
     tooltip = Column(String(50))
     attribute_type = Column(String(50))
     level = Column(Integer)
     next_value = Column(Integer)
-    is_not_max_level = Column(Boolean)  # Maybe remove
     reason_for_zero = Column(String(50))    # Maybe remove
+    modifier = Column(Float)
+    hidden = Column(Boolean)
+    current = Column(Integer)
 
     # Extra Ability columns
     error = Column(String(50))
-    formatted_name = Column(String(50))
-    ability = Column(Integer)
-    accuracy = Column(Integer)
-    amount = Column(Integer)
-    chance = Column(Integer)
-    current = Column(Integer)
-    efficiency = Column(Integer)
-    maximum = Column(Integer)
-    minimum = Column(Integer)
-    modifier = Column(Integer)
-    skill = Column(Integer)
-    speed = Column(Integer)
-
-    # Relationships
-    proficiency_container_id = Column(
-        Integer, ForeignKey('proficiency_container.id', ondelete="CASCADE"))
+    name = Column(String(50))
 
     __mapper_args__ = {
         'polymorphic_identity': "Proficiency",
-        'polymorphic_on': name
+        'polymorphic_on': type_
     }
 
-    def __init__(self):
-        self.name = self.__class__.__name__
-        from build_code import fix_camel_case
-        self.formatted_name = fix_camel_case(self.name).lower().replace(" ", "_")
+    def __init__(self, level=0, modifier=1.0):
+        self.type_ = self.__class__.__name__
+        self.name = normalize_attrib_name(self.type_)
         self.tooltip = ""
-        # self.reason_for_zero = ""
-        self.level = 0
-        # self.is_not_max_level = False
-
-    def is_max_level(self):
-        """Return whether proficiency is max level.
-
-        Should be able to get hero internally but the
-        relationships may be messed up.
-
-        Replaces:
-            is_not_max_level attribute.
-        """
-
-        return self.level >= getattr(
-            self.proficiencies.hero.attributes,
-            self.attribute_type.lower()
-        ).level // 2
+        self.level = level
+        self.modifier = modifier
+        self.current = self.get_final()
 
     def level_up(self):
         self.level += 1
+        self.current = self.get_final()
 
-    def __add__(self, other):
-        """Allow you to add 2 proficiencies (with the same name) together.
+    def get_base(self):
+        """Return some function of the level attribute."""
+        return self.level
 
-        hero.summed_proficiencies = sum([prof for prof in self.proficiencies])
-        OR
-        hero.summed_proficiencies = {}
-        for prof, ability_prof in zip(self.proficiencies,
-                                   self.abilities.summed_proficiencies):
-            new_prof = prof + ability_prof
-            self.summed_proficiencies[new_prof.formatted_name] = new_prof
-        OR
-        hero.summed_proficiencies = {
-            prof.formatted_name: prof + attrib_prof + ability_prof + active_item_profs
-            for prof, attrib_prof, ability_prof, active_item_profs in zip(
-                self.proficiencies,
-                self.attributes.base_proficiencies,
-                self.abilities.summed_proficiencies,
-                self.activated_items.summed_proficiencies)
-            }
-        """
+    def get_final(self):
+        """Return the modifier * the base."""
+        return self.get_base() * self.modifier
 
-        assert self.name == other.name
-        # pdb.set_trace()
-        obj = self.__init__()  # Make a new object of class name
-        obj.level = self.level + other.level
-        return obj
-
-    def __radd__(self, other):
-        """Run when adding object of different types.
-
-        A better way when using sum() is to set the 'start' keyword.
-        i.e.
-            sum([prof2, prof3, ..], start=prof1)
-        Then this method will never be called and the default add will be
-        used.
-        """
-        if not other:
-            obj = self.__init__()
-            obj = self.level
-            return obj
-        other.level += self.level
-        return other
-
-
-class DynamicMixin(object):
-    @declared_attr
-    def __mapper_args__(cls):
-        return {'polymorphic_identity': cls.__name__}
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.maximum = 0
-        self.current = 0
-
-    @property
-    def percent(self):
+    def get_percent(self):
+        """Return the percent of the current to the final value."""
         try:
-            return round(self.current / self.maximum, 2) * 100
+            return round(self.current / self.get_final(), 2) * 100
         except ZeroDivisionError:
             return 0
 
-    def generic_update(self, hero):
-        """Generic update function.
-        """
-        # This creates a tooltip for each variable
-        tooltips = ["Maximum: {}".format(self.maximum)]
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
 
-        """
-        for item in hero.inventory.equipped:
-            for attrib in self:
-               setattr(self, attrib, getattr(item, attrib))
-        
-        for attrib in self:
-            for item in hero.inventory.equipped:
-                setattr(self, attrib, getattr(item, attrib))
-        """
+class Health(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Health"
+    }
 
-        for item in hero.equipped_items():
-            try:
-                self.maximum += item.health_maximum
-            except AttributeError:
-                # If the item doesn't have this attribute, don't worry about
-                # it.
-                pass
-
-        for ability in hero.abilities:
-            try:
-                self.maximum += ability.health_maximum * ability.level
-            except AttributeError:
-                # If the item doesn't have this attribute, don't worry about
-                # it.
-                pass
-
-    def get_modifiable(self):
-        """Return modifiable columns for this class.
-
-        Possible options:
-            [(key, getattr(self, key)) for key in attrib_names]
-        OR
-            [getattr(self, key) for key in attrib_names]
-        """
-        attrib_names = ['maximum']
-        return [getattr(self, key) for key in attrib_names]
-
-    @property
-    def modifiable_on(self):
-        return ['maximum']
-
-
-class Health(DynamicMixin, Proficiency):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.description = "How much you can take before you die"
         self.attribute_type = "Vitality"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Health's attributes and tooltip variable.
         """
 
-        self.maximum = round(2 * self.level + 5, 0)
-        self.current = self.maximum
-        super().generic_update(hero)
-
-
-class Sanctity(DynamicMixin, Proficiency):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.description = "Amount of sanctity you can have"
-        self.attribute_type = "Divinity"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def update(self, hero):
-        """Update Sanctity's attributes and tooltip variable.
-        """
-
-        self.maximum = round(3 * self.level + 0, 0)
-        self.current = self.maximum
-        super().generic_update(hero)
-
-
-class Endurance(DynamicMixin, Proficiency):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.description = "Actions performed each day"
-        self.attribute_type = "Resilience"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def update(self, hero):
-        """Update Endurance's attributes and tooltip variable.
-        """
-        self.maximum = round(1 * self.level + 3, 0)
-        self.current = self.maximum
-        super().generic_update(hero)
-
-
-class Storage(DynamicMixin, Proficiency):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.description = "Your carrying capacity"
-        self.attribute_type = "Brawn"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def update(self, hero):
-        """Update Storage's attributes and tooltip variable.
-        """
-
-        self.maximum = round(2 * self.level + 10, 0)
-        self.current = self.maximum
-        super().generic_update(hero)
-
-
-class StaticMixin(object):
-    @declared_attr
-    def __mapper_args__(cls):
-        return {'polymorphic_identity': cls.__name__}
-
-    def __init__(self, *args, **kwargs):
-        """Generic init for static classes.
-
-        Main usage is to set init values to 0.
-        Example (the code does):
-            self.speed = 0
-        OR
-            self.skill = 0
-        """
-        super().__init__(*args, **kwargs)
-        for attrib in self.modifiable_on:
-            setattr(self, attrib, 0)
+        return round(2 * self.level + 5, 0)
 
     @property
-    def modifiable_on(self):
-        return ['ability', 'accuracy', 'amount', 'chance', 'efficiency',
-                'maximum', 'minimum', 'modifier', 'skill', 'speed']
-
-    def get_all_modifiable(self):
-        """Return modifiable columns for this class.
-
-        Possible options:
-            [(key, getattr(self, key)) for key in attrib_names]
-        OR
-            [getattr(self, key) for key in attrib_names]
-        """
-        return [getattr(self, key) for key in self.modifiable_on]
-
-    def generic_update(self, hero):
-        """Generic update function.
-
-        Requires that modifiable_on be declared in
-        subclass.
-
-        Usage does:
-            for item in hero.equipped_items():
-                self.efficiency += item.recovery_efficiency
-            for ability in hero.abilities:
-                self.efficiency += ability.recovery_efficiency * ability.level
-        OR
-            for item in hero.equipped_items():
-                self.speed += item.regeneration_speed
-            for ability in hero.abilities:
-                self.speed += ability.regeneration_speed * ability.level
-
-        Also sets the tooltip variable. Which will probably get moved to JS.
+    def current_tootip(self):
+        """Create a tooltip for each variable.
         """
         tooltips = []
         for attrib in self.modifiable_on:
@@ -869,38 +261,15 @@ class StaticMixin(object):
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
 
-            item_attrib = self.__class__.__name__.lower() + attrib
-            for item in hero.equipped_items():
-                new_value = 0
-                try:
-                    new_value = getattr(item, item_attrib)
-                except AttributeError:
-                    # If the item doesn't have this attribute, don't worry
-                    # about it.
-                    pass
-                new_value += getattr(self, attrib)
-                setattr(self, attrib, new_value)
-
-            for ability in hero.abilities:
-                new_value = 0
-                try:
-                    new_value = getattr(ability, item_attrib)
-                except AttributeError:
-                    # If the item doesn't have this attribute, don't worry
-                    # about it.
-                    pass
-                new_value *= ability.level
-                new_value += getattr(self, attrib)
-                setattr(self, attrib, new_value)
-
         # This updates the main tooltip string variable.
         self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
 
 
-class Regeneration(StaticMixin, Proficiency):
-    @property
-    def modifiable_on(self):
-        return ['speed']
+class Regeneration(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Regeneration"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -908,16 +277,31 @@ class Regeneration(StaticMixin, Proficiency):
         self.attribute_type = "Vitality"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Regeneration's attributes and tooltip variable.
         """
-        self.speed = round((100 * self.level)**0.5 - (self.level / 4) + 1, 2)
-        super().generic_update(hero)
 
-class Recovery(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 1, 2)
+
     @property
-    def modifiable_on(self):
-        return ['efficiency', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Recovery(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Recovery"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -925,16 +309,31 @@ class Recovery(StaticMixin, Proficiency):
         self.attribute_type = "Vitality"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Recovery's attributes and tooltip variable.
         """
-        self.efficiency = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        super().generic_update(hero)
 
-class Climbing(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['ability', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Climbing(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Climbing"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -942,16 +341,63 @@ class Climbing(StaticMixin, Proficiency):
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Climbing's attributes and tooltip variable.
         """
-        self.ability = round(0.5 * self.level + 0.5, 1)
-        super().generic_update(hero)
 
-class Encumbrance(StaticMixin, Proficiency):
+        return round(0.5 * self.level + 0.5, 1)
+
     @property
-    def modifiable_on(self):
-        return ['amount', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Storage(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Storage"
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Your carrying capacity"
+        self.attribute_type = "Brawn"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def get_base(self):
+        """Update Storage's attributes and tooltip variable.
+        """
+
+        return round(2 * self.level + 10, 0)
+
+    @property
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Encumbrance(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Encumbrance"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -959,16 +405,63 @@ class Encumbrance(StaticMixin, Proficiency):
         self.attribute_type = "Brawn"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Encumbrance's attributes and tooltip variable.
         """
-        self.amount = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        super().generic_update(hero)
 
-class Damage(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['minimum', 'maximum', 'modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Endurance(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Endurance"
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Actions performed each day"
+        self.attribute_type = "Resilience"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def get_base(self):
+        """Update Endurance's attributes and tooltip variable.
+        """
+
+        return round(1 * self.level + 3, 0)
+
+    @property
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Damage(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Damage"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -976,18 +469,31 @@ class Damage(StaticMixin, Proficiency):
         self.attribute_type = "Brawn"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Damage's attributes and tooltip variable.
         """
-        self.minimum = round(1 * self.level + 0, 0)
-        self.maximum = round(1 * self.level + 1, 0)
-        self.modifier = round(0.1 * self.level + 1, 1)
-        super().generic_update(hero)
 
-class Speed(StaticMixin, Proficiency):
+        return round(1 * self.level + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['speed', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Speed(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Speed"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -995,16 +501,31 @@ class Speed(StaticMixin, Proficiency):
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Speed's attributes and tooltip variable.
         """
-        self.speed = round(0.03 * self.level + 1, 2)
-        super().generic_update(hero)
 
-class Accuracy(StaticMixin, Proficiency):
+        return round(0.03 * self.level + 1, 2)
+
     @property
-    def modifiable_on(self):
-        return ['accuracy', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Accuracy(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Accuracy"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1012,16 +533,31 @@ class Accuracy(StaticMixin, Proficiency):
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Accuracy's attributes and tooltip variable.
         """
-        self.accuracy = round((100 * self.level)**0.5 - (self.level / 4) + 35, 0)
-        super().generic_update(hero)
 
-class FirstStrike(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 35, 0)
+
     @property
-    def modifiable_on(self):
-        return ['chance', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class FirstStrike(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "FirstStrike"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1029,16 +565,31 @@ class FirstStrike(StaticMixin, Proficiency):
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update FirstStrike's attributes and tooltip variable.
         """
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        super().generic_update(hero)
 
-class Killshot(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['chance', 'modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Killshot(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Killshot"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1046,17 +597,31 @@ class Killshot(StaticMixin, Proficiency):
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Killshot's attributes and tooltip variable.
         """
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        self.modifier = round(0.1 * self.level + 1, 1)
-        super().generic_update(hero)
 
-class Defence(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Defence(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Defence"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1064,16 +629,31 @@ class Defence(StaticMixin, Proficiency):
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Defence's attributes and tooltip variable.
         """
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        super().generic_update(hero)
 
-class Evade(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['chance', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Evade(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Evade"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1081,16 +661,31 @@ class Evade(StaticMixin, Proficiency):
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Evade's attributes and tooltip variable.
         """
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 5, 0)
-        super().generic_update(hero)
 
-class Parry(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 5, 0)
+
     @property
-    def modifiable_on(self):
-        return ['chance', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Parry(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Parry"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1098,16 +693,31 @@ class Parry(StaticMixin, Proficiency):
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Parry's attributes and tooltip variable.
         """
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 2, 0)
-        super().generic_update(hero)
 
-class Flee(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 2, 0)
+
     @property
-    def modifiable_on(self):
-        return ['chance', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Flee(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Flee"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1115,16 +725,31 @@ class Flee(StaticMixin, Proficiency):
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Flee's attributes and tooltip variable.
         """
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 7, 0)
-        super().generic_update(hero)
 
-class Riposte(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 7, 0)
+
     @property
-    def modifiable_on(self):
-        return ['chance', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Riposte(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Riposte"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1132,16 +757,31 @@ class Riposte(StaticMixin, Proficiency):
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Riposte's attributes and tooltip variable.
         """
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        super().generic_update(hero)
 
-class Fatigue(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['maximum', 'current', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Fatigue(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Fatigue"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1149,17 +789,31 @@ class Fatigue(StaticMixin, Proficiency):
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Fatigue's attributes and tooltip variable.
         """
-        self.maximum = round(1 * self.level + 5, 0)
-        self.current = self.maximum
-        super().generic_update(hero)
 
-class Block(StaticMixin, Proficiency):
+        return round(1 * self.level + 5, 0)
+
     @property
-    def modifiable_on(self):
-        return ['chance', 'modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Block(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Block"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1167,22 +821,37 @@ class Block(StaticMixin, Proficiency):
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Block's attributes and tooltip variable.
         """
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+    def check_shield(self, hero):
         if hero.inventory.left_hand is None or hero.inventory.left_hand.type != "Shield":
             self.chance = 0
             self.reason_for_zero = "You must have a shield equipped"
         else:
             self.reason_for_zero = ""
-        super().generic_update(hero)
 
-class Stealth(StaticMixin, Proficiency):
     @property
-    def modifiable_on(self):
-        return ['chance', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Stealth(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Stealth"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1190,16 +859,31 @@ class Stealth(StaticMixin, Proficiency):
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Stealth's attributes and tooltip variable.
         """
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
-        super().generic_update(hero)
 
-class Pickpocketing(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
+
     @property
-    def modifiable_on(self):
-        return ['chance', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Pickpocketing(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Pickpocketing"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1207,16 +891,31 @@ class Pickpocketing(StaticMixin, Proficiency):
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Pickpocketing's attributes and tooltip variable.
         """
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 1, 0)
-        super().generic_update(hero)
 
-class Faith(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 1, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Faith(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Faith"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1224,16 +923,63 @@ class Faith(StaticMixin, Proficiency):
         self.attribute_type = "Divinity"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Faith's attributes and tooltip variable.
         """
-        self.modifier = round(0.1 * self.level + 1, 0)
-        super().generic_update(hero)
 
-class ResistHoly(StaticMixin, Proficiency):
+        return round(0.1 * self.level + 1, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Sanctity(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Sanctity"
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Amount of sanctity you can have"
+        self.attribute_type = "Divinity"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def get_base(self):
+        """Update Sanctity's attributes and tooltip variable.
+        """
+
+        return round(3 * self.level + 0, 0)
+
+    @property
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class ResistHoly(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistHoly"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1241,16 +987,31 @@ class ResistHoly(StaticMixin, Proficiency):
         self.attribute_type = "Divinity"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update ResistHoly's attributes and tooltip variable.
         """
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        super().generic_update(hero)
 
-class Bartering(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Bartering(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Bartering"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1258,16 +1019,31 @@ class Bartering(StaticMixin, Proficiency):
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Bartering's attributes and tooltip variable.
         """
-        self.modifier = round(-0.05 * self.level + 1, 0)
-        super().generic_update(hero)
 
-class Oration(StaticMixin, Proficiency):
+        return round(-0.05 * self.level + 1, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Oration(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Oration"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1275,16 +1051,31 @@ class Oration(StaticMixin, Proficiency):
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Oration's attributes and tooltip variable.
         """
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 11, 0)
-        super().generic_update(hero)
 
-class Charm(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 11, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Charm(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Charm"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1292,16 +1083,31 @@ class Charm(StaticMixin, Proficiency):
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Charm's attributes and tooltip variable.
         """
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
-        super().generic_update(hero)
 
-class Trustworthiness(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Trustworthiness(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Trustworthiness"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1309,16 +1115,31 @@ class Trustworthiness(StaticMixin, Proficiency):
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Trustworthiness's attributes and tooltip variable.
         """
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        super().generic_update(hero)
 
-class Renown(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Renown(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Renown"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1326,16 +1147,31 @@ class Renown(StaticMixin, Proficiency):
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Renown's attributes and tooltip variable.
         """
-        self.modifier = round(0.1 * self.level + 1, 0)
-        super().generic_update(hero)
 
-class Knowledge(StaticMixin, Proficiency):
+        return round(0.1 * self.level + 1, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Knowledge(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Knowledge"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1343,16 +1179,31 @@ class Knowledge(StaticMixin, Proficiency):
         self.attribute_type = "Intellect"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Knowledge's attributes and tooltip variable.
         """
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 6, 0)
-        super().generic_update(hero)
 
-class Literacy(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 6, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Literacy(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Literacy"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1360,16 +1211,31 @@ class Literacy(StaticMixin, Proficiency):
         self.attribute_type = "Intellect"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Literacy's attributes and tooltip variable.
         """
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        super().generic_update(hero)
 
-class Understanding(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Understanding(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Understanding"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1377,16 +1243,31 @@ class Understanding(StaticMixin, Proficiency):
         self.attribute_type = "Intellect"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Understanding's attributes and tooltip variable.
         """
-        self.modifier = round(0.05 * self.level + 1, 0)
-        super().generic_update(hero)
 
-class Luckiness(StaticMixin, Proficiency):
+        return round(0.05 * self.level + 1, 0)
+
     @property
-    def modifiable_on(self):
-        return ['chance', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Luckiness(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Luckiness"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1394,16 +1275,31 @@ class Luckiness(StaticMixin, Proficiency):
         self.attribute_type = "Fortuity"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Luckiness's attributes and tooltip variable.
         """
-        self.chance = round(0.01 * self.level + 0, 0)
-        super().generic_update(hero)
 
-class Adventuring(StaticMixin, Proficiency):
+        return round(0.01 * self.level + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['chance', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Adventuring(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Adventuring"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1411,16 +1307,31 @@ class Adventuring(StaticMixin, Proficiency):
         self.attribute_type = "Fortuity"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Adventuring's attributes and tooltip variable.
         """
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        super().generic_update(hero)
 
-class Logistics(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Logistics(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Logistics"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1428,16 +1339,31 @@ class Logistics(StaticMixin, Proficiency):
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Logistics's attributes and tooltip variable.
         """
-        self.modifier = round(0.2 * self.level + 1, 0)
-        super().generic_update(hero)
 
-class Mountaineering(StaticMixin, Proficiency):
+        return round(0.2 * self.level + 1, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Mountaineering(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Mountaineering"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1445,16 +1371,31 @@ class Mountaineering(StaticMixin, Proficiency):
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Mountaineering's attributes and tooltip variable.
         """
-        self.modifier = round(0.5 * self.level + 1, 0)
-        super().generic_update(hero)
 
-class Woodsman(StaticMixin, Proficiency):
+        return round(0.5 * self.level + 1, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Woodsman(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Woodsman"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1462,16 +1403,31 @@ class Woodsman(StaticMixin, Proficiency):
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Woodsman's attributes and tooltip variable.
         """
-        self.modifier = round(0.5 * self.level + 1, 0)
-        super().generic_update(hero)
 
-class Navigator(StaticMixin, Proficiency):
+        return round(0.5 * self.level + 1, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Navigator(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Navigator"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1479,16 +1435,31 @@ class Navigator(StaticMixin, Proficiency):
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Navigator's attributes and tooltip variable.
         """
-        self.modifier = round(0.5 * self.level + 1, 0)
-        super().generic_update(hero)
 
-class Detection(StaticMixin, Proficiency):
+        return round(0.5 * self.level + 1, 0)
+
     @property
-    def modifiable_on(self):
-        return ['chance', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Detection(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Detection"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1496,16 +1467,31 @@ class Detection(StaticMixin, Proficiency):
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Detection's attributes and tooltip variable.
         """
-        self.chance = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        super().generic_update(hero)
 
-class Caution(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['ability', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Caution(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Caution"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1513,16 +1499,31 @@ class Caution(StaticMixin, Proficiency):
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Caution's attributes and tooltip variable.
         """
-        self.ability = round(0.5 * self.level + 0.5, 0)
-        super().generic_update(hero)
 
-class Explorer(StaticMixin, Proficiency):
+        return round(0.5 * self.level + 0.5, 0)
+
     @property
-    def modifiable_on(self):
-        return ['ability', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Explorer(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Explorer"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1530,16 +1531,31 @@ class Explorer(StaticMixin, Proficiency):
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Explorer's attributes and tooltip variable.
         """
-        self.ability = round(0.5 * self.level + 0.5, 0)
-        super().generic_update(hero)
 
-class Huntsman(StaticMixin, Proficiency):
+        return round(0.5 * self.level + 0.5, 0)
+
     @property
-    def modifiable_on(self):
-        return ['ability', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Huntsman(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Huntsman"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1547,16 +1563,31 @@ class Huntsman(StaticMixin, Proficiency):
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Huntsman's attributes and tooltip variable.
         """
-        self.ability = round(0.5 * self.level + 0.5, 0)
-        super().generic_update(hero)
 
-class Survivalist(StaticMixin, Proficiency):
+        return round(0.5 * self.level + 0.5, 0)
+
     @property
-    def modifiable_on(self):
-        return ['ability', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Survivalist(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Survivalist"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1564,16 +1595,31 @@ class Survivalist(StaticMixin, Proficiency):
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Survivalist's attributes and tooltip variable.
         """
-        self.ability = round(0.5 * self.level + 0.5, 0)
-        super().generic_update(hero)
 
-class ResistFrost(StaticMixin, Proficiency):
+        return round(0.5 * self.level + 0.5, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class ResistFrost(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistFrost"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1581,16 +1627,31 @@ class ResistFrost(StaticMixin, Proficiency):
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update ResistFrost's attributes and tooltip variable.
         """
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        super().generic_update(hero)
 
-class ResistFlame(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class ResistFlame(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistFlame"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1598,16 +1659,31 @@ class ResistFlame(StaticMixin, Proficiency):
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update ResistFlame's attributes and tooltip variable.
         """
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        super().generic_update(hero)
 
-class ResistShadow(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class ResistShadow(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistShadow"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1615,16 +1691,31 @@ class ResistShadow(StaticMixin, Proficiency):
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update ResistShadow's attributes and tooltip variable.
         """
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        super().generic_update(hero)
 
-class ResistPoison(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class ResistPoison(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistPoison"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1632,16 +1723,31 @@ class ResistPoison(StaticMixin, Proficiency):
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update ResistPoison's attributes and tooltip variable.
         """
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        super().generic_update(hero)
 
-class ResistBlunt(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class ResistBlunt(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistBlunt"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1649,16 +1755,31 @@ class ResistBlunt(StaticMixin, Proficiency):
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update ResistBlunt's attributes and tooltip variable.
         """
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        super().generic_update(hero)
 
-class ResistSlashing(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class ResistSlashing(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistSlashing"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1666,16 +1787,31 @@ class ResistSlashing(StaticMixin, Proficiency):
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update ResistSlashing's attributes and tooltip variable.
         """
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        super().generic_update(hero)
 
-class ResistPiercing(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['modifier', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class ResistPiercing(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistPiercing"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1683,16 +1819,31 @@ class ResistPiercing(StaticMixin, Proficiency):
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update ResistPiercing's attributes and tooltip variable.
         """
-        self.modifier = round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
-        super().generic_update(hero)
 
-class Courage(StaticMixin, Proficiency):
+        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['skill', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Courage(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Courage"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1700,16 +1851,31 @@ class Courage(StaticMixin, Proficiency):
         self.attribute_type = "Willpower"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Courage's attributes and tooltip variable.
         """
-        self.skill = round(1 * self.level + 0, 0)
-        super().generic_update(hero)
 
-class Sanity(StaticMixin, Proficiency):
+        return round(1 * self.level + 0, 0)
+
     @property
-    def modifiable_on(self):
-        return ['skill', ]
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class Sanity(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "Sanity"
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1717,9 +1883,24 @@ class Sanity(StaticMixin, Proficiency):
         self.attribute_type = "Willpower"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def update(self, hero):
+    def get_base(self):
         """Update Sanity's attributes and tooltip variable.
         """
-        self.skill = round(1 * self.level + 0, 0)
-        super().generic_update(hero)
+
+        return round(1 * self.level + 0, 0)
+
+    @property
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in self.modifiable_on:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
 

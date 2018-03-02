@@ -8,11 +8,12 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
 from sqlalchemy.orm import validates
+from sqlalchemy.orm.collections import attribute_mapped_collection
 
 from base_classes import Base, Map
 from attributes import AttributeContainer
 from abilities import AbilityContainer
-from proficiencies import ProficiencyContainer
+import proficiencies
 from inventory import Inventory
 from journal import Journal
 from specializations import SpecializationContainer
@@ -118,7 +119,9 @@ class Hero(Base):
 
     # Proficiencies One to One despite the name
     base_proficiencies = relationship(
-        "ProficiencyContainer", back_populates='hero', uselist=False,
+        "ProficiencyContainer",
+        collection_class=attribute_mapped_collection('type_'),
+        back_populates='hero',
         cascade="all, delete-orphan")
 
     # Journal to Hero is One to One
@@ -141,23 +144,30 @@ class Hero(Base):
         raise Exception("'current_world' Location type must be 'map' not '{}'."
                         "".format(value.type))
 
-    @property
-    def proficiencies(self):
+    def get_summed_proficiencies(self):
         """Summed value of all derivative proficiency objects.
 
         Should allow you to do this:
-            print(hero.proficiencies['defence'].level)
-            print(hero.proficiencies['defence'].value)
+            hero.get_summed_proficiencies()['defence'].modifier
+            hero.get_summed_proficiencies()['defence'].get_final_value()
+            hero.get_suumed_proficiencies()['defence'].get_percent()
         """
-        summed_proficiencies = Map(all_names=self.base_proficiencies.all_names)
-        for prof in zip(self.base_proficiencies,
-                        self.attributes.proficiencies):
-            # pdb.set_trace()
-            # print(sum(prof))
-            # print(prof)
-            # exit("testing hero summed proficiencies")
-            summed_proficiencies[prof[0].formatted_name] = sum(prof)
-        return summed_proficiencies
+        summed = {}
+
+        for prof in self.base_proficiencies:
+            summed[prof.type_] = [prof.level, prof.modifier]
+
+        for obj in self.equipped_items() + self.abilities:
+            for prof in obj.proficiencies:
+                if prof.type_ in summed:
+                    current_level, current_modifier = summed[prof.type_]
+                    summed[prof.type_] = [current_level + prof.level,
+                                         current_modifier + prof.modifier]
+        for key in summed:
+            lvl, mod = summed[key]
+            Class = getattr(proficiencies, key)
+            summed[key] = Class(level=lvl, modifier=mod)
+        return summed
 
     def __init__(self, **kwargs):
         """Initialize the Hero object.
@@ -170,7 +180,12 @@ class Hero(Base):
         """
 
         # Skills and abilities
-        self.base_proficiencies = ProficiencyContainer()
+        # set self.base_proficiencies
+        for cls_name in proficiencies.ALL_CLASS_NAMES:
+            Class = getattr(proficiencies, cls_name)
+            obj = Class()
+            self.base_proficiencies[obj.type_] = obj
+
         self.attributes = AttributeContainer()
         self.abilities = AbilityContainer()
         self.inventory = Inventory()
