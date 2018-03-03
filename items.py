@@ -6,9 +6,11 @@ from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
-from base_classes import Base
 from factories import TemplateMixin
+import proficiencies
+from sqlalchemy.orm.collections import attribute_mapped_collection
 from session_helpers import SessionHoistMixin, safe_commit_session
+from base_classes import Base
 """
 Item Specification:
     All hero specific attributes must be moved from the Template classes.
@@ -63,7 +65,13 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
     inventory = relationship(
         "Inventory", foreign_keys="[Item.inventory_id]")
 
-    # One to Many
+    # Item to Proficiency is One to Many
+    proficiencies = relationship(
+        "Proficiency",
+        collection_class=attribute_mapped_collection('name'),
+        back_populates='items',
+        cascade="all, delete-orphan")
+
     equipped = Column(Boolean)
     ring_position = Column(Integer)
     unequipped_position = Column(Integer)
@@ -77,6 +85,13 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
         self.name = name
         self.buy_price = buy_price
         self.template = template
+
+        # Initialize proficiencies
+        # Currently doesn't add any proficiencies.
+        for cls_name in []:
+            Class = getattr(proficiencies, cls_name)
+            obj = Class()
+            self.proficiencies[obj.name] = obj
 
     @safe_commit_session
     def build_new_from_template(self):

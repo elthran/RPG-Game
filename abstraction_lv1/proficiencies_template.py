@@ -28,9 +28,13 @@ class Proficiency(Base):
     hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
     hero = relationship("Hero", back_populates="base_proficiencies")
 
-    # Ability to Proficiency is One to many?
+    # Proficiency to Ability is One to Many
     ability_id = Column(Integer, ForeignKey('ability.id', ondelete="CASCADE"))
     ability = relationship("Ability", back_populates="proficiencies")
+
+    # Proficiency to Item is One to Many
+    item_id = Column(Integer, ForeignKey('item.id', ondelete="CASCADE"))
+    items = relationship("Item", back_populates="proficiencies")
 
     type_ = Column(String(50))
     description = Column(String(200))

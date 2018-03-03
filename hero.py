@@ -10,16 +10,17 @@ from sqlalchemy import orm
 from sqlalchemy.orm import validates
 from sqlalchemy.orm.collections import attribute_mapped_collection
 
-from base_classes import Base, Map
 from attributes import AttributeContainer
 from abilities import AbilityContainer
 import proficiencies
 from inventory import Inventory
 from journal import Journal
 from specializations import SpecializationContainer
+from session_helpers import SessionHoistMixin
+from base_classes import Base, Map
 
 
-class Hero(Base):
+class Hero(SessionHoistMixin, Base):
     """Store data about the Hero/Character object.
 
     """
@@ -124,6 +125,15 @@ class Hero(Base):
         back_populates='hero',
         cascade="all, delete-orphan")
 
+    # all_proficiencies = relationship(
+    #     "Proficiency",
+    #     collection_class=attribute_mapped_collection('name'),
+    #     primaryjoin="and_(Ability.id==Proficiency.ability_id, "
+    #                 "AbilityContainer.id==Ability.ability_container_id, "
+    #                 "Hero.id==AbilityContainer.hero_id)",
+    #     cascade="all, delete-orphan",
+    # )
+
     # Journal to Hero is One to One
     journal = relationship('Journal', back_populates='hero', uselist=False,
                            cascade="all, delete-orphan")
@@ -173,6 +183,8 @@ class Hero(Base):
         if key_name:
             prof = self.base_proficiencies[key_name]
             summed[prof.name] = [prof.level, prof.modifier, prof.type_]
+            # print(self.session.query(proficiencies.Proficiency).)
+            # pdb.set_trace()
             for obj in self.equipped_items() + [obj for obj in self.abilities]:
                 try:
                     prof = obj.proficiencies[key_name]
