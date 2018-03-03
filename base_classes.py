@@ -456,6 +456,15 @@ class Map(dict):
     """
     Example:
     m = Map({'first_name': 'Eduardo'}, last_name='Pool', age=24, sports=['Soccer'])
+
+    Should allow a dictionary to behave like an object.
+    So you can do either ->
+    map['some_key']
+    OR
+    map.some_key
+
+    NOTE: the iterator function is not normal for dictionaries.
+    It returns .values() (ordered) not .keys() (random)
     """
     def __init__(self, *args, **kwargs):
         super(Map, self).__init__(*args, **kwargs)
