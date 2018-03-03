@@ -462,12 +462,12 @@ class EZDB:
         timestamp = hero.timestamp
         time_diff = (EZDB.now() - timestamp).total_seconds()
         endurance_increment = int(time_diff / SECOND_PER_ENDURANCE)
-        hero.get_summed_proficiencies()['endurance'].current += endurance_increment
+        hero.base_proficiencies['endurance'].current += endurance_increment
 
-        if hero.get_summed_proficiencies()['endurance'].current \
-                > hero.get_summed_proficiencies()['endurance'].get_final():
-            hero.get_summed_proficiencies()['endurance'].current \
-                = hero.get_summed_proficiencies()['endurance'].get_final()
+        if hero.base_proficiencies['endurance'].current \
+                > hero.base_proficiencies['endurance'].get_final():
+            hero.base_proficiencies['endurance'].current \
+                = hero.base_proficiencies['endurance'].get_final()
 
         # Only update if endurance has been incremented.
         if endurance_increment:

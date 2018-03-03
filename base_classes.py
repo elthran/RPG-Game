@@ -468,6 +468,8 @@ class Map(dict):
             for k, v in kwargs.items():
                 self[k] = v
 
+            self.all_names = sorted(key for key in kwargs.keys())
+
     def __getattr__(self, attr):
         return self.get(attr)
 
@@ -490,4 +492,4 @@ class Map(dict):
         if self.all_names:
             # pdb.set_trace()
             return (self[key] for key in self.all_names)
-        return (x for x in sorted(self.values(), key=lambda x: x.name))
+        return (self[key] for key in sorted(self.keys()))

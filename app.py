@@ -637,7 +637,8 @@ def home(hero=None):
     # session['valid_moves'].append(hero.current_location.id)
 
     return render_template(
-        'profile_home.html', page_title="Profile", hero=hero, profile=True)
+        'profile_home.html', page_title="Profile", hero=hero, profile=True,
+        proficiencies=hero.get_summed_proficiencies())
 
 
 # This gets called anytime you have  attribute points to spend
@@ -657,8 +658,7 @@ def attributes(hero=None):
 @uses_hero
 def proficiencies(hero=None):
     # This page is literally just a html page with tooltips and proficiency level up buttons. No python code is needed. Python only tells html which page to load.
-    return render_template('profile_proficiencies.html', page_title="Proficiencies", hero=hero, all_attributes=hero.attributes
-                           ,all_proficiencies=hero.get_summed_proficiencies())
+    return render_template('profile_proficiencies.html', page_title="Proficiencies", hero=hero, all_attributes=hero.attributes, all_proficiencies=hero.get_summed_proficiencies())
 
 
 @app.route('/ability_tree/<spec>')
@@ -896,7 +896,7 @@ def barracks(name='', hero=None, location=None):
     # Dead heros wont be able to move on the map and will immediately get
     # moved to ahospital until they heal. So locations won't need to factor
     # in the "if"of the hero being dead
-    if hero.get_summed_proficiencies()['health'].current <= 0:
+    if hero.get_summed_proficiencies('health').current <= 0:
         location.display.page_heading = "Your hero is currently dead."
         location.display.page_image = "dead.jpg"
         location.children = None
@@ -1011,7 +1011,7 @@ def spar(name='', hero=None, location=None):
         # This gives you experience and also returns how much
         # experience you gained
         modified_spar_benefit = hero.gain_experience(spar_benefit)
-        hero.get_summed_proficiencies()['endurance'].current -= 1
+        hero.base_proficiencies['endurance'].current -= 1
         location.display.page_heading = \
             "You spend some time sparring with the trainer at the barracks." \
             " You spend {} gold and gain {} experience.".format(
@@ -1043,23 +1043,25 @@ def arena(name='', hero=None, location=None):
     location.display.page_title = "War Room"
     location.display.page_heading = "Welcome to the arena " + hero.name + "!"
     location.display.page_image = str(game.enemy.name) + '.jpg'
+
+    profs = game.enemy.get_summed_proficiencies()
     conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
                     ("Level: ", str(game.enemy.level), "Combat Details"),
-                    ("Health: ", str(game.enemy.get_summed_proficiencies()['health'].current) + " / " + str(
-                        game.enemy.get_summed_proficiencies()['health'].get_final())),
-                    ("Damage: ", str(game.enemy.get_summed_proficiencies()['damage'].minimum) + " - " + str(
-                        game.enemy.get_summed_proficiencies()['damage'].get_final())),
-                    ("Attack Speed: ", str(game.enemy.get_summed_proficiencies()['speed'].speed)),
-                    ("Accuracy: ", str(game.enemy.get_summed_proficiencies()['accuracy'].accuracy) + "%"),
-                    ("First Strike: ", str(game.enemy.get_summed_proficiencies()['first_strike'].chance) + "%"),
-                    ("Critical Hit Chance: ", str(game.enemy.get_summed_proficiencies()['killshot'].chance) + "%"),
-                    ("Critical Hit Modifier: ", str(game.enemy.get_summed_proficiencies()['killshot'].modifier)),
-                    ("Defence: ", str(game.enemy.get_summed_proficiencies()['defence'].modifier) + "%"),
-                    ("Evade: ", str(game.enemy.get_summed_proficiencies()['evade'].chance) + "%"),
-                    ("Parry: ", str(game.enemy.get_summed_proficiencies()['parry'].chance) + "%"),
-                    ("Riposte: ", str(game.enemy.get_summed_proficiencies()['riposte'].chance) + "%"),
-                    ("Block Chance: ", str(game.enemy.get_summed_proficiencies()['block'].chance) + "%"),
-                    ("Block Reduction: ", str(game.enemy.get_summed_proficiencies()['block'].modifier) + "%")]
+                    ("Health: ", str(profs.health.get_base()) + " / " + str(
+                        profs.health.get_final())),
+                    ("Damage: ", str(profs.damage.get_final()) + " - " + str(
+                        profs.damage.get_final())),
+                    ("Attack Speed: ", str(profs.speed.get_final())),
+                    ("Accuracy: ", str(profs.accuracy.get_final()) + "%"),
+                    ("First Strike: ", str(profs.first_strike.get_final()) + "%"),
+                    ("Critical Hit Chance: ", str(profs.killshot.get_final()) + "%"),
+                    ("Critical Hit Modifier: ", str(profs.killshot.get_final())),
+                    ("Defence: ", str(profs.defence.get_final()) + "%"),
+                    ("Evade: ", str(profs.evade.get_final()) + "%"),
+                    ("Parry: ", str(profs.parry.get_final()) + "%"),
+                    ("Riposte: ", str(profs.riposte.get_final()) + "%"),
+                    ("Block Chance: ", str(profs.block.get_final()) + "%"),
+                    ("Block Reduction: ", str(profs.block.get_final()) + "%")]
     page_links = [("Challenge the enemy to a ", "/battle/monster", "fight", "."),
                   ("Go back to the ", "/barracks/Barracks", "Barracks", ".")]
     return render_template(
@@ -1086,9 +1088,9 @@ def battle(this_user=None, hero=None):
         game.set_enemy(enemy)
         game.enemy.experience_rewarded = 5
         game.enemy.items_rewarded = []
-    hero.get_summed_proficiencies()['health'].current, game.enemy.get_summed_proficiencies()['health'].current, battle_log = combat_simulator.battle_logic(hero, game.enemy) # This should return the full heroes, not just their health
+    hero.get_summed_proficiencies('health').current, game.enemy.get_summed_proficiencies('health').current, battle_log = combat_simulator.battle_logic(hero, game.enemy) # This should return the full heroes, not just their health
     game.has_enemy = False
-    if hero.get_summed_proficiencies()['health'].current == 0:
+    if hero.get_summed_proficiencies('health').current == 0:
         page_title = "Defeat!"
         page_heading = "You have died."
         location = database.get_object_by_name('Location', hero.last_city.name)

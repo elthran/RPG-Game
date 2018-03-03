@@ -15,7 +15,7 @@
 <!-- Messing with multiplayer battling -->
 <div>
 	<h1>Battle user</h1>
-	{% if enemy_hero.get_summed_proficiencies()['health'].current == 0 %}
+	{% if enemy_hero.get_summed_proficiencies('health').get_final() == 0 %}
 	They are already dead.
 	{% else %}
 	<a href="/battle/{{ enemy_hero.user.username }}">Battle</a>

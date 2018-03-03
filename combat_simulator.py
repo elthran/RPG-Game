@@ -92,25 +92,25 @@ def battle_logic(active_player, inactive_player):
     combat_log = [active_player.name + " Health: " + str(active_player.proficiencies.health.current) + "  " + inactive_player.name + " Health: " + str(inactive_player.proficiencies.health.current)]
     while (active_player.proficiencies.health.current > 0) and (inactive_player.proficiencies.health.current > 0):
         attacker, defender = determine_attacker(active_player, inactive_player,
-                                                active_player.proficiencies.speed.speed,inactive_player.proficiencies.speed.speed,
-                                                active_player.proficiencies.killshot.chance, inactive_player.proficiencies.killshot.chance
+                                                active_player.proficiencies.speed.get_final(),inactive_player.proficiencies.speed.get_final(),
+                                                active_player.proficiencies.killshot.get_final(), inactive_player.proficiencies.killshot.get_final()
                                                 )
-        if determine_if_hits(attacker.proficiencies.accuracy.accuracy):
-            damage = calculate_damage(attacker.proficiencies.damage.minimum, attacker.proficiencies.damage.maximum)
+        if determine_if_hits(attacker.proficiencies.accuracy.get_final()):
+            damage = calculate_damage(attacker.proficiencies.damage.get_final(), attacker.proficiencies.damage.get_final())
         else:
             combat_log.append(attacker.name + " misses!")
             continue
-        if determine_if_critical_hit(attacker.proficiencies.killshot.chance):
-            damage = critical_hit_modifier(damage, attacker.proficiencies.killshot.modifier)
-        if determine_evade(defender.proficiencies.evade.chance):
+        if determine_if_critical_hit(attacker.proficiencies.killshot.get_final()):
+            damage = critical_hit_modifier(damage, attacker.proficiencies.killshot.get_final())
+        if determine_evade(defender.proficiencies.evade.get_final()):
             combat_log.append(str(defender.name) + " evaded!")
             continue
-        if determine_block_chance(defender.proficiencies.block.chance):
+        if determine_block_chance(defender.proficiencies.block.get_final()):
             combat_log.append(str(defender.name) + " blocked some damage!")
-            damage = determine_block_amount(damage, defender.proficiencies.block.modifier)
-        if determine_parry_chance(defender.proficiencies.parry.chance):
+            damage = determine_block_amount(damage, defender.proficiencies.block.get_final())
+        if determine_parry_chance(defender.proficiencies.parry.get_final()):
             continue
-        if determine_riposte_chance(defender.proficiencies.riposte.chance):
+        if determine_riposte_chance(defender.proficiencies.riposte.get_final()):
             defender.proficiencies.fatigue.current = lower_fatigue(defender.proficiencies.fatigue.current)
             continue
         defender.proficiencies.health.current -= damage

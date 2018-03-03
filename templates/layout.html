@@ -19,19 +19,19 @@
         </div>
         <div class="sideBarProgressDiv">Health:
             <div class="sideBarProgressMeter">
-                <span style="width:{{ hero.get_summed_proficiencies()['health'].percent }}%"></span>
+                <span style="width:{{ hero.get_summed_proficiencies('health').percent }}%"></span>
             </div>
         </div>
-        {% if hero.get_summed_proficiencies()['sanctity'].get_final() %}
+        {% if hero.get_summed_proficiencies('sanctity').get_final() %}
         <div class="sideBarProgressDiv">Sanctity:
             <div class="sideBarProgressMeter sidebarSanctity">
-                <span style="width:{{ hero.get_summed_proficiencies()['sanctity'].percent }}%"></span>
+                <span style="width:{{ hero.get_summed_proficiencies('sanctity').percent }}%"></span>
             </div>
         </div>
         {% endif %}
         <div class="sideBarProgressDiv">Endurance:
             <div class="sideBarProgressMeter sidebarEndurance">
-                <span style="width:{{ hero.get_summed_proficiencies()['endurance'].percent }}%"></span>
+                <span style="width:{{ hero.get_summed_proficiencies('endurance').percent }}%"></span>
             </div>
         </div>
         <div class="sideBarProgressDiv">Progress:

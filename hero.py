@@ -144,23 +144,40 @@ class Hero(Base):
         raise Exception("'current_world' Location type must be 'map' not '{}'."
                         "".format(value.type))
 
-    def get_summed_proficiencies(self):
+    def get_summed_proficiencies(self, key_name=None):
         """Summed value of all derivative proficiency objects.
 
+        Returns a Map object. This is a virtual object dictionary.
+
         Should allow you to do this:
-            hero.get_summed_proficiencies()['Defence'].modifier
-            hero.get_summed_proficiencies()['Defence'].get_final_value()
-            hero.get_suumed_proficiencies()['Defence'].get_percent()
+            hero.get_summed_proficiencies()['defence'].modifier
+            hero.get_summed_proficiencies()['defence'].get_final_value()
+            hero.get_suumed_proficiencies()['defence'].get_percent()
+
+        OR
+            hero.get_summed_proficiencies().defence.modifier
+        OR (more efficiently)
+            hero.get_summed_proficiencies('defence').modifier
+
+        NOTE: the value of get_summed_proficiencies is saved in the
+        hero.proficiencies attribute.
+        This can be used for much increase efficiency. Since each call of
+        get_summed_proficiencies() rechecks _all_ proficiecies.
+        The more efficient way is to do it once and then call
+            hero.proficiencies afterwards. Until you need to recheck.
+        You can also recheck just one value using:
+            get_summed_proficiencies(key_name='defence')
+
         """
         summed = {}
-
-        for key in self.base_proficiencies:
-            prof = self.base_proficiencies[key]
+        if key_name:
+            prof = self.base_proficiencies[key_name]
             summed[prof.name] = [prof.level, prof.modifier, prof.type_]
-
-        for obj in self.equipped_items() + [obj for obj in self.abilities]:
-            for key in obj.proficiencies:
-                prof = obj.proficiencies[key]
+            for obj in self.equipped_items() + [obj for obj in self.abilities]:
+                try:
+                    prof = obj.proficiencies[key_name]
+                except KeyError:
+                    continue
                 if prof.name in summed:
                     current_level, current_modifier, type_ = summed[prof.name]
                     summed[prof.name] = [current_level + prof.level,
@@ -169,12 +186,42 @@ class Hero(Base):
                 else:
                     summed[prof.name] = [prof.level, prof.modifier, prof.type_]
 
-        for key in summed:
-            lvl, mod, type_ = summed[key]
+            lvl, mod, type_ = summed[key_name]
 
+            # convert dict of values into dict of database objects
             Class = getattr(proficiencies, type_)
-            summed[key] = Class(level=lvl, modifier=mod)
-        return summed
+            summed[key_name] = Class(level=lvl, modifier=mod)
+
+            # If proficiencies exists update it. If not just return this
+            # mapped object.
+            try:
+                self.proficiencies[key_name] = summed[key_name]
+            except AttributeError:
+                pass
+            return summed[key_name]
+        else:
+            for key in self.base_proficiencies:
+                prof = self.base_proficiencies[key]
+                summed[prof.name] = [prof.level, prof.modifier, prof.type_]
+
+            for obj in self.equipped_items() + [obj for obj in self.abilities]:
+                for key in obj.proficiencies:
+                    prof = obj.proficiencies[key]
+                    if prof.name in summed:
+                        current_level, current_modifier, type_ = summed[prof.name]
+                        summed[prof.name] = [current_level + prof.level,
+                                             current_modifier + prof.modifier,
+                                             type_]
+                    else:
+                        summed[prof.name] = [prof.level, prof.modifier, prof.type_]
+
+            for key in summed:
+                lvl, mod, type_ = summed[key]
+
+                Class = getattr(proficiencies, type_)
+                summed[key] = Class(level=lvl, modifier=mod)
+            self.proficiencies = Map(summed)
+            return self.proficiencies
 
     def __init__(self, **kwargs):
         """Initialize the Hero object.
@@ -295,7 +342,7 @@ class Hero(Base):
         self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100
 
     def gain_experience(self, amount):
-        new_amount = amount * self.get_summed_proficiencies()['understanding'].modifier
+        new_amount = amount * self.get_summed_proficiencies('understanding').get_final()
         new_amount = int(new_amount) + (random.random() < new_amount - int(new_amount)) # This will round the number weighted by its decimal (so 1.2 has 20% chance of rounding up)
         self.experience += new_amount
         if self.experience >= self.experience_maximum:
