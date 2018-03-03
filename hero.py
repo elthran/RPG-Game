@@ -199,7 +199,7 @@ class Hero(Base):
             except AttributeError:
                 pass
             return summed[key_name]
-        else:
+        else:  # Get the latest combined values of all proficiencies!
             for key in self.base_proficiencies:
                 prof = self.base_proficiencies[key]
                 summed[prof.name] = [prof.level, prof.modifier, prof.type_]
