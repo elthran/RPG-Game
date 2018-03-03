@@ -426,7 +426,7 @@ from functools import lru_cache
 class ObjectDictMap(MappedCollection):
     def __init__(self, *args, **kw):
         MappedCollection.__init__(self, keyfunc=lambda obj: obj.name)
-        self.all_names = self.sorted_keys(self.keys())
+        self.sorted_keys = self.sorted_keys(self.keys())
 
     def __getattr__(self, attr):
         return self.get(attr)
@@ -439,7 +439,7 @@ class ObjectDictMap(MappedCollection):
 
     @orm.reconstructor
     def init__on_load(self):
-        self.all_names = self.sorted_keys(self.keys())
+        self.sorted_keys = self.sorted_keys(self.keys())
 
     @lru_cache(maxsize=16)
     def sorted_keys(self, keys=None):
@@ -448,8 +448,8 @@ class ObjectDictMap(MappedCollection):
     def __iter__(self):
         """Return all the attributes of this function as an iterator."""
 
-        self.all_names = self.sorted_keys(self.keys())
-        return (self[key] for key in self.all_names)
+        self.sorted_keys = self.sorted_keys(self.keys())
+        return (self[key] for key in self.sorted_keys)
 
 
 class Map(dict):
@@ -477,7 +477,7 @@ class Map(dict):
             for k, v in kwargs.items():
                 self[k] = v
 
-            self.all_names = sorted(key for key in kwargs.keys())
+        self.sorted_keys = sorted(self.keys())
 
     def __getattr__(self, attr):
         return self.get(attr)
@@ -497,8 +497,13 @@ class Map(dict):
         del self.__dict__[key]
 
     def __iter__(self):
-        """Return all the attributes of this function as an iterator."""
-        if self.all_names:
+        """Return all the values (sorted by key) of this Map as an iterator.
+
+        Overrides default of returning .keys() (unsorted).
+        Now returns .values() (sorted by .keys())
+        """
+        if self.sorted_keys:
             # pdb.set_trace()
-            return (self[key] for key in self.all_names)
-        return (self[key] for key in sorted(self.keys()))
+            return (self[key] for key in self.sorted_keys)
+        self.sorted_keys = sorted(self.keys())
+        return (self[key] for key in self.sorted_keys)
