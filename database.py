@@ -42,7 +42,8 @@ import prebuilt_objects
 from session_helpers import scoped_session, safe_commit_session
 
 # Constants#
-SECOND_PER_ENDURANCE = 3600  # One endurance per minute?
+# SECOND_PER_ENDURANCE = 3600  # One endurance per hour.
+SECOND_PER_ENDURANCE = 30 # One endurance per 30 seconds
 Session = sessionmaker()
 
 
@@ -459,7 +460,7 @@ class EZDB:
     # Consider update_endurance_and_time()
     # Or update_game_clock
     # Or update_hero_clock
-    @scoped_session
+    @safe_commit_session
     def update_time(self, hero):
         """Update the game time clock of a specific Hero and endurance values.
 
@@ -481,7 +482,9 @@ class EZDB:
         #     print("Main update is too early for Hero {}?".format(hero.id))
         #     return None
 
+        print(time_diff)
         endurance_increment = int(time_diff / SECOND_PER_ENDURANCE)
+        print("Hero: {}-> edurance_increment: {}".format(hero.id, endurance_increment))
 
         endurance = hero.base_proficiencies['endurance']
         endurance.current = min(endurance.current + endurance_increment,

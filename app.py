@@ -11,7 +11,8 @@ from pprint import pprint  # For testing!
 from functools import wraps
 from random import choice
 import os
-import threading
+import time
+from multiprocessing import Process
 
 from flask import (
     Flask, render_template, redirect, url_for, request, session,
@@ -47,14 +48,19 @@ engine = Engine(database)
 game = Game()
 
 
+def game_clock():
+    while True:
+        time.sleep(30)
+        database.update_time_all_heroes()
+
+
 def create_app():
     # create the application object
     app = Flask(__name__)
-    dir(app)
     # pdb.set_trace()
+
     if not werkzeug.serving.is_running_from_reloader():
-        t = threading.Timer(30.0, database.update_time_all_heroes)
-        t.start()
+        Process(target=game_clock).start()
     return app
 
 
@@ -640,7 +646,7 @@ def home(hero=None):
     """
 
     # Is this supposed to update the time of all hero objects?
-    database.update_time(hero)
+    # database.update_time(hero)
 
     # Not implemented. Control user moves on map.
     # Sets up initial valid moves on the map.
