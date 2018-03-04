@@ -11,6 +11,7 @@ from pprint import pprint  # For testing!
 from functools import wraps
 from random import choice
 import os
+import threading
 
 from flask import (
     Flask, render_template, redirect, url_for, request, session,
@@ -18,6 +19,7 @@ from flask import (
 from flask_sslify import SSLify
 
 import werkzeug
+import werkzeug.serving
 
 from game import Game
 import combat_simulator
@@ -44,8 +46,19 @@ engine = Engine(database)
 # initialization
 game = Game()
 
-# create the application object
-app = Flask(__name__)
+
+def create_app():
+    # create the application object
+    app = Flask(__name__)
+    dir(app)
+    # pdb.set_trace()
+    if not werkzeug.serving.is_running_from_reloader():
+        t = threading.Timer(30.0, database.update_time_all_heroes)
+        t.start()
+    return app
+
+
+app = create_app()
 sslify = SSLify(app)
 app.secret_key = 'starcraft'
 

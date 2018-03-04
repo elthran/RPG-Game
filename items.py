@@ -58,6 +58,9 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
     max_durability = Column(Integer)
     wearable = Column(Boolean)
 
+    # extra special :P
+    affinity = Column(Integer)
+
     # Relationships
     # Each Item can have only one Inventory
     inventory_id = Column(Integer, ForeignKey('inventory.id',

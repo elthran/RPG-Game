@@ -10,10 +10,8 @@ Mainly using the tutorial at:
 import hashlib
 import importlib
 import datetime
-import random
 # Testing only
 import pdb
-from pprint import pprint
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -44,7 +42,7 @@ import prebuilt_objects
 from session_helpers import scoped_session, safe_commit_session
 
 # Constants#
-SECOND_PER_ENDURANCE = 10
+SECOND_PER_ENDURANCE = 3600  # One endurance per minute?
 Session = sessionmaker()
 
 
@@ -226,9 +224,13 @@ class EZDB:
         return item
 
     def get_all_users(self):
-        """Return all Users order_by name.
+        """Return all Users order_by id.
         """
         return self.session.query(User).order_by(User.id).all()
+
+    def get_all_heroes(self):
+        """Return all Hero objects ordered by id."""
+        return self.session.query(Hero).order_by(Hero.id).all()
 
     def get_ability_by_id(self, ability_id):
         """Return an ability from its ID."""
@@ -443,10 +445,21 @@ class EZDB:
         """
         return datetime.datetime.utcnow()
 
+    def update_time_all_heroes(self):
+        """Run update_time on all hero objects.
+
+        Consider moving the While True: + sleep somewhere else?
+        Seems a little out of place here.
+        """
+
+        for hero in self.get_all_heroes():
+            self.update_time(hero)
+
     # Marked for renaming as it effects Hero endurance as well as time.
     # Consider update_endurance_and_time()
     # Or update_game_clock
     # Or update_hero_clock
+    @scoped_session
     def update_time(self, hero):
         """Update the game time clock of a specific Hero and endurance values.
 
@@ -461,17 +474,27 @@ class EZDB:
         """
         timestamp = hero.timestamp
         time_diff = (EZDB.now() - timestamp).total_seconds()
-        endurance_increment = int(time_diff / SECOND_PER_ENDURANCE)
-        hero.base_proficiencies['endurance'].current += endurance_increment
 
-        if hero.base_proficiencies['endurance'].current \
-                > hero.base_proficiencies['endurance'].get_final():
-            hero.base_proficiencies['endurance'].current \
-                = hero.base_proficiencies['endurance'].get_final()
+        # Do nothing if less than 30 minutes have passed.
+        # if time_diff < 60 * 30:
+        # if time_diff < 60:  # Temp: update once a minute!
+        #     print("Main update is too early for Hero {}?".format(hero.id))
+        #     return None
+
+        endurance_increment = int(time_diff / SECOND_PER_ENDURANCE)
+
+        endurance = hero.base_proficiencies['endurance']
+        endurance.current = min(endurance.current + endurance_increment,
+                                endurance.get_final())
+
+        for item in hero.equipped_items():
+            item.affinity += 1
 
         # Only update if endurance has been incremented.
         if endurance_increment:
             hero.timestamp = EZDB.now()
+
+        print("Hero {} updated on schedule.".format(hero.id))
 
     # def get_world(self, name):
     #     """Return WorldMap object from database using by name.
