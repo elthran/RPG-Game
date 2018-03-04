@@ -3,6 +3,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 
+from factories import TemplateMixin
 from base_classes import Base
 
 from math import sin, floor
@@ -16,7 +17,7 @@ import pdb
 {% import 'container_helpers.py' as container_helpers %}
 {{ container_helpers.build_container("Proficiency", "proficiencies", PROFICIENCY_INFORMATION, no_container=True) }}
 
-class Proficiency(Base):
+class Proficiency(TemplateMixin, Base):
     """Proficiency class that stores data about a hero object.
     """
     __tablename__ = "proficiency"
@@ -57,14 +58,21 @@ class Proficiency(Base):
         'polymorphic_on': type_
     }
 
-    def __init__(self, level=0, base=0, modifier=0):
+    def __init__(self, level=0, base=0, modifier=0, template=False):
         self.type_ = self.__class__.__name__
         self.name = normalize_attrib_name(self.type_)
         self.tooltip = ""
         self.level = level
         self.base = base
         self.modifier = modifier
+        self.template = template
         self.current = self.get_final()
+
+    def build_new_from_template(self):
+        if not self.template:
+            raise Exception("Only use this method if obj.template == True.")
+        return self.__class__(level=self.level, base=self.base,
+                              modifier=self.modifier, template=False)
 
     def level_up(self):
         self.level += 1

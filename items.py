@@ -115,7 +115,16 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
                 setattr(item, key, getattr(self, key))
             except AttributeError:
                 pass
+        for key, prof in self.proficiencies.items():
+            item.proficiencies[key] = prof.build_new_from_template()
         return item
+
+    @property
+    def armour_value(self):
+        try:
+            return self.proficiencies['defence'].get_final()
+        except KeyError:
+            return 0
 
     def is_equipped(self):
         # Untested!
@@ -386,16 +395,20 @@ class TwoHandedWeapon(Weapon):
 
 
 class Garment(Wearable):
-    armour_value = Column(Integer)
-
     __mapper_args__ = {
         'polymorphic_identity': "Garment",
     }
 
     def __init__(self, *args, armour_value=1, **kwargs):
+        """Create a new garment template.
+
+        Alternate possible armour syntax:
+            [("Defence", {'base': 25})]
+        """
         super().__init__(*args, **kwargs)
         self.garment = True
-        self.armour_value = armour_value
+        self.proficiencies['defence'] = proficiencies.Defence(
+            base=armour_value, template=True)
 
 
 class HeadArmour(Garment):

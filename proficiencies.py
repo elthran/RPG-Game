@@ -9,6 +9,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 
+from factories import TemplateMixin
 from base_classes import Base
 
 from math import sin, floor
@@ -169,7 +170,7 @@ ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'bartering', 'block', 'caution
 ALL_CLASS_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'Damage', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'FirstStrike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Regeneration', 'Renown', 'ResistBlunt', 'ResistFlame', 'ResistFrost', 'ResistHoly', 'ResistPiercing', 'ResistPoison', 'ResistShadow', 'ResistSlashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stealth', 'Storage', 'Survivalist', 'Trustworthiness', 'Understanding', 'Woodsman']
 
 
-class Proficiency(Base):
+class Proficiency(TemplateMixin, Base):
     """Proficiency class that stores data about a hero object.
     """
     __tablename__ = "proficiency"
@@ -210,14 +211,21 @@ class Proficiency(Base):
         'polymorphic_on': type_
     }
 
-    def __init__(self, level=0, base=0, modifier=0):
+    def __init__(self, level=0, base=0, modifier=0, template=False):
         self.type_ = self.__class__.__name__
         self.name = normalize_attrib_name(self.type_)
         self.tooltip = ""
         self.level = level
         self.base = base
         self.modifier = modifier
+        self.template = template
         self.current = self.get_final()
+
+    def build_new_from_template(self):
+        if not self.template:
+            raise Exception("Only use this method if obj.template == True.")
+        return self.__class__(level=self.level, base=self.base,
+                              modifier=self.modifier, template=False)
 
     def level_up(self):
         self.level += 1
