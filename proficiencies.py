@@ -62,10 +62,10 @@ PROFICIENCY_INFORMATION = [
     ("Endurance", "Actions performed each day", "Resilience",
         [("Maximum", "linear", (1, 3, 0)),
          ("Current", "percent")]),
-    ("Damage", "How much damage you do on each hit", "Brawn",
-        [("Minimum", "linear", (1, 0, 0)),
-         ("Maximum", "linear", (1, 1, 0)),
-         ("Modifier", "linear", (.1, 1, 1))]),
+    ("Damage minimum", "Mimimum damage you do on each hit", "Brawn",
+        [("Minimum", "linear", (1, 0))]),
+    ("Damage maximum", "Maximum damage you do on each hit", "Brawn",
+        [("Minimum", "linear", (2, 0))]),
     ("Speed", "How fast you attack", "Quickness",
         [("Speed", "linear", (0.03, 1, 2))]),
     ("Accuracy", "The chance of your attacks hitting their target.",
@@ -165,9 +165,9 @@ PROFICIENCY_INFORMATION = [
     ("Sanity", "Your ability to resist mind altering affects", "Willpower",
         [("Skill", "linear", (1, 0, 0))]),
 ]
-ALL_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'Damage', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'First strike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Regeneration', 'Renown', 'Resist blunt', 'Resist flame', 'Resist frost', 'Resist holy', 'Resist piercing', 'Resist poison', 'Resist shadow', 'Resist slashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stealth', 'Storage', 'Survivalist', 'Trustworthiness', 'Understanding', 'Woodsman']
-ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'bartering', 'block', 'caution', 'charm', 'climbing', 'courage', 'damage', 'defence', 'detection', 'encumbrance', 'endurance', 'evade', 'explorer', 'faith', 'fatigue', 'first_strike', 'flee', 'health', 'huntsman', 'killshot', 'knowledge', 'literacy', 'logistics', 'luckiness', 'mountaineering', 'navigator', 'oration', 'parry', 'pickpocketing', 'recovery', 'regeneration', 'renown', 'resist_blunt', 'resist_flame', 'resist_frost', 'resist_holy', 'resist_piercing', 'resist_poison', 'resist_shadow', 'resist_slashing', 'riposte', 'sanctity', 'sanity', 'speed', 'stealth', 'storage', 'survivalist', 'trustworthiness', 'understanding', 'woodsman']
-ALL_CLASS_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'Damage', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'FirstStrike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Regeneration', 'Renown', 'ResistBlunt', 'ResistFlame', 'ResistFrost', 'ResistHoly', 'ResistPiercing', 'ResistPoison', 'ResistShadow', 'ResistSlashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stealth', 'Storage', 'Survivalist', 'Trustworthiness', 'Understanding', 'Woodsman']
+ALL_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'Damage maximum', 'Damage minimum', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'First strike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Regeneration', 'Renown', 'Resist blunt', 'Resist flame', 'Resist frost', 'Resist holy', 'Resist piercing', 'Resist poison', 'Resist shadow', 'Resist slashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stealth', 'Storage', 'Survivalist', 'Trustworthiness', 'Understanding', 'Woodsman']
+ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'bartering', 'block', 'caution', 'charm', 'climbing', 'courage', 'damage_maximum', 'damage_minimum', 'defence', 'detection', 'encumbrance', 'endurance', 'evade', 'explorer', 'faith', 'fatigue', 'first_strike', 'flee', 'health', 'huntsman', 'killshot', 'knowledge', 'literacy', 'logistics', 'luckiness', 'mountaineering', 'navigator', 'oration', 'parry', 'pickpocketing', 'recovery', 'regeneration', 'renown', 'resist_blunt', 'resist_flame', 'resist_frost', 'resist_holy', 'resist_piercing', 'resist_poison', 'resist_shadow', 'resist_slashing', 'riposte', 'sanctity', 'sanity', 'speed', 'stealth', 'storage', 'survivalist', 'trustworthiness', 'understanding', 'woodsman']
+ALL_CLASS_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'DamageMaximum', 'DamageMinimum', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'FirstStrike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Regeneration', 'Renown', 'ResistBlunt', 'ResistFlame', 'ResistFrost', 'ResistHoly', 'ResistPiercing', 'ResistPoison', 'ResistShadow', 'ResistSlashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stealth', 'Storage', 'Survivalist', 'Trustworthiness', 'Understanding', 'Woodsman']
 
 
 class Proficiency(TemplateMixin, Base):
@@ -492,22 +492,55 @@ class Endurance(Proficiency):
         return ';'.join(tooltips)
 
 
-class Damage(Proficiency):
+class DamageMinimum(Proficiency):
     __mapper_args__ = {
-        'polymorphic_identity': "Damage"
+        'polymorphic_identity': "DamageMinimum"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How much damage you do on each hit"
+        self.description = "Mimimum damage you do on each hit"
         self.attribute_type = "Brawn"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self):
-        """Update Damage's attributes and tooltip variable.
+        """Update DamageMinimum's attributes and tooltip variable.
         """
 
-        return round(1 * self.level, 0)
+        return round(1 * self.level, )
+
+    @property
+    def current_tootip(self):
+        """Create a tooltip for each variable.
+        """
+        tooltips = []
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
+            # This creates a tooltip for each variable
+            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
+                self, attrib, 'error')))
+
+        # This updates the main tooltip string variable.
+        self.tooltip = ';'.join(tooltips)
+        return ';'.join(tooltips)
+
+
+class DamageMaximum(Proficiency):
+    __mapper_args__ = {
+        'polymorphic_identity': "DamageMaximum"
+    }
+
+    def __init__(self, *args, base=2, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Maximum damage you do on each hit"
+        self.attribute_type = "Brawn"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self):
+        """Update DamageMaximum's attributes and tooltip variable.
+        """
+
+        return round(2 * self.level, )
 
     @property
     def current_tootip(self):
