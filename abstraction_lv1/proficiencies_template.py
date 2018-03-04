@@ -36,31 +36,33 @@ class Proficiency(Base):
     item_id = Column(Integer, ForeignKey('item.id', ondelete="CASCADE"))
     items = relationship("Item", back_populates="proficiencies")
 
+    # Main colums
+    level = Column(Integer)
+    base = Column(Integer)
+    modifier = Column(Float)
+
     type_ = Column(String(50))
+    name = Column(String(50))
+    hidden = Column(Boolean)
     description = Column(String(200))
     tooltip = Column(String(50))
     attribute_type = Column(String(50))
-    level = Column(Integer)
     next_value = Column(Integer)
     reason_for_zero = Column(String(50))    # Maybe remove
-    modifier = Column(Float)
-    hidden = Column(Boolean)
     current = Column(Integer)
-
-    # Extra Ability columns
     error = Column(String(50))
-    name = Column(String(50))
 
     __mapper_args__ = {
         'polymorphic_identity': "Proficiency",
         'polymorphic_on': type_
     }
 
-    def __init__(self, level=0, modifier=1.0):
+    def __init__(self, level=0, base=0, modifier=0):
         self.type_ = self.__class__.__name__
         self.name = normalize_attrib_name(self.type_)
         self.tooltip = ""
         self.level = level
+        self.base = base
         self.modifier = modifier
         self.current = self.get_final()
 
@@ -68,13 +70,27 @@ class Proficiency(Base):
         self.level += 1
         self.current = self.get_final()
 
-    def get_base(self):
-        """Return some function of the level attribute."""
+    def scale_by_level(self):
+        """Return some function of the level attribute.
+
+        This is different for each proficiency.
+        Options are:
+
+        "root:
+        return round((100 * self.level)**0.5 - (self.level / 4), precision)
+        "linear"
+        return round(value1 * self.level, precision)
+        "empty"
+        return self.level  # Defaults to 0
+
+        NOTE: base value has now been moved to the get_final() function
+        """
         return self.level
 
     def get_final(self):
-        """Return the modifier * the base."""
-        return self.get_base() * self.modifier
+        """Return the scaled value + base + modifier percent."""
+
+        return (self.scale_by_level() + self.base) * (self.modifier + 1)
 
     def get_percent(self):
         """Return the percent of the current to the final value."""
@@ -92,23 +108,23 @@ class {{ prof_class }}(Proficiency):
         'polymorphic_identity': "{{ prof_class }}"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    {% set value = prof[3][0] %}
+    def __init__(self, *args, base={{ value[2][-2] }}, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "{{ prof[1]}}"
         self.attribute_type = "{{ prof[2]}}"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-{% set value = prof[3][0] %}
-    def get_base(self):
+    def scale_by_level(self):
         """Update {{ prof_class }}'s attributes and tooltip variable.
         """
 
     {% if value[1] == "root" %}
-        return round((100 * self.level)**0.5 - (self.level / 4) + {{ value[2][0]}}, {{ value[2][1]}})
+        return round((100 * self.level)**0.5 - (self.level / 4), {{ value[2][1]}})
     {% elif value[1] == "linear" %}
-        return round({{ value[2][0] }} * self.level + {{ value[2][1] }}, {{ value[2][2]}})
+        return round({{ value[2][0] }} * self.level, {{ value[2][2]}})
     {% elif value[1] == "empty" %}
-        return super().get_base()
+        return super().scale_by_level()
     {% endif %}
     {% if prof[0] == "Block" %}
 
@@ -125,8 +141,8 @@ class {{ prof_class }}(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))

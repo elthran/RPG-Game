@@ -182,27 +182,29 @@ class Hero(SessionHoistMixin, Base):
         summed = {}
         if key_name:
             prof = self.base_proficiencies[key_name]
-            summed[prof.name] = [prof.level, prof.modifier, prof.type_]
+            summed[prof.name] = [prof.level, prof.base, prof.modifier, prof.type_]
             # print(self.session.query(proficiencies.Proficiency).)
             # pdb.set_trace()
-            for obj in self.equipped_items() + [obj for obj in self.abilities]:
+            for obj in self.equipped_items() + [obj for obj in self.abilities
+                                                if obj.level]:
                 try:
                     prof = obj.proficiencies[key_name]
                 except KeyError:
                     continue
                 if prof.name in summed:
-                    current_level, current_modifier, type_ = summed[prof.name]
+                    current_level, current_base, current_modifier, type_ = summed[prof.name]
                     summed[prof.name] = [current_level + prof.level,
+                                         current_base + prof.base,
                                          current_modifier + prof.modifier,
                                          type_]
                 else:
-                    summed[prof.name] = [prof.level, prof.modifier, prof.type_]
+                    summed[prof.name] = [prof.level, prof.base, prof.modifier, prof.type_]
 
-            lvl, mod, type_ = summed[key_name]
+            lvl, base, mod, type_ = summed[key_name]
 
             # convert dict of values into dict of database objects
             Class = getattr(proficiencies, type_)
-            summed[key_name] = Class(level=lvl, modifier=mod)
+            summed[key_name] = Class(level=lvl, base=base, modifier=mod)
 
             # If proficiencies exists update it. If not just return this
             # mapped object.
@@ -214,24 +216,25 @@ class Hero(SessionHoistMixin, Base):
         else:  # Get the latest combined values of all proficiencies!
             for key in self.base_proficiencies:
                 prof = self.base_proficiencies[key]
-                summed[prof.name] = [prof.level, prof.modifier, prof.type_]
+                summed[prof.name] = [prof.level, prof.base, prof.modifier, prof.type_]
 
             for obj in self.equipped_items() + [obj for obj in self.abilities]:
                 for key in obj.proficiencies:
                     prof = obj.proficiencies[key]
                     if prof.name in summed:
-                        current_level, current_modifier, type_ = summed[prof.name]
+                        current_level, current_base, current_modifier, type_ = summed[prof.name]
                         summed[prof.name] = [current_level + prof.level,
+                                             current_base + prof.base,
                                              current_modifier + prof.modifier,
                                              type_]
                     else:
-                        summed[prof.name] = [prof.level, prof.modifier, prof.type_]
+                        summed[prof.name] = [prof.level, prof.base, prof.modifier, prof.type_]
 
             for key in summed:
-                lvl, mod, type_ = summed[key]
+                lvl, base, mod, type_ = summed[key]
 
                 Class = getattr(proficiencies, type_)
-                summed[key] = Class(level=lvl, modifier=mod)
+                summed[key] = Class(level=lvl, base=base, modifier=mod)
             self.proficiencies = Map(summed)
             return self.proficiencies
 
@@ -247,10 +250,18 @@ class Hero(SessionHoistMixin, Base):
 
         # Skills and abilities
         # set self.base_proficiencies
+        # e.g.
+        # import proficiencies
+        # Class = proficiencies.Accuracy
+        # obj = Accuracy()
+        # accuracy.hero = self (current hero object)
+        # hero.base_proficiencies['accuracy'] = Accuracy()
         for cls_name in proficiencies.ALL_CLASS_NAMES:
-            Class = getattr(proficiencies, cls_name)
-            obj = Class()
-            obj.hero = self
+            # attributes.Attribute
+            ProfClass = getattr(proficiencies, cls_name)
+            ProfClass().hero = self
+            # obj = Class()
+            # obj.hero = self
             # OR
             # self.base_proficiencies[obj.name] = obj
 

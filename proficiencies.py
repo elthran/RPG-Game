@@ -189,31 +189,33 @@ class Proficiency(Base):
     item_id = Column(Integer, ForeignKey('item.id', ondelete="CASCADE"))
     items = relationship("Item", back_populates="proficiencies")
 
+    # Main colums
+    level = Column(Integer)
+    base = Column(Integer)
+    modifier = Column(Float)
+
     type_ = Column(String(50))
+    name = Column(String(50))
+    hidden = Column(Boolean)
     description = Column(String(200))
     tooltip = Column(String(50))
     attribute_type = Column(String(50))
-    level = Column(Integer)
     next_value = Column(Integer)
     reason_for_zero = Column(String(50))    # Maybe remove
-    modifier = Column(Float)
-    hidden = Column(Boolean)
     current = Column(Integer)
-
-    # Extra Ability columns
     error = Column(String(50))
-    name = Column(String(50))
 
     __mapper_args__ = {
         'polymorphic_identity': "Proficiency",
         'polymorphic_on': type_
     }
 
-    def __init__(self, level=0, modifier=1.0):
+    def __init__(self, level=0, base=0, modifier=0):
         self.type_ = self.__class__.__name__
         self.name = normalize_attrib_name(self.type_)
         self.tooltip = ""
         self.level = level
+        self.base = base
         self.modifier = modifier
         self.current = self.get_final()
 
@@ -221,13 +223,27 @@ class Proficiency(Base):
         self.level += 1
         self.current = self.get_final()
 
-    def get_base(self):
-        """Return some function of the level attribute."""
+    def scale_by_level(self):
+        """Return some function of the level attribute.
+
+        This is different for each proficiency.
+        Options are:
+
+        "root:
+        return round((100 * self.level)**0.5 - (self.level / 4), precision)
+        "linear"
+        return round(value1 * self.level, precision)
+        "empty"
+        return self.level  # Defaults to 0
+
+        NOTE: base value has now been moved to the get_final() function
+        """
         return self.level
 
     def get_final(self):
-        """Return the modifier * the base."""
-        return self.get_base() * self.modifier
+        """Return the scaled value + base + modifier percent."""
+
+        return (self.scale_by_level() + self.base) * (self.modifier + 1)
 
     def get_percent(self):
         """Return the percent of the current to the final value."""
@@ -242,25 +258,25 @@ class Health(Proficiency):
         'polymorphic_identity': "Health"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=5, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "How much you can take before you die"
         self.attribute_type = "Vitality"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Health's attributes and tooltip variable.
         """
 
-        return round(2 * self.level + 5, 0)
+        return round(2 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -275,25 +291,25 @@ class Regeneration(Proficiency):
         'polymorphic_identity': "Regeneration"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "How quickly your wounds heal"
         self.attribute_type = "Vitality"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Regeneration's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 1, 2)
+        return round((100 * self.level)**0.5 - (self.level / 4), 2)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -308,25 +324,25 @@ class Recovery(Proficiency):
         'polymorphic_identity': "Recovery"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "How quickly you recover from poisons and negative effects"
         self.attribute_type = "Vitality"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Recovery's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -341,25 +357,25 @@ class Climbing(Proficiency):
         'polymorphic_identity': "Climbing"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0.5, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Your ability to climb obstacles"
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Climbing's attributes and tooltip variable.
         """
 
-        return round(0.5 * self.level + 0.5, 1)
+        return round(0.5 * self.level, 1)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -374,25 +390,25 @@ class Storage(Proficiency):
         'polymorphic_identity': "Storage"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=10, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Your carrying capacity"
         self.attribute_type = "Brawn"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Storage's attributes and tooltip variable.
         """
 
-        return round(2 * self.level + 10, 0)
+        return round(2 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -407,25 +423,25 @@ class Encumbrance(Proficiency):
         'polymorphic_identity': "Encumbrance"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "How much your are slowed down in combat by your equipment"
         self.attribute_type = "Brawn"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Encumbrance's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -440,25 +456,25 @@ class Endurance(Proficiency):
         'polymorphic_identity': "Endurance"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=3, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Actions performed each day"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Endurance's attributes and tooltip variable.
         """
 
-        return round(1 * self.level + 3, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -473,25 +489,25 @@ class Damage(Proficiency):
         'polymorphic_identity': "Damage"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "How much damage you do on each hit"
         self.attribute_type = "Brawn"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Damage's attributes and tooltip variable.
         """
 
-        return round(1 * self.level + 0, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -506,25 +522,25 @@ class Speed(Proficiency):
         'polymorphic_identity': "Speed"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "How fast you attack"
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Speed's attributes and tooltip variable.
         """
 
-        return round(0.03 * self.level + 1, 2)
+        return round(0.03 * self.level, 2)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -539,25 +555,25 @@ class Accuracy(Proficiency):
         'polymorphic_identity': "Accuracy"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=35, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "The chance of your attacks hitting their target."
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Accuracy's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 35, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -572,25 +588,25 @@ class FirstStrike(Proficiency):
         'polymorphic_identity': "FirstStrike"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to strike first"
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update FirstStrike's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -605,25 +621,25 @@ class Killshot(Proficiency):
         'polymorphic_identity': "Killshot"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to hit enemies in their weak spot"
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Killshot's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -638,25 +654,25 @@ class Defence(Proficiency):
         'polymorphic_identity': "Defence"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Damage reduction"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Defence's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -671,25 +687,25 @@ class Evade(Proficiency):
         'polymorphic_identity': "Evade"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=5, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to dodge"
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Evade's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 5, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -704,25 +720,25 @@ class Parry(Proficiency):
         'polymorphic_identity': "Parry"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=2, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to parry"
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Parry's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 2, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -737,25 +753,25 @@ class Flee(Proficiency):
         'polymorphic_identity': "Flee"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=7, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to run from a battle"
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Flee's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 7, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -770,25 +786,25 @@ class Riposte(Proficiency):
         'polymorphic_identity': "Riposte"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to riposte an enemy attack"
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Riposte's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -803,25 +819,25 @@ class Fatigue(Proficiency):
         'polymorphic_identity': "Fatigue"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=5, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "How quickly you tire in combat"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Fatigue's attributes and tooltip variable.
         """
 
-        return round(1 * self.level + 5, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -836,17 +852,17 @@ class Block(Proficiency):
         'polymorphic_identity': "Block"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to block if a shield is equipped"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Block's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     def check_shield(self, hero):
         if hero.inventory.left_hand is None or hero.inventory.left_hand.type != "Shield":
@@ -860,8 +876,8 @@ class Block(Proficiency):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -876,25 +892,25 @@ class Stealth(Proficiency):
         'polymorphic_identity': "Stealth"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=3, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to avoid detection"
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Stealth's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -909,25 +925,25 @@ class Pickpocketing(Proficiency):
         'polymorphic_identity': "Pickpocketing"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Skill at stealing from others"
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Pickpocketing's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 1, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -942,25 +958,25 @@ class Faith(Proficiency):
         'polymorphic_identity': "Faith"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Strength of spells you cast"
         self.attribute_type = "Divinity"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Faith's attributes and tooltip variable.
         """
 
-        return round(0.1 * self.level + 1, 0)
+        return round(0.1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -975,25 +991,25 @@ class Sanctity(Proficiency):
         'polymorphic_identity': "Sanctity"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Amount of sanctity you can have"
         self.attribute_type = "Divinity"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Sanctity's attributes and tooltip variable.
         """
 
-        return round(3 * self.level + 0, 0)
+        return round(3 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1008,25 +1024,25 @@ class ResistHoly(Proficiency):
         'polymorphic_identity': "ResistHoly"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist holy damage"
         self.attribute_type = "Divinity"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update ResistHoly's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1041,25 +1057,25 @@ class Bartering(Proficiency):
         'polymorphic_identity': "Bartering"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Discount from negotiating prices"
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Bartering's attributes and tooltip variable.
         """
 
-        return round(-0.05 * self.level + 1, 0)
+        return round(-0.05 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1074,25 +1090,25 @@ class Oration(Proficiency):
         'polymorphic_identity': "Oration"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=11, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Proficiency in speaking to others"
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Oration's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 11, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1107,25 +1123,25 @@ class Charm(Proficiency):
         'polymorphic_identity': "Charm"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=3, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "How quickly other people will like you"
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Charm's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 3, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1140,25 +1156,25 @@ class Trustworthiness(Proficiency):
         'polymorphic_identity': "Trustworthiness"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "How much other players trust you"
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Trustworthiness's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1173,25 +1189,25 @@ class Renown(Proficiency):
         'polymorphic_identity': "Renown"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "How much your actions affect your reputation"
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Renown's attributes and tooltip variable.
         """
 
-        return round(0.1 * self.level + 1, 0)
+        return round(0.1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1206,25 +1222,25 @@ class Knowledge(Proficiency):
         'polymorphic_identity': "Knowledge"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=6, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to understand"
         self.attribute_type = "Intellect"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Knowledge's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 6, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1239,25 +1255,25 @@ class Literacy(Proficiency):
         'polymorphic_identity': "Literacy"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to read"
         self.attribute_type = "Intellect"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Literacy's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1272,25 +1288,25 @@ class Understanding(Proficiency):
         'polymorphic_identity': "Understanding"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "How quickly you level up"
         self.attribute_type = "Intellect"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Understanding's attributes and tooltip variable.
         """
 
-        return round(0.05 * self.level + 1, 0)
+        return round(0.05 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1305,25 +1321,25 @@ class Luckiness(Proficiency):
         'polymorphic_identity': "Luckiness"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to have things turn your way against all odds"
         self.attribute_type = "Fortuity"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Luckiness's attributes and tooltip variable.
         """
 
-        return round(0.01 * self.level + 0, 0)
+        return round(0.01 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1338,25 +1354,25 @@ class Adventuring(Proficiency):
         'polymorphic_identity': "Adventuring"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to discover treasure"
         self.attribute_type = "Fortuity"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Adventuring's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1371,25 +1387,25 @@ class Logistics(Proficiency):
         'polymorphic_identity': "Logistics"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "How far you can move on the map"
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Logistics's attributes and tooltip variable.
         """
 
-        return round(0.2 * self.level + 1, 0)
+        return round(0.2 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1404,25 +1420,25 @@ class Mountaineering(Proficiency):
         'polymorphic_identity': "Mountaineering"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Modifier for mountain movement"
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Mountaineering's attributes and tooltip variable.
         """
 
-        return round(0.5 * self.level + 1, 0)
+        return round(0.5 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1437,25 +1453,25 @@ class Woodsman(Proficiency):
         'polymorphic_identity': "Woodsman"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Modifier for forest movement"
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Woodsman's attributes and tooltip variable.
         """
 
-        return round(0.5 * self.level + 1, 0)
+        return round(0.5 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1470,25 +1486,25 @@ class Navigator(Proficiency):
         'polymorphic_identity': "Navigator"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Modifier for water movement"
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Navigator's attributes and tooltip variable.
         """
 
-        return round(0.5 * self.level + 1, 0)
+        return round(0.5 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1503,25 +1519,25 @@ class Detection(Proficiency):
         'polymorphic_identity': "Detection"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to discover enemy stealth and traps"
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Detection's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1536,25 +1552,25 @@ class Caution(Proficiency):
         'polymorphic_identity': "Caution"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0.5, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "See information about a new grid before going there"
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Caution's attributes and tooltip variable.
         """
 
-        return round(0.5 * self.level + 0.5, 0)
+        return round(0.5 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1569,25 +1585,25 @@ class Explorer(Proficiency):
         'polymorphic_identity': "Explorer"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0.5, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Additional options on the map, such as foraging"
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Explorer's attributes and tooltip variable.
         """
 
-        return round(0.5 * self.level + 0.5, 0)
+        return round(0.5 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1602,25 +1618,25 @@ class Huntsman(Proficiency):
         'polymorphic_identity': "Huntsman"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0.5, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Learn additional information about enemies"
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Huntsman's attributes and tooltip variable.
         """
 
-        return round(0.5 * self.level + 0.5, 0)
+        return round(0.5 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1635,25 +1651,25 @@ class Survivalist(Proficiency):
         'polymorphic_identity': "Survivalist"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0.5, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Create bandages, tents, and other useful objects"
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Survivalist's attributes and tooltip variable.
         """
 
-        return round(0.5 * self.level + 0.5, 0)
+        return round(0.5 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1668,25 +1684,25 @@ class ResistFrost(Proficiency):
         'polymorphic_identity': "ResistFrost"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist frost damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update ResistFrost's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1701,25 +1717,25 @@ class ResistFlame(Proficiency):
         'polymorphic_identity': "ResistFlame"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist flame damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update ResistFlame's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1734,25 +1750,25 @@ class ResistShadow(Proficiency):
         'polymorphic_identity': "ResistShadow"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist shadow damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update ResistShadow's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1767,25 +1783,25 @@ class ResistPoison(Proficiency):
         'polymorphic_identity': "ResistPoison"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist poison damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update ResistPoison's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1800,25 +1816,25 @@ class ResistBlunt(Proficiency):
         'polymorphic_identity': "ResistBlunt"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist blunt damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update ResistBlunt's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1833,25 +1849,25 @@ class ResistSlashing(Proficiency):
         'polymorphic_identity': "ResistSlashing"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist slashing damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update ResistSlashing's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1866,25 +1882,25 @@ class ResistPiercing(Proficiency):
         'polymorphic_identity': "ResistPiercing"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist piercing damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update ResistPiercing's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4) + 0, 0)
+        return round((100 * self.level)**0.5 - (self.level / 4), 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1899,25 +1915,25 @@ class Courage(Proficiency):
         'polymorphic_identity': "Courage"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Your ability to overcome fears"
         self.attribute_type = "Willpower"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Courage's attributes and tooltip variable.
         """
 
-        return round(1 * self.level + 0, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))
@@ -1932,25 +1948,25 @@ class Sanity(Proficiency):
         'polymorphic_identity': "Sanity"
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
         self.description = "Your ability to resist mind altering affects"
         self.attribute_type = "Willpower"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
-    def get_base(self):
+    def scale_by_level(self):
         """Update Sanity's attributes and tooltip variable.
         """
 
-        return round(1 * self.level + 0, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
         tooltips = []
-        for attrib in ['get_base()', 'modifier', 'get_final()',
-                       'current', 'get_percent()']:
+        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
+                       'get_percent()']:
             # This creates a tooltip for each variable
             tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
                 self, attrib, 'error')))

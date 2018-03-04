@@ -3,10 +3,29 @@
 Abilities spec goes:
 
 name, class, class arguments (not including name as it is added later).
+
+relentless = ALL_ABILITIES[0]
+name = relentless[0]
+type = relentless[1]
+args = relentless[2]
+
+level_up_func = relentless[3]
+This last one ends up in the form
+
+@orm.validates('level')
+def validate_level(self, key, current):
+    for key in self.proficiencies:
+        prof = self.proficiencies[key]
+        prof.base = current {{ level_up_func }}
+        # in this case:
+        prof.base = current * 5
 """
 
 ALL_ABILITIES = [
-    ("Relentless", "AuraAbility", "5, 'Gain {{ level * 5 }} maximum health. Master this ability to unlock the Brute archetype.', learnable=True, health_maximum=5"),
+    ("Relentless",
+        "AuraAbility",
+        "5, 'Gain {{ level * 5 }} maximum health. Master this ability to unlock the Brute archetype.', learnable=True, proficiency_data=[('Health', {'base': 5}),]",
+        '* 5'),
     ("Trickster", "AuraAbility", "5, 'Become {{ level * 5 }}% harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', learnable=True, stealth_chance=5"),
     ("Discipline", "AuraAbility", "5, 'Gain devotion {{ level * 5 }}% faster. Master this ability to unlock the Ascetic archetype.', learnable=True"),
     ("Traveler", "AuraAbility", "5, 'Reveal {{ level * 10 }}% more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', learnable=True"),

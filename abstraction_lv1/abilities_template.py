@@ -88,7 +88,7 @@ class Ability(Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, max_level, description, hero=None, hidden=True, learnable=False, tree="basic", tree_type="", cost=1):
+    def __init__(self, name, max_level, description, hero=None, hidden=True, learnable=False, tree="basic", tree_type="", cost=1, proficiency_data=[]):
         """Build a basic ability object.
 
         Note: arguments (name, hero, max_level, etc.) that require input are
@@ -120,9 +120,10 @@ class Ability(Base):
 
         # Initialize proficiencies
         # Currently doesn't add any proficiencies.
-        for cls_name in []:
-            Class = getattr(proficiencies, cls_name)
-            obj = Class()
+        for class_name, arg_dict in proficiency_data:
+            Class = getattr(proficiencies, class_name)
+            # pdb.set_trace()
+            obj = Class(**arg_dict)
             self.proficiencies[obj.name] = obj
 
         self.init_on_load()
@@ -136,6 +137,24 @@ class Ability(Base):
     # @property
     # def display_name(self):
     #     return self.name.capitalize()
+
+    @orm.validates('level')
+    def validate_level(self, key, current):
+        """Set the base and modifier off the current level.
+
+        x = 7
+        for y in range(1, 10):
+            x = (x // (y - 1 or 1)) * y (base)
+            x = (x / (y - 1 or 1)) * y (modifier)
+
+        NOTE: hero get_summed_proficiecies must check if level of Ability is 0
+        """
+        for key in self.proficiencies:
+            prof = self.proficiencies[key]
+            if current > 0:
+                prof.base = (prof.base // (current-1 or 1)) * current
+                prof.modifier = (prof.modifier // (current-1 or 1)) * current
+        return current
 
     def get_description(self):
         return render_template_string(self.description,
