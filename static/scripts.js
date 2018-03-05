@@ -391,10 +391,12 @@ function updateAttribute(button, status) {
     }
 }
 
-function proficiencyTooltip(button, tooltip) {
-    var newTooltip = {};
+function proficiencyTooltip(response, oldData) {
+    console.log(response);
+    console.log(oldData);
+    var newTooltip;
     newTooltip = document.getElementById("proficiencyTooltip");
-    newTooltip.innerHTML = tooltip;
+    newTooltip.innerHTML = response.tooltip;
 }
 
 function updateProficiency(button, status, tooltip) {

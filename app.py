@@ -658,7 +658,7 @@ def attributes(hero=None):
 @uses_hero
 def proficiencies(hero=None):
     # This page is literally just a html page with tooltips and proficiency level up buttons. No python code is needed. Python only tells html which page to load.
-    return render_template('profile_proficiencies.html', page_title="Proficiencies", hero=hero, all_attributes=hero.attributes, all_proficiencies=hero.get_summed_proficiencies())
+    return render_template('profile_proficiencies.html', page_title="Proficiencies", hero=hero, all_attributes=hero.attributes, all_proficiencies=hero.base_proficiencies)
 
 
 @app.route('/ability_tree/<spec>')

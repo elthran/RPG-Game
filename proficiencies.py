@@ -11,6 +11,7 @@ from sqlalchemy.ext.declarative import declared_attr
 
 from factories import TemplateMixin
 from base_classes import Base
+from flask import render_template_string
 
 from math import sin, floor
 
@@ -282,16 +283,12 @@ class Health(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Regeneration(Proficiency):
@@ -315,16 +312,12 @@ class Regeneration(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Recovery(Proficiency):
@@ -348,16 +341,12 @@ class Recovery(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Climbing(Proficiency):
@@ -381,16 +370,12 @@ class Climbing(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Storage(Proficiency):
@@ -414,16 +399,12 @@ class Storage(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Encumbrance(Proficiency):
@@ -447,16 +428,12 @@ class Encumbrance(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Endurance(Proficiency):
@@ -480,16 +457,12 @@ class Endurance(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class DamageMinimum(Proficiency):
@@ -513,16 +486,12 @@ class DamageMinimum(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class DamageMaximum(Proficiency):
@@ -546,16 +515,12 @@ class DamageMaximum(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Speed(Proficiency):
@@ -579,16 +544,12 @@ class Speed(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Accuracy(Proficiency):
@@ -612,16 +573,12 @@ class Accuracy(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class FirstStrike(Proficiency):
@@ -645,16 +602,12 @@ class FirstStrike(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Killshot(Proficiency):
@@ -678,16 +631,12 @@ class Killshot(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Defence(Proficiency):
@@ -711,16 +660,12 @@ class Defence(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Evade(Proficiency):
@@ -744,16 +689,12 @@ class Evade(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Parry(Proficiency):
@@ -777,16 +718,12 @@ class Parry(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Flee(Proficiency):
@@ -810,16 +747,12 @@ class Flee(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Riposte(Proficiency):
@@ -843,16 +776,12 @@ class Riposte(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Fatigue(Proficiency):
@@ -876,16 +805,12 @@ class Fatigue(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Block(Proficiency):
@@ -916,16 +841,12 @@ class Block(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Stealth(Proficiency):
@@ -949,16 +870,12 @@ class Stealth(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Pickpocketing(Proficiency):
@@ -982,16 +899,12 @@ class Pickpocketing(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Faith(Proficiency):
@@ -1015,16 +928,12 @@ class Faith(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Sanctity(Proficiency):
@@ -1048,16 +957,12 @@ class Sanctity(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class ResistHoly(Proficiency):
@@ -1081,16 +986,12 @@ class ResistHoly(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Bartering(Proficiency):
@@ -1114,16 +1015,12 @@ class Bartering(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Oration(Proficiency):
@@ -1147,16 +1044,12 @@ class Oration(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Charm(Proficiency):
@@ -1180,16 +1073,12 @@ class Charm(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Trustworthiness(Proficiency):
@@ -1213,16 +1102,12 @@ class Trustworthiness(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Renown(Proficiency):
@@ -1246,16 +1131,12 @@ class Renown(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Knowledge(Proficiency):
@@ -1279,16 +1160,12 @@ class Knowledge(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Literacy(Proficiency):
@@ -1312,16 +1189,12 @@ class Literacy(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Understanding(Proficiency):
@@ -1345,16 +1218,12 @@ class Understanding(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Luckiness(Proficiency):
@@ -1378,16 +1247,12 @@ class Luckiness(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Adventuring(Proficiency):
@@ -1411,16 +1276,12 @@ class Adventuring(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Logistics(Proficiency):
@@ -1444,16 +1305,12 @@ class Logistics(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Mountaineering(Proficiency):
@@ -1477,16 +1334,12 @@ class Mountaineering(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Woodsman(Proficiency):
@@ -1510,16 +1363,12 @@ class Woodsman(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Navigator(Proficiency):
@@ -1543,16 +1392,12 @@ class Navigator(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Detection(Proficiency):
@@ -1576,16 +1421,12 @@ class Detection(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Caution(Proficiency):
@@ -1609,16 +1450,12 @@ class Caution(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Explorer(Proficiency):
@@ -1642,16 +1479,12 @@ class Explorer(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Huntsman(Proficiency):
@@ -1675,16 +1508,12 @@ class Huntsman(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Survivalist(Proficiency):
@@ -1708,16 +1537,12 @@ class Survivalist(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class ResistFrost(Proficiency):
@@ -1741,16 +1566,12 @@ class ResistFrost(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class ResistFlame(Proficiency):
@@ -1774,16 +1595,12 @@ class ResistFlame(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class ResistShadow(Proficiency):
@@ -1807,16 +1624,12 @@ class ResistShadow(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class ResistPoison(Proficiency):
@@ -1840,16 +1653,12 @@ class ResistPoison(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class ResistBlunt(Proficiency):
@@ -1873,16 +1682,12 @@ class ResistBlunt(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class ResistSlashing(Proficiency):
@@ -1906,16 +1711,12 @@ class ResistSlashing(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class ResistPiercing(Proficiency):
@@ -1939,16 +1740,12 @@ class ResistPiercing(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Courage(Proficiency):
@@ -1972,16 +1769,12 @@ class Courage(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 class Sanity(Proficiency):
@@ -2005,16 +1798,12 @@ class Sanity(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
 
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 

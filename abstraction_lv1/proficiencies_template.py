@@ -5,6 +5,7 @@ from sqlalchemy.ext.declarative import declared_attr
 
 from factories import TemplateMixin
 from base_classes import Base
+from flask import render_template_string
 
 from math import sin, floor
 
@@ -148,16 +149,13 @@ class {{ prof_class }}(Proficiency):
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
-        tooltips = []
-        for attrib in ['level', 'base', 'modifier', 'current', 'get_final()',
-                       'get_percent()']:
-            # This creates a tooltip for each variable
-            tooltips.append("{}: {}".format(attrib.capitalize(), getattr(
-                self, attrib, 'error')))
-
-        # This updates the main tooltip string variable.
-        self.tooltip = ';'.join(tooltips)
-        return ';'.join(tooltips)
+        {% raw %}
+        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
+                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
+                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
+        {% endfor %}"""
+        {% endraw %}
+        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 {% endfor %}

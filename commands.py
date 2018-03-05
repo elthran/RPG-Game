@@ -271,12 +271,10 @@ class Command:
         return "success".format()
 
     @staticmethod
-    def change_proficiency_tooltip(hero, database, arg_dict, **kwargs):
-        tooltip_id = arg_dict.get('data', None, type=int)
+    def change_proficiency_tooltip(hero, database, data, **kwargs):
+        tooltip_id = data['id']
         proficiency = database.get_proficiency_by_id(tooltip_id)
-        tooltip = proficiency.tooltip.replace(";", "</li><li>")
-        tooltip = "<h2>" + proficiency.name + "</h2>" + proficiency.description + "<ul><li>" + tooltip + "</li></ul>"
-        return "{}".format(tooltip)
+        return jsonify(tooltip=proficiency.current_tootip)
 
     @staticmethod
     def update_proficiency(hero, database, arg_dict, **kwargs):

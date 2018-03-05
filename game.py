@@ -79,3 +79,8 @@ class User(Base):
         self.is_admin = is_admin
         self.inbox_alert = False
         self.prestige = 0
+
+class Notification(object):
+    def send_notification(title="Attention!", content="Something interesting has happened.", url="/home"):
+        return None
+

@@ -10,10 +10,12 @@
             <button class="genericAccordion">{{ attribute.name }} (Current level: {{ attribute.level }})</button>
             <div class="genericAccordionPanel">
                 <ul>
-                    {% for proficiency in all_proficiencies %}
+                    {% for key in all_proficiencies %}
+                    {% set proficiency = all_proficiencies[key] %}
                         {% if proficiency.attribute_type == attribute.name %}
                             <li>
-                                <button class="genericTooltipTrigger" data-py-function="change_proficiency_tooltip" data="{{ proficiency.id }}" data-js-callback="proficiencyTooltip">
+                                <button class="genericTooltipTrigger"
+                                        onclick="sendToPy(event, proficiencyTooltip, 'change_proficiency_tooltip', {'id': {{ proficiency.id }}});">
                                     {{ proficiency.name}} (Current Level: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>)
                                     <button class="upgradeButton" data-py-function="update_proficiency" data="{{ proficiency.id }}" id="proficiencyButton" data-js-callback="updateProficiency" {% if hero.proficiency_points <= 0 or proficiency.is_max_level() %}style="display: none"{% endif %}>
                                     </button>
