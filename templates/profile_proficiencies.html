@@ -17,8 +17,6 @@
                                 <button class="genericTooltipTrigger"
                                         onclick="sendToPy(event, proficiencyTooltip, 'change_proficiency_tooltip', {'id': {{ proficiency.id }}});">
                                     {{ proficiency.name}} (Current Level: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>)
-                                    <button class="upgradeButton" data-py-function="update_proficiency" data="{{ proficiency.id }}" id="proficiencyButton" data-js-callback="updateProficiency" {% if hero.proficiency_points <= 0 or proficiency.is_max_level() %}style="display: none"{% endif %}>
-                                    </button>
                                 </button>
                                 </li>
                         {% endif %}
@@ -28,7 +26,12 @@
         {% endfor %}
     </div>
     <div style="float: right;width: 350px;border: dotted;height:auto;padding: 5px;">
-        <div><span id="proficiencyTooltip">Click on a proficiency to see more information.</span></div>
+        <div>
+            <span id="proficiencyTooltip">Click on a proficiency to see more information.</span>
+            {# <!-- Need to put the button here and fix it.
+            <button class="upgradeButton" data-py-function="update_proficiency" data="{{ proficiency.id }}" id="proficiencyButton" data-js-callback="updateProficiency" {% if hero.proficiency_points <= 0 %}style="display: none"{% endif %}>
+                                    </button> --> #}
+        </div>
         <div class="tooltipImage"><span id="attributeImage"></span></div>
     </div>
 </div>

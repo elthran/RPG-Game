@@ -123,7 +123,8 @@ class {{ prof_class }}(Proficiency):
         self.description = "{{ prof[1]}}"
         self.attribute_type = "{{ prof[2]}}"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = {{ prof[4] }}
+        self.hidden = {{ prof[4] }}     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
+        self.is_percent = {{ prof[5] }}   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
 
     def scale_by_level(self):
         """Update {{ prof_class }}'s attributes and tooltip variable.
@@ -153,7 +154,7 @@ class {{ prof_class }}(Proficiency):
         {% raw %}
         tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
                 <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
                 <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         {% endraw %}
         return render_template_string(tooltip, prof=self, getattr=getattr)
