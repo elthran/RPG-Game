@@ -117,22 +117,23 @@ class {{ prof_class }}(Proficiency):
         'polymorphic_identity': "{{ prof_class }}"
     }
 
-    {% set value = prof[3][0] %}
-    def __init__(self, *args, base={{ value[2][-2] }}, **kwargs):
+    {% set value = prof[3] %}
+    def __init__(self, *args, base={{ value[1] }}, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "{{ prof[1]}}"
         self.attribute_type = "{{ prof[2]}}"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = {{ prof[4] }}
 
     def scale_by_level(self):
         """Update {{ prof_class }}'s attributes and tooltip variable.
         """
 
-    {% if value[1] == "root" %}
+    {% if value[0] == "root" %}
         return round((100 * self.level)**0.5 - (self.level / 4), {{ value[2][1]}})
-    {% elif value[1] == "linear" %}
-        return round({{ value[2][0] }} * self.level, {{ value[2][2]}})
-    {% elif value[1] == "empty" %}
+    {% elif value[0] == "linear" %}
+        return round({{ value[2] }} * self.level, {{ value[3] }})
+    {% elif value[0] == "empty" %}
         return super().scale_by_level()
     {% endif %}
     {% if prof[0] == "Block" %}
@@ -150,10 +151,10 @@ class {{ prof_class }}(Proficiency):
         """Create a tooltip for each variable.
         """
         {% raw %}
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         {% endraw %}
         return render_template_string(tooltip, prof=self, getattr=getattr)
 

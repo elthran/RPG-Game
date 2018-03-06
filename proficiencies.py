@@ -41,130 +41,66 @@ Empty: Sets this value to take on the value of "maximum". Must be placed after
     "Maximum" in the list of variables
 """
 
+"""
+Prof_Name, Prof_Descr, Prof_Attrib, [Formula_Type, Base_Value, Weight, # of Decimals], hidden_boolean
+"""
+
 from build_code import normalize_attrib_name
 
 PROFICIENCY_INFORMATION = [
-    ("Health", "How much you can take before you die", "Vitality",
-        [("Maximum", "linear", (2, 5, 0)),
-         ("Current", "percent")]),
-    ("Regeneration", "How quickly your wounds heal", "Vitality",
-        [("Speed", "root", (1, 2))]),
-    ("Recovery", "How quickly you recover from poisons and negative effects",
-        "Vitality",
-        [("Efficiency", "root", (0, 0))]),
-    ("Climbing", "Your ability to climb obstacles", "Agility",
-        [("Ability", "linear", (0.5, 0.5, 1))]),
-    ("Storage", "Your carrying capacity", "Brawn",
-        [("Maximum", "linear", (2, 10, 0)),
-         ("Current", "percent")]),
-    ("Encumbrance", "How much your are slowed down in combat by your "
-                    "equipment", "Brawn",
-        [("Amount", "root", (0, 0))]),
-    ("Endurance", "Actions performed each day", "Resilience",
-        [("Maximum", "linear", (1, 3, 0)),
-         ("Current", "percent")]),
-    ("Damage minimum", "Mimimum damage you do on each hit", "Brawn",
-        [("Minimum", "linear", (1, 0))]),
-    ("Damage maximum", "Maximum damage you do on each hit", "Brawn",
-        [("Minimum", "linear", (2, 0))]),
-    ("Speed", "How fast you attack", "Quickness",
-        [("Speed", "linear", (0.03, 1, 2))]),
-    ("Accuracy", "The chance of your attacks hitting their target.",
-        "Agility",
-        [("Accuracy", "root", (35, 0))]),
-    ("First strike", "Chance to strike first", "Quickness",
-        [("Chance", "root", (0, 0))]),
-    ("Killshot", "Ability to hit enemies in their weak spot", "Agility",
-        [("Chance", "root", (0, 0)),
-         ("Modifier", "linear", (0.1, 1, 1))]),
-    ("Defence", "Damage reduction", "Resilience",
-        [("Modifier", "root", (0, 0))]),
-    ("Evade", "Chance to dodge", "Quickness",
-        [("Chance", "root", (5, 0))]),
-    ("Parry", "Chance to parry", "Quickness",
-        [("Chance", "root", (2, 0))]),
-    ("Flee", "Chance to run from a battle", "Quickness",
-        [("Chance", "root", (7, 0))]),
-    ("Riposte", "Chance to riposte an enemy attack", "Agility",
-        [("Chance", "root", (0, 0))]),
-    ("Fatigue", "How quickly you tire in combat", "Resilience",
-        [("Maximum", "linear", (1, 5, 0)),
-         ("Current", "percent")]),
-    ("Block", "Ability to block if a shield is equipped", "Resilience",
-        [("Chance", "root", (0, 0)),
-         ("Modifier", "root", (0, 0))]),
-    ("Stealth", "Chance to avoid detection", "Agility",
-        [("Chance", "root", (3, 0))]),
-    ("Pickpocketing", "Skill at stealing from others", "Agility",
-        [("Chance", "root", (1, 0))]),
-    ("Faith", "Strength of spells you cast", "Divinity",
-        [("Modifier", "linear", (0.1, 1, 0))]),
-    ("Sanctity", "Amount of sanctity you can have", "Divinity",
-        [("Maximum", "linear", (3, 0, 0)),
-         ("Current", "percent")]),
-    ("Resist holy", "Ability to resist holy damage", "Divinity",
-        [("Modifier", "root", (0, 0))]),
-    ("Bartering", "Discount from negotiating prices", "Charisma",
-        [("Modifier", "linear", (-0.05, 1, 0))]),
-    ("Oration", "Proficiency in speaking to others", "Charisma",
-        [("Modifier", "root", (11, 0))]),
-    ("Charm", "How quickly other people will like you", "Charisma",
-        [("Modifier", "root", (3, 0))]),
-    ("Trustworthiness", "How much other players trust you", "Charisma",
-        [("Modifier", "root", (0, 0))]),
-    ("Renown", "How much your actions affect your reputation", "Charisma",
-        [("Modifier", "linear", (0.1, 1, 0))]),
-    ("Knowledge", "Ability to understand", "Intellect",
-        [("Modifier", "root", (6, 0))]),
-    ("Literacy", "Ability to read", "Intellect",
-        [("Modifier", "root", (0, 0))]),
-    ("Understanding", "How quickly you level up", "Intellect",
-        [("Modifier", "linear", (0.05, 1, 0))]),
-    ("Luckiness", "Chance to have things turn your way against all odds",
-        "Fortuity",
-        [("Chance", "linear", (0.01, 0, 0))]),
-    ("Adventuring", "Chance to discover treasure", "Fortuity",
-        [("Chance", "root", (0, 0))]),
-    ("Logistics",  "How far you can move on the map", "Pathfinding",
-        [("Modifier", "linear", (0.2, 1, 0))]),
-    ("Mountaineering", "Modifier for mountain movement", "Pathfinding",
-        [("Modifier", "linear", (0.5, 1, 0))]),
-    ("Woodsman", "Modifier for forest movement", "Pathfinding",
-        [("Modifier", "linear", (.5, 1, 0))]),
-    ("Navigator", "Modifier for water movement", "Pathfinding",
-        [("Modifier", "linear", (.5, 1, 0))]),
-    ("Detection", "Chance to discover enemy stealth and traps", "Survivalism",
-        [("Chance", "root", (0, 0))]),
-    ("Caution",  "See information about a new grid before going there",
-        "Survivalism",
-        [("Ability", "linear", (0.5, 0.5, 0))]),
-    ("Explorer", "Additional options on the map, such as foraging",
-        "Survivalism",
-        [("Ability", "linear", (0.5, 0.5, 0))]),
-    ("Huntsman", "Learn additional information about enemies",
-        "Survivalism",
-        [("Ability", "linear", (0.5, 0.5, 0))]),
-    ("Survivalist", "Create bandages, tents, and other useful objects",
-        "Survivalism",
-        [("Ability", "linear", (0.5, 0.5, 0))]),
-    ("Resist frost", "Ability to resist frost damage", "Resilience",
-        [("Modifier", "root", (0, 0))]),
-    ("Resist flame", "Ability to resist flame damage", "Resilience",
-        [("Modifier", "root", (0, 0))]),
-    ("Resist shadow", "Ability to resist shadow damage", "Resilience",
-        [("Modifier", "root", (0, 0))]),
-    ("Resist poison", "Ability to resist poison damage", "Resilience",
-        [("Modifier", "root", (0, 0))]),
-    ("Resist blunt", "Ability to resist blunt damage", "Resilience",
-        [("Modifier", "root", (0, 0))]),
-    ("Resist slashing", "Ability to resist slashing damage", "Resilience",
-        [("Modifier", "root", (0, 0))]),
-    ("Resist piercing", "Ability to resist piercing damage", "Resilience",
-        [("Modifier", "root", (0, 0))]),
-    ("Courage", "Your ability to overcome fears", "Willpower",
-        [("Skill", "linear", (1, 0, 0))]),
-    ("Sanity", "Your ability to resist mind altering affects", "Willpower",
-        [("Skill", "linear", (1, 0, 0))]),
+    ("Health", "Your health is a measure of how alive your character is. When your health reahes zero, you become unconscious.", "Vitality", ["linear", 5, 2, 0], False),
+    ("Regeneration", "How many health points you recover each day.", "Vitality", ["linear", 1, 0.5, 0], False),
+    ("Recovery", "How quickly you recover from poisons and negative effects.", "Vitality", ["linear", 1, 0], False),
+    ("Climbing", "The difficulty of objects of which you are able to climb.", "Agility", ["linear", 0, 0, 0], False),
+    ("Storage", "The amount of weight that you can carry.", "Brawn", ["linear", 10, 3, 0], False),
+    ("Encumbrance", "How much your are slowed down in combat by your equipment.", "Brawn", ["linear", 100, -1, 0], False),
+    ("Endurance", "Number of actions you can perform each day.", "Resilience", ["linear", 3, 0.5, 0], False),
+    ("Damage minimum", "Mimimum damage you do on each hit", "Brawn", ["linear", 1, 1, 0], False),
+    ("Damage maximum", "Maximum damage you do on each hit", "Brawn", ["linear", 1, 1, 0], False),
+    ("Speed", "How fast you attack", "Quickness", ["linear", 1, 1, 0], False),
+    ("Accuracy", "The chance of your attacks hitting their target.", "Agility", ["linear", 1, 1, 0], False),
+    ("First strike", "Chance to strike first", "Quickness", ["linear", 1, 1, 0], False),
+    ("Killshot", "Ability to hit enemies in their weak spot", "Agility", ["linear", 1, 1, 0], False),
+    ("Defence", "Damage reduction", "Resilience", ["linear", 1, 1, 0], False),
+    ("Evade", "Chance to dodge", "Quickness", ["linear", 1, 1, 0], False),
+    ("Parry", "Chance to parry", "Quickness", ["linear", 1, 1, 0], False),
+    ("Flee", "Chance to run from a battle", "Quickness", ["linear", 1, 1, 0], False),
+    ("Riposte", "Chance to riposte an enemy attack", "Agility", ["linear", 1, 1, 0], False),
+    ("Fatigue", "How quickly you tire in combat", "Resilience", ["linear", 1, 1, 0], False),
+    ("Block", "Ability to block if a shield is equipped", "Resilience", ["linear", 1, 1, 0], False),
+    ("Stealth", "Chance to avoid detection", "Agility", ["linear", 1, 1, 0], False),
+    ("Pickpocketing", "Skill at stealing from others", "Agility", ["linear", 1, 1, 0], False),
+    ("Faith", "Strength of spells you cast", "Divinity", ["linear", 1, 1, 0], False),
+    ("Sanctity", "Amount of sanctity you can have", "Divinity", ["linear", 1, 1, 0], False),
+    ("Resist holy", "Ability to resist holy damage", "Divinity", ["linear", 1, 1, 0], False),
+    ("Bartering", "Discount from negotiating prices", "Charisma", ["linear", 1, 1, 0], False),
+    ("Oration", "Proficiency in speaking to others", "Charisma", ["linear", 1, 1, 0], False),
+    ("Charm", "How quickly other people will like you", "Charisma", ["linear", 1, 1, 0], False),
+    ("Trustworthiness", "How much other players trust you", "Charisma", ["linear", 1, 1, 0], False),
+    ("Renown", "How much your actions affect your reputation", "Charisma", ["linear", 1, 1, 0], False),
+    ("Knowledge", "Ability to understand", "Intellect", ["linear", 1, 1, 0], False),
+    ("Literacy", "Ability to read", "Intellect", ["linear", 1, 1, 0], False),
+    ("Understanding", "How quickly you level up.", "Intellect", ["linear", 0, 2, 0], False),
+    ("Luckiness", "Chance to have things turn your way against all odds", "Fortuity", ["linear", 1, 1, 0], False),
+    ("Adventuring", "Chance to discover treasure", "Fortuity", ["linear", 1, 1, 0], False),
+    ("Logistics",  "How far you can move on the map", "Pathfinding", ["linear", 1, 1, 0], False),
+    ("Mountaineering", "Modifier for mountain movement", "Pathfinding", ["linear", 1, 1, 0], False),
+    ("Woodsman", "Modifier for forest movement", "Pathfinding", ["linear", 1, 1, 0], False),
+    ("Navigator", "Modifier for water movement", "Pathfinding", ["linear", 1, 1, 0], False),
+    ("Detection", "Chance to discover enemy stealth and traps", "Survivalism", ["linear", 1, 1, 0], False),
+    ("Caution",  "See information about a new grid before going there", "Survivalism", ["linear", 1, 1, 0], False),
+    ("Explorer", "Additional options on the map, such as foraging", "Survivalism", ["linear", 1, 1, 0], False),
+    ("Huntsman", "Learn additional information about enemies", "Survivalism", ["linear", 1, 1, 0], False),
+    ("Survivalist", "Create bandages, tents, and other useful objects", "Survivalism", ["linear", 1, 1, 0], False),
+    ("Resist frost", "Ability to resist frost damage", "Resilience", ["linear", 1, 1, 0], False),
+    ("Resist flame", "Ability to resist flame damage", "Resilience", ["linear", 1, 1, 0], False),
+    ("Resist shadow", "Ability to resist shadow damage", "Resilience", ["linear", 1, 1, 0], False),
+    ("Resist poison", "Ability to resist poison damage", "Resilience", ["linear", 1, 1, 0], False),
+    ("Resist blunt", "Ability to resist blunt damage", "Resilience", ["linear", 1, 1, 0], False),
+    ("Resist slashing", "Ability to resist slashing damage", "Resilience", ["linear", 1, 1, 0], False),
+    ("Resist piercing", "Ability to resist piercing damage", "Resilience", ["linear", 1, 1, 0], False),
+    ("Courage", "Your ability to overcome fears", "Willpower", ["linear", 1, 1, 0], False),
+    ("Sanity", "Your ability to resist mind altering affects", "Willpower", ["linear", 1, 1, 0], False)
 ]
 ALL_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'Damage maximum', 'Damage minimum', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'First strike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Regeneration', 'Renown', 'Resist blunt', 'Resist flame', 'Resist frost', 'Resist holy', 'Resist piercing', 'Resist poison', 'Resist shadow', 'Resist slashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stealth', 'Storage', 'Survivalist', 'Trustworthiness', 'Understanding', 'Woodsman']
 ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'bartering', 'block', 'caution', 'charm', 'climbing', 'courage', 'damage_maximum', 'damage_minimum', 'defence', 'detection', 'encumbrance', 'endurance', 'evade', 'explorer', 'faith', 'fatigue', 'first_strike', 'flee', 'health', 'huntsman', 'killshot', 'knowledge', 'literacy', 'logistics', 'luckiness', 'mountaineering', 'navigator', 'oration', 'parry', 'pickpocketing', 'recovery', 'regeneration', 'renown', 'resist_blunt', 'resist_flame', 'resist_frost', 'resist_holy', 'resist_piercing', 'resist_poison', 'resist_shadow', 'resist_slashing', 'riposte', 'sanctity', 'sanity', 'speed', 'stealth', 'storage', 'survivalist', 'trustworthiness', 'understanding', 'woodsman']
@@ -269,9 +205,10 @@ class Health(Proficiency):
 
     def __init__(self, *args, base=5, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How much you can take before you die"
+        self.description = "Your health is a measure of how alive your character is. When your health reahes zero, you become unconscious."
         self.attribute_type = "Vitality"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Health's attributes and tooltip variable.
@@ -284,10 +221,10 @@ class Health(Proficiency):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -298,25 +235,26 @@ class Regeneration(Proficiency):
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How quickly your wounds heal"
+        self.description = "How many health points you recover each day."
         self.attribute_type = "Vitality"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Regeneration's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 2)
+        return round(0.5 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -325,27 +263,28 @@ class Recovery(Proficiency):
         'polymorphic_identity': "Recovery"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How quickly you recover from poisons and negative effects"
+        self.description = "How quickly you recover from poisons and negative effects."
         self.attribute_type = "Vitality"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Recovery's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(0 * self.level, )
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -354,27 +293,28 @@ class Climbing(Proficiency):
         'polymorphic_identity': "Climbing"
     }
 
-    def __init__(self, *args, base=0.5, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Your ability to climb obstacles"
+        self.description = "The difficulty of objects of which you are able to climb."
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Climbing's attributes and tooltip variable.
         """
 
-        return round(0.5 * self.level, 1)
+        return round(0 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -385,25 +325,26 @@ class Storage(Proficiency):
 
     def __init__(self, *args, base=10, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Your carrying capacity"
+        self.description = "The amount of weight that you can carry."
         self.attribute_type = "Brawn"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Storage's attributes and tooltip variable.
         """
 
-        return round(2 * self.level, 0)
+        return round(3 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -412,27 +353,28 @@ class Encumbrance(Proficiency):
         'polymorphic_identity': "Encumbrance"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=100, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How much your are slowed down in combat by your equipment"
+        self.description = "How much your are slowed down in combat by your equipment."
         self.attribute_type = "Brawn"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Encumbrance's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(-1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -443,25 +385,26 @@ class Endurance(Proficiency):
 
     def __init__(self, *args, base=3, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Actions performed each day"
+        self.description = "Number of actions you can perform each day."
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Endurance's attributes and tooltip variable.
         """
 
-        return round(1 * self.level, 0)
+        return round(0.5 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -475,22 +418,23 @@ class DamageMinimum(Proficiency):
         self.description = "Mimimum damage you do on each hit"
         self.attribute_type = "Brawn"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update DamageMinimum's attributes and tooltip variable.
         """
 
-        return round(1 * self.level, )
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -499,27 +443,28 @@ class DamageMaximum(Proficiency):
         'polymorphic_identity': "DamageMaximum"
     }
 
-    def __init__(self, *args, base=2, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Maximum damage you do on each hit"
         self.attribute_type = "Brawn"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update DamageMaximum's attributes and tooltip variable.
         """
 
-        return round(2 * self.level, )
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -533,22 +478,23 @@ class Speed(Proficiency):
         self.description = "How fast you attack"
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Speed's attributes and tooltip variable.
         """
 
-        return round(0.03 * self.level, 2)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -557,27 +503,28 @@ class Accuracy(Proficiency):
         'polymorphic_identity': "Accuracy"
     }
 
-    def __init__(self, *args, base=35, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "The chance of your attacks hitting their target."
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Accuracy's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -586,27 +533,28 @@ class FirstStrike(Proficiency):
         'polymorphic_identity': "FirstStrike"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to strike first"
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update FirstStrike's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -615,27 +563,28 @@ class Killshot(Proficiency):
         'polymorphic_identity': "Killshot"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to hit enemies in their weak spot"
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Killshot's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -644,27 +593,28 @@ class Defence(Proficiency):
         'polymorphic_identity': "Defence"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Damage reduction"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Defence's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -673,27 +623,28 @@ class Evade(Proficiency):
         'polymorphic_identity': "Evade"
     }
 
-    def __init__(self, *args, base=5, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to dodge"
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Evade's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -702,27 +653,28 @@ class Parry(Proficiency):
         'polymorphic_identity': "Parry"
     }
 
-    def __init__(self, *args, base=2, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to parry"
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Parry's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -731,27 +683,28 @@ class Flee(Proficiency):
         'polymorphic_identity': "Flee"
     }
 
-    def __init__(self, *args, base=7, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to run from a battle"
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Flee's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -760,27 +713,28 @@ class Riposte(Proficiency):
         'polymorphic_identity': "Riposte"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to riposte an enemy attack"
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Riposte's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -789,11 +743,12 @@ class Fatigue(Proficiency):
         'polymorphic_identity': "Fatigue"
     }
 
-    def __init__(self, *args, base=5, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How quickly you tire in combat"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Fatigue's attributes and tooltip variable.
@@ -806,10 +761,10 @@ class Fatigue(Proficiency):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -818,17 +773,18 @@ class Block(Proficiency):
         'polymorphic_identity': "Block"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to block if a shield is equipped"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Block's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     def check_shield(self, hero):
         if hero.inventory.left_hand is None or hero.inventory.left_hand.type != "Shield":
@@ -842,10 +798,10 @@ class Block(Proficiency):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -854,27 +810,28 @@ class Stealth(Proficiency):
         'polymorphic_identity': "Stealth"
     }
 
-    def __init__(self, *args, base=3, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to avoid detection"
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Stealth's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -888,22 +845,23 @@ class Pickpocketing(Proficiency):
         self.description = "Skill at stealing from others"
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Pickpocketing's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -917,22 +875,23 @@ class Faith(Proficiency):
         self.description = "Strength of spells you cast"
         self.attribute_type = "Divinity"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Faith's attributes and tooltip variable.
         """
 
-        return round(0.1 * self.level, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -941,27 +900,28 @@ class Sanctity(Proficiency):
         'polymorphic_identity': "Sanctity"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Amount of sanctity you can have"
         self.attribute_type = "Divinity"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Sanctity's attributes and tooltip variable.
         """
 
-        return round(3 * self.level, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -970,27 +930,28 @@ class ResistHoly(Proficiency):
         'polymorphic_identity': "ResistHoly"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist holy damage"
         self.attribute_type = "Divinity"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update ResistHoly's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1004,22 +965,23 @@ class Bartering(Proficiency):
         self.description = "Discount from negotiating prices"
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Bartering's attributes and tooltip variable.
         """
 
-        return round(-0.05 * self.level, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1028,27 +990,28 @@ class Oration(Proficiency):
         'polymorphic_identity': "Oration"
     }
 
-    def __init__(self, *args, base=11, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Proficiency in speaking to others"
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Oration's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1057,27 +1020,28 @@ class Charm(Proficiency):
         'polymorphic_identity': "Charm"
     }
 
-    def __init__(self, *args, base=3, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How quickly other people will like you"
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Charm's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1086,27 +1050,28 @@ class Trustworthiness(Proficiency):
         'polymorphic_identity': "Trustworthiness"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How much other players trust you"
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Trustworthiness's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1120,22 +1085,23 @@ class Renown(Proficiency):
         self.description = "How much your actions affect your reputation"
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Renown's attributes and tooltip variable.
         """
 
-        return round(0.1 * self.level, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1144,27 +1110,28 @@ class Knowledge(Proficiency):
         'polymorphic_identity': "Knowledge"
     }
 
-    def __init__(self, *args, base=6, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to understand"
         self.attribute_type = "Intellect"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Knowledge's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1173,27 +1140,28 @@ class Literacy(Proficiency):
         'polymorphic_identity': "Literacy"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to read"
         self.attribute_type = "Intellect"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Literacy's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1202,27 +1170,28 @@ class Understanding(Proficiency):
         'polymorphic_identity': "Understanding"
     }
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How quickly you level up"
+        self.description = "How quickly you level up."
         self.attribute_type = "Intellect"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Understanding's attributes and tooltip variable.
         """
 
-        return round(0.05 * self.level, 0)
+        return round(2 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1231,27 +1200,28 @@ class Luckiness(Proficiency):
         'polymorphic_identity': "Luckiness"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to have things turn your way against all odds"
         self.attribute_type = "Fortuity"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Luckiness's attributes and tooltip variable.
         """
 
-        return round(0.01 * self.level, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1260,27 +1230,28 @@ class Adventuring(Proficiency):
         'polymorphic_identity': "Adventuring"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to discover treasure"
         self.attribute_type = "Fortuity"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Adventuring's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1294,22 +1265,23 @@ class Logistics(Proficiency):
         self.description = "How far you can move on the map"
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Logistics's attributes and tooltip variable.
         """
 
-        return round(0.2 * self.level, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1323,22 +1295,23 @@ class Mountaineering(Proficiency):
         self.description = "Modifier for mountain movement"
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Mountaineering's attributes and tooltip variable.
         """
 
-        return round(0.5 * self.level, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1352,22 +1325,23 @@ class Woodsman(Proficiency):
         self.description = "Modifier for forest movement"
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Woodsman's attributes and tooltip variable.
         """
 
-        return round(0.5 * self.level, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1381,22 +1355,23 @@ class Navigator(Proficiency):
         self.description = "Modifier for water movement"
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Navigator's attributes and tooltip variable.
         """
 
-        return round(0.5 * self.level, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1405,27 +1380,28 @@ class Detection(Proficiency):
         'polymorphic_identity': "Detection"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to discover enemy stealth and traps"
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Detection's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1434,27 +1410,28 @@ class Caution(Proficiency):
         'polymorphic_identity': "Caution"
     }
 
-    def __init__(self, *args, base=0.5, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "See information about a new grid before going there"
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Caution's attributes and tooltip variable.
         """
 
-        return round(0.5 * self.level, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1463,27 +1440,28 @@ class Explorer(Proficiency):
         'polymorphic_identity': "Explorer"
     }
 
-    def __init__(self, *args, base=0.5, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Additional options on the map, such as foraging"
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Explorer's attributes and tooltip variable.
         """
 
-        return round(0.5 * self.level, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1492,27 +1470,28 @@ class Huntsman(Proficiency):
         'polymorphic_identity': "Huntsman"
     }
 
-    def __init__(self, *args, base=0.5, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Learn additional information about enemies"
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Huntsman's attributes and tooltip variable.
         """
 
-        return round(0.5 * self.level, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1521,27 +1500,28 @@ class Survivalist(Proficiency):
         'polymorphic_identity': "Survivalist"
     }
 
-    def __init__(self, *args, base=0.5, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Create bandages, tents, and other useful objects"
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Survivalist's attributes and tooltip variable.
         """
 
-        return round(0.5 * self.level, 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1550,27 +1530,28 @@ class ResistFrost(Proficiency):
         'polymorphic_identity': "ResistFrost"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist frost damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update ResistFrost's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1579,27 +1560,28 @@ class ResistFlame(Proficiency):
         'polymorphic_identity': "ResistFlame"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist flame damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update ResistFlame's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1608,27 +1590,28 @@ class ResistShadow(Proficiency):
         'polymorphic_identity': "ResistShadow"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist shadow damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update ResistShadow's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1637,27 +1620,28 @@ class ResistPoison(Proficiency):
         'polymorphic_identity': "ResistPoison"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist poison damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update ResistPoison's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1666,27 +1650,28 @@ class ResistBlunt(Proficiency):
         'polymorphic_identity': "ResistBlunt"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist blunt damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update ResistBlunt's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1695,27 +1680,28 @@ class ResistSlashing(Proficiency):
         'polymorphic_identity': "ResistSlashing"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist slashing damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update ResistSlashing's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1724,27 +1710,28 @@ class ResistPiercing(Proficiency):
         'polymorphic_identity': "ResistPiercing"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist piercing damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update ResistPiercing's attributes and tooltip variable.
         """
 
-        return round((100 * self.level)**0.5 - (self.level / 4), 0)
+        return round(1 * self.level, 0)
 
     @property
     def current_tootip(self):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1753,11 +1740,12 @@ class Courage(Proficiency):
         'polymorphic_identity': "Courage"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Your ability to overcome fears"
         self.attribute_type = "Willpower"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Courage's attributes and tooltip variable.
@@ -1770,10 +1758,10 @@ class Courage(Proficiency):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
@@ -1782,11 +1770,12 @@ class Sanity(Proficiency):
         'polymorphic_identity': "Sanity"
     }
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Your ability to resist mind altering affects"
         self.attribute_type = "Willpower"
         self.error = "You do not have enough {}".format(self.attribute_type)
+        self.hidden = False
 
     def scale_by_level(self):
         """Update Sanity's attributes and tooltip variable.
@@ -1799,10 +1788,10 @@ class Sanity(Proficiency):
         """Create a tooltip for each variable.
         """
 
-        tooltip = """{% for attrib in ['name', 'level', 'base', 'modifier', 'current', 'get_final()', 'get_percent()'] %}
-                {% if attrib == 'name' %}<h1>{{ getattr(prof, attrib, "Proficiency error").title() }}</h1>{% else %}
-                <li>{{ attrib }}: {{ getattr(prof, attrib, "Proficiency error") }}</li>{% endif %}
-        {% endfor %}"""
+        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}
+                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
         return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
