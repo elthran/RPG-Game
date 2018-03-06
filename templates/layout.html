@@ -22,7 +22,7 @@
                 <span style="width:{{ hero.get_summed_proficiencies('health').percent }}%"></span>
             </div>
         </div>
-        {% if hero.get_summed_proficiencies('sanctity').get_final() %}
+        {% if hero.get_summed_proficiencies('sanctity').final %}
         <div class="sideBarProgressDiv">Sanctity:
             <div class="sideBarProgressMeter sidebarSanctity">
                 <span style="width:{{ hero.get_summed_proficiencies('sanctity').percent }}%"></span>

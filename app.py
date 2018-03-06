@@ -1048,20 +1048,20 @@ def arena(name='', hero=None, location=None):
     conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
                     ("Level: ", str(game.enemy.level), "Combat Details"),
                     ("Health: ", str(profs.health.get_base()) + " / " + str(
-                        profs.health.get_final())),
-                    ("Damage: ", str(profs.damage.get_final()) + " - " + str(
-                        profs.damage.get_final())),
-                    ("Attack Speed: ", str(profs.speed.get_final())),
-                    ("Accuracy: ", str(profs.accuracy.get_final()) + "%"),
-                    ("First Strike: ", str(profs.first_strike.get_final()) + "%"),
-                    ("Critical Hit Chance: ", str(profs.killshot.get_final()) + "%"),
-                    ("Critical Hit Modifier: ", str(profs.killshot.get_final())),
-                    ("Defence: ", str(profs.defence.get_final()) + "%"),
-                    ("Evade: ", str(profs.evade.get_final()) + "%"),
-                    ("Parry: ", str(profs.parry.get_final()) + "%"),
-                    ("Riposte: ", str(profs.riposte.get_final()) + "%"),
-                    ("Block Chance: ", str(profs.block.get_final()) + "%"),
-                    ("Block Reduction: ", str(profs.block.get_final()) + "%")]
+                        profs.health.final)),
+                    ("Damage: ", str(profs.damage.final) + " - " + str(
+                        profs.damage.final)),
+                    ("Attack Speed: ", str(profs.speed.final)),
+                    ("Accuracy: ", str(profs.accuracy.final) + "%"),
+                    ("First Strike: ", str(profs.first_strike.final) + "%"),
+                    ("Critical Hit Chance: ", str(profs.killshot.final) + "%"),
+                    ("Critical Hit Modifier: ", str(profs.killshot.final)),
+                    ("Defence: ", str(profs.defence.final) + "%"),
+                    ("Evade: ", str(profs.evade.final) + "%"),
+                    ("Parry: ", str(profs.parry.final) + "%"),
+                    ("Riposte: ", str(profs.riposte.final) + "%"),
+                    ("Block Chance: ", str(profs.block.final) + "%"),
+                    ("Block Reduction: ", str(profs.block.final) + "%")]
     page_links = [("Challenge the enemy to a ", "/battle/monster", "fight", "."),
                   ("Go back to the ", "/barracks/Barracks", "Barracks", ".")]
     return render_template(

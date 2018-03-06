@@ -48,62 +48,62 @@ Prof_Name, Prof_Descr, Prof_Attrib, [Formula_Type, Base_Value, Weight, # of Deci
 from build_code import normalize_attrib_name
 
 PROFICIENCY_INFORMATION = [
-    ("Health", "Your health is a measure of how alive your character is. When your health reahes zero, you become unconscious.", "Vitality", ["linear", 5, 2, 0], False, False),
-    ("Regeneration", "How many health points you recover each day.", "Vitality", ["linear", 1, 0.5, 0], False, False),
-    ("Recovery", "How quickly you recover from poisons and negative effects.", "Vitality", ["linear", 1, 0, 0], False, False),
-    ("Climbing", "The difficulty of objects of which you are able to climb.", "Agility", ["linear", 0, 0, 0], False, False),
-    ("Storage", "The amount of weight that you can carry.", "Brawn", ["linear", 10, 3, 0], False, False),
-    ("Encumbrance", "How much your are slowed down in combat by your equipment.", "Brawn", ["linear", 100, -1, 0], False, False),
-    ("Endurance", "Number of actions you can perform each day.", "Resilience", ["linear", 3, 0.5, 0], False, False),
-    ("Damage minimum", "Mimimum damage you do on each hit", "Brawn", ["linear", 1, 1, 0], False, False),
-    ("Damage maximum", "Maximum damage you do on each hit", "Brawn", ["linear", 1, 1, 0], False, False),
-    ("Speed", "How fast you attack", "Quickness", ["linear", 1, 0.05, 2], False, False),
-    ("Accuracy", "The chance of your attacks hitting their target.", "Agility", ["linear", 1, 1, 0], False, True),
-    ("First strike", "Chance to strike first", "Quickness", ["linear", 1, 1, 0], False, True),
-    ("Killshot", "Ability to hit enemies in their weak spot", "Agility", ["linear", 1, 1, 0], False, False),
-    ("Defence", "Amount of all damage reduced.", "Resilience", ["linear", 0, 1, 0], False, True),
-    ("Armour", "Amount of physical damage reduced.", "Resilience", ["linear", 0, 1, 0], False, True),
-    ("Evade", "Chance to dodge", "Quickness", ["linear", 1, 1, 0], False, True),
-    ("Parry", "Chance to parry", "Quickness", ["linear", 1, 1, 0], False, True),
-    ("Flee", "Chance to run from a battle", "Quickness", ["linear", 1, 1, 0], False, True),
-    ("Riposte", "Chance to riposte an enemy attack", "Agility", ["linear", 1, 1, 0], False, True),
-    ("Fatigue", "How quickly you tire in combat", "Resilience", ["linear", 1, 1, 0], False, False),
-    ("Block", "Ability to block if a shield is equipped", "Resilience", ["linear", 1, 1, 0], False, False),
-    ("Stealth", "Chance to avoid detection", "Agility", ["linear", 1, 1, 0], False, True),
-    ("Pickpocketing", "Skill at stealing from others", "Agility", ["linear", 1, 1, 0], False, False),
-    ("Faith", "Strength of spells you cast", "Divinity", ["linear", 1, 1, 0], False, False),
-    ("Sanctity", "Amount of sanctity you can have", "Divinity", ["linear", 1, 1, 0], False, False),
-    ("Redemption", "Amount of sanctity you recover each day", "Divinity", ["linear", 0, 0.5, 1], False, False),
-    ("Resist holy", "Ability to resist holy damage", "Divinity", ["linear", 1, 1, 0], False, False),
-    ("Bartering", "Discount from negotiating prices", "Charisma", ["linear", 1, 1, 0], False, False),
-    ("Oration", "Proficiency in speaking to others", "Charisma", ["linear", 1, 1, 0], False, False),
-    ("Charm", "How quickly other people will like you", "Charisma", ["linear", 1, 1, 0], False, False),
-    ("Trustworthiness", "How much other players trust you", "Charisma", ["linear", 1, 1, 0], False, False),
-    ("Renown", "How much your actions affect your reputation", "Charisma", ["linear", 1, 1, 0], False, False),
-    ("Knowledge", "Ability to understand", "Intellect", ["linear", 1, 1, 0], False, False),
-    ("Literacy", "Ability to read", "Intellect", ["linear", 1, 1, 0], False, False),
-    ("Understanding", "How much more quickly you level up.", "Intellect", ["linear", 0, 2, 0], False, True),
-    ("Luckiness", "Chance to have things turn your way against all odds", "Fortuity", ["linear", 1, 1, 0], False, True),
-    ("Adventuring", "Chance to discover treasure", "Fortuity", ["linear", 1, 1, 0], False, False),
-    ("Logistics",  "How far you can move on the map", "Pathfinding", ["linear", 1, 1, 0], False, False),
-    ("Mountaineering", "Modifier for mountain movement", "Pathfinding", ["linear", 1, 1, 0], False, False),
-    ("Woodsman", "Modifier for forest movement", "Pathfinding", ["linear", 1, 1, 0], False, False),
-    ("Navigator", "Modifier for water movement", "Pathfinding", ["linear", 1, 1, 0], False, False),
-    ("Detection", "Chance to discover enemy stealth and traps", "Survivalism", ["linear", 1, 1, 0], False, True),
-    ("Caution",  "See information about a new grid before going there", "Survivalism", ["linear", 1, 1, 0], False, False),
-    ("Explorer", "Additional options on the map, such as foraging", "Survivalism", ["linear", 1, 1, 0], False, False),
-    ("Huntsman", "Learn additional information about enemies", "Survivalism", ["linear", 1, 1, 0], False, False),
-    ("Survivalist", "Create bandages, tents, and other useful objects", "Survivalism", ["linear", 1, 1, 0], False, False),
-    ("Resist frost", "Ability to resist frost damage", "Resilience", ["linear", 1, 1, 0], False, True),
-    ("Resist flame", "Ability to resist flame damage", "Resilience", ["linear", 1, 1, 0], False, True),
-    ("Resist shadow", "Ability to resist shadow damage", "Resilience", ["linear", 1, 1, 0], False, True),
-    ("Resist poison", "Ability to resist poison damage", "Resilience", ["linear", 1, 1, 0], False, True),
-    ("Resist blunt", "Ability to resist blunt damage", "Resilience", ["linear", 1, 1, 0], False, True),
-    ("Resist slashing", "Ability to resist slashing damage", "Resilience", ["linear", 1, 1, 0], False, True),
-    ("Resist piercing", "Ability to resist piercing damage", "Resilience", ["linear", 1, 1, 0], False, True),
-    ("Courage", "Your ability to overcome fears", "Willpower", ["linear", 1, 1, 0], False, False),
-    ("Sanity", "Your ability to resist mind altering affects", "Willpower", ["linear", 1, 1, 0], False, False),
-    ("Thorns", "Amount of damage that attackers take.", None, ["linear", 0, 0, 0], False, False)
+    ("Health", "When your health reahes zero you fall unconscious.", "Vitality", ["linear", 5, 2, 0], False),
+    ("Regeneration", "How many health points you recover each day.", "Vitality", ["linear", 1, 0.5, 1], False),
+    ("Recovery", "How quickly you recover from poisons and negative effects.", "Vitality", ["linear", 1, 0, 0], False),
+    ("Climbing", "The difficulty of objects of which you are able to climb.", "Agility", ["linear", 0, 0, 0], False),
+    ("Storage", "The amount of weight that you can carry.", "Brawn", ["linear", 10, 3, 0], False),
+    ("Encumbrance", "How much your are slowed down in combat by your equipment.", "Brawn", ["linear", 100, -1, 0], False),
+    ("Endurance", "Number of actions you can perform each day.", "Resilience", ["linear", 3, 0.5, 0], False),
+    ("Damage minimum", "Mimimum damage you do on each hit", "Brawn", ["linear", 1, 1, 0], False),
+    ("Damage maximum", "Maximum damage you do on each hit", "Brawn", ["linear", 1, 1, 0], False),
+    ("Speed", "How fast you attack", "Quickness", ["linear", 1, 0.05, 2], False),
+    ("Accuracy", "The chance of your attacks hitting their target.", "Agility", ["linear", 1, 1, 0], True),
+    ("First strike", "Chance to strike first", "Quickness", ["linear", 1, 1, 0], True),
+    ("Killshot", "Ability to hit enemies in their weak spot", "Agility", ["linear", 1, 1, 0], False),
+    ("Defence", "Amount of all damage reduced.", "Resilience", ["linear", 0, 1, 0], True),
+    ("Armour", "Amount of physical damage reduced.", "Resilience", ["linear", 0, 1, 0], True),
+    ("Evade", "Chance to dodge", "Quickness", ["linear", 1, 1, 0], True),
+    ("Parry", "Chance to parry", "Quickness", ["linear", 1, 1, 0], True),
+    ("Flee", "Chance to run from a battle", "Quickness", ["linear", 1, 1, 0], True),
+    ("Riposte", "Chance to riposte an enemy attack", "Agility", ["linear", 1, 1, 0], True),
+    ("Fatigue", "How quickly you tire in combat", "Resilience", ["linear", 1, 1, 0], False),
+    ("Block", "Ability to block if a shield is equipped", "Resilience", ["linear", 1, 1, 0], False),
+    ("Stealth", "Chance to avoid detection", "Agility", ["linear", 1, 1, 0], True),
+    ("Pickpocketing", "Skill at stealing from others", "Agility", ["linear", 1, 1, 0], False),
+    ("Faith", "Strength of spells you cast", "Divinity", ["linear", 1, 1, 0], False),
+    ("Sanctity", "Amount of sanctity you can have", "Divinity", ["linear", 1, 1, 0], False),
+    ("Redemption", "Amount of sanctity you recover each day", "Divinity", ["linear", 0, 0.5, 1], False),
+    ("Resist holy", "Ability to resist holy damage", "Divinity", ["linear", 1, 1, 0], False),
+    ("Bartering", "Discount from negotiating prices", "Charisma", ["linear", 1, 1, 0], False),
+    ("Oration", "Proficiency in speaking to others", "Charisma", ["linear", 1, 1, 0], False),
+    ("Charm", "How quickly other people will like you", "Charisma", ["linear", 1, 1, 0], False),
+    ("Trustworthiness", "How much other players trust you", "Charisma", ["linear", 1, 1, 0], False),
+    ("Renown", "How much your actions affect your reputation", "Charisma", ["linear", 1, 1, 0], False),
+    ("Knowledge", "Ability to understand", "Intellect", ["linear", 1, 1, 0], False),
+    ("Literacy", "Ability to read", "Intellect", ["linear", 1, 1, 0], False),
+    ("Understanding", "How much more quickly you level up.", "Intellect", ["linear", 0, 2, 0], True),
+    ("Luckiness", "Chance to have things turn your way against all odds", "Fortuity", ["linear", 1, 1, 0], True),
+    ("Adventuring", "Chance to discover treasure", "Fortuity", ["linear", 1, 1, 0], False),
+    ("Logistics",  "How far you can move on the map", "Pathfinding", ["linear", 1, 1, 0], False),
+    ("Mountaineering", "Modifier for mountain movement", "Pathfinding", ["linear", 1, 1, 0], False),
+    ("Woodsman", "Modifier for forest movement", "Pathfinding", ["linear", 1, 1, 0], False),
+    ("Navigator", "Modifier for water movement", "Pathfinding", ["linear", 1, 1, 0], False),
+    ("Detection", "Chance to discover enemy stealth and traps", "Survivalism", ["linear", 1, 1, 0], True),
+    ("Caution",  "See information about a new grid before going there", "Survivalism", ["linear", 1, 1, 0], False),
+    ("Explorer", "Additional options on the map, such as foraging", "Survivalism", ["linear", 1, 1, 0], False),
+    ("Huntsman", "Learn additional information about enemies", "Survivalism", ["linear", 1, 1, 0], False),
+    ("Survivalist", "Create bandages, tents, and other useful objects", "Survivalism", ["linear", 1, 1, 0], False),
+    ("Resist frost", "Ability to resist frost damage", "Resilience", ["linear", 1, 1, 0], True),
+    ("Resist flame", "Ability to resist flame damage", "Resilience", ["linear", 1, 1, 0], True),
+    ("Resist shadow", "Ability to resist shadow damage", "Resilience", ["linear", 1, 1, 0], True),
+    ("Resist poison", "Ability to resist poison damage", "Resilience", ["linear", 1, 1, 0], True),
+    ("Resist blunt", "Ability to resist blunt damage", "Resilience", ["linear", 1, 1, 0], True),
+    ("Resist slashing", "Ability to resist slashing damage", "Resilience", ["linear", 1, 1, 0], True),
+    ("Resist piercing", "Ability to resist piercing damage", "Resilience", ["linear", 1, 1, 0], True),
+    ("Courage", "Your ability to overcome fears", "Willpower", ["linear", 1, 1, 0], False),
+    ("Sanity", "Your ability to resist mind altering affects", "Willpower", ["linear", 1, 1, 0], False),
+    ("Thorns", "Amount of damage that attackers take.", None, ["linear", 0, 0, 0], False, True)
 ]
 ALL_NAMES = ['Accuracy', 'Adventuring', 'Armour', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'Damage maximum', 'Damage minimum', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'First strike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'Resist blunt', 'Resist flame', 'Resist frost', 'Resist holy', 'Resist piercing', 'Resist poison', 'Resist shadow', 'Resist slashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stealth', 'Storage', 'Survivalist', 'Thorns', 'Trustworthiness', 'Understanding', 'Woodsman']
 ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'armour', 'bartering', 'block', 'caution', 'charm', 'climbing', 'courage', 'damage_maximum', 'damage_minimum', 'defence', 'detection', 'encumbrance', 'endurance', 'evade', 'explorer', 'faith', 'fatigue', 'first_strike', 'flee', 'health', 'huntsman', 'killshot', 'knowledge', 'literacy', 'logistics', 'luckiness', 'mountaineering', 'navigator', 'oration', 'parry', 'pickpocketing', 'recovery', 'redemption', 'regeneration', 'renown', 'resist_blunt', 'resist_flame', 'resist_frost', 'resist_holy', 'resist_piercing', 'resist_poison', 'resist_shadow', 'resist_slashing', 'riposte', 'sanctity', 'sanity', 'speed', 'stealth', 'storage', 'survivalist', 'thorns', 'trustworthiness', 'understanding', 'woodsman']
@@ -137,13 +137,13 @@ class Proficiency(TemplateMixin, Base):
 
     type_ = Column(String(50))
     name = Column(String(50))
-    hidden = Column(Boolean)
-    description = Column(String(200))
-    tooltip = Column(String(50))
     attribute_type = Column(String(50))
+    description = Column(String(200))
+    # tooltip = Column(String(50))
     next_value = Column(Integer)
     reason_for_zero = Column(String(50))    # Maybe remove
     current = Column(Integer)
+    hidden = Column(Boolean)
     error = Column(String(50))
 
     __mapper_args__ = {
@@ -154,12 +154,12 @@ class Proficiency(TemplateMixin, Base):
     def __init__(self, level=0, base=0, modifier=0, template=False):
         self.type_ = self.__class__.__name__
         self.name = normalize_attrib_name(self.type_)
-        self.tooltip = ""
+        # self.tooltip = ""
         self.level = level
         self.base = base
         self.modifier = modifier
         self.template = template
-        self.current = self.get_final()
+        self.current = self.final
 
     def build_new_from_template(self):
         if not self.template:
@@ -169,7 +169,7 @@ class Proficiency(TemplateMixin, Base):
 
     def level_up(self):
         self.level += 1
-        self.current = self.get_final()
+        self.current = self.final
 
     def scale_by_level(self):
         """Return some function of the level attribute.
@@ -184,35 +184,53 @@ class Proficiency(TemplateMixin, Base):
         "empty"
         return self.level  # Defaults to 0
 
-        NOTE: base value has now been moved to the get_final() function
+        NOTE: base value has now been moved to the final function
         """
         return self.level
 
-    def get_final(self):
+    @property
+    def final(self):
         """Return the scaled value + base + modifier percent."""
 
         return (self.scale_by_level() + self.base) * (self.modifier + 1)
 
-    def get_percent(self):
+    @property
+    def percent(self):
         """Return the percent of the current to the final value."""
         try:
-            return round(self.current / self.get_final(), 2) * 100
+            return round(self.current / self.final, 2) * 100
         except ZeroDivisionError:
             return 0
+
+    @property
+    def tooltip(self):
+        """Create a tooltip for each variable.
+        """
+
+        temp = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+<h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+<h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
+<h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
+        return render_template_string(temp, prof=self, getattr=getattr)
 
 
 class Health(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Health"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=5, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Your health is a measure of how alive your character is. When your health reahes zero, you become unconscious."
+        self.description = "When your health reahes zero you fall unconscious."
         self.attribute_type = "Vitality"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Health's attributes and tooltip variable.
@@ -220,61 +238,49 @@ class Health(Proficiency):
 
         return round(2 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Regeneration(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Regeneration"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How many health points you recover each day."
         self.attribute_type = "Vitality"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Regeneration's attributes and tooltip variable.
         """
 
-        return round(0.5 * self.level, 0)
-
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
+        return round(0.5 * self.level, 1)
 
 
 class Recovery(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Recovery"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How quickly you recover from poisons and negative effects."
         self.attribute_type = "Vitality"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Recovery's attributes and tooltip variable.
@@ -282,30 +288,24 @@ class Recovery(Proficiency):
 
         return round(0 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Climbing(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Climbing"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "The difficulty of objects of which you are able to climb."
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Climbing's attributes and tooltip variable.
@@ -313,30 +313,24 @@ class Climbing(Proficiency):
 
         return round(0 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Storage(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Storage"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=10, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "The amount of weight that you can carry."
         self.attribute_type = "Brawn"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Storage's attributes and tooltip variable.
@@ -344,30 +338,24 @@ class Storage(Proficiency):
 
         return round(3 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Encumbrance(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Encumbrance"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=100, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How much your are slowed down in combat by your equipment."
         self.attribute_type = "Brawn"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Encumbrance's attributes and tooltip variable.
@@ -375,30 +363,24 @@ class Encumbrance(Proficiency):
 
         return round(-1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Endurance(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Endurance"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=3, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Number of actions you can perform each day."
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Endurance's attributes and tooltip variable.
@@ -406,30 +388,24 @@ class Endurance(Proficiency):
 
         return round(0.5 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class DamageMinimum(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "DamageMinimum"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Mimimum damage you do on each hit"
         self.attribute_type = "Brawn"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update DamageMinimum's attributes and tooltip variable.
@@ -437,30 +413,24 @@ class DamageMinimum(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class DamageMaximum(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "DamageMaximum"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Maximum damage you do on each hit"
         self.attribute_type = "Brawn"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update DamageMaximum's attributes and tooltip variable.
@@ -468,30 +438,24 @@ class DamageMaximum(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Speed(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Speed"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How fast you attack"
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Speed's attributes and tooltip variable.
@@ -499,30 +463,24 @@ class Speed(Proficiency):
 
         return round(0.05 * self.level, 2)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Accuracy(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Accuracy"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "The chance of your attacks hitting their target."
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update Accuracy's attributes and tooltip variable.
@@ -530,30 +488,24 @@ class Accuracy(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class FirstStrike(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "FirstStrike"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to strike first"
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update FirstStrike's attributes and tooltip variable.
@@ -561,30 +513,24 @@ class FirstStrike(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Killshot(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Killshot"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to hit enemies in their weak spot"
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Killshot's attributes and tooltip variable.
@@ -592,30 +538,24 @@ class Killshot(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Defence(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Defence"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Amount of all damage reduced."
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update Defence's attributes and tooltip variable.
@@ -623,30 +563,24 @@ class Defence(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Armour(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Armour"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Amount of physical damage reduced."
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update Armour's attributes and tooltip variable.
@@ -654,30 +588,24 @@ class Armour(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Evade(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Evade"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to dodge"
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update Evade's attributes and tooltip variable.
@@ -685,30 +613,24 @@ class Evade(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Parry(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Parry"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to parry"
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update Parry's attributes and tooltip variable.
@@ -716,30 +638,24 @@ class Parry(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Flee(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Flee"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to run from a battle"
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update Flee's attributes and tooltip variable.
@@ -747,30 +663,24 @@ class Flee(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Riposte(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Riposte"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to riposte an enemy attack"
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update Riposte's attributes and tooltip variable.
@@ -778,30 +688,24 @@ class Riposte(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Fatigue(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Fatigue"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How quickly you tire in combat"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Fatigue's attributes and tooltip variable.
@@ -809,30 +713,24 @@ class Fatigue(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Block(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Block"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to block if a shield is equipped"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Block's attributes and tooltip variable.
@@ -847,30 +745,24 @@ class Block(Proficiency):
         else:
             self.reason_for_zero = ""
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Stealth(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Stealth"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to avoid detection"
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update Stealth's attributes and tooltip variable.
@@ -878,30 +770,24 @@ class Stealth(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Pickpocketing(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Pickpocketing"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Skill at stealing from others"
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Pickpocketing's attributes and tooltip variable.
@@ -909,30 +795,24 @@ class Pickpocketing(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Faith(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Faith"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Strength of spells you cast"
         self.attribute_type = "Divinity"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Faith's attributes and tooltip variable.
@@ -940,30 +820,24 @@ class Faith(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Sanctity(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Sanctity"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Amount of sanctity you can have"
         self.attribute_type = "Divinity"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Sanctity's attributes and tooltip variable.
@@ -971,30 +845,24 @@ class Sanctity(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Redemption(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Redemption"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Amount of sanctity you recover each day"
         self.attribute_type = "Divinity"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Redemption's attributes and tooltip variable.
@@ -1002,30 +870,24 @@ class Redemption(Proficiency):
 
         return round(0.5 * self.level, 1)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class ResistHoly(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "ResistHoly"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist holy damage"
         self.attribute_type = "Divinity"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update ResistHoly's attributes and tooltip variable.
@@ -1033,30 +895,24 @@ class ResistHoly(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Bartering(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Bartering"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Discount from negotiating prices"
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Bartering's attributes and tooltip variable.
@@ -1064,30 +920,24 @@ class Bartering(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Oration(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Oration"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Proficiency in speaking to others"
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Oration's attributes and tooltip variable.
@@ -1095,30 +945,24 @@ class Oration(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Charm(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Charm"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How quickly other people will like you"
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Charm's attributes and tooltip variable.
@@ -1126,30 +970,24 @@ class Charm(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Trustworthiness(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Trustworthiness"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How much other players trust you"
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Trustworthiness's attributes and tooltip variable.
@@ -1157,30 +995,24 @@ class Trustworthiness(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Renown(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Renown"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How much your actions affect your reputation"
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Renown's attributes and tooltip variable.
@@ -1188,30 +1020,24 @@ class Renown(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Knowledge(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Knowledge"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to understand"
         self.attribute_type = "Intellect"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Knowledge's attributes and tooltip variable.
@@ -1219,30 +1045,24 @@ class Knowledge(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Literacy(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Literacy"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to read"
         self.attribute_type = "Intellect"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Literacy's attributes and tooltip variable.
@@ -1250,30 +1070,24 @@ class Literacy(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Understanding(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Understanding"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How much more quickly you level up."
         self.attribute_type = "Intellect"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update Understanding's attributes and tooltip variable.
@@ -1281,30 +1095,24 @@ class Understanding(Proficiency):
 
         return round(2 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Luckiness(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Luckiness"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to have things turn your way against all odds"
         self.attribute_type = "Fortuity"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update Luckiness's attributes and tooltip variable.
@@ -1312,30 +1120,24 @@ class Luckiness(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Adventuring(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Adventuring"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to discover treasure"
         self.attribute_type = "Fortuity"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Adventuring's attributes and tooltip variable.
@@ -1343,30 +1145,24 @@ class Adventuring(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Logistics(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Logistics"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How far you can move on the map"
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Logistics's attributes and tooltip variable.
@@ -1374,30 +1170,24 @@ class Logistics(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Mountaineering(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Mountaineering"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Modifier for mountain movement"
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Mountaineering's attributes and tooltip variable.
@@ -1405,30 +1195,24 @@ class Mountaineering(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Woodsman(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Woodsman"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Modifier for forest movement"
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Woodsman's attributes and tooltip variable.
@@ -1436,30 +1220,24 @@ class Woodsman(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Navigator(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Navigator"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Modifier for water movement"
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Navigator's attributes and tooltip variable.
@@ -1467,30 +1245,24 @@ class Navigator(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Detection(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Detection"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to discover enemy stealth and traps"
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update Detection's attributes and tooltip variable.
@@ -1498,30 +1270,24 @@ class Detection(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Caution(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Caution"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "See information about a new grid before going there"
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Caution's attributes and tooltip variable.
@@ -1529,30 +1295,24 @@ class Caution(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Explorer(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Explorer"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Additional options on the map, such as foraging"
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Explorer's attributes and tooltip variable.
@@ -1560,30 +1320,24 @@ class Explorer(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Huntsman(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Huntsman"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Learn additional information about enemies"
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Huntsman's attributes and tooltip variable.
@@ -1591,30 +1345,24 @@ class Huntsman(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Survivalist(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Survivalist"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Create bandages, tents, and other useful objects"
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Survivalist's attributes and tooltip variable.
@@ -1622,30 +1370,24 @@ class Survivalist(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class ResistFrost(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "ResistFrost"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist frost damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update ResistFrost's attributes and tooltip variable.
@@ -1653,30 +1395,24 @@ class ResistFrost(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class ResistFlame(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "ResistFlame"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist flame damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update ResistFlame's attributes and tooltip variable.
@@ -1684,30 +1420,24 @@ class ResistFlame(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class ResistShadow(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "ResistShadow"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist shadow damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update ResistShadow's attributes and tooltip variable.
@@ -1715,30 +1445,24 @@ class ResistShadow(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class ResistPoison(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "ResistPoison"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist poison damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update ResistPoison's attributes and tooltip variable.
@@ -1746,30 +1470,24 @@ class ResistPoison(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class ResistBlunt(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "ResistBlunt"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist blunt damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update ResistBlunt's attributes and tooltip variable.
@@ -1777,30 +1495,24 @@ class ResistBlunt(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class ResistSlashing(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "ResistSlashing"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist slashing damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update ResistSlashing's attributes and tooltip variable.
@@ -1808,30 +1520,24 @@ class ResistSlashing(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class ResistPiercing(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "ResistPiercing"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist piercing damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = True   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = True
 
     def scale_by_level(self):
         """Update ResistPiercing's attributes and tooltip variable.
@@ -1839,30 +1545,24 @@ class ResistPiercing(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Courage(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Courage"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Your ability to overcome fears"
         self.attribute_type = "Willpower"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Courage's attributes and tooltip variable.
@@ -1870,30 +1570,24 @@ class Courage(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Sanity(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Sanity"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Your ability to resist mind altering affects"
         self.attribute_type = "Willpower"
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Sanity's attributes and tooltip variable.
@@ -1901,47 +1595,30 @@ class Sanity(Proficiency):
 
         return round(1 * self.level, 0)
 
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
-
 
 class Thorns(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Thorns"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = True
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Amount of damage that attackers take."
-        self.attribute_type = "None"
+        self.attribute_type = None
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = False     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = False   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = False
 
     def scale_by_level(self):
         """Update Thorns's attributes and tooltip variable.
         """
 
         return round(0 * self.level, 0)
-
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 

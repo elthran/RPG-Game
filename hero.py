@@ -162,7 +162,7 @@ class Hero(SessionHoistMixin, Base):
         Should allow you to do this:
             hero.get_summed_proficiencies()['defence'].modifier
             hero.get_summed_proficiencies()['defence'].get_final_value()
-            hero.get_suumed_proficiencies()['defence'].get_percent()
+            hero.get_suumed_proficiencies()['defence'].percent
 
         OR
             hero.get_summed_proficiencies().defence.modifier
@@ -259,7 +259,8 @@ class Hero(SessionHoistMixin, Base):
         for cls_name in proficiencies.ALL_CLASS_NAMES:
             # attributes.Attribute
             ProfClass = getattr(proficiencies, cls_name)
-            ProfClass().hero = self
+            if not ProfClass.hidden:
+                ProfClass().hero = self
             # obj = Class()
             # obj.hero = self
             # OR
@@ -352,11 +353,11 @@ class Hero(SessionHoistMixin, Base):
         # self.refresh_proficiencies()
         if full:
             self.base_proficiencies['health'].current = \
-                self.base_proficiencies['health'].get_final()
+                self.base_proficiencies['health'].final
             self.base_proficiencies['sanctity'].current = \
-                self.base_proficiencies['sanctity'].get_final()
+                self.base_proficiencies['sanctity'].final
             self.base_proficiencies['endurance'].current = \
-                self.base_proficiencies['endurance'].get_final()
+                self.base_proficiencies['endurance'].final
 
     # I dont think this is needed if the validators are working?
     # I don't think I ever call this function and the bar seems
@@ -365,7 +366,7 @@ class Hero(SessionHoistMixin, Base):
         self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100
 
     def gain_experience(self, amount):
-        new_amount = amount * self.get_summed_proficiencies('understanding').get_final()
+        new_amount = amount * self.get_summed_proficiencies('understanding').final
         new_amount = int(new_amount) + (random.random() < new_amount - int(new_amount)) # This will round the number weighted by its decimal (so 1.2 has 20% chance of rounding up)
         self.experience += new_amount
         if self.experience >= self.experience_maximum:

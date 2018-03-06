@@ -465,9 +465,9 @@ class EZDB:
         hero.base_proficiencies['endurance'].current += endurance_increment
 
         if hero.base_proficiencies['endurance'].current \
-                > hero.base_proficiencies['endurance'].get_final():
+                > hero.base_proficiencies['endurance'].final:
             hero.base_proficiencies['endurance'].current \
-                = hero.base_proficiencies['endurance'].get_final()
+                = hero.base_proficiencies['endurance'].final
 
         # Only update if endurance has been incremented.
         if endurance_increment:

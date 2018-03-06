@@ -274,7 +274,7 @@ class Command:
     def change_proficiency_tooltip(hero, database, data, **kwargs):
         tooltip_id = data['id']
         proficiency = database.get_proficiency_by_id(tooltip_id)
-        return jsonify(tooltip=proficiency.current_tootip)
+        return jsonify(tooltip=proficiency.tooltip)
 
     @staticmethod
     def update_proficiency(hero, database, arg_dict, **kwargs):

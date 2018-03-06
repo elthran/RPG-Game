@@ -45,13 +45,13 @@ class Proficiency(TemplateMixin, Base):
 
     type_ = Column(String(50))
     name = Column(String(50))
-    hidden = Column(Boolean)
-    description = Column(String(200))
-    tooltip = Column(String(50))
     attribute_type = Column(String(50))
+    description = Column(String(200))
+    # tooltip = Column(String(50))
     next_value = Column(Integer)
     reason_for_zero = Column(String(50))    # Maybe remove
     current = Column(Integer)
+    hidden = Column(Boolean)
     error = Column(String(50))
 
     __mapper_args__ = {
@@ -62,12 +62,12 @@ class Proficiency(TemplateMixin, Base):
     def __init__(self, level=0, base=0, modifier=0, template=False):
         self.type_ = self.__class__.__name__
         self.name = normalize_attrib_name(self.type_)
-        self.tooltip = ""
+        # self.tooltip = ""
         self.level = level
         self.base = base
         self.modifier = modifier
         self.template = template
-        self.current = self.get_final()
+        self.current = self.final
 
     def build_new_from_template(self):
         if not self.template:
@@ -77,7 +77,7 @@ class Proficiency(TemplateMixin, Base):
 
     def level_up(self):
         self.level += 1
-        self.current = self.get_final()
+        self.current = self.final
 
     def scale_by_level(self):
         """Return some function of the level attribute.
@@ -92,21 +92,35 @@ class Proficiency(TemplateMixin, Base):
         "empty"
         return self.level  # Defaults to 0
 
-        NOTE: base value has now been moved to the get_final() function
+        NOTE: base value has now been moved to the final function
         """
         return self.level
 
-    def get_final(self):
+    @property
+    def final(self):
         """Return the scaled value + base + modifier percent."""
 
         return (self.scale_by_level() + self.base) * (self.modifier + 1)
 
-    def get_percent(self):
+    @property
+    def percent(self):
         """Return the percent of the current to the final value."""
         try:
-            return round(self.current / self.get_final(), 2) * 100
+            return round(self.current / self.final, 2) * 100
         except ZeroDivisionError:
             return 0
+
+    @property
+    def tooltip(self):
+        """Create a tooltip for each variable.
+        """
+        {% raw %}
+        temp = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
+<h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
+<h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
+<h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
+        {% endraw %}
+        return render_template_string(temp, prof=self, getattr=getattr)
 
 
 {% for prof in PROFICIENCY_INFORMATION %}
@@ -116,15 +130,20 @@ class {{ prof_class }}(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "{{ prof_class }}"
     }
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = {{prof[5] if prof[5] else False}}
 
     {% set value = prof[3] %}
     def __init__(self, *args, base={{ value[1] }}, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "{{ prof[1]}}"
-        self.attribute_type = "{{ prof[2]}}"
+        self.attribute_type = {{ '"' + prof[2] + '"' if prof[2] else None }}
         self.error = "You do not have enough {}".format(self.attribute_type)
-        self.hidden = {{ prof[4] }}     # If this is true, then the proficiency should not show up on the prof page and should only be modifiable by items/abilities.
-        self.is_percent = {{ prof[5] }}   # This should add a "%" to the display at the end of a prof. So instead of 5 Accuracy it should say 5% accuracy.
+
+        # This should add a "%" to the display at the end of a prof.
+        # So instead of 5 Accuracy it should say 5% accuracy.
+        self.is_percent = {{prof[4]}}
 
     def scale_by_level(self):
         """Update {{ prof_class }}'s attributes and tooltip variable.
@@ -146,18 +165,6 @@ class {{ prof_class }}(Proficiency):
         else:
             self.reason_for_zero = ""
     {% endif %}
-
-    @property
-    def current_tootip(self):
-        """Create a tooltip for each variable.
-        """
-        {% raw %}
-        tooltip = """<h1>{{ getattr(prof, 'name', "Proficiency error").title() }}</h1>
-                <h2>{{ getattr(prof, 'description', "Proficiency error").title() }}</h2>
-                <h2>Current: {{ getattr(prof, 'current', "Proficiency error") }}</h2>
-                <h2>Next Level: {{ getattr(prof, 'current', "Proficiency error") }}</h2>"""
-        {% endraw %}
-        return render_template_string(tooltip, prof=self, getattr=getattr)
 
 
 {% endfor %}
