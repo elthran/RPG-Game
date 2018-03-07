@@ -458,8 +458,8 @@ def reset_character(stat_type, hero=None):
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 @uses_hero
-def admin(path=None, hero=None):
-    admin = None
+def admin(path="modify_self", hero=None):
+    admin_form_content = None
     if path == "edit_database":
         pass
     elif path == "modify_self":
@@ -475,13 +475,13 @@ def admin(path=None, hero=None):
             hero.basic_ability_points = int(request.form["Basic_ability_points"])
             hero.archetype_ability_points = int(request.form["Archetype_ability_points"])
             hero.calling_ability_points = int(request.form["Calling_ability_points"])
-            hero.pantheon_ability_points = int(request.form["Pantheon_ability_points"])
+            hero.pantheon_ability_points = int(request.form["Pantheonic_ability_points"])
             hero.attribute_points = int(request.form["Attribute_points"])
             hero.proficiency_points = int(request.form['Proficiency_Points'])
             hero.refresh_character(full=True)
             return redirect(url_for('home'))
 
-        admin = [
+        admin_form_content = [
             ("Age", hero.age),
             ("Experience", hero.experience),
             ("Experience_maximum", hero.experience_maximum),
@@ -495,7 +495,7 @@ def admin(path=None, hero=None):
             ("Pantheonic_ability_points", hero.pantheon_ability_points),
             ("Attribute_points", hero.attribute_points),
             ("Proficiency_Points", hero.proficiency_points)]
-    return render_template('admin.html', hero=hero, admin=admin, path=path)  # return a string
+    return render_template('admin.html', hero=hero, admin=admin_form_content, path=path)  # return a string
 
 
 # The if statement works and displays the user page as normal. Now if you

@@ -225,9 +225,10 @@ class Proficiency(TemplateMixin, Base):
 
         temp = """<h1>{{ prof.display_name }}</h1>
                   <h2>{{ prof.description }}</h2>
-                  <h2>Current level: {{ prof.level }}</h2>
+                  <h2>Current level: {{ prof.level }} {% if not prof.is_max_level and prof.hero.proficiency_points %}<button id=levelUpProficiencyButton class="upgradeButton" onclick="sendToPy(event, proficiencyTooltip, 'update_proficiency', {'id': {{ prof.id }}});"></button>{% endif %}</h2>
                   <h2>Current value: {{ formatted_final }}</h2>
-                  <h2>Next value: {{ formatted_next }}</h2>"""
+                  <h2>Next value: {{ formatted_next }}</h2>
+                  <h2>Max level: {{ prof.max_level }}</h2>"""
         return render_template_string(
             temp, prof=self,
             formatted_final=self.format_spec.format(self.final),
@@ -238,9 +239,13 @@ class Proficiency(TemplateMixin, Base):
         return None
 
     @property
+    def max_level(self):
+        return self.attribute.level * 2
+
+    @property
     def is_max_level(self):
         """Cap the proficiency level at double the attribute level."""
-        return True if self.level > self.attribute.level * 2 else False
+        return True if self.level >= self.attribute.level * 2 else False
 
 
 class Health(Proficiency):
@@ -263,7 +268,6 @@ class Health(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.vitality
-
 
     def __init__(self, *args, base=5, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -304,7 +308,6 @@ class Regeneration(Proficiency):
     def attribute(self):
         return self.hero.attributes.vitality
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How many health points you recover each day."
@@ -343,7 +346,6 @@ class Recovery(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.vitality
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -384,7 +386,6 @@ class Climbing(Proficiency):
     def attribute(self):
         return self.hero.attributes.agility
 
-
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "The difficulty of objects of which you are able to climb."
@@ -423,7 +424,6 @@ class Storage(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.brawn
-
 
     def __init__(self, *args, base=10, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -464,7 +464,6 @@ class Encumbrance(Proficiency):
     def attribute(self):
         return self.hero.attributes.brawn
 
-
     def __init__(self, *args, base=100, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How much your are slowed down in combat by your equipment."
@@ -503,7 +502,6 @@ class Endurance(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.resilience
-
 
     def __init__(self, *args, base=3, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -544,7 +542,6 @@ class DamageMinimum(Proficiency):
     def attribute(self):
         return self.hero.attributes.brawn
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Mimimum damage you do on each hit"
@@ -583,7 +580,6 @@ class DamageMaximum(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.brawn
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -624,7 +620,6 @@ class Speed(Proficiency):
     def attribute(self):
         return self.hero.attributes.quickness
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How fast you attack."
@@ -663,7 +658,6 @@ class Accuracy(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.agility
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -704,7 +698,6 @@ class FirstStrike(Proficiency):
     def attribute(self):
         return self.hero.attributes.quickness
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to strike first"
@@ -743,7 +736,6 @@ class Killshot(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.agility
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -784,7 +776,6 @@ class Defence(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Amount of all damage reduced."
@@ -823,7 +814,6 @@ class Armour(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.resilience
-
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -864,7 +854,6 @@ class Evade(Proficiency):
     def attribute(self):
         return self.hero.attributes.quickness
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to dodge."
@@ -903,7 +892,6 @@ class Parry(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.quickness
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -944,7 +932,6 @@ class Flee(Proficiency):
     def attribute(self):
         return self.hero.attributes.quickness
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to run from a battle."
@@ -983,7 +970,6 @@ class Riposte(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.agility
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1024,7 +1010,6 @@ class Fatigue(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How quickly you tire in combat."
@@ -1063,7 +1048,6 @@ class Block(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.resilience
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1111,7 +1095,6 @@ class Stealth(Proficiency):
     def attribute(self):
         return self.hero.attributes.agility
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to avoid detection."
@@ -1150,7 +1133,6 @@ class Pickpocketing(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.agility
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1191,7 +1173,6 @@ class Faith(Proficiency):
     def attribute(self):
         return self.hero.attributes.divinity
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Strength of spells you cast."
@@ -1230,7 +1211,6 @@ class Sanctity(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.divinity
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1271,7 +1251,6 @@ class Redemption(Proficiency):
     def attribute(self):
         return self.hero.attributes.divinity
 
-
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Amount of sanctity you recover each day."
@@ -1310,7 +1289,6 @@ class ResistHoly(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.divinity
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1351,7 +1329,6 @@ class Bartering(Proficiency):
     def attribute(self):
         return self.hero.attributes.charisma
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Discount from negotiating prices."
@@ -1390,7 +1367,6 @@ class Oration(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.charisma
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1431,7 +1407,6 @@ class Charm(Proficiency):
     def attribute(self):
         return self.hero.attributes.charisma
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How quickly other people will like you."
@@ -1470,7 +1445,6 @@ class Trustworthiness(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.charisma
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1511,7 +1485,6 @@ class Renown(Proficiency):
     def attribute(self):
         return self.hero.attributes.charisma
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How much your actions affect your reputation."
@@ -1550,7 +1523,6 @@ class Knowledge(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.intellect
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1591,7 +1563,6 @@ class Literacy(Proficiency):
     def attribute(self):
         return self.hero.attributes.intellect
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to read."
@@ -1630,7 +1601,6 @@ class Understanding(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.intellect
-
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1671,7 +1641,6 @@ class Luckiness(Proficiency):
     def attribute(self):
         return self.hero.attributes.fortuity
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to have things turn your way against all odds."
@@ -1710,7 +1679,6 @@ class Adventuring(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.fortuity
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1751,7 +1719,6 @@ class Logistics(Proficiency):
     def attribute(self):
         return self.hero.attributes.pathfinding
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How far you can move on the map"
@@ -1790,7 +1757,6 @@ class Mountaineering(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.pathfinding
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1831,7 +1797,6 @@ class Woodsman(Proficiency):
     def attribute(self):
         return self.hero.attributes.pathfinding
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Modifier for forest movement."
@@ -1870,7 +1835,6 @@ class Navigator(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.pathfinding
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1911,7 +1875,6 @@ class Detection(Proficiency):
     def attribute(self):
         return self.hero.attributes.survivalism
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to discover enemy stealth and traps."
@@ -1950,7 +1913,6 @@ class Caution(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.survivalism
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1991,7 +1953,6 @@ class Explorer(Proficiency):
     def attribute(self):
         return self.hero.attributes.survivalism
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Additional options on the map, such as foraging"
@@ -2030,7 +1991,6 @@ class Huntsman(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.survivalism
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -2071,7 +2031,6 @@ class Survivalist(Proficiency):
     def attribute(self):
         return self.hero.attributes.survivalism
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Create bandages, tents, and other useful objects"
@@ -2110,7 +2069,6 @@ class ResistFrost(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.resilience
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -2151,7 +2109,6 @@ class ResistFlame(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist flame damage"
@@ -2190,7 +2147,6 @@ class ResistShadow(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.resilience
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -2231,7 +2187,6 @@ class ResistPoison(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist poison damage"
@@ -2270,7 +2225,6 @@ class ResistBlunt(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.resilience
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -2311,7 +2265,6 @@ class ResistSlashing(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist slashing damage"
@@ -2350,7 +2303,6 @@ class ResistPiercing(Proficiency):
     @property
     def attribute(self):
         return self.hero.attributes.resilience
-
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -2391,7 +2343,6 @@ class Courage(Proficiency):
     def attribute(self):
         return self.hero.attributes.willpower
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Your ability to overcome fears."
@@ -2431,7 +2382,6 @@ class Sanity(Proficiency):
     def attribute(self):
         return self.hero.attributes.willpower
 
-
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Your ability to resist mind altering affects."
@@ -2465,7 +2415,6 @@ class Thorns(Proficiency):
     __mapper_args__ = {
         'polymorphic_identity': "Thorns"
     }
-
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)

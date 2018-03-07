@@ -133,9 +133,10 @@ class Proficiency(TemplateMixin, Base):
         {% raw %}
         temp = """<h1>{{ prof.display_name }}</h1>
                   <h2>{{ prof.description }}</h2>
-                  <h2>Current level: {{ prof.level }}</h2>
+                  <h2>Current level: {{ prof.level }} {% if not prof.is_max_level and prof.hero.proficiency_points %}<button id=levelUpProficiencyButton class="upgradeButton" onclick="sendToPy(event, proficiencyTooltip, 'update_proficiency', {'id': {{ prof.id }}});"></button>{% endif %}</h2>
                   <h2>Current value: {{ formatted_final }}</h2>
-                  <h2>Next value: {{ formatted_next }}</h2>"""
+                  <h2>Next value: {{ formatted_next }}</h2>
+                  <h2>Max level: {{ prof.max_level }}</h2>"""
         {% endraw %}
         return render_template_string(
             temp, prof=self,
@@ -147,9 +148,13 @@ class Proficiency(TemplateMixin, Base):
         return None
 
     @property
+    def max_level(self):
+        return self.attribute.level * 2
+
+    @property
     def is_max_level(self):
         """Cap the proficiency level at double the attribute level."""
-        return True if self.level > self.attribute.level * 2 else False
+        return True if self.level >= self.attribute.level * 2 else False
 
 
 {% for prof in PROFICIENCY_INFORMATION %}
@@ -180,7 +185,6 @@ class {{ prof_class }}(Proficiency):
         return self.hero.attributes.{{ normalize_attrib_name(prof[2]) }}
 
     {% endif %}
-
     def __init__(self, *args, base={{ value[1] }}, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "{{ prof[1]}}"
