@@ -3,10 +3,36 @@
 Abilities spec goes:
 
 name, class, class arguments (not including name as it is added later).
+
+relentless = ALL_ABILITIES[0]
+name = relentless[0]
+type = relentless[1]
+args = relentless[2]
+
+NOTE:
+    proficiency_data gets parsed by:
+# Initialize proficiencies
+# Currently doesn't add any proficiencies.
+for class_name, arg_dict in proficiency_data:
+    Class = getattr(proficiencies, class_name)
+    # pdb.set_trace()
+    obj = Class(**arg_dict)
+    self.proficiencies[obj.name] = obj
+
+Such each element must be a list of tuples:
+Each tuple should have element 1 be the class name (Health)
+Each tuple should have an element 2 be an arg dict corresponding to the
+Proficiency argment dict ... this is expanded so that it will read
+e.g.
+    hero.abilities.relentless.proficiencies['health'] = Health(base=5)
+which is an entirely different object than:
+    hero.proficiencies['health']
 """
 
 ALL_ABILITIES = [
-    ("Relentless", "AuraAbility", "5, 'Gain {{ level * 5 }} maximum health. Master this ability to unlock the Brute archetype.', learnable=True, health_maximum=5"),
+    ("Relentless",
+        "AuraAbility",
+        "5, 'Gain {{ level * 5 }} maximum health. Master this ability to unlock the Brute archetype.', learnable=True, proficiency_data=[('Health', {'base': 5}),]"),
     ("Trickster", "AuraAbility", "5, 'Become {{ level * 5 }}% harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', learnable=True, stealth_chance=5"),
     ("Discipline", "AuraAbility", "5, 'Gain devotion {{ level * 5 }}% faster. Master this ability to unlock the Ascetic archetype.', learnable=True"),
     ("Traveler", "AuraAbility", "5, 'Reveal {{ level * 10 }}% more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', learnable=True"),
@@ -26,11 +52,7 @@ ALL_ABILITIES = [
     ("Charmer", "AuraAbility", "3, 'You are {{ level * 5 }}% more likely to succeed when choosing charm dialogues.', tree='archetype', tree_type='opportunist'"),
     ("Haggler", "AuraAbility", "3, 'Prices at shops are {{ level * 3}}% cheaper.', tree='archetype', tree_type='opportunist'")
 ]
-
-
-ABILITY_NAMES = [key[0] for key in ALL_ABILITIES]
-
 """
-End of documentation.
+End of abilities_data.py.
 {% endraw %}
 """

@@ -458,8 +458,8 @@ def reset_character(stat_type, hero=None):
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 @uses_hero
-def admin(path=None, hero=None):
-    admin = None
+def admin(path="modify_self", hero=None):
+    admin_form_content = None
     if path == "edit_database":
         pass
     elif path == "modify_self":
@@ -475,13 +475,13 @@ def admin(path=None, hero=None):
             hero.basic_ability_points = int(request.form["Basic_ability_points"])
             hero.archetype_ability_points = int(request.form["Archetype_ability_points"])
             hero.calling_ability_points = int(request.form["Calling_ability_points"])
-            hero.pantheon_ability_points = int(request.form["Pantheon_ability_points"])
+            hero.pantheon_ability_points = int(request.form["Pantheonic_ability_points"])
             hero.attribute_points = int(request.form["Attribute_points"])
             hero.proficiency_points = int(request.form['Proficiency_Points'])
             hero.refresh_character(full=True)
             return redirect(url_for('home'))
 
-        admin = [
+        admin_form_content = [
             ("Age", hero.age),
             ("Experience", hero.experience),
             ("Experience_maximum", hero.experience_maximum),
@@ -495,7 +495,7 @@ def admin(path=None, hero=None):
             ("Pantheonic_ability_points", hero.pantheon_ability_points),
             ("Attribute_points", hero.attribute_points),
             ("Proficiency_Points", hero.proficiency_points)]
-    return render_template('admin.html', hero=hero, admin=admin, path=path)  # return a string
+    return render_template('admin.html', hero=hero, admin=admin_form_content, path=path)  # return a string
 
 
 # The if statement works and displays the user page as normal. Now if you
@@ -637,7 +637,8 @@ def home(hero=None):
     # session['valid_moves'].append(hero.current_location.id)
 
     return render_template(
-        'profile_home.html', page_title="Profile", hero=hero, profile=True)
+        'profile_home.html', page_title="Profile", hero=hero, profile=True,
+        proficiencies=hero.get_summed_proficiencies())
 
 
 # This gets called anytime you have  attribute points to spend
@@ -657,8 +658,7 @@ def attributes(hero=None):
 @uses_hero
 def proficiencies(hero=None):
     # This page is literally just a html page with tooltips and proficiency level up buttons. No python code is needed. Python only tells html which page to load.
-    return render_template('profile_proficiencies.html', page_title="Proficiencies", hero=hero, all_attributes=hero.attributes
-                           ,all_proficiencies=hero.proficiencies)
+    return render_template('profile_proficiencies.html', page_title="Proficiencies", hero=hero, all_attributes=hero.attributes, all_proficiencies=hero.base_proficiencies)
 
 
 @app.route('/ability_tree/<spec>')
@@ -896,7 +896,7 @@ def barracks(name='', hero=None, location=None):
     # Dead heros wont be able to move on the map and will immediately get
     # moved to ahospital until they heal. So locations won't need to factor
     # in the "if"of the hero being dead
-    if hero.proficiencies.health.current <= 0:
+    if hero.get_summed_proficiencies('health').current <= 0:
         location.display.page_heading = "Your hero is currently dead."
         location.display.page_image = "dead.jpg"
         location.children = None
@@ -1011,7 +1011,7 @@ def spar(name='', hero=None, location=None):
         # This gives you experience and also returns how much
         # experience you gained
         modified_spar_benefit = hero.gain_experience(spar_benefit)
-        hero.proficiencies.endurance.current -= 1
+        hero.base_proficiencies['endurance'].current -= 1
         location.display.page_heading = \
             "You spend some time sparring with the trainer at the barracks." \
             " You spend {} gold and gain {} experience.".format(
@@ -1043,23 +1043,25 @@ def arena(name='', hero=None, location=None):
     location.display.page_title = "War Room"
     location.display.page_heading = "Welcome to the arena " + hero.name + "!"
     location.display.page_image = str(game.enemy.name) + '.jpg'
+
+    profs = game.enemy.get_summed_proficiencies()
     conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
                     ("Level: ", str(game.enemy.level), "Combat Details"),
-                    ("Health: ", str(game.enemy.proficiencies.health.current) + " / " + str(
-                        game.enemy.proficiencies.health.maximum)),
-                    ("Damage: ", str(game.enemy.proficiencies.damage.minimum) + " - " + str(
-                        game.enemy.proficiencies.damage.maximum)),
-                    ("Attack Speed: ", str(game.enemy.proficiencies.speed.speed)),
-                    ("Accuracy: ", str(game.enemy.proficiencies.accuracy.accuracy) + "%"),
-                    ("First Strike: ", str(game.enemy.proficiencies.first_strike.chance) + "%"),
-                    ("Critical Hit Chance: ", str(game.enemy.proficiencies.killshot.chance) + "%"),
-                    ("Critical Hit Modifier: ", str(game.enemy.proficiencies.killshot.modifier)),
-                    ("Defence: ", str(game.enemy.proficiencies.defence.modifier) + "%"),
-                    ("Evade: ", str(game.enemy.proficiencies.evade.chance) + "%"),
-                    ("Parry: ", str(game.enemy.proficiencies.parry.chance) + "%"),
-                    ("Riposte: ", str(game.enemy.proficiencies.riposte.chance) + "%"),
-                    ("Block Chance: ", str(game.enemy.proficiencies.block.chance) + "%"),
-                    ("Block Reduction: ", str(game.enemy.proficiencies.block.modifier) + "%")]
+                    ("Health: ", str(profs.health.get_base()) + " / " + str(
+                        profs.health.final)),
+                    ("Damage: ", str(profs.damage.final) + " - " + str(
+                        profs.damage.final)),
+                    ("Attack Speed: ", str(profs.speed.final)),
+                    ("Accuracy: ", str(profs.accuracy.final) + "%"),
+                    ("First Strike: ", str(profs.first_strike.final) + "%"),
+                    ("Critical Hit Chance: ", str(profs.killshot.final) + "%"),
+                    ("Critical Hit Modifier: ", str(profs.killshot.final)),
+                    ("Defence: ", str(profs.defence.final) + "%"),
+                    ("Evade: ", str(profs.evade.final) + "%"),
+                    ("Parry: ", str(profs.parry.final) + "%"),
+                    ("Riposte: ", str(profs.riposte.final) + "%"),
+                    ("Block Chance: ", str(profs.block.final) + "%"),
+                    ("Block Reduction: ", str(profs.block.final) + "%")]
     page_links = [("Challenge the enemy to a ", "/battle/monster", "fight", "."),
                   ("Go back to the ", "/barracks/Barracks", "Barracks", ".")]
     return render_template(
@@ -1086,9 +1088,9 @@ def battle(this_user=None, hero=None):
         game.set_enemy(enemy)
         game.enemy.experience_rewarded = 5
         game.enemy.items_rewarded = []
-    hero.proficiencies.health.current, game.enemy.proficiencies.health.current, battle_log = combat_simulator.battle_logic(hero, game.enemy) # This should return the full heroes, not just their health
+    hero.get_summed_proficiencies('health').current, game.enemy.get_summed_proficiencies('health').current, battle_log = combat_simulator.battle_logic(hero, game.enemy) # This should return the full heroes, not just their health
     game.has_enemy = False
-    if hero.proficiencies.health.current == 0:
+    if hero.get_summed_proficiencies('health').current == 0:
         page_title = "Defeat!"
         page_heading = "You have died."
         location = database.get_object_by_name('Location', hero.last_city.name)

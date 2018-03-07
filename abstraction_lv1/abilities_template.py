@@ -9,8 +9,10 @@ from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
+from sqlalchemy.orm.collections import attribute_mapped_collection
 from flask import render_template_string
 
+import proficiencies
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 # Well ... ok, but for simplicity sake just pretend that that is true.
 from base_classes import Base
@@ -65,6 +67,13 @@ class Ability(Base):
                                               ondelete="CASCADE"))
     abilities = relationship("AbilityContainer")
 
+    # Ability to Proficiencies is One to Many
+    proficiencies = relationship(
+        "Proficiency",
+        collection_class=attribute_mapped_collection('name'),
+        back_populates='ability',
+        cascade="all, delete-orphan")
+
     # Requirements is a One to Many relationship to self.
     """
     Use (pseudo-code):
@@ -79,7 +88,7 @@ class Ability(Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, max_level, description, hero=None, hidden=True, learnable=False, tree="basic", tree_type="", cost=1):
+    def __init__(self, name, max_level, description, hero=None, hidden=True, learnable=False, tree="basic", tree_type="", cost=1, proficiency_data=[]):
         """Build a basic ability object.
 
         Note: arguments (name, hero, max_level, etc.) that require input are
@@ -109,9 +118,15 @@ class Ability(Base):
         self.tree_type = tree_type  # Which specific tree (ie. if the tree is religious, then which religion is it)
         self.image = "ability_icon_" + self.name
 
-        self.init_on_load()
+        # Initialize proficiencies
+        # Currently doesn't add any proficiencies.
+        for class_name, arg_dict in proficiency_data:
+            Class = getattr(proficiencies, class_name)
+            # pdb.set_trace()
+            obj = Class(**arg_dict)
+            self.proficiencies[obj.name] = obj
 
-        # On load ... not implemented.
+        self.init_on_load()
 
     @orm.reconstructor
     def init_on_load(self):
@@ -122,6 +137,24 @@ class Ability(Base):
     # @property
     # def display_name(self):
     #     return self.name.capitalize()
+
+    @orm.validates('level')
+    def validate_level(self, key, current):
+        """Set the base and modifier off the current level.
+
+        x = 7
+        for y in range(1, 10):
+            x = (x // (y - 1 or 1)) * y (base)
+            x = (x / (y - 1 or 1)) * y (modifier)
+
+        NOTE: hero get_summed_proficiecies must check if level of Ability is 0
+        """
+        for key in self.proficiencies:
+            prof = self.proficiencies[key]
+            if current > 0:
+                prof.base = (prof.base // (current-1 or 1)) * current
+                prof.modifier = (prof.modifier // (current-1 or 1)) * current
+        return current
 
     def get_description(self):
         return render_template_string(self.description,
@@ -182,12 +215,12 @@ class CastableAbility(Ability):
         NOTE: returns False if spell is too expensive (cost > proficiencies.sanctity.current)
         If cast is succesful then return value is True.
         """
-        if hero.proficiencies.sanctity.current < self.sanctity_cost or hero.proficiencies.endurance.current < self.endurance_cost:
+        if hero.get_summed_proficiencies('sanctity').current < self.sanctity_cost or hero.get_summed_proficiencies('endurance').current < self.endurance_cost:
             return False
         else:
-            hero.proficiencies.sanctity.current -= self.sanctity_cost
-            hero.proficiencies.endurance.current -= self.endurance_cost
-            hero.proficiencies.health.current += self.heal_amount
+            hero.base_proficiencies['sanctity'].current -= self.sanctity_cost
+            hero.base_proficiencies['endurance'].current -= self.endurance_cost
+            hero.base_proficiencies['health'].current += self.heal_amount
             hero.gold += self.gold_amount
             return True
 

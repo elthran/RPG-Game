@@ -1,11 +1,14 @@
-{% macro build_container(cls_name, back_populates, data) %}
+{% macro build_container(cls_name, back_populates, data, no_container=False) %}
 {% set names = get_names(data) %}
 {% set container_name = cls_name + "Container" %}
 {% set container_table_name = cls_name.lower() + "_container" %}
-{% set attrib_names = normalized_attrib_names(names) %}
-{% set class_names = normalized_class_names(names) %}
+{% set attrib_names = normalize_attrib_names(names) %}
+{% set class_names = normalize_class_names(names) %}
 ALL_NAMES = {{ names }}
 ALL_ATTRIBUTE_NAMES = {{ attrib_names }}
+ALL_CLASS_NAMES = {{ class_names }}
+{% if no_container %}
+{% else %}
 
 
 class {{ container_name }}(Base):
@@ -45,4 +48,5 @@ class {{ container_name }}(Base):
     def __iter__(self):
         """Return all the attributes of this function as an iterator."""
         return (getattr(self, key) for key in ALL_ATTRIBUTE_NAMES)
+{% endif %}
 {% endmacro %}

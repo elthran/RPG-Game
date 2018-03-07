@@ -5,6 +5,8 @@ from pprint import pprint
 from database import EZDB
 # from hero import Hero
 # from inventory import Inventory
+from . import GenericTestCase
+
 from items import Item, OneHandedWeapon, Ring
 
 
@@ -46,11 +48,9 @@ Get all built in decorators with:
 Add new markers in the 'conftest.py'. I don't really understand the syntax yet.
 """
 
-from generic_setup import GenericTestClass
-
 
 @pytest.mark.incremental
-class TestItem(GenericTestClass):
+class TestItem(GenericTestCase):
     @classmethod
     def setup_class(cls):
         db = super().setup_class()

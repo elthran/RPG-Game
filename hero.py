@@ -8,17 +8,19 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
 from sqlalchemy.orm import validates
+from sqlalchemy.orm.collections import attribute_mapped_collection
 
-from base_classes import Base
 from attributes import AttributeContainer
 from abilities import AbilityContainer
-from proficiencies import ProficiencyContainer
+import proficiencies
 from inventory import Inventory
 from journal import Journal
 from specializations import SpecializationContainer
+from session_helpers import SessionHoistMixin
+from base_classes import Base, Map
 
 
-class Hero(Base):
+class Hero(SessionHoistMixin, Base):
     """Store data about the Hero/Character object.
 
     """
@@ -116,10 +118,21 @@ class Hero(Base):
         "AttributeContainer", back_populates='hero', uselist=False,
         cascade="all, delete-orphan")
 
-    # Proficiencies One to One despite the name
-    proficiencies = relationship(
-        "ProficiencyContainer", back_populates='hero', uselist=False,
+    # Hero to Proficiency is One to Many
+    base_proficiencies = relationship(
+        "Proficiency",
+        collection_class=attribute_mapped_collection('name'),
+        back_populates='hero',
         cascade="all, delete-orphan")
+
+    # all_proficiencies = relationship(
+    #     "Proficiency",
+    #     collection_class=attribute_mapped_collection('name'),
+    #     primaryjoin="and_(Ability.id==Proficiency.ability_id, "
+    #                 "AbilityContainer.id==Ability.ability_container_id, "
+    #                 "Hero.id==AbilityContainer.hero_id)",
+    #     cascade="all, delete-orphan",
+    # )
 
     # Journal to Hero is One to One
     journal = relationship('Journal', back_populates='hero', uselist=False,
@@ -141,6 +154,90 @@ class Hero(Base):
         raise Exception("'current_world' Location type must be 'map' not '{}'."
                         "".format(value.type))
 
+    def get_summed_proficiencies(self, key_name=None):
+        """Summed value of all derivative proficiency objects.
+
+        Returns a Map object. This is a virtual object dictionary.
+
+        Should allow you to do this:
+            hero.get_summed_proficiencies()['defence'].modifier
+            hero.get_summed_proficiencies()['defence'].get_final_value()
+            hero.get_suumed_proficiencies()['defence'].percent
+
+        OR
+            hero.get_summed_proficiencies().defence.modifier
+        OR (more efficiently)
+            hero.get_summed_proficiencies('defence').modifier
+
+        NOTE: the value of get_summed_proficiencies is saved in the
+        hero.proficiencies attribute.
+        This can be used for much increase efficiency. Since each call of
+        get_summed_proficiencies() rechecks _all_ proficiecies.
+        The more efficient way is to do it once and then call
+            hero.proficiencies afterwards. Until you need to recheck.
+        You can also recheck just one value using:
+            get_summed_proficiencies(key_name='defence')
+
+        """
+        summed = {}
+        if key_name:
+            prof = self.base_proficiencies[key_name]
+            summed[prof.name] = [prof.level, prof.base, prof.modifier, prof.type_]
+            # print(self.session.query(proficiencies.Proficiency).)
+            # pdb.set_trace()
+            for obj in self.equipped_items() + [obj for obj in self.abilities
+                                                if obj.level]:
+                try:
+                    prof = obj.proficiencies[key_name]
+                except KeyError:
+                    continue
+                if prof.name in summed:
+                    current_level, current_base, current_modifier, type_ = summed[prof.name]
+                    summed[prof.name] = [current_level + prof.level,
+                                         current_base + prof.base,
+                                         current_modifier + prof.modifier,
+                                         type_]
+                else:
+                    summed[prof.name] = [prof.level, prof.base, prof.modifier, prof.type_]
+
+            lvl, base, mod, type_ = summed[key_name]
+
+            # convert dict of values into dict of database objects
+            Class = getattr(proficiencies, type_)
+            summed[key_name] = Class(level=lvl, base=base, modifier=mod)
+
+            # If proficiencies exists update it. If not just return this
+            # mapped object.
+            try:
+                self.proficiencies[key_name] = summed[key_name]
+            except AttributeError:
+                pass
+            return summed[key_name]
+        else:  # Get the latest combined values of all proficiencies!
+            for key in self.base_proficiencies:
+                prof = self.base_proficiencies[key]
+                summed[prof.name] = [prof.level, prof.base, prof.modifier, prof.type_]
+
+            for obj in self.equipped_items() + [obj for obj in self.abilities]:
+                for key in obj.proficiencies:
+                    prof = obj.proficiencies[key]
+                    if prof.name in summed:
+                        current_level, current_base, current_modifier, type_ = summed[prof.name]
+                        summed[prof.name] = [current_level + prof.level,
+                                             current_base + prof.base,
+                                             current_modifier + prof.modifier,
+                                             type_]
+                    else:
+                        summed[prof.name] = [prof.level, prof.base, prof.modifier, prof.type_]
+
+            for key in summed:
+                lvl, base, mod, type_ = summed[key]
+
+                Class = getattr(proficiencies, type_)
+                summed[key] = Class(level=lvl, base=base, modifier=mod)
+            self.proficiencies = Map(summed)
+            return self.proficiencies
+
     def __init__(self, **kwargs):
         """Initialize the Hero object.
 
@@ -152,8 +249,26 @@ class Hero(Base):
         """
 
         # Skills and abilities
-        self.attributes = AttributeContainer()
-        self.proficiencies = ProficiencyContainer()
+        self.attributes = AttributeContainer()  # Must go above proficiencies
+
+        # set self.base_proficiencies
+        # e.g.
+        # import proficiencies
+        # Class = proficiencies.Accuracy
+        # obj = Accuracy()
+        # accuracy.hero = self (current hero object)
+        # hero.base_proficiencies['accuracy'] = Accuracy()
+        for cls_name in proficiencies.ALL_CLASS_NAMES:
+            # attributes.Attribute
+            ProfClass = getattr(proficiencies, cls_name)
+            if not ProfClass.hidden:
+                ProfClass().hero = self
+
+            # obj = Class()
+            # obj.hero = self
+            # OR
+            # self.base_proficiencies[obj.name] = obj
+
         self.abilities = AbilityContainer()
         self.inventory = Inventory()
         self.journal = Journal()
@@ -232,18 +347,19 @@ class Hero(Base):
     #     self.wolf_kills = 0
 
     def refresh_proficiencies(self):
-        for proficiency in self.proficiencies:
-            proficiency.update(self)
+        pass
+        # for proficiency in self.proficiencies:
+        #     proficiency.update(self)
 
     def refresh_character(self, full=False):
-        self.refresh_proficiencies()
+        # self.refresh_proficiencies()
         if full:
-            self.proficiencies.health.current = \
-                self.proficiencies.health.maximum
-            self.proficiencies.sanctity.current = \
-                self.proficiencies.sanctity.maximum
-            self.proficiencies.endurance.current = \
-                self.proficiencies.endurance.maximum
+            self.base_proficiencies['health'].current = \
+                self.base_proficiencies['health'].final
+            self.base_proficiencies['sanctity'].current = \
+                self.base_proficiencies['sanctity'].final
+            self.base_proficiencies['endurance'].current = \
+                self.base_proficiencies['endurance'].final
 
     # I dont think this is needed if the validators are working?
     # I don't think I ever call this function and the bar seems
@@ -252,7 +368,7 @@ class Hero(Base):
         self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100
 
     def gain_experience(self, amount):
-        new_amount = amount * self.proficiencies.understanding.modifier
+        new_amount = amount * self.get_summed_proficiencies('understanding').final
         new_amount = int(new_amount) + (random.random() < new_amount - int(new_amount)) # This will round the number weighted by its decimal (so 1.2 has 20% chance of rounding up)
         self.experience += new_amount
         if self.experience >= self.experience_maximum:

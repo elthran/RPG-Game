@@ -391,34 +391,38 @@ function updateAttribute(button, status) {
     }
 }
 
-function proficiencyTooltip(button, tooltip) {
-    var newTooltip = {};
+function proficiencyTooltip(response, oldData) {
+    var newTooltip;
     newTooltip = document.getElementById("proficiencyTooltip");
-    newTooltip.innerHTML = tooltip;
-}
-
-function updateProficiency(button, status, tooltip) {
-    "use strict";
-    proficiencyTooltip(button, tooltip);
-    var id = 0;
-    var i = 0;
-    var heroProfPointsDiv = {};
-    var profCurrentLvDiv = {};
-    var buttonsNodeList = {};
-    id = button.getAttribute("data");
-    profCurrentLvDiv = document.getElementById("proficiency-" + id);
-    heroProfPointsDiv = document.getElementById("points_remaining");
-    profCurrentLvDiv.innerHTML = parseInt(profCurrentLvDiv.innerHTML) + 1;
-    heroProfPointsDiv.innerHTML = parseInt(heroProfPointsDiv.innerHTML) - 1;
-    if (status === "hide_this") { //hide this button
-        button.style.display = "none";
-    } else if (status === "hide_all") { //hide all buttons
-        buttonsNodeList = document.querySelectorAll("button[class=upgradeButton]");
-        for (i = 0; i < buttonsNodeList.length; i++) {
-            buttonsNodeList[i].style.display = "none";
-        }
+    newTooltip.innerHTML = response.tooltip;
+    if ("pointsRemaining" in response) {
+        document.getElementById("pointsRemaining").innerHTML = response.pointsRemaining;
+        document.getElementById("proficiency-" + oldData.id).innerHTML = response.level;
     }
 }
+
+//function updateProficiency(button, status, tooltip) {
+//    "use strict";
+//    proficiencyTooltip(button, tooltip);
+//    var id = 0;
+//    var i = 0;
+//    var heroProfPointsDiv = {};
+//    var profCurrentLvDiv = {};
+//    var buttonsNodeList = {};
+//    id = button.getAttribute("data");
+//    profCurrentLvDiv = document.getElementById("proficiency-" + id);
+//    heroProfPointsDiv = document.getElementById("points_remaining");
+//    profCurrentLvDiv.innerHTML = parseInt(profCurrentLvDiv.innerHTML) + 1;
+//    heroProfPointsDiv.innerHTML = parseInt(heroProfPointsDiv.innerHTML) - 1;
+//    if (status === "hide_this") { //hide this button
+//        button.style.display = "none";
+//    } else if (status === "hide_all") { //hide all buttons
+//        buttonsNodeList = document.querySelectorAll("button[class=upgradeButton]");
+//        for (i = 0; i < buttonsNodeList.length; i++) {
+//            buttonsNodeList[i].style.display = "none";
+//        }
+//    }
+//}
 
 function abilityTooltip(button, tooltip, image) {
     var newTooltip = {};
