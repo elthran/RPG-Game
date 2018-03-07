@@ -32,7 +32,7 @@ from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
 # _before_ any of them are used.
-from database import EZDB
+from database import EZDB, SECOND_PER_ENDURANCE
 from engine import Engine
 from forum import Board, Thread, Post
 from bestiary2 import create_monster, MonsterTemplate
@@ -50,7 +50,7 @@ game = Game()
 
 def game_clock():
     while True:
-        time.sleep(30)
+        time.sleep(SECOND_PER_ENDURANCE)
         database.update_time_all_heroes()
 
 

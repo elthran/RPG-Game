@@ -490,7 +490,7 @@ class EZDB:
 
         endurance = hero.base_proficiencies['endurance']
         endurance.current = min(endurance.current + endurance_increment,
-                                endurance.get_final())
+                                endurance.final)
 
         for item in hero.equipped_items():
             item.affinity += 1

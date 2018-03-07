@@ -59,7 +59,7 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
     wearable = Column(Boolean)
 
     # extra special :P
-    affinity = Column(Integer)
+    affinity = Column(Integer, default=0)
 
     # Relationships
     # Each Item can have only one Inventory
