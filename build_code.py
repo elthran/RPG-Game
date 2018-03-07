@@ -49,8 +49,10 @@ def get_names(names):
 
 
 def normalize_attrib_name(name):
-    """Normalize name to Python attribute style."""
+    """Normalize name to Python attribute style.
 
+    Convert "First strike" to "first_strike"
+    """
     return fix_camel_case(name).lower().replace(" ", "_")
 
 

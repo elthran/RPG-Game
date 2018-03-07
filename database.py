@@ -10,8 +10,10 @@ Mainly using the tutorial at:
 import hashlib
 import importlib
 import datetime
+import random
 # Testing only
 import pdb
+from pprint import pprint
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

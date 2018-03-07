@@ -477,8 +477,8 @@ def reset_character(stat_type, hero=None):
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 @uses_hero
-def admin(path=None, hero=None):
-    admin = None
+def admin(path="modify_self", hero=None):
+    admin_form_content = None
     if path == "edit_database":
         pass
     elif path == "modify_self":
@@ -494,13 +494,13 @@ def admin(path=None, hero=None):
             hero.basic_ability_points = int(request.form["Basic_ability_points"])
             hero.archetype_ability_points = int(request.form["Archetype_ability_points"])
             hero.calling_ability_points = int(request.form["Calling_ability_points"])
-            hero.pantheon_ability_points = int(request.form["Pantheon_ability_points"])
+            hero.pantheon_ability_points = int(request.form["Pantheonic_ability_points"])
             hero.attribute_points = int(request.form["Attribute_points"])
             hero.proficiency_points = int(request.form['Proficiency_Points'])
             hero.refresh_character(full=True)
             return redirect(url_for('home'))
 
-        admin = [
+        admin_form_content = [
             ("Age", hero.age),
             ("Experience", hero.experience),
             ("Experience_maximum", hero.experience_maximum),
@@ -514,7 +514,7 @@ def admin(path=None, hero=None):
             ("Pantheonic_ability_points", hero.pantheon_ability_points),
             ("Attribute_points", hero.attribute_points),
             ("Proficiency_Points", hero.proficiency_points)]
-    return render_template('admin.html', hero=hero, admin=admin, path=path)  # return a string
+    return render_template('admin.html', hero=hero, admin=admin_form_content, path=path)  # return a string
 
 
 # The if statement works and displays the user page as normal. Now if you
@@ -677,7 +677,7 @@ def attributes(hero=None):
 @uses_hero
 def proficiencies(hero=None):
     # This page is literally just a html page with tooltips and proficiency level up buttons. No python code is needed. Python only tells html which page to load.
-    return render_template('profile_proficiencies.html', page_title="Proficiencies", hero=hero, all_attributes=hero.attributes, all_proficiencies=hero.get_summed_proficiencies())
+    return render_template('profile_proficiencies.html', page_title="Proficiencies", hero=hero, all_attributes=hero.attributes, all_proficiencies=hero.base_proficiencies)
 
 
 @app.route('/ability_tree/<spec>')
@@ -1067,20 +1067,20 @@ def arena(name='', hero=None, location=None):
     conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
                     ("Level: ", str(game.enemy.level), "Combat Details"),
                     ("Health: ", str(profs.health.get_base()) + " / " + str(
-                        profs.health.get_final())),
-                    ("Damage: ", str(profs.damage.get_final()) + " - " + str(
-                        profs.damage.get_final())),
-                    ("Attack Speed: ", str(profs.speed.get_final())),
-                    ("Accuracy: ", str(profs.accuracy.get_final()) + "%"),
-                    ("First Strike: ", str(profs.first_strike.get_final()) + "%"),
-                    ("Critical Hit Chance: ", str(profs.killshot.get_final()) + "%"),
-                    ("Critical Hit Modifier: ", str(profs.killshot.get_final())),
-                    ("Defence: ", str(profs.defence.get_final()) + "%"),
-                    ("Evade: ", str(profs.evade.get_final()) + "%"),
-                    ("Parry: ", str(profs.parry.get_final()) + "%"),
-                    ("Riposte: ", str(profs.riposte.get_final()) + "%"),
-                    ("Block Chance: ", str(profs.block.get_final()) + "%"),
-                    ("Block Reduction: ", str(profs.block.get_final()) + "%")]
+                        profs.health.final)),
+                    ("Damage: ", str(profs.damage.final) + " - " + str(
+                        profs.damage.final)),
+                    ("Attack Speed: ", str(profs.speed.final)),
+                    ("Accuracy: ", str(profs.accuracy.final) + "%"),
+                    ("First Strike: ", str(profs.first_strike.final) + "%"),
+                    ("Critical Hit Chance: ", str(profs.killshot.final) + "%"),
+                    ("Critical Hit Modifier: ", str(profs.killshot.final)),
+                    ("Defence: ", str(profs.defence.final) + "%"),
+                    ("Evade: ", str(profs.evade.final) + "%"),
+                    ("Parry: ", str(profs.parry.final) + "%"),
+                    ("Riposte: ", str(profs.riposte.final) + "%"),
+                    ("Block Chance: ", str(profs.block.final) + "%"),
+                    ("Block Reduction: ", str(profs.block.final) + "%")]
     page_links = [("Challenge the enemy to a ", "/battle/monster", "fight", "."),
                   ("Go back to the ", "/barracks/Barracks", "Barracks", ".")]
     return render_template(

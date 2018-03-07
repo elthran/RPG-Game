@@ -126,7 +126,7 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
     @property
     def armour_value(self):
         try:
-            return self.proficiencies['defence'].get_final()
+            return self.proficiencies['defence'].final
         except KeyError:
             return 0
 
