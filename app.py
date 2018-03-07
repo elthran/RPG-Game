@@ -1072,68 +1072,38 @@ def arena(name='', hero=None, location=None):
 
 
 # this gets called if you fight in the arena
-@app.route('/battle/<this_user>')
+@app.route('/battle/<enemy_user>')
 @login_required
 @uses_hero
-def battle(this_user=None, hero=None):
-    page_title = "Battle"
-    page_heading = "Fighting"
-    print("running function: battle2")
+def battle(enemy_user=None, hero=None):
     page_links = [("Return to your ", "/home", "profile", " page.")]
-    if this_user == "monster":
+    if enemy_user == "monster": # Ideally if this is an integer then search for a monster with that ID.
         pass
-    else:
-        enemy = database.fetch_hero_by_username(this_user)
-        enemy.login_alerts += "You have been attacked!-"
-        game.set_enemy(enemy)
-        game.enemy.experience_rewarded = 5
-        game.enemy.items_rewarded = []
-    hero.get_summed_proficiencies('health').current, game.enemy.get_summed_proficiencies('health').current, battle_log = combat_simulator.battle_logic(hero, game.enemy) # This should return the full heroes, not just their health
-    game.has_enemy = False
-    if hero.get_summed_proficiencies('health').current == 0:
-        page_title = "Defeat!"
-        page_heading = "You have died."
-        location = database.get_object_by_name('Location', hero.last_city.name)
+    else:   # If it's not an integer, then it's a username. Search for that user's hero.
+        enemy = database.fetch_hero_by_username(enemy_user)
+        # enemy.login_alerts += "You have been attacked!-"     This will be changed to the new notification system.
+        game.set_enemy(enemy)   # Why do we need (game) here? I don't understand why.'
+        game.enemy.experience_rewarded = game.enemy.age # For now you just get 1 experience for each level the other hero was
+        game.enemy.items_rewarded = []   # Currently you get no items for killing another user
+    battle_log = combat_simulator.battle_logic(hero, game.enemy) # Not sure if the combat sim should update the database or return the heros to be updated here
+    game.has_enemy = False # Not sure why we need game to have an enemy just to run the combat simulator? Please explain
+    hero.current_dungeon_monster = False # Whether you win or lose, the monster will now be gone.
+    if hero.get_summed_proficiencies('health').current == 0: # First see if the player died.
+        location = database.get_object_by_name('Location', hero.last_city.name) # Return hero to last visited city
         hero.current_location = location
-        hero.current_dungeon_monster = False
-        hero.deaths += 1
-    else:
-        """
-        for item in hero.equipped_items:
-            item.durability -= 1
-            if item.durability <= 0:
-                item.broken = True
-        # This code is for the bestiary and should add one to your kill count for that species of monster. If it's a new species it shouls add it to your book.
-        newMonster = True
-        for key, value in hero.kill_quests.items():
-            if key == game.enemy.species:
-                hero.kill_quests[key] += 1
-                if hero.kill_quests[key] == 2:
-                    for achievement in hero.completed_achievements:
-                        if achievement[0] == "Kill a " + game.enemy.species:
-                            hero.completed_achievements.remove(achievement)
-                            break
-                    hero.completed_achievements.append(("Kill two " + game.enemy.species_plural, "10"))
-                    hero.experience += 10
-                newMonster = False
-                break
-        if newMonster is not None:
-            #hero.kill_quests[game.enemy.species] = 1
-            hero.completed_achievements.append(("Kill a " + game.enemy.species, "5"))
-            for monster in bestiary_data:
-                if monster.name == game.enemy.name:
-                    hero.bestiary.append(monster)
-            hero.experience += 5
-        """
-        experience_gained = hero.gain_experience(game.enemy.experience_rewarded)  # * hero.experience_gain_modifier  THIS IS CAUSING A WEIRD BUG? I don't know why
-        if this_user == "monster":
-            hero.monster_kills += 1
-        else:
-            hero.player_kills += 1
-            game.enemy.deaths += 1
-            location = database.get_object_by_name('Location', game.enemy.last_city.name)
+        hero.current_dungeon_monster = False  # Reset any progress in any dungeon he was in
+        hero.deaths += 1  # Record that the hero has another death
+    else:  # Ok, the hero is not dead. Currently that means he won! Since we don't have ties yet.
+        experience_gained = str(hero.gain_experience(game.enemy.experience_rewarded)) # This works PERFECTLY as intended!
+        if enemy_user == "monster": # This needs updating. If you killed a monster then the next few lines should differ from a user
+            # hero.monster_kills += 1
+            pass
+        else: # Ok, you killed a user!
+            hero.player_kills += 1 # You get a player kill score!
+            game.enemy.deaths += 1 # Make sure they get their death recorded!
+            location = database.get_object_by_name('Location', game.enemy.last_city.name) # Send them to their last visited city
             game.enemy.current_location = location
-        if len(game.enemy.items_rewarded) > 0:
+        if len(game.enemy.items_rewarded) > 0: # Give the hero any items earned! This probably should be completely redone.
             for item in game.enemy.items_rewarded:
                 if not any(items.name == item.name for items in hero.inventory):
                     hero.inventory.append(item)
@@ -1141,14 +1111,9 @@ def battle(this_user=None, hero=None):
                     for items in hero.inventory:
                         if items.name == item.name:
                             items.amount_owned += 1
-        page_title = "Victory!"
-        page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(experience_gained) + " experience!"
+        battle_log += "You have defeated the " + game.enemy.name + " and gained " + experience_gained + " experience!"
         page_links = [("Return to where you ", hero.current_location.url, "were", ".")]
-        hero.current_dungeon_monster = False
-    return render_template(
-        'battle.html', page_title=page_title, page_heading=page_heading,
-        battle_log=battle_log, hero=hero, enemy=game.enemy,
-        page_links=page_links)
+    return render_template('battle.html', battle_log=battle_log, hero=hero, enemy=game.enemy, page_links=page_links)
 
 
 # a.k.a. "Blacksmith"

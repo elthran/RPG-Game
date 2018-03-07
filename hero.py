@@ -368,7 +368,7 @@ class Hero(SessionHoistMixin, Base):
         self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100
 
     def gain_experience(self, amount):
-        new_amount = amount * self.get_summed_proficiencies('understanding').final
+        new_amount = amount * (1 + self.get_summed_proficiencies('understanding').final / 100) # Each value of understanding should add 1% exp gained
         new_amount = int(new_amount) + (random.random() < new_amount - int(new_amount)) # This will round the number weighted by its decimal (so 1.2 has 20% chance of rounding up)
         self.experience += new_amount
         if self.experience >= self.experience_maximum:
@@ -380,7 +380,7 @@ class Hero(SessionHoistMixin, Base):
             self.archetype_ability_points += 1
             self.age += 1
             self.refresh_character(full=True)
-        return new_amount
+        return new_amount # This way you can just run this function anytime you want to add exp, it calculates your modifiers and updates, then returns the value in case you want to print it
 
     def equipped_items(self):
         return self.inventory.equipped or []  # Might work without OR.
