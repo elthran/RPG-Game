@@ -11,8 +11,8 @@ from random import randint
 
 def determine_attacker(active, inactive):
     speed_sum = active.get_summed_proficiencies('speed').final + inactive.get_summed_proficiencies('speed').final
-    random = randint(0,speed_sum)
-    print(active.get_summed_proficiencies('speed').final,inactive.get_summed_proficiencies('speed').final,random)
+    random = randint(0,speed_sum+1)
+    print(active.name,"'s speed:",active.get_summed_proficiencies('speed').final,inactive.name,"'s speed:",inactive.get_summed_proficiencies('speed').final," Random seed:",random)
     if active.get_summed_proficiencies('speed').final >= randint(0,speed_sum):
         return active,inactive
     else:
@@ -83,12 +83,13 @@ def lower_fatigue(fatigue):
 
 def battle_logic(active_player, inactive_player):
     """ Runs the entire battle simulator """
-    count = 5
-    combat_log = active_player.name + " Health: " + str(active_player.get_summed_proficiencies('health').current) + "  " + inactive_player.name + " Health: " + str(inactive_player.get_summed_proficiencies('health').current)
-    while active_player.base_proficiencies['health'].current >=0 and inactive_player.base_proficiencies['health'].current >= 0 and count >= 0:
+    # Currently just takes 1 away from health of whoever attacks slower each round. Ends when someone dies.
+    combat_log = active_player.name + " Health: " + str(active_player.base_proficiencies['health'].current) + "  " + inactive_player.name + " Health: " + str(inactive_player.base_proficiencies['health'].current)
+    while active_player.base_proficiencies['health'].current > 0 and inactive_player.base_proficiencies['health'].current > 0:
         attacker,defender = determine_attacker(active_player,inactive_player)
-        print("Before attack:",attacker.base_proficiencies['health'].current,defender.base_proficiencies['health'].current)
-        count-= 1
         defender.base_proficiencies['health'].current -= 1
-        print("After attack:", attacker.base_proficiencies['health'].current,defender.base_proficiencies['health'].current)
+        print("ATTACKER IS:", attacker.name, " with health: ", attacker.base_proficiencies['health'].current,"      DEFENDER IS ", defender.name," with health:", defender.base_proficiencies['health'].current)
+
+    active_player.base_proficiencies['health'].current = max(active_player.base_proficiencies['health'].current, 0)
+    inactive_player.base_proficiencies['health'].current = max(inactive_player.base_proficiencies['health'].current, 0)
     return combat_log

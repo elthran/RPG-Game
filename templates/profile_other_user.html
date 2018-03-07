@@ -15,7 +15,7 @@
 <!-- Messing with multiplayer battling -->
 <div>
 	<h1>Battle user</h1>
-	{% if enemy_hero.get_summed_proficiencies('health').final == 0 %}
+	{% if enemy_hero.base_proficiencies['health'].current == 0 %}
 	They are already dead.
 	{% else %}
 	<a href="/battle/{{ enemy_hero.user.username }}">Battle</a>
@@ -45,7 +45,7 @@
 				<li>Virtue: {{ enemy_hero.virtue }}</li>
 			{% endif %}			
 			<li>Experience: {{ enemy_hero.experience }} / {{ enemy_hero.experience_maximum }}</li>
-			<li>Health: {{ enemy_hero.get_summed_proficiencies()['health'].current }} / {{ enemy_hero.get_summed_proficiencies()['health'].final }}</li>
+			<li>Health: {{ enemy_hero.base_proficiencies['health'].current }} / {{ enemy_hero.get_summed_proficiencies()['health'].final }}</li>
 			<li>Sanctity: {{ enemy_hero.get_summed_proficiencies()['sanctity'].current }} / {{ enemy_hero.get_summed_proficiencies()['sanctity'].final }}</li>
 			<li>Storage: {{ enemy_hero.get_summed_proficiencies()['storage'].current }} / {{ enemy_hero.get_summed_proficiencies()['storage'].final }}</li>
 			<li>Endurance: {{ enemy_hero.get_summed_proficiencies()['endurance'].current }} / {{ enemy_hero.get_summed_proficiencies()['endurance'].final }}</li>
