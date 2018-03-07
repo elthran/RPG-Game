@@ -133,6 +133,7 @@ class Proficiency(TemplateMixin, Base):
         {% raw %}
         temp = """<h1>{{ prof.display_name }}</h1>
                   <h2>{{ prof.description }}</h2>
+                  <h2>Current level: {{ prof.level }}</h2>
                   <h2>Current value: {{ formatted_final }}</h2>
                   <h2>Next value: {{ formatted_next }}</h2>"""
         {% endraw %}
@@ -141,6 +142,15 @@ class Proficiency(TemplateMixin, Base):
             formatted_final=self.format_spec.format(self.final),
             formatted_next=self.format_spec.format(self.next_value))
 
+    @property
+    def attribute(self):
+        return None
+
+    @property
+    def is_max_level(self):
+        """Cap the proficiency level at double the attribute level."""
+        return True if self.level > self.attribute.level * 2 else False
+
 
 {% for prof in PROFICIENCY_INFORMATION %}
 {% set prof_class = normalize_class_name(prof[0]) %}
@@ -148,19 +158,28 @@ class Proficiency(TemplateMixin, Base):
 {% set display_name = prof[0].capitalize() %}
 {% set value = prof[3] %}
 class {{ prof_class }}(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "{{ prof_class }}"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = {{prof[5] if prof[5] else False}}
     name = "{{attrib_name}}"
     display_name = "{{ display_name.title() }}"
-    num_of_decimals = {{ value[3] }}
+    num_of_decimals = {{value[3]}}
     # This should add a "%" to the display at the end of a prof.
     # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = {{ prof[4] }}
+    is_percent = {{prof[4]}}
     format_spec = "{{ '{' }}:.{{ value[3] }}f{{ '}' }}{{ '%' if prof[4] else '' }}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "{{ prof_class }}"
+    }
+
+    {% if prof[2] %}
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.{{ normalize_attrib_name(prof[2]) }}
+
+    {% endif %}
 
     def __init__(self, *args, base={{ value[1] }}, **kwargs):
         super().__init__(*args, base=base, **kwargs)

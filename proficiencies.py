@@ -225,6 +225,7 @@ class Proficiency(TemplateMixin, Base):
 
         temp = """<h1>{{ prof.display_name }}</h1>
                   <h2>{{ prof.description }}</h2>
+                  <h2>Current level: {{ prof.level }}</h2>
                   <h2>Current value: {{ formatted_final }}</h2>
                   <h2>Next value: {{ formatted_next }}</h2>"""
         return render_template_string(
@@ -232,11 +233,17 @@ class Proficiency(TemplateMixin, Base):
             formatted_final=self.format_spec.format(self.final),
             formatted_next=self.format_spec.format(self.next_value))
 
+    @property
+    def attribute(self):
+        return None
+
+    @property
+    def is_max_level(self):
+        """Cap the proficiency level at double the attribute level."""
+        return True if self.level > self.attribute.level * 2 else False
+
 
 class Health(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Health"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -247,6 +254,16 @@ class Health(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Health"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.vitality
+
 
     def __init__(self, *args, base=5, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -267,9 +284,6 @@ class Health(Proficiency):
 
 
 class Regeneration(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Regeneration"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -280,6 +294,16 @@ class Regeneration(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.1f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Regeneration"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.vitality
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -300,9 +324,6 @@ class Regeneration(Proficiency):
 
 
 class Recovery(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Recovery"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -313,6 +334,16 @@ class Recovery(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Recovery"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.vitality
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -333,9 +364,6 @@ class Recovery(Proficiency):
 
 
 class Climbing(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Climbing"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -346,6 +374,16 @@ class Climbing(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Climbing"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.agility
+
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -366,9 +404,6 @@ class Climbing(Proficiency):
 
 
 class Storage(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Storage"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -379,6 +414,16 @@ class Storage(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Storage"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.brawn
+
 
     def __init__(self, *args, base=10, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -399,9 +444,6 @@ class Storage(Proficiency):
 
 
 class Encumbrance(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Encumbrance"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -412,6 +454,16 @@ class Encumbrance(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Encumbrance"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.brawn
+
 
     def __init__(self, *args, base=100, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -432,9 +484,6 @@ class Encumbrance(Proficiency):
 
 
 class Endurance(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Endurance"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -445,6 +494,16 @@ class Endurance(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Endurance"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
 
     def __init__(self, *args, base=3, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -465,9 +524,6 @@ class Endurance(Proficiency):
 
 
 class DamageMinimum(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "DamageMinimum"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -478,6 +534,16 @@ class DamageMinimum(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "DamageMinimum"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.brawn
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -498,9 +564,6 @@ class DamageMinimum(Proficiency):
 
 
 class DamageMaximum(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "DamageMaximum"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -511,6 +574,16 @@ class DamageMaximum(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "DamageMaximum"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.brawn
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -531,9 +604,6 @@ class DamageMaximum(Proficiency):
 
 
 class Speed(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Speed"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -544,6 +614,16 @@ class Speed(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.2f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Speed"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.quickness
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -564,9 +644,6 @@ class Speed(Proficiency):
 
 
 class Accuracy(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Accuracy"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -577,6 +654,16 @@ class Accuracy(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Accuracy"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.agility
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -597,9 +684,6 @@ class Accuracy(Proficiency):
 
 
 class FirstStrike(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "FirstStrike"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -610,6 +694,16 @@ class FirstStrike(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "FirstStrike"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.quickness
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -630,9 +724,6 @@ class FirstStrike(Proficiency):
 
 
 class Killshot(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Killshot"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -643,6 +734,16 @@ class Killshot(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Killshot"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.agility
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -663,9 +764,6 @@ class Killshot(Proficiency):
 
 
 class Defence(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Defence"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -676,6 +774,16 @@ class Defence(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Defence"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -696,9 +804,6 @@ class Defence(Proficiency):
 
 
 class Armour(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Armour"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -709,6 +814,16 @@ class Armour(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Armour"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -729,9 +844,6 @@ class Armour(Proficiency):
 
 
 class Evade(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Evade"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -742,6 +854,16 @@ class Evade(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Evade"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.quickness
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -762,9 +884,6 @@ class Evade(Proficiency):
 
 
 class Parry(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Parry"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -775,6 +894,16 @@ class Parry(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Parry"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.quickness
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -795,9 +924,6 @@ class Parry(Proficiency):
 
 
 class Flee(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Flee"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -808,6 +934,16 @@ class Flee(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Flee"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.quickness
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -828,9 +964,6 @@ class Flee(Proficiency):
 
 
 class Riposte(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Riposte"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -841,6 +974,16 @@ class Riposte(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Riposte"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.agility
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -861,9 +1004,6 @@ class Riposte(Proficiency):
 
 
 class Fatigue(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Fatigue"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -874,6 +1014,16 @@ class Fatigue(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Fatigue"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -894,9 +1044,6 @@ class Fatigue(Proficiency):
 
 
 class Block(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Block"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -907,6 +1054,16 @@ class Block(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Block"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -934,9 +1091,6 @@ class Block(Proficiency):
 
 
 class Stealth(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Stealth"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -947,6 +1101,16 @@ class Stealth(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Stealth"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.agility
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -967,9 +1131,6 @@ class Stealth(Proficiency):
 
 
 class Pickpocketing(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Pickpocketing"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -980,6 +1141,16 @@ class Pickpocketing(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Pickpocketing"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.agility
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1000,9 +1171,6 @@ class Pickpocketing(Proficiency):
 
 
 class Faith(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Faith"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1013,6 +1181,16 @@ class Faith(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Faith"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.divinity
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1033,9 +1211,6 @@ class Faith(Proficiency):
 
 
 class Sanctity(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Sanctity"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1046,6 +1221,16 @@ class Sanctity(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Sanctity"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.divinity
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1066,9 +1251,6 @@ class Sanctity(Proficiency):
 
 
 class Redemption(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Redemption"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1079,6 +1261,16 @@ class Redemption(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.1f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Redemption"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.divinity
+
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1099,9 +1291,6 @@ class Redemption(Proficiency):
 
 
 class ResistHoly(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "ResistHoly"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1112,6 +1301,16 @@ class ResistHoly(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistHoly"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.divinity
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1132,9 +1331,6 @@ class ResistHoly(Proficiency):
 
 
 class Bartering(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Bartering"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1145,6 +1341,16 @@ class Bartering(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Bartering"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.charisma
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1165,9 +1371,6 @@ class Bartering(Proficiency):
 
 
 class Oration(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Oration"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1178,6 +1381,16 @@ class Oration(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Oration"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.charisma
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1198,9 +1411,6 @@ class Oration(Proficiency):
 
 
 class Charm(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Charm"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1211,6 +1421,16 @@ class Charm(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Charm"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.charisma
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1231,9 +1451,6 @@ class Charm(Proficiency):
 
 
 class Trustworthiness(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Trustworthiness"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1244,6 +1461,16 @@ class Trustworthiness(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Trustworthiness"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.charisma
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1264,9 +1491,6 @@ class Trustworthiness(Proficiency):
 
 
 class Renown(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Renown"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1277,6 +1501,16 @@ class Renown(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Renown"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.charisma
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1297,9 +1531,6 @@ class Renown(Proficiency):
 
 
 class Knowledge(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Knowledge"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1310,6 +1541,16 @@ class Knowledge(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Knowledge"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.intellect
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1330,9 +1571,6 @@ class Knowledge(Proficiency):
 
 
 class Literacy(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Literacy"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1343,6 +1581,16 @@ class Literacy(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Literacy"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.intellect
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1363,9 +1611,6 @@ class Literacy(Proficiency):
 
 
 class Understanding(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Understanding"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1376,6 +1621,16 @@ class Understanding(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Understanding"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.intellect
+
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1396,9 +1651,6 @@ class Understanding(Proficiency):
 
 
 class Luckiness(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Luckiness"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1409,6 +1661,16 @@ class Luckiness(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Luckiness"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.fortuity
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1429,9 +1691,6 @@ class Luckiness(Proficiency):
 
 
 class Adventuring(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Adventuring"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1442,6 +1701,16 @@ class Adventuring(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Adventuring"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.fortuity
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1462,9 +1731,6 @@ class Adventuring(Proficiency):
 
 
 class Logistics(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Logistics"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1475,6 +1741,16 @@ class Logistics(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Logistics"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.pathfinding
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1495,9 +1771,6 @@ class Logistics(Proficiency):
 
 
 class Mountaineering(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Mountaineering"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1508,6 +1781,16 @@ class Mountaineering(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Mountaineering"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.pathfinding
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1528,9 +1811,6 @@ class Mountaineering(Proficiency):
 
 
 class Woodsman(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Woodsman"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1541,6 +1821,16 @@ class Woodsman(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Woodsman"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.pathfinding
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1561,9 +1851,6 @@ class Woodsman(Proficiency):
 
 
 class Navigator(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Navigator"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1574,6 +1861,16 @@ class Navigator(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Navigator"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.pathfinding
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1594,9 +1891,6 @@ class Navigator(Proficiency):
 
 
 class Detection(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Detection"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1607,6 +1901,16 @@ class Detection(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Detection"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.survivalism
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1627,9 +1931,6 @@ class Detection(Proficiency):
 
 
 class Caution(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Caution"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1640,6 +1941,16 @@ class Caution(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Caution"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.survivalism
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1660,9 +1971,6 @@ class Caution(Proficiency):
 
 
 class Explorer(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Explorer"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1673,6 +1981,16 @@ class Explorer(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Explorer"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.survivalism
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1693,9 +2011,6 @@ class Explorer(Proficiency):
 
 
 class Huntsman(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Huntsman"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1706,6 +2021,16 @@ class Huntsman(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Huntsman"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.survivalism
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1726,9 +2051,6 @@ class Huntsman(Proficiency):
 
 
 class Survivalist(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Survivalist"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1739,6 +2061,16 @@ class Survivalist(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Survivalist"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.survivalism
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1759,9 +2091,6 @@ class Survivalist(Proficiency):
 
 
 class ResistFrost(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "ResistFrost"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1772,6 +2101,16 @@ class ResistFrost(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistFrost"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1792,9 +2131,6 @@ class ResistFrost(Proficiency):
 
 
 class ResistFlame(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "ResistFlame"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1805,6 +2141,16 @@ class ResistFlame(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistFlame"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1825,9 +2171,6 @@ class ResistFlame(Proficiency):
 
 
 class ResistShadow(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "ResistShadow"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1838,6 +2181,16 @@ class ResistShadow(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistShadow"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1858,9 +2211,6 @@ class ResistShadow(Proficiency):
 
 
 class ResistPoison(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "ResistPoison"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1871,6 +2221,16 @@ class ResistPoison(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistPoison"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1891,9 +2251,6 @@ class ResistPoison(Proficiency):
 
 
 class ResistBlunt(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "ResistBlunt"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1904,6 +2261,16 @@ class ResistBlunt(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistBlunt"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1924,9 +2291,6 @@ class ResistBlunt(Proficiency):
 
 
 class ResistSlashing(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "ResistSlashing"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1937,6 +2301,16 @@ class ResistSlashing(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistSlashing"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1957,9 +2331,6 @@ class ResistSlashing(Proficiency):
 
 
 class ResistPiercing(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "ResistPiercing"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -1970,6 +2341,16 @@ class ResistPiercing(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
     format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistPiercing"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -1990,9 +2371,6 @@ class ResistPiercing(Proficiency):
 
 
 class Courage(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Courage"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -2003,6 +2381,16 @@ class Courage(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Courage"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.willpower
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -2023,9 +2411,6 @@ class Courage(Proficiency):
 
 
 class Sanity(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Sanity"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
@@ -2036,6 +2421,16 @@ class Sanity(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Sanity"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.willpower
+
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
@@ -2056,9 +2451,6 @@ class Sanity(Proficiency):
 
 
 class Thorns(Proficiency):
-    __mapper_args__ = {
-        'polymorphic_identity': "Thorns"
-    }
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = True
@@ -2069,6 +2461,11 @@ class Thorns(Proficiency):
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Thorns"
+    }
+
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)

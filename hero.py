@@ -249,6 +249,8 @@ class Hero(SessionHoistMixin, Base):
         """
 
         # Skills and abilities
+        self.attributes = AttributeContainer()  # Must go above proficiencies
+
         # set self.base_proficiencies
         # e.g.
         # import proficiencies
@@ -261,12 +263,12 @@ class Hero(SessionHoistMixin, Base):
             ProfClass = getattr(proficiencies, cls_name)
             if not ProfClass.hidden:
                 ProfClass().hero = self
+
             # obj = Class()
             # obj.hero = self
             # OR
             # self.base_proficiencies[obj.name] = obj
 
-        self.attributes = AttributeContainer()
         self.abilities = AbilityContainer()
         self.inventory = Inventory()
         self.journal = Journal()
