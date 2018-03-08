@@ -205,6 +205,7 @@ class Hero(SessionHoistMixin, Base):
             # convert dict of values into dict of database objects
             Class = getattr(proficiencies, type_)
             summed[key_name] = Class(level=lvl, base=base, modifier=mod)
+            summed[key_name].current = prof.current
 
             # If proficiencies exists update it. If not just return this
             # mapped object.
@@ -235,6 +236,7 @@ class Hero(SessionHoistMixin, Base):
 
                 Class = getattr(proficiencies, type_)
                 summed[key] = Class(level=lvl, base=base, modifier=mod)
+                summed[key].current = self.base_proficiencies[key].current
             self.proficiencies = Map(summed)
             return self.proficiencies
 
@@ -264,10 +266,7 @@ class Hero(SessionHoistMixin, Base):
             if not ProfClass.hidden:
                 ProfClass().hero = self
 
-            # obj = Class()
-            # obj.hero = self
-            # OR
-            # self.base_proficiencies[obj.name] = obj
+        self.base_proficiencies['endurance'].current = self.base_proficiencies['endurance'].final
 
         self.abilities = AbilityContainer()
         self.inventory = Inventory()

@@ -44,8 +44,8 @@ import prebuilt_objects
 from session_helpers import scoped_session, safe_commit_session
 
 # Constants#
-# SECOND_PER_ENDURANCE = 3600  # One endurance per hour.
-SECOND_PER_ENDURANCE = 30 # One endurance per 30 seconds
+# UPDATE_INTERVAL = 3600  # One endurance per hour.
+UPDATE_INTERVAL = 30 # One endurance per 30 seconds
 Session = sessionmaker()
 
 
@@ -475,29 +475,14 @@ class EZDB:
         Suggestion: Currently only affects the passed Hero, perhaps it
         should update all heroes?
         """
-        timestamp = hero.timestamp
-        time_diff = (EZDB.now() - timestamp).total_seconds()
-
-        # Do nothing if less than 30 minutes have passed.
-        # if time_diff < 60 * 30:
-        # if time_diff < 60:  # Temp: update once a minute!
-        #     print("Main update is too early for Hero {}?".format(hero.id))
-        #     return None
-
-        print(time_diff)
-        endurance_increment = int(time_diff / SECOND_PER_ENDURANCE)
-        print("Hero: {}-> edurance_increment: {}".format(hero.id, endurance_increment))
-
         endurance = hero.base_proficiencies['endurance']
-        endurance.current = min(endurance.current + endurance_increment,
-                                endurance.final)
+        summed_endurance = hero.get_summed_proficiencies('endurance')
+        regeneration = hero.get_summed_proficiencies('regeneration')
+        endurance.current = min(endurance.current + regeneration.final,
+                                summed_endurance.final)
 
         for item in hero.equipped_items():
             item.affinity += 1
-
-        # Only update if endurance has been incremented.
-        if endurance_increment:
-            hero.timestamp = EZDB.now()
 
         print("Hero {} updated on schedule.".format(hero.id))
 

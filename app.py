@@ -32,7 +32,7 @@ from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
 # _before_ any of them are used.
-from database import EZDB, SECOND_PER_ENDURANCE
+from database import EZDB, UPDATE_INTERVAL
 from engine import Engine
 from forum import Board, Thread, Post
 from bestiary2 import create_monster, MonsterTemplate
@@ -50,7 +50,7 @@ game = Game()
 
 def game_clock():
     while True:
-        time.sleep(SECOND_PER_ENDURANCE)
+        time.sleep(UPDATE_INTERVAL)
         database.update_time_all_heroes()
 
 
@@ -478,6 +478,7 @@ def reset_character(stat_type, hero=None):
 @login_required
 @uses_hero
 def admin(path="modify_self", hero=None):
+    hero.base_proficiencies['endurance'].current = 0
     admin_form_content = None
     if path == "edit_database":
         pass

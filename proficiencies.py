@@ -161,7 +161,7 @@ class Proficiency(TemplateMixin, Base):
         self.base = base
         self.modifier = modifier
         self.template = template
-        self.current = self.final
+        self.current = 0
 
     def build_new_from_template(self):
         if not self.template:
@@ -171,7 +171,7 @@ class Proficiency(TemplateMixin, Base):
 
     def level_up(self):
         self.level += 1
-        self.current = self.final
+        self.current = self.hero.get_summed_proficiencies(self.name).final
 
     def scale_by_level(self, level=None):
         """Return some function of the level attribute.
