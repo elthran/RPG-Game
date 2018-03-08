@@ -11,6 +11,8 @@ from pprint import pprint  # For testing!
 from functools import wraps
 from random import choice
 import os
+import time
+from multiprocessing import Process
 
 from flask import (
     Flask, render_template, redirect, url_for, request, session,
@@ -18,6 +20,7 @@ from flask import (
 from flask_sslify import SSLify
 
 import werkzeug
+import werkzeug.serving
 
 from game import Game
 import combat_simulator
@@ -29,7 +32,7 @@ from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
 # _before_ any of them are used.
-from database import EZDB
+from database import EZDB, UPDATE_INTERVAL
 from engine import Engine
 from forum import Board, Thread, Post
 from bestiary2 import create_monster, MonsterTemplate
@@ -44,8 +47,24 @@ engine = Engine(database)
 # initialization
 game = Game()
 
-# create the application object
-app = Flask(__name__)
+
+def game_clock():
+    while True:
+        time.sleep(UPDATE_INTERVAL)
+        database.update_time_all_heroes()
+
+
+def create_app():
+    # create the application object
+    app = Flask(__name__)
+    # pdb.set_trace()
+
+    if not werkzeug.serving.is_running_from_reloader():
+        Process(target=game_clock).start()
+    return app
+
+
+app = create_app()
 sslify = SSLify(app)
 app.secret_key = 'starcraft'
 
@@ -627,7 +646,7 @@ def home(hero=None):
     """
 
     # Is this supposed to update the time of all hero objects?
-    database.update_time(hero)
+    # database.update_time(hero)
 
     # Not implemented. Control user moves on map.
     # Sets up initial valid moves on the map.

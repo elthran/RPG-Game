@@ -44,7 +44,8 @@ import prebuilt_objects
 from session_helpers import scoped_session, safe_commit_session
 
 # Constants#
-SECOND_PER_ENDURANCE = 10
+# UPDATE_INTERVAL = 3600  # One endurance per hour.
+UPDATE_INTERVAL = 30 # One endurance per 30 seconds
 Session = sessionmaker()
 
 
@@ -226,9 +227,13 @@ class EZDB:
         return item
 
     def get_all_users(self):
-        """Return all Users order_by name.
+        """Return all Users order_by id.
         """
         return self.session.query(User).order_by(User.id).all()
+
+    def get_all_heroes(self):
+        """Return all Hero objects ordered by id."""
+        return self.session.query(Hero).order_by(Hero.id).all()
 
     def get_ability_by_id(self, ability_id):
         """Return an ability from its ID."""
@@ -443,10 +448,21 @@ class EZDB:
         """
         return datetime.datetime.utcnow()
 
+    def update_time_all_heroes(self):
+        """Run update_time on all hero objects.
+
+        Consider moving the While True: + sleep somewhere else?
+        Seems a little out of place here.
+        """
+
+        for hero in self.get_all_heroes():
+            self.update_time(hero)
+
     # Marked for renaming as it effects Hero endurance as well as time.
     # Consider update_endurance_and_time()
     # Or update_game_clock
     # Or update_hero_clock
+    @safe_commit_session
     def update_time(self, hero):
         """Update the game time clock of a specific Hero and endurance values.
 
@@ -459,19 +475,16 @@ class EZDB:
         Suggestion: Currently only affects the passed Hero, perhaps it
         should update all heroes?
         """
-        timestamp = hero.timestamp
-        time_diff = (EZDB.now() - timestamp).total_seconds()
-        endurance_increment = int(time_diff / SECOND_PER_ENDURANCE)
-        hero.base_proficiencies['endurance'].current += endurance_increment
+        endurance = hero.base_proficiencies['endurance']
+        summed_endurance = hero.get_summed_proficiencies('endurance')
+        regeneration = hero.get_summed_proficiencies('regeneration')
+        endurance.current = min(endurance.current + regeneration.final,
+                                summed_endurance.final)
 
-        if hero.base_proficiencies['endurance'].current \
-                > hero.base_proficiencies['endurance'].final:
-            hero.base_proficiencies['endurance'].current \
-                = hero.base_proficiencies['endurance'].final
+        for item in hero.equipped_items():
+            item.affinity += 1
 
-        # Only update if endurance has been incremented.
-        if endurance_increment:
-            hero.timestamp = EZDB.now()
+        print("Hero {} updated on schedule.".format(hero.id))
 
     # def get_world(self, name):
     #     """Return WorldMap object from database using by name.
