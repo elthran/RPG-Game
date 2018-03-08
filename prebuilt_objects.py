@@ -80,7 +80,7 @@ town.update()
 
 """
 town.display.places_of_interest=[
-("/store/greeting", "Blacksmith", "Shops"),
+("/town/blacksmith", "Blacksmith", "Shops"),
 ("/barracks", "Barracks"),
 ("/marketplace/greeting", "Marketplace"),
 ("/tavern", "Tavern", "Other"),
@@ -90,10 +90,10 @@ town.display.places_of_interest=[
 ]
 """
 blacksmith = Location('Blacksmith', 'store')
-blacksmith.children.append(Location('armoury', 'store'))
-blacksmith.children.append(Location('weaponry', 'store'))
-marketplace = Location('Marketplace', 'marketplace')
-marketplace.children.append(Location('general', 'marketplace'))
+#blacksmith.children.append(Location('armoury', 'blacksmith'))
+#blacksmith.children.append(Location('weaponry', 'store'))
+marketplace = Location('Marketplace', 'store')
+#marketplace.children.append(Location('general', 'marketplace'))
 tavern = Location("Red Dragon Inn", 'tavern')
 
 barracks = Location('Barracks', 'barracks')

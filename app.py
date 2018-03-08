@@ -830,32 +830,6 @@ def under_construction(hero=None):
     page_title = "Under Construction"
     return render_template('layout.html', page_title=page_title, hero=hero)  # return a string
 
-
-@app.route('/building/<name>')
-@login_required
-@uses_hero
-@update_current_location
-def building(name='', hero=None, location=None):
-    other_heroes = hero.get_other_heroes_at_current_location()
-    if name == "Old Man's Hut":
-        blacksmith_path_name = "Get Acquainted with the Blacksmith"
-        if not database.hero_has_quest_path_named(hero, blacksmith_path_name):
-            print("Adding new quests!")
-            blacksmith_path = database.get_quest_path_template(blacksmith_path_name)
-            hero.journal.quest_paths.append(blacksmith_path)
-        else:
-            print("Hero has path of that name, ignoring ..")
-
-    return render_template(
-        'move.html', hero=hero,
-        page_title=location.display.page_title,
-        page_heading=location.display.page_heading,
-        page_image=location.display.page_image,
-        paragraph=location.display.paragraph,
-        people_of_interest=other_heroes,
-        places_of_interest=location.places_of_interest)
-
-
 @app.route('/map/<name>')
 @app.route('/town/<name>')
 @app.route('/dungeon/<name>')
@@ -877,6 +851,52 @@ def move(name='', hero=None, location=None):
         other_heroes = []
     else:
         other_heroes = hero.get_other_heroes_at_current_location()
+
+    return render_template(
+        'move.html', hero=hero,
+        page_title=location.display.page_title,
+        page_heading=location.display.page_heading,
+        page_image=location.display.page_image,
+        paragraph=location.display.paragraph,
+        people_of_interest=other_heroes,
+        places_of_interest=location.places_of_interest)
+
+# Currently runs blacksmith and marketplace
+@app.route('/store/<name>')
+@login_required
+@uses_hero
+@update_current_location
+def store(name, hero=None, location=None):
+    print(hero.current_city)
+    if name == "Blacksmith":
+        dialogue = "I have the greatest armoury in all of Thornwall!" # This should be pulled from pre_built objects
+        items_for_sale = database.get_all_store_items()
+    elif name == "Marketplace":
+        dialogue = "I have trinkets from all over the world! Please take a look."
+        items_for_sale = database.get_all_marketplace_items()
+    else:
+        error = "Trying to get to the store but the store name is not valid."
+        render_template('broken_page_link', error=error)
+    return render_template('store.html', hero=hero,
+                           dialogue=dialogue,
+                           items_for_sale=items_for_sale,
+                           page_title=location.display.page_title)
+
+# Currently runs old man's hut
+@app.route('/building/<name>')
+@login_required
+@uses_hero
+@update_current_location
+def building(name='', hero=None, location=None):
+    other_heroes = hero.get_other_heroes_at_current_location()
+    if name == "Old Man's Hut":
+        blacksmith_path_name = "Get Acquainted with the Blacksmith"
+        if not database.hero_has_quest_path_named(hero, blacksmith_path_name):
+            print("Adding new quests!")
+            blacksmith_path = database.get_quest_path_template(blacksmith_path_name)
+            hero.journal.quest_paths.append(blacksmith_path)
+        else:
+            print("Hero has path of that name, ignoring ..")
 
     return render_template(
         'move.html', hero=hero,
@@ -1114,34 +1134,6 @@ def battle(enemy_user=None, hero=None):
         battle_log += "You have defeated the " + game.enemy.name + " and gained " + experience_gained + " experience!"
         page_links = [("Return to where you ", hero.current_location.url, "were", ".")]
     return render_template('battle.html', battle_log=battle_log, hero=hero, enemy=game.enemy, page_links=page_links)
-
-
-# a.k.a. "Blacksmith"
-@app.route('/store/<name>')
-@login_required
-@uses_hero
-@update_current_location
-# @spawns_event
-def store(name, hero=None, location=None):
-    page_title = "Store"
-    items_for_sale = []
-    if name == "Blacksmith":
-        page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]
-        return render_template('store.html', hero=hero, page_title=page_title, page_links=page_links)  # return a string
-    elif name == "armoury":
-        page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
-        for item in database.get_all_store_items():
-            if item.garment or item.jewelry:
-                items_for_sale.append(item)
-    elif name == "weaponry":
-        page_links = [("I think I'd rather look at your ", "/store/armoury", "armour", " selection.")]
-        for item in database.get_all_store_items():
-            if item.weapon:
-                items_for_sale.append(item)
-    return render_template('store.html', hero=hero, items_for_sale=items_for_sale, page_title=page_title,
-                           page_links=page_links)  # return a string
-
-
 
 # @app.route('/tavern')
 @app.route('/tavern/<name>', methods=['GET', 'POST'])

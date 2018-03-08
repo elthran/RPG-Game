@@ -6,31 +6,26 @@ the next town and store. Until then, this should be completely fine. -->
 
 {% extends "layout.html" %}
 {% block block1 %}
-<h1 style="text-align:center;">Store</h1>
+<h1 style="text-align:center;">{{ page_title }}</h1>
 <h3>{{ dialogue }}</h3>
-{% if items_for_sale %}
-    <div style="position:relative;border:dotted;width:800px;height:600px;padding:10px;scroll:auto;">
-        <div style="position:relative;float:left;width:75%;">
-            <h2>For Sale</h2>
-            <table>
-                {% for item in items_for_sale %}
-                    <tr>
-                        <td>{{ item.name }}</td>
-                        <td><button onclick="sendToPy(event, itemPurchasedPopup, 'buy', {'id': {{ item.id }}});">Buy</button></td>
-                        <td><b>{{ item.buy_price }}</b> gold</td>
-                    </tr>
-                {% endfor %}
-            </table>
-        </div>
-        <div>
-            <b>Purchase Log:</b>
-            <div id="purchaseLog" style="position:relative;float:right;width:20%;height:575px;border:dotted;"></div>
-        </div>
+<div style="position:relative;border:dotted;width:800px;height:600px;padding:10px;scroll:auto;">
+    <div style="position:relative;float:left;width:75%;">
+        <h2>For Sale</h2>
+        <table>
+            {% for item in items_for_sale %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td><button onclick="sendToPy(event, itemPurchasedPopup, 'buy', {'id': {{ item.id }}});">Buy</button></td>
+                    <td><b>{{ item.buy_price }}</b> gold</td>
+                </tr>
+            {% endfor %}
+        </table>
     </div>
-    <a href="/marketplace/entrance">Talk</a> to shopkeeper.
-{% else %}
-    Take a look at our <a href="/marketplace/shopping">selection</a>.
-{% endif %}
-<br>Return to <a href="/town/{{ hero.current_location.name }}">{{ hero.current_location.name }}</a>
+    <div>
+        <b>Purchase Log:</b>
+        <div id="purchaseLog" style="position:relative;float:right;width:20%;height:575px;border:dotted;"></div>
+    </div>
+</div>
+<h2>Return to <a href="/town/{{ hero.current_city.name }}">{{ hero.current_city.name }}</a></h2>
 {% endblock %}
 
