@@ -440,7 +440,6 @@ def choose_character():
     # Now I need to work out how to make game not global *sigh*
     # (Marlen)
     game.set_hero(hero)
-    game.set_enemy(monster_generator(hero.age))
     flash(hero.login_alerts)
     hero.login_alerts = ""
     # If it's a new character, send them to create_character url
@@ -996,7 +995,6 @@ def explore_dungeon(name='', hero=None, location=None, extra_data=None):
     if hero.random_encounter_monster == True: # You have a monster waiting for you from before
         location.display.page_heading += "The monster paces in front of you."
         enemy = monster_generator(hero.current_dungeon_floor + 1) # This should be a saved monster and not re-generated :(
-        game.set_enemy(enemy)
         page_links = [("Attack the ", "/battle/monster", "monster", "."),
                       ("Attempt to ", "/dungeon_entrance/Dungeon%20Entrance", "flee", ".")]
     else: # You continue exploring
@@ -1022,7 +1020,6 @@ def explore_dungeon(name='', hero=None, location=None, extra_data=None):
             location.display.page_heading += "You come across a terrifying monster lurking in the shadows."
             enemy = monster_generator(hero.current_dungeon_floor+1)
             hero.current_dungeon_monster = True
-            game.set_enemy(enemy)
             page_links = [("Attack the ", "/battle/monster", "monster", "."),
                           ("Attempt to ", "/dungeon_entrance/Dungeon%20Entrance", "flee", ".")]
         elif encounter_chance > 15: # You find an item!
@@ -1070,6 +1067,7 @@ def arena(name='', hero=None, location=None):
     """
     # If I try to check if the enemy has 0 health and there is no enemy,
     # I randomly get an error
+    """
     if not game.has_enemy:
         enemy = monster_generator(hero.age - 6)
         if enemy.name == "Wolf":
@@ -1101,13 +1099,14 @@ def arena(name='', hero=None, location=None):
                     ("Riposte: ", str(profs.riposte.final) + "%"),
                     ("Block Chance: ", str(profs.block.final) + "%"),
                     ("Block Reduction: ", str(profs.block.final) + "%")]
+                    """
     page_links = [("Challenge the enemy to a ", "/battle/monster", "fight", "."),
                   ("Go back to the ", "/barracks/Barracks", "Barracks", ".")]
     return render_template(
         'building_default.html', page_title=location.display.page_title,
         page_heading=location.display.page_heading,
         page_image=location.display.page_image, hero=hero, game=game,
-        page_links=page_links, enemy_info=conversation, enemy=game.enemy)
+        page_links=page_links, enemy_info=conversation)
 
 
 # this gets called if you fight in the arena
@@ -1121,11 +1120,9 @@ def battle(enemy_user=None, hero=None):
     else:   # If it's not an integer, then it's a username. Search for that user's hero.
         enemy = database.fetch_hero_by_username(enemy_user)
         # enemy.login_alerts += "You have been attacked!-"     This will be changed to the new notification system.
-        game.set_enemy(enemy)   # Why do we need (game) here? I don't understand why.'
-        game.enemy.experience_rewarded = game.enemy.age # For now you just get 1 experience for each level the other hero was
-        game.enemy.items_rewarded = []   # Currently you get no items for killing another user
-    battle_log = combat_simulator.battle_logic(hero, game.enemy) # Not sure if the combat sim should update the database or return the heros to be updated here
-    game.has_enemy = False # Not sure why we need game to have an enemy just to run the combat simulator? Please explain
+        enemy.experience_rewarded = enemy.age # For now you just get 1 experience for each level the other hero was
+        enemy.items_rewarded = []   # Currently you get no items for killing another user
+    battle_log = combat_simulator.battle_logic(hero, enemy) # Not sure if the combat sim should update the database or return the heros to be updated here
     hero.current_dungeon_monster = False # Whether you win or lose, the monster will now be gone.
     if hero.get_summed_proficiencies('health').current == 0: # First see if the player died.
         location = database.get_object_by_name('Location', hero.last_city.name) # Return hero to last visited city
@@ -1133,26 +1130,26 @@ def battle(enemy_user=None, hero=None):
         hero.current_dungeon_monster = False  # Reset any progress in any dungeon he was in
         hero.deaths += 1  # Record that the hero has another death
     else:  # Ok, the hero is not dead. Currently that means he won! Since we don't have ties yet.
-        experience_gained = str(hero.gain_experience(game.enemy.experience_rewarded)) # This works PERFECTLY as intended!
+        experience_gained = str(hero.gain_experience(enemy.experience_rewarded)) # This works PERFECTLY as intended!
         if enemy_user == "monster": # This needs updating. If you killed a monster then the next few lines should differ from a user
             # hero.monster_kills += 1
             pass
         else: # Ok, you killed a user!
             hero.player_kills += 1 # You get a player kill score!
-            game.enemy.deaths += 1 # Make sure they get their death recorded!
-            location = database.get_object_by_name('Location', game.enemy.last_city.name) # Send them to their last visited city
-            game.enemy.current_location = location
-        if len(game.enemy.items_rewarded) > 0: # Give the hero any items earned! This probably should be completely redone.
-            for item in game.enemy.items_rewarded:
+            enemy.deaths += 1 # Make sure they get their death recorded!
+            location = database.get_object_by_name('Location', enemy.last_city.name) # Send them to their last visited city
+            enemy.current_location = location
+        if len(enemy.items_rewarded) > 0: # Give the hero any items earned! This probably should be completely redone.
+            for item in enemy.items_rewarded:
                 if not any(items.name == item.name for items in hero.inventory):
                     hero.inventory.append(item)
                 else:
                     for items in hero.inventory:
                         if items.name == item.name:
                             items.amount_owned += 1
-        battle_log += "You have defeated the " + game.enemy.name + " and gained " + experience_gained + " experience!"
+        battle_log += "You have defeated the " + enemy.name + " and gained " + experience_gained + " experience!"
         page_links = [("Return to where you ", hero.current_location.url, "were", ".")]
-    return render_template('battle.html', battle_log=battle_log, hero=hero, enemy=game.enemy, page_links=page_links)
+    return render_template('battle.html', battle_log=battle_log, hero=hero, enemy=enemy, page_links=page_links)
 
 # @app.route('/tavern')
 @app.route('/tavern/<name>', methods=['GET', 'POST'])

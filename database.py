@@ -480,19 +480,19 @@ class EZDB:
         summed_endurance = hero.get_summed_proficiencies('endurance')
         stamina = hero.get_summed_proficiencies('stamina')
         stamina = round_number_intelligently(stamina.final)
-        endurance.current = min(endurance.current + stamina.final, summed_endurance.final)
+        endurance.current = min(endurance.current + stamina, summed_endurance.final)
 
         health = hero.base_proficiencies['health']
         summed_health = hero.get_summed_proficiencies('health')
         regeneration = hero.get_summed_proficiencies('regeneration')
         regeneration = round_number_intelligently(regeneration.final)
-        health.current = min(health.current + regeneration.final, summed_health.final)
+        health.current = min(health.current + regeneration, summed_health.final)
 
         sanctity = hero.base_proficiencies['sanctity']
         summed_sanctity = hero.get_summed_proficiencies('sanctity')
         redemption = hero.get_summed_proficiencies('redemption')
         redemption = round_number_intelligently(redemption.final)
-        sanctity.current = min(sanctity.current + redemption.final, summed_sanctity.final)
+        sanctity.current = min(sanctity.current + redemption, summed_sanctity.final)
 
         for item in hero.equipped_items():
             item.affinity += 1

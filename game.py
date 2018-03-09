@@ -28,10 +28,6 @@ class Game(object):
         self.global_chat_user_list = {}
         self.global_chat = []  # I am not sure if this should goin database? Just very temporary chat log that all users can see
 
-    def set_enemy(self, enemy):
-        self.enemy = enemy
-        self.has_enemy = True
-
     def set_hero(self, hero):
         self.hero = hero
 
