@@ -4,7 +4,9 @@
 {% block block1 %}
       <button onclick="battle_popup()">Toggle Battle Log</button>
       <div id="battle_log_div_id">
-        {{ battle_log }}
+          {% for log in battle_log %}
+            <br>{{ log }}
+          {% endfor %}
       </div>
 {% for link in page_links%}
 <h2>{{ link[0] }} <a href={{ link[1] }}>{{ link[2] }}</a>{{ link[3] }}</h2>

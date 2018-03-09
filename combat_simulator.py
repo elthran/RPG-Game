@@ -84,7 +84,7 @@ def lower_fatigue(fatigue):
 def battle_logic(active_player, inactive_player):
     """ Runs the entire battle simulator """
     # Currently just takes 1 away from health of whoever attacks slower each round. Ends when someone dies.
-    combat_log = active_player.name + " Health: " + str(active_player.base_proficiencies['health'].current) + "  " + inactive_player.name + " Health: " + str(inactive_player.base_proficiencies['health'].current)
+    combat_log = ["At the start of the battle: " + active_player.name + " Health: " + str(active_player.base_proficiencies['health'].current) + "  " + inactive_player.name + " Health: " + str(inactive_player.base_proficiencies['health'].current)]
     while active_player.base_proficiencies['health'].current > 0 and inactive_player.base_proficiencies['health'].current > 0:
         attacker,defender = determine_attacker(active_player,inactive_player)
         defender.base_proficiencies['health'].current -= 1

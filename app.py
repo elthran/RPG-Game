@@ -1124,11 +1124,12 @@ def battle(enemy_user=None, hero=None):
         enemy.items_rewarded = []   # Currently you get no items for killing another user
     battle_log = combat_simulator.battle_logic(hero, enemy) # Not sure if the combat sim should update the database or return the heros to be updated here
     hero.current_dungeon_monster = False # Whether you win or lose, the monster will now be gone.
-    if hero.get_summed_proficiencies('health').current == 0: # First see if the player died.
+    if hero.base_proficiencies['health'].current == 0: # First see if the player died.
         location = database.get_object_by_name('Location', hero.last_city.name) # Return hero to last visited city
         hero.current_location = location
         hero.current_dungeon_monster = False  # Reset any progress in any dungeon he was in
         hero.deaths += 1  # Record that the hero has another death
+        battle_log.append("You were defeated. You gain no experience and your account should be deleted.")
     else:  # Ok, the hero is not dead. Currently that means he won! Since we don't have ties yet.
         experience_gained = str(hero.gain_experience(enemy.experience_rewarded)) # This works PERFECTLY as intended!
         if enemy_user == "monster": # This needs updating. If you killed a monster then the next few lines should differ from a user
@@ -1147,7 +1148,7 @@ def battle(enemy_user=None, hero=None):
                     for items in hero.inventory:
                         if items.name == item.name:
                             items.amount_owned += 1
-        battle_log += "You have defeated the " + enemy.name + " and gained " + experience_gained + " experience!"
+                battle_log.append("You have defeated the " + enemy.name + " and gained " + experience_gained + " experience!")
         page_links = [("Return to where you ", hero.current_location.url, "were", ".")]
     return render_template('battle.html', battle_log=battle_log, hero=hero, enemy=enemy, page_links=page_links)
 

@@ -17,6 +17,8 @@
 	<h1>Battle user</h1>
 	{% if enemy_hero.base_proficiencies['health'].current == 0 %}
 	They are already dead.
+	{% elif hero.base_proficiencies['health'].current == 0 %}
+	You can't battle while you are dead.
 	{% else %}
 	<a href="/battle/{{ enemy_hero.user.username }}">Battle</a>
 	{% endif %}
