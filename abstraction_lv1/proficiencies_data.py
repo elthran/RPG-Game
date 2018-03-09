@@ -34,6 +34,7 @@ PROFICIENCY_INFORMATION = [
     ("Storage", "The amount of weight that you can carry.", "Brawn", ["linear", 10, 3, 0], False),
     ("Encumbrance", "How much your are slowed down in combat by your equipment.", "Brawn", ["linear", 100, -1, 0], False),
     ("Endurance", "Number of actions you can perform each day.", "Resilience", ["linear", 3, 0.5, 0], False),
+    ("Stamina", "How many endurance points you recover each day.", "Resilience", ["linear", 1, 0.5, 1], False),
     ("Damage minimum", "Mimimum damage you do on each hit", "Brawn", ["linear", 1, 1, 0], False),
     ("Damage maximum", "Maximum damage you do on each hit", "Brawn", ["linear", 1, 1, 0], False),
     ("Speed", "How fast you attack.", "Quickness", ["linear", 1, 0.05, 2], False),

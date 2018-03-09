@@ -55,6 +55,7 @@ PROFICIENCY_INFORMATION = [
     ("Storage", "The amount of weight that you can carry.", "Brawn", ["linear", 10, 3, 0], False),
     ("Encumbrance", "How much your are slowed down in combat by your equipment.", "Brawn", ["linear", 100, -1, 0], False),
     ("Endurance", "Number of actions you can perform each day.", "Resilience", ["linear", 3, 0.5, 0], False),
+    ("Stamina", "How many endurance points you recover each day.", "Resilience", ["linear", 1, 0.5, 1], False),
     ("Damage minimum", "Mimimum damage you do on each hit", "Brawn", ["linear", 1, 1, 0], False),
     ("Damage maximum", "Maximum damage you do on each hit", "Brawn", ["linear", 1, 1, 0], False),
     ("Speed", "How fast you attack.", "Quickness", ["linear", 1, 0.05, 2], False),
@@ -105,9 +106,9 @@ PROFICIENCY_INFORMATION = [
     ("Sanity", "Your ability to resist mind altering affects.", "Willpower", ["linear", 1, 1, 0], False),
     ("Thorns", "Amount of damage that attackers take.", None, ["linear", 0, 0, 0], False, True)
 ]
-ALL_NAMES = ['Accuracy', 'Adventuring', 'Armour', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'Damage maximum', 'Damage minimum', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'First strike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'Resist blunt', 'Resist flame', 'Resist frost', 'Resist holy', 'Resist piercing', 'Resist poison', 'Resist shadow', 'Resist slashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stealth', 'Storage', 'Survivalist', 'Thorns', 'Trustworthiness', 'Understanding', 'Woodsman']
-ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'armour', 'bartering', 'block', 'caution', 'charm', 'climbing', 'courage', 'damage_maximum', 'damage_minimum', 'defence', 'detection', 'encumbrance', 'endurance', 'evade', 'explorer', 'faith', 'fatigue', 'first_strike', 'flee', 'health', 'huntsman', 'killshot', 'knowledge', 'literacy', 'logistics', 'luckiness', 'mountaineering', 'navigator', 'oration', 'parry', 'pickpocketing', 'recovery', 'redemption', 'regeneration', 'renown', 'resist_blunt', 'resist_flame', 'resist_frost', 'resist_holy', 'resist_piercing', 'resist_poison', 'resist_shadow', 'resist_slashing', 'riposte', 'sanctity', 'sanity', 'speed', 'stealth', 'storage', 'survivalist', 'thorns', 'trustworthiness', 'understanding', 'woodsman']
-ALL_CLASS_NAMES = ['Accuracy', 'Adventuring', 'Armour', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'DamageMaximum', 'DamageMinimum', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'FirstStrike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'ResistBlunt', 'ResistFlame', 'ResistFrost', 'ResistHoly', 'ResistPiercing', 'ResistPoison', 'ResistShadow', 'ResistSlashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stealth', 'Storage', 'Survivalist', 'Thorns', 'Trustworthiness', 'Understanding', 'Woodsman']
+ALL_NAMES = ['Accuracy', 'Adventuring', 'Armour', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'Damage maximum', 'Damage minimum', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'First strike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'Resist blunt', 'Resist flame', 'Resist frost', 'Resist holy', 'Resist piercing', 'Resist poison', 'Resist shadow', 'Resist slashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stamina', 'Stealth', 'Storage', 'Survivalist', 'Thorns', 'Trustworthiness', 'Understanding', 'Woodsman']
+ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'armour', 'bartering', 'block', 'caution', 'charm', 'climbing', 'courage', 'damage_maximum', 'damage_minimum', 'defence', 'detection', 'encumbrance', 'endurance', 'evade', 'explorer', 'faith', 'fatigue', 'first_strike', 'flee', 'health', 'huntsman', 'killshot', 'knowledge', 'literacy', 'logistics', 'luckiness', 'mountaineering', 'navigator', 'oration', 'parry', 'pickpocketing', 'recovery', 'redemption', 'regeneration', 'renown', 'resist_blunt', 'resist_flame', 'resist_frost', 'resist_holy', 'resist_piercing', 'resist_poison', 'resist_shadow', 'resist_slashing', 'riposte', 'sanctity', 'sanity', 'speed', 'stamina', 'stealth', 'storage', 'survivalist', 'thorns', 'trustworthiness', 'understanding', 'woodsman']
+ALL_CLASS_NAMES = ['Accuracy', 'Adventuring', 'Armour', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'DamageMaximum', 'DamageMinimum', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'FirstStrike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'ResistBlunt', 'ResistFlame', 'ResistFrost', 'ResistHoly', 'ResistPiercing', 'ResistPoison', 'ResistShadow', 'ResistSlashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stamina', 'Stealth', 'Storage', 'Survivalist', 'Thorns', 'Trustworthiness', 'Understanding', 'Woodsman']
 
 
 class Proficiency(TemplateMixin, Base):
@@ -511,6 +512,45 @@ class Endurance(Proficiency):
 
     def scale_by_level(self, level=None):
         """Update Endurance's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(0.5 * level, self.num_of_decimals)
+
+
+class Stamina(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "stamina"
+    display_name = "Stamina"
+    num_of_decimals = 1
+    # This should add a "%" to the display at the end of a prof.
+    # So instead of 5 Accuracy it should say 5% accuracy.
+    is_percent = False
+    format_spec = "{:.1f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Stamina"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "How many endurance points you recover each day."
+        self.attribute_type = "Resilience"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Stamina's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
