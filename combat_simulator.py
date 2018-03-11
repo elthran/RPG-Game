@@ -10,10 +10,8 @@
 from random import randint
 
 def determine_attacker(active, inactive):
-    speed_sum = active.get_summed_proficiencies('speed').final + inactive.get_summed_proficiencies('speed').final
-    random = randint(0,speed_sum+1)
-    print(active.name,"'s speed:",active.get_summed_proficiencies('speed').final,inactive.name,"'s speed:",inactive.get_summed_proficiencies('speed').final," Random seed:",random)
-    if active.get_summed_proficiencies('speed').final >= randint(0,speed_sum):
+    random = randint(0,int((active.get_summed_proficiencies('speed').final + inactive.get_summed_proficiencies('speed').final)*100-1))
+    if active.get_summed_proficiencies('speed').final*100 > random:
         return active,inactive
     else:
         return inactive, active
@@ -88,7 +86,7 @@ def battle_logic(active_player, inactive_player):
     while active_player.base_proficiencies['health'].current > 0 and inactive_player.base_proficiencies['health'].current > 0:
         attacker,defender = determine_attacker(active_player,inactive_player)
         defender.base_proficiencies['health'].current -= 1
-        print("ATTACKER IS:", attacker.name, " with health: ", attacker.base_proficiencies['health'].current,"      DEFENDER IS ", defender.name," with health:", defender.base_proficiencies['health'].current)
+        combat_log.append("ATTACKER IS:" + attacker.name + " with health: " + str(attacker.base_proficiencies['health'].current) + "      DEFENDER IS " + defender.name + " with health:" + str(defender.base_proficiencies['health'].current))
 
     active_player.base_proficiencies['health'].current = max(active_player.base_proficiencies['health'].current, 0)
     inactive_player.base_proficiencies['health'].current = max(inactive_player.base_proficiencies['health'].current, 0)
