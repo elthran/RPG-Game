@@ -2,7 +2,7 @@
 Test combat simulator.
 """
 
-from combat_simulator import battle_logic, determine_attacker
+from combat_simulator import battle_logic, determine_attacker, determine_if_hits, determine_if_critical_hit
 from hero import Hero
 
 """
@@ -54,7 +54,7 @@ class TestCombat:
         assert self.hero1.base_proficiencies['health'].current >= 0 or self.hero2.base_proficiencies['health'].current >= 0
 
     def test_determine_attacker_distribution(self):
-        number_of_battle_tests = 10000
+        number_of_battle_tests = 1000000
         hero1count = 0
         hero2count = 0
         for i in range(number_of_battle_tests):
@@ -66,6 +66,32 @@ class TestCombat:
             # self.setup() would recreate the two heros from scratch
         print(hero1count,hero2count)
         assert self.precision_gauge(hero1count, number_of_battle_tests/2, 5) == True
+
+    def test_determine_if_attacker_hits(self):
+        number_of_battle_tests = 1000000
+        hits = 0
+        misses = 0
+        for i in range(number_of_battle_tests):
+            if determine_if_hits(self.hero1, self.hero2):
+                hits += 1
+            else:
+                misses += 1
+            # self.setup() would recreate the two heros from scratch
+        print(hits, misses)
+        assert self.precision_gauge(hits, number_of_battle_tests * 0.75, 5) == True
+
+    def test_determine_if_attacker_critical_hits(self):
+        number_of_battle_tests = 1000000
+        critical_hits = 0
+        critical_misses = 0
+        for i in range(number_of_battle_tests):
+            if determine_if_critical_hit(self.hero1):
+                critical_hits += 1
+            else:
+                critical_misses += 1
+            # self.setup() would recreate the two heros from scratch
+        print(critical_hits, critical_misses)
+        assert self.precision_gauge(critical_hits, number_of_battle_tests * 0.01, 5) == True
 
 
 
