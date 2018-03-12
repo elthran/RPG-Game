@@ -171,8 +171,9 @@ class {{ prof_class }}(Proficiency):
     display_name = "{{ display_name.title() }}"
     num_of_decimals = {{ value[3] }}
     # This should add a "%" to the display at the end of a prof.
-    is_percent = {{ True if value[0] == "linear_percent" else False }}
-    format_spec = "{{ '{' }}:.{{ value[3] }}f{{ '}' }}{{ '%' if prof[5] else '' }}"
+    {% set is_percent = True if value[0] == "linear_percent" else False %}
+    is_percent = {{ is_percent }}
+    format_spec = "{{ '{' }}:.{{ value[3] }}f{{ '}' }}{{ '%' if is_percent else '' }}"
 
     __mapper_args__ = {
         'polymorphic_identity': "{{ prof_class }}"

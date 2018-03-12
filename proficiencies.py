@@ -678,7 +678,7 @@ class Accuracy(Proficiency):
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
     is_percent = True
-    format_spec = "{:.0f}"
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Accuracy"
