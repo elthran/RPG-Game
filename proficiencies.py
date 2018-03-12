@@ -53,24 +53,24 @@ PROFICIENCY_INFORMATION = [
     ("Recovery", "How quickly you recover from poisons and negative effects.", "Vitality", ["linear", 1, 0, 0], False),
     ("Climbing", "The difficulty of objects of which you are able to climb.", "Agility", ["linear", 0, 1, 0], False),
     ("Storage", "The amount of weight that you can carry.", "Brawn", ["linear", 10, 3, 0], False),
-    ("Encumbrance", "How much your are slowed down in combat by your equipment.", "Brawn", ["linear", 100, -1, 0], True),
+    ("Encumbrance", "How much your are slowed down in combat by your equipment.", "Brawn", ["linear", 100, -1, 0], False),
     ("Endurance", "Number of actions you can perform each day.", "Resilience", ["linear", 3, 0.5, 0], False),
     ("Stamina", "How many endurance points you recover each day.", "Resilience", ["linear", 1, 0.5, 1], False),
     ("Damage minimum", "Mimimum damage you do on each hit", "Brawn", ["linear", 0, 1, 0], False),
     ("Damage maximum", "Maximum damage you do on each hit", "Brawn", ["linear", 1, 1, 0], False),
     ("Speed", "How fast you attack.", "Quickness", ["linear", 1, 0.05, 2], False),
-    ("Accuracy", "The chance of your attacks hitting their target.", "Agility", ["linear", 1, 1, 0], True),
-    ("First strike", "Chance to strike first", "Quickness", ["linear", 1, 1, 0], True),
+    ("Accuracy", "The chance of your attacks hitting their target.", "Agility", ["linear_percent", 1, 1, 0], False),
+    ("First strike", "Chance to strike first", "Quickness", ["linear", 1, 1, 0], False),
     ("Killshot", "Damage multiplier when performing a critical hit.", "Agility", ["linear", 1.5, 0.1, 1], False),
     ("Precision", "Ability to critically hit enemies.", "Agility", ["linear", 1, 1, 0], False),
-    ("Defence", "Amount of all damage reduced.", "Resilience", ["linear", 0, 1, 0], True),
-    ("Evade", "Chance to dodge.", "Quickness", ["linear", 1, 1, 0], True),
-    ("Parry", "Chance to parry.", "Quickness", ["linear", 1, 1, 0], True),
-    ("Flee", "Chance to run from a battle.", "Quickness", ["linear", 1, 1, 0], True),
-    ("Riposte", "Chance to riposte an enemy attack.", "Agility", ["linear", 1, 1, 0], True),
+    ("Defence", "Amount of all damage reduced.", "Resilience", ["linear", 0, 1, 0], False),
+    ("Evade", "Chance to dodge.", "Quickness", ["linear", 1, 1, 0], False),
+    ("Parry", "Chance to parry.", "Quickness", ["linear", 1, 1, 0], False),
+    ("Flee", "Chance to run from a battle.", "Quickness", ["linear", 1, 1, 0], False),
+    ("Riposte", "Chance to riposte an enemy attack.", "Agility", ["linear", 1, 1, 0], False),
     ("Fatigue", "How quickly you tire in combat.", "Resilience", ["linear", 1, 1, 0], False),
     ("Block", "Ability to block if a shield is equipped.", "Resilience", ["linear", 1, 1, 0], False),
-    ("Stealth", "Chance to avoid detection.", "Agility", ["linear", 1, 1, 0], True),
+    ("Stealth", "Chance to avoid detection.", "Agility", ["linear", 1, 1, 0], False),
     ("Pickpocketing", "Skill at stealing from others.", "Agility", ["linear", 1, 1, 0], False),
     ("Faith", "Strength of spells you cast.", "Divinity", ["linear", 1, 1, 0], False),
     ("Sanctity", "Amount of sanctity you can have.", "Divinity", ["linear", 1, 1, 0], False),
@@ -83,28 +83,29 @@ PROFICIENCY_INFORMATION = [
     ("Renown", "How much your actions affect your reputation.", "Charisma", ["linear", 1, 1, 0], False),
     ("Knowledge", "Ability to understand.", "Intellect", ["linear", 1, 1, 0], False),
     ("Literacy", "Ability to read.", "Intellect", ["linear", 1, 1, 0], False),
-    ("Understanding", "How much more quickly you level up.", "Intellect", ["linear", 0, 2, 0], True),
-    ("Luckiness", "Chance to have things turn your way against all odds.", "Fortuity", ["linear", 1, 1, 0], True),
+    ("Understanding", "How much more quickly you level up.", "Intellect", ["linear", 0, 2, 0], False),
+    ("Luckiness", "Chance to have things turn your way against all odds.", "Fortuity", ["linear", 1, 1, 0], False),
     ("Adventuring", "Chance to discover treasure.", "Fortuity", ["linear", 1, 1, 0], False),
     ("Logistics",  "How far you can move on the map", "Pathfinding", ["linear", 1, 1, 0], False),
     ("Mountaineering", "Modifier for mountain movement.", "Pathfinding", ["linear", 1, 1, 0], False),
     ("Woodsman", "Modifier for forest movement.", "Pathfinding", ["linear", 1, 1, 0], False),
     ("Navigator", "Modifier for water movement.", "Pathfinding", ["linear", 1, 1, 0], False),
-    ("Detection", "Chance to discover enemy stealth and traps.", "Survivalism", ["linear", 1, 1, 0], True),
+    ("Detection", "Chance to discover enemy stealth and traps.", "Survivalism", ["linear", 1, 1, 0], False),
     ("Caution",  "See information about a new grid before going there", "Survivalism", ["linear", 1, 1, 0], False),
     ("Explorer", "Additional options on the map, such as foraging", "Survivalism", ["linear", 1, 1, 0], False),
     ("Huntsman", "Learn additional information about enemies.", "Survivalism", ["linear", 1, 1, 0], False),
     ("Survivalist", "Create bandages, tents, and other useful objects", "Survivalism", ["linear", 1, 1, 0], False),
-    ("Resist frost", "Ability to resist frost damage", "Resilience", ["linear", 1, 1, 0], True),
-    ("Resist flame", "Ability to resist flame damage", "Resilience", ["linear", 1, 1, 0], True),
-    ("Resist shadow", "Ability to resist shadow damage", "Resilience", ["linear", 1, 1, 0], True),
-    ("Resist poison", "Ability to resist poison damage", "Resilience", ["linear", 1, 1, 0], True),
-    ("Resist blunt", "Ability to resist blunt damage", "Resilience", ["linear", 1, 1, 0], True),
-    ("Resist slashing", "Ability to resist slashing damage", "Resilience", ["linear", 1, 1, 0], True),
-    ("Resist piercing", "Ability to resist piercing damage", "Resilience", ["linear", 1, 1, 0], True),
+    ("Resist frost", "Ability to resist frost damage", "Resilience", ["linear", 1, 1, 0], False),
+    ("Resist flame", "Ability to resist flame damage", "Resilience", ["linear", 1, 1, 0], False),
+    ("Resist shadow", "Ability to resist shadow damage", "Resilience", ["linear", 1, 1, 0], False),
+    ("Resist poison", "Ability to resist poison damage", "Resilience", ["linear", 1, 1, 0], False),
+    ("Resist blunt", "Ability to resist blunt damage", "Resilience", ["linear", 1, 1, 0], False),
+    ("Resist slashing", "Ability to resist slashing damage", "Resilience", ["linear", 1, 1, 0], False),
+    ("Resist piercing", "Ability to resist piercing damage", "Resilience", ["linear", 1, 1, 0], False),
     ("Courage", "Your ability to overcome fears.", "Willpower", ["linear", 1, 1, 0], False),
     ("Sanity", "Your ability to resist mind altering affects.", "Willpower", ["linear", 1, 1, 0], False),
-    ("Thorns", "Amount of damage that attackers take.", None, ["linear", 0, 0, 0], False, True)
+    ("Thorns", "Amount of damage that attackers take.", None, ["",0,0,0], True),
+    #("Lifesteal", "Amount of health that you heal on each successful hit.", None, ["",0,0,0], True)
 ]
 ALL_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'Damage maximum', 'Damage minimum', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'First strike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Precision', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'Resist blunt', 'Resist flame', 'Resist frost', 'Resist holy', 'Resist piercing', 'Resist poison', 'Resist shadow', 'Resist slashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stamina', 'Stealth', 'Storage', 'Survivalist', 'Thorns', 'Trustworthiness', 'Understanding', 'Woodsman']
 ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'bartering', 'block', 'caution', 'charm', 'climbing', 'courage', 'damage_maximum', 'damage_minimum', 'defence', 'detection', 'encumbrance', 'endurance', 'evade', 'explorer', 'faith', 'fatigue', 'first_strike', 'flee', 'health', 'huntsman', 'killshot', 'knowledge', 'literacy', 'logistics', 'luckiness', 'mountaineering', 'navigator', 'oration', 'parry', 'pickpocketing', 'precision', 'recovery', 'redemption', 'regeneration', 'renown', 'resist_blunt', 'resist_flame', 'resist_frost', 'resist_holy', 'resist_piercing', 'resist_poison', 'resist_shadow', 'resist_slashing', 'riposte', 'sanctity', 'sanity', 'speed', 'stamina', 'stealth', 'storage', 'survivalist', 'thorns', 'trustworthiness', 'understanding', 'woodsman']
@@ -258,7 +259,6 @@ class Health(Proficiency):
     display_name = "Health"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -297,7 +297,6 @@ class Regeneration(Proficiency):
     display_name = "Regeneration"
     num_of_decimals = 1
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.1f}"
 
@@ -336,7 +335,6 @@ class Recovery(Proficiency):
     display_name = "Recovery"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -375,7 +373,6 @@ class Climbing(Proficiency):
     display_name = "Climbing"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -414,7 +411,6 @@ class Storage(Proficiency):
     display_name = "Storage"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -453,9 +449,8 @@ class Encumbrance(Proficiency):
     display_name = "Encumbrance"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "Encumbrance"
@@ -492,7 +487,6 @@ class Endurance(Proficiency):
     display_name = "Endurance"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -531,7 +525,6 @@ class Stamina(Proficiency):
     display_name = "Stamina"
     num_of_decimals = 1
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.1f}"
 
@@ -570,7 +563,6 @@ class DamageMinimum(Proficiency):
     display_name = "Damage Minimum"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -609,7 +601,6 @@ class DamageMaximum(Proficiency):
     display_name = "Damage Maximum"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -648,7 +639,6 @@ class Speed(Proficiency):
     display_name = "Speed"
     num_of_decimals = 2
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.2f}"
 
@@ -687,9 +677,8 @@ class Accuracy(Proficiency):
     display_name = "Accuracy"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = True
-    format_spec = "{:.0f}%"
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "Accuracy"
@@ -726,9 +715,8 @@ class FirstStrike(Proficiency):
     display_name = "First Strike"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "FirstStrike"
@@ -765,7 +753,6 @@ class Killshot(Proficiency):
     display_name = "Killshot"
     num_of_decimals = 1
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.1f}"
 
@@ -804,7 +791,6 @@ class Precision(Proficiency):
     display_name = "Precision"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -843,9 +829,8 @@ class Defence(Proficiency):
     display_name = "Defence"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "Defence"
@@ -882,9 +867,8 @@ class Evade(Proficiency):
     display_name = "Evade"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "Evade"
@@ -921,9 +905,8 @@ class Parry(Proficiency):
     display_name = "Parry"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "Parry"
@@ -960,9 +943,8 @@ class Flee(Proficiency):
     display_name = "Flee"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "Flee"
@@ -999,9 +981,8 @@ class Riposte(Proficiency):
     display_name = "Riposte"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "Riposte"
@@ -1038,7 +1019,6 @@ class Fatigue(Proficiency):
     display_name = "Fatigue"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1077,7 +1057,6 @@ class Block(Proficiency):
     display_name = "Block"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1123,9 +1102,8 @@ class Stealth(Proficiency):
     display_name = "Stealth"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "Stealth"
@@ -1162,7 +1140,6 @@ class Pickpocketing(Proficiency):
     display_name = "Pickpocketing"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1201,7 +1178,6 @@ class Faith(Proficiency):
     display_name = "Faith"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1240,7 +1216,6 @@ class Sanctity(Proficiency):
     display_name = "Sanctity"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1279,7 +1254,6 @@ class Redemption(Proficiency):
     display_name = "Redemption"
     num_of_decimals = 1
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.1f}"
 
@@ -1318,7 +1292,6 @@ class ResistHoly(Proficiency):
     display_name = "Resist Holy"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1352,14 +1325,13 @@ class ResistHoly(Proficiency):
 class Bartering(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden = False
+    hidden = True
     name = "bartering"
     display_name = "Bartering"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "Bartering"
@@ -1396,7 +1368,6 @@ class Oration(Proficiency):
     display_name = "Oration"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1435,7 +1406,6 @@ class Charm(Proficiency):
     display_name = "Charm"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1474,7 +1444,6 @@ class Trustworthiness(Proficiency):
     display_name = "Trustworthiness"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1513,7 +1482,6 @@ class Renown(Proficiency):
     display_name = "Renown"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1552,7 +1520,6 @@ class Knowledge(Proficiency):
     display_name = "Knowledge"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1591,7 +1558,6 @@ class Literacy(Proficiency):
     display_name = "Literacy"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1630,9 +1596,8 @@ class Understanding(Proficiency):
     display_name = "Understanding"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "Understanding"
@@ -1669,9 +1634,8 @@ class Luckiness(Proficiency):
     display_name = "Luckiness"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "Luckiness"
@@ -1708,7 +1672,6 @@ class Adventuring(Proficiency):
     display_name = "Adventuring"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1747,7 +1710,6 @@ class Logistics(Proficiency):
     display_name = "Logistics"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1786,7 +1748,6 @@ class Mountaineering(Proficiency):
     display_name = "Mountaineering"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1825,7 +1786,6 @@ class Woodsman(Proficiency):
     display_name = "Woodsman"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1864,7 +1824,6 @@ class Navigator(Proficiency):
     display_name = "Navigator"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1903,9 +1862,8 @@ class Detection(Proficiency):
     display_name = "Detection"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "Detection"
@@ -1942,7 +1900,6 @@ class Caution(Proficiency):
     display_name = "Caution"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -1981,7 +1938,6 @@ class Explorer(Proficiency):
     display_name = "Explorer"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -2020,7 +1976,6 @@ class Huntsman(Proficiency):
     display_name = "Huntsman"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -2059,7 +2014,6 @@ class Survivalist(Proficiency):
     display_name = "Survivalist"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -2098,9 +2052,8 @@ class ResistFrost(Proficiency):
     display_name = "Resist Frost"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "ResistFrost"
@@ -2137,9 +2090,8 @@ class ResistFlame(Proficiency):
     display_name = "Resist Flame"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "ResistFlame"
@@ -2176,9 +2128,8 @@ class ResistShadow(Proficiency):
     display_name = "Resist Shadow"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "ResistShadow"
@@ -2215,9 +2166,8 @@ class ResistPoison(Proficiency):
     display_name = "Resist Poison"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "ResistPoison"
@@ -2254,9 +2204,8 @@ class ResistBlunt(Proficiency):
     display_name = "Resist Blunt"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "ResistBlunt"
@@ -2293,9 +2242,8 @@ class ResistSlashing(Proficiency):
     display_name = "Resist Slashing"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "ResistSlashing"
@@ -2332,9 +2280,8 @@ class ResistPiercing(Proficiency):
     display_name = "Resist Piercing"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
+    is_percent = False
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "ResistPiercing"
@@ -2371,7 +2318,6 @@ class Courage(Proficiency):
     display_name = "Courage"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -2410,7 +2356,6 @@ class Sanity(Proficiency):
     display_name = "Sanity"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -2449,7 +2394,6 @@ class Thorns(Proficiency):
     display_name = "Thorns"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
     format_spec = "{:.0f}"
 
@@ -2472,7 +2416,6 @@ class Thorns(Proficiency):
         if level is None:
             level = self.level
 
-        return round(0 * level, self.num_of_decimals)
 
 
 

@@ -37,6 +37,8 @@ def calculate_damage(attacker, defender):
 def add_killshot_multiplier(attacker, damage):
     return (damage * attacker.get_summed_proficiencies('killshot').final)
 
+def determine_life_steal(attacker):
+    return attacker.get_summed_proficiencies('lifesteal').final
 
 
 """
@@ -88,6 +90,10 @@ def battle_logic(active_player, inactive_player):
                 damage = calculate_damage(attacker, defender)
             defender.base_proficiencies['health'].current -= damage
             combat_log.append(defender.name + " takes " + str(damage) + ". He has " + str(defender.base_proficiencies['health'].current) + " health remaining.")
+            #lifesteal = determine_life_steal(attacker)
+            #if lifesteal > 0:
+            #    attacker.base_proficiencies['health'].current += lifesteal
+            #    combat_log.append(attacker.name + " steals " + str(lifesteal) + " life!")
         else:
             combat_log.append(attacker.name + " misses.")
 

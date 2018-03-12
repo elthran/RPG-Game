@@ -166,14 +166,13 @@ class Proficiency(TemplateMixin, Base):
 class {{ prof_class }}(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden = {{prof[5] if prof[5] else False}}
+    hidden = {{ prof[4] if prof[4] else False }}
     name = "{{attrib_name}}"
     display_name = "{{ display_name.title() }}"
-    num_of_decimals = {{value[3]}}
+    num_of_decimals = {{ value[3] }}
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = {{prof[4]}}
-    format_spec = "{{ '{' }}:.{{ value[3] }}f{{ '}' }}{{ '%' if prof[4] else '' }}"
+    is_percent = {{ True if value[0] == "linear_percent" else False }}
+    format_spec = "{{ '{' }}:.{{ value[3] }}f{{ '}' }}{{ '%' if prof[5] else '' }}"
 
     __mapper_args__ = {
         'polymorphic_identity': "{{ prof_class }}"
@@ -210,7 +209,7 @@ class {{ prof_class }}(Proficiency):
      #}
     {% if value[0] == "root" %}
         return round((100 * level)**0.5 - (level / 4), self.num_of_decimals)
-    {% elif value[0] == "linear" %}
+    {% elif value[0] == "linear" or value[0] == "linear_percent" %}
         return round({{ value[2] }} * level, self.num_of_decimals)
     {% elif value[0] == "empty" %}
         return super().scale_by_level()
