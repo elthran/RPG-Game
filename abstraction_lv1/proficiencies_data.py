@@ -23,8 +23,13 @@ Empty: Sets this value to take on the value of "maximum". Must be placed after
 """
 Prof_Name, Prof_Descr, Prof_Attrib, [Formula_Type, Base_Value, Weight, # of Decimals], hidden_boolean, percent_boolean
 """
-
 from build_code import normalize_attrib_name
+
+import pandas
+temp = pandas.read_csv('profs.csv', dtype={'Name': str, "Description": str})
+NEW_PROFS = []
+for i, row in enumerate(temp.itertuples(), 1):
+    NEW_PROFS.append((row.Name, row.Description, row.Attribute, row.GrowthFunction, row.Base, row.Weight, row.Decimals, row.Hidden))
 
 PROFICIENCY_INFORMATION = [
     ("Health", "When your health reahes zero you fall unconscious.", "Vitality", ["linear", 5, 2, 0], False),
@@ -65,7 +70,7 @@ PROFICIENCY_INFORMATION = [
     ("Understanding", "How much more quickly you level up.", "Intellect", ["linear", 0, 2, 0], False),
     ("Luckiness", "Chance to have things turn your way against all odds.", "Fortuity", ["linear", 1, 1, 0], False),
     ("Adventuring", "Chance to discover treasure.", "Fortuity", ["linear", 1, 1, 0], False),
-    ("Logistics",  "How far you can move on the map", "Pathfinding", ["linear", 1, 1, 0], False),
+    ("Logistics", "How far you can move on the map", "Pathfinding", ["linear", 1, 1, 0], False),
     ("Mountaineering", "Modifier for mountain movement.", "Pathfinding", ["linear", 1, 1, 0], False),
     ("Woodsman", "Modifier for forest movement.", "Pathfinding", ["linear", 1, 1, 0], False),
     ("Navigator", "Modifier for water movement.", "Pathfinding", ["linear", 1, 1, 0], False),

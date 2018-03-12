@@ -47,7 +47,6 @@ engine = Engine(database)
 # initialization
 game = Game()
 
-
 def game_clock():
     while True:
         time.sleep(UPDATE_INTERVAL)
