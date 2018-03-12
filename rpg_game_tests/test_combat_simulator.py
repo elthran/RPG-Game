@@ -2,7 +2,7 @@
 Test combat simulator.
 """
 
-from combat_simulator import battle_logic, determine_attacker, determine_if_hits, determine_if_critical_hit
+from combat_simulator import battle_logic, determine_attacker, determine_if_hits, determine_if_critical_hit, calculate_damage, add_killshot_multiplier
 from hero import Hero
 
 """
@@ -33,7 +33,7 @@ class TestCombat:
     def setup(self):
         print("Setup is running.")
         self.hero1 = Hero(name="sample1")
-        # self.hero1.base_proficiencies['speed'].level += 1
+        self.hero1.base_proficiencies['killshot'].level += 5
         self.hero2 = Hero(name="sample2")
 
     def teardown(self):
@@ -54,7 +54,7 @@ class TestCombat:
         assert self.hero1.base_proficiencies['health'].current >= 0 or self.hero2.base_proficiencies['health'].current >= 0
 
     def test_determine_attacker_distribution(self):
-        number_of_battle_tests = 1000000
+        number_of_battle_tests = 10000
         hero1count = 0
         hero2count = 0
         for i in range(number_of_battle_tests):
@@ -64,11 +64,11 @@ class TestCombat:
             if attacker.name == self.hero2.name:
                 hero2count += 1
             # self.setup() would recreate the two heros from scratch
-        print(hero1count,hero2count)
+        print("Hero1 attacks vs. hero2 attacks:", hero1count,hero2count)
         assert self.precision_gauge(hero1count, number_of_battle_tests/2, 5) == True
 
     def test_determine_if_attacker_hits(self):
-        number_of_battle_tests = 1000000
+        number_of_battle_tests = 10000
         hits = 0
         misses = 0
         for i in range(number_of_battle_tests):
@@ -76,12 +76,11 @@ class TestCombat:
                 hits += 1
             else:
                 misses += 1
-            # self.setup() would recreate the two heros from scratch
-        print(hits, misses)
+        print("Hits vs. misses:", hits, misses)
         assert self.precision_gauge(hits, number_of_battle_tests * 0.75, 5) == True
 
     def test_determine_if_attacker_critical_hits(self):
-        number_of_battle_tests = 1000000
+        number_of_battle_tests = 50000
         critical_hits = 0
         critical_misses = 0
         for i in range(number_of_battle_tests):
@@ -89,9 +88,39 @@ class TestCombat:
                 critical_hits += 1
             else:
                 critical_misses += 1
-            # self.setup() would recreate the two heros from scratch
-        print(critical_hits, critical_misses)
+        print("Critical hits vs. misses:", critical_hits, critical_misses)
         assert self.precision_gauge(critical_hits, number_of_battle_tests * 0.01, 5) == True
 
+    def test_determine_damage(self):
+        number_of_battle_tests = 10000
+        lowest_damage = 99999
+        highest_damage = -10
+        total_damage = 0
+        for i in range(number_of_battle_tests):
+            damage = calculate_damage(self.hero1, self.hero2)
+            if damage < lowest_damage:
+                lowest_damage = damage
+            elif damage > highest_damage:
+                highest_damage = damage
+            total_damage += damage
+        average_damage = total_damage / number_of_battle_tests
+        print("Average damage:", average_damage)
+        assert average_damage >= 0
+        assert 0 <= lowest_damage < average_damage
+        assert lowest_damage < highest_damage < 100
+
+    def test_determine_damage_multiplier(self):
+        number_of_battle_tests = 10000
+        old_damage = 0
+        multiplied_damage = 0
+        for i in range(number_of_battle_tests):
+            damage = calculate_damage(self.hero1, self.hero2)
+            new_damage = add_killshot_multiplier(self.hero1, damage)
+            old_damage += damage
+            multiplied_damage += new_damage
+        old_average_damage = old_damage / number_of_battle_tests
+        multiplied_average_damage = multiplied_damage / number_of_battle_tests
+        print("Old vs. multiplied average damage:", old_average_damage, multiplied_average_damage)
+        assert 0 < old_average_damage < multiplied_average_damage
 
 

@@ -25,23 +25,21 @@ def determine_if_hits(attacker, defender):
 
 def determine_if_critical_hit(attacker):
     random = randint(1,100)
-    if attacker.get_summed_proficiencies('killshot').final >= random:
+    if attacker.get_summed_proficiencies('precision').final >= random:
         return True
     return False
 
+def calculate_damage(attacker, defender):
+    raw_damage = randint(attacker.get_summed_proficiencies('damage_minimum').final, attacker.get_summed_proficiencies('damage_maximum').final)
+    damage = raw_damage * (1 - defender.get_summed_proficiencies('defence').final)
+    return damage
+
+def add_killshot_multiplier(attacker, damage):
+    return (damage * attacker.get_summed_proficiencies('killshot').final)
+
+
+
 """
-def calculate_damage(minimum, maximum):
-    if maximum <= minimum:
-        maximum = minimum + 1 # This avoids a bug with randint looking at impossible ranges
-    damage = randint(minimum, maximum)
-    print ("Unmodified attack will hit for this much damage: " + str(damage))
-    return damage
-
-def critical_hit_modifier(original_damage, modifier):
-    print ("Critical hit! Damage multiplied by: " + str(modifier))
-    damage = original_damage * modifier
-    return damage
-
 def determine_block_chance(chance):
     print ("Chance to block is: " + str(chance) + "%")
     if randint(0,100) < chance:
@@ -84,12 +82,12 @@ def battle_logic(active_player, inactive_player):
         if determine_if_hits(attacker, defender):
             if determine_if_critical_hit(attacker):
                 combat_log.append(attacker.name + " lands a critical hit!")
-                damage = 2
+                damage = add_killshot_multiplier(attacker, calculate_damage(attacker, defender))
             else:
                 combat_log.append(attacker.name + " hits.")
-                damage = 1
+                damage = calculate_damage(attacker, defender)
             defender.base_proficiencies['health'].current -= damage
-            combat_log.append(defender.name + " takes " + str(damage) + ". Defender has " + str(defender.base_proficiencies['health'].current) + " health remaining.")
+            combat_log.append(defender.name + " takes " + str(damage) + ". He has " + str(defender.base_proficiencies['health'].current) + " health remaining.")
         else:
             combat_log.append(attacker.name + " misses.")
 

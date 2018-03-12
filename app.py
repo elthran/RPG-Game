@@ -1130,6 +1130,8 @@ def battle(enemy_user=None, hero=None):
         hero.current_dungeon_monster = False  # Reset any progress in any dungeon he was in
         hero.deaths += 1  # Record that the hero has another death
         battle_log.append("You were defeated. You gain no experience and your account should be deleted.")
+        if enemy_user != "monster":
+            enemy.player_kills += 1
     else:  # Ok, the hero is not dead. Currently that means he won! Since we don't have ties yet.
         experience_gained = str(hero.gain_experience(enemy.experience_rewarded)) # This works PERFECTLY as intended!
         if enemy_user == "monster": # This needs updating. If you killed a monster then the next few lines should differ from a user

@@ -131,12 +131,13 @@ class Proficiency(TemplateMixin, Base):
         Modifies the final and next_value with the Class's format spec.
         """
         {% raw %}
-        temp = """<h1>{{ prof.display_name }}</h1>
+        temp = """<h1>{{ prof.display_name }} (Level {{ prof.level }})</h1>
                   <h2>{{ prof.description }}</h2>
-                  <h2>Current level: {{ prof.level }} {% if not prof.is_max_level and prof.hero.proficiency_points %}<button id=levelUpProficiencyButton class="upgradeButton" onclick="sendToPy(event, proficiencyTooltip, 'update_proficiency', {'id': {{ prof.id }}});"></button>{% endif %}</h2>
                   <h2>Current value: {{ formatted_final }}</h2>
-                  <h2>Next value: {{ formatted_next }}</h2>
-                  <h2>Max level: {{ prof.max_level }}</h2>"""
+                  {% if not prof.is_max_level and prof.hero.proficiency_points %}
+                  <h2>Next value: <font color="green">{{ formatted_next }}</font></h2>
+                  <button id=levelUpProficiencyButton class="upgradeButton" onclick="sendToPy(event, proficiencyTooltip, 'update_proficiency', {'id': {{ prof.id }}});"></button>
+                  {% elif prof.is_max_level %}<font color="red">Not enough {{ prof.attribute_type }}</font>{% endif %}</h2>"""
         {% endraw %}
         return render_template_string(
             temp, prof=self,

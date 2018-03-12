@@ -51,19 +51,19 @@ PROFICIENCY_INFORMATION = [
     ("Health", "When your health reahes zero you fall unconscious.", "Vitality", ["linear", 5, 2, 0], False),
     ("Regeneration", "How many health points you recover each day.", "Vitality", ["linear", 1, 0.5, 1], False),
     ("Recovery", "How quickly you recover from poisons and negative effects.", "Vitality", ["linear", 1, 0, 0], False),
-    ("Climbing", "The difficulty of objects of which you are able to climb.", "Agility", ["linear", 0, 0, 0], False),
+    ("Climbing", "The difficulty of objects of which you are able to climb.", "Agility", ["linear", 0, 1, 0], False),
     ("Storage", "The amount of weight that you can carry.", "Brawn", ["linear", 10, 3, 0], False),
-    ("Encumbrance", "How much your are slowed down in combat by your equipment.", "Brawn", ["linear", 100, -1, 0], False),
+    ("Encumbrance", "How much your are slowed down in combat by your equipment.", "Brawn", ["linear", 100, -1, 0], True),
     ("Endurance", "Number of actions you can perform each day.", "Resilience", ["linear", 3, 0.5, 0], False),
     ("Stamina", "How many endurance points you recover each day.", "Resilience", ["linear", 1, 0.5, 1], False),
-    ("Damage minimum", "Mimimum damage you do on each hit", "Brawn", ["linear", 1, 1, 0], False),
+    ("Damage minimum", "Mimimum damage you do on each hit", "Brawn", ["linear", 0, 1, 0], False),
     ("Damage maximum", "Maximum damage you do on each hit", "Brawn", ["linear", 1, 1, 0], False),
     ("Speed", "How fast you attack.", "Quickness", ["linear", 1, 0.05, 2], False),
     ("Accuracy", "The chance of your attacks hitting their target.", "Agility", ["linear", 1, 1, 0], True),
     ("First strike", "Chance to strike first", "Quickness", ["linear", 1, 1, 0], True),
-    ("Killshot", "Ability to hit enemies in their weak spot.", "Agility", ["linear", 1, 1, 0], False),
+    ("Killshot", "Damage multiplier when performing a critical hit.", "Agility", ["linear", 1.5, 0.1, 1], False),
+    ("Precision", "Ability to critically hit enemies.", "Agility", ["linear", 1, 1, 0], False),
     ("Defence", "Amount of all damage reduced.", "Resilience", ["linear", 0, 1, 0], True),
-    ("Armour", "Amount of physical damage reduced.", "Resilience", ["linear", 0, 1, 0], True),
     ("Evade", "Chance to dodge.", "Quickness", ["linear", 1, 1, 0], True),
     ("Parry", "Chance to parry.", "Quickness", ["linear", 1, 1, 0], True),
     ("Flee", "Chance to run from a battle.", "Quickness", ["linear", 1, 1, 0], True),
@@ -76,7 +76,7 @@ PROFICIENCY_INFORMATION = [
     ("Sanctity", "Amount of sanctity you can have.", "Divinity", ["linear", 1, 1, 0], False),
     ("Redemption", "Amount of sanctity you recover each day.", "Divinity", ["linear", 0, 0.5, 1], False),
     ("Resist holy", "Ability to resist holy damage", "Divinity", ["linear", 1, 1, 0], False),
-    ("Bartering", "Discount from negotiating prices.", "Charisma", ["linear", 1, 1, 0], False),
+    ("Bartering", "Discount from negotiating prices.", "Charisma", ["linear", 1, 1, 0], True),
     ("Oration", "Proficiency in speaking to others.", "Charisma", ["linear", 1, 1, 0], False),
     ("Charm", "How quickly other people will like you.", "Charisma", ["linear", 1, 1, 0], False),
     ("Trustworthiness", "How much other players trust you.", "Charisma", ["linear", 1, 1, 0], False),
@@ -106,9 +106,9 @@ PROFICIENCY_INFORMATION = [
     ("Sanity", "Your ability to resist mind altering affects.", "Willpower", ["linear", 1, 1, 0], False),
     ("Thorns", "Amount of damage that attackers take.", None, ["linear", 0, 0, 0], False, True)
 ]
-ALL_NAMES = ['Accuracy', 'Adventuring', 'Armour', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'Damage maximum', 'Damage minimum', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'First strike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'Resist blunt', 'Resist flame', 'Resist frost', 'Resist holy', 'Resist piercing', 'Resist poison', 'Resist shadow', 'Resist slashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stamina', 'Stealth', 'Storage', 'Survivalist', 'Thorns', 'Trustworthiness', 'Understanding', 'Woodsman']
-ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'armour', 'bartering', 'block', 'caution', 'charm', 'climbing', 'courage', 'damage_maximum', 'damage_minimum', 'defence', 'detection', 'encumbrance', 'endurance', 'evade', 'explorer', 'faith', 'fatigue', 'first_strike', 'flee', 'health', 'huntsman', 'killshot', 'knowledge', 'literacy', 'logistics', 'luckiness', 'mountaineering', 'navigator', 'oration', 'parry', 'pickpocketing', 'recovery', 'redemption', 'regeneration', 'renown', 'resist_blunt', 'resist_flame', 'resist_frost', 'resist_holy', 'resist_piercing', 'resist_poison', 'resist_shadow', 'resist_slashing', 'riposte', 'sanctity', 'sanity', 'speed', 'stamina', 'stealth', 'storage', 'survivalist', 'thorns', 'trustworthiness', 'understanding', 'woodsman']
-ALL_CLASS_NAMES = ['Accuracy', 'Adventuring', 'Armour', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'DamageMaximum', 'DamageMinimum', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'FirstStrike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'ResistBlunt', 'ResistFlame', 'ResistFrost', 'ResistHoly', 'ResistPiercing', 'ResistPoison', 'ResistShadow', 'ResistSlashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stamina', 'Stealth', 'Storage', 'Survivalist', 'Thorns', 'Trustworthiness', 'Understanding', 'Woodsman']
+ALL_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'Damage maximum', 'Damage minimum', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'First strike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Precision', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'Resist blunt', 'Resist flame', 'Resist frost', 'Resist holy', 'Resist piercing', 'Resist poison', 'Resist shadow', 'Resist slashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stamina', 'Stealth', 'Storage', 'Survivalist', 'Thorns', 'Trustworthiness', 'Understanding', 'Woodsman']
+ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'bartering', 'block', 'caution', 'charm', 'climbing', 'courage', 'damage_maximum', 'damage_minimum', 'defence', 'detection', 'encumbrance', 'endurance', 'evade', 'explorer', 'faith', 'fatigue', 'first_strike', 'flee', 'health', 'huntsman', 'killshot', 'knowledge', 'literacy', 'logistics', 'luckiness', 'mountaineering', 'navigator', 'oration', 'parry', 'pickpocketing', 'precision', 'recovery', 'redemption', 'regeneration', 'renown', 'resist_blunt', 'resist_flame', 'resist_frost', 'resist_holy', 'resist_piercing', 'resist_poison', 'resist_shadow', 'resist_slashing', 'riposte', 'sanctity', 'sanity', 'speed', 'stamina', 'stealth', 'storage', 'survivalist', 'thorns', 'trustworthiness', 'understanding', 'woodsman']
+ALL_CLASS_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'DamageMaximum', 'DamageMinimum', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'FirstStrike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Precision', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'ResistBlunt', 'ResistFlame', 'ResistFrost', 'ResistHoly', 'ResistPiercing', 'ResistPoison', 'ResistShadow', 'ResistSlashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stamina', 'Stealth', 'Storage', 'Survivalist', 'Thorns', 'Trustworthiness', 'Understanding', 'Woodsman']
 
 
 class Proficiency(TemplateMixin, Base):
@@ -224,12 +224,13 @@ class Proficiency(TemplateMixin, Base):
         Modifies the final and next_value with the Class's format spec.
         """
 
-        temp = """<h1>{{ prof.display_name }}</h1>
+        temp = """<h1>{{ prof.display_name }} (Level {{ prof.level }})</h1>
                   <h2>{{ prof.description }}</h2>
-                  <h2>Current level: {{ prof.level }} {% if not prof.is_max_level and prof.hero.proficiency_points %}<button id=levelUpProficiencyButton class="upgradeButton" onclick="sendToPy(event, proficiencyTooltip, 'update_proficiency', {'id': {{ prof.id }}});"></button>{% endif %}</h2>
                   <h2>Current value: {{ formatted_final }}</h2>
-                  <h2>Next value: {{ formatted_next }}</h2>
-                  <h2>Max level: {{ prof.max_level }}</h2>"""
+                  {% if not prof.is_max_level and prof.hero.proficiency_points %}
+                  <h2>Next value: <font color="green">{{ formatted_next }}</font></h2>
+                  <button id=levelUpProficiencyButton class="upgradeButton" onclick="sendToPy(event, proficiencyTooltip, 'update_proficiency', {'id': {{ prof.id }}});"></button>
+                  {% elif prof.is_max_level %}<font color="red">Not enough {{ prof.attribute_type }}</font>{% endif %}</h2>"""
         return render_template_string(
             temp, prof=self,
             formatted_final=self.format_spec.format(self.final),
@@ -402,7 +403,7 @@ class Climbing(Proficiency):
         if level is None:
             level = self.level
 
-        return round(0 * level, self.num_of_decimals)
+        return round(1 * level, self.num_of_decimals)
 
 
 class Storage(Proficiency):
@@ -453,8 +454,8 @@ class Encumbrance(Proficiency):
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
     # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = False
-    format_spec = "{:.0f}"
+    is_percent = True
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Encumbrance"
@@ -582,7 +583,7 @@ class DamageMinimum(Proficiency):
     def attribute(self):
         return self.hero.attributes.brawn
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Mimimum damage you do on each hit"
         self.attribute_type = "Brawn"
@@ -762,11 +763,11 @@ class Killshot(Proficiency):
     hidden = False
     name = "killshot"
     display_name = "Killshot"
-    num_of_decimals = 0
+    num_of_decimals = 1
     # This should add a "%" to the display at the end of a prof.
     # So instead of 5 Accuracy it should say 5% accuracy.
     is_percent = False
-    format_spec = "{:.0f}"
+    format_spec = "{:.1f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "Killshot"
@@ -777,14 +778,53 @@ class Killshot(Proficiency):
     def attribute(self):
         return self.hero.attributes.agility
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=1.5, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Ability to hit enemies in their weak spot."
+        self.description = "Damage multiplier when performing a critical hit."
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
         """Update Killshot's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(0.1 * level, self.num_of_decimals)
+
+
+class Precision(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "precision"
+    display_name = "Precision"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    # So instead of 5 Accuracy it should say 5% accuracy.
+    is_percent = False
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Precision"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.agility
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Ability to critically hit enemies."
+        self.attribute_type = "Agility"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Precision's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -824,45 +864,6 @@ class Defence(Proficiency):
 
     def scale_by_level(self, level=None):
         """Update Defence's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1 * level, self.num_of_decimals)
-
-
-class Armour(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden = False
-    name = "armour"
-    display_name = "Armour"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = True
-    format_spec = "{:.0f}%"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Armour"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.resilience
-
-    def __init__(self, *args, base=0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Amount of physical damage reduced."
-        self.attribute_type = "Resilience"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Armour's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -1357,8 +1358,8 @@ class Bartering(Proficiency):
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
     # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = False
-    format_spec = "{:.0f}"
+    is_percent = True
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Bartering"
