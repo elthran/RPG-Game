@@ -25,11 +25,13 @@ Prof_Name, Prof_Descr, Prof_Attrib, [Formula_Type, Base_Value, Weight, # of Deci
 """
 from build_code import normalize_attrib_name
 
+
 import pandas
-temp = pandas.read_csv('profs.csv', dtype={'Name': str, "Description": str})
+profs = pandas.read_csv('profs.csv', dtype={'Name': str, "Description": str})
 NEW_PROFS = []
-for i, row in enumerate(temp.itertuples(), 1):
-    NEW_PROFS.append((row.Name, row.Description, row.Attribute, row.GrowthFunction, row.Base, row.Weight, row.Decimals, row.Hidden))
+for i, row in enumerate(profs.itertuples(), 1):
+    NEW_PROFS.append((row.Name, row.Description, row.Attribute, row.GrowthFunction, row.Base, row.Weight,
+                          row.Decimals, row.Hidden))
 
 PROFICIENCY_INFORMATION = [
     ("Health", "When your health reahes zero you fall unconscious.", "Vitality", ["linear", 5, 2, 0], False),
