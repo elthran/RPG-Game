@@ -1,0 +1,20 @@
+Name,Type,Maximum,Description,Learnable,Prof1,Value1
+Relentless,AuraAbility,5,Gain {{ level * 5 }} maximum health. Master this ability to unlock the Brute archetype.,True,Health,{base: 5}
+Trickster,AuraAbility,5,Become {{ level * 5 }}% harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.,True,Health,{'base': 5}
+Discipline,AuraAbility,5,Gain devotion {{ level * 5 }}% faster. Master this ability to unlock the Ascetic archetype.,True,Health,{'base': 5}
+Traveler,AuraAbility,5,Reveal {{ level * 10 }}% more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.,True,Health,{'base': 5}
+Arcanum,AuraAbility,5,Gain {{ level * 3 }} maximum sanctity. Master this ability to unlock the Philosopher archetype.,True,Health,{'base': 5}
+Poet,AuraAbility,5,Gain fame {{ level * 5 }}% faster. Master this ability to unlock the Opportunist archetype.,True,Health,{'base': 5}
+Blackhearted,AuraAbility,3,Lose virtue {{ level * 5 }}% faster.,True,Health,{'base': 5}
+Backstab,AuraAbility,3,You are {{ level * 15 }}% more likely to attack first in combat.,True,Health,{'base': 5}
+MartialArts,AuraAbility,3,You deal {{ level * 5 }}% more damage in combat.,True,Health,{'base': 5}
+Apprentice,AuraAbility,3,You are capable of learning level {{ level }} spells.,True,Health,{'base': 5}
+Meditation,AuraAbility,3,Regenerate {{ level }} sanctity per day.,True,Health,{'base': 5}
+Bash,AuraAbility,3,You deal {{ level * 10 }}% more damage with blunt weapons.,True,Health,{'base': 5}
+Student,AuraAbility,3,You are capable of learning level {{ level }} spells.,True,Health,{'base': 5}
+Scholar,AuraAbility,3,Gain experience {{ level }}% faster.,True,Health,{'base': 5}
+Vigilance,AuraAbility,3,You are {{ level * 10 }}% less likely to be ambushed.,True,Health,{'base': 5}
+Strider,AuraAbility,3,Traveling on the map requires {{ level * 10 }}% less endurance.,True,Health,{'base': 5}
+Skinner,AuraAbility,3,You have a {{ level * 5 }}% chance of obtaining a usable fur after kiling a beast.,True,Health,{'base': 5}
+Charmer,AuraAbility,3,You are {{ level * 5 }}% more likely to succeed when choosing charm dialogues.,True,Health,{'base': 5}
+Haggler,AuraAbility,3,Prices at shops are {{ level * 3}}% cheaper.,True,Health,{'base': 5}

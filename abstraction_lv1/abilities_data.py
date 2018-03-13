@@ -29,10 +29,19 @@ which is an entirely different object than:
     hero.proficiencies['health']
 """
 
+import pandas
+
+
+profs = pandas.read_csv('abilities.csv', dtype={'Name': str, "Description": str})  #You can declare each column's data type
+ABILITY_INFORMATION = []
+for i, row in enumerate(profs.itertuples(), 1):
+    ABILITY_INFORMATION.append((row.Name, row.Type, row.Maximum, row.Description, row.Learnable, row.Prof1, row.Value1))
+
+for ability in ABILITY_INFORMATION:
+    print(ability)
+
 ALL_ABILITIES = [
-    ("Relentless",
-        "AuraAbility",
-        "5, 'Gain {{ level * 5 }} maximum health. Master this ability to unlock the Brute archetype.', learnable=True, proficiency_data=[('Health', {'base': 5}),]"),
+    ("Relentless", "AuraAbility", "5, 'Gain {{ level * 5 }} maximum health. Master this ability to unlock the Brute archetype.', learnable=True, proficiency_data=[('Health', {'base': 5}),]"),
     ("Trickster", "AuraAbility", "5, 'Become {{ level * 5 }}% harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', learnable=True, stealth_chance=5"),
     ("Discipline", "AuraAbility", "5, 'Gain devotion {{ level * 5 }}% faster. Master this ability to unlock the Ascetic archetype.', learnable=True"),
     ("Traveler", "AuraAbility", "5, 'Reveal {{ level * 10 }}% more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', learnable=True"),
