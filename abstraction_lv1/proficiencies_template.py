@@ -7,8 +7,6 @@ from factories import TemplateMixin
 from base_classes import Base
 from flask import render_template_string
 
-from math import sin, floor
-
 # For testing
 from pprint import pprint
 import pdb
@@ -112,7 +110,7 @@ class Proficiency(TemplateMixin, Base):
     @property
     def final(self):
         """Return the scaled value + base + modifier percent."""
-
+        print(self.scale_by_level(),self.base,self.modifier,self.num_of_decimals)
         return round((self.scale_by_level() + self.base) *
                      (self.modifier + 1), self.num_of_decimals)
 
