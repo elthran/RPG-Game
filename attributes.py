@@ -10,22 +10,8 @@ from sqlalchemy.orm import relationship
 
 from base_classes import Base
 
-ATTRIBUTE_INFORMATION = [
-    ("Agility", "A measure of how skilfully you can move."),
-    ("Brawn", "A measure of how strong you are."),
-    ("Charisma", "A measure of how well you interact with other people"),
-    ("Divinity", "A measure of your connection with the spirit world."),
-    ("Fortuity", "A measure of your luck."),
-    ("Intellect", "A measure of your mental prowess and knowledge."),
-    ("Pathfinding", "A measure of your ability to traverse the world."),
-    ("Quickness", "A measure of how fast you can move."),
-    ("Resilience", "A measure of how tough you are."),
-    ("Survivalism", "A measure of how well you can adapt to your surroundings."),
-    ("Vitality", "A measure of how healthy you are."),
-    ("Willpower", "A measure of how disciplined you are.")
-]
+ALL_ATTRIBUTES = [('Agility', 'A measure of how skilfully you can move.'), ('Brawn', 'A measure of how strong you are.'), ('Charisma', 'A measure of how well you interact with other people'), ('Divinity', 'A measure of your connection with the spirit world.'), ('Fortuity', 'A measure of your luck.'), ('Intellect', 'A measure of your mental prowess and knowledge.'), ('Pathfinding', 'A measure of your ability to traverse the world.'), ('Quickness', 'A measure of how fast you can move.'), ('Resilience', 'A measure of how tough you are.'), ('Survivalism', 'A measure of how well you can adapt to your surroundings.'), ('Vitality', 'A measure of how healthy you are.'), ('Willpower', 'A measure of how disciplined you are.')]
 
-ALL_ATTRIBUTES = [attrib[0].lower() for attrib in ATTRIBUTE_INFORMATION]
 ALL_NAMES = ['Agility', 'Brawn', 'Charisma', 'Divinity', 'Fortuity', 'Intellect', 'Pathfinding', 'Quickness', 'Resilience', 'Survivalism', 'Vitality', 'Willpower']
 ALL_ATTRIBUTE_NAMES = ['agility', 'brawn', 'charisma', 'divinity', 'fortuity', 'intellect', 'pathfinding', 'quickness', 'resilience', 'survivalism', 'vitality', 'willpower']
 ALL_CLASS_NAMES = ['Agility', 'Brawn', 'Charisma', 'Divinity', 'Fortuity', 'Intellect', 'Pathfinding', 'Quickness', 'Resilience', 'Survivalism', 'Vitality', 'Willpower']
@@ -141,7 +127,7 @@ class AttributeContainer(Base):
         """Return all the attributes of this function as an iterator."""
         return (getattr(self, key) for key in ALL_ATTRIBUTE_NAMES)
 
-        
+
 class Attribute(Base):
     """Attribute class that stores data about a hero object.
     """

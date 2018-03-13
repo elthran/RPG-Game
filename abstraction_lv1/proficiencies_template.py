@@ -13,10 +13,10 @@ import pdb
 
 
 
-PROFICIENCY_INFORMATION = {{ PROFICIENCY_INFORMATION }}
+ALL_PROFICIENCIES = {{ ALL_PROFICIENCIES }}
 
 {% import 'container_helpers.py' as container_helpers %}
-{{ container_helpers.build_container("Proficiency", "proficiencies", PROFICIENCY_INFORMATION, no_container=True) }}
+{{ container_helpers.build_container("Proficiency", "proficiencies", ALL_PROFICIENCIES, no_container=True) }}
 
 class Proficiency(TemplateMixin, Base):
     """Proficiency class that stores data about a hero object.
@@ -157,7 +157,7 @@ class Proficiency(TemplateMixin, Base):
         return True if self.level >= self.attribute.level * 2 else False
 
 
-{% for prof in PROFICIENCY_INFORMATION %}
+{% for prof in ALL_PROFICIENCIES %}
 {% set prof_class = normalize_class_name(prof[0]) %}
 {% set attrib_name = normalize_attrib_name(prof[0]) %}
 {% set display_name = prof[0].capitalize() %}

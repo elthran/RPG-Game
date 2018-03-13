@@ -24,8 +24,6 @@ import werkzeug.serving
 
 from game import Game
 import combat_simulator
-from attributes import \
-    ATTRIBUTE_INFORMATION  # Since attribute information was hand typed out in both modules, it was causing bugs. Seems cleaner to import it and then only edit it in one place
 # Marked for restructure! Avoid use of import * in production code.
 from bestiary import *
 from commands import Command
