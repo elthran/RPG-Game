@@ -271,12 +271,6 @@ class Command:
         return "success".format()
 
     @staticmethod
-    def change_proficiency_tooltip(hero, database, data, **kwargs):
-        tooltip_id = data['id']
-        proficiency = database.get_proficiency_by_id(tooltip_id)
-        return jsonify(tooltip=proficiency.tooltip)
-
-    @staticmethod
     def update_proficiency(hero, database, data, **kwargs):
         """Raise proficiency level, decrement proficiency_points.
 
@@ -300,13 +294,16 @@ class Command:
                        level=proficiency.level)
 
     @staticmethod
-    def change_ability_tooltip(hero, database, arg_dict, **kwargs):
-        # I want to pass in the actual attribute here instead of the description. That way I can assign the attribute name and description to the tooltip.
-        # Unfortunately, I don't know how to pull the attribute object from the database. I need a get_attribute_by_name() function in database.py
-        ability_id = arg_dict.get('data', None, type=int)
-        ability = database.get_ability_by_id(ability_id)
-        tooltip = ability.get_description()
-        return "{}&&{}".format(tooltip, ability.image)
+    def change_proficiency_tooltip(hero, database, data, **kwargs):
+        tooltip_id = data['id']
+        proficiency = database.get_proficiency_by_id(tooltip_id)
+        return jsonify(tooltip=proficiency.tooltip)
+
+    @staticmethod
+    def change_ability_tooltip(hero, database, data, **kwargs):
+        tooltip_id = data['id']
+        ability = database.get_ability_by_id(tooltip_id)
+        return jsonify(tooltip=ability.tooltip)
 
     @staticmethod
     def update_ability(hero, database, arg_dict, **kwargs):

@@ -255,6 +255,25 @@ class AuraAbility(Ability):
         self.stealth_chance = stealth_chance
         self.firststrike_chance = firststrike_chance
 
+    @property
+    def tooltip(self):
+        """Create a tooltip for each variable.
+
+        Modifies the final and next_value with the Class's format spec.
+        """
+        {% raw %}
+        temp = """<h1>{{ self.display_name }} (Level {{ self.level }})</h1>
+                      <h2>{{ self.description }}</h2>"""
+        {% endraw %}
+
+        """{# I want this to be
+        temp = <h1>{{ this_ability.display_name }} (Level {{ this_ability.level }}</h1>
+               <h2>{{ this_ability.description }}</h2>
+               
+        return render_template(temp, this_ability=self)
+        #}"""
+        return render_template_string(temp)
+
 
 {% for value in ALL_ABILITIES %}
 class {{ value[0] }}({{ value[1] }}):

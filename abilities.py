@@ -423,6 +423,19 @@ class AuraAbility(Ability):
         self.stealth_chance = stealth_chance
         self.firststrike_chance = firststrike_chance
 
+    @property
+    def tooltip(self):
+        """Create a tooltip for each variable.
+
+        Modifies the final and next_value with the Class's format spec.
+        """
+
+        temp = """<h1>{{ self.display_name }} (Level {{ self.level }})</h1>
+                      <h2>{{ self.description }}</h2>"""
+
+        """"""
+        return render_template_string(temp)
+
 
 class Relentless(AuraAbility):
     __mapper_args__ = {
