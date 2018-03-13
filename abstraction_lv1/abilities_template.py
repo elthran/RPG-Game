@@ -18,7 +18,7 @@ import proficiencies
 from base_classes import Base
 import pdb
 
-{% include "abilities_data.py" %}
+ALL_ABILITIES = {{ ALL_ABILITIES }}
 
 {% import 'container_helpers.py' as container_helpers %}
 {{ container_helpers.build_container("Ability", "abilities", ALL_ABILITIES) }}
@@ -263,13 +263,8 @@ class {{ value[0] }}({{ value[1] }}):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('{{ value[0] }}', {{ value[2] }})
+        super().__init__('{{ value[0] }}', {{ value[2] }}, '{{ value[3] }}', learnable={{ value[4] }}, proficiency_data=[('{{ value[5] }}', {'base': {{ value[6] }}})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-{% if loop.last %}
-{% else %}
-
-
-{% endif %}
 {% endfor %}

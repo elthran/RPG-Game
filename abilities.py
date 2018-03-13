@@ -24,72 +24,8 @@ import proficiencies
 from base_classes import Base
 import pdb
 
-"""
+ALL_ABILITIES = [('Relentless', 'AuraAbility', 5, 'Gain {{ (level + 1) * 5 }} maximum health. Master this ability to unlock the Brute archetype.', True, 'Health', 5), ('Trickster', 'AuraAbility', 5, 'Become {{ (level + 1) * 5 }}% harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', True, 'Health', 5), ('Discipline', 'AuraAbility', 5, 'Gain devotion {{ (level + 1) * 5 }}% faster. Master this ability to unlock the Ascetic archetype.', True, 'Health', 5), ('Traveler', 'AuraAbility', 5, 'Reveal {{ (level + 1) * 10 }}% more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', True, 'Health', 5), ('Arcanum', 'AuraAbility', 5, 'Gain {{ (level + 1) * 3 }} maximum sanctity. Master this ability to unlock the Philosopher archetype.', True, 'Health', 5), ('Poet', 'AuraAbility', 5, 'Gain fame {{ (level + 1) * 5 }}% faster. Master this ability to unlock the Opportunist archetype.', True, 'Health', 5), ('Blackhearted', 'AuraAbility', 3, 'Lose virtue {{ (level + 1) * 5 }}% faster.', True, 'Health', 5), ('Backstab', 'AuraAbility', 3, 'You are {{ (level + 1) * 15 }}% more likely to attack first in combat.', True, 'Health', 5), ('MartialArts', 'AuraAbility', 3, 'You deal {{ (level + 1) * 5 }}% more damage in combat.', True, 'Health', 5), ('Apprentice', 'AuraAbility', 3, 'You are capable of learning {{ (level + 1) }} additional spells.', True, 'Health', 5), ('Meditation', 'AuraAbility', 3, 'Regenerate {{ (level + 1) }} sanctity per day.', True, 'Health', 5), ('Bash', 'AuraAbility', 3, 'You deal {{ (level + 1) * 10 }}% more damage with blunt weapons.', True, 'Health', 5), ('Student', 'AuraAbility', 3, 'You are capable of learning {{ (level + 1) }} additional spells.', True, 'Health', 5), ('Scholar', 'AuraAbility', 3, 'Gain experience {{ (level + 1) }}% faster.', True, 'Health', 5), ('Vigilance', 'AuraAbility', 3, 'You are {{ (level + 1) * 10 }}% less likely to be ambushed.', True, 'Health', 5), ('Strider', 'AuraAbility', 3, 'Traveling on the map requires {{ (level + 1) * 10 }}% less endurance.', True, 'Health', 5), ('Skinner', 'AuraAbility', 3, 'You have a {{ (level + 1) * 5 }}% chance of obtaining a usable fur after kiling a beast.', True, 'Health', 5), ('Charmer', 'AuraAbility', 3, 'You are {{ (level + 1) * 5 }}% more likely to succeed when choosing charm dialogues.', True, 'Health', 5), ('Haggler', 'AuraAbility', 3, 'Prices at shops are {{ (level + 1) * 3}}% cheaper.', True, 'Health', 5)]
 
-Abilities spec goes:
-
-name, class, class arguments (not including name as it is added later).
-
-relentless = ALL_ABILITIES[0]
-name = relentless[0]
-type = relentless[1]
-args = relentless[2]
-
-NOTE:
-    proficiency_data gets parsed by:
-# Initialize proficiencies
-# Currently doesn't add any proficiencies.
-for class_name, arg_dict in proficiency_data:
-    Class = getattr(proficiencies, class_name)
-    # pdb.set_trace()
-    obj = Class(**arg_dict)
-    self.proficiencies[obj.name] = obj
-
-Such each element must be a list of tuples:
-Each tuple should have element 1 be the class name (Health)
-Each tuple should have an element 2 be an arg dict corresponding to the
-Proficiency argment dict ... this is expanded so that it will read
-e.g.
-    hero.abilities.relentless.proficiencies['health'] = Health(base=5)
-which is an entirely different object than:
-    hero.proficiencies['health']
-"""
-
-import pandas
-
-
-profs = pandas.read_csv('abilities.csv', dtype={'Name': str, "Description": str})  #You can declare each column's data type
-ABILITY_INFORMATION = []
-for i, row in enumerate(profs.itertuples(), 1):
-    ABILITY_INFORMATION.append((row.Name, row.Type, row.Maximum, row.Description, row.Learnable, row.Prof1, row.Value1))
-
-for ability in ABILITY_INFORMATION:
-    print(ability)
-
-ALL_ABILITIES = [
-    ("Relentless", "AuraAbility", "5, 'Gain {{ level * 5 }} maximum health. Master this ability to unlock the Brute archetype.', learnable=True, proficiency_data=[('Health', {'base': 5}),]"),
-    ("Trickster", "AuraAbility", "5, 'Become {{ level * 5 }}% harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', learnable=True, stealth_chance=5"),
-    ("Discipline", "AuraAbility", "5, 'Gain devotion {{ level * 5 }}% faster. Master this ability to unlock the Ascetic archetype.', learnable=True"),
-    ("Traveler", "AuraAbility", "5, 'Reveal {{ level * 10 }}% more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', learnable=True"),
-    ("Arcanum", "AuraAbility", "5, 'Gain {{ level * 3 }} maximum sanctity. Master this ability to unlock the Philosopher archetype.', learnable=True, sanctity_maximum=3"),
-    ("Poet", "AuraAbility", "5, 'Gain fame {{ level * 5 }}% faster. Master this ability to unlock the Opportunist archetype.', learnable=True"),
-    ("Blackhearted", "AuraAbility", "3, 'Lose virtue {{ level * 5 }}% faster.', tree='archetype', tree_type='scoundrel'"),
-    ("Backstab", "AuraAbility", "3, 'You are {{ level * 15 }}% more likely to attack first in combat.', tree='archetype', tree_type='scoundrel', firststrike_chance=15"),
-    ("MartialArts", "AuraAbility", "3, 'You deal {{ level * 5 }}% more damage in combat.', tree='archetype', tree_type='ascetic'"),
-    ("Apprentice", "AuraAbility", "3, 'You are capable of learning level {{ level }} spells.', tree='archetype', tree_type='ascetic'"),
-    ("Meditation", "AuraAbility", "3, 'Regenerate {{ level }} sanctity per day.', tree='archetype', tree_type='ascetic', sanctity_regeneration=1"),
-    ("Bash", "AuraAbility", "3, 'You deal {{ level * 10 }}% more damage with blunt weapons.', tree='archetype', tree_type='brute'"),
-    ("Student", "AuraAbility", "3, 'You are capable of learning level {{ level }} spells.', tree='archetype', tree_type='philosopher'"),
-    ("Scholar", "AuraAbility", "3, 'Gain experience {{ level }}% faster.', learnable=True, tree='archetype', tree_type='philosopher', understanding_modifier=1"),
-    ("Vigilance", "AuraAbility", "3, 'You are {{ level * 10 }}% less likely to be ambushed.', tree='archetype', tree_type='survivalist'"),
-    ("Strider", "AuraAbility", "3, 'Traveling on the map requires {{ level * 10 }}% less endurance.', tree='archetype', tree_type='survivalist'"),
-    ("Skinner", "AuraAbility", "3, 'You have a {{ level * 5 }}% chance of obtaining a usable fur after kiling a beast.', tree='archetype', tree_type='survivalist'"),
-    ("Charmer", "AuraAbility", "3, 'You are {{ level * 5 }}% more likely to succeed when choosing charm dialogues.', tree='archetype', tree_type='opportunist'"),
-    ("Haggler", "AuraAbility", "3, 'Prices at shops are {{ level * 3}}% cheaper.', tree='archetype', tree_type='opportunist'")
-]
-"""
-End of abilities_data.py.
-"""
 ALL_NAMES = ['Apprentice', 'Arcanum', 'Backstab', 'Bash', 'Blackhearted', 'Charmer', 'Discipline', 'Haggler', 'Martial arts', 'Meditation', 'Poet', 'Relentless', 'Scholar', 'Skinner', 'Strider', 'Student', 'Traveler', 'Trickster', 'Vigilance']
 ALL_ATTRIBUTE_NAMES = ['apprentice', 'arcanum', 'backstab', 'bash', 'blackhearted', 'charmer', 'discipline', 'haggler', 'martial_arts', 'meditation', 'poet', 'relentless', 'scholar', 'skinner', 'strider', 'student', 'traveler', 'trickster', 'vigilance']
 ALL_CLASS_NAMES = ['Apprentice', 'Arcanum', 'Backstab', 'Bash', 'Blackhearted', 'Charmer', 'Discipline', 'Haggler', 'MartialArts', 'Meditation', 'Poet', 'Relentless', 'Scholar', 'Skinner', 'Strider', 'Student', 'Traveler', 'Trickster', 'Vigilance']
@@ -494,223 +430,187 @@ class Relentless(AuraAbility):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Relentless', 5, 'Gain {{ level * 5 }} maximum health. Master this ability to unlock the Brute archetype.', learnable=True, proficiency_data=[('Health', {'base': 5}),])
+        super().__init__('Relentless', 5, 'Gain {{ (level + 1) * 5 }} maximum health. Master this ability to unlock the Brute archetype.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class Trickster(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Trickster',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Trickster', 5, 'Become {{ level * 5 }}% harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', learnable=True, stealth_chance=5)
+        super().__init__('Trickster', 5, 'Become {{ (level + 1) * 5 }}% harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class Discipline(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Discipline',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Discipline', 5, 'Gain devotion {{ level * 5 }}% faster. Master this ability to unlock the Ascetic archetype.', learnable=True)
+        super().__init__('Discipline', 5, 'Gain devotion {{ (level + 1) * 5 }}% faster. Master this ability to unlock the Ascetic archetype.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class Traveler(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Traveler',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Traveler', 5, 'Reveal {{ level * 10 }}% more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', learnable=True)
+        super().__init__('Traveler', 5, 'Reveal {{ (level + 1) * 10 }}% more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class Arcanum(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Arcanum',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Arcanum', 5, 'Gain {{ level * 3 }} maximum sanctity. Master this ability to unlock the Philosopher archetype.', learnable=True, sanctity_maximum=3)
+        super().__init__('Arcanum', 5, 'Gain {{ (level + 1) * 3 }} maximum sanctity. Master this ability to unlock the Philosopher archetype.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class Poet(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Poet',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Poet', 5, 'Gain fame {{ level * 5 }}% faster. Master this ability to unlock the Opportunist archetype.', learnable=True)
+        super().__init__('Poet', 5, 'Gain fame {{ (level + 1) * 5 }}% faster. Master this ability to unlock the Opportunist archetype.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class Blackhearted(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Blackhearted',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Blackhearted', 3, 'Lose virtue {{ level * 5 }}% faster.', tree='archetype', tree_type='scoundrel')
+        super().__init__('Blackhearted', 3, 'Lose virtue {{ (level + 1) * 5 }}% faster.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class Backstab(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Backstab',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Backstab', 3, 'You are {{ level * 15 }}% more likely to attack first in combat.', tree='archetype', tree_type='scoundrel', firststrike_chance=15)
+        super().__init__('Backstab', 3, 'You are {{ (level + 1) * 15 }}% more likely to attack first in combat.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class MartialArts(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'MartialArts',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('MartialArts', 3, 'You deal {{ level * 5 }}% more damage in combat.', tree='archetype', tree_type='ascetic')
+        super().__init__('MartialArts', 3, 'You deal {{ (level + 1) * 5 }}% more damage in combat.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class Apprentice(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Apprentice',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Apprentice', 3, 'You are capable of learning level {{ level }} spells.', tree='archetype', tree_type='ascetic')
+        super().__init__('Apprentice', 3, 'You are capable of learning {{ (level + 1) }} additional spells.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class Meditation(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Meditation',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Meditation', 3, 'Regenerate {{ level }} sanctity per day.', tree='archetype', tree_type='ascetic', sanctity_regeneration=1)
+        super().__init__('Meditation', 3, 'Regenerate {{ (level + 1) }} sanctity per day.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class Bash(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Bash',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Bash', 3, 'You deal {{ level * 10 }}% more damage with blunt weapons.', tree='archetype', tree_type='brute')
+        super().__init__('Bash', 3, 'You deal {{ (level + 1) * 10 }}% more damage with blunt weapons.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class Student(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Student',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Student', 3, 'You are capable of learning level {{ level }} spells.', tree='archetype', tree_type='philosopher')
+        super().__init__('Student', 3, 'You are capable of learning {{ (level + 1) }} additional spells.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class Scholar(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Scholar',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Scholar', 3, 'Gain experience {{ level }}% faster.', learnable=True, tree='archetype', tree_type='philosopher', understanding_modifier=1)
+        super().__init__('Scholar', 3, 'Gain experience {{ (level + 1) }}% faster.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class Vigilance(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Vigilance',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Vigilance', 3, 'You are {{ level * 10 }}% less likely to be ambushed.', tree='archetype', tree_type='survivalist')
+        super().__init__('Vigilance', 3, 'You are {{ (level + 1) * 10 }}% less likely to be ambushed.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class Strider(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Strider',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Strider', 3, 'Traveling on the map requires {{ level * 10 }}% less endurance.', tree='archetype', tree_type='survivalist')
+        super().__init__('Strider', 3, 'Traveling on the map requires {{ (level + 1) * 10 }}% less endurance.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class Skinner(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Skinner',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Skinner', 3, 'You have a {{ level * 5 }}% chance of obtaining a usable fur after kiling a beast.', tree='archetype', tree_type='survivalist')
+        super().__init__('Skinner', 3, 'You have a {{ (level + 1) * 5 }}% chance of obtaining a usable fur after kiling a beast.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class Charmer(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Charmer',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Charmer', 3, 'You are {{ level * 5 }}% more likely to succeed when choosing charm dialogues.', tree='archetype', tree_type='opportunist')
+        super().__init__('Charmer', 3, 'You are {{ (level + 1) * 5 }}% more likely to succeed when choosing charm dialogues.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
-
-
 class Haggler(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Haggler',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Haggler', 3, 'Prices at shops are {{ level * 3}}% cheaper.', tree='archetype', tree_type='opportunist')
+        super().__init__('Haggler', 3, 'Prices at shops are {{ (level + 1) * 3}}% cheaper.', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
