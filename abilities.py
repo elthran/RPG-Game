@@ -442,7 +442,7 @@ class AuraAbility(Ability):
         temp = """<h1>{{ ability.name }} (Level {{ ability.level }})</h1>
                       <h2>{{ ability.description }}</h2>
                       {% if ability.level %}<h3>Current Bonus:</h3> {{ ability.current }}{% endif %}
-                      {% if not ability.is_max_level() %}<h3>Next Level:</h3> {{ ability.next }}{% else %}This ability is at its maximum level.{% endif %}
+                      {% if not ability.is_max_level() %}<h3>Next Level Bonus:</h3> {{ ability.next }}{% else %}This ability is at its maximum level.{% endif %}
                       {% if not ability.is_max_level() %}
                       <button id=levelUpAbilityButton class="upgradeButton" onclick="sendToPy(event, abilityTooltip, 'update_ability', {'id': {{ ability.id }}});"></button>
                       {% endif %}"""
