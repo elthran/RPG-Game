@@ -9,7 +9,7 @@ from sqlalchemy.orm import relationship
 from factories import TemplateMixin
 import proficiencies
 from session_helpers import SessionHoistMixin, safe_commit_session
-from base_classes import Base, attribute_mapped_collection_object_v2
+from base_classes import Base, attribute_mapped_dict_hybrid
 """
 Item Specification:
     All hero specific attributes must be moved from the Template classes.
@@ -70,7 +70,7 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
     # Item to Proficiency is One to Many
     proficiencies = relationship(
         "Proficiency",
-        collection_class=attribute_mapped_collection_object_v2('name'),
+        collection_class=attribute_mapped_dict_hybrid('name'),
         back_populates='items',
         cascade="all, delete-orphan")
 

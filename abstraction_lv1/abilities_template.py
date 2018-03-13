@@ -14,7 +14,7 @@ from flask import render_template_string
 import proficiencies
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 # Well ... ok, but for simplicity sake just pretend that that is true.
-from base_classes import Base, attribute_mapped_collection_object_v2
+from base_classes import Base, attribute_mapped_dict_hybrid
 import pdb
 
 {% include "abilities_data.py" %}
@@ -68,7 +68,7 @@ class Ability(Base):
     # Ability to Proficiencies is One to Many
     proficiencies = relationship(
         "Proficiency",
-        collection_class=attribute_mapped_collection_object_v2('name'),
+        collection_class=attribute_mapped_dict_hybrid('name'),
         back_populates='ability',
         cascade="all, delete-orphan")
 

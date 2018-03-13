@@ -887,7 +887,7 @@ def move(name='', hero=None, location=None):
 @uses_hero
 @update_current_location
 def store(name, hero=None, location=None):
-    print(hero.current_city)
+    # print(hero.current_city)
     if name == "Blacksmith":
         dialogue = "I have the greatest armoury in all of Thornwall!" # This should be pulled from pre_built objects
         items_for_sale = database.get_all_store_items()

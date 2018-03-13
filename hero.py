@@ -17,7 +17,7 @@ from inventory import Inventory
 from journal import Journal
 from specializations import SpecializationContainer
 from session_helpers import SessionHoistMixin
-from base_classes import Base, ObjectV2, attribute_mapped_collection_object_v2
+from base_classes import Base, DictHybrid, attribute_mapped_dict_hybrid
 
 
 class Hero(SessionHoistMixin, Base):
@@ -101,7 +101,7 @@ class Hero(SessionHoistMixin, Base):
     # Deleting a Hero deletes all their Abilities.
     abilities = relationship(
         "Ability",
-        collection_class=attribute_mapped_collection_object_v2('name'),
+        collection_class=attribute_mapped_dict_hybrid('name'),
         back_populates='hero',
         cascade="all, delete-orphan")
 
@@ -123,7 +123,7 @@ class Hero(SessionHoistMixin, Base):
     # Hero to Proficiency is One to Many
     base_proficiencies = relationship(
         "Proficiency",
-        collection_class=attribute_mapped_collection_object_v2('name'),
+        collection_class=attribute_mapped_dict_hybrid('name'),
         back_populates='hero',
         cascade="all, delete-orphan")
 
@@ -256,7 +256,7 @@ class Hero(SessionHoistMixin, Base):
                 Class = getattr(proficiencies, type_)
                 summed[key] = Class(level=lvl, base=base, modifier=mod)
                 summed[key].current = self.base_proficiencies[key].current
-            self.proficiencies = ObjectV2('name', summed)
+            self.proficiencies = DictHybrid(summed, key_attr='name')
             return self.proficiencies
 
     def __init__(self, **kwargs):
