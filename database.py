@@ -30,7 +30,7 @@ import base_classes
 from game import User
 from inbox import Inbox, Message
 from hero import Hero
-from abilities import AbilityContainer, Ability
+from abilities import Ability
 from specializations import Specialization
 from locations import Location
 from items import Item

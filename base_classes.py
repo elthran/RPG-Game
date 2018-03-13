@@ -419,37 +419,93 @@ class BaseListElement(Base):
 #             for item in self.base_items])
 #         return "BaseDict{" + data + "}"
 
-from sqlalchemy.orm.collections import MappedCollection, collection
+from sqlalchemy.orm.collections import MappedCollection, collection, InstrumentedDict
 from functools import lru_cache
 
 
-class ObjectDictMap(MappedCollection):
-    def __init__(self, *args, **kw):
-        MappedCollection.__init__(self, keyfunc=lambda obj: obj.name)
-        self.sorted_keys = self.sorted_keys(self.keys())
+def attribute_mapped_collection_object_v2(key):
+    def init(self, *args, **kwargs):
+        MappedCollection.__init__(self, keyfunc=lambda obj: getattr(obj, key))
+        self.keyfunc = lambda obj: getattr(obj, key)
+    ObjectV2.__init__ = init
+
+    return ObjectV2
+
+
+class ObjectV2(MappedCollection):
+    """A Python object that acts like a JS one.
+
+    You can assign values via attribute or via key.
+    e.g.
+        obj.foo = obj['foo']
+
+    The keyfunc allows me to build a factory for this class similar to
+    sqlalchemy.orm.collections.attribute_mapped_collection(attr_name)
+    """
+
+    def __init__(self, *args, **kwargs):
+        MappedCollection.__init__(self, keyfunc=lambda obj: obj.type)
+
+        for arg in args:
+            if isinstance(arg, dict):
+                for k, v in arg.items():
+                    self[k] = v
+
+        if kwargs:
+            for k, v in kwargs.items():
+                self[k] = v
+        # self.sorted_keys = self.sorted_keys(self.keys())
+
+    @collection.internally_instrumented
+    def __setitem__(self, key, value, _sa_initiator=None):
+        # do something with key, value
+        super().__setitem__(key, value, _sa_initiator)
+
+    @collection.internally_instrumented
+    def __delitem__(self, key, _sa_initiator=None):
+        # do something with key
+        super().__delitem__(key, _sa_initiator)
 
     def __getattr__(self, attr):
+        if attr not in {'__emulates__', 'id'}:
+            return self[attr]
         return self.get(attr)
 
-    def __setattr__(self, key, value):
-        self.__setitem__(key, value)
+    @collection.internally_instrumented
+    def __setattr__(self, key, _sa_initiator=None):
+        # do something with key
+        if key not in {'keyfunc', '_sa_adapter'}:
+            self.__setitem__(key, _sa_initiator)
+        super().__setattr__(key, _sa_initiator)
 
     def __delattr__(self, item):
         self.__delitem__(item)
 
-    @orm.reconstructor
-    def init__on_load(self):
-        self.sorted_keys = self.sorted_keys(self.keys())
+    # @orm.reconstructor
+    # def init__on_load(self):
+    #     self.sorted_keys = self.sorted_keys(self.keys())
 
-    @lru_cache(maxsize=16)
-    def sorted_keys(self, keys=None):
+    def sorted_keys(self):
+        keys = self._key_sort(frozenset(self.keys()))
         return (x for x in sorted(keys))
 
-    def __iter__(self):
-        """Return all the attributes of this function as an iterator."""
+    @staticmethod
+    @lru_cache(maxsize=16)
+    def _key_sort(keys):
+        return sorted(keys)
 
-        self.sorted_keys = self.sorted_keys(self.keys())
-        return (self[key] for key in self.sorted_keys)
+    def __iter__(self):
+        """Return all the values (sorted by keys) of this dict as an iterator.
+
+        If you want the normal dict method for __iter__ do:
+        self.keys() instead. This will return unsorted keys.
+        """
+
+        return (self[key] for key in self.sorted_keys())
+
+    def sorted_items(self):
+        """Return the keys and values sorted by keys."""
+        return ((k, self[k]) for k in self.sorted_keys())
 
 
 class Map(dict):
@@ -467,7 +523,7 @@ class Map(dict):
     It returns .values() (ordered) not .keys() (random)
     """
     def __init__(self, *args, **kwargs):
-        super(Map, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         for arg in args:
             if isinstance(arg, dict):
                 for k, v in arg.items():

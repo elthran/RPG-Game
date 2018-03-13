@@ -1,13 +1,12 @@
+from math import sin, floor
+
 from sqlalchemy import Column, Integer, String, Boolean, Float
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declared_attr
+from flask import render_template_string
 
 from factories import TemplateMixin
 from base_classes import Base
-from flask import render_template_string
-
-from math import sin, floor
 
 # For testing
 from pprint import pprint
@@ -69,7 +68,7 @@ class Proficiency(TemplateMixin, Base):
         self.base = base
         self.modifier = modifier
         self.template = template
-        self.current = self.final
+        self.current = 0
 
     def build_new_from_template(self):
         if not self.template:
@@ -79,7 +78,7 @@ class Proficiency(TemplateMixin, Base):
 
     def level_up(self):
         self.level += 1
-        self.current = self.final
+        self.current = self.hero.get_summed_proficiencies(self.name).final
 
     def scale_by_level(self, level=None):
         """Return some function of the level attribute.

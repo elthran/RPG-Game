@@ -478,6 +478,7 @@ def reset_character(stat_type, hero=None):
 @login_required
 @uses_hero
 def admin(path="modify_self", hero=None):
+    hero.base_proficiencies['endurance'].current = 0
     admin_form_content = None
     if path == "edit_database":
         pass

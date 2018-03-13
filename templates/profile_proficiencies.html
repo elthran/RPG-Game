@@ -10,8 +10,7 @@
             <button class="genericAccordion">{{ attribute.name }} (Current level: {{ attribute.level }})</button>
             <div class="genericAccordionPanel">
                 <ul>
-                    {% for key in all_proficiencies %}
-                    {% set proficiency = all_proficiencies[key] %}
+                    {% for proficiency in all_proficiencies %}
                         {% if proficiency.attribute_type == attribute.name %}
                             <li>
                                 <button class="genericTooltipTrigger"

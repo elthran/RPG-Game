@@ -7,7 +7,7 @@ from inventory import Inventory
 from items import (Item, OneHandedWeapon, HeadArmour, TwoHandedWeapon, Ring,
                    Shield, LegArmour)
 
-from test_setup import GenericTestCase
+from . import GenericTestCase
 
 """
 Inventory: work in progress

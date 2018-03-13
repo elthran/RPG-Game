@@ -24,11 +24,10 @@ class TestProficiency(GenericTestCase):
         db = super().setup_class()
         # Might be better for testing? To allow post mortem analysis.
         db.engine.execute("DROP TABLE `proficiency`;")
-        db.engine.execute("DROP TABLE `proficiency_container`;")
         db = super().setup_class()
 
-        profs = ProficiencyContainer()
-        db.session.add(profs)
+        health = Health()
+        db.session.add(health)
         db.update()
 
     @classmethod
@@ -37,7 +36,8 @@ class TestProficiency(GenericTestCase):
 
     def setup(self):
         super().setup()
-        self.profs = self.db.session.query(ProficiencyContainer).get(1)
+        self.profs = self.db.session.query(Proficiency)
+        self.health = self.db.session.query(Health)
 
     def test_health_init(self):
         """Check if object is created, storeable and retrievable.
