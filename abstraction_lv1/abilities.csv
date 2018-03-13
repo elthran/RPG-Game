@@ -1,20 +1,20 @@
-Name,Type,Maximum,Description,Learnable,Prof1,Value1
-Relentless,AuraAbility,5,Gain {{ (level + 1) * 5 }} maximum health. Master this ability to unlock the Brute archetype.,True,Health,5
-Trickster,AuraAbility,5,Become {{ (level + 1) * 5 }}% harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.,True,Health,5
-Discipline,AuraAbility,5,Gain devotion {{ (level + 1) * 5 }}% faster. Master this ability to unlock the Ascetic archetype.,True,Health,5
-Traveler,AuraAbility,5,Reveal {{ (level + 1) * 10 }}% more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.,True,Health,5
-Arcanum,AuraAbility,5,Gain {{ (level + 1) * 3 }} maximum sanctity. Master this ability to unlock the Philosopher archetype.,True,Health,5
-Poet,AuraAbility,5,Gain fame {{ (level + 1) * 5 }}% faster. Master this ability to unlock the Opportunist archetype.,True,Health,5
-Blackhearted,AuraAbility,3,Lose virtue {{ (level + 1) * 5 }}% faster.,True,Health,5
-Backstab,AuraAbility,3,You are {{ (level + 1) * 15 }}% more likely to attack first in combat.,True,Health,5
-MartialArts,AuraAbility,3,You deal {{ (level + 1) * 5 }}% more damage in combat.,True,Health,5
-Apprentice,AuraAbility,3,You are capable of learning {{ (level + 1) }} additional spells.,True,Health,5
-Meditation,AuraAbility,3,Regenerate {{ (level + 1) }} sanctity per day.,True,Health,5
-Bash,AuraAbility,3,You deal {{ (level + 1) * 10 }}% more damage with blunt weapons.,True,Health,5
-Student,AuraAbility,3,You are capable of learning {{ (level + 1) }} additional spells.,True,Health,5
-Scholar,AuraAbility,3,Gain experience {{ (level + 1) }}% faster.,True,Health,5
-Vigilance,AuraAbility,3,You are {{ (level + 1) * 10 }}% less likely to be ambushed.,True,Health,5
-Strider,AuraAbility,3,Traveling on the map requires {{ (level + 1) * 10 }}% less endurance.,True,Health,5
-Skinner,AuraAbility,3,You have a {{ (level + 1) * 5 }}% chance of obtaining a usable fur after kiling a beast.,True,Health,5
-Charmer,AuraAbility,3,You are {{ (level + 1) * 5 }}% more likely to succeed when choosing charm dialogues.,True,Health,5
-Haggler,AuraAbility,3,Prices at shops are {{ (level + 1) * 3}}% cheaper.,True,Health,5
+Name,Type,Maximum,Description,Current,Next,Learnable,Prof1,Value1
+Relentless,AuraAbility,5,Gain maximum health. Master this ability to unlock the Brute archetype.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
+Trickster,AuraAbility,5,Become harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
+Discipline,AuraAbility,5,Gain devotion faster. Master this ability to unlock the Ascetic archetype.,{{ (level) * 5 }}%,{{ (level + 1) * 5 }}%,True,Health,5
+Traveler,AuraAbility,5,Reveal more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
+Arcanum,AuraAbility,5,Gain maximum sanctity. Master this ability to unlock the Philosopher archetype.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
+Poet,AuraAbility,5,Gain fame faster. Master this ability to unlock the Opportunist archetype.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
+Blackhearted,AuraAbility,3,Lose virtue faster.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
+Backstab,AuraAbility,3,You are more likely to attack first in combat.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
+MartialArts,AuraAbility,3,You deal more damage in combat.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
+Apprentice,AuraAbility,3,You are capable of learning additional spells.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
+Meditation,AuraAbility,3,Regenerate sanctity per day.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
+Bash,AuraAbility,3,You deal more damage with blunt weapons.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
+Student,AuraAbility,3,You are capable of learning additional spells.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
+Scholar,AuraAbility,3,Gain experience faster.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
+Vigilance,AuraAbility,3,You are less likely to be ambushed.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
+Strider,AuraAbility,3,Traveling on the map requires less endurance.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
+Skinner,AuraAbility,3,You have a chance of obtaining a usable fur after kiling a beast.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
+Charmer,AuraAbility,3,You are more likely to succeed when choosing charm dialogues.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
+Haggler,AuraAbility,3,Prices at shops are cheaper.,{{ (level) * 5 }},{{ (level + 1) * 5 }},True,Health,5
