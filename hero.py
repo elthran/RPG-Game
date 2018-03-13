@@ -256,7 +256,7 @@ class Hero(SessionHoistMixin, Base):
                 Class = getattr(proficiencies, type_)
                 summed[key] = Class(level=lvl, base=base, modifier=mod)
                 summed[key].current = self.base_proficiencies[key].current
-            self.proficiencies = ObjectV2(summed)
+            self.proficiencies = ObjectV2('name', summed)
             return self.proficiencies
 
     def __init__(self, **kwargs):

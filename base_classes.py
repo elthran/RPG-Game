@@ -420,18 +420,19 @@ class BaseListElement(Base):
 #             for item in self.base_items])
 #         return "BaseDict{" + data + "}"
 
-from sqlalchemy.orm.collections import MappedCollection, collection, InstrumentedDict
+from sqlalchemy.orm.collections import MappedCollection, collection
 from functools import lru_cache
+import operator
 
 
 def attribute_mapped_collection_object_v2(key):
-    def init(self, *args, **kwargs):
-        print("key:", key)
-        MappedCollection.__init__(self, keyfunc=lambda obj: getattr(obj, key))
-        # self.keyfunc = lambda obj: getattr(obj, key)
-    ObjectV2.__init__ = init
+    # def init(self, *args, **kwargs):
+    #     # print("key:", key)
+    #     super().__init__(operator.attrgetter(key))
+    #     self._keyfunc = key
+    # ObjectV2.__init__ = init
 
-    return ObjectV2
+    return lambda: ObjectV2(key)
 
 
 class ObjectV2(MappedCollection):
@@ -445,9 +446,8 @@ class ObjectV2(MappedCollection):
     sqlalchemy.orm.collections.attribute_mapped_collection(attr_name)
     """
 
-    def __init__(self, *args, **kwargs):
-        MappedCollection.__init__(self, keyfunc=lambda obj: obj.name)
-
+    def __init__(self, key, *args, **kwargs):
+        super().__init__(operator.attrgetter(key))
         for arg in args:
             if isinstance(arg, dict):
                 for k, v in arg.items():
@@ -469,7 +469,7 @@ class ObjectV2(MappedCollection):
         super().__delitem__(key, _sa_initiator)
 
     def __getattr__(self, attr):
-        if attr not in {'__emulates__', 'id'}:
+        if attr not in {'__emulates__', 'id', 'keyfunc'}:
             return self[attr]
         return self.get(attr)
 

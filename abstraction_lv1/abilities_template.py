@@ -147,8 +147,7 @@ class Ability(Base):
 
         NOTE: hero get_summed_proficiecies must check if level of Ability is 0
         """
-        for key in self.proficiencies:
-            prof = self.proficiencies[key]
+        for prof in self.proficiencies:
             if current > 0:
                 prof.base = (prof.base // (current-1 or 1)) * current
                 prof.modifier = (prof.modifier // (current-1 or 1)) * current
