@@ -49,18 +49,19 @@ class TestHero(GenericTestCase):
         """
         health = self.hero.get_summed_proficiencies('health')
 
-        assert health.final == 1
-        max_health = health.maximum
-        health.level += 10
+        assert health.final == 5
+        max_health = health.final
+        self.hero.base_proficiencies.health.level += 10
 
         self.rebuild_instance()
-        max_health2 = self.hero.proficiencies.health.maximum
+        max_health2 = self.hero.get_summed_proficiencies('health').final
         assert max_health < max_health2
 
-        item = Ring("Silver Ring", 8, style="silver", health_maximum=50)
+        item = Ring("Silver Ring", 8, style="silver",
+                    proficiency_data=[('Health', {'base': 50})])
         self.db.session.add(item)
         self.db.session.commit()
         self.hero.inventory.equip(item)
         self.rebuild_instance()
 
-        assert max_health2 < self.hero.proficiencies.health.maximum
+        assert max_health2 < self.hero.get_summed_proficiencies('health').final

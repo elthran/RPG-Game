@@ -18,6 +18,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import orm
+from sqlalchemy.orm.collections import attribute_mapped_collection
 import sqlalchemy
 
 from pprint import pprint
@@ -425,8 +426,9 @@ from functools import lru_cache
 
 def attribute_mapped_collection_object_v2(key):
     def init(self, *args, **kwargs):
+        print("key:", key)
         MappedCollection.__init__(self, keyfunc=lambda obj: getattr(obj, key))
-        self.keyfunc = lambda obj: getattr(obj, key)
+        # self.keyfunc = lambda obj: getattr(obj, key)
     ObjectV2.__init__ = init
 
     return ObjectV2
@@ -444,7 +446,7 @@ class ObjectV2(MappedCollection):
     """
 
     def __init__(self, *args, **kwargs):
-        MappedCollection.__init__(self, keyfunc=lambda obj: obj.type)
+        MappedCollection.__init__(self, keyfunc=lambda obj: obj.name)
 
         for arg in args:
             if isinstance(arg, dict):

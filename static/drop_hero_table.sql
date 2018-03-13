@@ -8,7 +8,6 @@ DROP TABLE IF EXISTS `trigger`;
 DROP TABLE IF EXISTS `journal`;
 DROP TABLE IF EXISTS `proficiency`;
 DROP TABLE IF EXISTS `ability`;
-DROP TABLE IF EXISTS `ability_container`;
 DROP TABLE IF EXISTS `attribute`;
 DROP TABLE IF EXISTS `attribute_container`;
 DROP TABLE IF EXISTS `item`;
