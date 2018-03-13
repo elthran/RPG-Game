@@ -430,11 +430,14 @@ class AuraAbility(Ability):
         Modifies the final and next_value with the Class's format spec.
         """
 
-        temp = """<h1>{{ self.display_name }} (Level {{ self.level }})</h1>
-                      <h2>{{ self.description }}</h2>"""
-
-        """"""
-        return render_template_string(temp)
+        temp = """<h1>{{ ability.name }} (Level {{ ability.level }})</h1>
+                      <h2>{{ ability.description }}</h2>
+                      {% if ability.level %}<h3>Current Bonus:</h3>{% endif %}
+                      {% if not ability.is_max_level() %}<h3>Next Level:</h3>{% else %}This ability is at its maximum level.{% endif %}
+                      {% if not ability.is_max_level() %}
+                      <button id=levelUpAbilityButton class="upgradeButton" onclick="sendToPy(event, abilityTooltip, 'update_ability', {'id': {{ ability.id }}});"></button>
+                      {% endif %}"""
+        return render_template_string(temp, ability=self)
 
 
 class Relentless(AuraAbility):

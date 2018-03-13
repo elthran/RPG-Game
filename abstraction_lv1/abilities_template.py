@@ -262,17 +262,15 @@ class AuraAbility(Ability):
         Modifies the final and next_value with the Class's format spec.
         """
         {% raw %}
-        temp = """<h1>{{ self.display_name }} (Level {{ self.level }})</h1>
-                      <h2>{{ self.description }}</h2>"""
+        temp = """<h1>{{ ability.name }} (Level {{ ability.level }})</h1>
+                      <h2>{{ ability.description }}</h2>
+                      {% if ability.level %}<h3>Current Bonus:</h3>{% endif %}
+                      {% if not ability.is_max_level() %}<h3>Next Level:</h3>{% else %}This ability is at its maximum level.{% endif %}
+                      {% if not ability.is_max_level() %}
+                      <button id=levelUpAbilityButton class="upgradeButton" onclick="sendToPy(event, abilityTooltip, 'update_ability', {'id': {{ ability.id }}});"></button>
+                      {% endif %}"""
         {% endraw %}
-
-        """{# I want this to be
-        temp = <h1>{{ this_ability.display_name }} (Level {{ this_ability.level }}</h1>
-               <h2>{{ this_ability.description }}</h2>
-               
-        return render_template(temp, this_ability=self)
-        #}"""
-        return render_template_string(temp)
+        return render_template_string(temp, ability=self)
 
 
 {% for value in ALL_ABILITIES %}

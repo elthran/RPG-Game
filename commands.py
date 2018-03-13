@@ -306,20 +306,17 @@ class Command:
         return jsonify(tooltip=ability.tooltip)
 
     @staticmethod
-    def update_ability(hero, database, arg_dict, **kwargs):
-        ability_id = arg_dict.get('data', None, type=int)
-        if hero.basic_ability_points <= 0:
-            return "error: no attribute points"
-        for ability in hero.abilities:
-            if ability.id == ability_id: # This code terminates as soon as it finds the ability which matches the id
-                ability.level += 1
-                tooltip = ability.get_description()
-                hero.basic_ability_points -= 1
-                if hero.basic_ability_points == 0:
-                    return "hide_all&&{}".format(tooltip)
-                if ability.level >= ability.max_level:
-                    return "hide_this&&{}".format(tooltip)
-                return "success&&{}".format(tooltip)
+    def update_ability(hero, database, data, **kwargs):
+        ability_id = data['id']
+        ability = database.get_ability_by_id(ability_id)
+        print(ability)
+        if hero.basic_ability_points <= 0 or ability.is_max_level():
+            return "error: no ability_points or ability is at max level."
+        hero.basic_ability_points -= 1
+        ability.level += 1 # Should be a level_up() function instead?
+        return jsonify(tooltip=ability.tooltip,
+                       pointsRemaining=hero.basic_ability_points,
+                       level=ability.level)
 
     @staticmethod
     def change_ability_choice_tooltip(hero, database, arg_dict, **kwargs):
