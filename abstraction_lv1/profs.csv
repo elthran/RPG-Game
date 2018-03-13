@@ -10,7 +10,7 @@ Stamina,How many endurance points you recover each day.,Resilience,linear,1, 0.5
 Damage minimum,Mimimum damage you do on each hit,Brawn,linear,0, 1, 0, False,False
 Damage maximum,Maximum damage you do on each hit,Brawn,linear,1, 1, 0, False,False
 Speed,How fast you attack.,Quickness,linear,1, 0.05, 2, False,False
-Accuracy,The chance of your attacks hitting their target.,Agility,linear_percent,1, 1, 0, False,False
+Accuracy,The chance of your attacks hitting their target.,Agility,linear,1, 1, 0, False,False
 First strike,Chance to strike first,Quickness,linear,1, 1, 0, False,False
 Killshot,Damage multiplier when performing a critical hit.,Agility,linear,1.5, 0.1, 1, False,False
 Precision,Ability to critically hit enemies.,Agility,linear,1, 1, 0, False,False
