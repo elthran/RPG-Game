@@ -863,7 +863,7 @@ def move(name='', hero=None, location=None):
     # pdb.set_trace()
     hero.current_terrain = location.terrain # Set the hero's terrain to the terrain type of the place he just moved to.
     if location.type == 'map':
-        location.pprint() # Why do we have this?
+        # location.pprint() # Why do we have this?
         other_heroes = []
     else:
         other_heroes = hero.get_other_heroes_at_current_location()

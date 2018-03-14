@@ -56,16 +56,7 @@ class Event(Base):
         # arg_dict.get('location', None, type=str)
 
 
-trigger_condition_association_table = Table(
-    'trigger_condition_association', Base.metadata,
-    Column('trigger_id', Integer, ForeignKey('trigger.id',
-                                             ondelete="SET NULL")),
-    Column('condition_id', Integer, ForeignKey('condition.id',
-                                               ondelete="SET NULL"))
-)
-
-
-class Condition(Base):
+class Condition(TemplateMixin, Base):
     """A function that takes a python string and evaluates to boolean.
 
     Factory?
@@ -78,17 +69,16 @@ class Condition(Base):
 
     # Relationships
     # Each trigger might have many conditions
-    triggers = relationship(
-        "Trigger",
-        secondary=trigger_condition_association_table,
-        back_populates="conditions")
+    trigger_id = Column(Integer, ForeignKey('trigger.id', ondelete="CASCADE"))
+    trigger = relationship("Trigger", back_populates="conditions")
 
     # Each condition might be connected to a location. One to One.
     location_id = Column(Integer, ForeignKey('location.id',
                                              ondelete="CASCADE"))
     location = relationship('Location')
 
-    def __init__(self, hero_attribute, comparison, object_of_comparison):
+    def __init__(self, hero_attribute, comparison, object_of_comparison,
+                 template=True):
         """Build a condition object.
 
         The default initial comparison is:
@@ -97,12 +87,23 @@ class Condition(Base):
         """
         condition_attribute = object_of_comparison.__table__.name
 
-        self.code = 'self.trigger.hero.{}.id {} self.{}.id'.format(
+        self.code = """self.trigger.hero.{}.id {} self.{}.id""".format(
             hero_attribute, comparison, condition_attribute)
 
         # Should for example do:
         # self.location = the location I passed.
         setattr(self, condition_attribute, object_of_comparison)
+
+        self.template = template
+
+    def build_new_from_template(self):
+        if not self.template:
+            raise Exception("Only use this method if obj.template == True.")
+        obj = Condition("", "", self.location, template=False)
+        if obj is None:
+            pdb.set_trace()
+        obj.code = self.code
+        return obj
 
 
 class Trigger(TemplateMixin, Base):
@@ -119,18 +120,17 @@ class Trigger(TemplateMixin, Base):
     hero = relationship('Hero', back_populates='triggers')
 
     # One to many with Conditions. Each trigger might have many conditions.
-    conditions = relationship(
-        "Condition",
-        secondary=trigger_condition_association_table,
-        back_populates="triggers")
+    conditions = relationship("Condition", back_populates="trigger",
+                              cascade="all, delete-orphan")
 
     def __init__(self, event_name, conditions, extra_info_for_humans=None,
                  template=True):
         self.event_name = event_name
-        self.conditions = conditions
         self.extra_info_for_humans = extra_info_for_humans
         self.template = template
         self.completed = False
+        self.conditions = [c.build_new_from_template() if c.template else c
+                           for c in conditions]
 
     @staticmethod
     def new_blank_trigger():
