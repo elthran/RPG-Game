@@ -20,10 +20,10 @@
         <div style="float:left;width:600px;border:dotted;">
             <h2>You have yet to choose a {{ ability_tree }}. After you choose, you will be able to learn abilities related to that {{ ability_tree }}.</h2>
             <ul>
-            {% for choice in spec_choices %}
+            {% for spec in spec_choices %}
                 <li>
-                    <button class="genericTooltipTrigger" onclick="sendToPy(event, null, 'update_specialization', {'spec': '{{ becomeType }}', 'name': '{{ choice[0] }}'});">
-                        {{ choice[0].title() }}
+                    <button class="genericTooltipTrigger" onclick="sendToPy(event, null, 'update_specialization', {'spec': '{{ becomeType }}', 'id': {{ spec.id }}});">
+                        {{ spec.name.title() }}
                     </button>
                 </li>
             {% endfor %}

@@ -319,9 +319,11 @@ class Command:
 
     @staticmethod
     def update_specialization(hero, database, data, **kwargs):
-        choice = data['name']
+        spec_id = data['id']
+        specialization = database.get_object_by_id("Specialization", spec_id)
+        # spec.level += 1 or something
         spec = data['spec']
-        print("The hero's " + spec + " should be " + choice)
+        print("The hero's " + spec + " should be " + specialization.name)
         # PLEASE MAKE THE ABOVE PRINT STATEMENT TRUE!!!!!!!!!!!!!!!!!!!!!!!
         #specialization = database.get_object_by_name("Specialization", choice)
         #setattr(hero.specializations, choice, specialization)

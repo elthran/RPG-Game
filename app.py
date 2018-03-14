@@ -681,14 +681,15 @@ def proficiencies(hero=None):
 @login_required
 @uses_hero
 def ability_tree(spec, hero=None):
-    if spec == "archetype" and hero.specializations.archetype is None: # On the archetype pagebut the hero doesn't have one!
+    if spec == "archetype": # and hero.specializations.archetype is None: # On the archetype pagebut the hero doesn't have one!
         becomeType = "archetype"
-        spec_choices = [("brute", "A character who uses strength and combat to solve problems. Proficient with many types of weapons."),
-                                ("scoundrel", "A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery."),
-                                ("ascetic", "A character who focuses on disciplining mind and body. They use a combination of combat and intellect."),
-                                ("survivalist", "A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration."),
-                                ("philosopher", "A character who uses intellect to solve problems. Excels at any task requiring powers of the mind."),
-                                ("opportunist", "A character who solves problems using speech and dialogue.")]
+        # spec_choices = [("brute", "A character who uses strength and combat to solve problems. Proficient with many types of weapons."),
+        #                         ("scoundrel", "A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery."),
+        #                         ("ascetic", "A character who focuses on disciplining mind and body. They use a combination of combat and intellect."),
+        #                         ("survivalist", "A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration."),
+        #                         ("philosopher", "A character who uses intellect to solve problems. Excels at any task requiring powers of the mind."),
+        #                         ("opportunist", "A character who solves problems using speech and dialogue.")]
+        spec_choices = hero.specializations
     elif spec == "calling" and hero.specializations.calling is None: # On the archetype pagebut the hero doesn't have one!
         becomeType = "calling"
         spec_choices = [("blacksmith", "A blacksmith dude.")]

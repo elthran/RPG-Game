@@ -16,7 +16,7 @@ import abilities
 import proficiencies
 from inventory import Inventory
 from journal import Journal
-from specializations import SpecializationContainer
+import specializations
 from session_helpers import SessionHoistMixin
 from base_classes import Base, DictHybrid, attribute_mapped_dict_hybrid
 
@@ -108,7 +108,9 @@ class Hero(SessionHoistMixin, Base):
 
     # Hero to specializations relationship
     specializations = relationship(
-        "SpecializationContainer", back_populates="hero", uselist=False,
+        "Specialization",
+        collection_class=attribute_mapped_dict_hybrid('attrib_name'),
+        back_populates="hero",
         cascade="all, delete-orphan")
 
     # Each Hero has One inventory. (One to One -> bidirectional)
@@ -297,9 +299,13 @@ class Hero(SessionHoistMixin, Base):
             AbilityClass = getattr(abilities, cls_name)
             AbilityClass().hero = self
 
+        # Attach one of each Ability to hero.
+        for cls_name in specializations.ALL_CLASS_NAMES:
+            Class = getattr(specializations, cls_name)
+            Class().hero = self
+
         self.inventory = Inventory()
         self.journal = Journal()
-        self.specializations = SpecializationContainer()
 
         # Data and statistics
         self.age = 7
