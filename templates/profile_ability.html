@@ -22,7 +22,7 @@
             <ul>
             {% for choice in spec_choices %}
                 <li>
-                    <button class="genericTooltipTrigger">
+                    <button class="genericTooltipTrigger" onclick="sendToPy(event, null, 'update_specialization', {'spec': '{{ becomeType }}', 'name': '{{ choice[0] }}'});">
                         {{ choice[0].title() }}
                     </button>
                 </li>

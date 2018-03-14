@@ -318,23 +318,14 @@ class Command:
                        level=ability.level)
 
     @staticmethod
-    def change_ability_choice_tooltip(hero, database, arg_dict, **kwargs):
-        choice = arg_dict.get('data', None, type=str)
-        choice = choice.split("-")
-        image = choice[0]
-        description = choice[1]
-        return "{}&&{}".format(description, image)
-
-    @staticmethod
-    def update_specialization(hero, database, arg_dict, **kwargs):
-        print(arg_dict)
-        choice = arg_dict.get('data', None, type=str)
-        print(choice)
-        spec = choice.split("_")
-        spec_type, spec_name = spec[0], spec[1].title()
-        specialization = database.get_object_by_name("Specialization", spec_name)
-        setattr(hero.specializations, spec_type, specialization)
-        return "success".format()
+    def update_specialization(hero, database, data, **kwargs):
+        choice = data['name']
+        spec = data['spec']
+        print("The hero's " + spec + " should be " + choice)
+        # PLEASE MAKE THE ABOVE PRINT STATEMENT TRUE!!!!!!!!!!!!!!!!!!!!!!!
+        #specialization = database.get_object_by_name("Specialization", choice)
+        #setattr(hero.specializations, choice, specialization)
+        return jsonify(tooltip="Temp", pointsRemaining=0, level=0)
 
     # This should be combined with function below when I know how to pass a path.id
     @staticmethod
