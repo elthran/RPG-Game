@@ -17,117 +17,6 @@ ALL_ATTRIBUTE_NAMES = ['agility', 'brawn', 'charisma', 'divinity', 'fortuity', '
 ALL_CLASS_NAMES = ['Agility', 'Brawn', 'Charisma', 'Divinity', 'Fortuity', 'Intellect', 'Pathfinding', 'Quickness', 'Resilience', 'Survivalism', 'Vitality', 'Willpower']
 
 
-class AttributeContainer(Base):
-    __tablename__ = "attribute_container"
-
-    id = Column(Integer, primary_key=True)
-
-    # Relationships
-    # Hero to self is one to one.
-    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
-    hero = relationship("Hero", back_populates="attributes")
-
-    # Container connections are one to one.
-    agility = relationship(
-        "Agility",
-        primaryjoin="and_(AttributeContainer.id==Attribute.attribute_container_id, "
-                    "Attribute.name=='Agility')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    brawn = relationship(
-        "Brawn",
-        primaryjoin="and_(AttributeContainer.id==Attribute.attribute_container_id, "
-                    "Attribute.name=='Brawn')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    charisma = relationship(
-        "Charisma",
-        primaryjoin="and_(AttributeContainer.id==Attribute.attribute_container_id, "
-                    "Attribute.name=='Charisma')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    divinity = relationship(
-        "Divinity",
-        primaryjoin="and_(AttributeContainer.id==Attribute.attribute_container_id, "
-                    "Attribute.name=='Divinity')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    fortuity = relationship(
-        "Fortuity",
-        primaryjoin="and_(AttributeContainer.id==Attribute.attribute_container_id, "
-                    "Attribute.name=='Fortuity')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    intellect = relationship(
-        "Intellect",
-        primaryjoin="and_(AttributeContainer.id==Attribute.attribute_container_id, "
-                    "Attribute.name=='Intellect')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    pathfinding = relationship(
-        "Pathfinding",
-        primaryjoin="and_(AttributeContainer.id==Attribute.attribute_container_id, "
-                    "Attribute.name=='Pathfinding')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    quickness = relationship(
-        "Quickness",
-        primaryjoin="and_(AttributeContainer.id==Attribute.attribute_container_id, "
-                    "Attribute.name=='Quickness')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    resilience = relationship(
-        "Resilience",
-        primaryjoin="and_(AttributeContainer.id==Attribute.attribute_container_id, "
-                    "Attribute.name=='Resilience')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    survivalism = relationship(
-        "Survivalism",
-        primaryjoin="and_(AttributeContainer.id==Attribute.attribute_container_id, "
-                    "Attribute.name=='Survivalism')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    vitality = relationship(
-        "Vitality",
-        primaryjoin="and_(AttributeContainer.id==Attribute.attribute_container_id, "
-                    "Attribute.name=='Vitality')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    willpower = relationship(
-        "Willpower",
-        primaryjoin="and_(AttributeContainer.id==Attribute.attribute_container_id, "
-                    "Attribute.name=='Willpower')",
-        uselist=False,
-        cascade="all, delete-orphan")
-
-    def __init__(self):
-        self.agility = Agility()
-        self.brawn = Brawn()
-        self.charisma = Charisma()
-        self.divinity = Divinity()
-        self.fortuity = Fortuity()
-        self.intellect = Intellect()
-        self.pathfinding = Pathfinding()
-        self.quickness = Quickness()
-        self.resilience = Resilience()
-        self.survivalism = Survivalism()
-        self.vitality = Vitality()
-        self.willpower = Willpower()
-
-    def items(self):
-        """Basically a dict.items() clone that looks like ((key, value),
-            (key, value), ...)
-
-        This is an iterator? Maybe it should be a list or a view?
-        """
-        return ((key, getattr(self, key)) for key in ALL_ATTRIBUTE_NAMES)
-
-    def __iter__(self):
-        """Return all the attributes of this function as an iterator."""
-        return (getattr(self, key) for key in ALL_ATTRIBUTE_NAMES)
-
-
 class Attribute(Base):
     """Attribute class that stores data about a hero object.
     """
@@ -135,18 +24,21 @@ class Attribute(Base):
     
     id = Column(Integer, primary_key=True)
 
+    type_ = Column(String(50))
     name = Column(String(50))
     description = Column(String(200))
     level = Column(Integer)
 
     # Relationships
-    # Ability to abilities. Abilities is a list of ability objects.
-    attribute_container_id = Column(
-        Integer, ForeignKey('attribute_container.id', ondelete="CASCADE"))
+    # Hero to self is one to one.
+    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
+    hero = relationship("Hero", back_populates="attributes")
+
+    attrib_name = 'attribute'
 
     __mapper_args__ = {
         'polymorphic_identity': 'Attribute',
-        'polymorphic_on': name
+        'polymorphic_on': type_
     }
     
     def __init__(self, name, description):
@@ -161,6 +53,8 @@ class Attribute(Base):
 
 
 class Agility(Attribute):
+    attrib_name = "agility"
+
     __mapper_args__ = {
         'polymorphic_identity': 'Agility',
     }
@@ -173,6 +67,8 @@ class Agility(Attribute):
 
 
 class Brawn(Attribute):
+    attrib_name = "brawn"
+
     __mapper_args__ = {
         'polymorphic_identity': 'Brawn',
     }
@@ -185,6 +81,8 @@ class Brawn(Attribute):
 
 
 class Charisma(Attribute):
+    attrib_name = "charisma"
+
     __mapper_args__ = {
         'polymorphic_identity': 'Charisma',
     }
@@ -197,6 +95,8 @@ class Charisma(Attribute):
 
 
 class Divinity(Attribute):
+    attrib_name = "divinity"
+
     __mapper_args__ = {
         'polymorphic_identity': 'Divinity',
     }
@@ -209,6 +109,8 @@ class Divinity(Attribute):
 
 
 class Fortuity(Attribute):
+    attrib_name = "fortuity"
+
     __mapper_args__ = {
         'polymorphic_identity': 'Fortuity',
     }
@@ -221,6 +123,8 @@ class Fortuity(Attribute):
 
 
 class Intellect(Attribute):
+    attrib_name = "intellect"
+
     __mapper_args__ = {
         'polymorphic_identity': 'Intellect',
     }
@@ -233,6 +137,8 @@ class Intellect(Attribute):
 
 
 class Pathfinding(Attribute):
+    attrib_name = "pathfinding"
+
     __mapper_args__ = {
         'polymorphic_identity': 'Pathfinding',
     }
@@ -245,6 +151,8 @@ class Pathfinding(Attribute):
 
 
 class Quickness(Attribute):
+    attrib_name = "quickness"
+
     __mapper_args__ = {
         'polymorphic_identity': 'Quickness',
     }
@@ -257,6 +165,8 @@ class Quickness(Attribute):
 
 
 class Resilience(Attribute):
+    attrib_name = "resilience"
+
     __mapper_args__ = {
         'polymorphic_identity': 'Resilience',
     }
@@ -269,6 +179,8 @@ class Resilience(Attribute):
 
 
 class Survivalism(Attribute):
+    attrib_name = "survivalism"
+
     __mapper_args__ = {
         'polymorphic_identity': 'Survivalism',
     }
@@ -281,6 +193,8 @@ class Survivalism(Attribute):
 
 
 class Vitality(Attribute):
+    attrib_name = "vitality"
+
     __mapper_args__ = {
         'polymorphic_identity': 'Vitality',
     }
@@ -293,6 +207,8 @@ class Vitality(Attribute):
 
 
 class Willpower(Attribute):
+    attrib_name = "willpower"
+
     __mapper_args__ = {
         'polymorphic_identity': 'Willpower',
     }

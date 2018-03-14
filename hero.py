@@ -11,7 +11,7 @@ from sqlalchemy.orm import validates
 from sqlalchemy.orm.collections import attribute_mapped_collection
 
 from game import round_number_intelligently
-from attributes import AttributeContainer
+import attributes
 import abilities
 import proficiencies
 from inventory import Inventory
@@ -102,7 +102,7 @@ class Hero(SessionHoistMixin, Base):
     # Deleting a Hero deletes all their Abilities.
     abilities = relationship(
         "Ability",
-        collection_class=attribute_mapped_dict_hybrid('name'),
+        collection_class=attribute_mapped_dict_hybrid('attrib_name'),
         back_populates='hero',
         cascade="all, delete-orphan")
 
@@ -118,7 +118,9 @@ class Hero(SessionHoistMixin, Base):
 
     # Attributes One to One despite the name
     attributes = relationship(
-        "AttributeContainer", back_populates='hero', uselist=False,
+        "Attribute",
+        collection_class=attribute_mapped_dict_hybrid('attrib_name'),
+        back_populates='hero',
         cascade="all, delete-orphan")
 
     # Hero to Proficiency is One to Many
@@ -270,8 +272,10 @@ class Hero(SessionHoistMixin, Base):
         max_exp should be assigned a value before current_exp.
         """
 
-        # Skills and abilities
-        self.attributes = AttributeContainer()  # Must go above proficiencies
+        # Add all attributes to hero.
+        for cls_name in attributes.ALL_CLASS_NAMES:
+            AttributeClass = getattr(attributes, cls_name)
+            AttributeClass().hero = self
 
         # set self.base_proficiencies
         # e.g.

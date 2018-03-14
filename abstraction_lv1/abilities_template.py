@@ -74,6 +74,17 @@ class Ability(Base):
         back_populates='ability',
         cascade="all, delete-orphan")
 
+    attrib_name = 'ability'
+    adjective = ["I", "II", "III", "IV", "V", "VI"]
+
+    @property
+    def display_name(self):
+        return self.adjective[self.level - 1]
+
+    @property
+    def learn_name(self):
+        return self.adjective[self.level]
+
     # Requirements is a One to Many relationship to self.
     """
     Use (pseudo-code):
@@ -88,7 +99,7 @@ class Ability(Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, max_level, description, current=0, next=0, hero=None, hidden=True, learnable=False, tree="basic", tree_type="", cost=1, proficiency_data=[]):
+    def __init__(self, name, max_level, description, current=0, next=0, hidden=True, learnable=False, tree="basic", tree_type="", cost=1, proficiency_data=()):
         """Build a basic ability object.
 
         Note: arguments (name, hero, max_level, etc.) that require input are
@@ -111,7 +122,7 @@ class Ability(Base):
         self.current = current
         self.next = next
         self.cost = cost
-        if learnable == True:   # If the ability starts as a default of learnable, then it shouldn't start hidden to the player
+        if learnable:   # If the ability starts as a default of learnable, then it shouldn't start hidden to the player
             self.hidden = False
         else:
             self.hidden = hidden    # If the player can see it
@@ -127,14 +138,6 @@ class Ability(Base):
             # pdb.set_trace()
             obj = Class(**arg_dict)
             self.proficiencies[obj.name] = obj
-
-        self.init_on_load()
-
-    @orm.reconstructor
-    def init_on_load(self):
-        self.adjective = ["I", "II", "III", "IV", "V", "VI"]
-        self.display_name = self.adjective[self.level - 1]
-        self.learn_name = self.adjective[self.level]
 
     # @property
     # def display_name(self):
@@ -175,11 +178,6 @@ class Ability(Base):
 
     def activate(self, hero):
         return self.cast(hero)
-
-    def update_display(self):
-        self.display_name = self.adjective[self.level - 1]
-        if self.level < self.max_level:
-            self.learn_name = self.adjective[self.level]
 
     def update_owner(self, hero):
         print("Ability to Hero relationship is now Many to Many.")
@@ -281,12 +279,14 @@ class AuraAbility(Ability):
 
 {% for value in ALL_ABILITIES %}
 class {{ value[0] }}({{ value[1] }}):
+    attrib_name = "{{ normalize_attrib_name(value[0]) }}"
+
     __mapper_args__ = {
         'polymorphic_identity': '{{ value[0] }}',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('{{ normalize_attrib_name(value[0]) }}', {{ value[2] }}, '{{ value[3] }}', current='{{ value[4] }}', next='{{ value[5] }}', learnable={{ value[6] }}, proficiency_data=[('{{ value[7] }}', {'base': {{ value[8] }}})])
+        super().__init__('{{ value[0] }}', {{ value[2] }}, '{{ value[3] }}', current='{{ value[4] }}', next='{{ value[5] }}', learnable={{ value[6] }}, proficiency_data=[('{{ value[7] }}', {'base': {{ value[8] }}})])
 
         for key, value in kwargs:
             setattr(self, key, value)
