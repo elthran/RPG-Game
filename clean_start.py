@@ -54,4 +54,3 @@ if __name__ == "__main__":
             os.system("python3 app.py")
         except KeyboardInterrupt:
             pass  # Only raise error from the actual program
-

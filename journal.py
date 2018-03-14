@@ -57,7 +57,7 @@ from sqlalchemy.orm import validates
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from base_classes import Base
-
+from achievements import Achievements
 # For testing
 import pdb
 
@@ -96,6 +96,10 @@ class Journal(Base):
                                 uselist=False,
                                 cascade="all, delete-orphan")
 
+    # Journal to Achievements is One to One.
+    achievements = relationship("Achievements", back_populates="journal",
+                                uselist=False)
+
     # @property
     # def quest_notification(self):
     #     return self.notification.get_description()
@@ -112,6 +116,9 @@ class Journal(Base):
         quest_path.activate(self.hero)
         self.notification = quest_path
         return quest_path
+
+    def __init__(self):
+        self.achievements = Achievements()
 
     # Each journal can have many entries
     # entries = relationship("Entry", back_populates='journal')

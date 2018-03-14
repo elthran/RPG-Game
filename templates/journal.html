@@ -9,7 +9,7 @@
         <li><a {% if bestiary %}style="background-color:Red;"{% endif %} href=/bestiary/0>Bestiary</a></li>
         <li><a {% if people_log %}style="background-color:Red;"{% endif %} href=/people_log/0>People</a></li>
         <li><a {% if atlas %}style="background-color:Red;"{% endif %} href=/atlas/0>Atlas</a></li>
-        <li><a {% if achievement_log %}style="background-color:Red;"{% endif %} href=/achievements/0>Achievements</a></li>
+        <li><a {% if achievement_log %}style="background-color:Red;"{% endif %} href=/achievements/None>Achievements</a></li>
     </ul>
 </div>
 {% endblock %}
@@ -158,11 +158,13 @@
         <div style="position:relative;float:right;width:20%;height:100%;border:dotted;">
             {% for achievement in all_achievements %}
                 <ul>
-                    <li><a href=/achievements/{{ achievement[0] }}>{{ achievement[1] }}</a></li>
+                    <li><a href=/achievements/{{ achievement.id }}><b>{{ achievement.name }} -> Current level: {{ achievement.current_level }} -> Next level: {{ achievement.next_level }}</b></a></li>
                 </ul>
             {% endfor %}
         </div>
-    </div>
+        {% if completed_achievements %}
+        {% for achievement in completed_achievements %}
+        <h2><br><b>{{ achievement.name }} &nbsp; &nbsp; &nbsp; (+{{ achievement.experience }} experience)</b></h2>
     {% for map in maps %}
         {{ map }}
         <img src="/static/images/maps/world_{{ map.display.page_image }}"/>

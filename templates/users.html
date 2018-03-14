@@ -27,10 +27,10 @@
         <td><a href=/display_users/see_user/{{ hero.user.username }}>{{ hero.user.username }}</a> {% if hero.user.is_admin %}[ADMIN]{% endif %}</td>
         <td>{{ hero.character_name }}</td>
         <td>{{ hero.age }}</td>
-        <td>{{ hero.deepest_dungeon_floor }}</td>
-        <td>{{ hero.player_kills }}</td>
-        <td>{{ hero.monster_kills }}</td>
-        <td>{{ hero.deaths }}</td>
+        <td>{{ hero.journal.achievements.deepest_dungeon_floor }}</td>
+        <td>{{ hero.journal.achievements.player_kills }}</td>
+        <td>{{ hero.journal.achievements.monster_kills }}</td>
+        <td>{{ hero.journal.achievements.deaths }}</td>
         <td>{{ hero.base_proficiencies['health'].current }}</td>
         <td>{% if hero.archetype %}{{ hero.archetype.title() }}{% endif %}</td>
         <td>{{ hero.last_login }}</td>
