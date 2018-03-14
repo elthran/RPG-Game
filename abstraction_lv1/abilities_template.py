@@ -17,7 +17,7 @@ import proficiencies
 from base_classes import Base, attribute_mapped_dict_hybrid
 import pdb
 
-{% include "abilities_data.py" %}
+ALL_ABILITIES = {{ ALL_ABILITIES }}
 
 {% import 'container_helpers.py' as container_helpers %}
 {{ container_helpers.build_container("Ability", "abilities", ALL_ABILITIES, no_container=True) }}
@@ -42,6 +42,8 @@ class Ability(Base):
     max_level = Column(Integer)
     # Maybe description should be unique? use: unique=True as keyword.
     description = Column(String(200))
+    current = Column(String(50))
+    next = Column(String(50))
     cost = Column(String(50))
 
     # Note: Original code used default of "Unknown"
@@ -86,7 +88,7 @@ class Ability(Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, max_level, description, hero=None, hidden=True, learnable=False, tree="basic", tree_type="", cost=1, proficiency_data=[]):
+    def __init__(self, name, max_level, description, current=0, next=0, hero=None, hidden=True, learnable=False, tree="basic", tree_type="", cost=1, proficiency_data=[]):
         """Build a basic ability object.
 
         Note: arguments (name, hero, max_level, etc.) that require input are
@@ -106,6 +108,8 @@ class Ability(Base):
         self.level = 0
         self.max_level = max_level  # Highest level that this ability can get to
         self.description = description  # Describe what it does
+        self.current = current
+        self.next = next
         self.cost = cost
         if learnable == True:   # If the ability starts as a default of learnable, then it shouldn't start hidden to the player
             self.hidden = False
@@ -154,8 +158,13 @@ class Ability(Base):
         return current
 
     def get_description(self):
-        return render_template_string(self.description,
-            level=self.level)
+        return render_template_string(self.description)
+
+    def get_current_bonus(self):
+        return render_template_string(self.current, level=self.level)
+
+    def get_next_bonus(self):
+        return render_template_string(self.next, level=self.level)
 
     def is_max_level(self):
         """Return True if level is at max_level."""
@@ -252,6 +261,23 @@ class AuraAbility(Ability):
         self.stealth_chance = stealth_chance
         self.firststrike_chance = firststrike_chance
 
+    @property
+    def tooltip(self):
+        """Create a tooltip for each variable.
+
+        Modifies the final and next_value with the Class's format spec.
+        """
+        {% raw %}
+        temp = """<h1>{{ ability.name }} (Level {{ ability.level }})</h1>
+                      <h2>{{ ability.description }}</h2>
+                      {% if ability.level %}<h3>Current Bonus:</h3> {{ ability.current }}{% endif %}
+                      {% if not ability.is_max_level() %}<h3>Next Level Bonus:</h3> {{ ability.next }}{% else %}This ability is at its maximum level.{% endif %}
+                      {% if not ability.is_max_level() %}
+                      <button id=levelUpAbilityButton class="upgradeButton" onclick="sendToPy(event, abilityTooltip, 'update_ability', {'id': {{ ability.id }}});"></button>
+                      {% endif %}"""
+        {% endraw %}
+        return render_template_string(temp, ability=self)
+
 
 {% for value in ALL_ABILITIES %}
 class {{ value[0] }}({{ value[1] }}):
@@ -260,7 +286,7 @@ class {{ value[0] }}({{ value[1] }}):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('{{ normalize_attrib_name(value[0]) }}', {{ value[2] }})
+        super().__init__('{{ normalize_attrib_name(value[0]) }}', {{ value[2] }}, '{{ value[3] }}', current='{{ value[4] }}', next='{{ value[5] }}', learnable={{ value[6] }}, proficiency_data=[('{{ value[7] }}', {'base': {{ value[8] }}})])
 
         for key, value in kwargs:
             setattr(self, key, value)

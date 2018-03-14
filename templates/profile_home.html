@@ -32,10 +32,10 @@
 				{% if hero.devotion %}}<li>Devotion: {{ hero.age }}</li>{% endif %}
 				{% if hero.virtue %}}<li>{{ hero.virtue }}</li>{% endif %}
 				<li>{{ hero.experience }} / {{ hero.experience_maximum }}</li>
-				<li>{{ proficiencies.health.current }} / {{ proficiencies.health.final|int }}</li>
+				<li>{{ hero.base_proficiencies['health'].current }} / {{ hero.proficiencies.health.final|int }}</li>
 				{% if proficiencies.sanctity.final %}<li>{{ proficiencies.sanctity.current|int }} / {{ proficiencies.sanctity.final }}</li>{% endif %}
-				<li>{{ proficiencies.storage.current }} / {{ proficiencies.storage.final|int }}</li>
-				<li>{{ proficiencies.endurance.current }} / {{ proficiencies.endurance.final|int }}</li>
+				<li>{{ hero.base_proficiencies['storage'].current }} / {{ proficiencies.storage.final|int }}</li>
+				<li>{{ hero.base_proficiencies['endurance'].current }} / {{ proficiencies.endurance.final|int }}</li>
 				<li>{{ hero.player_kills }}</li>
 				<li>{{ hero.monster_kills }}</li>
 				<li>{{ hero.deaths }}</li>

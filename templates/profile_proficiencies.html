@@ -7,7 +7,7 @@
 <div>
 	<div class="leftPageHalf" style="width:700px;">
         {% for attribute in all_attributes %}
-            <button class="genericAccordion">{{ attribute.name }} (Current level: {{ attribute.level }})</button>
+            <button class="genericAccordion">{{ attribute.name }} {% if attribute.level %}{{ attribute.level }}{% endif %}</button>
             <div class="genericAccordionPanel">
                 <ul>
                     {% for proficiency in all_proficiencies %}
@@ -15,9 +15,9 @@
                             <li>
                                 <button class="genericTooltipTrigger"
                                         onclick="sendToPy(event, proficiencyTooltip, 'change_proficiency_tooltip', {'id': {{ proficiency.id }}});">
-                                    {{ proficiency.display_name}} (Current Level: <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>)
+                                    {{ proficiency.display_name}} {% if proficiency.level %}<div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>{% endif %}
                                 </button>
-                                </li>
+                            </li>
                         {% endif %}
                     {% endfor %}
                 </ul>
@@ -27,9 +27,6 @@
     <div style="float: right;width: 350px;border: dotted;height:auto;padding: 5px;">
         <div>
             <span id="proficiencyTooltip">Click on a proficiency to see more information.</span>
-            {# <!-- Need to put the button here and fix it.
-            <button class="upgradeButton" data-py-function="update_proficiency" data="{{ proficiency.id }}" id="proficiencyButton" data-js-callback="updateProficiency" {% if hero.proficiency_points <= 0 %}style="display: none"{% endif %}>
-                                    </button> --> #}
         </div>
         <div class="tooltipImage"><span id="attributeImage"></span></div>
     </div>

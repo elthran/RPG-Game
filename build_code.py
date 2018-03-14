@@ -1,11 +1,15 @@
-from jinja2 import Environment, FileSystemLoader, select_autoescape
-
 import importlib
 import os
 import stat
 import hashlib
 from contextlib import contextmanager
 import sys
+import argparse
+
+import pandas
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+import pdb
 
 LANGUAGES = {
     '.html': {
@@ -85,7 +89,7 @@ def hash_match(filename, filename2):
     return get_hash(filename) == get_hash(filename2)
 
 
-def maybe_backup(temp_name, final_name, extension):
+def backup_system(temp_name, final_name, extension):
     """If the template is out of sync with the file make a backup.
 
     This is done through checking if the file is _readonly_ (built by template
@@ -122,7 +126,49 @@ def maybe_backup(temp_name, final_name, extension):
     os.chmod(final_name, stat.S_IREAD)
 
 
-def build_templates(filenames, extension):
+def no_backup(temp_name, final_name):
+    """Replace old file with new one.
+
+    No longer sets read-only attribute.
+    """
+    if hash_match(final_name, temp_name):
+        # Template has not been changed.
+        os.remove(temp_name)
+        print("Template unmodified for '{}'.".format(final_name))
+    else:
+        os.remove(final_name)
+        os.rename(temp_name, final_name)
+        print("'{}' updated!".format(final_name))
+
+
+def csv_or_module_data(name):
+    """Use the contents of a csv file if it exists as the data file.
+
+    If not do it the old way by import a file with the '_data.py' extension.
+    """
+    data = {}
+    csv_file = name + '.csv'
+    if os.path.exists(csv_file):
+        # You can declare each column's data type
+        objs = pandas.read_csv(csv_file)
+        key_name = 'ALL_' + name.upper()  # e.g. ALL_ABILITIES
+        data[key_name] = []
+        for i, row in enumerate(objs.itertuples(), 1):
+            data[key_name].append(tuple(getattr(row, key)
+                                  for key in tuple(objs.columns.values)))
+    else:
+        # Note this is an import name so the file type is left off.
+        # e.g. import profile_proficiencies_data
+        data_name = name + "_data"
+
+        data_module = importlib.import_module(data_name)
+
+        data = {key: getattr(data_module, key) for key in dir(data_module) if
+                key[:2] != '__'}
+    return data
+
+
+def build_templates(filenames, extension, use_backup_system=True):
     """For each template import the data and build a template.
 
     Send the data to the template as a expanded dictionary of non-builtin
@@ -160,15 +206,8 @@ def build_templates(filenames, extension):
         final_name = "../" + name + extension
         template_name = name + "_template" + extension
 
-        # Note this is an import name so the file type is left off.
-        # e.g. import profile_proficiencies_data
-        data_name = name + "_data"
-
-        data_module = importlib.import_module(data_name)
+        data = csv_or_module_data(name)
         template = env.get_template(template_name)
-
-        data = {key: getattr(data_module, key) for key in dir(data_module) if
-                key[:2] != '__'}
 
         # Output a header.
         comment = LANGUAGES[extension]['multi_line_comment']
@@ -183,8 +222,11 @@ It has been set to read only so that you don't edit it without using
         with open(temp_name, 'a') as file:
             template.stream(**data).dump(file)
 
-        # Build a backup of all files if needed.
-        maybe_backup(temp_name, final_name, extension)
+        if use_backup_system:
+            # Build a backup of all files if needed.
+            backup_system(temp_name, final_name, extension)
+        else:
+            no_backup(temp_name, final_name)
 
 
 @contextmanager
@@ -266,6 +308,9 @@ if __name__ == "__main__":
     
     I don't think I have fixed the order yet ..
     """
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-b", help="Enable backup system.", action='store_true')
+    args = parser.parse_args()
 
     all_templates = get_all_templates_by_dir_then_extension()
 
@@ -273,5 +318,5 @@ if __name__ == "__main__":
         with pushd_popd(dir_):
             file_names = all_templates[dir_]
             for extension, names in file_names.items():
-                build_templates(names, extension)
+                build_templates(names, extension, use_backup_system=args.b)
     print("Code updated!")

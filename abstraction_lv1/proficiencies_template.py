@@ -1,5 +1,3 @@
-from math import sin, floor
-
 from sqlalchemy import Column, Integer, String, Boolean, Float
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
@@ -12,10 +10,12 @@ from base_classes import Base
 from pprint import pprint
 import pdb
 
-{% include "proficiencies_data.py" %}
+
+
+ALL_PROFICIENCIES = {{ ALL_PROFICIENCIES }}
 
 {% import 'container_helpers.py' as container_helpers %}
-{{ container_helpers.build_container("Proficiency", "proficiencies", PROFICIENCY_INFORMATION, no_container=True) }}
+{{ container_helpers.build_container("Proficiency", "proficiencies", ALL_PROFICIENCIES, no_container=True) }}
 
 class Proficiency(TemplateMixin, Base):
     """Proficiency class that stores data about a hero object.
@@ -68,7 +68,7 @@ class Proficiency(TemplateMixin, Base):
         self.base = base
         self.modifier = modifier
         self.template = template
-        self.current = 0
+        self.current = self.final
 
     def build_new_from_template(self):
         if not self.template:
@@ -111,7 +111,6 @@ class Proficiency(TemplateMixin, Base):
     @property
     def final(self):
         """Return the scaled value + base + modifier percent."""
-
         return round((self.scale_by_level() + self.base) *
                      (self.modifier + 1), self.num_of_decimals)
 
@@ -130,12 +129,13 @@ class Proficiency(TemplateMixin, Base):
         Modifies the final and next_value with the Class's format spec.
         """
         {% raw %}
-        temp = """<h1>{{ prof.display_name }}</h1>
+        temp = """<h1>{{ prof.display_name }} (Level {{ prof.level }})</h1>
                   <h2>{{ prof.description }}</h2>
-                  <h2>Current level: {{ prof.level }} {% if not prof.is_max_level and prof.hero.proficiency_points %}<button id=levelUpProficiencyButton class="upgradeButton" onclick="sendToPy(event, proficiencyTooltip, 'update_proficiency', {'id': {{ prof.id }}});"></button>{% endif %}</h2>
                   <h2>Current value: {{ formatted_final }}</h2>
-                  <h2>Next value: {{ formatted_next }}</h2>
-                  <h2>Max level: {{ prof.max_level }}</h2>"""
+                  {% if not prof.is_max_level and prof.hero.proficiency_points %}
+                  <h2>Next value: <font color="green">{{ formatted_next }}</font></h2>
+                  <button id=levelUpProficiencyButton class="upgradeButton" onclick="sendToPy(event, proficiencyTooltip, 'update_proficiency', {'id': {{ prof.id }}});"></button>
+                  {% elif prof.is_max_level %}<font color="red">Not enough {{ prof.attribute_type }}</font>{% endif %}</h2>"""
         {% endraw %}
         return render_template_string(
             temp, prof=self,
@@ -156,22 +156,26 @@ class Proficiency(TemplateMixin, Base):
         return True if self.level >= self.attribute.level * 2 else False
 
 
-{% for prof in PROFICIENCY_INFORMATION %}
+{% for prof in ALL_PROFICIENCIES %}
 {% set prof_class = normalize_class_name(prof[0]) %}
 {% set attrib_name = normalize_attrib_name(prof[0]) %}
 {% set display_name = prof[0].capitalize() %}
-{% set value = prof[3] %}
+{% set growth = prof[3] %}
+{% set base = prof[4] %}
+{% set weight = prof[5] %}
+{% set decimals = prof[6] %}
+{% set hidden = prof[7] %}
+{% set percent = prof[8] %}
 class {{ prof_class }}(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden = {{prof[5] if prof[5] else False}}
+    hidden = {{ hidden }}
     name = "{{attrib_name}}"
     display_name = "{{ display_name.title() }}"
-    num_of_decimals = {{value[3]}}
+    num_of_decimals = {{ decimals }}
     # This should add a "%" to the display at the end of a prof.
-    # So instead of 5 Accuracy it should say 5% accuracy.
-    is_percent = {{prof[4]}}
-    format_spec = "{{ '{' }}:.{{ value[3] }}f{{ '}' }}{{ '%' if prof[4] else '' }}"
+    is_percent = False # Should be {{ percent }} but I'm getting an error
+    format_spec = "{{ '{' }}:.{{ decimals }}f{{ '}' }}{{ '%' if percent else '' }}"
 
     __mapper_args__ = {
         'polymorphic_identity': "{{ prof_class }}"
@@ -184,7 +188,7 @@ class {{ prof_class }}(Proficiency):
         return self.hero.attributes.{{ normalize_attrib_name(prof[2]) }}
 
     {% endif %}
-    def __init__(self, *args, base={{ value[1] }}, **kwargs):
+    def __init__(self, *args, base={{ base }}, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "{{ prof[1]}}"
         self.attribute_type = {{ '"' + prof[2] + '"' if prof[2] else None }}
@@ -199,18 +203,11 @@ class {{ prof_class }}(Proficiency):
         if level is None:
             level = self.level
 
-    {# value format is [Formula_Type, Base_Value, Weight, # of Decimals]
-     # Formual_Type = value[0]
-     # Base_Value = value[1]
-     # Weight = value[2]
-     # Number of Decimals = value[3]
-     # @elthran I'm not sure if these formulas are still being used correctly - Marlen
-     #}
-    {% if value[0] == "root" %}
+    {% if growth == "root" %}
         return round((100 * level)**0.5 - (level / 4), self.num_of_decimals)
-    {% elif value[0] == "linear" %}
-        return round({{ value[2] }} * level, self.num_of_decimals)
-    {% elif value[0] == "empty" %}
+    {% elif growth == "linear" %}
+        return round({{ weight }} * level, self.num_of_decimals)
+    {% elif growth == "empty" %}
         return super().scale_by_level()
     {% endif %}
     {% if prof[0] == "Block" %}

@@ -10,45 +10,38 @@
 from random import randint
 
 def determine_attacker(active, inactive):
-    speed_sum = active.get_summed_proficiencies('speed').final + inactive.get_summed_proficiencies('speed').final
-    random = randint(0,speed_sum+1)
-    print(active.name,"'s speed:",active.get_summed_proficiencies('speed').final,inactive.name,"'s speed:",inactive.get_summed_proficiencies('speed').final," Random seed:",random)
-    if active.get_summed_proficiencies('speed').final >= randint(0,speed_sum):
+    random = randint(1,int((active.get_summed_proficiencies('speed').final + inactive.get_summed_proficiencies('speed').final)*100))
+    if active.get_summed_proficiencies('speed').final*100 > random:
         return active,inactive
     else:
         return inactive, active
 
+def determine_if_hits(attacker, defender):
+    random = randint(1,100)
+    attackers_chance = 75 + attacker.get_summed_proficiencies('accuracy').final - defender.get_summed_proficiencies('evade').final
+    if attackers_chance >= random:
+        return True
+    return False
+
+def determine_if_critical_hit(attacker):
+    random = randint(1,100)
+    if attacker.get_summed_proficiencies('precision').final >= random:
+        return True
+    return False
+
+def calculate_damage(attacker, defender):
+    raw_damage = randint(attacker.get_summed_proficiencies('damage_minimum').final, attacker.get_summed_proficiencies('damage_maximum').final)
+    damage = raw_damage * (1 - defender.get_summed_proficiencies('defence').final)
+    return damage
+
+def add_killshot_multiplier(attacker, damage):
+    return (damage * attacker.get_summed_proficiencies('killshot').final)
+
+def determine_life_steal(attacker):
+    return attacker.get_summed_proficiencies('lifesteal').final
+
+
 """
-def determine_if_hits(accuracy):
-    print ("Chance for attacker to hit their opponent is: " + str(accuracy) + "%")
-    if randint(0,100) <= accuracy:
-        return True
-    return False
-
-def determine_if_critical_hit(chance):
-    print ("Chance for critical hit is: " + str(chance) + "%")
-    if randint(0,100) < chance:
-        return True
-    return False
-
-def calculate_damage(minimum, maximum):
-    if maximum <= minimum:
-        maximum = minimum + 1 # This avoids a bug with randint looking at impossible ranges
-    damage = randint(minimum, maximum)
-    print ("Unmodified attack will hit for this much damage: " + str(damage))
-    return damage
-
-def critical_hit_modifier(original_damage, modifier):
-    print ("Critical hit! Damage multiplied by: " + str(modifier))
-    damage = original_damage * modifier
-    return damage
-
-def determine_evade(chance):
-    print ("Chance to evade is: " + str(chance) + "%")
-    if randint(0,100) < chance:
-        return True
-    return False
-
 def determine_block_chance(chance):
     print ("Chance to block is: " + str(chance) + "%")
     if randint(0,100) < chance:
@@ -84,11 +77,25 @@ def lower_fatigue(fatigue):
 def battle_logic(active_player, inactive_player):
     """ Runs the entire battle simulator """
     # Currently just takes 1 away from health of whoever attacks slower each round. Ends when someone dies.
-    combat_log = active_player.name + " Health: " + str(active_player.base_proficiencies['health'].current) + "  " + inactive_player.name + " Health: " + str(inactive_player.base_proficiencies['health'].current)
+    combat_log = ["At the start of the battle: " + active_player.name + " Health: " + str(active_player.base_proficiencies['health'].current) + "  " + inactive_player.name + " Health: " + str(inactive_player.base_proficiencies['health'].current)]
     while active_player.base_proficiencies['health'].current > 0 and inactive_player.base_proficiencies['health'].current > 0:
         attacker,defender = determine_attacker(active_player,inactive_player)
-        defender.base_proficiencies['health'].current -= 1
-        print("ATTACKER IS:", attacker.name, " with health: ", attacker.base_proficiencies['health'].current,"      DEFENDER IS ", defender.name," with health:", defender.base_proficiencies['health'].current)
+        combat_log.append(attacker.name + " is attacking.")
+        if determine_if_hits(attacker, defender):
+            if determine_if_critical_hit(attacker):
+                combat_log.append(attacker.name + " lands a critical hit!")
+                damage = add_killshot_multiplier(attacker, calculate_damage(attacker, defender))
+            else:
+                combat_log.append(attacker.name + " hits.")
+                damage = calculate_damage(attacker, defender)
+            defender.base_proficiencies['health'].current -= damage
+            combat_log.append(defender.name + " takes " + str(damage) + ". He has " + str(defender.base_proficiencies['health'].current) + " health remaining.")
+            #lifesteal = determine_life_steal(attacker)
+            #if lifesteal > 0:
+            #    attacker.base_proficiencies['health'].current += lifesteal
+            #    combat_log.append(attacker.name + " steals " + str(lifesteal) + " life!")
+        else:
+            combat_log.append(attacker.name + " misses.")
 
     active_player.base_proficiencies['health'].current = max(active_player.base_proficiencies['health'].current, 0)
     inactive_player.base_proficiencies['health'].current = max(inactive_player.base_proficiencies['health'].current, 0)
