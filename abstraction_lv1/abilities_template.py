@@ -9,19 +9,18 @@ from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
-from sqlalchemy.orm.collections import attribute_mapped_collection
 from flask import render_template_string
 
 import proficiencies
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 # Well ... ok, but for simplicity sake just pretend that that is true.
-from base_classes import Base
+from base_classes import Base, attribute_mapped_dict_hybrid
 import pdb
 
 ALL_ABILITIES = {{ ALL_ABILITIES }}
 
 {% import 'container_helpers.py' as container_helpers %}
-{{ container_helpers.build_container("Ability", "abilities", ALL_ABILITIES) }}
+{{ container_helpers.build_container("Ability", "abilities", ALL_ABILITIES, no_container=True) }}
 
 class Ability(Base):
     """Ability object base class.
@@ -63,16 +62,15 @@ class Ability(Base):
     tree_type = Column(String(50))
     image = Column(String(50))
 
-    # Relationships.
-    # Ability to abilities. Abilities is a list of ability objects.
-    ability_container_id = Column(Integer, ForeignKey('ability_container.id',
-                                              ondelete="CASCADE"))
-    abilities = relationship("AbilityContainer")
+    # Relationships
+    # Hero to self is one to one.
+    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
+    hero = relationship("Hero", back_populates="abilities")
 
     # Ability to Proficiencies is One to Many
     proficiencies = relationship(
         "Proficiency",
-        collection_class=attribute_mapped_collection('name'),
+        collection_class=attribute_mapped_dict_hybrid('name'),
         back_populates='ability',
         cascade="all, delete-orphan")
 
@@ -153,8 +151,7 @@ class Ability(Base):
 
         NOTE: hero get_summed_proficiecies must check if level of Ability is 0
         """
-        for key in self.proficiencies:
-            prof = self.proficiencies[key]
+        for prof in self.proficiencies:
             if current > 0:
                 prof.base = (prof.base // (current-1 or 1)) * current
                 prof.modifier = (prof.modifier // (current-1 or 1)) * current
@@ -289,8 +286,13 @@ class {{ value[0] }}({{ value[1] }}):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('{{ value[0] }}', {{ value[2] }}, '{{ value[3] }}', current='{{ value[4] }}', next='{{ value[5] }}', learnable={{ value[6] }}, proficiency_data=[('{{ value[7] }}', {'base': {{ value[8] }}})])
+        super().__init__('{{ normalize_attrib_name(value[0]) }}', {{ value[2] }}, '{{ value[3] }}', current='{{ value[4] }}', next='{{ value[5] }}', learnable={{ value[6] }}, proficiency_data=[('{{ value[7] }}', {'base': {{ value[8] }}})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+{% if loop.last %}
+{% else %}
+
+
+{% endif %}
 {% endfor %}

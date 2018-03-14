@@ -474,6 +474,7 @@ def reset_character(stat_type, hero=None):
 @login_required
 @uses_hero
 def admin(path="modify_self", hero=None):
+    hero.base_proficiencies['endurance'].current = 0
     admin_form_content = None
     if path == "edit_database":
         pass
@@ -882,7 +883,7 @@ def move(name='', hero=None, location=None):
 @uses_hero
 @update_current_location
 def store(name, hero=None, location=None):
-    print(hero.current_city)
+    # print(hero.current_city)
     if name == "Blacksmith":
         dialogue = "I have the greatest armoury in all of Thornwall!" # This should be pulled from pre_built objects
         items_for_sale = database.get_all_store_items()

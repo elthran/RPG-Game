@@ -7,19 +7,17 @@ It has been set to read only so that you don't edit it without using
 from sqlalchemy import Column, Integer, String, Boolean, Float
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declared_attr
+from flask import render_template_string
 
 from factories import TemplateMixin
 from base_classes import Base
-from flask import render_template_string
 
 # For testing
 from pprint import pprint
 import pdb
 
 
-
-ALL_PROFICIENCIES = [('Health', 'When your health reahes zero you fall unconscious.', 'Vitality', 'linear', 5.0, 2.0, 0, ' False', False), ('Regeneration', 'How many health points you recover each day.', 'Vitality', 'linear', 1.0, 0.5, 1, ' False', False), ('Recovery', 'How quickly you recover from poisons and negative effects.', 'Vitality', 'linear', 1.0, 0.0, 0, ' False', False), ('Climbing', 'The difficulty of objects of which you are able to climb.', 'Agility', 'linear', 0.0, 1.0, 0, ' False', False), ('Storage', 'The amount of weight that you can carry.', 'Brawn', 'linear', 10.0, 3.0, 0, ' False', False), ('Encumbrance', 'How much your are slowed down in combat by your equipment.', 'Brawn', 'linear', 100.0, -1.0, 0, ' False', False), ('Endurance', 'Number of actions you can perform each day.', 'Resilience', 'linear', 3.0, 0.5, 0, ' False', False), ('Stamina', 'How many endurance points you recover each day.', 'Resilience', 'linear', 1.0, 0.5, 1, ' False', False), ('Damage minimum', 'Mimimum damage you do on each hit', 'Brawn', 'linear', 0.0, 1.0, 0, ' False', False), ('Damage maximum', 'Maximum damage you do on each hit', 'Brawn', 'linear', 1.0, 1.0, 0, ' False', False), ('Speed', 'How fast you attack.', 'Quickness', 'linear', 1.0, 0.05, 2, ' False', False), ('Accuracy', 'The chance of your attacks hitting their target.', 'Agility', 'linear', 1.0, 1.0, 0, ' False', False), ('First strike', 'Chance to strike first', 'Quickness', 'linear', 1.0, 1.0, 0, ' False', False), ('Killshot', 'Damage multiplier when performing a critical hit.', 'Agility', 'linear', 1.5, 0.1, 1, ' False', False), ('Precision', 'Ability to critically hit enemies.', 'Agility', 'linear', 1.0, 1.0, 0, ' False', False), ('Defence', 'Amount of all damage reduced.', 'Resilience', 'linear', 0.0, 1.0, 0, ' False', False), ('Evade', 'Chance to dodge.', 'Quickness', 'linear', 1.0, 1.0, 0, ' False', False), ('Parry', 'Chance to parry.', 'Quickness', 'linear', 1.0, 1.0, 0, ' False', False), ('Flee', 'Chance to run from a battle.', 'Quickness', 'linear', 1.0, 1.0, 0, ' False', False), ('Riposte', 'Chance to riposte an enemy attack.', 'Agility', 'linear', 1.0, 1.0, 0, ' False', False), ('Fatigue', 'How quickly you tire in combat.', 'Resilience', 'linear', 1.0, 1.0, 0, ' False', False), ('Block', 'Ability to block if a shield is equipped.', 'Resilience', 'linear', 1.0, 1.0, 0, ' False', False), ('Stealth', 'Chance to avoid detection.', 'Agility', 'linear', 1.0, 1.0, 0, ' False', False), ('Pickpocketing', 'Skill at stealing from others.', 'Agility', 'linear', 1.0, 1.0, 0, ' False', False), ('Faith', 'Strength of spells you cast.', 'Divinity', 'linear', 1.0, 1.0, 0, ' False', False), ('Sanctity', 'Amount of sanctity you can have.', 'Divinity', 'linear', 1.0, 1.0, 0, ' False', False), ('Redemption', 'Amount of sanctity you recover each day.', 'Divinity', 'linear', 0.0, 0.5, 1, ' False', False), ('Resist holy', 'Ability to resist holy damage', 'Divinity', 'linear', 1.0, 1.0, 0, ' False', False), ('Bartering', 'Discount from negotiating prices.', 'Charisma', 'linear', 1.0, 1.0, 0, ' True', nan), ('Oration', 'Proficiency in speaking to others.', 'Charisma', 'linear', 1.0, 1.0, 0, ' False', False), ('Charm', 'How quickly other people will like you.', 'Charisma', 'linear', 1.0, 1.0, 0, ' False', False), ('Trustworthiness', 'How much other players trust you.', 'Charisma', 'linear', 1.0, 1.0, 0, ' False', False), ('Renown', 'How much your actions affect your reputation.', 'Charisma', 'linear', 1.0, 1.0, 0, ' False', False), ('Knowledge', 'Ability to understand.', 'Intellect', 'linear', 1.0, 1.0, 0, ' False', False), ('Literacy', 'Ability to read.', 'Intellect', 'linear', 1.0, 1.0, 0, ' False', False), ('Understanding', 'How much more quickly you level up.', 'Intellect', 'linear', 0.0, 2.0, 0, ' False', False), ('Luckiness', 'Chance to have things turn your way against all odds.', 'Fortuity', 'linear', 1.0, 1.0, 0, ' False', False), ('Adventuring', 'Chance to discover treasure.', 'Fortuity', 'linear', 1.0, 1.0, 0, ' False', False), ('Logistics', 'How far you can move on the map', 'Pathfinding', 'linear', 1.0, 1.0, 0, ' False', False), ('Mountaineering', 'Modifier for mountain movement.', 'Pathfinding', 'linear', 1.0, 1.0, 0, ' False', False), ('Woodsman', 'Modifier for forest movement.', 'Pathfinding', 'linear', 1.0, 1.0, 0, ' False', False), ('Navigator', 'Modifier for water movement.', 'Pathfinding', 'linear', 1.0, 1.0, 0, ' False', False), ('Detection', 'Chance to discover enemy stealth and traps.', 'Survivalism', 'linear', 1.0, 1.0, 0, ' False', False), ('Caution', 'See information about a new grid before going there', 'Survivalism', 'linear', 1.0, 1.0, 0, ' False', False), ('Explorer', 'Additional options on the map such as foraging', 'Survivalism', 'linear', 1.0, 1.0, 0, ' False', False), ('Huntsman', 'Learn additional information about enemies.', 'Survivalism', 'linear', 1.0, 1.0, 0, ' False', False), ('Survivalist', 'Create bandages and other useful objects', 'Survivalism', 'linear', 1.0, 1.0, 0, ' False', False), ('Resist frost', 'Ability to resist frost damage', 'Resilience', 'linear', 1.0, 1.0, 0, ' False', False), ('Resist flame', 'Ability to resist flame damage', 'Resilience', 'linear', 1.0, 1.0, 0, ' False', False), ('Resist shadow', 'Ability to resist shadow damage', 'Resilience', 'linear', 1.0, 1.0, 0, ' False', False), ('Resist poison', 'Ability to resist poison damage', 'Resilience', 'linear', 1.0, 1.0, 0, ' False', False), ('Resist blunt', 'Ability to resist blunt damage', 'Resilience', 'linear', 1.0, 1.0, 0, ' False', False), ('Resist slashing', 'Ability to resist slashing damage', 'Resilience', 'linear', 1.0, 1.0, 0, ' False', False), ('Resist piercing', 'Ability to resist piercing damage', 'Resilience', 'linear', 1.0, 1.0, 0, ' False', False), ('Courage', 'Your ability to overcome fears.', 'Willpower', 'linear', 1.0, 1.0, 0, ' False', False), ('Sanity', 'Your ability to resist mind altering affects.', 'Willpower', 'linear', 1.0, 1.0, 0, ' False', False)]
+ALL_PROFICIENCIES = [('Accuracy', 'The chance of your attacks hitting their target.', 'Agility', 'linear', 1, 1.0, 0, False, False), ('Adventuring', 'Chance to discover treasure.', 'Fortuity', 'linear', 1, 1.0, 0, False, False), ('Bartering', 'Discount from negotiating prices.', 'Charisma', 'linear', 1, 1.0, 0, True, True), ('Block', 'Ability to block if a shield is equipped.', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('Caution', 'See information about a new grid before going there', 'Survivalism', 'linear', 1, 1.0, 0, False, False), ('Charm', 'How quickly other people will like you.', 'Charisma', 'linear', 1, 1.0, 0, False, False), ('Climbing', 'The difficulty of objects of which you are able to climb.', 'Agility', 'linear', 0, 1.0, 0, False, False), ('Courage', 'Your ability to overcome fears.', 'Willpower', 'linear', 1, 1.0, 0, False, False), ('Damage maximum', 'Maximum damage you do on each hit', 'Brawn', 'linear', 1, 1.0, 0, False, False), ('Damage minimum', 'Mimimum damage you do on each hit', 'Brawn', 'linear', 0, 1.0, 0, False, False), ('Defence', 'Amount of all damage reduced.', 'Resilience', 'linear', 0, 1.0, 0, False, False), ('Detection', 'Chance to discover enemy stealth and traps.', 'Survivalism', 'linear', 1, 1.0, 0, False, False), ('Encumbrance', 'How much your are slowed down in combat by your equipment.', 'Brawn', 'linear', 100, -1.0, 0, False, False), ('Endurance', 'Number of actions you can perform each day.', 'Resilience', 'linear', 3, 0.5, 0, False, False), ('Evade', 'Chance to dodge.', 'Quickness', 'linear', 1, 1.0, 0, False, False), ('Explorer', 'Additional options on the map such as foraging', 'Survivalism', 'linear', 1, 1.0, 0, False, False), ('Faith', 'Strength of spells you cast.', 'Divinity', 'linear', 1, 1.0, 0, False, False), ('Fatigue', 'How quickly you tire in combat.', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('First strike', 'Chance to strike first', 'Quickness', 'linear', 1, 1.0, 0, False, False), ('Flee', 'Chance to run from a battle.', 'Quickness', 'linear', 1, 1.0, 0, False, False), ('Health', 'When your health reahes zero you fall unconscious.', 'Vitality', 'linear', 5, 2.0, 0, False, False), ('Huntsman', 'Learn additional information about enemies.', 'Survivalism', 'linear', 1, 1.0, 0, False, False), ('Killshot', 'Damage multiplier when performing a critical hit.', 'Agility', 'linear', 2, 0.1, 1, False, False), ('Knowledge', 'Ability to understand.', 'Intellect', 'linear', 1, 1.0, 0, False, False), ('Literacy', 'Ability to read.', 'Intellect', 'linear', 1, 1.0, 0, False, False), ('Logistics', 'How far you can move on the map', 'Pathfinding', 'linear', 1, 1.0, 0, False, False), ('Luckiness', 'Chance to have things turn your way against all odds.', 'Fortuity', 'linear', 1, 1.0, 0, False, False), ('Mountaineering', 'Modifier for mountain movement.', 'Pathfinding', 'linear', 1, 1.0, 0, False, False), ('Navigator', 'Modifier for water movement.', 'Pathfinding', 'linear', 1, 1.0, 0, False, False), ('Oration', 'Proficiency in speaking to others.', 'Charisma', 'linear', 1, 1.0, 0, False, False), ('Parry', 'Chance to parry.', 'Quickness', 'linear', 1, 1.0, 0, False, False), ('Pickpocketing', 'Skill at stealing from others.', 'Agility', 'linear', 1, 1.0, 0, False, False), ('Precision', 'Ability to critically hit enemies.', 'Agility', 'linear', 1, 1.0, 0, False, False), ('Recovery', 'How quickly you recover from poisons and negative effects.', 'Vitality', 'linear', 1, 0.0, 0, False, False), ('Redemption', 'Amount of sanctity you recover each day.', 'Divinity', 'linear', 0, 0.5, 1, False, False), ('Regeneration', 'How many health points you recover each day.', 'Vitality', 'linear', 1, 0.5, 1, False, False), ('Renown', 'How much your actions affect your reputation.', 'Charisma', 'linear', 1, 1.0, 0, False, False), ('Resist blunt', 'Ability to resist blunt damage', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('Resist flame', 'Ability to resist flame damage', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('Resist frost', 'Ability to resist frost damage', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('Resist holy', 'Ability to resist holy damage', 'Divinity', 'linear', 1, 1.0, 0, False, False), ('Resist piercing', 'Ability to resist piercing damage', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('Resist poison', 'Ability to resist poison damage', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('Resist shadow', 'Ability to resist shadow damage', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('Resist slashing', 'Ability to resist slashing damage', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('Riposte', 'Chance to riposte an enemy attack.', 'Agility', 'linear', 1, 1.0, 0, False, False), ('Sanctity', 'Amount of sanctity you can have.', 'Divinity', 'linear', 1, 1.0, 0, False, False), ('Sanity', 'Your ability to resist mind altering affects.', 'Willpower', 'linear', 1, 1.0, 0, False, False), ('Speed', 'How fast you attack.', 'Quickness', 'linear', 1, 0.05, 2, False, False), ('Stamina', 'How many endurance points you recover each day.', 'Resilience', 'linear', 1, 0.5, 1, False, False), ('Stealth', 'Chance to avoid detection.', 'Agility', 'linear', 1, 1.0, 0, False, False), ('Storage', 'The amount of weight that you can carry.', 'Brawn', 'linear', 10, 3.0, 0, False, False), ('Survivalist', 'Create bandages and other useful objects', 'Survivalism', 'linear', 1, 1.0, 0, False, False), ('Trustworthiness', 'How much other players trust you.', 'Charisma', 'linear', 1, 1.0, 0, False, False), ('Understanding', 'How much more quickly you level up.', 'Intellect', 'linear', 0, 2.0, 0, False, False), ('Woodsman', 'Modifier for forest movement.', 'Pathfinding', 'linear', 1, 1.0, 0, False, False)]
 
 ALL_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Courage', 'Damage maximum', 'Damage minimum', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'First strike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Precision', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'Resist blunt', 'Resist flame', 'Resist frost', 'Resist holy', 'Resist piercing', 'Resist poison', 'Resist shadow', 'Resist slashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stamina', 'Stealth', 'Storage', 'Survivalist', 'Trustworthiness', 'Understanding', 'Woodsman']
 ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'bartering', 'block', 'caution', 'charm', 'climbing', 'courage', 'damage_maximum', 'damage_minimum', 'defence', 'detection', 'encumbrance', 'endurance', 'evade', 'explorer', 'faith', 'fatigue', 'first_strike', 'flee', 'health', 'huntsman', 'killshot', 'knowledge', 'literacy', 'logistics', 'luckiness', 'mountaineering', 'navigator', 'oration', 'parry', 'pickpocketing', 'precision', 'recovery', 'redemption', 'regeneration', 'renown', 'resist_blunt', 'resist_flame', 'resist_frost', 'resist_holy', 'resist_piercing', 'resist_poison', 'resist_shadow', 'resist_slashing', 'riposte', 'sanctity', 'sanity', 'speed', 'stamina', 'stealth', 'storage', 'survivalist', 'trustworthiness', 'understanding', 'woodsman']
@@ -64,6 +62,7 @@ class Proficiency(TemplateMixin, Base):
     num_of_decimals = 0
     # In the child classes this allows nice output formatting
     format_spec = '{:.2f}'
+    name = "proficiency"
 
     __mapper_args__ = {
         'polymorphic_identity': "Proficiency",
@@ -87,7 +86,7 @@ class Proficiency(TemplateMixin, Base):
 
     def level_up(self):
         self.level += 1
-        self.current = self.final
+        self.current = self.hero.get_summed_proficiencies(self.name).final
 
     def scale_by_level(self, level=None):
         """Return some function of the level attribute.
@@ -164,34 +163,34 @@ class Proficiency(TemplateMixin, Base):
         return True if self.level >= self.attribute.level * 2 else False
 
 
-class Health(Proficiency):
+class Accuracy(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "health"
-    display_name = "Health"
+    hidden = False
+    name = "accuracy"
+    display_name = "Accuracy"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
-        'polymorphic_identity': "Health"
+        'polymorphic_identity': "Accuracy"
     }
 
     # Proficiency to Attribute is many to one.
     @property
     def attribute(self):
-        return self.hero.attributes.vitality
+        return self.hero.attributes.agility
 
-    def __init__(self, *args, base=5.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "When your health reahes zero you fall unconscious."
-        self.attribute_type = "Vitality"
+        self.description = "The chance of your attacks hitting their target."
+        self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update Health's attributes and tooltip variable.
+        """Update Accuracy's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -199,75 +198,37 @@ class Health(Proficiency):
         if level is None:
             level = self.level
 
-        return round(2.0 * level, self.num_of_decimals)
+        return round(1.0 * level, self.num_of_decimals)
 
 
-class Regeneration(Proficiency):
+class Adventuring(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "regeneration"
-    display_name = "Regeneration"
-    num_of_decimals = 1
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.1f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Regeneration"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.vitality
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "How many health points you recover each day."
-        self.attribute_type = "Vitality"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Regeneration's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(0.5 * level, self.num_of_decimals)
-
-
-class Recovery(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "recovery"
-    display_name = "Recovery"
+    hidden = False
+    name = "adventuring"
+    display_name = "Adventuring"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
-        'polymorphic_identity': "Recovery"
+        'polymorphic_identity': "Adventuring"
     }
 
     # Proficiency to Attribute is many to one.
     @property
     def attribute(self):
-        return self.hero.attributes.vitality
+        return self.hero.attributes.fortuity
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How quickly you recover from poisons and negative effects."
-        self.attribute_type = "Vitality"
+        self.description = "Chance to discover treasure."
+        self.attribute_type = "Fortuity"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update Recovery's attributes and tooltip variable.
+        """Update Adventuring's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -275,18 +236,177 @@ class Recovery(Proficiency):
         if level is None:
             level = self.level
 
-        return round(0.0 * level, self.num_of_decimals)
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class Bartering(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = True
+    name = "bartering"
+    display_name = "Bartering"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Bartering"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.charisma
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Discount from negotiating prices."
+        self.attribute_type = "Charisma"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Bartering's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class Block(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "block"
+    display_name = "Block"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Block"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Ability to block if a shield is equipped."
+        self.attribute_type = "Resilience"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Block's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+    def check_shield(self, hero):
+        if hero.inventory.left_hand is None or hero.inventory.left_hand.type != "Shield":
+            self.current = 0
+            self.reason_for_zero = "You must have a shield equipped"
+        else:
+            self.reason_for_zero = ""
+
+
+class Caution(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "caution"
+    display_name = "Caution"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Caution"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.survivalism
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "See information about a new grid before going there"
+        self.attribute_type = "Survivalism"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Caution's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class Charm(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "charm"
+    display_name = "Charm"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Charm"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.charisma
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "How quickly other people will like you."
+        self.attribute_type = "Charisma"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Charm's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
 
 
 class Climbing(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
+    hidden = False
     name = "climbing"
     display_name = "Climbing"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
@@ -298,7 +418,7 @@ class Climbing(Proficiency):
     def attribute(self):
         return self.hero.attributes.agility
 
-    def __init__(self, *args, base=0.0, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "The difficulty of objects of which you are able to climb."
         self.attribute_type = "Agility"
@@ -316,34 +436,34 @@ class Climbing(Proficiency):
         return round(1.0 * level, self.num_of_decimals)
 
 
-class Storage(Proficiency):
+class Courage(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "storage"
-    display_name = "Storage"
+    hidden = False
+    name = "courage"
+    display_name = "Courage"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
-        'polymorphic_identity': "Storage"
+        'polymorphic_identity': "Courage"
     }
 
     # Proficiency to Attribute is many to one.
     @property
     def attribute(self):
-        return self.hero.attributes.brawn
+        return self.hero.attributes.willpower
 
-    def __init__(self, *args, base=10.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "The amount of weight that you can carry."
-        self.attribute_type = "Brawn"
+        self.description = "Your ability to overcome fears."
+        self.attribute_type = "Willpower"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update Storage's attributes and tooltip variable.
+        """Update Courage's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -351,18 +471,170 @@ class Storage(Proficiency):
         if level is None:
             level = self.level
 
-        return round(3.0 * level, self.num_of_decimals)
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class DamageMaximum(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "damage_maximum"
+    display_name = "Damage Maximum"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "DamageMaximum"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.brawn
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Maximum damage you do on each hit"
+        self.attribute_type = "Brawn"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update DamageMaximum's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class DamageMinimum(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "damage_minimum"
+    display_name = "Damage Minimum"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "DamageMinimum"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.brawn
+
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Mimimum damage you do on each hit"
+        self.attribute_type = "Brawn"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update DamageMinimum's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class Defence(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "defence"
+    display_name = "Defence"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Defence"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Amount of all damage reduced."
+        self.attribute_type = "Resilience"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Defence's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class Detection(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "detection"
+    display_name = "Detection"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Detection"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.survivalism
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Chance to discover enemy stealth and traps."
+        self.attribute_type = "Survivalism"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Detection's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
 
 
 class Encumbrance(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
+    hidden = False
     name = "encumbrance"
     display_name = "Encumbrance"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
@@ -374,7 +646,7 @@ class Encumbrance(Proficiency):
     def attribute(self):
         return self.hero.attributes.brawn
 
-    def __init__(self, *args, base=100.0, **kwargs):
+    def __init__(self, *args, base=100, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How much your are slowed down in combat by your equipment."
         self.attribute_type = "Brawn"
@@ -395,12 +667,12 @@ class Encumbrance(Proficiency):
 class Endurance(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
+    hidden = False
     name = "endurance"
     display_name = "Endurance"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
@@ -412,7 +684,7 @@ class Endurance(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-    def __init__(self, *args, base=3.0, **kwargs):
+    def __init__(self, *args, base=3, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Number of actions you can perform each day."
         self.attribute_type = "Resilience"
@@ -430,357 +702,15 @@ class Endurance(Proficiency):
         return round(0.5 * level, self.num_of_decimals)
 
 
-class Stamina(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "stamina"
-    display_name = "Stamina"
-    num_of_decimals = 1
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.1f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Stamina"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.resilience
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "How many endurance points you recover each day."
-        self.attribute_type = "Resilience"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Stamina's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(0.5 * level, self.num_of_decimals)
-
-
-class DamageMinimum(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "damage_minimum"
-    display_name = "Damage Minimum"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "DamageMinimum"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.brawn
-
-    def __init__(self, *args, base=0.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Mimimum damage you do on each hit"
-        self.attribute_type = "Brawn"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update DamageMinimum's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class DamageMaximum(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "damage_maximum"
-    display_name = "Damage Maximum"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "DamageMaximum"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.brawn
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Maximum damage you do on each hit"
-        self.attribute_type = "Brawn"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update DamageMaximum's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class Speed(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "speed"
-    display_name = "Speed"
-    num_of_decimals = 2
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.2f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Speed"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.quickness
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "How fast you attack."
-        self.attribute_type = "Quickness"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Speed's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(0.05 * level, self.num_of_decimals)
-
-
-class Accuracy(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "accuracy"
-    display_name = "Accuracy"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Accuracy"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.agility
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "The chance of your attacks hitting their target."
-        self.attribute_type = "Agility"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Accuracy's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class FirstStrike(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "first_strike"
-    display_name = "First Strike"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "FirstStrike"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.quickness
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Chance to strike first"
-        self.attribute_type = "Quickness"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update FirstStrike's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class Killshot(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "killshot"
-    display_name = "Killshot"
-    num_of_decimals = 1
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.1f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Killshot"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.agility
-
-    def __init__(self, *args, base=1.5, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Damage multiplier when performing a critical hit."
-        self.attribute_type = "Agility"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Killshot's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(0.1 * level, self.num_of_decimals)
-
-
-class Precision(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "precision"
-    display_name = "Precision"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Precision"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.agility
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Ability to critically hit enemies."
-        self.attribute_type = "Agility"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Precision's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class Defence(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "defence"
-    display_name = "Defence"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Defence"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.resilience
-
-    def __init__(self, *args, base=0.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Amount of all damage reduced."
-        self.attribute_type = "Resilience"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Defence's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
 class Evade(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
+    hidden = False
     name = "evade"
     display_name = "Evade"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
@@ -792,7 +722,7 @@ class Evade(Proficiency):
     def attribute(self):
         return self.hero.attributes.quickness
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Chance to dodge."
         self.attribute_type = "Quickness"
@@ -810,269 +740,34 @@ class Evade(Proficiency):
         return round(1.0 * level, self.num_of_decimals)
 
 
-class Parry(Proficiency):
+class Explorer(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "parry"
-    display_name = "Parry"
+    hidden = False
+    name = "explorer"
+    display_name = "Explorer"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
-        'polymorphic_identity': "Parry"
+        'polymorphic_identity': "Explorer"
     }
 
     # Proficiency to Attribute is many to one.
     @property
     def attribute(self):
-        return self.hero.attributes.quickness
+        return self.hero.attributes.survivalism
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Chance to parry."
-        self.attribute_type = "Quickness"
+        self.description = "Additional options on the map such as foraging"
+        self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update Parry's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class Flee(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "flee"
-    display_name = "Flee"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Flee"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.quickness
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Chance to run from a battle."
-        self.attribute_type = "Quickness"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Flee's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class Riposte(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "riposte"
-    display_name = "Riposte"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Riposte"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.agility
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Chance to riposte an enemy attack."
-        self.attribute_type = "Agility"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Riposte's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class Fatigue(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "fatigue"
-    display_name = "Fatigue"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Fatigue"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.resilience
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "How quickly you tire in combat."
-        self.attribute_type = "Resilience"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Fatigue's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class Block(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "block"
-    display_name = "Block"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Block"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.resilience
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Ability to block if a shield is equipped."
-        self.attribute_type = "Resilience"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Block's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-    def check_shield(self, hero):
-        if hero.inventory.left_hand is None or hero.inventory.left_hand.type != "Shield":
-            self.chance = 0
-            self.reason_for_zero = "You must have a shield equipped"
-        else:
-            self.reason_for_zero = ""
-
-
-class Stealth(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "stealth"
-    display_name = "Stealth"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Stealth"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.agility
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Chance to avoid detection."
-        self.attribute_type = "Agility"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Stealth's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class Pickpocketing(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "pickpocketing"
-    display_name = "Pickpocketing"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Pickpocketing"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.agility
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Skill at stealing from others."
-        self.attribute_type = "Agility"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Pickpocketing's attributes and tooltip variable.
+        """Update Explorer's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -1086,12 +781,12 @@ class Pickpocketing(Proficiency):
 class Faith(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
+    hidden = False
     name = "faith"
     display_name = "Faith"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
@@ -1103,7 +798,7 @@ class Faith(Proficiency):
     def attribute(self):
         return self.hero.attributes.divinity
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Strength of spells you cast."
         self.attribute_type = "Divinity"
@@ -1121,34 +816,34 @@ class Faith(Proficiency):
         return round(1.0 * level, self.num_of_decimals)
 
 
-class Sanctity(Proficiency):
+class Fatigue(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "sanctity"
-    display_name = "Sanctity"
+    hidden = False
+    name = "fatigue"
+    display_name = "Fatigue"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
-        'polymorphic_identity': "Sanctity"
+        'polymorphic_identity': "Fatigue"
     }
 
     # Proficiency to Attribute is many to one.
     @property
     def attribute(self):
-        return self.hero.attributes.divinity
+        return self.hero.attributes.resilience
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Amount of sanctity you can have."
-        self.attribute_type = "Divinity"
+        self.description = "How quickly you tire in combat."
+        self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update Sanctity's attributes and tooltip variable.
+        """Update Fatigue's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -1159,34 +854,186 @@ class Sanctity(Proficiency):
         return round(1.0 * level, self.num_of_decimals)
 
 
-class Redemption(Proficiency):
+class FirstStrike(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "redemption"
-    display_name = "Redemption"
+    hidden = False
+    name = "first_strike"
+    display_name = "First Strike"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "FirstStrike"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.quickness
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Chance to strike first"
+        self.attribute_type = "Quickness"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update FirstStrike's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class Flee(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "flee"
+    display_name = "Flee"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Flee"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.quickness
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Chance to run from a battle."
+        self.attribute_type = "Quickness"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Flee's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class Health(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "health"
+    display_name = "Health"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Health"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.vitality
+
+    def __init__(self, *args, base=5, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "When your health reahes zero you fall unconscious."
+        self.attribute_type = "Vitality"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Health's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(2.0 * level, self.num_of_decimals)
+
+
+class Huntsman(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "huntsman"
+    display_name = "Huntsman"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Huntsman"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.survivalism
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Learn additional information about enemies."
+        self.attribute_type = "Survivalism"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Huntsman's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class Killshot(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "killshot"
+    display_name = "Killshot"
     num_of_decimals = 1
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.1f}"
 
     __mapper_args__ = {
-        'polymorphic_identity': "Redemption"
+        'polymorphic_identity': "Killshot"
     }
 
     # Proficiency to Attribute is many to one.
     @property
     def attribute(self):
-        return self.hero.attributes.divinity
+        return self.hero.attributes.agility
 
-    def __init__(self, *args, base=0.0, **kwargs):
+    def __init__(self, *args, base=2, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Amount of sanctity you recover each day."
-        self.attribute_type = "Divinity"
+        self.description = "Damage multiplier when performing a critical hit."
+        self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update Redemption's attributes and tooltip variable.
+        """Update Killshot's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -1194,246 +1041,18 @@ class Redemption(Proficiency):
         if level is None:
             level = self.level
 
-        return round(0.5 * level, self.num_of_decimals)
-
-
-class ResistHoly(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "resist_holy"
-    display_name = "Resist Holy"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "ResistHoly"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.divinity
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Ability to resist holy damage"
-        self.attribute_type = "Divinity"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update ResistHoly's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class Bartering(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  True
-    name = "bartering"
-    display_name = "Bartering"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be nan but I'm getting an error
-    format_spec = "{:.0f}%"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Bartering"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.charisma
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Discount from negotiating prices."
-        self.attribute_type = "Charisma"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Bartering's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class Oration(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "oration"
-    display_name = "Oration"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Oration"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.charisma
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Proficiency in speaking to others."
-        self.attribute_type = "Charisma"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Oration's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class Charm(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "charm"
-    display_name = "Charm"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Charm"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.charisma
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "How quickly other people will like you."
-        self.attribute_type = "Charisma"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Charm's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class Trustworthiness(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "trustworthiness"
-    display_name = "Trustworthiness"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Trustworthiness"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.charisma
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "How much other players trust you."
-        self.attribute_type = "Charisma"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Trustworthiness's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class Renown(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "renown"
-    display_name = "Renown"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Renown"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.charisma
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "How much your actions affect your reputation."
-        self.attribute_type = "Charisma"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Renown's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
+        return round(0.1 * level, self.num_of_decimals)
 
 
 class Knowledge(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
+    hidden = False
     name = "knowledge"
     display_name = "Knowledge"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
@@ -1445,7 +1064,7 @@ class Knowledge(Proficiency):
     def attribute(self):
         return self.hero.attributes.intellect
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to understand."
         self.attribute_type = "Intellect"
@@ -1466,12 +1085,12 @@ class Knowledge(Proficiency):
 class Literacy(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
+    hidden = False
     name = "literacy"
     display_name = "Literacy"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
@@ -1483,7 +1102,7 @@ class Literacy(Proficiency):
     def attribute(self):
         return self.hero.attributes.intellect
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to read."
         self.attribute_type = "Intellect"
@@ -1501,129 +1120,15 @@ class Literacy(Proficiency):
         return round(1.0 * level, self.num_of_decimals)
 
 
-class Understanding(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "understanding"
-    display_name = "Understanding"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Understanding"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.intellect
-
-    def __init__(self, *args, base=0.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "How much more quickly you level up."
-        self.attribute_type = "Intellect"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Understanding's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(2.0 * level, self.num_of_decimals)
-
-
-class Luckiness(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "luckiness"
-    display_name = "Luckiness"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Luckiness"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.fortuity
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Chance to have things turn your way against all odds."
-        self.attribute_type = "Fortuity"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Luckiness's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class Adventuring(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "adventuring"
-    display_name = "Adventuring"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Adventuring"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.fortuity
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Chance to discover treasure."
-        self.attribute_type = "Fortuity"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Adventuring's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
 class Logistics(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
+    hidden = False
     name = "logistics"
     display_name = "Logistics"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
@@ -1635,7 +1140,7 @@ class Logistics(Proficiency):
     def attribute(self):
         return self.hero.attributes.pathfinding
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "How far you can move on the map"
         self.attribute_type = "Pathfinding"
@@ -1653,15 +1158,53 @@ class Logistics(Proficiency):
         return round(1.0 * level, self.num_of_decimals)
 
 
+class Luckiness(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "luckiness"
+    display_name = "Luckiness"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Luckiness"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.fortuity
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Chance to have things turn your way against all odds."
+        self.attribute_type = "Fortuity"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Luckiness's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
 class Mountaineering(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
+    hidden = False
     name = "mountaineering"
     display_name = "Mountaineering"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
@@ -1673,7 +1216,7 @@ class Mountaineering(Proficiency):
     def attribute(self):
         return self.hero.attributes.pathfinding
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Modifier for mountain movement."
         self.attribute_type = "Pathfinding"
@@ -1691,53 +1234,15 @@ class Mountaineering(Proficiency):
         return round(1.0 * level, self.num_of_decimals)
 
 
-class Woodsman(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "woodsman"
-    display_name = "Woodsman"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Woodsman"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.pathfinding
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Modifier for forest movement."
-        self.attribute_type = "Pathfinding"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Woodsman's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
 class Navigator(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
+    hidden = False
     name = "navigator"
     display_name = "Navigator"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
@@ -1749,7 +1254,7 @@ class Navigator(Proficiency):
     def attribute(self):
         return self.hero.attributes.pathfinding
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Modifier for water movement."
         self.attribute_type = "Pathfinding"
@@ -1767,34 +1272,34 @@ class Navigator(Proficiency):
         return round(1.0 * level, self.num_of_decimals)
 
 
-class Detection(Proficiency):
+class Oration(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "detection"
-    display_name = "Detection"
+    hidden = False
+    name = "oration"
+    display_name = "Oration"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
-        'polymorphic_identity': "Detection"
+        'polymorphic_identity': "Oration"
     }
 
     # Proficiency to Attribute is many to one.
     @property
     def attribute(self):
-        return self.hero.attributes.survivalism
+        return self.hero.attributes.charisma
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Chance to discover enemy stealth and traps."
-        self.attribute_type = "Survivalism"
+        self.description = "Proficiency in speaking to others."
+        self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update Detection's attributes and tooltip variable.
+        """Update Oration's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -1805,34 +1310,34 @@ class Detection(Proficiency):
         return round(1.0 * level, self.num_of_decimals)
 
 
-class Caution(Proficiency):
+class Parry(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "caution"
-    display_name = "Caution"
+    hidden = False
+    name = "parry"
+    display_name = "Parry"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
-        'polymorphic_identity': "Caution"
+        'polymorphic_identity': "Parry"
     }
 
     # Proficiency to Attribute is many to one.
     @property
     def attribute(self):
-        return self.hero.attributes.survivalism
+        return self.hero.attributes.quickness
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "See information about a new grid before going there"
-        self.attribute_type = "Survivalism"
+        self.description = "Chance to parry."
+        self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update Caution's attributes and tooltip variable.
+        """Update Parry's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -1843,34 +1348,34 @@ class Caution(Proficiency):
         return round(1.0 * level, self.num_of_decimals)
 
 
-class Explorer(Proficiency):
+class Pickpocketing(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "explorer"
-    display_name = "Explorer"
+    hidden = False
+    name = "pickpocketing"
+    display_name = "Pickpocketing"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
-        'polymorphic_identity': "Explorer"
+        'polymorphic_identity': "Pickpocketing"
     }
 
     # Proficiency to Attribute is many to one.
     @property
     def attribute(self):
-        return self.hero.attributes.survivalism
+        return self.hero.attributes.agility
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Additional options on the map such as foraging"
-        self.attribute_type = "Survivalism"
+        self.description = "Skill at stealing from others."
+        self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update Explorer's attributes and tooltip variable.
+        """Update Pickpocketing's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -1881,34 +1386,34 @@ class Explorer(Proficiency):
         return round(1.0 * level, self.num_of_decimals)
 
 
-class Huntsman(Proficiency):
+class Precision(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "huntsman"
-    display_name = "Huntsman"
+    hidden = False
+    name = "precision"
+    display_name = "Precision"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
-        'polymorphic_identity': "Huntsman"
+        'polymorphic_identity': "Precision"
     }
 
     # Proficiency to Attribute is many to one.
     @property
     def attribute(self):
-        return self.hero.attributes.survivalism
+        return self.hero.attributes.agility
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Learn additional information about enemies."
-        self.attribute_type = "Survivalism"
+        self.description = "Ability to critically hit enemies."
+        self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update Huntsman's attributes and tooltip variable.
+        """Update Precision's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -1919,34 +1424,34 @@ class Huntsman(Proficiency):
         return round(1.0 * level, self.num_of_decimals)
 
 
-class Survivalist(Proficiency):
+class Recovery(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "survivalist"
-    display_name = "Survivalist"
+    hidden = False
+    name = "recovery"
+    display_name = "Recovery"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
-        'polymorphic_identity': "Survivalist"
+        'polymorphic_identity': "Recovery"
     }
 
     # Proficiency to Attribute is many to one.
     @property
     def attribute(self):
-        return self.hero.attributes.survivalism
+        return self.hero.attributes.vitality
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Create bandages and other useful objects"
-        self.attribute_type = "Survivalism"
+        self.description = "How quickly you recover from poisons and negative effects."
+        self.attribute_type = "Vitality"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update Survivalist's attributes and tooltip variable.
+        """Update Recovery's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -1954,37 +1459,37 @@ class Survivalist(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(0.0 * level, self.num_of_decimals)
 
 
-class ResistFrost(Proficiency):
+class Redemption(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "resist_frost"
-    display_name = "Resist Frost"
-    num_of_decimals = 0
+    hidden = False
+    name = "redemption"
+    display_name = "Redemption"
+    num_of_decimals = 1
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.1f}"
 
     __mapper_args__ = {
-        'polymorphic_identity': "ResistFrost"
+        'polymorphic_identity': "Redemption"
     }
 
     # Proficiency to Attribute is many to one.
     @property
     def attribute(self):
-        return self.hero.attributes.resilience
+        return self.hero.attributes.divinity
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Ability to resist frost damage"
-        self.attribute_type = "Resilience"
+        self.description = "Amount of sanctity you recover each day."
+        self.attribute_type = "Divinity"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update ResistFrost's attributes and tooltip variable.
+        """Update Redemption's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -1992,37 +1497,37 @@ class ResistFrost(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(0.5 * level, self.num_of_decimals)
 
 
-class ResistFlame(Proficiency):
+class Regeneration(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "resist_flame"
-    display_name = "Resist Flame"
-    num_of_decimals = 0
+    hidden = False
+    name = "regeneration"
+    display_name = "Regeneration"
+    num_of_decimals = 1
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.1f}"
 
     __mapper_args__ = {
-        'polymorphic_identity': "ResistFlame"
+        'polymorphic_identity': "Regeneration"
     }
 
     # Proficiency to Attribute is many to one.
     @property
     def attribute(self):
-        return self.hero.attributes.resilience
+        return self.hero.attributes.vitality
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Ability to resist flame damage"
-        self.attribute_type = "Resilience"
+        self.description = "How many health points you recover each day."
+        self.attribute_type = "Vitality"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update ResistFlame's attributes and tooltip variable.
+        """Update Regeneration's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -2030,75 +1535,37 @@ class ResistFlame(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(0.5 * level, self.num_of_decimals)
 
 
-class ResistShadow(Proficiency):
+class Renown(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "resist_shadow"
-    display_name = "Resist Shadow"
+    hidden = False
+    name = "renown"
+    display_name = "Renown"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
-        'polymorphic_identity': "ResistShadow"
+        'polymorphic_identity': "Renown"
     }
 
     # Proficiency to Attribute is many to one.
     @property
     def attribute(self):
-        return self.hero.attributes.resilience
+        return self.hero.attributes.charisma
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Ability to resist shadow damage"
-        self.attribute_type = "Resilience"
+        self.description = "How much your actions affect your reputation."
+        self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update ResistShadow's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class ResistPoison(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "resist_poison"
-    display_name = "Resist Poison"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "ResistPoison"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.resilience
-
-    def __init__(self, *args, base=1.0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "Ability to resist poison damage"
-        self.attribute_type = "Resilience"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update ResistPoison's attributes and tooltip variable.
+        """Update Renown's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -2112,12 +1579,12 @@ class ResistPoison(Proficiency):
 class ResistBlunt(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
+    hidden = False
     name = "resist_blunt"
     display_name = "Resist Blunt"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
@@ -2129,7 +1596,7 @@ class ResistBlunt(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist blunt damage"
         self.attribute_type = "Resilience"
@@ -2147,19 +1614,19 @@ class ResistBlunt(Proficiency):
         return round(1.0 * level, self.num_of_decimals)
 
 
-class ResistSlashing(Proficiency):
+class ResistFlame(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "resist_slashing"
-    display_name = "Resist Slashing"
+    hidden = False
+    name = "resist_flame"
+    display_name = "Resist Flame"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
-        'polymorphic_identity': "ResistSlashing"
+        'polymorphic_identity': "ResistFlame"
     }
 
     # Proficiency to Attribute is many to one.
@@ -2167,14 +1634,90 @@ class ResistSlashing(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Ability to resist slashing damage"
+        self.description = "Ability to resist flame damage"
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update ResistSlashing's attributes and tooltip variable.
+        """Update ResistFlame's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class ResistFrost(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "resist_frost"
+    display_name = "Resist Frost"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistFrost"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Ability to resist frost damage"
+        self.attribute_type = "Resilience"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update ResistFrost's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class ResistHoly(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "resist_holy"
+    display_name = "Resist Holy"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistHoly"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.divinity
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Ability to resist holy damage"
+        self.attribute_type = "Divinity"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update ResistHoly's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -2188,12 +1731,12 @@ class ResistSlashing(Proficiency):
 class ResistPiercing(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
+    hidden = False
     name = "resist_piercing"
     display_name = "Resist Piercing"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
@@ -2205,7 +1748,7 @@ class ResistPiercing(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist piercing damage"
         self.attribute_type = "Resilience"
@@ -2223,34 +1766,186 @@ class ResistPiercing(Proficiency):
         return round(1.0 * level, self.num_of_decimals)
 
 
-class Courage(Proficiency):
+class ResistPoison(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
-    name = "courage"
-    display_name = "Courage"
+    hidden = False
+    name = "resist_poison"
+    display_name = "Resist Poison"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
-        'polymorphic_identity': "Courage"
+        'polymorphic_identity': "ResistPoison"
     }
 
     # Proficiency to Attribute is many to one.
     @property
     def attribute(self):
-        return self.hero.attributes.willpower
+        return self.hero.attributes.resilience
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Your ability to overcome fears."
-        self.attribute_type = "Willpower"
+        self.description = "Ability to resist poison damage"
+        self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update Courage's attributes and tooltip variable.
+        """Update ResistPoison's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class ResistShadow(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "resist_shadow"
+    display_name = "Resist Shadow"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistShadow"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Ability to resist shadow damage"
+        self.attribute_type = "Resilience"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update ResistShadow's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class ResistSlashing(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "resist_slashing"
+    display_name = "Resist Slashing"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "ResistSlashing"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Ability to resist slashing damage"
+        self.attribute_type = "Resilience"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update ResistSlashing's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class Riposte(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "riposte"
+    display_name = "Riposte"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Riposte"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.agility
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Chance to riposte an enemy attack."
+        self.attribute_type = "Agility"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Riposte's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class Sanctity(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "sanctity"
+    display_name = "Sanctity"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Sanctity"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.divinity
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Amount of sanctity you can have."
+        self.attribute_type = "Divinity"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Sanctity's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -2264,12 +1959,12 @@ class Courage(Proficiency):
 class Sanity(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden =  False
+    hidden = False
     name = "sanity"
     display_name = "Sanity"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be False but I'm getting an error
+    is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
@@ -2281,7 +1976,7 @@ class Sanity(Proficiency):
     def attribute(self):
         return self.hero.attributes.willpower
 
-    def __init__(self, *args, base=1.0, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Your ability to resist mind altering affects."
         self.attribute_type = "Willpower"
@@ -2299,6 +1994,308 @@ class Sanity(Proficiency):
         return round(1.0 * level, self.num_of_decimals)
 
 
+class Speed(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "speed"
+    display_name = "Speed"
+    num_of_decimals = 2
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.2f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Speed"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.quickness
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "How fast you attack."
+        self.attribute_type = "Quickness"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Speed's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(0.05 * level, self.num_of_decimals)
+
+
+class Stamina(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "stamina"
+    display_name = "Stamina"
+    num_of_decimals = 1
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.1f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Stamina"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.resilience
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "How many endurance points you recover each day."
+        self.attribute_type = "Resilience"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Stamina's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(0.5 * level, self.num_of_decimals)
+
+
+class Stealth(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "stealth"
+    display_name = "Stealth"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Stealth"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.agility
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Chance to avoid detection."
+        self.attribute_type = "Agility"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Stealth's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class Storage(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "storage"
+    display_name = "Storage"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Storage"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.brawn
+
+    def __init__(self, *args, base=10, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "The amount of weight that you can carry."
+        self.attribute_type = "Brawn"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Storage's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(3.0 * level, self.num_of_decimals)
+
+
+class Survivalist(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "survivalist"
+    display_name = "Survivalist"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Survivalist"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.survivalism
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Create bandages and other useful objects"
+        self.attribute_type = "Survivalism"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Survivalist's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class Trustworthiness(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "trustworthiness"
+    display_name = "Trustworthiness"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Trustworthiness"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.charisma
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "How much other players trust you."
+        self.attribute_type = "Charisma"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Trustworthiness's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class Understanding(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "understanding"
+    display_name = "Understanding"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Understanding"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.intellect
+
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "How much more quickly you level up."
+        self.attribute_type = "Intellect"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Understanding's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(2.0 * level, self.num_of_decimals)
+
+
+class Woodsman(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "woodsman"
+    display_name = "Woodsman"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Woodsman"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.pathfinding
+
+    def __init__(self, *args, base=1, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Modifier for forest movement."
+        self.attribute_type = "Pathfinding"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Woodsman's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(1.0 * level, self.num_of_decimals)
 
 
 '''

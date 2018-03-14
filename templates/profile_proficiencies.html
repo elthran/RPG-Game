@@ -10,9 +10,8 @@
             <button class="genericAccordion">{{ attribute.name }} {% if attribute.level %}{{ attribute.level }}{% endif %}</button>
             <div class="genericAccordionPanel">
                 <ul>
-                    {% for key in all_proficiencies %}
-                    {% set proficiency = all_proficiencies[key] %}
-                        {% if proficiency.attribute_type == attribute.name %}
+                    {% for proficiency in all_proficiencies %}
+                        {% if proficiency.attribute_type == attribute.name and not proficiency.hidden %}
                             <li>
                                 <button class="genericTooltipTrigger"
                                         onclick="sendToPy(event, proficiencyTooltip, 'change_proficiency_tooltip', {'id': {{ proficiency.id }}});">

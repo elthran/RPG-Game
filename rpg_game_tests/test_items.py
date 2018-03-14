@@ -55,12 +55,16 @@ class TestItem(GenericTestCase):
     def setup_class(cls):
         db = super().setup_class()
         # Might be better for testing? To allow post mortem analysis.
+        db.engine.execute("DROP TABLE `proficiency`;")
         db.engine.execute("DROP TABLE `item`;")
         db = super().setup_class()
 
         template = OneHandedWeapon(
-            "Big Dagger", buy_price=10, damage_minimum=300, damage_maximum=600,
-            speed_speed=2, template=True)
+            "Big Dagger", buy_price=10,
+            proficiency_data=[('DamageMinimum', {'base': 300}),
+                              ('DamageMaximum', {'base': 600}),
+                              ('Speed', {'base': 2})],
+            template=True)
         db.session.add(template)
         db.update()
 

@@ -15,13 +15,12 @@ from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
-from sqlalchemy.orm.collections import attribute_mapped_collection
 from flask import render_template_string
 
 import proficiencies
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 # Well ... ok, but for simplicity sake just pretend that that is true.
-from base_classes import Base
+from base_classes import Base, attribute_mapped_dict_hybrid
 import pdb
 
 ALL_ABILITIES = [('Relentless', 'AuraAbility', 5, 'Gain maximum health. Master this ability to unlock the Brute archetype.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5), ('Trickster', 'AuraAbility', 5, 'Become harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5), ('Discipline', 'AuraAbility', 5, 'Gain devotion faster. Master this ability to unlock the Ascetic archetype.', '{{ (level) * 5 }}%', '{{ (level + 1) * 5 }}%', True, 'Health', 5), ('Traveler', 'AuraAbility', 5, 'Reveal more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5), ('Arcanum', 'AuraAbility', 5, 'Gain maximum sanctity. Master this ability to unlock the Philosopher archetype.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5), ('Poet', 'AuraAbility', 5, 'Gain fame faster. Master this ability to unlock the Opportunist archetype.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5), ('Blackhearted', 'AuraAbility', 3, 'Lose virtue faster.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5), ('Backstab', 'AuraAbility', 3, 'You are more likely to attack first in combat.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5), ('MartialArts', 'AuraAbility', 3, 'You deal more damage in combat.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5), ('Apprentice', 'AuraAbility', 3, 'You are capable of learning additional spells.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5), ('Meditation', 'AuraAbility', 3, 'Regenerate sanctity per day.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5), ('Bash', 'AuraAbility', 3, 'You deal more damage with blunt weapons.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5), ('Student', 'AuraAbility', 3, 'You are capable of learning additional spells.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5), ('Scholar', 'AuraAbility', 3, 'Gain experience faster.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5), ('Vigilance', 'AuraAbility', 3, 'You are less likely to be ambushed.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5), ('Strider', 'AuraAbility', 3, 'Traveling on the map requires less endurance.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5), ('Skinner', 'AuraAbility', 3, 'You have a chance of obtaining a usable fur after kiling a beast.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5), ('Charmer', 'AuraAbility', 3, 'You are more likely to succeed when choosing charm dialogues.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5), ('Haggler', 'AuraAbility', 3, 'Prices at shops are cheaper.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 5)]
@@ -29,166 +28,6 @@ ALL_ABILITIES = [('Relentless', 'AuraAbility', 5, 'Gain maximum health. Master t
 ALL_NAMES = ['Apprentice', 'Arcanum', 'Backstab', 'Bash', 'Blackhearted', 'Charmer', 'Discipline', 'Haggler', 'Martial arts', 'Meditation', 'Poet', 'Relentless', 'Scholar', 'Skinner', 'Strider', 'Student', 'Traveler', 'Trickster', 'Vigilance']
 ALL_ATTRIBUTE_NAMES = ['apprentice', 'arcanum', 'backstab', 'bash', 'blackhearted', 'charmer', 'discipline', 'haggler', 'martial_arts', 'meditation', 'poet', 'relentless', 'scholar', 'skinner', 'strider', 'student', 'traveler', 'trickster', 'vigilance']
 ALL_CLASS_NAMES = ['Apprentice', 'Arcanum', 'Backstab', 'Bash', 'Blackhearted', 'Charmer', 'Discipline', 'Haggler', 'MartialArts', 'Meditation', 'Poet', 'Relentless', 'Scholar', 'Skinner', 'Strider', 'Student', 'Traveler', 'Trickster', 'Vigilance']
-
-
-class AbilityContainer(Base):
-    __tablename__ = "ability_container"
-
-    id = Column(Integer, primary_key=True)
-
-    # Relationships
-    # Hero to self is one to one.
-    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
-    hero = relationship("Hero", back_populates="abilities")
-
-    # Container connections are one to one.
-    apprentice = relationship(
-        "Apprentice",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Apprentice')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    arcanum = relationship(
-        "Arcanum",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Arcanum')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    backstab = relationship(
-        "Backstab",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Backstab')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    bash = relationship(
-        "Bash",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Bash')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    blackhearted = relationship(
-        "Blackhearted",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Blackhearted')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    charmer = relationship(
-        "Charmer",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Charmer')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    discipline = relationship(
-        "Discipline",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Discipline')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    haggler = relationship(
-        "Haggler",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Haggler')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    martial_arts = relationship(
-        "MartialArts",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='MartialArts')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    meditation = relationship(
-        "Meditation",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Meditation')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    poet = relationship(
-        "Poet",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Poet')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    relentless = relationship(
-        "Relentless",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Relentless')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    scholar = relationship(
-        "Scholar",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Scholar')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    skinner = relationship(
-        "Skinner",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Skinner')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    strider = relationship(
-        "Strider",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Strider')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    student = relationship(
-        "Student",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Student')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    traveler = relationship(
-        "Traveler",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Traveler')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    trickster = relationship(
-        "Trickster",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Trickster')",
-        uselist=False,
-        cascade="all, delete-orphan")
-    vigilance = relationship(
-        "Vigilance",
-        primaryjoin="and_(AbilityContainer.id==Ability.ability_container_id, "
-                    "Ability.name=='Vigilance')",
-        uselist=False,
-        cascade="all, delete-orphan")
-
-    def __init__(self):
-        self.apprentice = Apprentice()
-        self.arcanum = Arcanum()
-        self.backstab = Backstab()
-        self.bash = Bash()
-        self.blackhearted = Blackhearted()
-        self.charmer = Charmer()
-        self.discipline = Discipline()
-        self.haggler = Haggler()
-        self.martial_arts = MartialArts()
-        self.meditation = Meditation()
-        self.poet = Poet()
-        self.relentless = Relentless()
-        self.scholar = Scholar()
-        self.skinner = Skinner()
-        self.strider = Strider()
-        self.student = Student()
-        self.traveler = Traveler()
-        self.trickster = Trickster()
-        self.vigilance = Vigilance()
-
-    def items(self):
-        """Basically a dict.items() clone that looks like ((key, value),
-            (key, value), ...)
-
-        This is an iterator? Maybe it should be a list or a view?
-        """
-        return ((key, getattr(self, key)) for key in ALL_ATTRIBUTE_NAMES)
-
-    def __iter__(self):
-        """Return all the attributes of this function as an iterator."""
-        return (getattr(self, key) for key in ALL_ATTRIBUTE_NAMES)
 
 
 class Ability(Base):
@@ -231,16 +70,15 @@ class Ability(Base):
     tree_type = Column(String(50))
     image = Column(String(50))
 
-    # Relationships.
-    # Ability to abilities. Abilities is a list of ability objects.
-    ability_container_id = Column(Integer, ForeignKey('ability_container.id',
-                                              ondelete="CASCADE"))
-    abilities = relationship("AbilityContainer")
+    # Relationships
+    # Hero to self is one to one.
+    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
+    hero = relationship("Hero", back_populates="abilities")
 
     # Ability to Proficiencies is One to Many
     proficiencies = relationship(
         "Proficiency",
-        collection_class=attribute_mapped_collection('name'),
+        collection_class=attribute_mapped_dict_hybrid('name'),
         back_populates='ability',
         cascade="all, delete-orphan")
 
@@ -321,8 +159,7 @@ class Ability(Base):
 
         NOTE: hero get_summed_proficiecies must check if level of Ability is 0
         """
-        for key in self.proficiencies:
-            prof = self.proficiencies[key]
+        for prof in self.proficiencies:
             if current > 0:
                 prof.base = (prof.base // (current-1 or 1)) * current
                 prof.modifier = (prof.modifier // (current-1 or 1)) * current
@@ -455,187 +292,223 @@ class Relentless(AuraAbility):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Relentless', 5, 'Gain maximum health. Master this ability to unlock the Brute archetype.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('relentless', 5, 'Gain maximum health. Master this ability to unlock the Brute archetype.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class Trickster(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Trickster',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Trickster', 5, 'Become harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('trickster', 5, 'Become harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class Discipline(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Discipline',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Discipline', 5, 'Gain devotion faster. Master this ability to unlock the Ascetic archetype.', current='{{ (level) * 5 }}%', next='{{ (level + 1) * 5 }}%', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('discipline', 5, 'Gain devotion faster. Master this ability to unlock the Ascetic archetype.', current='{{ (level) * 5 }}%', next='{{ (level + 1) * 5 }}%', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class Traveler(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Traveler',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Traveler', 5, 'Reveal more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('traveler', 5, 'Reveal more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class Arcanum(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Arcanum',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Arcanum', 5, 'Gain maximum sanctity. Master this ability to unlock the Philosopher archetype.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('arcanum', 5, 'Gain maximum sanctity. Master this ability to unlock the Philosopher archetype.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class Poet(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Poet',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Poet', 5, 'Gain fame faster. Master this ability to unlock the Opportunist archetype.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('poet', 5, 'Gain fame faster. Master this ability to unlock the Opportunist archetype.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class Blackhearted(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Blackhearted',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Blackhearted', 3, 'Lose virtue faster.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('blackhearted', 3, 'Lose virtue faster.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class Backstab(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Backstab',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Backstab', 3, 'You are more likely to attack first in combat.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('backstab', 3, 'You are more likely to attack first in combat.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class MartialArts(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'MartialArts',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('MartialArts', 3, 'You deal more damage in combat.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('martial_arts', 3, 'You deal more damage in combat.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class Apprentice(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Apprentice',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Apprentice', 3, 'You are capable of learning additional spells.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('apprentice', 3, 'You are capable of learning additional spells.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class Meditation(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Meditation',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Meditation', 3, 'Regenerate sanctity per day.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('meditation', 3, 'Regenerate sanctity per day.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class Bash(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Bash',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Bash', 3, 'You deal more damage with blunt weapons.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('bash', 3, 'You deal more damage with blunt weapons.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class Student(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Student',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Student', 3, 'You are capable of learning additional spells.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('student', 3, 'You are capable of learning additional spells.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class Scholar(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Scholar',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Scholar', 3, 'Gain experience faster.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('scholar', 3, 'Gain experience faster.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class Vigilance(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Vigilance',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Vigilance', 3, 'You are less likely to be ambushed.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('vigilance', 3, 'You are less likely to be ambushed.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class Strider(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Strider',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Strider', 3, 'Traveling on the map requires less endurance.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('strider', 3, 'Traveling on the map requires less endurance.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class Skinner(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Skinner',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Skinner', 3, 'You have a chance of obtaining a usable fur after kiling a beast.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('skinner', 3, 'You have a chance of obtaining a usable fur after kiling a beast.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class Charmer(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Charmer',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Charmer', 3, 'You are more likely to succeed when choosing charm dialogues.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('charmer', 3, 'You are more likely to succeed when choosing charm dialogues.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
+
+
 class Haggler(AuraAbility):
     __mapper_args__ = {
         'polymorphic_identity': 'Haggler',
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('Haggler', 3, 'Prices at shops are cheaper.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
+        super().__init__('haggler', 3, 'Prices at shops are cheaper.', current='{{ (level) * 5 }}', next='{{ (level + 1) * 5 }}', learnable=True, proficiency_data=[('Health', {'base': 5})])
 
         for key, value in kwargs:
             setattr(self, key, value)
