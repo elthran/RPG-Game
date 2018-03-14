@@ -681,28 +681,32 @@ def proficiencies(hero=None):
 @login_required
 @uses_hero
 def ability_tree(spec, hero=None):
-    all_abilities = []
-    becomeType = None
-    all_type_choices = []
-    if spec == "archetype":
-        points_remaining = hero.archetype_ability_points
-        if hero.specializations.archetype is None:
-            becomeType = "archetype"
-            # all_specializations = database.get_all_specializations()
-            # see EZDB.get_all_users() -- maybe sort by name?
-            all_type_choices = [("brute", "A character who uses strength and combat to solve problems. Proficient with many types of weapons."),
+    if spec == "archetype" and hero.specializations.archetype is None: # On the archetype pagebut the hero doesn't have one!
+        becomeType = "archetype"
+        spec_choices = [("brute", "A character who uses strength and combat to solve problems. Proficient with many types of weapons."),
                                 ("scoundrel", "A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery."),
                                 ("ascetic", "A character who focuses on disciplining mind and body. They use a combination of combat and intellect."),
                                 ("survivalist", "A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration."),
                                 ("philosopher", "A character who uses intellect to solve problems. Excels at any task requiring powers of the mind."),
                                 ("opportunist", "A character who solves problems using speech and dialogue.")]
+    elif spec == "calling" and hero.specializations.calling is None: # On the archetype pagebut the hero doesn't have one!
+        becomeType = "calling"
+        spec_choices = [("blacksmith", "A blacksmith dude.")]
+    elif spec == "pantheon" and hero.specializations.pantheon is None: # On the archetype pagebut the hero doesn't have one!
+        becomeType = "pantheon"
+        spec_choices = [("fire god", "A fire god dude.")]
+    else:
+        becomeType = None
+        spec_choices = []
+
+    all_abilities = []
     for ability in hero.abilities:
-        if ability.hidden == False and ability.tree == spec:
-            print("Name:",ability.name,"   Hidden:",ability.hidden,"   Tree:",ability.tree,spec)
+        if ability.hidden == False and ability.tree == spec.title():
             all_abilities.append(ability)
+
     return render_template('profile_ability.html', hero=hero, ability_tree=spec,
                            all_abilities=all_abilities, becomeType=becomeType,
-                           all_type_choices=all_type_choices)
+                           spec_choices=spec_choices)
 
 
 @app.route('/inventory_page')

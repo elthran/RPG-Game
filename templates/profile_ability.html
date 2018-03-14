@@ -16,16 +16,14 @@
 {% endif %}
 
 {% if becomeType %} <!-- The hero hasn't chosen his type. So don't let him choose an ability. Only choose a type. -->
-<!--{% raw %}
     <div style="width:1100px;height:500px;">
         <div style="float:left;width:600px;border:dotted;">
             <h2>You have yet to choose a {{ ability_tree }}. After you choose, you will be able to learn abilities related to that {{ ability_tree }}.</h2>
             <ul>
-            {% for choice in all_type_choices %}
+            {% for choice in spec_choices %}
                 <li>
-                    <button class="genericTooltipTrigger"
-                            onclick="sendToPy(event, abilityTooltip, 'change_ability_tooltip', {'id': {{ ability.id }}});">
-                        {{ ability.name}}
+                    <button class="genericTooltipTrigger">
+                        {{ choice[0].title() }}
                     </button>
                 </li>
             {% endfor %}
@@ -36,7 +34,6 @@
             <div><span id="choiceImage"></span></div>
         </div>
     </div>
-    -->{% endraw %}
 {% else %} <!-- Hero has a chosen type. Let him choose their abilities! -->
 <div class="stickyPointsRemainingBar">Points Remaining: <div style="display: inline" id="pointsRemaining">{{ points_remaining }}</div></div>
 <div style="clear: both;"></div>
