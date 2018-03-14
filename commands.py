@@ -309,7 +309,6 @@ class Command:
     def update_ability(hero, database, data, **kwargs):
         ability_id = data['id']
         ability = database.get_ability_by_id(ability_id)
-        print(ability)
         if hero.basic_ability_points <= 0 or ability.is_max_level():
             return "error: no ability_points or ability is at max level."
         hero.basic_ability_points -= 1

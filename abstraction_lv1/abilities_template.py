@@ -286,7 +286,7 @@ class {{ value[0] }}({{ value[1] }}):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__('{{ value[0] }}', {{ value[2] }}, '{{ value[3] }}', current='{{ value[4] }}', next='{{ value[5] }}', learnable={{ value[6] }}, proficiency_data=[('{{ value[7] }}', {'base': {{ value[8] }}})])
+        super().__init__(name='{{ value[0] }}', tree='{{ value[2] }}', tree_type='{{ value[3] }}', max_level={{ value[4] }}, description='{{ value[5] }}', current='{{ value[6] }}', next='{{ value[7] }}', learnable={{ value[8] }}, proficiency_data=[('{{ value[9] }}', {'base': {{ value[10] }}})])
 
         for key, value in kwargs:
             setattr(self, key, value)
