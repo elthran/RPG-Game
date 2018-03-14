@@ -11,7 +11,7 @@
             <div class="genericAccordionPanel">
                 <ul>
                     {% for proficiency in all_proficiencies %}
-                        {% if proficiency.attribute_type == attribute.name %}
+                        {% if proficiency.attribute_type == attribute.name and not proficiency.hidden %}
                             <li>
                                 <button class="genericTooltipTrigger"
                                         onclick="sendToPy(event, proficiencyTooltip, 'change_proficiency_tooltip', {'id': {{ proficiency.id }}});">

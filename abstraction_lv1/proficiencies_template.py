@@ -11,7 +11,6 @@ from pprint import pprint
 import pdb
 
 
-
 ALL_PROFICIENCIES = {{ ALL_PROFICIENCIES }}
 
 {% import 'container_helpers.py' as container_helpers %}
@@ -55,6 +54,7 @@ class Proficiency(TemplateMixin, Base):
     num_of_decimals = 0
     # In the child classes this allows nice output formatting
     format_spec = '{:.2f}'
+    name = "proficiency"
 
     __mapper_args__ = {
         'polymorphic_identity': "Proficiency",
@@ -174,7 +174,7 @@ class {{ prof_class }}(Proficiency):
     display_name = "{{ display_name.title() }}"
     num_of_decimals = {{ decimals }}
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False # Should be {{ percent }} but I'm getting an error
+    is_percent = {{ percent }}  # Should be {{ percent }} but I'm getting an error
     format_spec = "{{ '{' }}:.{{ decimals }}f{{ '}' }}{{ '%' if percent else '' }}"
 
     __mapper_args__ = {
@@ -214,7 +214,7 @@ class {{ prof_class }}(Proficiency):
 
     def check_shield(self, hero):
         if hero.inventory.left_hand is None or hero.inventory.left_hand.type != "Shield":
-            self.chance = 0
+            self.current = 0
             self.reason_for_zero = "You must have a shield equipped"
         else:
             self.reason_for_zero = ""
@@ -222,8 +222,6 @@ class {{ prof_class }}(Proficiency):
 
 
 {% endfor %}
-
-
 '''{% raw %}
 Old code that might need to be readded at some point.
 @staticmethod

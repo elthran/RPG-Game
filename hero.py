@@ -284,9 +284,7 @@ class Hero(SessionHoistMixin, Base):
             # attributes.Attribute
             # pdb.set_trace()
             ProfClass = getattr(proficiencies, cls_name)
-            if not ProfClass.hidden:
-                # pdb.set_trace()
-                ProfClass().hero = self
+            ProfClass().hero = self
 
         self.base_proficiencies['endurance'].current = self.base_proficiencies['endurance'].final
 
