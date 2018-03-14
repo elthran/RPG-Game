@@ -4,11 +4,11 @@ from sqlalchemy.orm import relationship
 
 from base_classes import Base
 
-{% include "attributes_data.py" %}
+ALL_ATTRIBUTES = {{ ALL_ATTRIBUTES }}
 
 {% import 'container_helpers.py' as container_helpers %}
-{{ container_helpers.build_container("Attribute", "attributes", ATTRIBUTE_INFORMATION) }}
-        
+{{ container_helpers.build_container("Attribute", "attributes", ALL_ATTRIBUTES) }}
+
 class Attribute(Base):
     """Attribute class that stores data about a hero object.
     """
@@ -41,7 +41,7 @@ class Attribute(Base):
         self.level = 1
 
 
-{% for attrib in ATTRIBUTE_INFORMATION %}
+{% for attrib in ALL_ATTRIBUTES %}
 class {{ attrib[0] }}(Attribute):
     __mapper_args__ = {
         'polymorphic_identity': '{{ attrib[0] }}',

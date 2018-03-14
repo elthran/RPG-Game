@@ -7,7 +7,7 @@ from inventory import Inventory
 from items import (Item, OneHandedWeapon, HeadArmour, TwoHandedWeapon, Ring,
                    Shield, LegArmour)
 
-from test_helpers import GenericTestCase
+from . import GenericTestCase
 
 """
 Inventory: work in progress
@@ -33,6 +33,7 @@ class TestInventory(GenericTestCase):
 
         # Might be better for testing? To allow post mortem analysis.
         # db.engine.execute("SET FOREIGN_KEY_CHECKS = 0;")
+        db.engine.execute("DROP TABLE `proficiency`;")
         db.engine.execute("DROP TABLE `item`;")
         db.engine.execute("DROP TABLE `inventory`;")
         # db.engine.execute("SET FOREIGN_KEY_CHECKS = 0;")
@@ -53,8 +54,11 @@ class TestInventory(GenericTestCase):
 
         # Add second stock item/template combo - 2 handed weapon.
         template_2handed = TwoHandedWeapon(
-            "Medium Polearm", buy_price=5, damage_minimum=30,
-            damage_maximum=60, speed_speed=1, template=True)
+            "Medium Polearm", buy_price=5,
+            proficiency_data=[('DamageMinimum', {'base': 30}),
+                              ('DamageMaximum', {'base': 60}),
+                              ('Speed', {'base': 1})],
+            template=True)
         db.session.add(template_2handed)
         db.session.commit()
         item_2handed = template_2handed.build_new_from_template()
@@ -75,8 +79,11 @@ class TestInventory(GenericTestCase):
         db.session.commit()
 
         template_sword = OneHandedWeapon(
-            "Big Dagger", buy_price=10, damage_minimum=300, damage_maximum=600,
-            speed_speed=2, template=True)
+            "Big Dagger", buy_price=10,
+            proficiency_data=[('DamageMinimum', {'base': 300}),
+                              ('DamageMaximum', {'base': 600}),
+                              ('Speed', {'base': 2})],
+            template=True)
         db.session.add(template_sword)
         db.session.commit()
         template_sword.build_new_from_template()

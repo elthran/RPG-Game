@@ -1,22 +1,20 @@
 from sqlalchemy import Column, Integer, String, Boolean, Float
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declared_attr
+from flask import render_template_string
 
 from factories import TemplateMixin
 from base_classes import Base
-from flask import render_template_string
-
-from math import sin, floor
 
 # For testing
 from pprint import pprint
 import pdb
 
-{% include "proficiencies_data.py" %}
+
+ALL_PROFICIENCIES = {{ ALL_PROFICIENCIES }}
 
 {% import 'container_helpers.py' as container_helpers %}
-{{ container_helpers.build_container("Proficiency", "proficiencies", PROFICIENCY_INFORMATION, no_container=True) }}
+{{ container_helpers.build_container("Proficiency", "proficiencies", ALL_PROFICIENCIES, no_container=True) }}
 
 class Proficiency(TemplateMixin, Base):
     """Proficiency class that stores data about a hero object.
@@ -56,6 +54,7 @@ class Proficiency(TemplateMixin, Base):
     num_of_decimals = 0
     # In the child classes this allows nice output formatting
     format_spec = '{:.2f}'
+    name = "proficiency"
 
     __mapper_args__ = {
         'polymorphic_identity': "Proficiency",
@@ -79,7 +78,7 @@ class Proficiency(TemplateMixin, Base):
 
     def level_up(self):
         self.level += 1
-        self.current = self.final
+        self.current = self.hero.get_summed_proficiencies(self.name).final
 
     def scale_by_level(self, level=None):
         """Return some function of the level attribute.
@@ -112,7 +111,6 @@ class Proficiency(TemplateMixin, Base):
     @property
     def final(self):
         """Return the scaled value + base + modifier percent."""
-
         return round((self.scale_by_level() + self.base) *
                      (self.modifier + 1), self.num_of_decimals)
 
@@ -158,22 +156,26 @@ class Proficiency(TemplateMixin, Base):
         return True if self.level >= self.attribute.level * 2 else False
 
 
-{% for prof in PROFICIENCY_INFORMATION %}
+{% for prof in ALL_PROFICIENCIES %}
 {% set prof_class = normalize_class_name(prof[0]) %}
 {% set attrib_name = normalize_attrib_name(prof[0]) %}
 {% set display_name = prof[0].capitalize() %}
-{% set value = prof[3] %}
+{% set growth = prof[3] %}
+{% set base = prof[4] %}
+{% set weight = prof[5] %}
+{% set decimals = prof[6] %}
+{% set hidden = prof[7] %}
+{% set percent = prof[8] %}
 class {{ prof_class }}(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden = {{ prof[4] if prof[4] else False }}
+    hidden = {{ hidden }}
     name = "{{attrib_name}}"
     display_name = "{{ display_name.title() }}"
-    num_of_decimals = {{ value[3] }}
+    num_of_decimals = {{ decimals }}
     # This should add a "%" to the display at the end of a prof.
-    {% set is_percent = True if value[0] == "linear_percent" else False %}
-    is_percent = {{ is_percent }}
-    format_spec = "{{ '{' }}:.{{ value[3] }}f{{ '}' }}{{ '%' if is_percent else '' }}"
+    is_percent = {{ percent }}  # Should be {{ percent }} but I'm getting an error
+    format_spec = "{{ '{' }}:.{{ decimals }}f{{ '}' }}{{ '%' if percent else '' }}"
 
     __mapper_args__ = {
         'polymorphic_identity': "{{ prof_class }}"
@@ -186,7 +188,7 @@ class {{ prof_class }}(Proficiency):
         return self.hero.attributes.{{ normalize_attrib_name(prof[2]) }}
 
     {% endif %}
-    def __init__(self, *args, base={{ value[1] }}, **kwargs):
+    def __init__(self, *args, base={{ base }}, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "{{ prof[1]}}"
         self.attribute_type = {{ '"' + prof[2] + '"' if prof[2] else None }}
@@ -201,25 +203,18 @@ class {{ prof_class }}(Proficiency):
         if level is None:
             level = self.level
 
-    {# value format is [Formula_Type, Base_Value, Weight, # of Decimals]
-     # Formual_Type = value[0]
-     # Base_Value = value[1]
-     # Weight = value[2]
-     # Number of Decimals = value[3]
-     # @elthran I'm not sure if these formulas are still being used correctly - Marlen
-     #}
-    {% if value[0] == "root" %}
+    {% if growth == "root" %}
         return round((100 * level)**0.5 - (level / 4), self.num_of_decimals)
-    {% elif value[0] == "linear" or value[0] == "linear_percent" %}
-        return round({{ value[2] }} * level, self.num_of_decimals)
-    {% elif value[0] == "empty" %}
+    {% elif growth == "linear" %}
+        return round({{ weight }} * level, self.num_of_decimals)
+    {% elif growth == "empty" %}
         return super().scale_by_level()
     {% endif %}
     {% if prof[0] == "Block" %}
 
     def check_shield(self, hero):
         if hero.inventory.left_hand is None or hero.inventory.left_hand.type != "Shield":
-            self.chance = 0
+            self.current = 0
             self.reason_for_zero = "You must have a shield equipped"
         else:
             self.reason_for_zero = ""
@@ -227,8 +222,6 @@ class {{ prof_class }}(Proficiency):
 
 
 {% endfor %}
-
-
 '''{% raw %}
 Old code that might need to be readded at some point.
 @staticmethod

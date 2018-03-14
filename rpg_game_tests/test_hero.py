@@ -1,3 +1,5 @@
+import pdb
+
 from . import GenericTestCase, db_execute_script
 
 from hero import Hero
@@ -41,23 +43,25 @@ class TestHero(GenericTestCase):
             -by equipping Items
             -by using Abilities.
 
-        like does your character have a max health? can he raise it by adding points into the health proficiency or by equipping items/abilities that add max health?
+        Does your character have a max health?
+        Can he raise it by adding points into the health proficiency or by
+        equipping items/abilities that add max health?
         """
-        print()
-        print(self.hero.proficiencies.health.maximum)
-        health = self.hero.proficiencies.health
+        health = self.hero.get_summed_proficiencies('health')
 
-        max_health = health.maximum
-        health.level += 10
+        assert health.final == 5
+        max_health = health.final
+        self.hero.base_proficiencies.health.level += 10
 
         self.rebuild_instance()
-        max_health2 = self.hero.proficiencies.health.maximum
+        max_health2 = self.hero.get_summed_proficiencies('health').final
         assert max_health < max_health2
 
-        item = Ring("Silver Ring", 8, style="silver", health_maximum=50)
+        item = Ring("Silver Ring", 8, style="silver",
+                    proficiency_data=[('Health', {'base': 50})])
         self.db.session.add(item)
         self.db.session.commit()
         self.hero.inventory.equip(item)
         self.rebuild_instance()
 
-        assert max_health2 < self.hero.proficiencies.health.maximum
+        assert max_health2 < self.hero.get_summed_proficiencies('health').final
