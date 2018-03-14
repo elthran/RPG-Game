@@ -1,7 +1,7 @@
 import datetime
 
 from sqlalchemy import (
-    Column, Integer, String, DateTime, Boolean, ForeignKey
+    Column, Integer, String, DateTime, Boolean, ForeignKey, Table
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
@@ -22,8 +22,8 @@ class Event(Base):
     __tablename__ = 'event'
 
     id = Column(Integer, primary_key=True)
-    type = Column(String)
-    description = Column(String)
+    type = Column(String(50))
+    description = Column(String(200))
     when = Column(DateTime)
     hero_id = Column(Integer)
 
@@ -56,7 +56,7 @@ class Event(Base):
         # arg_dict.get('location', None, type=str)
 
 
-class Condition(Base):
+class Condition(TemplateMixin, Base):
     """A function that takes a python string and evaluates to boolean.
 
     Factory?
@@ -65,18 +65,20 @@ class Condition(Base):
     """
     __tablename__ = 'condition'
     id = Column(Integer, primary_key=True)
-    code = Column(String)
+    code = Column(String(200))
 
     # Relationships
     # Each trigger might have many conditions
-    trigger_id = Column(Integer, ForeignKey('trigger.id'))
-    trigger = relationship('Trigger', back_populates='conditions')
+    trigger_id = Column(Integer, ForeignKey('trigger.id', ondelete="CASCADE"))
+    trigger = relationship("Trigger", back_populates="conditions")
 
     # Each condition might be connected to a location. One to One.
-    location_id = Column(Integer, ForeignKey('location.id'))
+    location_id = Column(Integer, ForeignKey('location.id',
+                                             ondelete="CASCADE"))
     location = relationship('Location')
 
-    def __init__(self, hero_attribute, comparison, object_of_comparison):
+    def __init__(self, hero_attribute, comparison, object_of_comparison,
+                 template=True):
         """Build a condition object.
 
         The default initial comparison is:
@@ -85,37 +87,50 @@ class Condition(Base):
         """
         condition_attribute = object_of_comparison.__table__.name
 
-        self.code = 'self.trigger.hero.{}.id {} self.{}.id'.format(
+        self.code = """self.trigger.hero.{}.id {} self.{}.id""".format(
             hero_attribute, comparison, condition_attribute)
 
         # Should for example do:
         # self.location = the location I passed.
         setattr(self, condition_attribute, object_of_comparison)
 
+        self.template = template
+
+    def build_new_from_template(self):
+        if not self.template:
+            raise Exception("Only use this method if obj.template == True.")
+        obj = Condition("", "", self.location, template=False)
+        if obj is None:
+            pdb.set_trace()
+        obj.code = self.code
+        return obj
+
 
 class Trigger(TemplateMixin, Base):
     __tablename__ = 'trigger'
 
     id = Column(Integer, primary_key=True)
-    event_name = Column(String)
-    extra_info_for_humans = Column(String)
+    event_name = Column(String(50))
+    extra_info_for_humans = Column(String(200))
     completed = Column(Boolean)
 
     # relationships
     # One to Many with Heroes?
-    hero_id = Column(Integer, ForeignKey('hero.id'))
+    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
     hero = relationship('Hero', back_populates='triggers')
 
     # One to many with Conditions. Each trigger might have many conditions.
-    conditions = relationship('Condition', back_populates='trigger')
+    conditions = relationship("Condition", back_populates="trigger",
+                              cascade="all, delete-orphan")
 
     def __init__(self, event_name, conditions, extra_info_for_humans=None,
                  template=True):
         self.event_name = event_name
-        self.conditions = conditions
         self.extra_info_for_humans = extra_info_for_humans
         self.template = template
         self.completed = False
+        self.conditions = [c.build_new_from_template() if c.template else c
+                           for c in conditions]
 
     @staticmethod
     def new_blank_trigger():
@@ -129,6 +144,7 @@ class Trigger(TemplateMixin, Base):
         """Deactivate this trigger.
 
         As it has no conditions it should never run.
+        Maybe this should just delete the Trigger from the database?
         """
         self.event_name = "Deactivated"
         self.conditions = []
@@ -189,7 +205,7 @@ class HandlerMixin(object):
     # Add relationship to cls spec.
     @declared_attr
     def trigger_id(cls):
-        return Column(Integer, ForeignKey('trigger.id'))
+        return Column(Integer, ForeignKey('trigger.id', ondelete="CASCADE"))
 
     @declared_attr
     def trigger(cls):

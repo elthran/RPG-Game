@@ -90,6 +90,10 @@ ul {
 	list-style-type: none;
 }
 
+.button {
+	font-size: 30px;
+}
+
 /* Login Page */
 .login-page {
   width: 360px;
@@ -168,7 +172,6 @@ ul {
   background: Green; /* fallback for old browsers */
   font-family: "Roboto", sans-serif;
 }
-
 
 /* Sidebar used for all pages and called in the layout.html */
 .sidebar {
@@ -331,8 +334,54 @@ ul {
     width: 300px;
     }
 
-.button {
-	font-size: 30px;
+/* Forum */
+.forumTable {
+    font-size: 25px;
+    line-height: 45px;
+    width: 100%;
+    border: solid;  /* Creates a border that surrounds the entire table */
+    border-collapse: collapse;  /* Collapses row/column borders so they can be properly edited with CSS in the class below */
+}
+
+.forumTable tr td { /* tr affects each row and td affects each column */
+    border: 1px solid DeepSkyBlue;
+}
+
+.forumTable th {    /* Affects the row of headers */
+    font-size: 35px;
+}
+
+.forumPostContainer {
+    width: 95%;
+    height: 200px;
+    border: 1px dotted;
+    margin: 10px;
+}
+
+.forumPostAuthor {
+    float: left;
+    width: 15%;
+}
+
+.forumPostContent {
+    float: right;
+    width: 85%;
+}
+
+.forumPostHeader {
+    font-size: 15px;
+    border-bottom: 1px solid Black;
+    padding: 0 0 25px 0;
+}
+
+.forumPostBody {
+    font-size: 25px;
+    border-bottom: 1px solid Black;
+    padding: 25px 0 25px 0;
+}
+
+.forumPostFooter {
+    padding: 25px 0 0 0;
 }
 
 /* Topbar that runs horizontal to any page */
@@ -380,25 +429,6 @@ ul {
     border: 0.5px dotted #000;
 }
 
-#inboxTable tr td:first-child {
-    width: 5%;
-}
-#inboxTable tr td:nth-child(2) {
-    width: 10%;
-}
-
-#inboxTable tr td:nth-child(3) {
-    width: 50%;
-}
-
-#inboxTable tr td:nth-child(4) {
-    width: 10%;
-}
-
-#inboxTable tr td:last-child {
-    width: 3%;
-}
-
 #inboxTableUnreadMessage {
 outline: 2px solid black;
 }
@@ -440,8 +470,8 @@ outline: 2px solid black;
     color: #444;
     cursor: pointer;
     padding: 18px;
-    width: 60%;
-    height: 50px;
+    width: 80%;
+    height: auto;
     border: none;
     text-align: left;
     font-size: 17px;
@@ -470,7 +500,10 @@ outline: 2px solid black;
 
 .genericTooltip { /* The tooltip box on the right side of the page */
     float: right;
-    width: 30%;
+    width: 20%;
+    border: dotted;
+    height: 700px;
+    padding: 5px;
 }
 
 .genericTooltip li {
@@ -484,25 +517,24 @@ outline: 2px solid black;
 	background-image: url(/static/images/prof_button.jpg); /* Image size needs to match abilityButton (about 16px x 16px) */
 }
 
-.tooltipImage img {
-    display: block;
+.tooltipImage {
     margin: 0 auto; /* Centers the image */
-	height: 250px;  /* make this the size of your image */
-	width: 250px;
+	height: 100px;  /* make this the size of your image */
+	width: 100px;
 }
 
 /* Inventory Page Code */
 .inventory_equipped_outer {
     border: 5px solid;
     height: 800px;
-    min-width: 650px;
+    min-width: 850px;
     z-index: 50;
     position: relative;  /* Allows children to use position: absolute */
 }
 
 .inventory_unequipped_outer {
     border: 5px solid;
-    min-width: 650px;
+    min-width: 850px;
     z-index: 50;
 }
 
@@ -592,20 +624,83 @@ Centered margin is 275px left/right.
     left: 0;
 }
 
-#inventory-left-finger {
+#inventory-finger-0 {
     margin: auto;
-    top: 50px;
-    right: 300px;
-    bottom: 0;
-    left: 0;
+    top: 0px;
+    right: 0px;
+    bottom: 500px;
+    left: 700px;
 }
 
-#inventory-right-finger {
+#inventory-finger-1 {
     margin: auto;
-    top: 50px;
-    right: 0;
-    bottom: 0;
-    left: 300px;
+    top: 0px;
+    right: 0px;
+    bottom: 250px;
+    left: 700px;
+}
+#inventory-finger-2 {
+    margin: auto;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 700px;
+}
+
+#inventory-finger-3 {
+    margin: auto;
+    top: 250px;
+    right: 0px;
+    bottom: 0px;
+    left: 700px;
+}
+
+#inventory-finger-4 {
+    margin: auto;
+    top: 500px;
+    right: 0px;
+    bottom: 0px;
+    left: 700px;
+}
+
+#inventory-finger-5 {
+    margin: auto;
+    top: 0px;
+    right: 700px;
+    bottom: 500px;
+    left: 0px;
+}
+
+#inventory-finger-6 {
+    margin: auto;
+    top: 0px;
+    right: 700px;
+    bottom: 250px;
+    left: 0px;
+}
+
+#inventory-finger-7 {
+    margin: auto;
+    top: 0px;
+    right: 700px;
+    bottom: 0px;
+    left: 0px;
+}
+
+#inventory-finger-8 {
+    margin: auto;
+    top: 250px;
+    right: 700px;
+    bottom: 0px;
+    left: 0px;
+}
+
+#inventory-finger-9 {
+    margin: auto;
+    top: 500px;
+    right: 700px;
+    bottom: 0px;
+    left: 0px;
 }
 
 #inventory-waist {
@@ -653,12 +748,22 @@ Centered margin is 275px left/right.
     height: 150px;
 }
 
+#inventory-both-hands {
+    margin: auto;
+    top: 350px;
+    right: 0;
+    bottom: 0;
+    left: 400px;
+    height: 150px;
+}
+
 .inventory-tooltip {
     height: inherit;
     width: inherit;
     position: relative;
     display: inline-block;
     border-bottom: 1px dotted black;
+    cursor: pointer;
 }
 
 .inventory-tooltip .inventory-tooltip-text {

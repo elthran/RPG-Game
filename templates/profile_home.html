@@ -16,7 +16,7 @@
 				{% if hero.virtue %}}<li>Virtue:</li>{% endif %}
 				<li>Experience:</li>
 				<li>Health:</li>
-				{% if hero.proficiencies.sanctity.maximum %}<li>Sanctity:</li>{% endif %}
+				{% if proficiencies.sanctity.final %}<li>Sanctity:</li>{% endif %}
 				<li>Storage:</li>
 				<li>Endurance:</li>
 				<li>Other players killed:</li>
@@ -32,10 +32,10 @@
 				{% if hero.devotion %}}<li>Devotion: {{ hero.age }}</li>{% endif %}
 				{% if hero.virtue %}}<li>{{ hero.virtue }}</li>{% endif %}
 				<li>{{ hero.experience }} / {{ hero.experience_maximum }}</li>
-				<li>{{ hero.proficiencies.health.current }} / {{ hero.proficiencies.health.maximum }}</li>
-				{% if hero.proficiencies.sanctity.maximum %}<li>{{ hero.proficiencies.sanctity.current }} / {{ hero.proficiencies.sanctity.maximum }}</li>{% endif %}
-				<li>{{ hero.proficiencies.storage.current }} / {{ hero.proficiencies.storage.maximum }}</li>
-				<li>{{ hero.proficiencies.endurance.current }} / {{ hero.proficiencies.endurance.maximum }}</li>
+				<li>{{ hero.base_proficiencies['health'].current }} / {{ hero.proficiencies.health.final|int }}</li>
+				{% if proficiencies.sanctity.final %}<li>{{ proficiencies.sanctity.current|int }} / {{ proficiencies.sanctity.final }}</li>{% endif %}
+				<li>{{ hero.base_proficiencies['storage'].current }} / {{ proficiencies.storage.final|int }}</li>
+				<li>{{ hero.base_proficiencies['endurance'].current }} / {{ proficiencies.endurance.final|int }}</li>
 				<li>{{ hero.journal.achievements.player_kills }}</li>
 				<li>{{ hero.journal.achievements.monster_kills }}</li>
 				<li>{{ hero.journal.achievements.deaths }}</li>
@@ -65,13 +65,13 @@
 				<li>{{ hero.specializations.calling.name }}</li>
 				<!--{% if hero.pantheon %}<li>{{ hero.pantheon.name }}</li>{% endif %}-->
 				{% if hero.house %}<li>{{ hero.house.title() }}</li>{% endif %}
-				<li>{{ hero.proficiencies.stealth.chance }}%</li>
-				<li>{{ hero.proficiencies.pickpocketing.chance }}%</li>
-				<li>{{ hero.proficiencies.faith.modifier }}%</li>
-				<li>{{ hero.proficiencies.bartering.chance }}%</li>
-				<li>{{ hero.proficiencies.oration.modifier }}%</li>
-				<li>{{ hero.proficiencies.literacy.modifier }}%</li>
-				<li>{{ hero.proficiencies.luckiness.chance }}%</li>
+				<li>{{ proficiencies.stealth.final }}%</li>
+				<li>{{ proficiencies.pickpocketing.final }}%</li>
+				<li>{{ proficiencies.faith.final }}%</li>
+				<li>{{ proficiencies.bartering.final }}%</li>
+				<li>{{ proficiencies.oration.final }}%</li>
+				<li>{{ proficiencies.literacy.final }}%</li>
+				<li>{{ proficiencies.luckiness.final }}%</li>
 			</ul>
 		</div>
 	</div>
@@ -95,15 +95,15 @@
 		</div>
 		<div class="rightPageHalf textRight">
 			<ul>
-				<li>{{ hero.proficiencies.damage.minimum }}-{{ hero.proficiencies.damage.maximum }}</li>
-				<li>{{ hero.proficiencies.speed.speed }}</li>
-				<li>{{ hero.proficiencies.accuracy.accuracy }}%</li>
-				<li>{{ hero.proficiencies.first_strike.chance }}%</li>
-				<li>{{ hero.proficiencies.killshot.chance }}% (Modifier: {{ hero.proficiencies.killshot.modifier }}%)</li>
-				<li>{{ hero.proficiencies.defence.modifier }}%</li>
-				<li>{{ hero.proficiencies.evade.chance }}%</li>
-				<li>{{ hero.proficiencies.parry.chance }}%</li>
-				<li>{{ hero.proficiencies.riposte.chance }}%</li>
+				<li>{{ proficiencies.damage_minimum.final }}-{{ proficiencies.damage_maximum.final }}</li>
+				<li>{{ proficiencies.speed.final }}</li>
+				<li>{{ proficiencies.accuracy.final }}%</li>
+				<li>{{ proficiencies.first_strike.final }}%</li>
+				<li>{{ proficiencies.killshot.final }}% (Modifier: {{ proficiencies.killshot.final }}%)</li>
+				<li>{{ proficiencies.defence.final }}%</li>
+				<li>{{ proficiencies.evade.final }}%</li>
+				<li>{{ proficiencies.parry.final }}%</li>
+				<li>{{ proficiencies.riposte.final }}%</li>
 			</ul>
 		</div>
 	</div>
@@ -126,17 +126,17 @@
 		</div>
 		<div class="rightPageHalf textRight">
 			<ul>
-				<li>{{ hero.proficiencies.defence.modifier }}</li>
-				<li>{% if hero.inventory.hero.inventory.left_hand.type == "Shield"%}{{ hero.proficiencies.block.chance }}%{% else %}<font color="red">You need a shield</font>{% endif %}</li>
-				<li>{{ hero.proficiencies.fatigue.current }}</li>
-				<li>{{ hero.proficiencies.resist_frost.modifier }}%</li>
-				<li>{{ hero.proficiencies.resist_flame.modifier }}%</li>
-				<li>{{ hero.proficiencies.resist_shadow.modifier }}%</li>
-				<li>{{ hero.proficiencies.resist_holy.modifier }}%</li>
-				<li>{{ hero.proficiencies.resist_poison.modifier }}%</li>
-				<li>{{ hero.proficiencies.resist_blunt.modifier }}%</li>
-				<li>{{ hero.proficiencies.resist_slashing.modifier }}%</li>
-				<li>{{ hero.proficiencies.resist_piercing.modifier }}%</li>
+				<li>{{ proficiencies.defence.final }}</li>
+				<li>{% if hero.inventory.hero.inventory.left_hand.type == "Shield"%}{{ proficiencies.block.final }}%{% else %}<font color="red">You need a shield</font>{% endif %}</li>
+				<li>{{ proficiencies.fatigue.current }}</li>
+				<li>{{ proficiencies.resist_frost.final }}%</li>
+				<li>{{ proficiencies.resist_flame.final }}%</li>
+				<li>{{ proficiencies.resist_shadow.final }}%</li>
+				<li>{{ proficiencies.resist_holy.final }}%</li>
+				<li>{{ proficiencies.resist_poison.final }}%</li>
+				<li>{{ proficiencies.resist_blunt.final }}%</li>
+				<li>{{ proficiencies.resist_slashing.final }}%</li>
+				<li>{{ proficiencies.resist_piercing.final }}%</li>
 			</ul>
 		</div>
 	</div>

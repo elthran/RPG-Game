@@ -184,48 +184,139 @@ Scrips for inventory page.
 Currently handles unequip and equipping one item at at time.
 The current approach is not very flexible.
 */
-function toggleEquip(clicked, slot_type, idsArrayStr) {
+function toggleEquip(response, oldData) {
     "use strict";
 //    log("toggleEquip function");
-//    console.log(clicked);
-//    console.log(slot_type);
-//    console.log(idsArrayStr);
-    var tooltipDiv = clicked;
-    var inventoryItemDiv = tooltipDiv.parentElement;
+//    log("Response:")
+//    console.log(response);
+//    log("oldData:")
+//    console.log(oldData);
+    // For readability.
+    // tooltipDiv is the location of the specific item that is being moved.
+    // inventoryItemDiv is the container that the item is in.
+    // emptySlotDiv is the picture that is displayed in a given inventory slot
+    // i.e. the head has an gray/gold helmet pic.
+    var tooltipDiv;
+    var inventoryItemDiv;
+    var emptySlotDiv;
+    var command;
+    var primarySlotType;
 
-    if (slot_type === "both-hands") {
-        throw "You need to build code to deal with equipping a 2 handed weapon!";
-    } else {
-        var empty_slot = document.getElementById("inventory-" + slot_type + "-empty");
-    }
-//    log("inventory-" + slot_type + "-empty");
-//    console.log(empty_slot);
-
-    var command = tooltipDiv.getAttribute("data-py-function");
+    command = response.command;
+    // primarySlotType is the location in the inventory that the item
+    // will be equipped into.
+    primarySlotType = response.primarySlotType;
 
     // When you are Unequipping an Item.
     if (command === "unequip") {
-        inventoryItemDiv.removeChild(tooltipDiv);
-        empty_slot.style.display = "inline";
-
-        tooltipDiv.setAttribute("data-py-function", "equip");
-
-        var unequippedItemDiv = document.createElement("div");
-        unequippedItemDiv.classList.add("inventory-unequipped", "inventory-item");
-        unequippedItemDiv.appendChild(tooltipDiv);
-
-        var unequippedGeneralDiv = document.getElementById("unequipped");
-        unequippedGeneralDiv.appendChild(unequippedItemDiv);
+        tooltipDiv = document.getElementById("item-" + oldData.id);
+        inventoryItemDiv = tooltipDiv.parentElement;
+//        log("iventoryItemDiv.id: " + inventoryItemDiv.id)
+        emptySlotDiv = document.getElementById(inventoryItemDiv.id + "-empty");
+        unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv, primarySlotType);
 
     // When you are Equipping and Item.
     } else if (command === "equip") {
-        inventoryItemDiv.parentElement.removeChild(inventoryItemDiv);
-        empty_slot.style.display = "none";
+        var slotDiv;
+        var idsToUnequip;
 
-        tooltipDiv.setAttribute("data-py-function", "unequip");
-        var slotDiv = document.getElementById("inventory-" + slot_type);
-        slotDiv.appendChild(tooltipDiv);
+        idsToUnequip = response.idsToUnequip;
+        var itemId;
+        var i;
+        var idsLength = idsToUnequip.length
+        for (i=0; i< idsLength; i++) {
+            itemId = idsToUnequip[i];
+//            log("id: " + itemId)
+            tooltipDiv = document.getElementById("item-" + itemId)
+            inventoryItemDiv = tooltipDiv.parentElement;
+//            log("iventoryItemDiv.id: " + inventoryItemDiv.id)
+            emptySlotDiv = document.getElementById(inventoryItemDiv.id + "-empty");
+            unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv, primarySlotType);
+        }
+        tooltipDiv = document.getElementById("item-" + oldData.id);
+        equip(tooltipDiv, primarySlotType)
     }
+}
+
+// Equip a given item into the correct slot on the inventory diagram.
+function equip(tooltipDiv, primarySlotType) {
+    "use strict";
+    var inventoryItemDiv;
+    var slotDiv;
+    var emptySlotDiv;
+    var slotType;
+    var rightHandDiv;
+    var emptyLeftHandDiv;
+
+    inventoryItemDiv = tooltipDiv.parentElement;
+    slotDiv = document.getElementById("inventory-" + primarySlotType);
+    emptySlotDiv = document.getElementById("inventory-" + primarySlotType + "-empty");
+
+    // Delete the inventoryItemDiv
+    // Hide the emptySlot Div.
+    // Move the tooltipDiv
+    inventoryItemDiv.parentElement.removeChild(inventoryItemDiv);
+    emptySlotDiv.style.display = "none";
+    slotDiv.appendChild(tooltipDiv);
+    slotDiv.style.display = "";
+
+    // Make the alternate overlapping slot invisible.
+    if (primarySlotType === "both-hands") {
+        slotType = "right-hand";
+        rightHandDiv = document.getElementById("inventory-" + slotType);
+        rightHandDiv.style.display = "none";
+        slotType = "left-hand";
+        emptyLeftHandDiv = document.getElementById("inventory-" + slotType + "-empty");
+        emptyLeftHandDiv.src = tooltipDiv.firstElementChild.src;
+//        log(tooltipDiv);
+//        log(emptyLeftHandDiv);
+//        log(emptyLeftHandDiv.src);
+        emptyLeftHandDiv.style.filter = "grayscale(100%) opacity(50%)"
+    } else if (["left-hand", "right-hand"].indexOf(primarySlotType) != -1) {
+        slotType = "both-hands";
+        slotDiv = document.getElementById("inventory-" + slotType);
+        slotDiv.style.display = "none";
+    }
+}
+
+// Unequip an item from its current location.
+// Put it at the back of the inventory
+function unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv, primarySlotType) {
+    "use strict";
+
+    var unequippedItemDiv;
+    var unequippedGeneralDiv;
+    var emptyLeftHandDiv;
+    var rightHandDiv;
+    var bothHandsDiv;
+    var slotType;
+
+    // Reset left hand div.
+    // Lame check if element is in array.
+//    log("primary slot type unequip");
+//    log(primarySlotType);
+    if (["both-hands", "left-hand", "right-hand"].indexOf(primarySlotType) != -1) {
+//        log("Should be reseting left-hand image!")
+        slotType = "left-hand";
+        emptyLeftHandDiv = document.getElementById("inventory-" + slotType + "-empty");
+        emptyLeftHandDiv.src = "static/images/items/inventory_left_hand.jpg";
+        emptyLeftHandDiv.style.filter = "";
+        slotType = "right-hand";
+        rightHandDiv = document.getElementById("inventory-" + slotType);
+        rightHandDiv.style.display = "";
+        slotType = "both-hands";
+        bothHandsDiv = document.getElementById("inventory-" + slotType);
+        bothHandsDiv.style.display = "none";
+    }
+    inventoryItemDiv.removeChild(tooltipDiv);
+    emptySlotDiv.style.display = "inline";
+
+    unequippedItemDiv = document.createElement("div");
+    unequippedItemDiv.classList.add("inventory-unequipped", "inventory-item");
+    unequippedItemDiv.appendChild(tooltipDiv);
+
+    unequippedGeneralDiv = document.getElementById("unequipped");
+    unequippedGeneralDiv.appendChild(unequippedItemDiv);
 }
 
 /*
@@ -300,44 +391,24 @@ function updateAttribute(button, status) {
     }
 }
 
-function proficiencyTooltip(button, tooltip) {
-    var newTooltip = {};
+function proficiencyTooltip(response, oldData) {
+    var newTooltip;
     newTooltip = document.getElementById("proficiencyTooltip");
-    newTooltip.innerHTML = tooltip;
-}
-
-function updateProficiency(button, status, tooltip) {
-    "use strict";
-    proficiencyTooltip(button, tooltip);
-    var id = 0;
-    var i = 0;
-    var heroProfPointsDiv = {};
-    var profCurrentLvDiv = {};
-    var buttonsNodeList = {};
-    id = button.getAttribute("data");
-    profCurrentLvDiv = document.getElementById("proficiency-" + id);
-    heroProfPointsDiv = document.getElementById("points_remaining");
-    profCurrentLvDiv.innerHTML = parseInt(profCurrentLvDiv.innerHTML) + 1;
-    heroProfPointsDiv.innerHTML = parseInt(heroProfPointsDiv.innerHTML) - 1;
-    if (status === "hide_this") { //hide this button
-        button.style.display = "none";
-    } else if (status === "hide_all") { //hide all buttons
-        buttonsNodeList = document.querySelectorAll("button[class=upgradeButton]");
-        for (i = 0; i < buttonsNodeList.length; i++) {
-            buttonsNodeList[i].style.display = "none";
-        }
+    newTooltip.innerHTML = response.tooltip;
+    if ("pointsRemaining" in response) {
+        document.getElementById("pointsRemaining").innerHTML = response.pointsRemaining;
+        document.getElementById("proficiency-" + oldData.id).innerHTML = response.level;
     }
 }
 
-function abilityTooltip(button, tooltip, image) {
-    var newTooltip = {};
-    var newImage = {};
-    var startImage = '<img src="/static/images/';
-    var endImage = '.jpg" alt="none">';
-    newTooltip = document.getElementById("attributeTooltip");
-    newTooltip.innerHTML = tooltip;
-    newImage = document.getElementById("attributeImage");
-    newImage.innerHTML = startImage + image + endImage;
+function abilityTooltip(response, oldData) {
+    var newTooltip;
+    newTooltip = document.getElementById("abilityTooltip");
+    newTooltip.innerHTML = response.tooltip;
+    if ("pointsRemaining" in response) {
+        document.getElementById("pointsRemaining").innerHTML = response.pointsRemaining;
+        document.getElementById("ability-" + oldData.id).innerHTML = response.level;
+    }
 }
 
 function updateAbility(button, status, tooltip) {
@@ -369,7 +440,7 @@ function abilityChoiceTooltip(button, description, image) {
     var newTooltip = {};
     var newImage = {};
     var startImage = '<img src="/static/images/';
-    var endImage = '.jpg" alt="none">';
+    var endImage = '.jpg" alt="none"  style="display:block;margin-left:auto;margin-right:auto;height:200px;width:200px;">';
     newTooltip = document.getElementById("abilityChoiceTooltip");
     newTooltip.innerHTML = description;
     newImage = document.getElementById("choiceImage");
@@ -488,6 +559,15 @@ function popupReplyBox(button, messageContent, messageSender) {
 
 function newPopupReplyBox(button, messageContent, messageSender) {
     document.getElementById('inboxNewPopupWindow').style.display = "block";
+    var contentInput = document.querySelector("[name=content]");
+    if (contentInput) {
+        contentInput.focus();
+    }
+    document.querySelector("[name=message_id]").value = button.getAttribute("data");
+}
+
+function newThreadBox(button, threadName, threadDescription) {
+    document.getElementById('newThreadPopupWindow').style.display = "block";
     var contentInput = document.querySelector("[name=content]");
     if (contentInput) {
         contentInput.focus();

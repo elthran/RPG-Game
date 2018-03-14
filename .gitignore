@@ -1,9 +1,11 @@
 __pycache__/
 *.pyc
+*.pyo
+*.bak
 .editorconfig
 static/database.db
 static/database.db-journal
 .idea/
 .cache/
-tests/test.db
 templates/desktop.ini
+.pytest_cache/

@@ -10,6 +10,8 @@ from items import (
 )
 from events import Trigger, Condition
 from random import choice # To create pre-built adjectives
+from forum import Forum, Board, Thread, Post
+from bestiary2 import MonsterTemplate
 
 # for testing
 import pdb
@@ -73,11 +75,12 @@ starting_world.children = node_grid
 town = node_grid[5]
 town.name = "Thornwall"
 town.type = 'town'
+town.terrain = 'city'
 town.update()
 
 """
 town.display.places_of_interest=[
-("/store/greeting", "Blacksmith", "Shops"),
+("/town/blacksmith", "Blacksmith", "Shops"),
 ("/barracks", "Barracks"),
 ("/marketplace/greeting", "Marketplace"),
 ("/tavern", "Tavern", "Other"),
@@ -87,10 +90,10 @@ town.display.places_of_interest=[
 ]
 """
 blacksmith = Location('Blacksmith', 'store')
-blacksmith.children.append(Location('armoury', 'store'))
-blacksmith.children.append(Location('weaponry', 'store'))
-marketplace = Location('Marketplace', 'marketplace')
-marketplace.children.append(Location('general', 'marketplace'))
+#blacksmith.children.append(Location('armoury', 'blacksmith'))
+#blacksmith.children.append(Location('weaponry', 'store'))
+marketplace = Location('Marketplace', 'store')
+#marketplace.children.append(Location('general', 'marketplace'))
 tavern = Location("Red Dragon Inn", 'tavern')
 
 barracks = Location('Barracks', 'barracks')
@@ -127,6 +130,7 @@ dungeon_entrance.children.append(explore_dungeon)
 cave = node_grid[2]
 cave.name = choice(adjective_list) + " Cave"
 cave.type = 'dungeon'
+cave.terrain = 'cave'
 cave.update()
 cave.display.page_heading = "You are outside {}".format(cave.name)
 cave.display.page_image = "generic_cave_entrance.jpg"
@@ -136,6 +140,7 @@ cave.children.append(dungeon_entrance)
 forest = node_grid[8]
 forest.name = choice(adjective_list) + " Forest"
 forest.type = 'dungeon'
+forest.terrain = 'forest'
 forest.update()
 forest.display.page_heading = "You are outside {}".format(forest.name)
 forest.display.page_image = "generic_forest_entrance.jpg"
@@ -266,11 +271,13 @@ when prebuilt_objects are preloaded into the database.
 admin = User(username="admin", password="admin", is_admin=True)
 admin.prestige = 371
 adminHero = Hero(name="Admin", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
+adminHero.proficiency_points = 10
 admin.heroes = [adminHero]
 
 marlen = User(username="marlen", password="brunner", is_admin=True)
 marlen.prestige = 309
 haldon = Hero(name="Haldon", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
+haldon.proficiency_points = 7
 marlen.heroes = [haldon]
 users = [marlen, admin]
 
@@ -278,44 +285,77 @@ users = [marlen, admin]
 # Items
 ##########
 all_store_items = [
-    LegArmour("Medium Pants", 7, armour_value=25),
-    ChestArmour("Medium Tunic", 2, armour_value=25),
-    ChestArmour("Strong Tunic", 5, armour_value=250),
-    HeadArmour("Weak Helmet", 2, armour_value=1),
-    HeadArmour("Medium Helmet", 4, armour_value=3),
-    FootArmour("Light Boots", 3, armour_value=3),
-    ArmArmour("Light Sleeves", 4, armour_value=5),
-    HandArmour("Light Gloves", 5, armour_value=7),
-    Ring("Silver Ring", 8),
-    TwoHandedWeapon("Medium Polearm", buy_price=5, damage_minimum=30,
-                    damage_maximum=60, speed_speed=1),
-    TwoHandedWeapon("Small Polearm", buy_price=5, damage_minimum=30,
-                    damage_maximum=60, speed_speed=1),
-    Shield("Small Shield", buy_price=10),
+    LegArmour("Medium Pants", 7, armour_value=25, template=True),
+    ChestArmour("Medium Tunic", 2, armour_value=25, template=True),
+    ChestArmour("Strong Tunic", 5, armour_value=250, template=True),
+    HeadArmour("Weak Helmet", 2, armour_value=1, template=True),
+    HeadArmour("Medium Helmet", 4, armour_value=3, template=True),
+    FootArmour("Light Boots", 3, armour_value=3, template=True),
+    ArmArmour("Light Sleeves", 4, armour_value=5, template=True),
+    HandArmour("Light Gloves", 5, armour_value=7, template=True),
+    Ring("Silver Ring", 8, template=True, style="silver"),
+    TwoHandedWeapon("Medium Polearm", buy_price=5,
+                    proficiency_data=[
+                        ('DamageMinimum', {'base': 30}),
+                        ('DamageMaximum', {'base': 60}),
+                        ('Speed', {'base': 1})],
+                    template=True),
+    TwoHandedWeapon("Small Polearm", buy_price=5,
+                    proficiency_data=[
+                        ('DamageMinimum', {'base': 30}),
+                        ('DamageMaximum', {'base': 60}),
+                        ('Speed', {'base': 1})],
+                    template=True),
+    Shield("Small Shield", buy_price=10, template=True),
     OneHandedWeapon("Big Dagger", buy_price=10,
-                    damage_minimum=300, damage_maximum=600, speed_speed=2),
+                    proficiency_data=[
+                        ('DamageMinimum', {'base': 300}),
+                        ('DamageMaximum', {'base': 600}),
+                        ('Speed', {'base': 2})],
+                    template=True),
     OneHandedWeapon("Small Dagger", buy_price=5,
-                    damage_minimum=30, damage_maximum=60, speed_speed=1),
+                    proficiency_data=[
+                        ('DamageMinimum', {'base': 30}),
+                        ('DamageMaximum', {'base': 60}),
+                        ('Speed', {'base': 1})],
+                    template=True),
     OneHandedWeapon("Poisoned Dagger", buy_price=5,
-                    damage_minimum=2, damage_maximum=10, damage_modifier=1,
-                    resist_poison_modifier=25),
+                    proficiency_data=[
+                        ('DamageMinimum', {'base': 2, 'modifier': 0.1}),
+                        ('DamageMaximum', {'base': 10, 'modifier': 0.1}),
+                        ('ResistPoison', {'base': 25})],
+                    template=True),
     Shield("Ice Buckler", buy_price=100, max_durability=3,
-           damage_minimum=2, damage_maximum=10, damage_modifier=1,
-           block_chance=50, block_modifier=50,
-           resist_frost_modifier=30),
+           proficiency_data=[
+               ('DamageMinimum', {'base': 2, 'modifier': 0.1}),
+               ('DamageMaximum', {'base': 10, 'modifier': 0.1}),
+               ('Block', {'base': 50, 'modifier': 0.5}),
+               ('ResistFrost', {'base': 30})],
+           template=True),
     Shield("Rare Fire Buckler", buy_price=100, max_durability=3,
-           damage_minimum=2, damage_maximum=10, damage_modifier=1,
-           block_chance=50, block_modifier=50,
-           resist_frost_modifier=30),
+           proficiency_data=[
+               ('DamageMinimum', {'base': 2, 'modifier': 0.1}),
+               ('DamageMaximum', {'base': 10, 'modifier': 0.1}),
+               ('Block', {'base': 50, 'modifier': 0.5}),
+               ('ResistFrost', {'base': 30})],
+           template=True),
     TwoHandedWeapon("Simple Staff", buy_price=100, max_durability=3,
-                    damage_minimum=2, damage_maximum=10, damage_modifier=1)
+                    proficiency_data=[
+                        ('DamageMinimum', {'base': 2, 'modifier': 0.1}),
+                        ('DamageMaximum', {'base': 10, 'modifier': 0.1})],
+                    template=True)
     ]
 
 all_marketplace_items = [
-    Consumable("Minor Health Potion", 3, healing_amount=10),
-    Consumable("Major Health Potion", 6, healing_amount=50),
-    Consumable("Major Faith Potion", 6, sanctity_amount=50),
-    Consumable("Major Awesome Max Potion", 6000, sanctity_amount=50)
+    Consumable("Minor Health Potion", 3,
+               proficiency_data=[('Health', {'base': 10})], template=True),
+    Consumable("Major Health Potion", 6,
+               proficiency_data=[('Health', {'base': 50})], template=True),
+    Consumable("Major Faith Potion", 6,
+               proficiency_data=[('Sanctity', {'base': 50})], template=True),
+    Consumable("Major Awesome Max Potion", 6000,
+               proficiency_data=[('Sanctity', {'base': 50})],
+               template=True)
 ]
 
 all_specializations = [
@@ -338,3 +378,15 @@ all_specializations = [
                             'A character who solves problems using speech and dialogue.', 
                             'Charisma of 7, Fame of 200')
 ]
+
+basic_forum = Forum("Basic")  # Create the first forum
+all_forums = [basic_forum]  # Add it to the list of forums to be generated on game init
+basic_forum.create_board(Board("General"))  # Add a board to the forum so it doesn't seem so lonely
+
+all_monsters = [MonsterTemplate(name="Sewer Rat", species="Rat", species_plural="Rats", level_max=10, experience_rewarded=1, level_modifier=0.5,
+                        cave=True, city=True,
+                        agility=1.5, charisma=0, divinity=0.1, resilience=1.2, quickness=1.7, willpower=0.5, brawn=0.9, vitality=0.8, intellect=0),
+                MonsterTemplate(name="Rabid Dog", species="Dog", species_plural="Dogs", level_max=20, experience_rewarded=2,
+                        forest=True,
+                        agility=1.5, charisma=0, divinity=0.1, resilience=1.5, fortuity=1, quickness=1.7, willpower=0.5, brawn=1.5, vitality=0.8, intellect=0)
+                ]

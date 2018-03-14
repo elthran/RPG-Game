@@ -91,11 +91,12 @@ import pdb
 from pprint import pprint
 
 
-quest_path_to_quest = Table(
-    "quest_path_to_quest",
+quest_path_to_quest_association = Table(
+    "quest_path_to_quest_association",
     Base.metadata,
-    Column("quest_path_id", Integer, ForeignKey("quest_path.id")),
-    Column("quest_id", Integer, ForeignKey("quest.id"))
+    Column("quest_path_id", Integer, ForeignKey("quest_path.id",
+                                                ondelete="SET NULL")),
+    Column("quest_id", Integer, ForeignKey("quest.id", ondelete="SET NULL"))
 )
 
 
@@ -115,19 +116,20 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
     
     id = Column(Integer, primary_key=True)
 
-    name = Column(String)
-    description = Column(String)
+    name = Column(String(50))
+    description = Column(String(200))
     reward_experience = Column(Integer)
     stage = Column(Integer)
     is_default = Column(Boolean)
 
     # Relationships
     # QuestPath to Journal is Many to One.
-    journal_id = Column(Integer, ForeignKey('journal.id'))
+    journal_id = Column(Integer, ForeignKey('journal.id', ondelete="SET NULL"))
     journal = relationship("Journal", back_populates='quest_paths',
                            foreign_keys="[QuestPath.journal_id]")
 
-    notification_id = Column(Integer, ForeignKey("journal.id"))
+    notification_id = Column(Integer, ForeignKey("journal.id",
+                                                 ondelete="CASCADE"))
 
     # Each Path can be connected to any quest.
     # Each Quest can be connected to multiple paths.
@@ -136,7 +138,7 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         "Quest",
         order_by="Quest.position",
         collection_class=ordering_list('position'),
-        secondary=quest_path_to_quest,
+        secondary=quest_path_to_quest_association,
         back_populates="quest_paths",
     )
 
@@ -226,9 +228,9 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         hero = self.journal.hero
         quest = self.current_quest
         if final:
-            hero.experience += quest.reward_experience + self.reward_experience
+            hero.gain_experience(quest.reward_experience + self.reward_experience)
         else:
-            hero.experience += quest.reward_experience
+            hero.gain_experience(quest.reward_experience)
         self.journal.notification = self
 
     def activate(self, hero):
@@ -259,8 +261,8 @@ class Quest(Base):
     __tablename__ = "quest"
     
     id = Column(Integer, primary_key=True)
-    name = Column(String)
-    description = Column(String)
+    name = Column(String(50))
+    description = Column(String(200))
     reward_experience = Column(Integer)
     position = Column(Integer)
 
@@ -268,14 +270,14 @@ class Quest(Base):
     # QuestPath many to many
     quest_paths = relationship(
         "QuestPath",
-        secondary=quest_path_to_quest,
+        secondary=quest_path_to_quest_association,
         back_populates='quests'
     )
 
     # Triggers Each Quest has a completion trigger. Each trigger can
     # complete multiple quests?
     # One to Many? (Later will be many to many).
-    trigger_id = Column(Integer, ForeignKey('trigger.id'))
+    trigger_id = Column(Integer, ForeignKey('trigger.id', ondelete="SET NULL"))
     trigger = relationship("Trigger")
 
     def __init__(self, name, description=name, reward_experience=3,

@@ -21,8 +21,8 @@ fileConfig(config.config_file_name)
 import sys
 import os
 # Get the name of the current directory for this file and split it.
-old_path = os.path.dirname(os.path.abspath(__file__)).split('\\')
-new_path = '\\'.join(old_path[:-1])
+old_path = os.path.dirname(os.path.abspath(__file__)).split(os.sep)
+new_path = os.sep.join(old_path[:-1])
 # -1 refers to how many levels of directory to go up
 sys.path.insert(0, new_path)
 from base_classes import Base
@@ -33,7 +33,6 @@ target_metadata = Base.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.

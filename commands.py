@@ -212,36 +212,38 @@ class Command:
 
     @staticmethod
     @set_notification_active
-    def equip(hero, database, arg_dict, engine):
-        item_id = arg_dict.get('data', None, type=int)
+    def toggle_equip(hero, database, data, engine):
+        item_id = data['id']
         item = database.get_item_by_id(item_id)
-        ids_to_unequip = hero.inventory.equip(item)
-        hero.refresh_character()
-        engine.spawn(
-            'equip_event',
-            hero,
-            description="{} equips a/an {}.".format(hero.name, item.name)
-        )
-        slot = hero.inventory.slots_used_by_item_type[item.type]["primary"]
-        slot = slot.replace('_', "-")
-        return slot + "&&" + str(ids_to_unequip)
+        len_rings = None
+        if item.type == "Ring":
+            lowest_empty_slot = hero.inventory.get_lowest_empty_ring_pos()
+            primary_slot_type = "finger-{}".format(lowest_empty_slot)
+        else:
+            primary_slot_type = hero.inventory.\
+                js_slots_used_by_item_type[item.type][0]
+        if item.equipped:
+            hero.inventory.unequip(item)
+            hero.refresh_character()
+            engine.spawn(
+                'unequip_event',
+                hero,
+                description="{} unequips a/an {}.".format(hero.name, item.name)
+            )
+            return jsonify(primarySlotType=primary_slot_type,
+                           command="unequip")
+        else:
+            ids_to_unequip = hero.inventory.equip(item)
+            hero.refresh_character()
+            engine.spawn(
+                'equip_event',
+                hero,
+                description="{} equips a/an {}.".format(hero.name, item.name)
+            )
+            return jsonify(primarySlotType=primary_slot_type,
+                           command="equip", idsToUnequip=ids_to_unequip)
 
     @staticmethod
-    @set_notification_active
-    def unequip(hero, database, arg_dict, engine):
-        item_id = arg_dict.get('data', None, type=int)
-        item = database.get_item_by_id(item_id)
-        hero.inventory.unequip(item)
-        hero.refresh_character()
-        engine.spawn(
-            'unequip_event',
-            hero,
-            description="{} unequips a/an {}.".format(hero.name, item.name)
-        )
-        slot = hero.inventory.slots_used_by_item_type[item.type]["primary"]
-        slot = slot.replace('_', "-")
-        return slot
-
     def cast_spell(hero, database, arg_dict, **kwargs):
         ability_id = arg_dict.get('data', None, type=int)
         ability = database.get_ability_by_id(ability_id)
@@ -269,64 +271,52 @@ class Command:
         return "success".format()
 
     @staticmethod
-    def change_proficiency_tooltip(hero, database, arg_dict, **kwargs):
-        tooltip_id = arg_dict.get('data', None, type=int)
-        proficiency = database.get_proficiency_by_id(tooltip_id)
-        tooltip = proficiency.tooltip.replace(";", "</li><li>")
-        tooltip = "<h2>" + proficiency.name + "</h2>" + proficiency.description + "<ul><li>" + tooltip + "</li></ul>"
-        return "{}".format(tooltip)
-
-    @staticmethod
-    def update_proficiency(hero, database, arg_dict, **kwargs):
+    def update_proficiency(hero, database, data, **kwargs):
         """Raise proficiency level, decrement proficiency_points.
 
         Return status of: success, hide_all, hide_this.
         "success" means hide none ... maybe I should call it that instead?
         """
-        id = arg_dict.get('data', None, type=int)
-        proficiency = database.get_proficiency_by_id(id)
-        #tooltip = change_proficiency_tooltip(hero, database, arg_dict, **kwargs)
-        #print(tooltip)
+        proficiency_id = data['id']
+        proficiency = database.get_proficiency_by_id(proficiency_id)
+
         # Defensive coding: command buttons should be hidden by JavaScript
         # when no longer valid due to the return values of this function.
-        # If for some reason they are still clickable return error to JS console.
-        if hero.proficiency_points <= 0 or proficiency.is_max_level():
+        # If for some reason they are still clickable return error to
+        # JS console.
+        if hero.proficiency_points <= 0 or proficiency.is_max_level:
             return "error: no proficiency_points or proficiency is at max level."
+
         hero.proficiency_points -= 1
         proficiency.level_up()
-        proficiency.update(hero)
-        tooltip = proficiency.tooltip.replace(";", "</li><li>")
-        tooltip = "<h2>" + proficiency.name + "</h2>" + proficiency.description + "<ul><li>" + tooltip + "</li></ul>"
-        if hero.proficiency_points == 0:
-            return "hide_all&&{}".format(tooltip)
-        elif proficiency.is_max_level():
-            return "hide_this&&{}".format(tooltip)
-        return "success&&{}".format(tooltip)
+        return jsonify(tooltip=proficiency.tooltip,
+                       pointsRemaining=hero.proficiency_points,
+                       level=proficiency.level)
 
     @staticmethod
-    def change_ability_tooltip(hero, database, arg_dict, **kwargs):
-        # I want to pass in the actual attribute here instead of the description. That way I can assign the attribute name and description to the tooltip.
-        # Unfortunately, I don't know how to pull the attribute object from the database. I need a get_attribute_by_name() function in database.py
-        ability_id = arg_dict.get('data', None, type=int)
+    def change_proficiency_tooltip(hero, database, data, **kwargs):
+        tooltip_id = data['id']
+        proficiency = database.get_proficiency_by_id(tooltip_id)
+        return jsonify(tooltip=proficiency.tooltip)
+
+    @staticmethod
+    def change_ability_tooltip(hero, database, data, **kwargs):
+        tooltip_id = data['id']
+        ability = database.get_ability_by_id(tooltip_id)
+        return jsonify(tooltip=ability.tooltip)
+
+    @staticmethod
+    def update_ability(hero, database, data, **kwargs):
+        ability_id = data['id']
         ability = database.get_ability_by_id(ability_id)
-        tooltip = ability.get_description()
-        return "{}&&{}".format(tooltip, ability.image)
-
-    @staticmethod
-    def update_ability(hero, database, arg_dict, **kwargs):
-        ability_id = arg_dict.get('data', None, type=int)
-        if hero.basic_ability_points <= 0:
-            return "error: no attribute points"
-        for ability in hero.abilities:
-            if ability.id == ability_id: # This code terminates as soon as it finds the ability which matches the id
-                ability.level += 1
-                tooltip = ability.get_description()
-                hero.basic_ability_points -= 1
-                if hero.basic_ability_points == 0:
-                    return "hide_all&&{}".format(tooltip)
-                if ability.level >= ability.max_level:
-                    return "hide_this&&{}".format(tooltip)
-                return "success&&{}".format(tooltip)
+        print(ability)
+        if hero.basic_ability_points <= 0 or ability.is_max_level():
+            return "error: no ability_points or ability is at max level."
+        hero.basic_ability_points -= 1
+        ability.level += 1 # Should be a level_up() function instead?
+        return jsonify(tooltip=ability.tooltip,
+                       pointsRemaining=hero.basic_ability_points,
+                       level=ability.level)
 
     @staticmethod
     def change_ability_choice_tooltip(hero, database, arg_dict, **kwargs):

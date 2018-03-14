@@ -3,52 +3,52 @@
 <!-- This is the ability page. It let's you learn/upgrade abilities -->
 
 <h1 style="text-align:center;">{{ ability_tree.title() }} Abilities</h1>
-
-{% for thing in hero.specializations %}
-    {{ thing }}
-    {% endfor %}
-
+<div style="clear: both;"></div>
 {% if becomeType %} <!-- The hero hasn't chosen his type. So don't let him choose an ability. Only choose a type. -->
-<div style="clear: both;"></div>
-<div>
-	<div class="leftPageHalf" style="width:65%;">
-        <h2>You have yet to choose a {{ ability_tree }}. After you choose, you will be able to learn abilities related to that {{ ability_tree }}.</h2>
-        <ul>
-        {% for choice in all_type_choices %}
-            <li>
-            <button class="genericTooltipTrigger" data-py-function="change_ability_choice_tooltip" data="{{ ability_tree }}_{{ choice[0] }}-{{ choice[1] }}" data-js-callback="abilityChoiceTooltip">{{ choice[0].title() }}</button>
-            <button class="upgradeButton" data-py-function="update_specialization" data="{{ ability_tree }}_{{ choice[0] }}" data-js-callback="pageReload"></button>
-            </li>
-        {% endfor %}
-        </ul>
+<!--{% raw %}
+    <div style="width:1100px;height:500px;">
+        <div style="float:left;width:600px;border:dotted;">
+            <h2>You have yet to choose a {{ ability_tree }}. After you choose, you will be able to learn abilities related to that {{ ability_tree }}.</h2>
+            <ul>
+            {% for choice in all_type_choices %}
+                <li>
+                    <button class="genericTooltipTrigger"
+                            onclick="sendToPy(event, abilityTooltip, 'change_ability_tooltip', {'id': {{ ability.id }}});">
+                        {{ ability.name}}
+                    </button>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+        <div style="float:left;width:400px;border:dotted;height:auto;padding:5px;margin-left:50px;">
+            <div><span id="abilityTooltip">Click on an ability to see more information.</span></div>
+            <div><span id="choiceImage"></span></div>
+        </div>
     </div>
-    <div class="attributeTooltip">
-        <div><span id="abilityChoiceTooltip">Click on an attribute to see more information.</span></div>
-        <div class="tooltipImage"><span id="choiceImage"></span></div>
-    </div>
-</div>
-<div style="clear:both;"></div>
-
+    -->{% endraw %}
 {% else %} <!-- Hero has a chosen type. Let him choose their abilities! -->
-<div class="stickyPointsRemainingBar">Points Remaining: <div style="display: inline" id="points_remaining">{{ points_remaining }}</div></div>
+<div class="stickyPointsRemainingBar">Points Remaining: <div style="display: inline" id="pointsRemaining">{{ points_remaining }}</div></div>
 <div style="clear: both;"></div>
-<div>
-	<div class="leftPageHalf" style="width:65%;">
+<div style="width:1100px;height:500px;">
+	<div style="float:left;width:600px;border:dotted;">
         <ul>
         {% for ability in all_abilities %}
             <li>
-            <button class="genericTooltipTrigger" data-py-function="change_ability_tooltip" data="{{ ability.id }}" data-js-callback="abilityTooltip">{{ ability.name }} <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>/{{ ability.max_level }}</button>
-            <button class="upgradeButton" data-py-function="update_ability" data="{{ ability.id }}" id="abilityButton-{{ ability.id }}" data-js-callback="updateAbility" {% if hero.basic_ability_points <= 0 %}style="display: none"{% endif %}></button>
+                <button class="genericTooltipTrigger"
+                            onclick="sendToPy(event, abilityTooltip, 'change_ability_tooltip', {'id': {{ ability.id }}});">
+                    {{ ability.name}}
+                    {% if ability.level %}<div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>{% endif %} <!-- If you have points in this, show the user how many -->
+                </button>
             </li>
         {% endfor %}
         </ul>
     </div>
-    <div class="attributeTooltip">
-        <div><span id="attributeTooltip">Click on an attribute to see more information.</span></div>
-        <div class="tooltipImage"><span id="attributeImage"></span></div>
+    <div style="float:left;width:400px;border:dotted;height:auto;padding:5px;margin-left:50px;">
+        <div>
+            <span id="abilityTooltip">Click on an ability to see more information.</span>
+        </div>
     </div>
 </div>
-<div style="clear:both;"></div>
 {% endif %}
 
 {% endblock %}

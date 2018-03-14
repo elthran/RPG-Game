@@ -18,6 +18,8 @@ from sqlalchemy.orm import relationship
 from base_classes import Base
 from inbox import Inbox
 
+from random import random
+
 
 class Game(object):
     def __init__(self, hero=None):
@@ -25,10 +27,6 @@ class Game(object):
         self.has_enemy = False
         self.global_chat_user_list = {}
         self.global_chat = []  # I am not sure if this should goin database? Just very temporary chat log that all users can see
-
-    def set_enemy(self, enemy):
-        self.enemy = enemy
-        self.has_enemy = True
 
     def set_hero(self, hero):
         self.hero = hero
@@ -42,9 +40,9 @@ class User(Base):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
-    username = Column(String, unique=True, nullable=False)
-    password = Column(String, nullable=False)
-    email = Column(String)
+    username = Column(String(50), unique=True, nullable=False)
+    password = Column(String(50), nullable=False)
+    email = Column(String(50))
     timestamp = Column(DateTime)
     is_admin = Column(Boolean)
     inbox_alert = Column(Boolean)
@@ -52,12 +50,17 @@ class User(Base):
 
     # Relationships
     # Each user can have one inbox. One to One (bidirectional).
-    inbox_id = Column(Integer, ForeignKey('inbox.id'))
-    inbox = relationship("Inbox", back_populates="user")
+    inbox = relationship("Inbox", back_populates="user", uselist=False,
+                         cascade="all, delete-orphan")
 
     # Many heroes -> one user
     heroes = relationship("Hero", order_by='Hero.character_name',
-                          back_populates='user')
+                          back_populates='user',
+                          cascade="all, delete-orphan")
+
+    # Many to One with Posts
+    posts = relationship("Post", order_by="Post.timestamp.desc()",
+                         back_populates="user", cascade="all, delete-orphan")
 
     def __init__(self, username, password, email='', timestamp=None, is_admin=False):
         """Create a new user object.
@@ -74,3 +77,14 @@ class User(Base):
         self.is_admin = is_admin
         self.inbox_alert = False
         self.prestige = 0
+
+class Notification(object):
+    def send_notification(title="Attention!", content="Something interesting has happened.", url="/home"):
+        return None
+
+def round_number_intelligently(number):
+    """This will round a number based on its closeness to the next number. So (1.4) has a 40% chance to be rounded to a (2).
+    It returns an integer."""
+    new_amount = int(number) + (random() < number - int(number))
+    return new_amount
+
