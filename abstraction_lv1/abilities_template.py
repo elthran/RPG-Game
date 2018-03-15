@@ -43,7 +43,7 @@ class Ability(Base):
     # Maybe description should be unique? use: unique=True as keyword.
     description = Column(String(200))
     current = Column(String(50))
-    next = Column(String(50))
+    _next = Column(String(50))
     cost = Column(String(50))
 
     # Note: Original code used default of "Unknown"
@@ -85,6 +85,10 @@ class Ability(Base):
     def learn_name(self):
         return self.adjective[self.level]
 
+    @property
+    def next(self):
+        return render_template_string(self._next, level=self.level)
+
     # Requirements is a One to Many relationship to self.
     """
     Use (pseudo-code):
@@ -120,7 +124,7 @@ class Ability(Base):
         self.max_level = max_level  # Highest level that this ability can get to
         self.description = description  # Describe what it does
         self.current = current
-        self.next = next
+        self._next = next
         self.cost = cost
         if learnable:   # If the ability starts as a default of learnable, then it shouldn't start hidden to the player
             self.hidden = False
@@ -268,8 +272,8 @@ class AuraAbility(Ability):
         {% raw %}
         temp = """<h1>{{ ability.name }} (Level {{ ability.level }})</h1>
                       <h2>{{ ability.description }}</h2>
-                      {% if ability.level %}<h3>Current Bonus:</h3> {{ ability.current }}{% endif %}
-                      {% if not ability.is_max_level() %}<h3>Next Level Bonus:</h3> {{ ability.next }}{% else %}This ability is at its maximum level.{% endif %}
+                      {% if ability.level %}<h3>Current Bonus: {{ ability.current }}</h3>{% endif %}
+                      {% if not ability.is_max_level() %}<h3>Next Level Bonus: {{ ability.next }}</h3>{% else %}<h3>This ability is at its maximum level.</h3>{% endif %}
                       {% if not ability.is_max_level() %}
                       <button id=levelUpAbilityButton class="upgradeButton" onclick="sendToPy(event, abilityTooltip, 'update_ability', {'id': {{ ability.id }}});"></button>
                       {% endif %}"""

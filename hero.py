@@ -187,7 +187,7 @@ class Hero(SessionHoistMixin, Base):
     @hybrid_property
     def specializations(self):
         collection = DictHybrid(key_attr='attrib_name')
-        collection['basic'] = self._specializations
+        collection['all'] = self._specializations
         collection['archetype'] = self._archetype
         collection['calling'] = self._calling
         collection['pantheon'] = self._pantheon

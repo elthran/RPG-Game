@@ -681,7 +681,7 @@ def proficiencies(hero=None):
 @login_required
 @uses_hero
 def ability_tree(spec, hero=None):
-    if spec == "archetype": # and hero.specializations.archetype is None: # On the archetype pagebut the hero doesn't have one!
+    if spec == "archetype" and hero.specializations.archetype is None: # On the archetype pagebut the hero doesn't have one!
         becomeType = "archetype"
         spec_choices = database.get_all_objects("Archetype")
     elif spec == "calling" and hero.specializations.calling is None: # On the archetype pagebut the hero doesn't have one!
@@ -689,7 +689,7 @@ def ability_tree(spec, hero=None):
         spec_choices = database.get_all_objects("Calling")
     elif spec == "pantheon" and hero.specializations.pantheon is None: # On the archetype pagebut the hero doesn't have one!
         becomeType = "pantheon"
-        spec_choices = database.get_all_objects("Calling")
+        spec_choices = database.get_all_objects("Pantheon")
     else:
         becomeType = None
         spec_choices = []
