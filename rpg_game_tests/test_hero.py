@@ -4,6 +4,10 @@ from . import GenericTestCase, db_execute_script
 
 from hero import Hero
 from items import Ring
+from events import Condition, Trigger
+from locations import Location
+from quests import Quest, QuestPath
+from engine import Engine
 
 
 class TestHero(GenericTestCase):
@@ -65,3 +69,47 @@ class TestHero(GenericTestCase):
         self.rebuild_instance()
 
         assert max_health2 < self.hero.get_summed_proficiencies('health').final
+
+    def test_blacksmith_quest(self):
+        """
+
+        hero
+        trigger
+        condition
+        quest
+        questpath?
+        """
+        blacksmith = Location('Blacksmith', 'store')
+        blacksmith_condition = Condition('current_location', '==', blacksmith)
+        visit_blacksmith_trigger = Trigger('move_event', conditions=[blacksmith_condition], extra_info_for_humans='Should activate when the hero.current_location.id == the id of the blacksmith object.')
+        buy_item_from_blacksmith_trigger = Trigger(
+            'buy_event',
+            conditions=[blacksmith_condition],
+            extra_info_for_humans='Should activate when buy code runs and '
+                                  'hero.current_location.id == id of the blacksmith.'
+        )
+        blacksmith_quest_stage1 = Quest(
+            "Go talk to the blacksmith",
+            "Find the blacksmith in Thornwall and enter his shop.",
+            trigger=visit_blacksmith_trigger
+        )
+        blacksmith_quest_stage2 = Quest(
+            "Buy your first item",
+            "Buy any item from the blacksmith.",
+            reward_experience=4,
+            trigger=buy_item_from_blacksmith_trigger
+        )
+        meet_the_blacksmith_path = QuestPath(
+            "Get Acquainted with the Blacksmith",
+            "Find the blacksmith and buy something from him.",
+            quests=[blacksmith_quest_stage1, blacksmith_quest_stage2]
+        )
+
+        # Ok that is all the setup. I wish it were simpler.
+        self.hero.journal.quest_paths.append(meet_the_blacksmith_path)
+        # self.db.session.add(blacksmith_condition)
+        self.db.session.commit()
+
+        assert [obj.id for obj in self.hero.journal.current_quest_paths] == [1]
+        # Now for the Engine.
+        engine = Engine(self.db)

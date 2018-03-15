@@ -55,9 +55,12 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import validates
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import column_property
+from sqlalchemy import select, and_
 
 from base_classes import Base
 from achievements import Achievements
+from quests import QuestPath
 # For testing
 import pdb
 
@@ -83,13 +86,26 @@ class Journal(Base):
     # Hero to Journal is One to One
     hero_id = Column(Integer, ForeignKey('hero.id',
                                          ondelete="CASCADE"))
-    hero = relationship("Hero", back_populates='journal')
+    hero = relationship("Hero", back_populates='journal',
+                        cascade="all, delete-orphan")
 
     # Journal to QuestPath is One to Many
     # QuestPath provides many special methods.
     quest_paths = relationship("QuestPath", back_populates='journal',
                                cascade="all, delete-orphan",
                                foreign_keys="[QuestPath.journal_id]")
+
+    _current_quest_paths = relationship(
+        "QuestPath",
+        primaryjoin="and_(Journal.id==QuestPath.journal_id, "
+                    "QuestPath.completed==False)",
+        cascade="all, delete-orphan"
+    )
+
+    @property
+    def current_quest_paths(self):
+        return self._current_quest_paths
+
 
     notification = relationship("QuestPath",
                                 foreign_keys="[QuestPath.notification_id]",
@@ -98,7 +114,8 @@ class Journal(Base):
 
     # Journal to Achievements is One to One.
     achievements = relationship("Achievements", back_populates="journal",
-                                uselist=False)
+                                uselist=False,
+                                cascade="all, delete-orphan")
 
     # @property
     # def quest_notification(self):

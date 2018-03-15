@@ -5,6 +5,8 @@ DROP TABLE IF EXISTS `quest`;
 DROP TABLE IF EXISTS `quest_path`;
 DROP TABLE IF EXISTS `condition`;
 DROP TABLE IF EXISTS `trigger`;
+DROP table IF EXISTS `achievement`;
+DROP table IF EXISTS `achievements`;
 DROP TABLE IF EXISTS `journal`;
 DROP TABLE IF EXISTS `proficiency`;
 DROP TABLE IF EXISTS `ability`;

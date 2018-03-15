@@ -14,8 +14,9 @@ class Achievements(Base):
     # Relationships
     # Achievements to Journal is One to One
     # Journal to Achievements is One to One.
-    journal_id = Column(Integer, ForeignKey('journal.id'))
-    journal = relationship("Journal", back_populates="achievements")
+    journal_id = Column(Integer, ForeignKey('journal.id', ondelete="CASCADE"))
+    journal = relationship("Journal", back_populates="achievements",
+                           cascade="all, delete-orphan")
 
     deepest_dungeon_floor = Column(Integer)  # High score for dungeon runs
     current_dungeon_floor = Column(Integer)  # Which floor of dungeon your on
@@ -26,19 +27,21 @@ class Achievements(Base):
     deaths = Column(Integer)
     wolf_kills = Column(Integer)
 
-    achievements = relationship("Achievement")
+    achievements = relationship("Achievement", cascade="all, delete-orphan")
 
     # Should return all completed Achievements?
     completed_achievements = relationship(
         "Achievement",
         primaryjoin="and_(Achievements.id==Achievement.achievements_id, "
-                    "Achievement.completed==True)")
+                    "Achievement.completed==True)",
+        cascade="all, delete-orphan")
 
     # Should return a list of all Achievement type with "kill" in their name.
     kill_achievements = relationship(
         "Achievement",
         primaryjoin="and_(Achievements.id==Achievement.achievements_id, "
-                    "Achievement.name.ilike('%kill%'))")
+                    "Achievement.name.ilike('%kill%'))",
+        cascade="all, delete-orphan")
 
     def __init__(self):
         # Achievements and statistics
@@ -59,7 +62,8 @@ class Achievement(Base):
     id = Column(Integer, primary_key=True)
 
     # Relationships
-    achievements_id = Column(Integer, ForeignKey("achievements.id"))
+    achievements_id = Column(Integer, ForeignKey("achievements.id",
+                                                 ondelete="CASCADE"))
 
     completed = Column(Boolean)
 

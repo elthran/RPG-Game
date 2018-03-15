@@ -165,6 +165,8 @@
         {% if completed_achievements %}
         {% for achievement in completed_achievements %}
         <h2><br><b>{{ achievement.name }} &nbsp; &nbsp; &nbsp; (+{{ achievement.experience }} experience)</b></h2>
+        {% endfor %}
+        {% endif %}
     {% for map in maps %}
         {{ map }}
         <img src="/static/images/maps/world_{{ map.display.page_image }}"/>
