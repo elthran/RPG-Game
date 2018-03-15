@@ -1,46 +1,42 @@
-import unittest
 import pdb
 
 from database import EZDB
-from game import Hero
+from hero import Hero
 from quests import Quest, QuestPath
+from . import GenericTestCase
 
 
-class QuestsTestCase(unittest.TestCase):
-    def setUp(self):
-        self.db = EZDB('sqlite:///tests/test.db', debug=False, testing=True)
-        self.quest = Quest("Get Acquainted with the Blacksmith",
-                           "Go talk to the blacksmith.")
-    
-    def tearDown(self, delete=True):
-        self.db.session.close()
-        self.db.engine.dispose()
-        if delete:
-            self.db._delete_database()
-            
-    def rebuild_instance(self):
-        """Tidy up and rebuild database instance.
+class TestQuest(GenericTestCase):
+    @classmethod
+    def setup_class(cls):
+        db = super().setup_class()
+        db.engine.execute("DROP TABLE IF EXISTS `quest_path_to_quest_association`;")
+        db.engine.execute("DROP TABLE IF EXISTS `quest`;")
+        db = super().setup_class()  # Rebuild schema.
+        quest = Quest("Get Acquainted with the Blacksmith", "Go talk to the blacksmith.")
+        db.session.add(quest)
+        db.update()
 
-        ... otherwise you may not be retrieving the actual data
-        from the database only from memory.
-        """
-        
-        self.db.session.commit()
-        self.tearDown(delete=False)
-        self.setUp()
+    @classmethod
+    def teardown_class(cls, delete=False):
+        super().teardown_class(delete=delete)
 
-    def test_Quest_init(self):
+    def setup(self):
+        super().setup()
+        self.quest = self.db.session.query(Quest).get(1)
+
+    def test_init(self):
         """Check if object is created, storable and retrievable.
         """
-        quest = Quest("Get Acquainted with the Blacksmith",
-                      "Go talk to the blacksmith.")
+        quest = Quest("Get Acquainted with the Blacksmith", "Go talk to the blacksmith.")
         self.db.session.add(quest)
         self.db.session.commit()
-        str_quest = str(quest)
-        
+        quest_id = quest.id
+        str_quest = quest.pretty
         self.rebuild_instance()
-        quest2 = self.db.session.query(Quest).filter_by(id=1).first()
-        self.assertEqual(str_quest, str(quest2))
+
+        quest2 = self.db.session.query(Quest).get(quest_id)
+        assert str_quest == quest2.pretty
 
     def test_if_relationship_is_a_set(self):
         """Test if relationship can contain duplicates.
@@ -167,7 +163,6 @@ class QuestsTestCase(unittest.TestCase):
         self.assertFalse(active_state2)
         self.assertFalse(completed_state)
 
-    @unittest.skip("Not built.")
     def test_path_advance(self):
         self.assertEqual('Not built', '')
 
