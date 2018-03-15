@@ -157,11 +157,14 @@ class Hero(SessionHoistMixin, Base):
                         "".format(value.type))
 
     # Hero to Specializations relationship - One to Many
+    # These relationships can be modified through the 'specializations'
+    # container.
     _specializations = relationship(
         "Specialization",
         collection_class=attribute_mapped_dict_hybrid("attrib_name"),
         back_populates="hero",
         cascade="all, delete-orphan")
+    # Hero to Calling is One to One
     _calling = relationship(
         "Specialization",
         primaryjoin="and_(Hero.id==Specialization.hero_id, "
@@ -169,6 +172,7 @@ class Hero(SessionHoistMixin, Base):
         back_populates="hero",
         uselist=False,
         cascade="all, delete-orphan")
+    # Hero to Archetype is One to One
     _archetype = relationship(
         "Specialization",
         primaryjoin="and_(Hero.id==Specialization.hero_id, "
@@ -176,6 +180,7 @@ class Hero(SessionHoistMixin, Base):
         uselist=False,
         back_populates="hero",
         cascade="all, delete-orphan")
+    # Hero to Pantheon is One to One.
     _pantheon = relationship(
         "Specialization",
         primaryjoin="and_(Hero.id==Specialization.hero_id, "
@@ -186,6 +191,30 @@ class Hero(SessionHoistMixin, Base):
 
     @hybrid_property
     def specializations(self):
+        """Wrapper for the hero Specialziation objects.
+
+        These variables can be accessed via:
+        for obj in hero.specializations:
+            print(obj)
+        -> all (Container)
+        -> archetype object
+        -> calling object
+        -> pantheon object
+
+        hero.specializations.archetype
+        hero.specializations.calling
+        hero.specializations.pantheon
+        hero.specializations.all
+
+        hero.specializations.all is a container class too! So you can do:
+        for obj in hero.specializations.all:
+            print(obj)
+        To print out _all_ Specialization objects attached to this hero.
+
+        also:
+        hero.specializations.all.brute -> if this hero has Brute Spec.
+        """
+
         collection = DictHybrid(key_attr='attrib_name')
         collection['all'] = self._specializations
         collection['archetype'] = self._archetype
@@ -198,6 +227,16 @@ class Hero(SessionHoistMixin, Base):
         """Update the specializations classes relationships.
 
         If passing a template ... make a new value an use that instead.
+
+        You can add a new object to the hero via. I know that that is a bit
+        counter-intuitive but hey ... it works.
+            hero.specializations = specialization
+
+        To remove an object from the hero do:
+            hero.specializations.archetype.hero = None
+        This will set the objects hero to None which will remove it from this
+        hero. I'm not sure if doing hero.specializations.archetype = None
+        will have any effect.
         """
         if value.template:
             getattr(specializations, value.name)().hero = self

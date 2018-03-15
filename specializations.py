@@ -57,6 +57,11 @@ class Specialization(TemplateMixin, Base):
     }
 
     def __init__(self, name, description, requirements, template=False):
+        """Create a new Specialization object.
+
+        NOTE: you can pretty much ignore templating hero as when you
+        assign a value to a hero it creates a new object from the template.
+        """
         self.name = name
         self.attrib_name = normalize_attrib_name(name)
         self.description = description

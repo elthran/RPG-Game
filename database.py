@@ -186,13 +186,17 @@ class EZDB:
                 "No '{}' with id '{}' exists.".format(obj_name, obj_id))
 
     def get_all_objects(self, obj_name, template=True):
-        """Return all objects given of this class name and template condition.
+        """Return all objects given a class name and template condition.
 
         Return error if name doesn't exist in global scope.
         obj = getattr(globals(), name)
 
         Name must be properly capitalized!
+
+        NOTE: if object isn't template compatible it returns it anyways.
+        Just ignore the template flag.
         """
+
         try:
             obj = globals()[obj_name]
         except IndexError:
