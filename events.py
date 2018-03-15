@@ -65,6 +65,10 @@ class Condition(TemplateMixin, Base):
     """
     __tablename__ = 'condition'
     id = Column(Integer, primary_key=True)
+
+    hero_attribute = Column(String(50))
+    comparison = Column(String(2))
+    condition_attribute = Column(String(50))
     code = Column(String(200))
 
     # Relationships
@@ -85,25 +89,28 @@ class Condition(TemplateMixin, Base):
         self.trigger.hero._some_passed_attribute_name_.id
         NOTE: id is applied automatically this will need to be re-specced.
         """
-        condition_attribute = object_of_comparison.__table__.name
+
+        self.hero_attribute = hero_attribute
+        self.comparison = comparison
+
+        self.condition_attribute = object_of_comparison.__table__.name
 
         self.code = """self.trigger.hero.{}.id {} self.{}.id""".format(
-            hero_attribute, comparison, condition_attribute)
+            hero_attribute, comparison, self.condition_attribute)
 
         # Should for example do:
         # self.location = the location I passed.
-        setattr(self, condition_attribute, object_of_comparison)
+        setattr(self, self.condition_attribute, object_of_comparison)
 
         self.template = template
 
-    def build_new_from_template(self):
+    def clone(self):
         if not self.template:
             raise Exception("Only use this method if obj.template == True.")
-        obj = Condition("", "", self.location, template=False)
-        if obj is None:
-            pdb.set_trace()
-        obj.code = self.code
-        return obj
+        return Condition(
+            self.hero_attribute, self.comparison,
+            getattr(self, self.condition_attribute),
+            template=False)
 
 
 class Trigger(TemplateMixin, Base):
@@ -129,7 +136,7 @@ class Trigger(TemplateMixin, Base):
         self.extra_info_for_humans = extra_info_for_humans
         self.template = template
         self.completed = False
-        self.conditions = [c.build_new_from_template() if c.template else c
+        self.conditions = [c.clone() if c.template else c
                            for c in conditions]
 
     @staticmethod

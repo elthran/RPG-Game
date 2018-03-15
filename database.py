@@ -215,7 +215,7 @@ class EZDB:
         Autocommit using @safe_commit_session.
         """
         template = self.session.query(Item).get(template_id)
-        item = template.build_new_from_template()
+        item = template.clone()
         return item
 
     def get_random_item(self):

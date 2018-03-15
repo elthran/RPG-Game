@@ -97,7 +97,7 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
         self.template = template
 
     @safe_commit_session
-    def build_new_from_template(self):
+    def clone(self):
         if not self.template:
             raise Exception("Only use this method if obj.template == True.")
         keys = self.__class__.__table__.columns.keys()
@@ -119,7 +119,7 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
             except AttributeError:
                 pass
         for key, prof in self.proficiencies.items():
-            item.proficiencies[key] = prof.build_new_from_template()
+            item.proficiencies[key] = prof.clone()
         return item
 
     @property

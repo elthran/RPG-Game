@@ -112,7 +112,7 @@ class Journal(Base):
         Activate the current_quest as well.
         """
         if quest_path.template:
-            quest_path = quest_path.build_new_from_template()
+            quest_path = quest_path.clone()
         quest_path.activate(self.hero)
         self.notification = quest_path
         return quest_path

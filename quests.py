@@ -152,7 +152,7 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         self.is_default = is_default
         self.template = template  # See TemplateMixin?
 
-    def build_new_from_template(self):
+    def clone(self):
         return QuestPath(self.name, self.description,
                          self.reward_experience, self.stage, self.quests,
                          template=False)

@@ -63,7 +63,7 @@ class Achievement(Base):
 
     completed = Column(Boolean)
 
-    name = Column(String)
+    name = Column(String(100))
     current_level = Column(Integer)
     next_level = Column(Integer)
     experience = Column(Integer)
