@@ -159,7 +159,7 @@ class Hero(SessionHoistMixin, Base):
     # Hero to Specializations relationship - One to Many
     _specializations = relationship(
         "Specialization",
-        foreign_keys="[Specialization.hero_id]",
+        collection_class=attribute_mapped_dict_hybrid("attrib_name"),
         back_populates="hero",
         cascade="all, delete-orphan")
     _calling = relationship(
