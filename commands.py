@@ -321,7 +321,9 @@ class Command:
     def update_specialization(hero, database, data, **kwargs):
         spec_id = data['id']
         specialization = database.get_object_by_id("Specialization", spec_id)
-        # spec.level += 1 or something
+        # spec.level += 1 or something?
+        hero.specializations = specialization
+        pprint(hero.specializations)
         spec = data['spec']
         print("The hero's " + spec + " should be " + specialization.name)
         # PLEASE MAKE THE ABOVE PRINT STATEMENT TRUE!!!!!!!!!!!!!!!!!!!!!!!

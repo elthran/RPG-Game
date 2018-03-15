@@ -11,6 +11,8 @@ from sqlalchemy import orm
 from flask import render_template_string
 
 from base_classes import Base
+from factories import TemplateMixin
+from build_code import normalize_attrib_name
 import pdb
 
 # This is a list of specializations. Your hero can have one of each type active at any time. There are 4 types of specs.
@@ -19,18 +21,18 @@ import pdb
 # Each of the 4 choices unlocks different abilities to learn. So each character will be very unique based on the 4 paths they choose.
 # name, type, description, requirements
 
-ALL_SPECIALIZATIONS = [('Brute', 'Specialization', 'A character who uses strength and combat to solve problems. Proficient with many types of weapons.', 'Brawn of 6, Any Weapon Talent ~ 10'), ('Scoundrel', 'Specialization', 'A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.', 'Dagger Talent of 6, Virtue of -100'), ('Ascetic', 'Specialization', 'A character who focuses on disciplining mind and body. They use a combination of combat and intellect.', '10 Errands Complete, Virtue of 100, Willpower of 4'), ('Survivalist', 'Specialization', 'A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.', '5 Locations Discovered, 10 Animals in Bestiary'), ('Philosopher', 'Specialization', 'A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.', 'Intellect of 7, Books Read of 10'), ('Opportunist', 'Specialization', 'A character who solves problems using speech and dialogue.', 'Charisma of 7, Fame of 200'), ('Archetype test', 'Archetype', 'TEST CODE1', 'TEST1'), ('Calling test', 'Calling', 'TEST CODE2', 'TEST2'), ('Pantheon test', 'Pantheon', 'TEST CODE3', 'TEST3')]
+ALL_SPECIALIZATIONS = [('Brute', 'Archetype', 'A character who uses strength and combat to solve problems. Proficient with many types of weapons.', 'Brawn of 6, Any Weapon Talent ~ 10'), ('Scoundrel', 'Archetype', 'A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.', 'Dagger Talent of 6, Virtue of -100'), ('Ascetic', 'Archetype', 'A character who focuses on disciplining mind and body. They use a combination of combat and intellect.', '10 Errands Complete, Virtue of 100, Willpower of 4'), ('Survivalist', 'Archetype', 'A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.', '5 Locations Discovered, 10 Animals in Bestiary'), ('Philosopher', 'Archetype', 'A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.', 'Intellect of 7, Books Read of 10'), ('Opportunist', 'Archetype', 'A character who solves problems using speech and dialogue.', 'Charisma of 7, Fame of 200'), ('Blacksmith', 'Calling', 'A blacksmith dude.', 'Be a dude ... who likes hitting hot metal.'), ('Fire god', 'Pantheon', 'A fire god dude.', 'Be a Pyro ... and a dude.')]
 
 SPECIALIZATION_NAMES = [key[0] for key in ALL_SPECIALIZATIONS]
 
 SPECIALIZATIONS_CATEGORIES = ['archetype', 'calling']
 
-ALL_NAMES = ['Archetype test', 'Ascetic', 'Brute', 'Calling test', 'Opportunist', 'Pantheon test', 'Philosopher', 'Scoundrel', 'Survivalist']
-ALL_ATTRIBUTE_NAMES = ['archetype_test', 'ascetic', 'brute', 'calling_test', 'opportunist', 'pantheon_test', 'philosopher', 'scoundrel', 'survivalist']
-ALL_CLASS_NAMES = ['ArchetypeTest', 'Ascetic', 'Brute', 'CallingTest', 'Opportunist', 'PantheonTest', 'Philosopher', 'Scoundrel', 'Survivalist']
+ALL_NAMES = ['Ascetic', 'Blacksmith', 'Brute', 'Fire god', 'Opportunist', 'Philosopher', 'Scoundrel', 'Survivalist']
+ALL_ATTRIBUTE_NAMES = ['ascetic', 'blacksmith', 'brute', 'fire_god', 'opportunist', 'philosopher', 'scoundrel', 'survivalist']
+ALL_CLASS_NAMES = ['Ascetic', 'Blacksmith', 'Brute', 'FireGod', 'Opportunist', 'Philosopher', 'Scoundrel', 'Survivalist']
 
 
-class Specialization(Base):
+class Specialization(TemplateMixin, Base):
     __tablename__ = "specialization"
 
     id = Column(Integer, primary_key=True)
@@ -38,27 +40,33 @@ class Specialization(Base):
     type = Column(String(50))
     description = Column(String(200))
     requirements = Column(String(50))
+    attrib_name = Column(String(50))
 
     # Relationships
     # Each hero can have one list of abilities (bi, one to one)
     hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
-    hero = relationship("Hero", back_populates="specializations")
+    hero = relationship(
+        "Hero",
+        back_populates="_specializations",
+        cascade="all, delete-orphan",
+        single_parent=True)
 
-    # I DONT KNOW WHAT THIS DOES!!!?? :'( - Elthran
     __mapper_args__ = {
         'polymorphic_identity': 'Specialization',
         'polymorphic_on': type
     }
 
-    def __init__(self, name, description, requirements):
+    def __init__(self, name, description, requirements, template=False):
         self.name = name
+        self.attrib_name = normalize_attrib_name(name)
         self.description = description
         self.requirements = requirements
+        self.template = template
 
 
 class Archetype(Specialization):
     __mapper_args__ = {
-        'polymorphic_identity': 'ArchetypeSpecialization',
+        'polymorphic_identity': 'Archetype',
     }
 
     def __init__(self, *args, **kwargs):
@@ -67,7 +75,7 @@ class Archetype(Specialization):
 
 class Calling(Specialization):
     __mapper_args__ = {
-        'polymorphic_identity': 'CallingSpecialization',
+        'polymorphic_identity': 'Calling',
     }
 
     def __init__(self, *args, **kwargs):
@@ -76,107 +84,40 @@ class Calling(Specialization):
 
 class Pantheon(Specialization):
     __mapper_args__ = {
-        'polymorphic_identity': 'PantheonSpecialization',
+        'polymorphic_identity': 'Pantheon',
     }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
 
-class Brute(Specialization):
-    attrib_name = "brute"
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'Brute',
-    }
-
-    def __init__(self, args=("Brute", "A character who uses strength and combat to solve problems. Proficient with many types of weapons.", "Brawn of 6, Any Weapon Talent ~ 10"), **kwargs):
-        super().__init__(*args, **kwargs)
+def Brute(template=False):
+    return Archetype("Brute", "A character who uses strength and combat to solve problems. Proficient with many types of weapons.", "Brawn of 6, Any Weapon Talent ~ 10", template=template)
 
 
-class Scoundrel(Specialization):
-    attrib_name = "scoundrel"
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'Scoundrel',
-    }
-
-    def __init__(self, args=("Scoundrel", "A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.", "Dagger Talent of 6, Virtue of -100"), **kwargs):
-        super().__init__(*args, **kwargs)
+def Scoundrel(template=False):
+    return Archetype("Scoundrel", "A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.", "Dagger Talent of 6, Virtue of -100", template=template)
 
 
-class Ascetic(Specialization):
-    attrib_name = "ascetic"
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'Ascetic',
-    }
-
-    def __init__(self, args=("Ascetic", "A character who focuses on disciplining mind and body. They use a combination of combat and intellect.", "10 Errands Complete, Virtue of 100, Willpower of 4"), **kwargs):
-        super().__init__(*args, **kwargs)
+def Ascetic(template=False):
+    return Archetype("Ascetic", "A character who focuses on disciplining mind and body. They use a combination of combat and intellect.", "10 Errands Complete, Virtue of 100, Willpower of 4", template=template)
 
 
-class Survivalist(Specialization):
-    attrib_name = "survivalist"
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'Survivalist',
-    }
-
-    def __init__(self, args=("Survivalist", "A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.", "5 Locations Discovered, 10 Animals in Bestiary"), **kwargs):
-        super().__init__(*args, **kwargs)
+def Survivalist(template=False):
+    return Archetype("Survivalist", "A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.", "5 Locations Discovered, 10 Animals in Bestiary", template=template)
 
 
-class Philosopher(Specialization):
-    attrib_name = "philosopher"
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'Philosopher',
-    }
-
-    def __init__(self, args=("Philosopher", "A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.", "Intellect of 7, Books Read of 10"), **kwargs):
-        super().__init__(*args, **kwargs)
+def Philosopher(template=False):
+    return Archetype("Philosopher", "A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.", "Intellect of 7, Books Read of 10", template=template)
 
 
-class Opportunist(Specialization):
-    attrib_name = "opportunist"
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'Opportunist',
-    }
-
-    def __init__(self, args=("Opportunist", "A character who solves problems using speech and dialogue.", "Charisma of 7, Fame of 200"), **kwargs):
-        super().__init__(*args, **kwargs)
+def Opportunist(template=False):
+    return Archetype("Opportunist", "A character who solves problems using speech and dialogue.", "Charisma of 7, Fame of 200", template=template)
 
 
-class ArchetypeTest(Archetype):
-    attrib_name = "archetype_test"
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'ArchetypeTest',
-    }
-
-    def __init__(self, args=("ArchetypeTest", "TEST CODE1", "TEST1"), **kwargs):
-        super().__init__(*args, **kwargs)
+def Blacksmith(template=False):
+    return Calling("Blacksmith", "A blacksmith dude.", "Be a dude ... who likes hitting hot metal.", template=template)
 
 
-class CallingTest(Calling):
-    attrib_name = "calling_test"
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'CallingTest',
-    }
-
-    def __init__(self, args=("CallingTest", "TEST CODE2", "TEST2"), **kwargs):
-        super().__init__(*args, **kwargs)
-
-
-class PantheonTest(Pantheon):
-    attrib_name = "pantheon_test"
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'PantheonTest',
-    }
-
-    def __init__(self, args=("PantheonTest", "TEST CODE3", "TEST3"), **kwargs):
-        super().__init__(*args, **kwargs)
+def FireGod(template=False):
+    return Pantheon("FireGod", "A fire god dude.", "Be a Pyro ... and a dude.", template=template)

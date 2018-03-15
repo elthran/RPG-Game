@@ -683,19 +683,13 @@ def proficiencies(hero=None):
 def ability_tree(spec, hero=None):
     if spec == "archetype": # and hero.specializations.archetype is None: # On the archetype pagebut the hero doesn't have one!
         becomeType = "archetype"
-        # spec_choices = [("brute", "A character who uses strength and combat to solve problems. Proficient with many types of weapons."),
-        #                         ("scoundrel", "A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery."),
-        #                         ("ascetic", "A character who focuses on disciplining mind and body. They use a combination of combat and intellect."),
-        #                         ("survivalist", "A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration."),
-        #                         ("philosopher", "A character who uses intellect to solve problems. Excels at any task requiring powers of the mind."),
-        #                         ("opportunist", "A character who solves problems using speech and dialogue.")]
-        spec_choices = hero.specializations
+        spec_choices = database.get_all_objects("Archetype")
     elif spec == "calling" and hero.specializations.calling is None: # On the archetype pagebut the hero doesn't have one!
         becomeType = "calling"
-        spec_choices = [("blacksmith", "A blacksmith dude.")]
+        spec_choices = database.get_all_objects("Calling")
     elif spec == "pantheon" and hero.specializations.pantheon is None: # On the archetype pagebut the hero doesn't have one!
         becomeType = "pantheon"
-        spec_choices = [("fire god", "A fire god dude.")]
+        spec_choices = database.get_all_objects("Calling")
     else:
         becomeType = None
         spec_choices = []

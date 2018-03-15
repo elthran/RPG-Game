@@ -1,10 +1,9 @@
 Name,Type,Description,Requirements
-Brute,Specialization,A character who uses strength and combat to solve problems. Proficient with many types of weapons.,"Brawn of 6, Any Weapon Talent ~ 10"
-Scoundrel,Specialization,A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.,"Dagger Talent of 6, Virtue of -100"
-Ascetic,Specialization,A character who focuses on disciplining mind and body. They use a combination of combat and intellect.,"10 Errands Complete, Virtue of 100, Willpower of 4"
-Survivalist,Specialization,A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.,"5 Locations Discovered, 10 Animals in Bestiary"
-Philosopher,Specialization,A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.,"Intellect of 7, Books Read of 10"
-Opportunist,Specialization,A character who solves problems using speech and dialogue.,"Charisma of 7, Fame of 200"
-Archetype test,Archetype,TEST CODE1,TEST1
-Calling test,Calling,TEST CODE2,TEST2
-Pantheon test,Pantheon,TEST CODE3,TEST3
+Brute,Archetype,A character who uses strength and combat to solve problems. Proficient with many types of weapons.,"Brawn of 6, Any Weapon Talent ~ 10"
+Scoundrel,Archetype,A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.,"Dagger Talent of 6, Virtue of -100"
+Ascetic,Archetype,A character who focuses on disciplining mind and body. They use a combination of combat and intellect.,"10 Errands Complete, Virtue of 100, Willpower of 4"
+Survivalist,Archetype,A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.,"5 Locations Discovered, 10 Animals in Bestiary"
+Philosopher,Archetype,A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.,"Intellect of 7, Books Read of 10"
+Opportunist,Archetype,A character who solves problems using speech and dialogue.,"Charisma of 7, Fame of 200"
+Blacksmith,Calling,A blacksmith dude.,Be a dude ... who likes hitting hot metal.
+Fire god,Pantheon,A fire god dude.,Be a Pyro ... and a dude.

@@ -5,6 +5,8 @@ from sqlalchemy import orm
 from flask import render_template_string
 
 from base_classes import Base
+from factories import TemplateMixin
+from build_code import normalize_attrib_name
 import pdb
 
 # This is a list of specializations. Your hero can have one of each type active at any time. There are 4 types of specs.
@@ -22,7 +24,7 @@ SPECIALIZATIONS_CATEGORIES = ['archetype', 'calling']
 {% import 'container_helpers.py' as container_helpers %}
 {{ container_helpers.build_container("Ability", "abilities", ALL_SPECIALIZATIONS, no_container=True) }}
 
-class Specialization(Base):
+class Specialization(TemplateMixin, Base):
     __tablename__ = "specialization"
 
     id = Column(Integer, primary_key=True)
@@ -30,27 +32,33 @@ class Specialization(Base):
     type = Column(String(50))
     description = Column(String(200))
     requirements = Column(String(50))
+    attrib_name = Column(String(50))
 
     # Relationships
     # Each hero can have one list of abilities (bi, one to one)
     hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
-    hero = relationship("Hero", back_populates="specializations")
+    hero = relationship(
+        "Hero",
+        back_populates="_specializations",
+        cascade="all, delete-orphan",
+        single_parent=True)
 
-    # I DONT KNOW WHAT THIS DOES!!!?? :'( - Elthran
     __mapper_args__ = {
         'polymorphic_identity': 'Specialization',
         'polymorphic_on': type
     }
 
-    def __init__(self, name, description, requirements):
+    def __init__(self, name, description, requirements, template=False):
         self.name = name
+        self.attrib_name = normalize_attrib_name(name)
         self.description = description
         self.requirements = requirements
+        self.template = template
 
 
 class Archetype(Specialization):
     __mapper_args__ = {
-        'polymorphic_identity': 'ArchetypeSpecialization',
+        'polymorphic_identity': 'Archetype',
     }
 
     def __init__(self, *args, **kwargs):
@@ -59,7 +67,7 @@ class Archetype(Specialization):
 
 class Calling(Specialization):
     __mapper_args__ = {
-        'polymorphic_identity': 'CallingSpecialization',
+        'polymorphic_identity': 'Calling',
     }
 
     def __init__(self, *args, **kwargs):
@@ -68,7 +76,7 @@ class Calling(Specialization):
 
 class Pantheon(Specialization):
     __mapper_args__ = {
-        'polymorphic_identity': 'PantheonSpecialization',
+        'polymorphic_identity': 'Pantheon',
     }
 
     def __init__(self, *args, **kwargs):
@@ -77,18 +85,11 @@ class Pantheon(Specialization):
 
 {% for spec in ALL_SPECIALIZATIONS %}
 {% set cls_name = normalize_class_name(spec[0]) %}
-{% set spec_type = "Specialization" if spec[1] in ["BasicSpecialization", "basic"] else spec[1] %}
+{% set spec_type = spec[1] %}
 {% set description = spec[2] %}
 {% set requirements = spec[3] %}
-class {{ cls_name }}({{ spec_type }}):
-    attrib_name = "{{ normalize_attrib_name(spec[0]) }}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': '{{ cls_name }}',
-    }
-
-    def __init__(self, args=("{{ cls_name }}", "{{ description }}", "{{ requirements }}"), **kwargs):
-        super().__init__(*args, **kwargs)
+def {{ cls_name }}(template=False):
+    return {{ spec_type }}("{{ cls_name }}", "{{ description }}", "{{ requirements }}", template=template)
 {% if loop.last %}
 {% else %}
 

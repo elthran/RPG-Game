@@ -18,6 +18,7 @@ from pprint import pprint
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import desc
+import sqlalchemy.exc
 
 # Base is the initialize SQLAlchemy base class. It is used to set up the
 # table metadata.
@@ -31,7 +32,7 @@ from game import User, round_number_intelligently
 from inbox import Inbox, Message
 from hero import Hero
 from abilities import Ability
-from specializations import Specialization
+from specializations import Specialization, Archetype, Calling, Pantheon
 from locations import Location
 from items import Item
 from quests import Quest, QuestPath
@@ -183,6 +184,33 @@ class EZDB:
         else:
             raise IndexError(
                 "No '{}' with id '{}' exists.".format(obj_name, obj_id))
+
+    def get_all_objects(self, obj_name, template=True):
+        """Return all objects given of this class name and template condition.
+
+        Return error if name doesn't exist in global scope.
+        obj = getattr(globals(), name)
+
+        Name must be properly capitalized!
+        """
+        try:
+            obj = globals()[obj_name]
+        except IndexError:
+            raise Exception(
+                "Object name: '{}' is not an "
+                "object, or has not been imported into "
+                "'database' module yet.".format(obj_name))
+        db_obj = None
+        try:
+            db_obj = self.session.query(obj).filter_by(template=template).all()
+        except sqlalchemy.exc.InvalidRequestError as ex:
+            if "has no property 'template'" in str(ex):
+                db_obj = self.session.query(obj).all()
+        if db_obj:
+            return db_obj
+        else:
+            raise IndexError(
+                "No '{}' objects exist.".format(obj_name))
 
     def get_learnable_abilities(self, hero):
         """Get all learnable abilities of a given hero."""

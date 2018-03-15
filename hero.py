@@ -8,7 +8,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
 from sqlalchemy.orm import validates
-from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from game import round_number_intelligently
 import attributes
@@ -106,13 +106,6 @@ class Hero(SessionHoistMixin, Base):
         back_populates='hero',
         cascade="all, delete-orphan")
 
-    # Hero to specializations relationship
-    specializations = relationship(
-        "Specialization",
-        collection_class=attribute_mapped_dict_hybrid('attrib_name'),
-        back_populates="hero",
-        cascade="all, delete-orphan")
-
     # Each Hero has One inventory. (One to One -> bidirectional)
     # inventory is list of character's items.
     inventory = relationship("Inventory", back_populates="hero", uselist=False,
@@ -162,6 +155,162 @@ class Hero(SessionHoistMixin, Base):
             return value
         raise Exception("'current_world' Location type must be 'map' not '{}'."
                         "".format(value.type))
+
+    # Hero to Specializations relationship - One to Many
+    _specializations = relationship(
+        "Specialization",
+        foreign_keys="[Specialization.hero_id]",
+        back_populates="hero",
+        cascade="all, delete-orphan")
+    _calling = relationship(
+        "Specialization",
+        primaryjoin="and_(Hero.id==Specialization.hero_id, "
+                    "Specialization.type=='Calling')",
+        back_populates="hero",
+        uselist=False,
+        cascade="all, delete-orphan")
+    _archetype = relationship(
+        "Specialization",
+        primaryjoin="and_(Hero.id==Specialization.hero_id, "
+                    "Specialization.type=='Archetype')",
+        uselist=False,
+        back_populates="hero",
+        cascade="all, delete-orphan")
+    _pantheon = relationship(
+        "Specialization",
+        primaryjoin="and_(Hero.id==Specialization.hero_id, "
+                    "Specialization.type=='Pantheon')",
+        uselist=False,
+        back_populates="hero",
+        cascade="all, delete-orphan")
+
+    @hybrid_property
+    def specializations(self):
+        collection = DictHybrid(key_attr='attrib_name')
+        collection['basic'] = self._specializations
+        collection['archetype'] = self._archetype
+        collection['calling'] = self._calling
+        collection['pantheon'] = self._pantheon
+        return collection
+
+    @specializations.setter
+    def specializations(self, value):
+        """Update the specializations classes relationships.
+
+        If passing a template ... make a new value an use that instead.
+        """
+        if value.template:
+            getattr(specializations, value.name)().hero = self
+        else:
+            value.hero = self
+
+    def __init__(self, **kwargs):
+        """Initialize the Hero object.
+
+        Currently only accepts keywords. Consider changing this.
+        Consider having some Non-null values?
+
+        exp_percent is now updated by current_exp using a validator.
+        max_exp should be assigned a value before current_exp.
+        """
+
+        # Add all attributes to hero.
+        for cls_name in attributes.ALL_CLASS_NAMES:
+            AttributeClass = getattr(attributes, cls_name)
+            AttributeClass().hero = self
+
+        # set self.base_proficiencies
+        # e.g.
+        # import proficiencies
+        # Class = proficiencies.Accuracy
+        # obj = Accuracy()
+        # accuracy.hero = self (current hero object)
+        # hero.base_proficiencies['accuracy'] = Accuracy()
+        for cls_name in proficiencies.ALL_CLASS_NAMES:
+            # attributes.Attribute
+            # pdb.set_trace()
+            ProfClass = getattr(proficiencies, cls_name)
+            ProfClass().hero = self
+
+        self.base_proficiencies['endurance'].current = self.base_proficiencies['endurance'].final
+
+        # Attach one of each Ability to hero.
+        for cls_name in abilities.ALL_CLASS_NAMES:
+            AbilityClass = getattr(abilities, cls_name)
+            AbilityClass().hero = self
+
+        # Attach one of each Specialization to hero.
+        for cls_name in specializations.ALL_CLASS_NAMES:
+            Class = getattr(specializations, cls_name)
+            obj = Class()
+            if obj.type == "Specialization":
+                obj.hero = self
+
+        self.inventory = Inventory()
+        self.journal = Journal()
+
+        # Data and statistics
+        self.age = 7
+        # self.archetype = None
+        # self.calling = SpecializationContainer()
+        # self.pantheon = SpecializationContainer()
+        self.house = None
+        self.background = ""
+        self.experience_percent = 0
+        self.experience = 0
+        self.experience_maximum = 10
+        self.renown = 0
+        self.virtue = 0
+        self.devotion = 0
+        self.gold = 50
+
+        # Spendable points
+        self.basic_ability_points = 5
+        self.archetype_ability_points = 0
+        self.calling_ability_points = 0
+        self.pantheon_ability_points = 0
+        self.attribute_points = 0
+        self.proficiency_points = 0
+
+        # Achievements and statistics
+        self.current_terrain = "city"
+        self.deepest_dungeon_floor = 0
+        self.current_dungeon_floor = 0
+        self.current_dungeon_floor_progress = 0
+        self.random_encounter_monster = None
+        self.player_kills = 0
+        self.monster_kills = 0
+        self.deaths = 0
+
+        # Time code and login alerts
+        self.timestamp = datetime.datetime.utcnow()
+        self.last_login = ""
+        self.login_alerts = "testing"
+
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
+
+        self.refresh_character(full=True)
+        self.init_on_load()
+
+    @orm.reconstructor
+    def init_on_load(self):
+        """Runs when the database is reload and at the end of __init__.
+        """
+        # I don't even know if this is supposed to be rebuilt? (Marlen)
+        self.refresh_proficiencies()
+
+        # resets experience_percent
+        self.experience = self.experience
+
+    @validates('experience')
+    def validate_experience(self, key_name, current):
+        # Update experience percent on experience change.
+        try:
+            self.experience_percent = min(round(current / self.experience_maximum, 2) * 100, 100)
+        except (TypeError, ZeroDivisionError):
+            self.experience_percent = 0
+        return max(current or 0, 0)
 
     def get_summed_proficiencies(self, key_name=None):
         """Summed value of all derivative proficiency objects.
@@ -263,121 +412,6 @@ class Hero(SessionHoistMixin, Base):
                 summed[key].current = self.base_proficiencies[key].current
             self.proficiencies = DictHybrid(summed, key_attr='name')
             return self.proficiencies
-
-    def __init__(self, **kwargs):
-        """Initialize the Hero object.
-
-        Currently only accepts keywords. Consider changing this.
-        Consider having some Non-null values?
-
-        exp_percent is now updated by current_exp using a validator.
-        max_exp should be assigned a value before current_exp.
-        """
-
-        # Add all attributes to hero.
-        for cls_name in attributes.ALL_CLASS_NAMES:
-            AttributeClass = getattr(attributes, cls_name)
-            AttributeClass().hero = self
-
-        # set self.base_proficiencies
-        # e.g.
-        # import proficiencies
-        # Class = proficiencies.Accuracy
-        # obj = Accuracy()
-        # accuracy.hero = self (current hero object)
-        # hero.base_proficiencies['accuracy'] = Accuracy()
-        for cls_name in proficiencies.ALL_CLASS_NAMES:
-            # attributes.Attribute
-            # pdb.set_trace()
-            ProfClass = getattr(proficiencies, cls_name)
-            ProfClass().hero = self
-
-        self.base_proficiencies['endurance'].current = self.base_proficiencies['endurance'].final
-
-        # Attach one of each Ability to hero.
-        for cls_name in abilities.ALL_CLASS_NAMES:
-            AbilityClass = getattr(abilities, cls_name)
-            AbilityClass().hero = self
-
-        # Attach one of each Ability to hero.
-        for cls_name in specializations.ALL_CLASS_NAMES:
-            Class = getattr(specializations, cls_name)
-            Class().hero = self
-
-        self.inventory = Inventory()
-        self.journal = Journal()
-
-        # Data and statistics
-        self.age = 7
-        # self.archetype = None
-        # self.calling = SpecializationContainer()
-        # self.pantheon = SpecializationContainer()
-        self.house = None
-        self.background = ""
-        self.experience_percent = 0
-        self.experience = 0
-        self.experience_maximum = 10
-        self.renown = 0
-        self.virtue = 0
-        self.devotion = 0
-        self.gold = 50
-
-        # Spendable points
-        self.basic_ability_points = 5
-        self.archetype_ability_points = 0
-        self.calling_ability_points = 0
-        self.pantheon_ability_points = 0
-        self.attribute_points = 0
-        self.proficiency_points = 0
-
-        # Achievements and statistics
-        self.current_terrain = "city"
-        self.deepest_dungeon_floor = 0
-        self.current_dungeon_floor = 0
-        self.current_dungeon_floor_progress = 0
-        self.random_encounter_monster = None
-        self.player_kills = 0
-        self.monster_kills = 0
-        self.deaths = 0
-
-        # Time code and login alerts
-        self.timestamp = datetime.datetime.utcnow()
-        self.last_login = ""
-        self.login_alerts = "testing"
-
-        for key in kwargs:
-            setattr(self, key, kwargs[key])
-
-        self.refresh_character(full=True)
-        self.init_on_load()
-
-    @orm.reconstructor
-    def init_on_load(self):
-        """Runs when the database is reload and at the end of __init__.
-        """
-        # I don't even know if this is supposed to be rebuilt? (Marlen)
-        self.refresh_proficiencies()
-
-        # resets experience_percent
-        self.experience = self.experience
-
-    @validates('experience')
-    def validate_experience(self, key_name, current):
-        # Update experience percent on experience change.
-        try:
-            self.experience_percent = min(round(current / self.experience_maximum, 2) * 100, 100)
-        except (TypeError, ZeroDivisionError):
-            self.experience_percent = 0
-        return max(current or 0, 0)
-
-    # def not_yet_implemented(self):
-    #     self.kill_quests = BaseDict()
-    #     self.chest_equipped = []
-    #     self.errands = []
-    #     self.completed_quests = []
-    #     self.completed_achievements = []
-    #     self.bestiary = []
-    #     self.wolf_kills = 0
 
     def refresh_proficiencies(self):
         pass
