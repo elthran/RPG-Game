@@ -322,6 +322,8 @@ class Command:
         spec_id = data['id']
         specialization = database.get_object_by_id("Specialization", spec_id)
         # spec.level += 1 or something?
+
+        # You can ignore templating here as hero takes care of it.
         hero.specializations = specialization
         pprint(hero.specializations)
         spec = data['spec']
