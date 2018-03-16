@@ -681,6 +681,9 @@ def proficiencies(hero=None):
 @login_required
 @uses_hero
 def ability_tree(spec, hero=None):
+    for prof in hero.get_summed_proficiencies():
+        if prof.name == "stealth" or prof.name == "health":
+            print(prof,"\n")
     if spec == "archetype" and hero.specializations.archetype is None: # On the archetype pagebut the hero doesn't have one!
         becomeType = "archetype"
         spec_choices = database.get_all_objects("Archetype")
