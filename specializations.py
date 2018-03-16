@@ -21,15 +21,15 @@ import pdb
 # Each of the 4 choices unlocks different abilities to learn. So each character will be very unique based on the 4 paths they choose.
 # name, type, description, requirements
 
-ALL_SPECIALIZATIONS = [('Brute', 'Archetype', 'A character who uses strength and combat to solve problems. Proficient with many types of weapons.', 'Brawn of 6, Any Weapon Talent ~ 10'), ('Scoundrel', 'Archetype', 'A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.', 'Dagger Talent of 6, Virtue of -100'), ('Ascetic', 'Archetype', 'A character who focuses on disciplining mind and body. They use a combination of combat and intellect.', '10 Errands Complete, Virtue of 100, Willpower of 4'), ('Survivalist', 'Archetype', 'A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.', '5 Locations Discovered, 10 Animals in Bestiary'), ('Philosopher', 'Archetype', 'A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.', 'Intellect of 7, Books Read of 10'), ('Opportunist', 'Archetype', 'A character who solves problems using speech and dialogue.', 'Charisma of 7, Fame of 200'), ('Blacksmith', 'Calling', 'A blacksmith dude.', 'Be a dude ... who likes hitting hot metal.'), ('Fire god', 'Pantheon', 'A fire god dude.', 'Be a Pyro ... and a dude.')]
+ALL_SPECIALIZATIONS = [('Brute', 'Archetype', 'A character who uses strength and combat to solve problems. Proficient with many types of weapons.', 'Brawn of 6, Any Weapon Talent ~ 10'), ('Scoundrel', 'Archetype', 'A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.', 'Dagger Talent of 6, Virtue of -100'), ('Ascetic', 'Archetype', 'A character who focuses on disciplining mind and body. They use a combination of combat and intellect.', '10 Errands Complete, Virtue of 100, Willpower of 4'), ('Survivalist', 'Archetype', 'A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.', '5 Locations Discovered, 10 Animals in Bestiary'), ('Philosopher', 'Archetype', 'A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.', 'Intellect of 7, Books Read of 10'), ('Opportunist', 'Archetype', 'A character who solves problems using speech and dialogue.', 'Charisma of 7, Fame of 200'), ('Test Calling', 'Calling', 'A blacksmith dude.', 'Be a dude ... who likes hitting hot metal.'), ('Test Pantheon', 'Pantheon', 'A fire god dude.', 'Be a Pyro ... and a dude.')]
 
 SPECIALIZATION_NAMES = [key[0] for key in ALL_SPECIALIZATIONS]
 
 SPECIALIZATIONS_CATEGORIES = ['archetype', 'calling']
 
-ALL_NAMES = ['Ascetic', 'Blacksmith', 'Brute', 'Fire god', 'Opportunist', 'Philosopher', 'Scoundrel', 'Survivalist']
-ALL_ATTRIBUTE_NAMES = ['ascetic', 'blacksmith', 'brute', 'fire_god', 'opportunist', 'philosopher', 'scoundrel', 'survivalist']
-ALL_CLASS_NAMES = ['Ascetic', 'Blacksmith', 'Brute', 'FireGod', 'Opportunist', 'Philosopher', 'Scoundrel', 'Survivalist']
+ALL_NAMES = ['Ascetic', 'Brute', 'Opportunist', 'Philosopher', 'Scoundrel', 'Survivalist', 'Test  calling', 'Test  pantheon']
+ALL_ATTRIBUTE_NAMES = ['ascetic', 'brute', 'opportunist', 'philosopher', 'scoundrel', 'survivalist', 'test__calling', 'test__pantheon']
+ALL_CLASS_NAMES = ['Ascetic', 'Brute', 'Opportunist', 'Philosopher', 'Scoundrel', 'Survivalist', 'TestCalling', 'TestPantheon']
 
 
 class Specialization(TemplateMixin, Base):
@@ -57,11 +57,6 @@ class Specialization(TemplateMixin, Base):
     }
 
     def __init__(self, name, description, requirements, template=False):
-        """Create a new Specialization object.
-
-        NOTE: you can pretty much ignore templating hero as when you
-        assign a value to a hero it creates a new object from the template.
-        """
         self.name = name
         self.attrib_name = normalize_attrib_name(name)
         self.description = description
@@ -120,9 +115,9 @@ def Opportunist(template=False):
     return Archetype("Opportunist", "A character who solves problems using speech and dialogue.", "Charisma of 7, Fame of 200", template=template)
 
 
-def Blacksmith(template=False):
-    return Calling("Blacksmith", "A blacksmith dude.", "Be a dude ... who likes hitting hot metal.", template=template)
+def TestCalling(template=False):
+    return Calling("TestCalling", "A blacksmith dude.", "Be a dude ... who likes hitting hot metal.", template=template)
 
 
-def FireGod(template=False):
-    return Pantheon("FireGod", "A fire god dude.", "Be a Pyro ... and a dude.", template=template)
+def TestPantheon(template=False):
+    return Pantheon("TestPantheon", "A fire god dude.", "Be a Pyro ... and a dude.", template=template)

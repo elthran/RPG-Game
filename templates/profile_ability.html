@@ -2,27 +2,17 @@
 {% block block1 %}
 <!-- This is the ability page. It let's you learn/upgrade abilities -->
 
-<h1 style="text-align:center;">{{ ability_tree.title() }} Abilities</h1>
 <div style="clear: both;"></div>
 
-{% if ability_tree == "basic" %}
-{% set points_remaining = hero.basic_ability_points %}
-{% elif ability_tree == "archetype" %}
-{% set points_remaining = hero.archetype_ability_points %}
-{% elif ability_tree == "calling" %}
-{% set points_remaining = hero.calling_ability_points %}
-{% elif ability_tree == "pantheon" %}
-{% set points_remaining = hero.pantheon_ability_points %}
-{% endif %}
-
 {% if becomeType %} <!-- The hero hasn't chosen his type. So don't let him choose an ability. Only choose a type. -->
+    <h1 style="text-align:center;">{{ ability_tree.title() }} Abilities</h1>
     <div style="width:1100px;height:500px;">
         <div style="float:left;width:600px;border:dotted;">
             <h2>You have yet to choose a {{ ability_tree }}. After you choose, you will be able to learn abilities related to that {{ ability_tree }}.</h2>
             <ul>
             {% for spec in spec_choices %}
                 <li>
-                    <button class="genericTooltipTrigger" onclick="sendToPy(event, null, 'update_specialization', {'spec': '{{ becomeType }}', 'id': {{ spec.id }}});">
+                    <button class="genericTooltipTrigger" onclick="sendToPy(event, refreshPage, 'update_specialization', {'spec': '{{ becomeType }}', 'id': {{ spec.id }}});">
                         {{ spec.name.title() }}
                     </button>
                 </li>
@@ -30,11 +20,28 @@
             </ul>
         </div>
         <div style="float:left;width:400px;border:dotted;height:auto;padding:5px;margin-left:50px;">
-            <div><span id="abilityTooltip">Click on an ability to see more information.</span></div>
+            <div><span id="abilityTooltip">You must choose a {{ ability_tree.title() }} before you can learn any abilities.</span></div>
             <div><span id="choiceImage"></span></div>
         </div>
     </div>
 {% else %} <!-- Hero has a chosen type. Let him choose their abilities! -->
+
+{% if ability_tree == "basic" %}
+{% set points_remaining = hero.basic_ability_points %}
+{% set spec_name = "Basic" %}
+{% set page_header = "Basic" %}
+{% elif ability_tree == "archetype" %}
+{% set points_remaining = hero.archetype_ability_points %}
+{% set spec_name = hero.specializations.archetype.name %}
+{% elif ability_tree == "calling" %}
+{% set points_remaining = hero.calling_ability_points %}
+{% set spec_name = hero.specializations.calling.name %}
+{% elif ability_tree == "pantheon" %}
+{% set points_remaining = hero.pantheon_ability_points %}
+{% set spec_name = hero.specializations.pantheon.name %}
+{% endif %}
+
+<h1 style="text-align:center;">{{ spec_name }}</h1>
 <div class="stickyPointsRemainingBar">Points Remaining: <div style="display: inline" id="pointsRemaining">{{ points_remaining }}</div></div>
 <div style="clear: both;"></div>
 <div style="width:1100px;height:500px;">
@@ -53,7 +60,7 @@
     </div>
     <div style="float:left;width:400px;border:dotted;height:auto;padding:5px;margin-left:50px;">
         <div>
-            <span id="abilityTooltip">Click on an ability to see more information.</span>
+            <span id="abilityTooltip">These abilities are available to {{ spec_name }} heroes. Click on an ability to see more information about it or to increase its level."</span>
         </div>
     </div>
 </div>
