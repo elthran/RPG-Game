@@ -15,8 +15,11 @@ class Achievements(Base):
     # Achievements to Journal is One to One
     # Journal to Achievements is One to One.
     journal_id = Column(Integer, ForeignKey('journal.id', ondelete="CASCADE"))
-    journal = relationship("Journal", back_populates="achievements",
-                           cascade="all, delete-orphan")
+    journal = relationship(
+        "Journal",
+        back_populates="achievements",
+        cascade="all, delete-orphan",
+        single_parent=True)
 
     deepest_dungeon_floor = Column(Integer)  # High score for dungeon runs
     current_dungeon_floor = Column(Integer)  # Which floor of dungeon your on

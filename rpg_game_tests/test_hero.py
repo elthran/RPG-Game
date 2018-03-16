@@ -79,8 +79,10 @@ class TestHero(GenericTestCase):
         quest
         questpath?
         """
-        blacksmith = Location('Blacksmith', 'store')
-        blacksmith_condition = Condition('current_location', '==', blacksmith)
+        blacksmith = self.db.session.query(Location).filter_by(name='Blacksmith', type='store').one()
+        blacksmith_condition = self.db.session.query(Condition).filter_by(
+            code='current_location', comparison='==', condition_attribute=blacksmith.__table__.name)
+
         visit_blacksmith_trigger = Trigger('move_event', conditions=[blacksmith_condition], extra_info_for_humans='Should activate when the hero.current_location.id == the id of the blacksmith object.')
         buy_item_from_blacksmith_trigger = Trigger(
             'buy_event',
@@ -113,3 +115,18 @@ class TestHero(GenericTestCase):
         assert [obj.id for obj in self.hero.journal.current_quest_paths] == [1]
         # Now for the Engine.
         engine = Engine(self.db)
+        engine.spawn(
+            'move_event',
+            self.hero,
+            description="{} visits {}.".format(self.hero.name, blacksmith.url)
+        )
+
+        assert ''
+
+        engine.spawn(
+                'buy_event',
+                self.hero,
+                description="{} buys a/an {}.".format(self.hero.name, "Sword.")
+            )
+
+        assert ''

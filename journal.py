@@ -86,8 +86,11 @@ class Journal(Base):
     # Hero to Journal is One to One
     hero_id = Column(Integer, ForeignKey('hero.id',
                                          ondelete="CASCADE"))
-    hero = relationship("Hero", back_populates='journal',
-                        cascade="all, delete-orphan")
+    hero = relationship(
+        "Hero",
+        back_populates='journal',
+        cascade="all, delete-orphan",
+        single_parent=True)
 
     # Journal to QuestPath is One to Many
     # QuestPath provides many special methods.
