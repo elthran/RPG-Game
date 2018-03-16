@@ -309,7 +309,6 @@ class Command:
     def update_ability(hero, database, data, **kwargs):
         ability_id = data['id']
         ability = database.get_ability_by_id(ability_id)
-        print(ability)
         if hero.basic_ability_points <= 0 or ability.is_max_level():
             return "error: no ability_points or ability is at max level."
         hero.basic_ability_points -= 1
@@ -319,23 +318,20 @@ class Command:
                        level=ability.level)
 
     @staticmethod
-    def change_ability_choice_tooltip(hero, database, arg_dict, **kwargs):
-        choice = arg_dict.get('data', None, type=str)
-        choice = choice.split("-")
-        image = choice[0]
-        description = choice[1]
-        return "{}&&{}".format(description, image)
+    def update_specialization(hero, database, data, **kwargs):
+        spec_id = data['id']
+        specialization = database.get_object_by_id("Specialization", spec_id)
+        # spec.level += 1 or something?
 
-    @staticmethod
-    def update_specialization(hero, database, arg_dict, **kwargs):
-        print(arg_dict)
-        choice = arg_dict.get('data', None, type=str)
-        print(choice)
-        spec = choice.split("_")
-        spec_type, spec_name = spec[0], spec[1].title()
-        specialization = database.get_object_by_name("Specialization", spec_name)
-        setattr(hero.specializations, spec_type, specialization)
-        return "success".format()
+        # You can ignore templating here as hero takes care of it.
+        hero.specializations = specialization
+        pprint(hero.specializations)
+        spec = data['spec']
+        print("The hero's " + spec + " should be " + specialization.name)
+        # PLEASE MAKE THE ABOVE PRINT STATEMENT TRUE!!!!!!!!!!!!!!!!!!!!!!!
+        #specialization = database.get_object_by_name("Specialization", choice)
+        #setattr(hero.specializations, choice, specialization)
+        return jsonify(tooltip="Temp", pointsRemaining=0, level=0)
 
     # This should be combined with function below when I know how to pass a path.id
     @staticmethod

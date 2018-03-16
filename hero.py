@@ -8,7 +8,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
 from sqlalchemy.orm import validates
-from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from game import round_number_intelligently
 import attributes
@@ -16,7 +16,7 @@ import abilities
 import proficiencies
 from inventory import Inventory
 from journal import Journal
-from specializations import SpecializationContainer
+import specializations
 from session_helpers import SessionHoistMixin
 from base_classes import Base, DictHybrid, attribute_mapped_dict_hybrid
 
@@ -99,11 +99,6 @@ class Hero(SessionHoistMixin, Base):
         back_populates='hero',
         cascade="all, delete-orphan")
 
-    # Hero to specializations relationship
-    specializations = relationship(
-        "SpecializationContainer", back_populates="hero", uselist=False,
-        cascade="all, delete-orphan")
-
     # Each Hero has One inventory. (One to One -> bidirectional)
     # inventory is list of character's items.
     inventory = relationship("Inventory", back_populates="hero", uselist=False,
@@ -154,106 +149,92 @@ class Hero(SessionHoistMixin, Base):
         raise Exception("'current_world' Location type must be 'map' not '{}'."
                         "".format(value.type))
 
-    def get_summed_proficiencies(self, key_name=None):
-        """Summed value of all derivative proficiency objects.
+    # Hero to Specializations relationship - One to Many
+    # These relationships can be modified through the 'specializations'
+    # container.
+    _specializations = relationship(
+        "Specialization",
+        collection_class=attribute_mapped_dict_hybrid("attrib_name"),
+        back_populates="hero",
+        cascade="all, delete-orphan")
+    # Hero to Calling is One to One
+    _calling = relationship(
+        "Specialization",
+        primaryjoin="and_(Hero.id==Specialization.hero_id, "
+                    "Specialization.type=='Calling')",
+        back_populates="hero",
+        uselist=False,
+        cascade="all, delete-orphan")
+    # Hero to Archetype is One to One
+    _archetype = relationship(
+        "Specialization",
+        primaryjoin="and_(Hero.id==Specialization.hero_id, "
+                    "Specialization.type=='Archetype')",
+        uselist=False,
+        back_populates="hero",
+        cascade="all, delete-orphan")
+    # Hero to Pantheon is One to One.
+    _pantheon = relationship(
+        "Specialization",
+        primaryjoin="and_(Hero.id==Specialization.hero_id, "
+                    "Specialization.type=='Pantheon')",
+        uselist=False,
+        back_populates="hero",
+        cascade="all, delete-orphan")
 
-        Returns a Map object. This is a virtual object dictionary.
+    @hybrid_property
+    def specializations(self):
+        """Wrapper for the hero Specialziation objects.
 
-        Should allow you to do this:
-            hero.get_summed_proficiencies()['defence'].modifier
-            hero.get_summed_proficiencies()['defence'].get_final_value()
-            hero.get_suumed_proficiencies()['defence'].percent
+        These variables can be accessed via:
+        for obj in hero.specializations:
+            print(obj)
+        -> all (Container)
+        -> archetype object
+        -> calling object
+        -> pantheon object
 
-        OR
-            hero.get_summed_proficiencies().defence.modifier
-        OR (more efficiently)
-            hero.get_summed_proficiencies('defence').modifier
+        hero.specializations.archetype
+        hero.specializations.calling
+        hero.specializations.pantheon
+        hero.specializations.all
 
-        NOTE: the value of get_summed_proficiencies is saved in the
-        hero.proficiencies attribute.
-        This can be used for much increase efficiency. Since each call of
-        get_summed_proficiencies() rechecks _all_ proficiecies.
-        The more efficient way is to do it once and then call
-            hero.proficiencies afterwards. Until you need to recheck.
-        You can also recheck just one value using:
-            get_summed_proficiencies(key_name='defence')
+        hero.specializations.all is a container class too! So you can do:
+        for obj in hero.specializations.all:
+            print(obj)
+        To print out _all_ Specialization objects attached to this hero.
 
+        also:
+        hero.specializations.all.brute -> if this hero has Brute Spec.
         """
 
-        summed = {}
-        if key_name:
-            prof = self.base_proficiencies[key_name]
+        collection = DictHybrid(key_attr='attrib_name')
+        collection['all'] = self._specializations
+        collection['archetype'] = self._archetype
+        collection['calling'] = self._calling
+        collection['pantheon'] = self._pantheon
+        return collection
 
-            # outside_profs = self.session.query(
-            #     proficiencies.Proficiency).filter_by(type_=prof.type_, hero_id=None)
-            # outside_profs += self.session.query(
-            #     proficiencies.Proficiency).filter_by(type_=prof.type_, hero_id=self.id)
-            # outside_profs += self.session.query(
-            #     proficiencies.Proficiency).filter_by(type_=prof.type_, ability_id=self.id)
-            # print("Before printing profs!")
-            # for prof in outside_profs:
-            #     print(prof.name)
-            # print("After printing profs!")
-            # exit()
+    @specializations.setter
+    def specializations(self, value):
+        """Update the specializations classes relationships.
 
-            summed[prof.name] = [prof.level, prof.base, prof.modifier, prof.type_]
-            # print(self.session.query(proficiencies.Proficiency).)
-            # pdb.set_trace()
-            for obj in self.equipped_items() + [obj for obj in self.abilities
-                                                if obj.level]:
-                try:
-                    prof = obj.proficiencies[key_name]
-                except KeyError:
-                    continue
-                if prof.name in summed:
-                    current_level, current_base, current_modifier, type_ = summed[prof.name]
-                    summed[prof.name] = [current_level + prof.level,
-                                         current_base + prof.base,
-                                         current_modifier + prof.modifier,
-                                         type_]
-                else:
-                    summed[prof.name] = [prof.level, prof.base, prof.modifier, prof.type_]
+        If passing a template ... make a new value an use that instead.
 
-            lvl, base, mod, type_ = summed[key_name]
+        You can add a new object to the hero via. I know that that is a bit
+        counter-intuitive but hey ... it works.
+            hero.specializations = specialization
 
-            # convert dict of values into dict of database objects
-            Class = getattr(proficiencies, type_)
-            summed[key_name] = Class(level=lvl, base=base, modifier=mod)
-            summed[key_name].current = prof.current
-
-            # If proficiencies exists update it. If not just return this
-            # mapped object.
-            try:
-                self.proficiencies[key_name] = summed[key_name]
-            except AttributeError:
-                pass
-            return summed[key_name]
-        else:  # Get the latest combined values of all proficiencies!
-            for prof in self.base_proficiencies:
-                summed[prof.name] = [prof.level, prof.base, prof.modifier,
-                                     prof.type_]
-
-            for obj in self.equipped_items() + [obj for obj in self.abilities]:
-                for prof in obj.proficiencies:
-                    if prof.name in summed:
-                        # Add 1st to 1st, 2nd to 2nc etc.
-                        # Drops the type which we add back in afterwards.
-                        summed[prof.name] = [sum(v) for v in zip(
-                            summed[prof.name],
-                            [prof.level, prof.base, prof.modifier])]
-                        summed[prof.name].append(prof.type_)
-                    else:
-                        summed[prof.name] = [prof.level, prof.base,
-                                             prof.modifier, prof.type_]
-
-            for key in summed:
-                lvl, base, mod, type_ = summed[key]
-
-                Class = getattr(proficiencies, type_)
-                summed[key] = Class(level=lvl, base=base, modifier=mod)
-                summed[key].current = self.base_proficiencies[key].current
-            self.proficiencies = DictHybrid(summed, key_attr='name')
-            return self.proficiencies
+        To remove an object from the hero do:
+            hero.specializations.archetype.hero = None
+        This will set the objects hero to None which will remove it from this
+        hero. I'm not sure if doing hero.specializations.archetype = None
+        will have any effect.
+        """
+        if value.template:
+            getattr(specializations, value.name)().hero = self
+        else:
+            value.hero = self
 
     def __init__(self, **kwargs):
         """Initialize the Hero object.
@@ -279,7 +260,6 @@ class Hero(SessionHoistMixin, Base):
         # hero.base_proficiencies['accuracy'] = Accuracy()
         for cls_name in proficiencies.ALL_CLASS_NAMES:
             # attributes.Attribute
-            # pdb.set_trace()
             ProfClass = getattr(proficiencies, cls_name)
             ProfClass().hero = self
 
@@ -290,9 +270,15 @@ class Hero(SessionHoistMixin, Base):
             AbilityClass = getattr(abilities, cls_name)
             AbilityClass().hero = self
 
+        # Attach one of each Specialization to hero.
+        for cls_name in specializations.ALL_CLASS_NAMES:
+            Class = getattr(specializations, cls_name)
+            obj = Class()
+            if obj.type == "Specialization":
+                obj.hero = self
+
         self.inventory = Inventory()
         self.journal = Journal()
-        self.specializations = SpecializationContainer()
 
         # Data and statistics
         self.age = 7
@@ -337,7 +323,7 @@ class Hero(SessionHoistMixin, Base):
         """Runs when the database is reload and at the end of __init__.
         """
         # I don't even know if this is supposed to be rebuilt? (Marlen)
-        self.refresh_proficiencies()
+        # self.refresh_proficiencies()
 
         # resets experience_percent
         self.experience = self.experience
@@ -350,6 +336,109 @@ class Hero(SessionHoistMixin, Base):
         except (TypeError, ZeroDivisionError):
             self.experience_percent = 0
         return max(current or 0, 0)
+
+    def get_summed_proficiencies(self, key_name=None):
+        """Summed value of all derivative proficiency objects.
+
+        Returns a Map object. This is a virtual object dictionary.
+
+        Should allow you to do this:
+            hero.get_summed_proficiencies()['defence'].modifier
+            hero.get_summed_proficiencies()['defence'].get_final_value()
+            hero.get_suumed_proficiencies()['defence'].percent
+
+        OR
+            hero.get_summed_proficiencies().defence.modifier
+        OR (more efficiently)
+            hero.get_summed_proficiencies('defence').modifier
+
+        NOTE: the value of get_summed_proficiencies is saved in the
+        hero.proficiencies attribute.
+        This can be used for much increase efficiency. Since each call of
+        get_summed_proficiencies() rechecks _all_ proficiecies.
+        The more efficient way is to do it once and then call
+            hero.proficiencies afterwards. Until you need to recheck.
+        You can also recheck just one value using:
+            get_summed_proficiencies(key_name='defence')
+
+        """
+
+        all_other_proficiencies = self.equipped_items() + \
+                                  [obj for obj in self.abilities if obj.level]
+
+        summed = {}
+        if key_name:
+            prof = self.base_proficiencies[key_name]
+
+            # outside_profs = self.session.query(
+            #     proficiencies.Proficiency).filter_by(type_=prof.type_, hero_id=None)
+            # outside_profs += self.session.query(
+            #     proficiencies.Proficiency).filter_by(type_=prof.type_, hero_id=self.id)
+            # outside_profs += self.session.query(
+            #     proficiencies.Proficiency).filter_by(type_=prof.type_, ability_id=self.id)
+            # print("Before printing profs!")
+            # for prof in outside_profs:
+            #     print(prof.name)
+            # print("After printing profs!")
+            # exit()
+
+            summed[prof.name] = [prof.level, prof.base, prof.modifier, prof.type_]
+            # print(self.session.query(proficiencies.Proficiency).)
+            # pdb.set_trace()
+            for obj in all_other_proficiencies:
+                try:
+                    prof = obj.proficiencies[key_name]
+                except KeyError:
+                    continue
+                if prof.name in summed:
+                    current_level, current_base, current_modifier, type_ = summed[prof.name]
+                    summed[prof.name] = [current_level + prof.level,
+                                         current_base + prof.base,
+                                         current_modifier + prof.modifier,
+                                         type_]
+                else:
+                    summed[prof.name] = [prof.level, prof.base, prof.modifier, prof.type_]
+
+            lvl, base, mod, type_ = summed[key_name]
+
+            # convert dict of values into dict of database objects
+            Class = getattr(proficiencies, type_)
+            summed[key_name] = Class(level=lvl, base=base, modifier=mod)
+            summed[key_name].current = prof.current
+
+            # If proficiencies exists update it. If not just return this
+            # mapped object.
+            try:
+                self.proficiencies[key_name] = summed[key_name]
+            except AttributeError:
+                pass
+            return summed[key_name]
+        else:  # Get the latest combined values of all proficiencies!
+            for prof in self.base_proficiencies:
+                summed[prof.name] = [prof.level, prof.base, prof.modifier,
+                                     prof.type_]
+
+            for obj in all_other_proficiencies:
+                for prof in obj.proficiencies:
+                    if prof.name in summed:
+                        # Add 1st to 1st, 2nd to 2nc etc.
+                        # Drops the type which we add back in afterwards.
+                        summed[prof.name] = [sum(v) for v in zip(
+                            summed[prof.name],
+                            [prof.level, prof.base, prof.modifier])]
+                        summed[prof.name].append(prof.type_)
+                    else:
+                        summed[prof.name] = [prof.level, prof.base,
+                                             prof.modifier, prof.type_]
+
+            for key in summed:
+                lvl, base, mod, type_ = summed[key]
+
+                Class = getattr(proficiencies, type_)
+                summed[key] = Class(level=lvl, base=base, modifier=mod)
+                summed[key].current = self.base_proficiencies[key].current
+            self.proficiencies = DictHybrid(summed, key_attr='name')
+            return self.proficiencies
 
     def refresh_proficiencies(self):
         pass

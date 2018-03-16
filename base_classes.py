@@ -56,6 +56,8 @@ class DictHybrid(MappedCollection):
     Defaults to keying on object 'type'.
     """
 
+    invalid_keys = {'__emulates__', 'id', 'keyfunc', '_sa_adapter'}
+
     def __init__(self, *args, key_attr='type', **kwargs):
         """Create a new DictHybrid with keying on 'type'.
 
@@ -101,7 +103,7 @@ class DictHybrid(MappedCollection):
         self.id ... returns self.id like a normal object.
         self.some_key ... returns self[some_key] as though self was a dict.
         """
-        if attr not in {'__emulates__', 'id', 'keyfunc'}:
+        if attr not in self.invalid_keys:
             return self[attr]
         return self.get(attr)
 
@@ -117,7 +119,7 @@ class DictHybrid(MappedCollection):
         self.keyfunc = somefunc ... sets self.keyfunc like a normal object.
         self.some_key ... sets self[some_key] as though self was a dict.
         """
-        if key not in {'keyfunc', '_sa_adapter'}:
+        if key not in self.invalid_keys:
             self.__setitem__(key, _sa_initiator)
         super().__setattr__(key, _sa_initiator)
 
