@@ -186,7 +186,8 @@ class Ability(Base):
         return self.level >= self.max_level
 
     def update_stats(self, hero):
-        hero.refresh_proficiencies()
+        pass
+        # hero.refresh_proficiencies()
 
     def activate(self, hero):
         return self.cast(hero)

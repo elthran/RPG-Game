@@ -267,7 +267,6 @@ class Hero(SessionHoistMixin, Base):
         # hero.base_proficiencies['accuracy'] = Accuracy()
         for cls_name in proficiencies.ALL_CLASS_NAMES:
             # attributes.Attribute
-            # pdb.set_trace()
             ProfClass = getattr(proficiencies, cls_name)
             ProfClass().hero = self
 
@@ -337,7 +336,7 @@ class Hero(SessionHoistMixin, Base):
         """Runs when the database is reload and at the end of __init__.
         """
         # I don't even know if this is supposed to be rebuilt? (Marlen)
-        self.refresh_proficiencies()
+        # self.refresh_proficiencies()
 
         # resets experience_percent
         self.experience = self.experience
@@ -377,6 +376,9 @@ class Hero(SessionHoistMixin, Base):
 
         """
 
+        all_other_proficiencies = self.equipped_items() + \
+                                  [obj for obj in self.abilities if obj.level]
+
         summed = {}
         if key_name:
             prof = self.base_proficiencies[key_name]
@@ -396,8 +398,7 @@ class Hero(SessionHoistMixin, Base):
             summed[prof.name] = [prof.level, prof.base, prof.modifier, prof.type_]
             # print(self.session.query(proficiencies.Proficiency).)
             # pdb.set_trace()
-            for obj in self.equipped_items() + [obj for obj in self.abilities
-                                                if obj.level]:
+            for obj in all_other_proficiencies:
                 try:
                     prof = obj.proficiencies[key_name]
                 except KeyError:
@@ -430,7 +431,7 @@ class Hero(SessionHoistMixin, Base):
                 summed[prof.name] = [prof.level, prof.base, prof.modifier,
                                      prof.type_]
 
-            for obj in self.equipped_items() + [obj for obj in self.abilities]:
+            for obj in all_other_proficiencies:
                 for prof in obj.proficiencies:
                     if prof.name in summed:
                         # Add 1st to 1st, 2nd to 2nc etc.

@@ -141,7 +141,7 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
         """
         if self.broken:
             return None
-        hero.refresh_proficiencies()
+        # hero.refresh_proficiencies()
 
     # Both of these need to be modified. I am not sure how to make
     # Each item in an inventory set the correct inventory id ... while
