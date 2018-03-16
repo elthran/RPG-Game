@@ -529,7 +529,7 @@ class EZDB:
         for item in hero.equipped_items():
             item.affinity += 1
 
-        print("Hero {} updated on schedule.".format(hero.id))
+        # print("Hero {} updated on schedule.".format(hero.id))
 
     # def get_world(self, name):
     #     """Return WorldMap object from database using by name.
