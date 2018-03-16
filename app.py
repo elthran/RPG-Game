@@ -696,8 +696,12 @@ def ability_tree(spec, hero=None):
 
     all_abilities = []
     for ability in hero.abilities:
-        if ability.hidden == False and ability.tree == spec.title():
-            all_abilities.append(ability)
+        if ability.hidden == False and ability.tree == spec.title(): # This checks if the ability is the correct basic/archetpe/calling/pantheon
+            if spec == "basic": # If its basic thenit passed and always gets added
+                all_abilities.append(ability)
+            elif spec == "archetype" and hero.specializations.archetype: # If it's archetype and the hero has chosen an archetype...
+                if hero.specializations.archetype.name == ability.tree_type: # If the chosen archetype matches the ability's archetype add it
+                    all_abilities.append(ability)
 
     return render_template('profile_ability.html', hero=hero, ability_tree=spec,
                            all_abilities=all_abilities, becomeType=becomeType,
