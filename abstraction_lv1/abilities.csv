@@ -1,6 +1,6 @@
 Name,Type,Tree,TreeType,Maximum,Description,Current,Next,Learnable,Prof1,Value1
-Apprentice,AuraAbility,Archetype,Ascetic,3,(BROKEN) You are capable of learning additional spells.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0
-Arcanum,AuraAbility,Basic,None,5,Gain maximum sanctity. Master this ability to unlock the Philosopher archetype.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Sanctity,5
+Apprentice,AuraAbility,Archetype,Ascetic,3,You are capable of learning additional spells.,{{ (level) * 1 }},{{ (level + 1) * 1 }},TRUE,SpellLimit,1
+Arcanum,AuraAbility,Basic,None,5,Gain maximum sanctity. Master this ability to unlock the Philosopher archetype.,{{ (level) * 2 }},{{ (level + 1) * 2 }},TRUE,Sanctity,2
 Backstab,AuraAbility,Archetype,Scoundrel,3,You are more likely to attack first in combat.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,FirstStrike,5
 Bash,AuraAbility,Archetype,Brute,3,(BROKEN)You deal more damage with blunt weapons.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0
 Blackhearted,AuraAbility,Archetype,Scoundrel,3,(BROKEN)Lose virtue faster.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0

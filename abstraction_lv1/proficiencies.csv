@@ -53,7 +53,9 @@ Storage,The amount of weight that you can carry.,Brawn,linear,10,3,0,FALSE,FALSE
 Survivalist,UNUSED,Survivalism,linear,0,0,0,FALSE,FALSE
 Trustworthiness,UNUSED,Charisma,linear,0,0,0,FALSE,FALSE
 Understanding,How much more quickly you level up.,Intellect,linear,0,1,0,FALSE,TRUE
-Caution,How much detail is revealed of a location before you visit it.,None,linear,0,0,0,TRUE,FALSE
-Climbing,The higher your climbing skill then the more difficult mountains you may climb.,None,linear,0,0,0,FALSE,FALSE
+
+CautionLevel,How much detail is revealed of a location before you visit it.,None,linear,0,0,0,TRUE,FALSE
+ClimbingAbility,The higher your climbing skill then the more difficult mountains you may climb.,None,linear,0,0,0,TRUE,FALSE
+SpellLimit,How many spells you may know.,None,linear,0,0,0,TRUE,FALSE
 Vision,How much of the map is revealed.,None,linear,0,0,0,TRUE,FALSE
-Woodsman,Modifier for forest movement.,Pathfinding,linear,1,1,0,FALSE,FALSE
+Woodsman,Modifier for forest movement.,Pathfinding,linear,1,1,0,TRUE,FALSE
