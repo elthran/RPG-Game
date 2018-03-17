@@ -96,19 +96,20 @@ class Journal(Base):
     # QuestPath provides many special methods.
     quest_paths = relationship("QuestPath", back_populates='journal',
                                cascade="all, delete-orphan",
-                               foreign_keys="[QuestPath.journal_id]")
+                               foreign_keys="[QuestPath.journal_id]",
+                               order_by="QuestPath.name")
 
     _current_quest_paths = relationship(
         "QuestPath",
         primaryjoin="and_(Journal.id==QuestPath.journal_id, "
                     "QuestPath.completed==False)",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        order_by="QuestPath.name"
     )
 
     @property
     def current_quest_paths(self):
         return self._current_quest_paths
-
 
     notification = relationship("QuestPath",
                                 foreign_keys="[QuestPath.notification_id]",
