@@ -61,8 +61,8 @@ class TestItem(GenericTestCase):
 
         template = OneHandedWeapon(
             "Big Dagger", buy_price=10,
-            proficiency_data=[('DamageMinimum', {'base': 300}),
-                              ('DamageMaximum', {'base': 600}),
+            proficiency_data=[('Damage', {'base': 300}),
+                              ('Combat', {'base': 600}),
                               ('Speed', {'base': 2})],
             template=True)
         db.session.add(template)

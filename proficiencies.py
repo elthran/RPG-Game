@@ -17,11 +17,11 @@ from pprint import pprint
 import pdb
 
 
-ALL_PROFICIENCIES = [('Accuracy', 'The chance of your attacks hitting their target.', 'Agility', 'linear', 1, 1.0, 0, False, False), ('Adventuring', 'Chance to discover treasure.', 'Fortuity', 'linear', 1, 1.0, 0, False, False), ('Bartering', 'Discount from negotiating prices.', 'Charisma', 'linear', 1, 1.0, 0, False, True), ('Block', 'Ability to block if a shield is equipped.', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('Caution', 'See information about a new grid before going there', 'Survivalism', 'linear', 1, 1.0, 0, False, False), ('Charm', 'How quickly other people will like you.', 'Charisma', 'linear', 1, 1.0, 0, False, False), ('Climbing', 'The difficulty of objects of which you are able to climb.', 'Agility', 'linear', 0, 1.0, 0, False, False), ('Conviction', 'How quickly you gain devotion.', 'None', 'linear', 0, 0.0, 0, True, False), ('Courage', 'Your ability to overcome fears.', 'Willpower', 'linear', 1, 1.0, 0, False, False), ('Damage maximum', 'Maximum damage you do on each hit', 'Brawn', 'linear', 1, 1.0, 0, False, False), ('Damage minimum', 'Mimimum damage you do on each hit', 'Brawn', 'linear', 0, 1.0, 0, False, False), ('Defence', 'Amount of all damage reduced.', 'Resilience', 'linear', 0, 1.0, 0, False, False), ('Detection', 'Chance to discover enemy stealth and traps.', 'Survivalism', 'linear', 1, 1.0, 0, False, False), ('Encumbrance', 'How much your are slowed down in combat by your equipment.', 'Brawn', 'linear', 100, -1.0, 0, False, False), ('Endurance', 'Number of actions you can perform each day.', 'Resilience', 'linear', 3, 0.5, 0, False, False), ('Evade', 'Chance to dodge.', 'Quickness', 'linear', 1, 1.0, 0, False, False), ('Explorer', 'Additional options on the map such as foraging', 'Survivalism', 'linear', 1, 1.0, 0, False, False), ('Faith', 'Strength of spells you cast.', 'Divinity', 'linear', 1, 1.0, 0, False, False), ('Fatigue', 'How quickly you tire in combat.', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('First strike', 'Chance to strike first', 'Quickness', 'linear', 1, 1.0, 0, False, False), ('Flee', 'Chance to run from a battle.', 'Quickness', 'linear', 1, 1.0, 0, False, False), ('Health', 'When your health reahes zero you fall unconscious.', 'Vitality', 'linear', 5, 2.0, 0, False, False), ('Huntsman', 'Learn additional information about enemies.', 'Survivalism', 'linear', 1, 1.0, 0, False, False), ('Killshot', 'Damage multiplier when performing a critical hit.', 'Agility', 'linear', 2, 0.1, 1, False, False), ('Knowledge', 'Ability to understand.', 'Intellect', 'linear', 1, 1.0, 0, False, False), ('Literacy', 'Ability to read.', 'Intellect', 'linear', 1, 1.0, 0, False, False), ('Logistics', 'How far you can move on the map', 'Pathfinding', 'linear', 1, 1.0, 0, False, False), ('Luckiness', 'Chance to have things turn your way against all odds.', 'Fortuity', 'linear', 1, 1.0, 0, False, False), ('Mountaineering', 'Modifier for mountain movement.', 'Pathfinding', 'linear', 1, 1.0, 0, False, False), ('Navigator', 'Modifier for water movement.', 'Pathfinding', 'linear', 1, 1.0, 0, False, False), ('Oration', 'Proficiency in speaking to others.', 'Charisma', 'linear', 1, 1.0, 0, False, False), ('Parry', 'Chance to parry.', 'Quickness', 'linear', 1, 1.0, 0, False, False), ('Pickpocketing', 'Skill at stealing from others.', 'Agility', 'linear', 1, 1.0, 0, False, False), ('Precision', 'Ability to critically hit enemies.', 'Agility', 'linear', 1, 1.0, 0, False, False), ('Recovery', 'How quickly you recover from poisons and negative effects.', 'Vitality', 'linear', 1, 0.0, 0, False, False), ('Redemption', 'Amount of sanctity you recover each day.', 'Divinity', 'linear', 0, 0.5, 1, False, False), ('Regeneration', 'How many health points you recover each day.', 'Vitality', 'linear', 1, 0.5, 1, False, False), ('Renown', 'How much your actions affect your reputation.', 'Charisma', 'linear', 1, 1.0, 0, False, False), ('Reputation', 'How quickly your fame grows,', 'None', 'linear', 0, 0.0, 0, True, False), ('Resist blunt', 'Ability to resist blunt damage', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('Resist flame', 'Ability to resist flame damage', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('Resist frost', 'Ability to resist frost damage', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('Resist holy', 'Ability to resist holy damage', 'Divinity', 'linear', 1, 1.0, 0, False, False), ('Resist piercing', 'Ability to resist piercing damage', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('Resist poison', 'Ability to resist poison damage', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('Resist shadow', 'Ability to resist shadow damage', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('Resist slashing', 'Ability to resist slashing damage', 'Resilience', 'linear', 1, 1.0, 0, False, False), ('Riposte', 'Chance to riposte an enemy attack.', 'Agility', 'linear', 1, 1.0, 0, False, False), ('Sanctity', 'Amount of sanctity you can have.', 'Divinity', 'linear', 1, 1.0, 0, False, False), ('Sanity', 'Your ability to resist mind altering affects.', 'Willpower', 'linear', 1, 1.0, 0, False, False), ('Speed', 'How fast you attack.', 'Quickness', 'linear', 1, 0.05, 2, False, False), ('Stamina', 'How many endurance points you recover each day.', 'Resilience', 'linear', 1, 0.5, 1, False, False), ('Stealth', 'Chance to avoid detection.', 'Agility', 'linear', 5, 2.0, 0, False, False), ('Storage', 'The amount of weight that you can carry.', 'Brawn', 'linear', 10, 3.0, 0, False, False), ('Survivalist', 'Create bandages and other useful objects', 'Survivalism', 'linear', 1, 1.0, 0, False, False), ('Trustworthiness', 'How much other players trust you.', 'Charisma', 'linear', 1, 1.0, 0, False, False), ('Understanding', 'How much more quickly you level up.', 'Intellect', 'linear', 0, 2.0, 0, False, False), ('Vision', 'How much of the map is revealed.', 'None', 'linear', 0, 0.0, 0, True, False), ('Woodsman', 'Modifier for forest movement.', 'Pathfinding', 'linear', 1, 1.0, 0, False, False)]
+ALL_PROFICIENCIES = [('Accuracy', 'How accurately you attack. This gives a bonus chance to successfully striking your opponent in combat.', 'Agility', 'linear', 0, 1.0, 0, False, True), ('Adventuring', 'Your skill at exploring new places. This increases your likelihood of finding items when exploring', 'Fortuity', 'linear', 0, 5.0, 0, False, True), ('Bartering', 'Your skill at negotiating prices. It reduces the price you pay when buying any item from a vendor.', 'Charisma', 'linear', 0, 2.0, 0, False, True), ('Block', 'Skill with a shield. If a shield is equipped then the amount of damage blocked is increased.', 'Resilience', 'linear', 0, 2.0, 0, False, True), ('Charm', 'How likeable you are. It increases the speed of how quickly people begin to trust you.', 'Charisma', 'linear', 0, 5.0, 0, False, True), ('Conviction', 'How quickly you are able to gain the devotion of a god.', 'None', 'linear', 0, 2.0, 0, False, True), ('Courage', 'How capable you are of overcoming your fears. The greater your courage then the greater the obstacles you will be capable of facing.', 'Willpower', 'linear', 0, 1.0, 0, False, False), ('Damage', 'Your capability of inflicting damage through melee. This determines the greatest posssible damage you can deal in a single blow.', 'Brawn', 'linear', 1, 1.0, 0, False, False), ('Combat', 'The likelihood that your attack will hit for maximum damage.', 'Brawn', 'linear', 10, 2.0, 0, False, True), ('Defence', 'Your ability to take physical damage. All physical damaged received is reduced.', 'Resilience', 'linear', 0, 1.0, 0, False, True), ('Detection', 'Determines the chance that you will uncover enemy traps and ambushes.', 'Survivalism', 'linear', 0, 3.0, 0, False, True), ('Encumbrance', 'Your ability to fight in combat while carrying cumbersome gear.', 'Brawn', 'linear', 0, 5.0, 0, False, True), ('Endurance', 'Number of actions you can perform each day.', 'Resilience', 'linear', 5, 0.5, 0, False, False), ('Evade', 'Your ability to dodge enemy attacks. Gives a bonus chance for enemies to miss their close combat attacks.', 'Quickness', 'linear', 0, 2.0, 0, False, True), ('Explorer', 'Reveals additional optional tasks which can be performed while exploring.', 'Survivalism', 'linear', 0, 1.0, 0, False, False), ('Faith', 'Adds a bonus to how effective your spells are.', 'Divinity', 'linear', 0, 5.0, 0, False, True), ('Fatigue', 'Reduces the speed at which you become exhausted in combat.', 'Resilience', 'linear', 0, 5.0, 0, False, False), ('First strike', 'Increases the likelihood that you will attack first in combat.', 'Quickness', 'linear', 0, 3.5, 1, False, False), ('Flee', 'Increases the chance that you can successful escape from a battle.', 'Quickness', 'linear', 0, 10.0, 0, False, False), ('Health', 'Determines the number of health points you have. When your health reahes zero then you fall unconscious.', 'Vitality', 'linear', 5, 1.0, 0, False, False), ('Huntsman', 'The amount of information that you can learn from defeated enemies.', 'Survivalism', 'linear', 0, 1.0, 0, False, False), ('Killshot', 'Damage multiplier added when performing a critical hit.', 'Agility', 'linear', 1, 10.0, 0, False, True), ('Knowledge', 'UNUSED', 'Intellect', 'linear', 0, 0.0, 0, False, False), ('Literacy', 'UNUSED', 'Intellect', 'linear', 0, 0.0, 0, False, False), ('Logistics', 'UNUSED', 'Pathfinding', 'linear', 0, 0.0, 0, False, False), ('Luckiness', 'A bonus chance of having incredibly good luck.', 'Fortuity', 'linear', 0, 1.0, 0, False, True), ('Mountaineering', 'UNUSED', 'Pathfinding', 'linear', 0, 0.0, 0, False, False), ('Navigator', 'UNUSED', 'Pathfinding', 'linear', 0, 0.0, 0, False, False), ('Oration', 'UNUSED', 'Charisma', 'linear', 0, 0.0, 0, False, False), ('Parry', 'The likelihood that you can parry an incoming attack.', 'Quickness', 'linear', 0, 2.0, 0, False, True), ('Pickpocketing', 'Increases the chance that you will successfully pickpocket someone.', 'Agility', 'linear', 0, 5.0, 0, False, True), ('Precision', 'Chance to critically hit enemies. A critical hit always hits for maximum damage and then applies your killshot multiplier to that value.', 'Agility', 'linear', 0, 1.0, 0, False, True), ('Recovery', 'How quickly you recover from poisons and the negative effects of different ailments.', 'Vitality', 'linear', 0, 10.0, 0, False, True), ('Redemption', 'For each two levels of redemption you recover one sanctity each day.', 'Divinity', 'linear', 0, 0.5, 0, False, False), ('Regeneration', 'For each two levels of regeneration you recover one additional health each day.', 'Vitality', 'linear', 1, 0.5, 0, False, False), ('Renown', 'The magnitutde of which your actions affect your reputation.', 'Charisma', 'linear', 0, 5.0, 0, False, True), ('Resist blunt', 'Ability to resist blunt damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist flame', 'Ability to resist flame damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist frost', 'Ability to resist frost damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist holy', 'Ability to resist holy damage', 'Divinity', 'linear', 0, 3.0, 0, False, True), ('Resist piercing', 'Ability to resist piercing damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist poison', 'Ability to resist poison damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist shadow', 'Ability to resist shadow damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist slashing', 'Ability to resist slashing damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Riposte', 'UNUSED', 'Agility', 'linear', 0, 0.0, 0, False, False), ('Sanctity', 'Amount of sanctity you can have.', 'Divinity', 'linear', 0, 1.0, 0, False, False), ('Sanity', 'Your ability to resist mind altering affects.', 'Willpower', 'linear', 0, 3.0, 0, False, True), ('Speed', 'How quickly you can attack in combat.', 'Quickness', 'linear', 1, 0.05, 2, False, False), ('Stamina', 'For each four levels of stamina you recover one additional endurance each day.', 'Resilience', 'linear', 1, 0.25, 0, False, False), ('Stealth', 'Chance to avoid detection when attempting to stay concealed.', 'Agility', 'linear', 0, 2.0, 0, False, True), ('Storage', 'The amount of weight that you can carry.', 'Brawn', 'linear', 10, 3.0, 0, False, False), ('Survivalist', 'UNUSED', 'Survivalism', 'linear', 0, 0.0, 0, False, False), ('Trustworthiness', 'UNUSED', 'Charisma', 'linear', 0, 0.0, 0, False, False), ('Understanding', 'How much more quickly you level up.', 'Intellect', 'linear', 0, 1.0, 0, False, True), ('Caution', 'How much detail is revealed of a location before you visit it.', 'None', 'linear', 0, 0.0, 0, True, False), ('Climbing', 'The higher your climbing skill then the more difficult mountains you may climb.', 'None', 'linear', 0, 0.0, 0, False, False), ('Vision', 'How much of the map is revealed.', 'None', 'linear', 0, 0.0, 0, True, False), ('Woodsman', 'Modifier for forest movement.', 'Pathfinding', 'linear', 1, 1.0, 0, False, False)]
 
-ALL_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Conviction', 'Courage', 'Damage maximum', 'Damage minimum', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'First strike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Precision', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'Reputation', 'Resist blunt', 'Resist flame', 'Resist frost', 'Resist holy', 'Resist piercing', 'Resist poison', 'Resist shadow', 'Resist slashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stamina', 'Stealth', 'Storage', 'Survivalist', 'Trustworthiness', 'Understanding', 'Vision', 'Woodsman']
-ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'bartering', 'block', 'caution', 'charm', 'climbing', 'conviction', 'courage', 'damage_maximum', 'damage_minimum', 'defence', 'detection', 'encumbrance', 'endurance', 'evade', 'explorer', 'faith', 'fatigue', 'first_strike', 'flee', 'health', 'huntsman', 'killshot', 'knowledge', 'literacy', 'logistics', 'luckiness', 'mountaineering', 'navigator', 'oration', 'parry', 'pickpocketing', 'precision', 'recovery', 'redemption', 'regeneration', 'renown', 'reputation', 'resist_blunt', 'resist_flame', 'resist_frost', 'resist_holy', 'resist_piercing', 'resist_poison', 'resist_shadow', 'resist_slashing', 'riposte', 'sanctity', 'sanity', 'speed', 'stamina', 'stealth', 'storage', 'survivalist', 'trustworthiness', 'understanding', 'vision', 'woodsman']
-ALL_CLASS_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Conviction', 'Courage', 'DamageMaximum', 'DamageMinimum', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'FirstStrike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Precision', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'Reputation', 'ResistBlunt', 'ResistFlame', 'ResistFrost', 'ResistHoly', 'ResistPiercing', 'ResistPoison', 'ResistShadow', 'ResistSlashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stamina', 'Stealth', 'Storage', 'Survivalist', 'Trustworthiness', 'Understanding', 'Vision', 'Woodsman']
+ALL_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Combat', 'Conviction', 'Courage', 'Damage', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'First strike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Precision', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'Resist blunt', 'Resist flame', 'Resist frost', 'Resist holy', 'Resist piercing', 'Resist poison', 'Resist shadow', 'Resist slashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stamina', 'Stealth', 'Storage', 'Survivalist', 'Trustworthiness', 'Understanding', 'Vision', 'Woodsman']
+ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'bartering', 'block', 'caution', 'charm', 'climbing', 'combat', 'conviction', 'courage', 'damage', 'defence', 'detection', 'encumbrance', 'endurance', 'evade', 'explorer', 'faith', 'fatigue', 'first_strike', 'flee', 'health', 'huntsman', 'killshot', 'knowledge', 'literacy', 'logistics', 'luckiness', 'mountaineering', 'navigator', 'oration', 'parry', 'pickpocketing', 'precision', 'recovery', 'redemption', 'regeneration', 'renown', 'resist_blunt', 'resist_flame', 'resist_frost', 'resist_holy', 'resist_piercing', 'resist_poison', 'resist_shadow', 'resist_slashing', 'riposte', 'sanctity', 'sanity', 'speed', 'stamina', 'stealth', 'storage', 'survivalist', 'trustworthiness', 'understanding', 'vision', 'woodsman']
+ALL_CLASS_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Caution', 'Charm', 'Climbing', 'Combat', 'Conviction', 'Courage', 'Damage', 'Defence', 'Detection', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'FirstStrike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Literacy', 'Logistics', 'Luckiness', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Precision', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'ResistBlunt', 'ResistFlame', 'ResistFrost', 'ResistHoly', 'ResistPiercing', 'ResistPoison', 'ResistShadow', 'ResistSlashing', 'Riposte', 'Sanctity', 'Sanity', 'Speed', 'Stamina', 'Stealth', 'Storage', 'Survivalist', 'Trustworthiness', 'Understanding', 'Vision', 'Woodsman']
 
 
 class Proficiency(TemplateMixin, Base):
@@ -171,8 +171,8 @@ class Accuracy(Proficiency):
     display_name = "Accuracy"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Accuracy"
@@ -183,9 +183,9 @@ class Accuracy(Proficiency):
     def attribute(self):
         return self.hero.attributes.agility
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "The chance of your attacks hitting their target."
+        self.description = "How accurately you attack. This gives a bonus chance to successfully striking your opponent in combat."
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -209,8 +209,8 @@ class Adventuring(Proficiency):
     display_name = "Adventuring"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Adventuring"
@@ -221,9 +221,9 @@ class Adventuring(Proficiency):
     def attribute(self):
         return self.hero.attributes.fortuity
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Chance to discover treasure."
+        self.description = "Your skill at exploring new places. This increases your likelihood of finding items when exploring"
         self.attribute_type = "Fortuity"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -236,7 +236,7 @@ class Adventuring(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(5.0 * level, self.num_of_decimals)
 
 
 class Bartering(Proficiency):
@@ -259,9 +259,9 @@ class Bartering(Proficiency):
     def attribute(self):
         return self.hero.attributes.charisma
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Discount from negotiating prices."
+        self.description = "Your skill at negotiating prices. It reduces the price you pay when buying any item from a vendor."
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -274,7 +274,7 @@ class Bartering(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(2.0 * level, self.num_of_decimals)
 
 
 class Block(Proficiency):
@@ -285,8 +285,8 @@ class Block(Proficiency):
     display_name = "Block"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Block"
@@ -297,9 +297,9 @@ class Block(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Ability to block if a shield is equipped."
+        self.description = "Skill with a shield. If a shield is equipped then the amount of damage blocked is increased."
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -312,7 +312,7 @@ class Block(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(2.0 * level, self.num_of_decimals)
 
     def check_shield(self, hero):
         if hero.inventory.left_hand is None or hero.inventory.left_hand.type != "Shield":
@@ -320,44 +320,6 @@ class Block(Proficiency):
             self.reason_for_zero = "You must have a shield equipped"
         else:
             self.reason_for_zero = ""
-
-
-class Caution(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden = False
-    name = "caution"
-    display_name = "Caution"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Caution"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.survivalism
-
-    def __init__(self, *args, base=1, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "See information about a new grid before going there"
-        self.attribute_type = "Survivalism"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Caution's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
 
 
 class Charm(Proficiency):
@@ -368,8 +330,8 @@ class Charm(Proficiency):
     display_name = "Charm"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Charm"
@@ -380,9 +342,9 @@ class Charm(Proficiency):
     def attribute(self):
         return self.hero.attributes.charisma
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How quickly other people will like you."
+        self.description = "How likeable you are. It increases the speed of how quickly people begin to trust you."
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -395,57 +357,19 @@ class Charm(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class Climbing(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden = False
-    name = "climbing"
-    display_name = "Climbing"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Climbing"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.agility
-
-    def __init__(self, *args, base=0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "The difficulty of objects of which you are able to climb."
-        self.attribute_type = "Agility"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Climbing's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(1.0 * level, self.num_of_decimals)
+        return round(5.0 * level, self.num_of_decimals)
 
 
 class Conviction(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
-    hidden = True
+    hidden = False
     name = "conviction"
     display_name = "Conviction"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Conviction"
@@ -458,7 +382,7 @@ class Conviction(Proficiency):
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How quickly you gain devotion."
+        self.description = "How quickly you are able to gain the devotion of a god."
         self.attribute_type = "None"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -471,7 +395,7 @@ class Conviction(Proficiency):
         if level is None:
             level = self.level
 
-        return round(0.0 * level, self.num_of_decimals)
+        return round(2.0 * level, self.num_of_decimals)
 
 
 class Courage(Proficiency):
@@ -494,9 +418,9 @@ class Courage(Proficiency):
     def attribute(self):
         return self.hero.attributes.willpower
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Your ability to overcome fears."
+        self.description = "How capable you are of overcoming your fears. The greater your courage then the greater the obstacles you will be capable of facing."
         self.attribute_type = "Willpower"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -512,19 +436,19 @@ class Courage(Proficiency):
         return round(1.0 * level, self.num_of_decimals)
 
 
-class DamageMaximum(Proficiency):
+class Damage(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
-    name = "damage_maximum"
-    display_name = "Damage Maximum"
+    name = "damage"
+    display_name = "Damage"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
     __mapper_args__ = {
-        'polymorphic_identity': "DamageMaximum"
+        'polymorphic_identity': "Damage"
     }
 
     # Proficiency to Attribute is many to one.
@@ -534,12 +458,12 @@ class DamageMaximum(Proficiency):
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Maximum damage you do on each hit"
+        self.description = "Your capability of inflicting damage through melee. This determines the greatest posssible damage you can deal in a single blow."
         self.attribute_type = "Brawn"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update DamageMaximum's attributes and tooltip variable.
+        """Update Damage's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -550,19 +474,19 @@ class DamageMaximum(Proficiency):
         return round(1.0 * level, self.num_of_decimals)
 
 
-class DamageMinimum(Proficiency):
+class Combat(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
     hidden = False
-    name = "damage_minimum"
-    display_name = "Damage Minimum"
+    name = "combat"
+    display_name = "Combat"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
-        'polymorphic_identity': "DamageMinimum"
+        'polymorphic_identity': "Combat"
     }
 
     # Proficiency to Attribute is many to one.
@@ -570,14 +494,14 @@ class DamageMinimum(Proficiency):
     def attribute(self):
         return self.hero.attributes.brawn
 
-    def __init__(self, *args, base=0, **kwargs):
+    def __init__(self, *args, base=10, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Mimimum damage you do on each hit"
+        self.description = "The likelihood that your attack will hit for maximum damage."
         self.attribute_type = "Brawn"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
     def scale_by_level(self, level=None):
-        """Update DamageMinimum's attributes and tooltip variable.
+        """Update Combat's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
@@ -585,7 +509,7 @@ class DamageMinimum(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(2.0 * level, self.num_of_decimals)
 
 
 class Defence(Proficiency):
@@ -596,8 +520,8 @@ class Defence(Proficiency):
     display_name = "Defence"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Defence"
@@ -610,7 +534,7 @@ class Defence(Proficiency):
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Amount of all damage reduced."
+        self.description = "Your ability to take physical damage. All physical damaged received is reduced."
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -634,8 +558,8 @@ class Detection(Proficiency):
     display_name = "Detection"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Detection"
@@ -646,9 +570,9 @@ class Detection(Proficiency):
     def attribute(self):
         return self.hero.attributes.survivalism
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Chance to discover enemy stealth and traps."
+        self.description = "Determines the chance that you will uncover enemy traps and ambushes."
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -661,7 +585,7 @@ class Detection(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(3.0 * level, self.num_of_decimals)
 
 
 class Encumbrance(Proficiency):
@@ -672,8 +596,8 @@ class Encumbrance(Proficiency):
     display_name = "Encumbrance"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Encumbrance"
@@ -684,9 +608,9 @@ class Encumbrance(Proficiency):
     def attribute(self):
         return self.hero.attributes.brawn
 
-    def __init__(self, *args, base=100, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How much your are slowed down in combat by your equipment."
+        self.description = "Your ability to fight in combat while carrying cumbersome gear."
         self.attribute_type = "Brawn"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -699,7 +623,7 @@ class Encumbrance(Proficiency):
         if level is None:
             level = self.level
 
-        return round(-1.0 * level, self.num_of_decimals)
+        return round(5.0 * level, self.num_of_decimals)
 
 
 class Endurance(Proficiency):
@@ -722,7 +646,7 @@ class Endurance(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-    def __init__(self, *args, base=3, **kwargs):
+    def __init__(self, *args, base=5, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Number of actions you can perform each day."
         self.attribute_type = "Resilience"
@@ -748,8 +672,8 @@ class Evade(Proficiency):
     display_name = "Evade"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Evade"
@@ -760,9 +684,9 @@ class Evade(Proficiency):
     def attribute(self):
         return self.hero.attributes.quickness
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Chance to dodge."
+        self.description = "Your ability to dodge enemy attacks. Gives a bonus chance for enemies to miss their close combat attacks."
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -775,7 +699,7 @@ class Evade(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(2.0 * level, self.num_of_decimals)
 
 
 class Explorer(Proficiency):
@@ -798,9 +722,9 @@ class Explorer(Proficiency):
     def attribute(self):
         return self.hero.attributes.survivalism
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Additional options on the map such as foraging"
+        self.description = "Reveals additional optional tasks which can be performed while exploring."
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -824,8 +748,8 @@ class Faith(Proficiency):
     display_name = "Faith"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Faith"
@@ -836,9 +760,9 @@ class Faith(Proficiency):
     def attribute(self):
         return self.hero.attributes.divinity
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Strength of spells you cast."
+        self.description = "Adds a bonus to how effective your spells are."
         self.attribute_type = "Divinity"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -851,7 +775,7 @@ class Faith(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(5.0 * level, self.num_of_decimals)
 
 
 class Fatigue(Proficiency):
@@ -874,9 +798,9 @@ class Fatigue(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How quickly you tire in combat."
+        self.description = "Reduces the speed at which you become exhausted in combat."
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -889,7 +813,7 @@ class Fatigue(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(5.0 * level, self.num_of_decimals)
 
 
 class FirstStrike(Proficiency):
@@ -898,10 +822,10 @@ class FirstStrike(Proficiency):
     hidden = False
     name = "first_strike"
     display_name = "First Strike"
-    num_of_decimals = 0
+    num_of_decimals = 1
     # This should add a "%" to the display at the end of a prof.
     is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    format_spec = "{:.1f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "FirstStrike"
@@ -912,9 +836,9 @@ class FirstStrike(Proficiency):
     def attribute(self):
         return self.hero.attributes.quickness
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Chance to strike first"
+        self.description = "Increases the likelihood that you will attack first in combat."
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -927,7 +851,7 @@ class FirstStrike(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(3.5 * level, self.num_of_decimals)
 
 
 class Flee(Proficiency):
@@ -950,9 +874,9 @@ class Flee(Proficiency):
     def attribute(self):
         return self.hero.attributes.quickness
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Chance to run from a battle."
+        self.description = "Increases the chance that you can successful escape from a battle."
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -965,7 +889,7 @@ class Flee(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(10.0 * level, self.num_of_decimals)
 
 
 class Health(Proficiency):
@@ -990,7 +914,7 @@ class Health(Proficiency):
 
     def __init__(self, *args, base=5, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "When your health reahes zero you fall unconscious."
+        self.description = "Determines the number of health points you have. When your health reahes zero then you fall unconscious."
         self.attribute_type = "Vitality"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1003,7 +927,7 @@ class Health(Proficiency):
         if level is None:
             level = self.level
 
-        return round(2.0 * level, self.num_of_decimals)
+        return round(1.0 * level, self.num_of_decimals)
 
 
 class Huntsman(Proficiency):
@@ -1026,9 +950,9 @@ class Huntsman(Proficiency):
     def attribute(self):
         return self.hero.attributes.survivalism
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Learn additional information about enemies."
+        self.description = "The amount of information that you can learn from defeated enemies."
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1050,10 +974,10 @@ class Killshot(Proficiency):
     hidden = False
     name = "killshot"
     display_name = "Killshot"
-    num_of_decimals = 1
+    num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.1f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Killshot"
@@ -1064,9 +988,9 @@ class Killshot(Proficiency):
     def attribute(self):
         return self.hero.attributes.agility
 
-    def __init__(self, *args, base=2, **kwargs):
+    def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Damage multiplier when performing a critical hit."
+        self.description = "Damage multiplier added when performing a critical hit."
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1079,7 +1003,7 @@ class Killshot(Proficiency):
         if level is None:
             level = self.level
 
-        return round(0.1 * level, self.num_of_decimals)
+        return round(10.0 * level, self.num_of_decimals)
 
 
 class Knowledge(Proficiency):
@@ -1102,9 +1026,9 @@ class Knowledge(Proficiency):
     def attribute(self):
         return self.hero.attributes.intellect
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Ability to understand."
+        self.description = "UNUSED"
         self.attribute_type = "Intellect"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1117,7 +1041,7 @@ class Knowledge(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(0.0 * level, self.num_of_decimals)
 
 
 class Literacy(Proficiency):
@@ -1140,9 +1064,9 @@ class Literacy(Proficiency):
     def attribute(self):
         return self.hero.attributes.intellect
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Ability to read."
+        self.description = "UNUSED"
         self.attribute_type = "Intellect"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1155,7 +1079,7 @@ class Literacy(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(0.0 * level, self.num_of_decimals)
 
 
 class Logistics(Proficiency):
@@ -1178,9 +1102,9 @@ class Logistics(Proficiency):
     def attribute(self):
         return self.hero.attributes.pathfinding
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How far you can move on the map"
+        self.description = "UNUSED"
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1193,7 +1117,7 @@ class Logistics(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(0.0 * level, self.num_of_decimals)
 
 
 class Luckiness(Proficiency):
@@ -1204,8 +1128,8 @@ class Luckiness(Proficiency):
     display_name = "Luckiness"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Luckiness"
@@ -1216,9 +1140,9 @@ class Luckiness(Proficiency):
     def attribute(self):
         return self.hero.attributes.fortuity
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Chance to have things turn your way against all odds."
+        self.description = "A bonus chance of having incredibly good luck."
         self.attribute_type = "Fortuity"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1254,9 +1178,9 @@ class Mountaineering(Proficiency):
     def attribute(self):
         return self.hero.attributes.pathfinding
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Modifier for mountain movement."
+        self.description = "UNUSED"
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1269,7 +1193,7 @@ class Mountaineering(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(0.0 * level, self.num_of_decimals)
 
 
 class Navigator(Proficiency):
@@ -1292,9 +1216,9 @@ class Navigator(Proficiency):
     def attribute(self):
         return self.hero.attributes.pathfinding
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Modifier for water movement."
+        self.description = "UNUSED"
         self.attribute_type = "Pathfinding"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1307,7 +1231,7 @@ class Navigator(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(0.0 * level, self.num_of_decimals)
 
 
 class Oration(Proficiency):
@@ -1330,9 +1254,9 @@ class Oration(Proficiency):
     def attribute(self):
         return self.hero.attributes.charisma
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Proficiency in speaking to others."
+        self.description = "UNUSED"
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1345,7 +1269,7 @@ class Oration(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(0.0 * level, self.num_of_decimals)
 
 
 class Parry(Proficiency):
@@ -1356,8 +1280,8 @@ class Parry(Proficiency):
     display_name = "Parry"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Parry"
@@ -1368,9 +1292,9 @@ class Parry(Proficiency):
     def attribute(self):
         return self.hero.attributes.quickness
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Chance to parry."
+        self.description = "The likelihood that you can parry an incoming attack."
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1383,7 +1307,7 @@ class Parry(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(2.0 * level, self.num_of_decimals)
 
 
 class Pickpocketing(Proficiency):
@@ -1394,8 +1318,8 @@ class Pickpocketing(Proficiency):
     display_name = "Pickpocketing"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Pickpocketing"
@@ -1406,9 +1330,9 @@ class Pickpocketing(Proficiency):
     def attribute(self):
         return self.hero.attributes.agility
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Skill at stealing from others."
+        self.description = "Increases the chance that you will successfully pickpocket someone."
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1421,7 +1345,7 @@ class Pickpocketing(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(5.0 * level, self.num_of_decimals)
 
 
 class Precision(Proficiency):
@@ -1432,8 +1356,8 @@ class Precision(Proficiency):
     display_name = "Precision"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Precision"
@@ -1444,9 +1368,9 @@ class Precision(Proficiency):
     def attribute(self):
         return self.hero.attributes.agility
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Ability to critically hit enemies."
+        self.description = "Chance to critically hit enemies. A critical hit always hits for maximum damage and then applies your killshot multiplier to that value."
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1470,8 +1394,8 @@ class Recovery(Proficiency):
     display_name = "Recovery"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Recovery"
@@ -1482,9 +1406,9 @@ class Recovery(Proficiency):
     def attribute(self):
         return self.hero.attributes.vitality
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How quickly you recover from poisons and negative effects."
+        self.description = "How quickly you recover from poisons and the negative effects of different ailments."
         self.attribute_type = "Vitality"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1497,7 +1421,7 @@ class Recovery(Proficiency):
         if level is None:
             level = self.level
 
-        return round(0.0 * level, self.num_of_decimals)
+        return round(10.0 * level, self.num_of_decimals)
 
 
 class Redemption(Proficiency):
@@ -1506,10 +1430,10 @@ class Redemption(Proficiency):
     hidden = False
     name = "redemption"
     display_name = "Redemption"
-    num_of_decimals = 1
+    num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
     is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.1f}"
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "Redemption"
@@ -1522,7 +1446,7 @@ class Redemption(Proficiency):
 
     def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Amount of sanctity you recover each day."
+        self.description = "For each two levels of redemption you recover one sanctity each day."
         self.attribute_type = "Divinity"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1544,10 +1468,10 @@ class Regeneration(Proficiency):
     hidden = False
     name = "regeneration"
     display_name = "Regeneration"
-    num_of_decimals = 1
+    num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
     is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.1f}"
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "Regeneration"
@@ -1560,7 +1484,7 @@ class Regeneration(Proficiency):
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How many health points you recover each day."
+        self.description = "For each two levels of regeneration you recover one additional health each day."
         self.attribute_type = "Vitality"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1584,8 +1508,8 @@ class Renown(Proficiency):
     display_name = "Renown"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Renown"
@@ -1596,9 +1520,9 @@ class Renown(Proficiency):
     def attribute(self):
         return self.hero.attributes.charisma
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How much your actions affect your reputation."
+        self.description = "The magnitutde of which your actions affect your reputation."
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1611,45 +1535,7 @@ class Renown(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
-
-
-class Reputation(Proficiency):
-    # If this is true, then the proficiency should not show up on the
-    # prof page and should only be modifiable by items/abilities.
-    hidden = True
-    name = "reputation"
-    display_name = "Reputation"
-    num_of_decimals = 0
-    # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
-
-    __mapper_args__ = {
-        'polymorphic_identity': "Reputation"
-    }
-
-    # Proficiency to Attribute is many to one.
-    @property
-    def attribute(self):
-        return self.hero.attributes.none
-
-    def __init__(self, *args, base=0, **kwargs):
-        super().__init__(*args, base=base, **kwargs)
-        self.description = "How quickly your fame grows,"
-        self.attribute_type = "None"
-        self.error = "You do not have enough {}".format(self.attribute_type)
-
-    def scale_by_level(self, level=None):
-        """Update Reputation's attributes and tooltip variable.
-        """
-
-        # Allows you to determine the value at the next level without
-        # modifying self.level (which might have unintended consequences).
-        if level is None:
-            level = self.level
-
-        return round(0.0 * level, self.num_of_decimals)
+        return round(5.0 * level, self.num_of_decimals)
 
 
 class ResistBlunt(Proficiency):
@@ -1660,8 +1546,8 @@ class ResistBlunt(Proficiency):
     display_name = "Resist Blunt"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "ResistBlunt"
@@ -1672,7 +1558,7 @@ class ResistBlunt(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist blunt damage"
         self.attribute_type = "Resilience"
@@ -1687,7 +1573,7 @@ class ResistBlunt(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(3.0 * level, self.num_of_decimals)
 
 
 class ResistFlame(Proficiency):
@@ -1698,8 +1584,8 @@ class ResistFlame(Proficiency):
     display_name = "Resist Flame"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "ResistFlame"
@@ -1710,7 +1596,7 @@ class ResistFlame(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist flame damage"
         self.attribute_type = "Resilience"
@@ -1725,7 +1611,7 @@ class ResistFlame(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(3.0 * level, self.num_of_decimals)
 
 
 class ResistFrost(Proficiency):
@@ -1736,8 +1622,8 @@ class ResistFrost(Proficiency):
     display_name = "Resist Frost"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "ResistFrost"
@@ -1748,7 +1634,7 @@ class ResistFrost(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist frost damage"
         self.attribute_type = "Resilience"
@@ -1763,7 +1649,7 @@ class ResistFrost(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(3.0 * level, self.num_of_decimals)
 
 
 class ResistHoly(Proficiency):
@@ -1774,8 +1660,8 @@ class ResistHoly(Proficiency):
     display_name = "Resist Holy"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "ResistHoly"
@@ -1786,7 +1672,7 @@ class ResistHoly(Proficiency):
     def attribute(self):
         return self.hero.attributes.divinity
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist holy damage"
         self.attribute_type = "Divinity"
@@ -1801,7 +1687,7 @@ class ResistHoly(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(3.0 * level, self.num_of_decimals)
 
 
 class ResistPiercing(Proficiency):
@@ -1812,8 +1698,8 @@ class ResistPiercing(Proficiency):
     display_name = "Resist Piercing"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "ResistPiercing"
@@ -1824,7 +1710,7 @@ class ResistPiercing(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist piercing damage"
         self.attribute_type = "Resilience"
@@ -1839,7 +1725,7 @@ class ResistPiercing(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(3.0 * level, self.num_of_decimals)
 
 
 class ResistPoison(Proficiency):
@@ -1850,8 +1736,8 @@ class ResistPoison(Proficiency):
     display_name = "Resist Poison"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "ResistPoison"
@@ -1862,7 +1748,7 @@ class ResistPoison(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist poison damage"
         self.attribute_type = "Resilience"
@@ -1877,7 +1763,7 @@ class ResistPoison(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(3.0 * level, self.num_of_decimals)
 
 
 class ResistShadow(Proficiency):
@@ -1888,8 +1774,8 @@ class ResistShadow(Proficiency):
     display_name = "Resist Shadow"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "ResistShadow"
@@ -1900,7 +1786,7 @@ class ResistShadow(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist shadow damage"
         self.attribute_type = "Resilience"
@@ -1915,7 +1801,7 @@ class ResistShadow(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(3.0 * level, self.num_of_decimals)
 
 
 class ResistSlashing(Proficiency):
@@ -1926,8 +1812,8 @@ class ResistSlashing(Proficiency):
     display_name = "Resist Slashing"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "ResistSlashing"
@@ -1938,7 +1824,7 @@ class ResistSlashing(Proficiency):
     def attribute(self):
         return self.hero.attributes.resilience
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Ability to resist slashing damage"
         self.attribute_type = "Resilience"
@@ -1953,7 +1839,7 @@ class ResistSlashing(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(3.0 * level, self.num_of_decimals)
 
 
 class Riposte(Proficiency):
@@ -1976,9 +1862,9 @@ class Riposte(Proficiency):
     def attribute(self):
         return self.hero.attributes.agility
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Chance to riposte an enemy attack."
+        self.description = "UNUSED"
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -1991,7 +1877,7 @@ class Riposte(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(0.0 * level, self.num_of_decimals)
 
 
 class Sanctity(Proficiency):
@@ -2014,7 +1900,7 @@ class Sanctity(Proficiency):
     def attribute(self):
         return self.hero.attributes.divinity
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Amount of sanctity you can have."
         self.attribute_type = "Divinity"
@@ -2040,8 +1926,8 @@ class Sanity(Proficiency):
     display_name = "Sanity"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Sanity"
@@ -2052,7 +1938,7 @@ class Sanity(Proficiency):
     def attribute(self):
         return self.hero.attributes.willpower
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
         self.description = "Your ability to resist mind altering affects."
         self.attribute_type = "Willpower"
@@ -2067,7 +1953,7 @@ class Sanity(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(3.0 * level, self.num_of_decimals)
 
 
 class Speed(Proficiency):
@@ -2092,7 +1978,7 @@ class Speed(Proficiency):
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How fast you attack."
+        self.description = "How quickly you can attack in combat."
         self.attribute_type = "Quickness"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -2114,10 +2000,10 @@ class Stamina(Proficiency):
     hidden = False
     name = "stamina"
     display_name = "Stamina"
-    num_of_decimals = 1
+    num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
     is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.1f}"
+    format_spec = "{:.0f}"
 
     __mapper_args__ = {
         'polymorphic_identity': "Stamina"
@@ -2130,7 +2016,7 @@ class Stamina(Proficiency):
 
     def __init__(self, *args, base=1, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How many endurance points you recover each day."
+        self.description = "For each four levels of stamina you recover one additional endurance each day."
         self.attribute_type = "Resilience"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -2143,7 +2029,7 @@ class Stamina(Proficiency):
         if level is None:
             level = self.level
 
-        return round(0.5 * level, self.num_of_decimals)
+        return round(0.25 * level, self.num_of_decimals)
 
 
 class Stealth(Proficiency):
@@ -2154,8 +2040,8 @@ class Stealth(Proficiency):
     display_name = "Stealth"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Stealth"
@@ -2166,9 +2052,9 @@ class Stealth(Proficiency):
     def attribute(self):
         return self.hero.attributes.agility
 
-    def __init__(self, *args, base=5, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Chance to avoid detection."
+        self.description = "Chance to avoid detection when attempting to stay concealed."
         self.attribute_type = "Agility"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -2242,9 +2128,9 @@ class Survivalist(Proficiency):
     def attribute(self):
         return self.hero.attributes.survivalism
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "Create bandages and other useful objects"
+        self.description = "UNUSED"
         self.attribute_type = "Survivalism"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -2257,7 +2143,7 @@ class Survivalist(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(0.0 * level, self.num_of_decimals)
 
 
 class Trustworthiness(Proficiency):
@@ -2280,9 +2166,9 @@ class Trustworthiness(Proficiency):
     def attribute(self):
         return self.hero.attributes.charisma
 
-    def __init__(self, *args, base=1, **kwargs):
+    def __init__(self, *args, base=0, **kwargs):
         super().__init__(*args, base=base, **kwargs)
-        self.description = "How much other players trust you."
+        self.description = "UNUSED"
         self.attribute_type = "Charisma"
         self.error = "You do not have enough {}".format(self.attribute_type)
 
@@ -2295,7 +2181,7 @@ class Trustworthiness(Proficiency):
         if level is None:
             level = self.level
 
-        return round(1.0 * level, self.num_of_decimals)
+        return round(0.0 * level, self.num_of_decimals)
 
 
 class Understanding(Proficiency):
@@ -2306,8 +2192,8 @@ class Understanding(Proficiency):
     display_name = "Understanding"
     num_of_decimals = 0
     # This should add a "%" to the display at the end of a prof.
-    is_percent = False  # Should be False but I'm getting an error
-    format_spec = "{:.0f}"
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
 
     __mapper_args__ = {
         'polymorphic_identity': "Understanding"
@@ -2333,7 +2219,83 @@ class Understanding(Proficiency):
         if level is None:
             level = self.level
 
-        return round(2.0 * level, self.num_of_decimals)
+        return round(1.0 * level, self.num_of_decimals)
+
+
+class Caution(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = True
+    name = "caution"
+    display_name = "Caution"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Caution"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.none
+
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "How much detail is revealed of a location before you visit it."
+        self.attribute_type = "None"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Caution's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(0.0 * level, self.num_of_decimals)
+
+
+class Climbing(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = False
+    name = "climbing"
+    display_name = "Climbing"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = False  # Should be False but I'm getting an error
+    format_spec = "{:.0f}"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Climbing"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.none
+
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "The higher your climbing skill then the more difficult mountains you may climb."
+        self.attribute_type = "None"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Climbing's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(0.0 * level, self.num_of_decimals)
 
 
 class Vision(Proficiency):

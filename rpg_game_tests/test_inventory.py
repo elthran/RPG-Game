@@ -55,8 +55,8 @@ class TestInventory(GenericTestCase):
         # Add second stock item/template combo - 2 handed weapon.
         template_2handed = TwoHandedWeapon(
             "Medium Polearm", buy_price=5,
-            proficiency_data=[('DamageMinimum', {'base': 30}),
-                              ('DamageMaximum', {'base': 60}),
+            proficiency_data=[('Damage', {'base': 30}),
+                              ('Combat', {'base': 60}),
                               ('Speed', {'base': 1})],
             template=True)
         db.session.add(template_2handed)
@@ -80,8 +80,8 @@ class TestInventory(GenericTestCase):
 
         template_sword = OneHandedWeapon(
             "Big Dagger", buy_price=10,
-            proficiency_data=[('DamageMinimum', {'base': 300}),
-                              ('DamageMaximum', {'base': 600}),
+            proficiency_data=[('Damage', {'base': 300}),
+                              ('Combat', {'base': 600}),
                               ('Speed', {'base': 2})],
             template=True)
         db.session.add(template_sword)
