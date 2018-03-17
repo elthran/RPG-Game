@@ -6,18 +6,19 @@ if __name__ == "__main__":
     exit()  # prevents code from trying to run file afterwards.
 
 import datetime
+import pdb
+from pprint import pprint
 
 from sqlalchemy import (
     Column, Integer, String, DateTime, Boolean, ForeignKey, Table
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import validates, column_property, deferred
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from base_classes import Base
 from factories import TemplateMixin
-import pdb
-from pprint import pprint
 
 
 class Event(Base):
@@ -161,6 +162,7 @@ class Trigger(TemplateMixin, Base):
         self.conditions = []
         self.extra_info_for_humans = None
         self.completed = False
+        self.hero = None
 
     def evaluate(self):
         """Return true if all conditions are true.
@@ -185,44 +187,31 @@ class Trigger(TemplateMixin, Base):
         return self.completed  # mostly not used.
 
 
-class HandlerMixin(object):
-    """Handler mixin to add trigger functionality to a class.
+class Handler(Base):
+    __tablename__ = 'handler'
 
-    The basic steps are:
-        1. add an 'activate' method to sub-class that can be run when a
-            hero and trigger are available
-        2. add some code that causes sub-class to 'complete'
-        3.
-    """
     id = Column(Integer, primary_key=True)
 
-    @declared_attr
-    def completed(cls):
-        return Column(Boolean, default=False)
+    completed = Column(Boolean, default=False)
 
     # Add relationship to cls spec.
-    @declared_attr
-    def trigger_id(cls):
-        return Column(Integer, ForeignKey('trigger.id', ondelete="CASCADE"))
+    trigger_id = Column(Integer, ForeignKey('trigger.id', ondelete="CASCADE"))
 
-    @declared_attr
-    def trigger(cls):
-        return relationship("Trigger")
+    trigger = relationship("Trigger", cascade="all, delete-orphan",
+                            single_parent=True)
 
-    @declared_attr
-    def trigger_is_completed(cls):
-        return relationship(
-            "Trigger",
-            primaryjoin="and_({}.trigger_id==Trigger.id, "
-                        "Trigger.completed==True)".format(cls.__name__))
+    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
 
-    @declared_attr
-    def _hero_id(cls):
-        """This should remain the same for the lifetime of the handler.
+    hero = relationship("Hero", cascade="all, delete-orphan",
+                            single_parent=True)
 
-        Assigned in the 'activate' method.
-        """
-        return Column(Integer)
+    @hybrid_property
+    def trigger_is_completed(self):
+        return self.trigger.completed
+
+    # @declared_attr
+    # def something(cls):
+    #     return something
 
     def activate(self, trigger_template, hero):
         """Fully activate this Handler.
@@ -239,9 +228,18 @@ class HandlerMixin(object):
         NOTE: this is because the location of next triggers may vary between
         Handler sub classes as may the location of the hero object.
         """
-        self._hero_id = hero.id
-        self.trigger = trigger_template.clone()
-        self.trigger.hero = hero
+        if self.completed:
+            self.deactivate()
+        else:
+            self._hero = hero
+            self.trigger = trigger_template.clone()
+            self.trigger.hero = hero
+
+    def deactivate(self):
+        """Deactivate self and current trigger."""
+        self.trigger.deactivate()
+        self.trigger = None
+        self._hero = None
 
     def run(self, trigger_template):
         """Deactivate or update the current trigger.
@@ -256,6 +254,37 @@ class HandlerMixin(object):
         self.advance()
         super().run(self.current_quest.trigger)
         """
-        self.trigger.deactivate()
-        if trigger_template:
+        if self.completed:
+            self.deactivate()
+        elif trigger_template:
+            self.trigger.deactivate()
             self.trigger = trigger_template.clone()
+            print(self.trigger.id)
+
+
+class HandlerMixin(object):
+    """Handler mixin to add trigger functionality to a class.
+
+    The basic steps are:
+        1. add an 'activate' method to sub-class that can be run when a
+            hero and trigger are available
+        2. add some code that causes sub-class to 'complete'
+        3.
+    """
+    # Add relationship to cls spec.
+    @declared_attr
+    def handler_id(cls):
+        return Column(Integer, ForeignKey('handler.id', ondelete="CASCADE"))
+
+    @declared_attr
+    def handler(cls):
+        return relationship("Handler", cascade="all, delete-orphan",
+                            single_parent=True)
+
+    @property
+    def new_handler(self):
+        return lambda: Handler()
+
+    @declared_attr
+    def completed(cls):
+        return Column(Boolean, default=False)

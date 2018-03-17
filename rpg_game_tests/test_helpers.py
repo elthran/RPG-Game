@@ -94,12 +94,12 @@ class Mock:
 
 
 class TestMock:
-    def test_deep(self):
+    def test_init(self):
         mock_hero = Mock('current_location.id', 5)
 
         assert mock_hero.current_location.id == 5
 
-    def test_init(self):
+    def test_blank(self):
         mock_hero = Mock.blank()
         assert type(mock_hero) == Mock
 

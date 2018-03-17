@@ -1,3 +1,8 @@
+if __name__ == "__main__":
+    import os
+    os.system("python3 -m pytest -vv -s rpg_game_tests/test_{}".format(__file__))
+    exit()  # prevents code from trying to run file afterwards.
+
 """
 
 THIS IS REALLY OUT OF DATE! ASK ME TO UPDATE IT. SAVE ME FROM MYSELF!
@@ -151,6 +156,7 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         self.quests = quests
         self.is_default = is_default
         self.template = template  # See TemplateMixin?
+        self.handler = self.new_handler()
 
     def clone(self):
         return QuestPath(self.name, self.description,
@@ -202,9 +208,9 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         necessary to account for path ending. Update hero xp and such.
         """
         
-        # Sort of like a failsafe. Active paths should not be advanced.
-        # Maybe this should be an assert?
-        assert self.completed != True
+        # Fail safe. Completed paths should not be advanced.
+        if self.completed:
+            raise AssertionError("This path '{}' is completed and should have been deactivated!".format(self.name))
 
         if self.stage == self.stages-1:
             self.completed = True
@@ -212,6 +218,9 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         else:
             self.reward_hero()  # Reward must come before stage increase.
             self.stage += 1
+
+        # Activate the latest trigger. This should deactivate the trigger if 'completed'.
+        self.activate(self.journal.hero)
 
         # Potentially spawn a new path? or maybe that would be a trigger
         # in Quests?
@@ -233,9 +242,9 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
             hero.gain_experience(quest.reward_experience)
         self.journal.notification = self
 
-    def activate(self, hero):
-        """Run super's activate using locations of local variables."""
-        super().activate(self.current_quest.trigger, hero)
+    def activate_handler(self, hero):
+        """Activate the trigger for the current quest."""
+        self.handler.activate(self.current_quest.trigger, hero)
 
     def run(self):
         """Special handler method over ride.

@@ -69,4 +69,5 @@ class Engine:
 
         # Garbage collect all completed/deactivated triggers.
         for trigger in self.db.get_all_garbage_triggers():
+            print("Trigger.id: {} -> garbage collected.".format(trigger.id))
             self.db.session.delete(trigger)

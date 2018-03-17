@@ -1,20 +1,57 @@
 import pdb
 
+import pytest
+
 from database import EZDB
 from hero import Hero
 from quests import Quest, QuestPath
-from . import GenericTestCase
+from locations import Location
+from events import Condition, Trigger
+from . import GenericTestCase, db_execute_script, Mock
 
 
-class TestQuest(GenericTestCase):
+@pytest.mark.incremental
+class TestQuestPath(GenericTestCase):
     @classmethod
     def setup_class(cls):
         db = super().setup_class()
-        db.engine.execute("DROP TABLE IF EXISTS `quest_path_to_quest_association`;")
-        db.engine.execute("DROP TABLE IF EXISTS `quest`;")
+        db_execute_script("static/drop_hero_table.sql", db)
         db = super().setup_class()  # Rebuild schema.
-        quest = Quest("Get Acquainted with the Blacksmith", "Go talk to the blacksmith.")
-        db.session.add(quest)
+
+
+        equip_item_trigger = Trigger(
+            'equip_event',
+            conditions=[],
+            extra_info_for_humans="Should activate when equip_event spawns."
+        )
+
+        unequip_item_trigger = Trigger(
+            'unequip_event',
+            conditions=[],
+            extra_info_for_humans="Should activate when unequip_event spawns."
+        )
+
+        inventory_quest_stage1 = Quest(
+            "Equip an item",
+            "Equip any item in your inventory.",
+            trigger=equip_item_trigger
+        )
+
+        inventory_quest_stage2 = Quest(
+            "Unequip an item",
+            "Unequip any item in your inventory.",
+            trigger=unequip_item_trigger
+        )
+
+        learn_about_your_inventory_path = QuestPath(
+            "Learn how your inventory works",
+            "Practice equipping an unequipping.",
+            quests=[inventory_quest_stage1, inventory_quest_stage2],
+            is_default=True
+        )
+
+        hero = Hero(name="Haldon")
+        db.session.add_all([learn_about_your_inventory_path, hero])
         db.update()
 
     @classmethod
@@ -23,162 +60,44 @@ class TestQuest(GenericTestCase):
 
     def setup(self):
         super().setup()
-        self.quest = self.db.session.query(Quest).get(1)
+        self.inventory_path = self.db.session.query(QuestPath).filter_by(name="Learn how your inventory works", template=True).one()
+        self.hero = self.db.session.query(Hero).filter_by(name="Haldon").one()
 
-    def test_init(self):
-        """Check if object is created, storable and retrievable.
-        """
-        quest = Quest("Get Acquainted with the Blacksmith", "Go talk to the blacksmith.")
-        self.db.session.add(quest)
-        self.db.session.commit()
-        quest_id = quest.id
-        str_quest = quest.pretty
+    def test_current_quest(self):
+        str_current_quest = self.inventory_path.current_quest.pretty
+        self.inventory_path.stage += 1
+
+        self.rebuild_instance()
+        assert str_current_quest != self.inventory_path.current_quest.pretty
+
+    def test_activate(self):
+        current_quest_trigger_id = self.inventory_path.current_quest.trigger.id
+        hero_id = self.hero.id
+        self.inventory_path.activate_handler(self.hero)
+
         self.rebuild_instance()
 
-        quest2 = self.db.session.query(Quest).get(quest_id)
-        assert str_quest == quest2.pretty
-
-    def test_if_relationship_is_a_set(self):
-        """Test if relationship can contain duplicates.
-        
-        NOTE: You must do a commit after adding each element or you will
-        get an error of "added the same object twice." With the commit
-        in between it seems to work.
-        """
-        quest = Quest("Get Acquainted with the Blacksmith",
-                      "Go talk to the blacksmith.")
-        quest2 = Quest("Get Acquainted with the Blacksmith",
-                       "Buy your first item.", reward_experience=7)
-        self.db.session.add(quest)
-        self.db.session.add(quest2)
-        
-        # Append first time.
-        quest.next_quests.append(quest2)
-        self.db.session.commit()
-        str_quest = str(quest)
-        
-        # Add again while already there.
-        quest.next_quests.append(quest2)
-        self.db.session.commit()
-        
-        str2_quest = str(quest)
-        
-        self.rebuild_instance()
-        quest3 = self.db.session.query(Quest).filter_by(id=1).first()
-        
-        self.assertEqual(str_quest, str2_quest)
-        self.assertEqual(str_quest, str(quest3))
-     
-    def test_quest_path_adding(self):
-        hero = Hero(name="Haldon")
-        quest = self.quest
-        
-        # self.quest.quest_paths.append(QuestPath(self.quest, hero))
-        # same as:
-        # QuestPath(quest, hero)
-        quest.add_hero(hero)
-        
-        self.db.session.add(quest)
-        self.db.session.commit()
-        str_quest = str(quest)
-        
-        self.rebuild_instance()
-        quest2 = self.db.session.query(Quest).filter_by(id=1).first()
-        
-        self.assertEqual(str_quest, str(quest2))
-
-    def test_active_heroes(self):
-        hero = Hero(name="Haldon")
-        hero2 = Hero(name="Elthran")
-        hero3 = Hero(name="Not_Active")
-        quest = self.quest
-        QuestPath(quest, hero)
-        QuestPath(quest, hero2)
-        QuestPath(quest, hero3, active=False)
-        
-        self.db.session.add(quest)
-        self.db.session.commit()
-        str_active_heroes = str([
-            'hero.name={}'.format(hero.name)
-            for hero in QuestPath.active_heroes(quest)])
-         
-        self.rebuild_instance()
-        quest2 = self.db.session.query(Quest).filter_by(id=1).first()
-        
-        str_active_heroes2 = str([
-            'hero.name={}'.format(hero.name)
-            for hero in QuestPath.active_heroes(quest2)])
-        
-        self.assertEqual(str_active_heroes, str_active_heroes2)
-        self.assertEqual(str_active_heroes,
-                         "['hero.name=Haldon', 'hero.name=Elthran']")
-        
-    def test_completed_heroes(self):
-        hero = Hero(name="Haldon")
-        hero2 = Hero(name="Elthran")
-        hero3 = Hero(name="Not_Active")
-        quest = self.quest
-        QuestPath(quest, hero)
-        QuestPath(quest, hero2)
-        QuestPath(quest, hero3, active=False)
-        
-        self.db.session.add(quest)
-        self.db.session.commit()
-        len_active = len(QuestPath.active_heroes(quest))
-        len_completed = len(QuestPath.completed_heroes(quest))    
-        
-        self.rebuild_instance()
-        quest2 = self.db.session.query(Quest).filter_by(id=1).first()
-        active_heroes = QuestPath.active_heroes(quest2)
-        
-        quest2.mark_completed(active_heroes[0])
-        quest2.mark_completed(active_heroes[1])
-        self.db.session.commit()
-        len_active2 = len(QuestPath.active_heroes(quest2))
-        len_completed2 = len(QuestPath.completed_heroes(quest2))
-        
-        self.assertEqual(len_completed, 0)
-        self.assertEqual(len_active, 2)
-        self.assertEqual(len_completed2, 2)
-        self.assertEqual(len_active2, 0)
-        
-    def test_hero_cannot_be_active_and_completed_at_the_same_time(self):
-        quest = self.quest
-        hero = Hero(name="Haldon")
-        quest.add_hero(hero)
-        self.db.session.add(self.quest)
-        self.db.session.commit()
-        
-        self.rebuild_instance()
-        quest2 = self.db.session.query(Quest).filter_by(id=1).first()
-        
-        active_state = quest2.quest_paths[0].active
-        completed_state = quest2.quest_paths[0].completed
-        quest2.mark_completed(QuestPath.active_heroes(quest2)[0])   
-        active_state2 = quest2.quest_paths[0].active
-        completed_state2 = quest2.quest_paths[0].completed
-        
-        self.assertTrue(active_state)
-        self.assertTrue(completed_state2)
-        self.assertFalse(active_state2)
-        self.assertFalse(completed_state)
+        assert current_quest_trigger_id == self.inventory_path.current_quest.trigger.id
+        assert current_quest_trigger_id != self.hero.triggers[0].id
+        assert self.inventory_path._hero_id == hero_id
 
     def test_path_advance(self):
-        self.assertEqual('Not built', '')
+        self.inventory_path.journal = self.hero.journal
 
-    # def test_heroes_relationship(self):
-        # """Test if hero/quest backref is set up properly.
-        # """
-        # self.assertEqual('Not built', '')
-        
-    # def test_past_quests(self):
-        # self.assertEqual('Not built', '')
-        
-    # def test_next_quests(self):
-        # self.assertEqual('Not built', '')
-        
-    # def test_relationship_with_self(self):
-        # self.assertEqual('Not built', '')
-        
-    # def test_advance_quest(self):
-        # self.assertEqual('Not built', '')
+        initial_completed = self.inventory_path.completed
+        current_quest_id = self.inventory_path.current_quest.id
+        active_trigger_id = self.hero.triggers[0].id
+        next_quest_trigger_id = self.inventory_path.current_quest.trigger.id
+
+        self.inventory_path.advance()
+        self.rebuild_instance()
+
+        assert initial_completed is False
+        assert self.inventory_path.completed is True
+        # Since path is completed current quest remains the same.
+        assert current_quest_id == self.inventory_path.current_quest.id
+        assert self.hero.triggers == []
+        assert self.inventory_path._hero_id is None
+        assert self.inventory_path.trigger is None
+        # Make sure advance hasn't build a bunch blank triggers behind.
+        assert self.db.session.query(Trigger).filter_by(template=False).count() == 0

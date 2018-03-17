@@ -137,8 +137,12 @@ class Hero(SessionHoistMixin, Base):
     journal = relationship('Journal', back_populates='hero', uselist=False,
                            cascade="all, delete-orphan")
 
-    # Many to one with Triggers, Each hero has many triggers.
+    # Each hero has many Triggers. One to Many
     triggers = relationship('Trigger', back_populates='hero',
+                            cascade="all, delete-orphan")
+
+    # Hero to Handlers is One to Many.
+    handlers = relationship('Handler', back_populates='hero',
                             cascade="all, delete-orphan")
 
     # @eltran ... this probably won't work as the var will disappear on

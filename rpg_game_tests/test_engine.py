@@ -109,7 +109,7 @@ class TestEngine(GenericTestCase):
         )
 
         hero = Hero(name="Haldon")
-        hero.journal.quest_paths = [meet_the_blacksmith_path, learn_about_your_inventory_path]
+        hero.journal.quest_paths = [learn_about_your_inventory_path]
         db.session.add(hero)
         db.update()
 
@@ -117,21 +117,31 @@ class TestEngine(GenericTestCase):
     def teardown_class(cls, delete=True):
         db = super().teardown_class(delete=False)
 
+    def setup(self):
+        super().setup()
+        self.hero = self.db.session.query(Hero).filter_by(name="Haldon").one()
+        self.inventory_path = self.db.session.query(QuestPath).filter_by(name="Learn how your inventory works", template=True).one()
+
     def test_spawn(self):
         engine = Engine(self.db)
 
-        hero = self.db.session.query(Hero).filter_by(name="Haldon").one()
-        trigger_id = [t.id for t in hero.triggers if t.event_name== "equip_event"]
-        current_quest_id = [qp.current_quest.id for qp in hero.journal.quest_paths if qp.name == "Learn how your inventory works"]
+        trigger_id = self.hero.triggers[0].id
+        current_quest_id = self.inventory_path.current_quest.id
 
         mock_item = Mock("name", 'Blade')
         engine.spawn(
                 'equip_event',
-                hero,
-                description="{} equips a/an {}.".format(hero.name, mock_item.name)
+                self.hero,
+                description="{} equips a/an {}.".format(self.hero.name, mock_item.name)
         )
-        self.db.update()
-        hero = self.db.session.query(Hero).get(1)
-        assert trigger_id not in [t.id for t in hero.triggers]
+
+        self.rebuild_instance()
+
+        assert trigger_id not in [t.id for t in self.hero.triggers]
         assert current_quest_id != [qp.current_quest.id for qp in hero.journal.quest_paths if qp.name == "Learn how your inventory works"]
+
+        # Check if deactive triggers get garbage collected.
+        self.rebuild_instance()
+
+        assert self.db.session.query(Trigger).filter_by(event_name="Deactivated").count() == 0
 

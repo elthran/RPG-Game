@@ -134,7 +134,7 @@ class Journal(Base):
         """
         if quest_path.template:
             quest_path = quest_path.clone()
-        quest_path.activate(self.hero)
+        quest_path.activate_handler(self.hero)
         self.notification = quest_path
         return quest_path
 
