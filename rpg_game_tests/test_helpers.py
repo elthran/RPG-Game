@@ -1,4 +1,13 @@
+if __name__ == "__main__":
+    import os
+    os.system("python3 -m pytest -vv {}".format(__file__))
+    exit()  # prevents code from trying to run file afterwards.
+
 import configparser
+import pdb
+
+import pytest
+
 from database import EZDB
 
 config = configparser.ConfigParser()
@@ -66,3 +75,34 @@ def db_execute_script(path, ezdb):
         for line in file:
             if line != '\n':
                 ezdb.engine.execute(line)
+
+
+class Mock:
+    def __init__(self, location, value):
+        attrs = location.split('.')
+        if len(attrs) > 1:
+            setattr(self, attrs[0], Mock('.'.join(attrs[1:]), value))
+        setattr(self, location, value)
+
+    @classmethod
+    def blank(cls):
+        temp = cls.__init__
+        cls.__init__ = lambda self: None
+        mock = cls()
+        cls.__init__ = temp
+        return mock
+
+
+class TestMock:
+    def test_deep(self):
+        mock_hero = Mock('current_location.id', 5)
+
+        assert mock_hero.current_location.id == 5
+
+    def test_init(self):
+        mock_hero = Mock.blank()
+        assert type(mock_hero) == Mock
+
+        # Make sure init isn't messed up by blank.
+        mock_hero = Mock('current_location.id', 5)
+        assert mock_hero.current_location.id == 5

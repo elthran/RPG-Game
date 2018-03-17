@@ -1,3 +1,8 @@
+if __name__ == "__main__":
+    import os
+    os.system("python3 -m pytest -vv {}".format(__file__))
+    exit()  # prevents code from trying to run file afterwards.
+
 import pdb
 
 from . import GenericTestCase, db_execute_script
@@ -65,6 +70,7 @@ class TestHero(GenericTestCase):
                     proficiency_data=[('Health', {'base': 50})])
         self.db.session.add(item)
         self.db.session.commit()
+
         self.hero.inventory.equip(item)
         self.rebuild_instance()
 

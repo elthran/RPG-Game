@@ -1,3 +1,8 @@
+if __name__ == "__main__":
+    import os
+    os.system("python3 -m pytest -vv rpg_game_tests/test_{}".format(__file__))
+    exit()  # prevents code from trying to run file afterwards.
+
 import math
 import random
 import datetime
@@ -118,14 +123,13 @@ class Hero(SessionHoistMixin, Base):
         back_populates='hero',
         cascade="all, delete-orphan")
 
-    # Old proficiency collection class.
-    # collection_class=attribute_mapped_collection('name'),
-
+    # see http://docs.sqlalchemy.org/en/latest/orm/join_conditions.html#composite-secondary-joins
     # all_proficiencies = relationship(
     #     "Proficiency",
-    #     collection_class=attribute_mapped_collection('name'),
-    #     primaryjoin="and_(Ability.id==Proficiency.ability_id, "
-    #                 "Hero.id==Ability.hero_id)",
+    #     collection_class=attribute_mapped_dict_hybrid('name'),
+    #     primaryjoin="join(Hero, Proficiency, Hero.id==Proficiency.hero_id)."
+    #                 "join(Hero, Ability, Hero.id==Ability.hero_id)."
+    #                 "join(Ability, Proficiency, Ability.id==Proficiency.ability_id)",
     #     cascade="all, delete-orphan",
     # )
 

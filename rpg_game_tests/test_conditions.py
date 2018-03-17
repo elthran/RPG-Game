@@ -1,5 +1,13 @@
+if __name__ == "__main__":
+    import os
+    os.system("python3 -m pytest -vv {}".format(__file__))
+    exit()  # prevents code from trying to run file afterwards.
+
+import pdb
+
 from events import Condition
 from locations import Location
+from . import Mock
 
 
 class TestCondition:
@@ -8,13 +16,17 @@ class TestCondition:
         self.blacksmith_condition = Condition('current_location', '==', self.blacksmith)
 
     def test_init(self):
-        assert self.blacksmith_condition.code == 'self.trigger.hero.current_location.id == self.location.id'
+        assert self.blacksmith_condition.code == 'hero.current_location.id == self.location.id'
 
         blacksmith_is_parent_of_current_location_condition = Condition('current_location.parent', '==', self.blacksmith)
 
-        assert blacksmith_is_parent_of_current_location_condition.code == 'self.trigger.hero.current_location.parent.id == self.location.id'
+        assert blacksmith_is_parent_of_current_location_condition.code == 'hero.current_location.parent.id == self.location.id'
 
-    def test_clone(self):
-        blacksmith_condition_clone = self.blacksmith_condition.clone()
+    def test_eval(self):
+        condition = self.blacksmith_condition
+        mock_hero = Mock('current_location.id', 5)
+        condition.location.id = 5
+        assert eval(condition.code, {'self': condition, 'hero': mock_hero}) is True
 
-        assert blacksmith_condition_clone.code == self.blacksmith_condition.code and blacksmith_condition_clone is not self.blacksmith_condition
+        condition.location.id = 4
+        assert eval(condition.code, {'self': condition, 'hero': mock_hero}) is False

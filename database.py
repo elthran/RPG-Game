@@ -453,6 +453,9 @@ class EZDB:
             Trigger).filter_by(
             event_name=event_name, hero_id=hero_id).all()
 
+    def get_all_garbage_triggers(self):
+        return self.session.query(Trigger).filter_by(event_name="Deactivated").all()
+
     def hero_has_quest_path_named(self, hero, name):
         """Returns True if hero has a ques_path of the given name.
 

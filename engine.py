@@ -1,3 +1,8 @@
+if __name__ == "__main__":
+    import os
+    os.system("python3 -m pytest -vv rpg_game_tests/test_{}".format(__file__))
+    exit()  # prevents code from trying to run file afterwards.
+
 """
 This file will become very important. I would like to switch to handling
 events here. And everything else that the User doesn't need to know about.
@@ -61,3 +66,7 @@ class Engine:
             # print("A handler with a completed trigger!")
             # handler.pprint()
             handler.run()  # This should be overridden by the subclass.
+
+        # Garbage collect all completed/deactivated triggers.
+        for trigger in self.db.get_all_garbage_triggers():
+            self.db.session.delete(trigger)

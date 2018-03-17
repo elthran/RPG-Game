@@ -1,3 +1,10 @@
+if __name__ == "__main__":
+    import os
+    os.system("python3 -m pytest -vv "
+              "rpg_game_tests/test_conditions.py "
+              "rpg_game_tests/test_conditions.py")
+    exit()  # prevents code from trying to run file afterwards.
+
 import datetime
 
 from sqlalchemy import (
@@ -56,7 +63,15 @@ class Event(Base):
         # arg_dict.get('location', None, type=str)
 
 
-class Condition(TemplateMixin, Base):
+condition_to_trigger = Table('condition_to_trigger', Base.metadata,
+    Column('condition_id', Integer, ForeignKey('condition.id',
+                                               ondelete="SET NULL")),
+    Column('trigger_id', Integer, ForeignKey('trigger.id',
+                                             ondelete="SET NULL"))
+)
+
+
+class Condition(Base):
     """A function that takes a python string and evaluates to boolean.
 
     Factory?
@@ -72,17 +87,16 @@ class Condition(TemplateMixin, Base):
     code = Column(String(200))
 
     # Relationships
-    # Each trigger might have many conditions
-    trigger_id = Column(Integer, ForeignKey('trigger.id', ondelete="CASCADE"))
-    trigger = relationship("Trigger", back_populates="conditions")
+    # Condition to Trigger is Many To Many
+    triggers = relationship("Trigger", secondary=condition_to_trigger,
+                            back_populates="conditions")
 
     # Each condition might be connected to a location. One to One.
     location_id = Column(Integer, ForeignKey('location.id',
                                              ondelete="CASCADE"))
     location = relationship('Location')
 
-    def __init__(self, hero_attribute, comparison, object_of_comparison,
-                 template=True):
+    def __init__(self, hero_attribute, comparison, object_of_comparison):
         """Build a condition object.
 
         The default initial comparison is:
@@ -95,22 +109,12 @@ class Condition(TemplateMixin, Base):
 
         self.condition_attribute = object_of_comparison.__table__.name
 
-        self.code = """self.trigger.hero.{}.id {} self.{}.id""".format(
+        self.code = """hero.{}.id {} self.{}.id""".format(
             hero_attribute, comparison, self.condition_attribute)
 
         # Should for example do:
         # self.location = the location I passed.
         setattr(self, self.condition_attribute, object_of_comparison)
-
-        self.template = template
-
-    def clone(self):
-        if not self.template:
-            raise Exception("Only use this method if obj.template == True.")
-        return Condition(
-            self.hero_attribute, self.comparison,
-            getattr(self, self.condition_attribute),
-            template=False)
 
 
 class Trigger(TemplateMixin, Base):
@@ -127,25 +131,25 @@ class Trigger(TemplateMixin, Base):
     hero = relationship('Hero', back_populates='triggers')
 
     # One to many with Conditions. Each trigger might have many conditions.
-    conditions = relationship("Condition", back_populates="trigger",
-                              cascade="all, delete-orphan")
+    conditions = relationship("Condition", secondary=condition_to_trigger,
+                              back_populates="triggers")
 
     def __init__(self, event_name, conditions, extra_info_for_humans=None,
                  template=True):
         self.event_name = event_name
         self.extra_info_for_humans = extra_info_for_humans
-        self.template = template
         self.completed = False
-        self.conditions = [c.clone() if c.template else c
-                           for c in conditions]
+        self.conditions = conditions
 
-    @staticmethod
-    def new_blank_trigger():
-        """Build a blank trigger to be modified by the update function.
+        self.template = template
 
-        This trigger will never run as no Event should have this name.
+    def clone(self):
+        """Clone this template.
         """
-        return Trigger("Blank", [], template=False)
+        if not self.template:
+            raise Exception("Only use this method if obj.template == True.")
+
+        return Trigger(self.event_name, self.conditions, self.extra_info_for_humans, template=False)
 
     def deactivate(self):
         """Deactivate this trigger.
@@ -156,19 +160,6 @@ class Trigger(TemplateMixin, Base):
         self.event_name = "Deactivated"
         self.conditions = []
         self.extra_info_for_humans = None
-        self.completed = False
-
-    def update(self, template_trigger):
-        """Change the values of this trigger.
-
-        Essential make a new trigger without producing a tonne of spam
-        defunct triggers.
-        """
-        assert template_trigger.template
-
-        self.event_name = template_trigger.event_name
-        self.conditions = template_trigger.conditions
-        self.extra_info_for_humans = template_trigger.extra_info_for_humans
         self.completed = False
 
     def evaluate(self):
@@ -188,7 +179,7 @@ class Trigger(TemplateMixin, Base):
             self.completed = True
         """
         for condition in self.conditions:
-            if not eval(condition.code, {'self': condition}):
+            if not eval(condition.code, {'self': condition, 'hero': self.hero}):
                 return False
         self.completed = True
         return self.completed  # mostly not used.
@@ -233,7 +224,7 @@ class HandlerMixin(object):
         """
         return Column(Integer)
 
-    def activate(self, new_trigger_template, hero):
+    def activate(self, trigger_template, hero):
         """Fully activate this Handler.
 
         This is used when all variables are available.
@@ -249,11 +240,10 @@ class HandlerMixin(object):
         Handler sub classes as may the location of the hero object.
         """
         self._hero_id = hero.id
-        self.trigger = Trigger.new_blank_trigger()
+        self.trigger = trigger_template.clone()
         self.trigger.hero = hero
-        self.trigger.update(new_trigger_template)
 
-    def run(self, new_trigger_template):
+    def run(self, trigger_template):
         """Deactivate or update the current trigger.
 
         NOTE: sub-class needs its own local version!
@@ -266,27 +256,6 @@ class HandlerMixin(object):
         self.advance()
         super().run(self.current_quest.trigger)
         """
-        if self.completed:
-            self.trigger.deactivate()
-        else:
-            self.trigger.update(new_trigger_template)
-
-
-if __name__ == "__main__":
-    class SomeClassThatUsesTriggers(HandlerMixin, Base):
-        __tablename__ = "some_class_that_uses_triggers"
-
-        id = Column(Integer, primary_key=True)
-
-        def __init__(self, kvar=None):
-            self._init_handler()
-            self.kvar = kvar
-            print("My class that now uses triggers.")
-
-    print("SomeClass before init:", repr(SomeClassThatUsesTriggers))
-    sc = SomeClassThatUsesTriggers()
-    print("SomeClass:", repr(sc))
-    # print("SomeClass dir:", dir(sc))
-    sc.pprint()
-
-
+        self.trigger.deactivate()
+        if trigger_template:
+            self.trigger = trigger_template.clone()

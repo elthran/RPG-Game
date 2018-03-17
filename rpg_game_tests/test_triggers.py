@@ -1,3 +1,8 @@
+if __name__ == "__main__":
+    import os
+    os.system("python3 -m pytest -vv {}".format(__file__))
+    exit()  # prevents code from trying to run file afterwards.
+
 from events import Trigger, Condition
 from locations import Location
 
