@@ -84,7 +84,8 @@
 		<h2>Offense</h2>
 		<div class="leftPageHalf">
 			<ul>
-				<li>Damage:</li>
+				<li>Av. Damage:</li>
+				<li>Max Damage:</li>
 				<li>Attack Speed:</li>
 				<li>Accuracy:</li>
 				<li>First Strike:</li>
@@ -97,6 +98,7 @@
 		</div>
 		<div class="rightPageHalf textRight">
 			<ul>
+				<li>{{ proficiencies.damage.final * proficiencies.combat.final / 100 }}</li>
 				<li>{{ proficiencies.damage.final }}</li>
 				<li>{{ proficiencies.speed.final }}</li>
 				<li>{{ proficiencies.accuracy.final }}%</li>

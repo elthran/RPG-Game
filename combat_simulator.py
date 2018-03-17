@@ -8,6 +8,7 @@
 """ These functions control each battle within the game """
 
 from random import randint
+from game import round_number_intelligently
 
 def determine_attacker(active, inactive):
     random = randint(1,int((active.get_summed_proficiencies('speed').final + inactive.get_summed_proficiencies('speed').final)*100))
@@ -30,8 +31,9 @@ def determine_if_critical_hit(attacker):
     return False
 
 def calculate_damage(attacker, defender):
-    raw_damage = randint(attacker.get_summed_proficiencies('damage_minimum').final, attacker.get_summed_proficiencies('damage_maximum').final)
-    damage = raw_damage * (1 - defender.get_summed_proficiencies('defence').final)
+    average_damage = attacker.get_summed_proficiencies('damage').final * attacker.get_summed_proficiencies('combat').final / 100
+    damage = average_damage * (1 - defender.get_summed_proficiencies('defence').final)
+    damage = max(round_number_intelligently(damage),1)
     return damage
 
 def add_killshot_multiplier(attacker, damage):
