@@ -294,19 +294,17 @@ all_store_items = [
     ArmArmour("Light Sleeves", 4, armour_value=5, template=True),
     HandArmour("Light Gloves", 5, armour_value=7, template=True),
     Ring("Silver Ring", 8, template=True, style="silver"),
-    TwoHandedWeapon("Medium Polearm", buy_price=5,
-                    proficiency_data=[
-                        ('Damage', {'base': 30}),
-                        ('Combat', {'base': 60}),
-                        ('Speed', {'base': 1})],
-                    template=True),
     TwoHandedWeapon("Small Polearm", buy_price=5,
                     proficiency_data=[
                         ('Damage', {'base': 30}),
                         ('Combat', {'base': 60}),
                         ('Speed', {'base': 1})],
                     template=True),
-    Shield("Small Shield", buy_price=10, template=True),
+    Shield("Small Shield", buy_price=15,
+           proficiency_data=[
+                ('Block', {'base': 25}),
+                ('BlockAmount', {'base': 25})],
+           template=True),
     OneHandedWeapon("Big Dagger", buy_price=10,
                     proficiency_data=[
                         ('Damage', {'base': 300}),
@@ -319,31 +317,11 @@ all_store_items = [
                         ('Combat', {'base': 60}),
                         ('Speed', {'base': 1})],
                     template=True),
-    OneHandedWeapon("Poisoned Dagger", buy_price=5,
-                    proficiency_data=[
-                        ('Damage', {'base': 2, 'modifier': 0.1}),
-                        ('Combat', {'base': 10, 'modifier': 0.1}),
-                        ('ResistPoison', {'base': 25})],
-                    template=True),
     Shield("Ice Buckler", buy_price=100, max_durability=3,
            proficiency_data=[
-               ('Damage', {'base': 2, 'modifier': 0.1}),
-               ('Combat', {'base': 10, 'modifier': 0.1}),
-               ('Block', {'base': 50, 'modifier': 0.5}),
+               ('Block', {'base': 25}),
                ('ResistFrost', {'base': 30})],
-           template=True),
-    Shield("Rare Fire Buckler", buy_price=100, max_durability=3,
-           proficiency_data=[
-               ('Damage', {'base': 2, 'modifier': 0.1}),
-               ('Combat', {'base': 10, 'modifier': 0.1}),
-               ('Block', {'base': 50, 'modifier': 0.5}),
-               ('ResistFrost', {'base': 30})],
-           template=True),
-    TwoHandedWeapon("Simple Staff", buy_price=100, max_durability=3,
-                    proficiency_data=[
-                        ('Damage', {'base': 2, 'modifier': 0.1}),
-                        ('Combat', {'base': 10, 'modifier': 0.1})],
-                    template=True)
+           template=True)
     ]
 
 all_marketplace_items = [

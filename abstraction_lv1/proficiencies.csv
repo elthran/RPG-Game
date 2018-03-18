@@ -60,6 +60,7 @@ SpellLimit,How many spells you may know.,None,linear,0,0,0,TRUE,FALSE
 Vision,How much of the map is revealed.,None,linear,0,0,0,TRUE,FALSE
 Woodsman,Modifier for forest movement.,Pathfinding,linear,1,1,0,TRUE,FALSE
 
+BlockAmount,Amount of damage absorbed when a shield successfully blocks,None,linear,0,0,0,TRUE,TRUE
 Blunt,Skill with blunt weapons,None,linear,0,0,0,TRUE,TRUE
 Piercing,Skill with piercing weapons,None,linear,0,0,0,TRUE,TRUE
 Slashing,Skill with slashing weapons,None,linear,0,0,0,TRUE,TRUE
