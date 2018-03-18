@@ -138,8 +138,8 @@ class Hero(SessionHoistMixin, Base):
                            cascade="all, delete-orphan")
 
     # Each hero has many Triggers. One to Many
-    triggers = relationship('Trigger', back_populates='hero',
-                            cascade="all, delete-orphan")
+    triggers = relationship('Trigger', secondary='trigger_to_hero',
+                            back_populates='heroes')
 
     # Hero to Handlers is One to Many.
     handlers = relationship('Handler', back_populates='hero',

@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS `quest_path`;
 DROP TABLE IF EXISTS `condition_to_trigger`;
 DROP TABLE IF EXISTS `condition`;
 DROP TABLE IF EXISTS `handler`;
+DROP TABLE IF EXISTS `trigger_to_hero`;
 DROP TABLE IF EXISTS `trigger`;
 DROP table IF EXISTS `achievement`;
 DROP table IF EXISTS `achievements`;

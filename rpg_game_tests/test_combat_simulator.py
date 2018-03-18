@@ -1,7 +1,7 @@
 """
 Test combat simulator.
 """
-
+import pytest
 from combat_simulator import battle_logic, determine_attacker, determine_if_hits, determine_if_critical_hit, calculate_damage, add_killshot_multiplier
 from hero import Hero
 
@@ -21,6 +21,8 @@ vv - show full length output
 l - show local vars during traceback (when a test fails)
 """
 
+
+@pytest.mark.slow
 class TestCombat:
     @classmethod
     def setup_class(cls):

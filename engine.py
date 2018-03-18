@@ -50,24 +50,12 @@ class Engine:
         event = Event(event_name, hero_id=hero.id, description=description)
         self.db.add_object(event)
 
-        triggers = self.db.get_all_triggers_by(event_name, hero.id)
-        for trigger in triggers:
-            trigger.evaluate()
-            # if trigger.completed:
-            #     print("Trigger completed!")
-            #     trigger.pprint()
-
-        handlers = self.db.get_all_handlers_with_completed_triggers(hero)
         # return the "Blacksmith" quest object ...
         # Since its completion trigger is completed ...
         # It is now completed. Run the method that you run when trigger
         # completes.
-        for handler in handlers:
+        for handler in hero.handlers:
             # print("A handler with a completed trigger!")
             # handler.pprint()
-            handler.run()  # This should be overridden by the subclass.
-
-        # Garbage collect all completed/deactivated triggers.
-        for trigger in self.db.get_all_garbage_triggers():
-            print("Trigger.id: {} -> garbage collected.".format(trigger.id))
-            self.db.session.delete(trigger)
+            if handler.trigger.evaluate():
+                handler.run()

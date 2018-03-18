@@ -126,12 +126,23 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
     reward_experience = Column(Integer)
     stage = Column(Integer)
     is_default = Column(Boolean)
+    completed = Column(Boolean, default=False)
 
     # Relationships
     # QuestPath to Journal is Many to One.
     journal_id = Column(Integer, ForeignKey('journal.id', ondelete="SET NULL"))
     journal = relationship("Journal", back_populates='quest_paths',
                            foreign_keys="[QuestPath.journal_id]")
+
+    @validates('journal')
+    def activate_path(self, key, journal):
+        """Activate the trigger for the current quest."""
+
+        assert self.template is False
+        assert self.handler is None
+        self.handler = self.new_handler()
+        self.handler.activate(self.current_quest.trigger, journal.hero)
+        return journal
 
     notification_id = Column(Integer, ForeignKey("journal.id",
                                                  ondelete="CASCADE"))
@@ -156,7 +167,6 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         self.quests = quests
         self.is_default = is_default
         self.template = template  # See TemplateMixin?
-        self.handler = self.new_handler()
 
     def clone(self):
         return QuestPath(self.name, self.description,
@@ -215,12 +225,13 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         if self.stage == self.stages-1:
             self.completed = True
             self.reward_hero(final=True)
+            self.handler.deactivate()
+            self.handler = None
         else:
             self.reward_hero()  # Reward must come before stage increase.
             self.stage += 1
-
-        # Activate the latest trigger. This should deactivate the trigger if 'completed'.
-        self.activate(self.journal.hero)
+            # Activate the latest trigger. This should deactivate the trigger if 'completed'.
+            self.handler.activate(self.current_quest.trigger, self.journal.hero)
 
         # Potentially spawn a new path? or maybe that would be a trigger
         # in Quests?
@@ -242,10 +253,6 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
             hero.gain_experience(quest.reward_experience)
         self.journal.notification = self
 
-    def activate_handler(self, hero):
-        """Activate the trigger for the current quest."""
-        self.handler.activate(self.current_quest.trigger, hero)
-
     def run(self):
         """Special handler method over ride.
 
@@ -254,7 +261,6 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         deactivate if completed or update the current trigger.
         """
         self.advance()
-        super().run(self.current_quest.trigger)
 
 
 class Quest(Base):

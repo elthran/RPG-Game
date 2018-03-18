@@ -14,11 +14,11 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import backref
 from sqlalchemy.orm import validates, column_property, deferred
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from base_classes import Base
-from factories import TemplateMixin
 
 
 class Event(Base):
@@ -118,7 +118,14 @@ class Condition(Base):
         setattr(self, self.condition_attribute, object_of_comparison)
 
 
-class Trigger(TemplateMixin, Base):
+trigger_to_hero = Table('trigger_to_hero', Base.metadata,
+    Column('hero_id', Integer, ForeignKey('hero.id', ondelete="SET NULL")),
+    Column('trigger_id', Integer, ForeignKey('trigger.id',
+                                             ondelete="SET NULL"))
+)
+
+
+class Trigger(Base):
     __tablename__ = 'trigger'
 
     id = Column(Integer, primary_key=True)
@@ -126,43 +133,20 @@ class Trigger(TemplateMixin, Base):
     extra_info_for_humans = Column(String(200))
     completed = Column(Boolean)
 
-    # relationships
-    # One to Many with Heroes?
-    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
-    hero = relationship('Hero', back_populates='triggers')
+    # Relationship
+    # Many to Many with Heroes.
+    heroes = relationship('Hero', secondary=trigger_to_hero,
+                          back_populates='triggers')
 
     # One to many with Conditions. Each trigger might have many conditions.
     conditions = relationship("Condition", secondary=condition_to_trigger,
                               back_populates="triggers")
 
-    def __init__(self, event_name, conditions, extra_info_for_humans=None,
-                 template=True):
+    def __init__(self, event_name, conditions, extra_info_for_humans=None):
         self.event_name = event_name
         self.extra_info_for_humans = extra_info_for_humans
         self.completed = False
         self.conditions = conditions
-
-        self.template = template
-
-    def clone(self):
-        """Clone this template.
-        """
-        if not self.template:
-            raise Exception("Only use this method if obj.template == True.")
-
-        return Trigger(self.event_name, self.conditions, self.extra_info_for_humans, template=False)
-
-    def deactivate(self):
-        """Deactivate this trigger.
-
-        As it has no conditions it should never run.
-        Maybe this should just delete the Trigger from the database?
-        """
-        self.event_name = "Deactivated"
-        self.conditions = []
-        self.extra_info_for_humans = None
-        self.completed = False
-        self.hero = None
 
     def evaluate(self):
         """Return true if all conditions are true.
@@ -183,37 +167,39 @@ class Trigger(TemplateMixin, Base):
         for condition in self.conditions:
             if not eval(condition.code, {'self': condition, 'hero': self.hero}):
                 return False
-        self.completed = True
-        return self.completed  # mostly not used.
+        return True
 
 
 class Handler(Base):
     __tablename__ = 'handler'
 
     id = Column(Integer, primary_key=True)
+    master = Column(String(50))
 
-    completed = Column(Boolean, default=False)
-
-    # Add relationship to cls spec.
+    # Relationships
     trigger_id = Column(Integer, ForeignKey('trigger.id', ondelete="CASCADE"))
-
-    trigger = relationship("Trigger", cascade="all, delete-orphan",
-                            single_parent=True)
+    trigger = relationship("Trigger")
 
     hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
-
-    hero = relationship("Hero", cascade="all, delete-orphan",
-                            single_parent=True)
+    hero = relationship("Hero")  # Don't set cascade here or you will delete the hero object.
 
     @hybrid_property
     def trigger_is_completed(self):
-        return self.trigger.completed
+        return self.trigger.evaluate()
 
     # @declared_attr
     # def something(cls):
     #     return something
 
-    def activate(self, trigger_template, hero):
+    def __init__(self, master):
+        """Create a new Handler object with the passed master.
+
+        This is probably done by a class that sub-classes HandlerMixin and
+        is using the self.new_hander() method.
+        """
+        self.master = master
+
+    def activate(self, trigger, hero, completed=False):
         """Fully activate this Handler.
 
         This is used when all variables are available.
@@ -222,69 +208,98 @@ class Handler(Base):
         object and then activated.
 
         The subclass should run:
-            super().activate(some_local_trigger_template, hero)
+            self.handler.activate(some_local_trigger, hero)
         when all of these variables are available.
 
         NOTE: this is because the location of next triggers may vary between
         Handler sub classes as may the location of the hero object.
         """
-        if self.completed:
+
+        if completed:
             self.deactivate()
         else:
-            self._hero = hero
-            self.trigger = trigger_template.clone()
-            self.trigger.hero = hero
+            self.hero = hero
+            self.trigger = trigger
+            self.trigger.heroes.append(hero)
 
     def deactivate(self):
-        """Deactivate self and current trigger."""
-        self.trigger.deactivate()
+        """Break trigger and hero relationship."""
+
+        self.trigger.heroes.remove(self.hero)
         self.trigger = None
-        self._hero = None
+        self.hero = None
 
-    def run(self, trigger_template):
-        """Deactivate or update the current trigger.
+    def run(self):
+        """Run the object that controls this handler.
 
-        NOTE: sub-class needs its own local version!
-        Which should:
-            1. run some local code -> which should have a possibility of
-                triggering the 'completed' flag
-            2. run super().run(maybe_a_trigger)
+        This method must have been implement in a class that implements
+        HandlerMixin. The master is the tablename of the object that
+        this object was create by.
 
-        i.e.
-        self.advance()
-        super().run(self.current_quest.trigger)
+        This is to accommodate the fact that many objects can have handlers
+        but I'm only interested in the one that created this object.
         """
-        if self.completed:
-            self.deactivate()
-        elif trigger_template:
-            self.trigger.deactivate()
-            self.trigger = trigger_template.clone()
-            print(self.trigger.id)
+
+        obj = getattr(self, self.master)
+        if obj:
+            obj.run()
 
 
 class HandlerMixin(object):
-    """Handler mixin to add trigger functionality to a class.
+    """Handler mixin to adds handler functionality to a class.
 
     The basic steps are:
-        1. add an 'activate' method to sub-class that can be run when a
+        1. add and 'activate' method to sub-class that can be run when a
             hero and trigger are available
-        2. add some code that causes sub-class to 'complete'
-        3.
+
+    e.g. In quests.py -> QuestPath I have built a journal class validator.
+    @validates('journal')
+    def activate_path(self, key, journal):
+        assert self.template is False
+        assert self.handler is None
+        self.handler = self.new_handler()
+        self.handler.activate(self.current_quest.trigger, journal.hero)
+        return journal
+
+        2. Add a run method to the subclass that is a stub to whatever the
+        subclass actually does. This method needs to deactivate the handler
+        appropriately.
+
+    e.g. In quests.py -> QuestPath
+    def advance(self):
+        if self.completed:
+            raise AssertionError("This path '{}' is completed and should have been deactivated!".format(self.name))
+
+        if self.stage == self.stages-1:
+            self.completed = True
+            self.reward_hero(final=True)
+            self.handler.deactivate()
+            self.handler = None
+        else:
+            self.reward_hero()  # Reward must come before stage increase.
+            self.stage += 1
+            # Activate the latest trigger. This should deactivate the trigger if 'completed'.
+            self.handler.activate(self.current_quest.trigger, self.journal.hero)
+
+    def run(self):
+        self.advance()
     """
+
     # Add relationship to cls spec.
     @declared_attr
     def handler_id(cls):
         return Column(Integer, ForeignKey('handler.id', ondelete="CASCADE"))
 
+    # The backref here populates the list of handler mixin stubs.
     @declared_attr
     def handler(cls):
         return relationship("Handler", cascade="all, delete-orphan",
-                            single_parent=True)
+                            single_parent=True,
+                            backref=backref(cls.__tablename__, uselist=False))
 
     @property
     def new_handler(self):
-        return lambda: Handler()
+        return lambda: Handler(self.__tablename__)
 
-    @declared_attr
-    def completed(cls):
-        return Column(Boolean, default=False)
+    def run(self):
+        raise NotImplementedError("You need to override this on the '{}' class.".format(self.__class__))
