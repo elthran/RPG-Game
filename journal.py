@@ -113,8 +113,7 @@ class Journal(Base):
 
     notification = relationship("QuestPath",
                                 foreign_keys="[QuestPath.notification_id]",
-                                uselist=False,
-                                cascade="all, delete-orphan")
+                                uselist=False)
 
     # Journal to Achievements is One to One.
     achievements = relationship("Achievements", back_populates="journal",
