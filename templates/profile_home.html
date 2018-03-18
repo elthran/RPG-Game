@@ -3,7 +3,7 @@
 
 <!-- This is the Home page -->
 <h1 style="text-align:center;">General</h1>
-<div style="clear: both;"></div>
+<div style="clear: both;width:1000px"></div> <!-- Set the width of the page here -->
 <div>
 	<div class="leftPageHalf">
 		<h2>Basics</h2>
@@ -19,8 +19,8 @@
 				{% if proficiencies.sanctity.final %}<li>Sanctity:</li>{% endif %}
 				<li>Storage:</li>
 				<li>Endurance:</li>
-				<li>Players killed:</li>
-				<li>Monsters killed:</li>
+				<li>Player Kills:</li>
+				<li>Monster Kills:</li>
 				<li>Deaths:</li>
 			</ul>
 		</div>
@@ -44,6 +44,7 @@
 	</div>
 	<div class="rightPageHalf">
 		<h2>Skills</h2>
+		<div style="clear: both;"></div>
 		<div class="leftPageHalf">
 				<ul>
 
@@ -84,12 +85,13 @@
 		<h2>Offense</h2>
 		<div class="leftPageHalf">
 			<ul>
-				<li>Av. Damage:</li>
-				<li>Max Damage:</li>
-				<li>Attack Speed:</li>
+				<li>Average Damage:</li>
+				<li>Maximum Damage:</li>
+				<li>AttackSpeed:</li>
 				<li>Accuracy:</li>
 				<li>First Strike:</li>
-				<li>Critical Hit Chance:</li>
+				<li>Killshot Chance:</li>
+				<li>Killshot Damage Multiplier:</li>
 				<li>Defence:</li>
 				<li>Evade:</li>
 				<li>Parry:</li>
@@ -103,7 +105,8 @@
 				<li>{{ proficiencies.speed.final }}</li>
 				<li>{{ proficiencies.accuracy.final }}%</li>
 				<li>{{ proficiencies.first_strike.final }}%</li>
-				<li>{{ proficiencies.killshot.final }}% ({{ proficiencies.killshot.final }}%)</li>
+				<li>{{ proficiencies.precision.final }}%</li>
+				<li>{{ proficiencies.killshot.final }}x</li>
 				<li>{{ proficiencies.defence.final }}%</li>
 				<li>{{ proficiencies.evade.final }}%</li>
 				<li>{{ proficiencies.parry.final }}%</li>
@@ -112,20 +115,20 @@
 		</div>
 	</div>
 	<div class="rightPageHalf">
-		<h2>Defence/Resistances</h2>
+		<h2>Defence</h2>
 		<div class="leftPageHalf">
 				<ul>
 					<li>Toughness:</li>
 					<li>Block Chance:</li>
 					<li>Fatigue:</li>
-					<li>Frost:</li>
-					<li>Flame:</li>
-					<li>Shadow:</li>
-					<li>Holy:</li>
-					<li>Poison:</li>
-					<li>Blunt:</li>
-					<li>Slashing:</li>
-					<li>Piercing:</li>
+					<li>Resist Frost:</li>
+					<li>Resist Flame:</li>
+					<li>Resist Shadow:</li>
+					<li>Resist Holy:</li>
+					<li>Resist Poison:</li>
+					<li>Resist Blunt:</li>
+					<li>Resist Slashing:</li>
+					<li>Resist Piercing:</li>
 				</ul>
 		</div>
 		<div class="rightPageHalf textRight">
