@@ -160,7 +160,7 @@ class TestEngine(GenericTestCase):
         )
 
         self.rebuild_instance()
-        assert handler_id == self.hero.handlers[0].id
+        assert handler_id != self.hero.handlers[0].id
         assert len(self.hero.handlers) == 1
         assert trigger_id != self.hero.handlers[0].trigger.id
         # assert len(self.hero.triggers) == 1
@@ -174,3 +174,21 @@ class TestEngine(GenericTestCase):
         self.rebuild_instance()
         assert self.hero.handlers == []
         # assert self.hero.triggers == []
+
+    def test_only_correct_event_triggers_handler(self):
+        hero = Hero(name="Elthran")
+        hero.journal.quest_paths.append(self.inventory_path)
+        hero.journal.notification = None
+        self.db.session.add(hero)
+        self.db.session.commit()
+
+        engine = Engine(self.db)
+        engine.spawn(
+                'buy_event',
+                self.hero,
+                description="{} buys a/an {}.".format(self.hero.name, "Sword")
+            )
+
+        hero = self.db.session.query(Hero).filter_by(name="Elthran").one()
+        assert len(hero.journal.current_quest_paths) == 1
+        assert hero.journal.quest_paths[0].stage == 0
