@@ -303,7 +303,7 @@ all_store_items = [
     Shield("Small Shield", buy_price=15,
            proficiency_data=[
                 ('Block', {'base': 25}),
-                ('BlockAmount', {'base': 25})],
+                ('BlockAmount', {'base': 15})],
            template=True),
     OneHandedWeapon("Big Dagger", buy_price=10,
                     proficiency_data=[
@@ -316,12 +316,7 @@ all_store_items = [
                         ('Damage', {'base': 30}),
                         ('Combat', {'base': 60}),
                         ('Speed', {'base': 1})],
-                    template=True),
-    Shield("Ice Buckler", buy_price=100, max_durability=3,
-           proficiency_data=[
-               ('Block', {'base': 25}),
-               ('ResistFrost', {'base': 30})],
-           template=True)
+                    template=True)
     ]
 
 all_marketplace_items = [
