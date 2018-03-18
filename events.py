@@ -118,11 +118,11 @@ class Condition(Base):
         setattr(self, self.condition_attribute, object_of_comparison)
 
 
-trigger_to_hero = Table('trigger_to_hero', Base.metadata,
-    Column('hero_id', Integer, ForeignKey('hero.id', ondelete="SET NULL")),
-    Column('trigger_id', Integer, ForeignKey('trigger.id',
-                                             ondelete="SET NULL"))
-)
+# trigger_to_hero = Table('trigger_to_hero', Base.metadata,
+#     Column('hero_id', Integer, ForeignKey('hero.id', ondelete="SET NULL")),
+#     Column('trigger_id', Integer, ForeignKey('trigger.id',
+#                                              ondelete="SET NULL"))
+# )
 
 
 class Trigger(Base):
@@ -133,10 +133,10 @@ class Trigger(Base):
     extra_info_for_humans = Column(String(200))
     completed = Column(Boolean)
 
-    # Relationship
-    # Many to Many with Heroes.
-    heroes = relationship('Hero', secondary=trigger_to_hero,
-                          back_populates='triggers')
+    # # Relationship
+    # # Many to Many with Heroes.
+    # heroes = relationship('Hero', secondary=trigger_to_hero,
+    #                       back_populates='triggers')
 
     # One to many with Conditions. Each trigger might have many conditions.
     conditions = relationship("Condition", secondary=condition_to_trigger,
@@ -148,33 +148,12 @@ class Trigger(Base):
         self.completed = False
         self.conditions = conditions
 
-    def evaluate(self):
-        """Return true if all conditions are true.
-
-        And set the completed flag.
-
-        If they are set completed and return true.
-        If not return false.
-
-        NOTE: if there are _no_ conditions will evaluate to True!
-        This basically means that when the first correct event occurs
-        the Trigger will complete.
-        e.g.
-            equip_event spawns ... self.coditions = []
-            ->
-            self.completed = True
-        """
-        for condition in self.conditions:
-            if not eval(condition.code, {'self': condition, 'hero': self.hero}):
-                return False
-        return True
-
 
 class Handler(Base):
     __tablename__ = 'handler'
 
     id = Column(Integer, primary_key=True)
-    master = Column(String(50))
+    _master = Column(String(50))
 
     # Relationships
     trigger_id = Column(Integer, ForeignKey('trigger.id', ondelete="CASCADE"))
@@ -185,7 +164,7 @@ class Handler(Base):
 
     @hybrid_property
     def trigger_is_completed(self):
-        return self.trigger.evaluate()
+        return self.evaluate()
 
     # @declared_attr
     # def something(cls):
@@ -197,7 +176,7 @@ class Handler(Base):
         This is probably done by a class that sub-classes HandlerMixin and
         is using the self.new_hander() method.
         """
-        self.master = master
+        self._master = master
 
     def activate(self, trigger, hero, completed=False):
         """Fully activate this Handler.
@@ -220,14 +199,30 @@ class Handler(Base):
         else:
             self.hero = hero
             self.trigger = trigger
-            self.trigger.heroes.append(hero)
 
     def deactivate(self):
         """Break trigger and hero relationship."""
 
-        self.trigger.heroes.remove(self.hero)
+        # self.trigger.heroes.remove(self.hero)
+        # self.hero.triggers.remove(self.trigger)
         self.trigger = None
         self.hero = None
+
+    def evaluate(self):
+        """Return true if all Trigger conditions are true.
+
+        NOTE: if there are _no_ conditions this will evaluate to True!
+        This basically means that when the first correct event occurs
+        the Trigger will complete.
+        e.g.
+            equip_event spawns ... self.coditions = []
+            ->
+            self.completed = True
+        """
+        for condition in self.trigger.conditions:
+            if not eval(condition.code, {'self': condition, 'hero': self.hero}):
+                return False
+        return True
 
     def run(self):
         """Run the object that controls this handler.
@@ -240,7 +235,7 @@ class Handler(Base):
         but I'm only interested in the one that created this object.
         """
 
-        obj = getattr(self, self.master)
+        obj = getattr(self, self._master)
         if obj:
             obj.run()
 

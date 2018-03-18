@@ -188,7 +188,7 @@ visit_blacksmith_trigger = Trigger(
 
 buy_item_from_blacksmith_trigger = Trigger(
     'buy_event',
-    conditions=[blacksmith_is_parent_of_current_location_condition],
+    conditions=[blacksmith_condition],
     extra_info_for_humans='Should activate when buy code runs and '
                           'hero.current_location.id == id of the blacksmith.'
 )

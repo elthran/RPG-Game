@@ -73,7 +73,7 @@ def db_execute_script(path, ezdb):
 
     with open(path, 'r') as file:
         for line in file:
-            if line != '\n':
+            if line != '\n' and not line.startswith('--'):
                 ezdb.engine.execute(line)
 
 

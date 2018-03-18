@@ -57,5 +57,5 @@ class Engine:
         for handler in hero.handlers:
             # print("A handler with a completed trigger!")
             # handler.pprint()
-            if handler.trigger.evaluate():
+            if handler.evaluate():
                 handler.run()

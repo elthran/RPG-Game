@@ -28,10 +28,7 @@ completed=False
 conditions='[<Condition(id=None)>]'
 event_name='buy_event'
 extra_info_for_humans='Should activate when buy code runs and hero.current_location.id == id of the blacksmith.'
-hero=None
-hero_id=None
 id=None
-template=True
 )>
 """
 
@@ -47,10 +44,7 @@ completed=False
 conditions=[]
 event_name='equip_event'
 extra_info_for_humans='Should activate when equip_event spawns.'
-hero=None
-hero_id=None
 id=None
-template=True
 )>
 """
 
@@ -66,9 +60,6 @@ completed=False
 conditions=[]
 event_name='unequip_event'
 extra_info_for_humans='Should activate when unequip_event spawns.'
-hero=None
-hero_id=None
 id=None
-template=True
 )>
 """

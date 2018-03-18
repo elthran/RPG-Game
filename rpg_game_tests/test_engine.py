@@ -32,9 +32,6 @@ class TestEngine(GenericTestCase):
         # Conditions
         #########
         blacksmith_condition = Condition('current_location', '==', blacksmith)
-        blacksmith_is_parent_of_current_location_condition \
-            = Condition('current_location.parent', '==', blacksmith)
-
 
         ##########
         # Triggers
@@ -47,7 +44,7 @@ class TestEngine(GenericTestCase):
 
         buy_item_from_blacksmith_trigger = Trigger(
             'buy_event',
-            conditions=[blacksmith_is_parent_of_current_location_condition],
+            conditions=[blacksmith_condition],
             extra_info_for_humans='Should activate when buy code runs and '
                                   'hero.current_location.id == id of the blacksmith.'
         )
@@ -110,6 +107,7 @@ class TestEngine(GenericTestCase):
 
         hero = Hero(name="Haldon")
         hero.journal.quest_paths = [learn_about_your_inventory_path]
+        db.session.add(meet_the_blacksmith_path)
         db.session.add(hero)
         db.update()
 
@@ -121,11 +119,14 @@ class TestEngine(GenericTestCase):
         super().setup()
         self.hero = self.db.session.query(Hero).filter_by(name="Haldon").one()
         self.inventory_path = self.db.session.query(QuestPath).filter_by(name="Learn how your inventory works", template=True).one()
+        self.meet_the_blacksmith_path = self.db.session.query(QuestPath).filter_by(name="Get Acquainted with the Blacksmith", template=True).one()
+        self.blacksmith = self.db.session.query(Location).filter_by(name="Blacksmith").one()
 
     def test_spawn(self):
         engine = Engine(self.db)
 
-        trigger_id = self.hero.triggers[0].id
+        # assert len(self.hero.triggers) == 1
+        # trigger_id = self.hero.triggers[0].id
         current_quest_id = self.inventory_path.current_quest.id
 
         mock_item = Mock("name", 'Blade')
@@ -137,11 +138,39 @@ class TestEngine(GenericTestCase):
 
         self.rebuild_instance()
 
-        assert trigger_id not in [t.id for t in self.hero.triggers]
-        assert current_quest_id != [qp.current_quest.id for qp in hero.journal.quest_paths if qp.name == "Learn how your inventory works"]
+        # assert len(self.hero.triggers) == 1
+        # assert trigger_id in [t.id for t in self.hero.triggers]
+        assert current_quest_id != [qp.current_quest.id for qp in self.hero.journal.quest_paths if qp.name == "Learn how your inventory works"]
 
-        # Check if deactive triggers get garbage collected.
+    def test_blacksmith_quest(self):
+        self.hero.journal.quest_paths.append(self.meet_the_blacksmith_path)
+        self.hero.current_location = self.blacksmith
+        self.db.session.commit()
+        trigger_id = self.hero.handlers[0].trigger.id
+        handler_id = self.hero.handlers[0].id
+        # assert len(self.hero.triggers) == 1
+
+        assert self.hero.journal.current_quest_paths[0].id != self.meet_the_blacksmith_path.id
+        # Now for the Engine.
+        engine = Engine(self.db)
+        engine.spawn(
+            'move_event',
+            self.hero,
+            description="{} visits {}.".format(self.hero.name, self.blacksmith.url)
+        )
+
         self.rebuild_instance()
+        assert handler_id == self.hero.handlers[0].id
+        assert len(self.hero.handlers) == 1
+        assert trigger_id != self.hero.handlers[0].trigger.id
+        # assert len(self.hero.triggers) == 1
 
-        assert self.db.session.query(Trigger).filter_by(event_name="Deactivated").count() == 0
+        engine.spawn(
+                'buy_event',
+                self.hero,
+                description="{} buys a/an {}.".format(self.hero.name, "Sword.")
+            )
 
+        self.rebuild_instance()
+        assert self.hero.handlers == []
+        # assert self.hero.triggers == []

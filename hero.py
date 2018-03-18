@@ -137,9 +137,9 @@ class Hero(SessionHoistMixin, Base):
     journal = relationship('Journal', back_populates='hero', uselist=False,
                            cascade="all, delete-orphan")
 
-    # Each hero has many Triggers. One to Many
-    triggers = relationship('Trigger', secondary='trigger_to_hero',
-                            back_populates='heroes')
+    # # Each hero has many Triggers. One to Many
+    # triggers = relationship('Trigger', secondary='trigger_to_hero',
+    #                         back_populates='heroes')
 
     # Hero to Handlers is One to Many.
     handlers = relationship('Handler', back_populates='hero',
