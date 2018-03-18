@@ -208,7 +208,7 @@ class Handler(Base):
         self.trigger = None
         self.hero = None
 
-    def evaluate(self):
+    def evaluate(self, event):
         """Return true if all Trigger conditions are true.
 
         NOTE: if there are _no_ conditions this will evaluate to True!
@@ -219,6 +219,9 @@ class Handler(Base):
             ->
             self.completed = True
         """
+        if self.trigger.event_name != event.type:
+            return False
+
         for condition in self.trigger.conditions:
             if not eval(condition.code, {'self': condition, 'hero': self.hero}):
                 return False

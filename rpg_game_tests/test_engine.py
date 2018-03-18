@@ -5,6 +5,8 @@ if __name__ == "__main__":
 
 import pdb
 
+import pytest
+
 from . import GenericTestCase, Mock, db_execute_script
 from engine import Engine
 from locations import Location
@@ -13,6 +15,7 @@ from hero import Hero
 from quests import QuestPath, Quest
 
 
+@pytest.mark.incremental
 class TestEngine(GenericTestCase):
     @classmethod
     def setup_class(cls):
@@ -117,65 +120,77 @@ class TestEngine(GenericTestCase):
 
     def setup(self):
         super().setup()
-        self.hero = self.db.session.query(Hero).filter_by(name="Haldon").one()
         self.inventory_path = self.db.session.query(QuestPath).filter_by(name="Learn how your inventory works", template=True).one()
         self.meet_the_blacksmith_path = self.db.session.query(QuestPath).filter_by(name="Get Acquainted with the Blacksmith", template=True).one()
         self.blacksmith = self.db.session.query(Location).filter_by(name="Blacksmith").one()
 
     def test_spawn(self):
+        hero = self.db.session.query(Hero).filter_by(name="Haldon").one()
         engine = Engine(self.db)
 
-        # assert len(self.hero.triggers) == 1
-        # trigger_id = self.hero.triggers[0].id
+        # assert len(hero.triggers) == 1
+        # trigger_id = hero.triggers[0].id
+        assert len(hero.handlers) == 1
         current_quest_id = self.inventory_path.current_quest.id
 
         mock_item = Mock("name", 'Blade')
         engine.spawn(
                 'equip_event',
-                self.hero,
-                description="{} equips a/an {}.".format(self.hero.name, mock_item.name)
+                hero,
+                description="{} equips a/an {}.".format(hero.name, mock_item.name)
         )
 
         self.rebuild_instance()
 
-        # assert len(self.hero.triggers) == 1
-        # assert trigger_id in [t.id for t in self.hero.triggers]
-        assert current_quest_id != [qp.current_quest.id for qp in self.hero.journal.quest_paths if qp.name == "Learn how your inventory works"]
+        hero = self.db.session.query(Hero).filter_by(name="Haldon").one()
+        # assert len(hero.triggers) == 1
+        # assert trigger_id in [t.id for t in hero.triggers]
+        assert current_quest_id != hero.journal.quest_paths[0].id
+        assert len(hero.handlers) == 1
 
     def test_blacksmith_quest(self):
-        self.hero.journal.quest_paths.append(self.meet_the_blacksmith_path)
-        self.hero.current_location = self.blacksmith
+        hero = Hero(name="Pigbear")
+        hero.journal.quest_paths.append(self.meet_the_blacksmith_path)
+        assert len(hero.handlers) == 0  # I'm not sure if this should be 1 here.
+        
+        hero.current_location = self.blacksmith
+        self.db.session.add(hero)
         self.db.session.commit()
-        trigger_id = self.hero.handlers[0].trigger.id
-        handler_id = self.hero.handlers[0].id
-        # assert len(self.hero.triggers) == 1
+        assert len(hero.handlers) == 1
 
-        assert self.hero.journal.current_quest_paths[0].id != self.meet_the_blacksmith_path.id
+        trigger_id = hero.handlers[0].trigger.id
+        handler_id = hero.handlers[0].id
+
+        assert hero.journal.current_quest_paths[0].id != self.meet_the_blacksmith_path.id
         # Now for the Engine.
         engine = Engine(self.db)
         engine.spawn(
             'move_event',
-            self.hero,
-            description="{} visits {}.".format(self.hero.name, self.blacksmith.url)
+            hero,
+            description="{} visits {}.".format(hero.name, self.blacksmith.url)
         )
 
         self.rebuild_instance()
-        assert handler_id != self.hero.handlers[0].id
-        assert len(self.hero.handlers) == 1
-        assert trigger_id != self.hero.handlers[0].trigger.id
-        # assert len(self.hero.triggers) == 1
+        
+        hero = self.db.session.query(Hero).filter_by(name="Pigbear").one()
+        assert handler_id == hero.handlers[0].id
+        assert len(hero.handlers) == 1
+        assert trigger_id != hero.handlers[0].trigger.id
+        # assert len(hero.triggers) == 1
 
         engine.spawn(
                 'buy_event',
-                self.hero,
-                description="{} buys a/an {}.".format(self.hero.name, "Sword.")
+                hero,
+                description="{} buys a/an {}.".format(hero.name, "Sword.")
             )
 
         self.rebuild_instance()
-        assert self.hero.handlers == []
-        # assert self.hero.triggers == []
 
-    def test_only_correct_event_triggers_handler(self):
+        hero = self.db.session.query(Hero).filter_by(name="Pigbear").one()
+        assert hero.handlers == []
+        # assert hero.triggers == []
+
+    def test_wrong_event(self):
         hero = Hero(name="Elthran")
         hero.journal.quest_paths.append(self.inventory_path)
         hero.journal.notification = None
@@ -185,10 +200,11 @@ class TestEngine(GenericTestCase):
         engine = Engine(self.db)
         engine.spawn(
                 'buy_event',
-                self.hero,
-                description="{} buys a/an {}.".format(self.hero.name, "Sword")
+                hero,
+                description="{} buys a/an {}.".format(hero.name, "Sword")
             )
 
         hero = self.db.session.query(Hero).filter_by(name="Elthran").one()
         assert len(hero.journal.current_quest_paths) == 1
         assert hero.journal.quest_paths[0].stage == 0
+        assert len(hero.handlers) == 1
