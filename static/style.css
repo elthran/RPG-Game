@@ -183,7 +183,7 @@ ul {
 	padding: 10px;
 	/* height: 100%; */ /* Makes it fill the page vertically */
 	/* overflow: auto; */ /* Will add a scrollbar only if the screen is too small */
-	background-color: Gray;
+	background: url(images/brushed_alu_dark.png) repeat 0 0;
 	top: 10px; /* Set the top of the element 10px below the top of the window.*/
 	left: 10px; /* Set the left side 10px below the top of the window. */
 	z-index: 100;

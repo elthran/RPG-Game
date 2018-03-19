@@ -6,60 +6,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='style.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+     <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
 </head>
 
 <body onscroll="stickyTopAndBottom();" style="min-height:815px;">
-    <div class="sidebar" id="sidebar">
-        <div>
-            <h1>{{ hero.name }}</h1>
-            <img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px" />
-            Age: {{ hero.age }}
-            <br>Gold: <span id="heroGold">{{ hero.gold }}</span>
-        </div>
-        <div class="sideBarProgressDiv">Health:
-            <div class="sideBarProgressMeter">
-                <span style="width:{{ hero.get_summed_proficiencies('health').percent }}%"></span>
+    <div class="sidebar panel panel-default" id="sidebar">
+        <div class="panel-body" style="padding:0px;">
+            <div>
+                <h1>{{ hero.name }}</h1>
+                <img src="/static/images/character.jpg" class="img-thumbnail" alt="Sample" width="100px" height="100px" />
+                Age: {{ hero.age }}
+                <br>Gold: <span id="heroGold">{{ hero.gold }}</span>
             </div>
-        </div>
-        {% if hero.get_summed_proficiencies('sanctity').final %}
-        <div class="sideBarProgressDiv">Sanctity:
-            <div class="sideBarProgressMeter sidebarSanctity">
-                <span style="width:{{ hero.get_summed_proficiencies('sanctity').percent }}%"></span>
+            <div class="sideBarProgressDiv">Health:
+                <div class="sideBarProgressMeter">
+                    <span style="width:{{ hero.get_summed_proficiencies('health').percent }}%"></span>
+                </div>
             </div>
-        </div>
-        {% endif %}
-        <div class="sideBarProgressDiv">Endurance:
-            <div class="sideBarProgressMeter sidebarEndurance">
-                <span style="width:{{ hero.get_summed_proficiencies('endurance').percent }}%"></span>
+            {% if hero.get_summed_proficiencies('sanctity').final %}
+            <div class="sideBarProgressDiv">Sanctity:
+                <div class="sideBarProgressMeter sidebarSanctity">
+                    <span style="width:{{ hero.get_summed_proficiencies('sanctity').percent }}%"></span>
+                </div>
             </div>
-        </div>
-        <div class="sideBarProgressDiv">Progress:
-            <div class="sideBarProgressMeter sidebarProgress" style="">
-                <span style="width:{{ hero.experience_percent }}%"></span>
-            </div>
-        </div>
-        <div>
-            <ul>
-                <li onclick="this.firstChild.click();"><a href=/home>Profile</a></li>
-                <li onclick="this.firstChild.click();"><a href=/inventory_page>Inventory</a></li>
-                <li onclick="this.firstChild.click();"><a href=/spellbook>Spellbook</a></li>
-                <li onclick="this.firstChild.click();"><a href={{ hero.current_location.url }}>{{ hero.current_location.name.title() }}</a></li>
-                <li onclick="this.firstChild.click();"><a href=/quest_log>Journal</a></li>
-            {% if hero.user.is_admin %}
-                <li onclick="this.firstChild.click();"><a href=/admin>Admin</a></li>
             {% endif %}
-                <li onclick="this.firstChild.click();"><a href=/display_users/display/id>Users</a></li>
-                <li onclick="this.firstChild.click();"><a href=/about>About</a></li>
-            {% if hero.user.inbox_alert %}
-                <li onclick="this.firstChild.click();"><a href=/inbox/inbox><font color="blue">New Message</font></a></li>
-            {% else %}
-                <li onclick="this.firstChild.click();"><a href=/inbox/inbox>Mailbox</a></li>
-            {% endif %}
-                <li onclick="this.firstChild.click();"><a href=/global_chat>Chat</a></li>
-                <li onclick="this.firstChild.click();"><a href=/forum/0/0>Forum</a></li>
-                <li onclick="this.firstChild.click();"><a href=/logout>Logout</a></li>
-            </ul>
+            <div class="sideBarProgressDiv">Endurance:
+                <div class="sideBarProgressMeter sidebarEndurance">
+                    <span style="width:{{ hero.get_summed_proficiencies('endurance').percent }}%"></span>
+                </div>
+            </div>
+            <div class="sideBarProgressDiv">Progress:
+                <div class="sideBarProgressMeter sidebarProgress" style="">
+                    <span style="width:{{ hero.experience_percent }}%"></span>
+                </div>
+            </div>
+            <div>
+                <ul>
+                    <li onclick="this.firstChild.click();"><a href=/home>Profile</a></li>
+                    <li onclick="this.firstChild.click();"><a href=/inventory_page>Inventory</a></li>
+                    <li onclick="this.firstChild.click();"><a href=/spellbook>Spellbook</a></li>
+                    <li onclick="this.firstChild.click();"><a href={{ hero.current_location.url }}>{{ hero.current_location.name.title() }}</a></li>
+                    <li onclick="this.firstChild.click();"><a href=/quest_log>Journal</a></li>
+                {% if hero.user.is_admin %}
+                    <li onclick="this.firstChild.click();"><a href=/admin>Admin</a></li>
+                {% endif %}
+                    <li onclick="this.firstChild.click();"><a href=/display_users/display/id>Users</a></li>
+                    <li onclick="this.firstChild.click();"><a href=/about>About</a></li>
+                {% if hero.user.inbox_alert %}
+                    <li onclick="this.firstChild.click();"><a href=/inbox/inbox><font color="blue">New Message</font></a></li>
+                {% else %}
+                    <li onclick="this.firstChild.click();"><a href=/inbox/inbox>Mailbox</a></li>
+                {% endif %}
+                    <li onclick="this.firstChild.click();"><a href=/global_chat>Chat</a></li>
+                    <li onclick="this.firstChild.click();"><a href=/forum/0/0>Forum</a></li>
+                    <li onclick="this.firstChild.click();"><a href=/logout>Logout</a></li>
+                </ul>
+            </div>
         </div>
     </div>
     <!-- This is where you want to add HTML that will not be contained within the main body of the page -->
