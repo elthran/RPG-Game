@@ -447,13 +447,15 @@ function abilityChoiceTooltip(button, description, image) {
     newImage.innerHTML = startImage + image + endImage;
 }
 
-function questTooltip(button, description, reward) {
-    var newTooltip = {};
-    var tooltipReward = {};
+function questTooltip(response, oldData) {
+    "use strict";
+    var newTooltip;
+    var tooltipReward;
+
     newTooltip = document.getElementById("questTooltip");
-    newTooltip.innerHTML = description;
+    newTooltip.innerHTML = response.description;
     tooltipReward = document.getElementById("questReward");
-    tooltipReward.innerHTML = "<h3>Your reward for completing the quest is: " + reward +"</h3>";
+    tooltipReward.innerHTML = "<h3>Your reward for completing this quest is: " + response.reward +"xp</h3>";
 }
 
 function pageReload(button) {

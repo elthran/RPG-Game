@@ -335,15 +335,14 @@ class Command:
 
     # This should be combined with function below when I know how to pass a path.id
     @staticmethod
-    def change_path_tooltip(hero, database, arg_dict, **kwargs):
-        choice = arg_dict.get('data', None, type=str)
-        return "{}&&{}".format(choice, "50gold")
+    def change_path_tooltip(hero, database, data, **kwargs):
+        path = database.get_object_by_id("QuestPath", data['id'])
+        return jsonify(description=path.description, reward=path.total_reward)
 
     @staticmethod
-    def change_quest_tooltip(hero, database, arg_dict, **kwargs):
-        quest_id = arg_dict.get('data', None, type=int)
-        quest = database.get_object_by_id("Quest", quest_id)
-        return "{}&&{}".format(quest.description, quest.reward_experience)
+    def change_quest_tooltip(hero, database, data, **kwargs):
+        quest = database.get_object_by_id("Quest", data['id'])
+        return jsonify(description=quest.description, reward=quest.reward_experience)
 
     @staticmethod
     def choose_background(hero, database, arg_dict, **kwargs):
