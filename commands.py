@@ -21,7 +21,7 @@ def set_notification_active(f):
     @wraps(f)
     def wrap_set_notice_active(hero, *args, **kwargs):
         response = f(hero, *args, **kwargs)
-        print("Using the set notification active code!")
+        # print("Using the set notification active code!")
         notice = str(bool(hero.journal.notification)).lower()
         try:
             new_data = b'\n  "isNotice": ' + notice.encode() + b', '
@@ -407,8 +407,8 @@ class Command:
 
         data = jsonify(header=header, body=body, footer=footer)
 
-        print("Sending Notice content to JS.")
-        pprint(data)
+        # print("Sending Notice content to JS.")
+        # pprint(data)
 
         # Clear quest notification
         hero.journal.notification = None
