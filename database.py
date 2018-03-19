@@ -343,6 +343,16 @@ class EZDB:
         self.session.add(user)
         return user
 
+    @scoped_session
+    def validate_email(self, username, email):
+        user = self.session.query(User).filter_by(username=username).first()
+        if user is not None:
+            # check a password
+            return bcrypt.checkpw(
+                base64.b64encode(hashlib.sha256(email.encode()).digest()),
+                user.email.encode())
+        return None
+
     def add_new_hero_to_user(self, user):
         """Create a new blank character object for a user.
 

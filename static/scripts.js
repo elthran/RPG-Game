@@ -114,16 +114,29 @@ function refreshPage() {
 
 // Allows the user to switch between the register and login forms.
 function toggleLoginRegister(button) {
+    var tag = button.getAttribute('data');
     var registerForm = document.getElementById("register-form");
     var loginForm = document.getElementById("login-form");
-    if (window.getComputedStyle(registerForm).display === "none") {
+    var resetForm = document.getElementById("reset-form");
+    var errorDiv = document.getElementById("error");
+    if (tag === "register") {
         registerForm.style.display = "block";
         loginForm.style.display = "none";
+        resetForm.style.display = "none";
+        errorDiv.style.display = "none";
         document.getElementById("registerFocus").focus();
-    } else {
+    } else if (tag === "login") {
         registerForm.style.display = "none";
         loginForm.style.display = "block";
+        resetForm.style.display = "none";
+        errorDiv.style.display = "none";
         document.getElementById("loginFocus").focus();
+    } else if (tag === "reset") {
+        registerForm.style.display = "none";
+        loginForm.style.display = "none";
+        resetForm.style.display = "block";
+        errorDiv.style.display = "none";
+        document.getElementById("resetFocus").focus();
     }
 }
 

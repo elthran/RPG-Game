@@ -266,6 +266,43 @@ def update_current_location(f):
     return wrap_current_location
 
 
+def send_email(user, address):
+    """Send an email to the passed address.
+
+    This could later be improved to send other types of emails but right
+    now it will only send a reset email.
+    """
+    # Import smtplib for the actual sending function
+    import smtplib
+
+    # Import the email modules we'll need
+    from email.mime.text import MIMEText
+
+    # Open a plain text file for reading.  For this example, assume that
+    # the text file contains only ASCII characters.
+    # with open("static/") as fp:
+    #     # Create a text/plain message
+    #     msg = MIMEText(fp.read())
+
+    msg = MIMEText(""""Hi {}:
+    Please click this link <> to reset your account.
+You will be prompted to enter a new account password.
+
+I highly recommend using a service such as https://keepass.info/index.html
+(which I use). No I don't get paid to recommend this product ... I just really like it :P
+""".format(user))
+    # me == the sender's email address
+    # you == the recipient's email address
+    msg['Subject'] = "Reset link for ElthranOnline."
+    msg['From'] = "admin@elthran.online.ca"
+    msg['To'] = address
+
+    # Send the message via our own SMTP server.
+    s = smtplib.SMTP('localhost')
+    s.send_message(msg)
+    s.quit()
+
+
 # use decorators to link the function to a url
 # route for handling the login page logic
 @app.route('/login', methods=['GET', 'POST'])
@@ -279,11 +316,11 @@ def login():
     # if 'logged_in' in session and session['logged_in']
     session['logged_in'] = False
 
+    username = request.form['username'] if 'username' in request.form else ""
+    password = request.form['password'] if 'password' in request.form else ""
+    email_address = request.form['email'] if 'email' in request.form else ""
+
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        if 'email' in request.form:
-            email = request.form['email']
         if request.form['type'] == "login":
             # Otherwise, we are just logging in normally
             if database.validate(username, password):
@@ -298,9 +335,12 @@ def login():
             if database.get_user_id(username):
                 error = "Username already exists!"
             else:
-                user = database.add_new_user(username, password, email=email)
+                user = database.add_new_user(username, password, email=email_address)
                 database.add_new_hero_to_user(user)
                 session['logged_in'] = True
+        elif request.form['type'] == "reset":
+            if database.validate_email(username, email_address):
+                send_email(username, email_address)
         else:
             raise Exception("The form of this 'type' doesn't exist!")
 
@@ -312,7 +352,7 @@ def login():
             # Maybe should just go directly to home page.
             return redirect(url_for('choose_character'))
 
-    return render_template('index.html', error=error)
+    return render_template('index.html', error=error, username=username)
 
 
 # route for handling the account creation page logic
