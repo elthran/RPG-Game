@@ -8,6 +8,7 @@ Mainly using the tutorial at:
 
 """
 import hashlib
+import base64
 import importlib
 import datetime
 import random
@@ -19,6 +20,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import desc
 import sqlalchemy.exc
+import bcrypt
 
 # Base is the initialize SQLAlchemy base class. It is used to set up the
 # table metadata.
@@ -47,6 +49,7 @@ from session_helpers import scoped_session, safe_commit_session
 # Constants#
 # UPDATE_INTERVAL = 3600  # One endurance per hour.
 UPDATE_INTERVAL = 30 # One endurance per 30 seconds
+PASSWORD_HASH_COST = 10
 Session = sessionmaker()
 
 
@@ -129,8 +132,9 @@ class EZDB:
             for obj in obj_list:
                 self.session.add(obj)
                 if isinstance(obj, User):
-                    obj.password = hashlib.md5(
-                        obj.password.encode()).hexdigest()
+                    obj.password = bcrypt.hashpw(
+                        base64.b64encode(hashlib.sha256(obj.password.encode()).digest()),
+                        bcrypt.gensalt(PASSWORD_HASH_COST))
                     obj.timestamp = EZDB.now()
                 self.update()
         default_quest_paths = self.get_default_quest_paths()
@@ -323,10 +327,13 @@ class EZDB:
     def add_new_user(self, username, password, email=''):
         """Add a user to the username with a given a unique username and a password.
 
-        The password is hashed.
+        The password is encrypted with bcrypt.
         """
 
-        hashed_password = hashlib.md5(password.encode()).hexdigest()
+        # hash and save a password
+        hashed_password = bcrypt.hashpw(
+            base64.b64encode(hashlib.sha256(password.encode()).digest()),
+            bcrypt.gensalt(PASSWORD_HASH_COST))
         user = User(username=username, password=hashed_password, email=email,
                     timestamp=EZDB.now())
         self.session.add(user)
@@ -346,7 +353,10 @@ class EZDB:
         """
         user = self.session.query(User).filter_by(username=username).first()
         if user is not None:
-            return user.password == hashlib.md5(password.encode()).hexdigest()
+            # check a password
+            return bcrypt.checkpw(
+                base64.b64encode(hashlib.sha256(password.encode()).digest()),
+                user.password.encode())
         return None
 
     def fetch_hero_by_username(self, username, character_name=None):
