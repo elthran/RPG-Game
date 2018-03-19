@@ -334,7 +334,11 @@ class EZDB:
         hashed_password = bcrypt.hashpw(
             base64.b64encode(hashlib.sha256(password.encode()).digest()),
             bcrypt.gensalt(PASSWORD_HASH_COST))
-        user = User(username=username, password=hashed_password, email=email,
+        hashed_email = bcrypt.hashpw(
+            base64.b64encode(hashlib.sha256(email.encode()).digest()),
+            bcrypt.gensalt(PASSWORD_HASH_COST))
+        print(hashed_email)
+        user = User(username=username, password=hashed_password, email=hashed_email,
                     timestamp=EZDB.now())
         self.session.add(user)
         return user

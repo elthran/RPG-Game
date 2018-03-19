@@ -16,7 +16,8 @@
                 <input class="hide" type="text" name="type" value="register" />
                 <input id="registerFocus" type="text" placeholder="username" name="username" autofocus tabindex=1 />
                 <input type="password" placeholder="password" name="password" tabindex=2 />
-                <button tabindex=3>create account</button>
+                <input type="email" placeholder="email" name="email" tabindex=3 />
+                <button tabindex=4>create account</button>
                 <br>
                 <p>Already have an account? <a class="loginAlternateButton" title="Switch to login" href="#" onclick="toggleLoginRegister();return false;" >Login</a></p>
             </form>
@@ -29,7 +30,7 @@
                 <p>New user? <a class="loginAlternateButton" title="Switch to register" href="#" onclick="toggleLoginRegister();return false;" >Create account</a></p>
             </form>
             {% if error %}
-            <p class="error"><strong>Error:</strong> {{ error }}
+            <p class="error">{{ error }} <a class="loginAlternateButton" title="Switch to reset password" href="#" onclick="toggleLoginRegister();return false;" >Forgot password?</a></p>
             {% endif %}
       </div>
     </div>

@@ -42,7 +42,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(50), unique=True, nullable=False)
     password = Column(Unicode(200, convert_unicode=False), nullable=False)
-    email = Column(String(50))
+    email = Column(Unicode(200, convert_unicode=False))
     timestamp = Column(DateTime)
     is_admin = Column(Boolean)
     inbox_alert = Column(Boolean)
