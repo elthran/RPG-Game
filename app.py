@@ -45,6 +45,7 @@ engine = Engine(database)
 # initialization
 game = Game()
 
+
 def game_clock():
     while True:
         time.sleep(UPDATE_INTERVAL)
@@ -276,7 +277,7 @@ def send_email(user, address):
     import smtplib
 
     # Import the email modules we'll need
-    from email.mime.text import MIMEText
+    # from email.mime.text import MIMEText
 
     # Open a plain text file for reading.  For this example, assume that
     # the text file contains only ASCII characters.
@@ -284,23 +285,29 @@ def send_email(user, address):
     #     # Create a text/plain message
     #     msg = MIMEText(fp.read())
 
-    msg = MIMEText(""""Hi {}:
-    Please click this link <> to reset your account.
-You will be prompted to enter a new account password.
+    sender = "elthran.online@no-reply.ca"
+    receivers = [address]
 
-I highly recommend using a service such as https://keepass.info/index.html
-(which I use). No I don't get paid to recommend this product ... I just really like it :P
-""".format(user))
-    # me == the sender's email address
-    # you == the recipient's email address
-    msg['Subject'] = "Reset link for ElthranOnline."
-    msg['From'] = "admin@elthran.online.ca"
-    msg['To'] = address
+    message = """From: Elthran Online <{sender}>
+To: Owner of account '{user}' <{address}>
+MIME-Version: 1.0
+Content-type: text/html
+Subject: "Reset link for ElthranOnline"
+<p>Hi Owner of account '{user}',</p>
+<p>Please click this link <> to reset your account.
+You will be prompted to enter a new account password.</p>
+""".format(sender=sender, user=user, address=address)
 
-    # Send the message via our own SMTP server.
-    s = smtplib.SMTP('localhost')
-    s.send_message(msg)
-    s.quit()
+    try:
+        smtp_obj = smtplib.SMTP('localhost')
+        try:
+            smtp_obj.sendmail(sender, receivers, message)
+            smtp_obj.quit()
+            print("Successfully sent email")
+        except smtplib.SMTPException:
+            print("Error: unable to send email")
+    except ConnectionRefusedError:
+        print("You need to setup your stmp server correctly.")
 
 
 # use decorators to link the function to a url
@@ -339,7 +346,9 @@ def login():
                 database.add_new_hero_to_user(user)
                 session['logged_in'] = True
         elif request.form['type'] == "reset":
+            print("Validating email address ...")
             if database.validate_email(username, email_address):
+                print("Trying to send mail ...")
                 send_email(username, email_address)
         else:
             raise Exception("The form of this 'type' doesn't exist!")
