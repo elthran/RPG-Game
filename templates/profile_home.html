@@ -36,9 +36,9 @@
 				{% if proficiencies.sanctity.final %}<li>{{ proficiencies.sanctity.current|int }} / {{ proficiencies.sanctity.final }}</li>{% endif %}
 				<li>{{ hero.base_proficiencies['storage'].current }} / {{ proficiencies.storage.final|int }}</li>
 				<li>{{ hero.base_proficiencies['endurance'].current }} / {{ proficiencies.endurance.final|int }}</li>
-				<li>{{ hero.player_kills }}</li>
-				<li>{{ hero.monster_kills }}</li>
-				<li>{{ hero.deaths }}</li>
+				<li>{{ hero.journal.achievements.player_kills }}</li>
+				<li>{{ hero.journal.achievements.monster_kills }}</li>
+				<li>{{ hero.journal.achievements.deaths }}</li>
 			</ul>
 		</div>
 	</div>

@@ -48,8 +48,8 @@ class TestInventory(GenericTestCase):
                               template=True)
         db.session.add(template)
         db.session.commit()
-        item = template.build_new_from_template()
-        db.session.add(template.build_new_from_template())
+        item = template.clone()
+        db.session.add(template.clone())
         db.session.commit()
 
         # Add second stock item/template combo - 2 handed weapon.
@@ -61,21 +61,21 @@ class TestInventory(GenericTestCase):
             template=True)
         db.session.add(template_2handed)
         db.session.commit()
-        item_2handed = template_2handed.build_new_from_template()
+        item_2handed = template_2handed.clone()
         db.session.add(item_2handed)
         db.session.commit()
 
         template_ring = Ring("Silver Ring", 8, template=True)
         db.session.add(template_ring)
         db.session.commit()
-        item_ring = template_ring.build_new_from_template()
+        item_ring = template_ring.clone()
         db.session.add(item_ring)
         db.session.commit()
 
         template_shield = Shield("Small Shield", buy_price=10, template=True)
         db.session.add(template_shield)
         db.session.commit()
-        db.session.add(template_shield.build_new_from_template())
+        db.session.add(template_shield.clone())
         db.session.commit()
 
         template_sword = OneHandedWeapon(
@@ -86,7 +86,7 @@ class TestInventory(GenericTestCase):
             template=True)
         db.session.add(template_sword)
         db.session.commit()
-        template_sword.build_new_from_template()
+        template_sword.clone()
 
         db.update()
 
@@ -208,7 +208,7 @@ class TestInventory(GenericTestCase):
 
         template_helmet = self.db.session.query(
             Item).filter_by(name="Medium Helmet", template=True).first()
-        item_helmet2 = template_helmet.build_new_from_template()
+        item_helmet2 = template_helmet.clone()
 
         self.inv.add_item(item_helmet2)
         assert item_helmet2.unequipped_position == 0

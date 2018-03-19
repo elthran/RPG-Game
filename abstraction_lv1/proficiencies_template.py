@@ -70,7 +70,7 @@ class Proficiency(TemplateMixin, Base):
         self.template = template
         self.current = self.final
 
-    def build_new_from_template(self):
+    def clone(self):
         if not self.template:
             raise Exception("Only use this method if obj.template == True.")
         return self.__class__(level=self.level, base=self.base,

@@ -1,3 +1,8 @@
+if __name__ == "__main__":
+    import os
+    os.system("python3 -m pytest -vv rpg_game_tests/test_{}".format(__file__))
+    exit()  # prevents code from trying to run file afterwards.
+
 import math
 import random
 import datetime
@@ -49,16 +54,9 @@ class Hero(SessionHoistMixin, Base):
     proficiency_points = Column(Integer)
 
     # All elthran's new code for random stuff
+    # Checks if you are currently about to fight a monster
     current_terrain = Column(String(50))
-    deepest_dungeon_floor = Column(Integer)  # High score for dungeon runs
-    current_dungeon_floor = Column(Integer)  # Which floor of dungeon your on
-    current_dungeon_floor_progress = Column(
-        Integer)  # Current progress in current cave floor
-    random_encounter_monster = Column(
-        Boolean)  # Checks if you are currently about to fight a monster
-    player_kills = Column(Integer)
-    monster_kills = Column(Integer)
-    deaths = Column(Integer)
+    random_encounter_monster = Column(Boolean)
 
     # Time code of when the (account?) was created
     timestamp = Column(DateTime)
@@ -125,14 +123,13 @@ class Hero(SessionHoistMixin, Base):
         back_populates='hero',
         cascade="all, delete-orphan")
 
-    # Old proficiency collection class.
-    # collection_class=attribute_mapped_collection('name'),
-
+    # see http://docs.sqlalchemy.org/en/latest/orm/join_conditions.html#composite-secondary-joins
     # all_proficiencies = relationship(
     #     "Proficiency",
-    #     collection_class=attribute_mapped_collection('name'),
-    #     primaryjoin="and_(Ability.id==Proficiency.ability_id, "
-    #                 "Hero.id==Ability.hero_id)",
+    #     collection_class=attribute_mapped_dict_hybrid('name'),
+    #     primaryjoin="join(Hero, Proficiency, Hero.id==Proficiency.hero_id)."
+    #                 "join(Hero, Ability, Hero.id==Ability.hero_id)."
+    #                 "join(Ability, Proficiency, Ability.id==Proficiency.ability_id)",
     #     cascade="all, delete-orphan",
     # )
 
@@ -140,8 +137,12 @@ class Hero(SessionHoistMixin, Base):
     journal = relationship('Journal', back_populates='hero', uselist=False,
                            cascade="all, delete-orphan")
 
-    # Many to one with Triggers, Each hero has many triggers.
-    triggers = relationship('Trigger', back_populates='hero',
+    # # Each hero has many Triggers. One to Many
+    # triggers = relationship('Trigger', secondary='trigger_to_hero',
+    #                         back_populates='heroes')
+
+    # Hero to Handlers is One to Many.
+    handlers = relationship('Handler', back_populates='hero',
                             cascade="all, delete-orphan")
 
     # @eltran ... this probably won't work as the var will disappear on
@@ -312,13 +313,7 @@ class Hero(SessionHoistMixin, Base):
 
         # Achievements and statistics
         self.current_terrain = "city"
-        self.deepest_dungeon_floor = 0
-        self.current_dungeon_floor = 0
-        self.current_dungeon_floor_progress = 0
         self.random_encounter_monster = None
-        self.player_kills = 0
-        self.monster_kills = 0
-        self.deaths = 0
 
         # Time code and login alerts
         self.timestamp = datetime.datetime.utcnow()

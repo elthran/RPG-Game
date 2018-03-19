@@ -1,3 +1,8 @@
+if __name__ == "__main__":
+    import os
+    os.system("python3 -m pytest -vv rpg_game_tests/test_{}".format(__file__))
+    exit()  # prevents code from trying to run file afterwards.
+
 """
 This file will become very important. I would like to switch to handling
 events here. And everything else that the User doesn't need to know about.
@@ -45,19 +50,12 @@ class Engine:
         event = Event(event_name, hero_id=hero.id, description=description)
         self.db.add_object(event)
 
-        triggers = self.db.get_all_triggers_by(event_name, hero.id)
-        for trigger in triggers:
-            trigger.evaluate()
-            # if trigger.completed:
-            #     print("Trigger completed!")
-            #     trigger.pprint()
-
-        handlers = self.db.get_all_handlers_with_completed_triggers(hero)
         # return the "Blacksmith" quest object ...
         # Since its completion trigger is completed ...
         # It is now completed. Run the method that you run when trigger
         # completes.
-        for handler in handlers:
+        for handler in hero.handlers:
             # print("A handler with a completed trigger!")
             # handler.pprint()
-            handler.run()  # This should be overridden by the subclass.
+            if handler.evaluate(event):
+                handler.run()

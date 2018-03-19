@@ -90,7 +90,7 @@ class TestItem(GenericTestCase):
 
     def test_build_from_template(self):
         template = self.template
-        item = template.build_new_from_template()
+        item = template.clone()
         self.db.session.add(item)
         self.db.session.commit()
         str_item = item.pretty

@@ -247,7 +247,7 @@ class EZDB:
         Autocommit using @safe_commit_session.
         """
         template = self.session.query(Item).get(template_id)
-        item = template.build_new_from_template()
+        item = template.clone()
         return item
 
     def get_random_item(self):
@@ -431,27 +431,30 @@ class EZDB:
         """
         self.session.add(obj)
 
-    def get_all_handlers_with_completed_triggers(self, hero):
-        """Return all the handler objects with completed triggers.
-
-        This occurs when an event has happened that 'completed' a trigger
-        for a given event.
-        """
-        objs = [QuestPath]
-        handlers = []
-        for obj in objs:
-            handlers += self.session.query(obj).\
-                filter(obj.trigger_is_completed).\
-                filter(obj._hero_id == hero.id).all()
-
-        return handlers
-
-    def get_all_triggers_by(self, event_name, hero_id):
-        """Return all triggers for this hero that fit a given event."""
-
-        return self.session.query(
-            Trigger).filter_by(
-            event_name=event_name, hero_id=hero_id).all()
+    # def get_all_handlers_with_completed_triggers(self, hero):
+    #     """Return all the handler objects with completed triggers.
+    #
+    #     This occurs when an event has happened that 'completed' a trigger
+    #     for a given event.
+    #     """
+    #     objs = [QuestPath]
+    #     handlers = []
+    #     for obj in objs:
+    #         handlers += self.session.query(obj).\
+    #             filter(obj.trigger_is_completed).\
+    #             filter(obj._hero_id == hero.id).all()
+    #
+    #     return handlers
+    #
+    # def get_all_triggers_by(self, event_name, hero_id):
+    #     """Return all triggers for this hero that fit a given event."""
+    #
+    #     return self.session.query(
+    #         Trigger).filter_by(
+    #         event_name=event_name, hero_id=hero_id).all()
+    #
+    # def get_all_garbage_triggers(self):
+    #     return self.session.query(Trigger).filter_by(event_name="Deactivated").all()
 
     def hero_has_quest_path_named(self, hero, name):
         """Returns True if hero has a ques_path of the given name.
