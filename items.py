@@ -169,14 +169,7 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
         Modifies the final and next_value with the Class's format spec.
         """
 
-        temp = """<h1>{{ item.name }}</h1>
-                  <h2>{{ item.description }}</h2>
-                  <ul>
-                     {% for prof in item.proficiencies %}
-                        <li> - {{ prof.display_name }}: {{ prof.base }}</li>
-                     {% endfor %}
-                  </ul>
-               """
+        temp = """<h1>{{ item.name }}</h1><h2>{{ item.description }}</h2><ul>{% for prof in item.proficiencies %}<li> - {{ prof.display_name }}: {{ prof.base }}</li>{% endfor %}</ul>"""
         return render_template_string(temp, item=self)
 
 

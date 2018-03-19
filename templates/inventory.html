@@ -4,7 +4,6 @@
 {% block block1 %}
         <!-- This is the inventory page and displays everything your character wears/owns and gives you CMD buttons to equip/unequip -->
         {% set inventory = hero.inventory %}
-        CURRENT ARMOUR VALUE = {{ test_value }}
         <div class="inventory_equipped_outer" id="equipped">
             <img id="inventory-body-outline" src="/static/images/body.jpg" alt="body.jpg" />
             <!--Nice for loop of inventory slots-->
@@ -13,7 +12,7 @@
                 <img {% if slot == "left_hand" and inventory.both_hands %}src="/static/images/items/{{ inventory.both_hands.style }}_{{ inventory.both_hands.type }}.jpg" style="filter: grayscale(100%) opacity(50%)"{% else %}src="/static/images/items/inventory_{{ slot }}.jpg"{% endif %} alt="{{ slot }}.jpg" id="inventory-{{ js_slot }}-empty" {% if getattr(inventory, slot) %}{% set item = getattr(inventory, slot) %} style="display: none;" />
                 <div id="item-{{ item.id }}" class="inventory-tooltip" onclick="sendToPy(event, toggleEquip, 'toggle_equip', {'id': {{ item.id }}});">
                     <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
-                    <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
+                    <span class="inventory-tooltip-text">{{ item.tooltip|safe }}</span>
                 </div>
                 {% else %}/>
                 {% endif %}
@@ -24,7 +23,7 @@
                 <img src="/static/images/items/inventory_shoulder.jpg" alt="shoulder.jpg" id="inventory-shoulder-empty" {% if inventory.shoulder %}{% set item = inventory.shoulder %} style="display: none;" />
                 <div id="item-{{ item.id }}" class="inventory-tooltip" onclick="sendToPy(event, toggleEquip, 'toggle_equip', {'id': {{ item.id }}});">
                     <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
-                    <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
+                    <span class="inventory-tooltip-text">{{ item.tooltip|safe }}</span>
                 </div>
                 {% else %}/>{% endif %}
             </div>
@@ -32,7 +31,7 @@
                 <img src="/static/images/items/inventory_neck.jpg" alt="neck.jpg" id="inventory-neck-empty" {% if inventory.neck %}{% set item = inventory.neck %} style="display: none;" />
                 <div id="item-{{ item.id }}" class="inventory-tooltip" onclick="sendToPy(event, toggleEquip, 'toggle_equip', {'id': {{ item.id }}});">
                     <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
-                    <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
+                    <span class="inventory-tooltip-text">{{ item.tooltip|safe }}</span>
                 </div>
                 {% else %}/>
                 {% endif %}
@@ -41,7 +40,7 @@
                 <img src="/static/images/items/inventory_waist.jpg" alt="waist.jpg" id="inventory-waist-empty" {% if inventory.waist %}{% set item = inventory.waist %} style="display: none;" />
                 <div id="item-{{ item.id }}" class="inventory-tooltip" onclick="sendToPy(event, toggleEquip, 'toggle_equip', {'id': {{ item.id }}});">
                     <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
-                    <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
+                    <span class="inventory-tooltip-text">{{ item.tooltip|safe }}</span>
                 </div>
                 {% else %}/>
                 {% endif %}
@@ -52,7 +51,7 @@
                 <img src="/static/images/items/inventory_finger.jpg" alt="finger {{n}}.jpg" id="inventory-finger-{{n}}-empty" {% if inventory.get_ring_at_pos(n) %}{% set item = inventory.get_ring_at_pos(n) %} style="display:none;" />
                 <div id="item-{{ item.id }}" class="inventory-tooltip" onclick="sendToPy(event, toggleEquip, 'toggle_equip', {'id': {{ item.id }}});">
                     <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
-                    <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
+                    <span class="inventory-tooltip-text">{{ item.tooltip|safe }}</span>
                 </div>
                 {% else %}/>
                 {% endif %}
@@ -61,12 +60,18 @@
         </div>
         <div></div>
         <div class="inventory_unequipped_outer" id="unequipped">
-            <h1>Inventory:</h1>
+            <h1>Backpack:</h1>
             {% for item in hero.non_equipped_items() %}
             <div class="inventory-unequipped inventory-item">
                 <div id="item-{{ item.id }}" class="inventory-tooltip" onclick="sendToPy(event, toggleEquip, 'toggle_equip', {'id': {{ item.id }}});">
                     <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
-                    <span class="inventory-tooltip-text">{{ item.tooltip }}</span>
+                    <span class="inventory-tooltip-text">{{ item.tooltip|safe }}</span>
+                </div>
+            </div>
+            {% else %}
+            <div class="inventory-unequipped inventory-item">
+                <div>
+                    <img src="/static/images/items/empty.jpg" />
                 </div>
             </div>
             {% endfor %}

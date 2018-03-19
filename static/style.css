@@ -778,7 +778,7 @@ Centered margin is 275px left/right.
     position: absolute;
     z-index: 1;
     top: 50%;
-    width: inherit;
+    width: 250px;
 }
 
 .inventory-tooltip:hover .inventory-tooltip-text {
