@@ -5,6 +5,7 @@ import pdb
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
+from flask import render_template_string
 
 from factories import TemplateMixin
 import proficiencies
@@ -46,6 +47,7 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
     image = Column(String(50))
     buy_price = Column(Integer)
     type = Column(String(50))
+    description = Column(String(200))
 
     broken = Column(Boolean)
     consumable = Column(Boolean)
@@ -83,9 +85,10 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, buy_price, proficiency_data=[], template=False):
+    def __init__(self, name, buy_price, description="A small item.", proficiency_data=[], template=False):
         self.name = name
         self.buy_price = buy_price
+        self.description = description
 
         # Initialize proficiencies
         for class_name, arg_dict in proficiency_data:
@@ -158,6 +161,23 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
     #
     # def update_owner(self, hero):
     #     self.inventory.hero = hero
+
+    @property
+    def tooltip(self):
+        """Create a tooltip for each variable.
+
+        Modifies the final and next_value with the Class's format spec.
+        """
+
+        temp = """<h1>{{ item.name }}</h1>
+                  <h2>{{ item.description }}</h2>
+                  <ul>
+                     {% for prof in item.proficiencies %}
+                        <li> - {{ prof.display_name }}: {{ prof.base }}</li>
+                     {% endfor %}
+                  </ul>
+               """
+        return render_template_string(temp, item=self)
 
 
 # Subclass of Item

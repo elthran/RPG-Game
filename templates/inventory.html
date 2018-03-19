@@ -2,7 +2,6 @@
 <!-- This shows the admin page -->
 {% extends "layout.html" %}
 {% block block1 %}
-
         <!-- This is the inventory page and displays everything your character wears/owns and gives you CMD buttons to equip/unequip -->
         {% set inventory = hero.inventory %}
         CURRENT ARMOUR VALUE = {{ test_value }}
@@ -67,7 +66,7 @@
             <div class="inventory-unequipped inventory-item">
                 <div id="item-{{ item.id }}" class="inventory-tooltip" onclick="sendToPy(event, toggleEquip, 'toggle_equip', {'id': {{ item.id }}});">
                     <img src="/static/images/items/{{ item.style }}_{{ item.type }}.jpg" />
-                    <span class="inventory-tooltip-text">{{ item.name }}:<br>Armour Value of {{ item.armour_value }}</span>
+                    <span class="inventory-tooltip-text">{{ item.tooltip }}</span>
                 </div>
             </div>
             {% endfor %}
