@@ -12,13 +12,14 @@
 <body class="loginBody">
     <div class="loginPage">
         <div class="loginDiv">
-            <form id="register-form" class="register-form" action="" method="post">
+            <form id="register-form" class="hide" action="" method="post">
                 <input class="hide" type="text" name="type" value="register" />
                 <input id="registerFocus" type="text" placeholder="username" name="username" autofocus tabindex=1 />
                 <input type="password" placeholder="password" name="password" tabindex=2 />
-                <button tabindex=3>create account</button>
+                <input type="email" placeholder="email" name="email" tabindex=3 />
+                <button tabindex=4>create account</button>
                 <br>
-                <p>Already have an account? <a class="loginAlternateButton" title="Switch to login" href="#" onclick="toggleLoginRegister();return false;" >Login</a></p>
+                <p>Already have an account? <a class="loginAlternateButton" title="Switch to login" href="#" onclick="toggleLoginRegister(this);return false;" data="login" >Login</a></p>
             </form>
             <form id="login-form" class="login-form" action="" method="post">
                 <input class="hide" type="text" name="type" value="login" />
@@ -26,34 +27,21 @@
                 <input type="password" placeholder="password" name="password" tabindex=2 />
                 <button tabindex=3>login</button>
                 <br>
-                <p>New user? <a class="loginAlternateButton" title="Switch to register" href="#" onclick="toggleLoginRegister();return false;" >Create account</a></p>
+                <p>New user? <a class="loginAlternateButton" title="Switch to register" href="#" onclick="toggleLoginRegister(this);return false;" data="register" >Create account</a></p>
+            </form>
+            <form id="reset-form" class="hide" action="" method="post">
+                <p style="float:left;">Email reset link for account: <strong>{{ username }}</strong></p>
+                <input class="hide" type="text" name="type" value="reset" />
+                <input id="resetFocus" type="email" placeholder="email" name="email" autofocus tabindex=1 />
+                <input class="hide" type="text" placeholder="username" name="username" value="{{ username }}"/>
+                <button tabindex=2>Email reset link</button>
+                <br>
+                <p>Go back to login? <a class="loginAlternateButton" title="Switch to login" href="#" onclick="toggleLoginRegister(this);return false;" data="login">Login</a></p>
             </form>
             {% if error %}
-            <p class="error"><strong>Error:</strong> {{ error }}
+            <p id="error" class="error">{{ error }} <a class="loginAlternateButton" title="Switch to reset password" href="#" onclick="toggleLoginRegister(this);return false;" data="reset">Forgot password?</a></p>
             {% endif %}
       </div>
     </div>
 </body>
-<!--
-<li><a href=/create_account>Create Account</a></li>
-<li><a href=/password_recovery>Forgot Your Password</a></li>
-
-{% if password_recovery %}
-    <div class="container">
-      <h1>You Must Not Forget Your Password</h1>
-      <br>
-      <form action="" method="post">
-		<p> Please enter your username: </p>
-        <input type="text" placeholder="Username" name="username" value="{{
-          request.form.username }}">
-        <input class="btn btn-default" type="submit" value="Submit">
-      </form>
-{% endif %}
-
-      {% for message in get_flashed_messages() %}
-        {{ message }}
-      {% endfor %}
-    </div>
-  </body>
-  -->
 </html>

@@ -12,7 +12,6 @@ from functools import wraps
 from random import choice
 import os
 import time
-from multiprocessing import Process
 
 from flask import (
     Flask, render_template, redirect, url_for, request, session,
@@ -20,7 +19,6 @@ from flask import (
 from flask_sslify import SSLify
 
 import werkzeug
-import werkzeug.serving
 
 from game import Game
 import combat_simulator
@@ -30,8 +28,8 @@ from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
 # _before_ any of them are used.
-from database import EZDB, UPDATE_INTERVAL
-from engine import Engine
+from database import EZDB
+from engine import Engine, game_clock, async_process, rest_key_timelock
 from forum import Board, Thread, Post
 from bestiary2 import create_monster, MonsterTemplate
 
@@ -45,24 +43,23 @@ engine = Engine(database)
 # initialization
 game = Game()
 
-def game_clock():
-    while True:
-        time.sleep(UPDATE_INTERVAL)
-        database.update_time_all_heroes()
-
 
 def create_app():
     # create the application object
     app = Flask(__name__)
     # pdb.set_trace()
 
-    if not werkzeug.serving.is_running_from_reloader():
-        Process(target=game_clock).start()
+    async_process(game_clock, args=(database,))
     return app
 
 
 app = create_app()
 sslify = SSLify(app)
+
+# Should replace on server with custom (not pushed to github).
+# import os
+# os.urandom(24)
+# '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
 app.secret_key = 'starcraft'
 
 ALWAYS_VALID_URLS = [
@@ -266,6 +263,68 @@ def update_current_location(f):
     return wrap_current_location
 
 
+def send_email(user, address, key):
+    """Send an email to the passed address.
+
+    This could later be improved to send other types of emails but right
+    now it will only send a reset email.
+    """
+    # Import smtplib for the actual sending function
+    import smtplib
+
+    # Import the email modules we'll need
+    # from email.mime.text import MIMEText
+
+    # Open a plain text file for reading.  For this example, assume that
+    # the text file contains only ASCII characters.
+    # with open("static/") as fp:
+    #     # Create a text/plain message
+    #     msg = MIMEText(fp.read())
+
+    sender = "elthran.online@no-reply.ca"
+    receivers = [address]
+
+    # url = 'https://mydomain.com/reset=' + token_urlsafe()
+    # if server:
+    # link = "https://elthran.pythonanywhere.com/reset/?user={}&&key={}".format(user, key)
+    link = "http://127.0.0.1:5000/reset?user={}&&key={}".format(user, key)
+
+    message = """From: Elthran Online <{sender}>
+To: Owner of account '{user}' <{address}>
+MIME-Version: 1.0
+Content-type: text/html
+Subject: Reset link for ElthranOnline
+<pre>Hi Owner of account '{user}',
+    Please click this link <a href="{link}">{link}</a> to reset your account.
+You will be prompted to enter a new account password.</pre>
+""".format(sender=sender, user=user, address=address, link=link)
+
+    try:
+        smtp_obj = smtplib.SMTP('localhost')
+        try:
+            smtp_obj.sendmail(sender, receivers, message)
+            smtp_obj.quit()
+            print("Successfully sent email")
+        except smtplib.SMTPException:
+            print("Error: unable to send email")
+    except ConnectionRefusedError:
+        print("You need to setup your stmp server correctly.")
+
+
+@app.route("/reset", methods=["GET", "POST"])
+def reset_password():
+    if request.method == "GET":
+        if database.validate_reset(request.args['user'], request.args['key']):
+            return render_template("reset.html", username=request.args['user'])
+    elif request.method == "POST":
+        user = database.get_user_by_username(request.form['username'])
+        if user.reset_key:
+            user.reset_key = None
+            user.password = database.encrypt(request.form['password'])
+            return redirect(url_for('login'), code=307)
+    return redirect(url_for('login'))
+
+
 # use decorators to link the function to a url
 # route for handling the login page logic
 @app.route('/login', methods=['GET', 'POST'])
@@ -279,9 +338,11 @@ def login():
     # if 'logged_in' in session and session['logged_in']
     session['logged_in'] = False
 
+    username = request.form['username'] if 'username' in request.form else ""
+    password = request.form['password'] if 'password' in request.form else ""
+    email_address = request.form['email'] if 'email' in request.form else ""
+
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
         if request.form['type'] == "login":
             # Otherwise, we are just logging in normally
             if database.validate(username, password):
@@ -289,16 +350,23 @@ def login():
             # Marked for upgrade, consider checking if user exists
             # and redirect to account creation page.
             else:
-                error = 'Invalid Credentials. Please try again.'
+                error = 'Invalid Credentials.'
         elif request.form['type'] == "register":
             # See if new_username has a valid input.
             # This only works if they are creating an account
             if database.get_user_id(username):
                 error = "Username already exists!"
             else:
-                user = database.add_new_user(username, password)
+                user = database.add_new_user(username, password, email=email_address)
                 database.add_new_hero_to_user(user)
                 session['logged_in'] = True
+        elif request.form['type'] == "reset":
+            print("Validating email address ...")
+            if database.validate_email(username, email_address):
+                print("Trying to send mail ...")
+                key = database.setup_account_for_reset(username)
+                send_email(username, email_address, key)
+                async_process(rest_key_timelock, args=(database, username), kwargs={'timeout': 5})
         else:
             raise Exception("The form of this 'type' doesn't exist!")
 
@@ -310,7 +378,7 @@ def login():
             # Maybe should just go directly to home page.
             return redirect(url_for('choose_character'))
 
-    return render_template('index.html', error=error)
+    return render_template('index.html', error=error, username=username)
 
 
 # route for handling the account creation page logic

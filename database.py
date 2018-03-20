@@ -8,17 +8,21 @@ Mainly using the tutorial at:
 
 """
 import hashlib
+import base64
 import importlib
 import datetime
 import random
+import os
 # Testing only
 import pdb
 from pprint import pprint
+
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import desc
 import sqlalchemy.exc
+import bcrypt
 
 # Base is the initialize SQLAlchemy base class. It is used to set up the
 # table metadata.
@@ -47,6 +51,7 @@ from session_helpers import scoped_session, safe_commit_session
 # Constants#
 # UPDATE_INTERVAL = 3600  # One endurance per hour.
 UPDATE_INTERVAL = 30 # One endurance per 30 seconds
+PASSWORD_HASH_COST = 10
 Session = sessionmaker()
 
 
@@ -129,8 +134,9 @@ class EZDB:
             for obj in obj_list:
                 self.session.add(obj)
                 if isinstance(obj, User):
-                    obj.password = hashlib.md5(
-                        obj.password.encode()).hexdigest()
+                    obj.password = bcrypt.hashpw(
+                        base64.b64encode(hashlib.sha256(obj.password.encode()).digest()),
+                        bcrypt.gensalt(PASSWORD_HASH_COST))
                     obj.timestamp = EZDB.now()
                 self.update()
         default_quest_paths = self.get_default_quest_paths()
@@ -320,18 +326,6 @@ class EZDB:
     def get_user_by_username(self, username):
         return self.session.query(User).filter_by(username=username).first()
 
-    def add_new_user(self, username, password, email=''):
-        """Add a user to the username with a given a unique username and a password.
-
-        The password is hashed.
-        """
-
-        hashed_password = hashlib.md5(password.encode()).hexdigest()
-        user = User(username=username, password=hashed_password, email=email,
-                    timestamp=EZDB.now())
-        self.session.add(user)
-        return user
-
     def add_new_hero_to_user(self, user):
         """Create a new blank character object for a user.
 
@@ -340,14 +334,76 @@ class EZDB:
 
         self.session.add(Hero(user=user))
 
+    @staticmethod
+    def encrypt(s):
+        return bcrypt.hashpw(
+            base64.b64encode(hashlib.sha256(s.encode()).digest()),
+            bcrypt.gensalt(PASSWORD_HASH_COST))
+
+    def add_new_user(self, username, password, email=''):
+        """Create a new user account with this username and password.
+
+        And optional email.
+
+        The password is encrypted with bcrypt.
+        The email is encrypted separately with bcrypt.
+        """
+
+        # hash and save a password
+        user = User(username=username, password=EZDB.encrypt(password), email=EZDB.encrypt(email),
+                    timestamp=EZDB.now())
+        self.session.add(user)
+        return user
+
+    @scoped_session
+    def validate_email(self, username, email):
+        """Check if the passed email matches the email for this account.
+
+        Email is encrypted separately. You can't decrypt the email even
+        if you know the user name. This might be inconvenient at some point.
+        """
+        user = self.session.query(User).filter_by(username=username).first()
+        if user is not None:
+            # check a password
+            return bcrypt.checkpw(
+                base64.b64encode(hashlib.sha256(email.encode()).digest()),
+                user.email.encode())
+        return None
+
     @scoped_session
     def validate(self, username, password):
         """Check if password if valid for user.
         """
         user = self.session.query(User).filter_by(username=username).first()
         if user is not None:
-            return user.password == hashlib.md5(password.encode()).hexdigest()
+            # check a password
+            return bcrypt.checkpw(
+                base64.b64encode(hashlib.sha256(password.encode()).digest()),
+                user.password.encode())
         return None
+
+    @scoped_session
+    def setup_account_for_reset(self, username):
+        """Add a reset key to the user account and return it."""
+        user = self.session.query(User).filter_by(username=username).first()
+        key = os.urandom(256)
+        urlsafe_key = base64.urlsafe_b64encode(hashlib.sha256(key).digest())
+        user.reset_key = urlsafe_key
+        return urlsafe_key
+
+    @scoped_session
+    def validate_reset(self, username, key):
+        """Make sure the reset key matches.
+
+        Additionally make sure you can't use a blank reset key.
+        """
+        user = self.session.query(User).filter_by(username=username).first()
+        # For some reason the key get converted to binary then back
+        # so it looks like "b'______'" instead of b'________' or
+        # '_________'. I strip the "b'" of the start and "'" of the end.
+        if user.reset_key and user.reset_key == key[2:-1]:
+            return True
+        return False
 
     def fetch_hero_by_username(self, username, character_name=None):
         """Return hero objected based on username_or_id and character_name.
