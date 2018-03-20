@@ -141,7 +141,7 @@ function toggleLoginRegister(button) {
 }
 
 function checkPasswordMatch() {
-    var continueButton = document.getElementById("continueButton;")
+    var continueButton = document.getElementById("continueButton");
     var errorDiv = document.getElementById("error");
     var password = document.getElementById("password").value;
     var passwordCheck = document.getElementById("passwordCheck").value;
@@ -149,9 +149,11 @@ function checkPasswordMatch() {
     if (password != passwordCheck) {
         errorDiv.innerHTML = "These passwords don't match!";
         continueButton.disabled = true;
+        continueButton.style.background = "#5e9960";
     } else {
         errorDiv.innerHTML = "These passwords match.";
         continueButton.disabled = false;
+        continueButton.style.background = "#4CAF50";
     }
 }
 
