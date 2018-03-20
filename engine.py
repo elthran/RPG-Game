@@ -8,9 +8,15 @@ This file will become very important. I would like to switch to handling
 events here. And everything else that the User doesn't need to know about.
 """
 import pdb
+import time
+from multiprocessing import Process
+
+import werkzeug.serving
 
 from events import Event
 from pprint import pprint
+from database import UPDATE_INTERVAL
+from session_helpers import scoped_session
 
 
 class Engine:
@@ -59,3 +65,32 @@ class Engine:
             # handler.pprint()
             if handler.evaluate(event):
                 handler.run()
+
+
+def game_clock(database):
+    """Run the update all heroes code every x seconds."""
+    if not werkzeug.serving.is_running_from_reloader():
+        while True:
+            time.sleep(UPDATE_INTERVAL)
+            database.update_time_all_heroes()
+
+
+# Maybe make this a decorator?
+def async_process(func, args=(), kwargs={}):
+    """Start a new asynchronous process.
+
+    These processes might respawn if the server restarts.
+    """
+
+    Process(target=func, args=args, kwargs=kwargs).start()
+
+
+@scoped_session
+def rest_key_timelock(database, username, timeout=5):
+    """Erase the user reset key after x minutes."""
+
+    # pdb.set_trace()
+    timeout *= 60  # Convert minute time to seconds required by time.sleep.
+    time.sleep(timeout)
+    user = database.get_user_by_username(username)
+    user.reset_key = None

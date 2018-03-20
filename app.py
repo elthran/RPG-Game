@@ -12,7 +12,6 @@ from functools import wraps
 from random import choice
 import os
 import time
-from multiprocessing import Process
 
 from flask import (
     Flask, render_template, redirect, url_for, request, session,
@@ -20,7 +19,6 @@ from flask import (
 from flask_sslify import SSLify
 
 import werkzeug
-import werkzeug.serving
 
 from game import Game
 import combat_simulator
@@ -30,8 +28,8 @@ from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
 # _before_ any of them are used.
-from database import EZDB, UPDATE_INTERVAL
-from engine import Engine
+from database import EZDB
+from engine import Engine, game_clock, async_process, rest_key_timelock
 from forum import Board, Thread, Post
 from bestiary2 import create_monster, MonsterTemplate
 
@@ -46,24 +44,22 @@ engine = Engine(database)
 game = Game()
 
 
-def game_clock():
-    while True:
-        time.sleep(UPDATE_INTERVAL)
-        database.update_time_all_heroes()
-
-
 def create_app():
     # create the application object
     app = Flask(__name__)
     # pdb.set_trace()
 
-    if not werkzeug.serving.is_running_from_reloader():
-        Process(target=game_clock).start()
+    async_process(game_clock, args=(database,))
     return app
 
 
 app = create_app()
 sslify = SSLify(app)
+
+# Should replace on server with custom (not pushed to github).
+# import os
+# os.urandom(24)
+# '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
 app.secret_key = 'starcraft'
 
 ALWAYS_VALID_URLS = [
@@ -370,6 +366,7 @@ def login():
                 print("Trying to send mail ...")
                 key = database.setup_account_for_reset(username)
                 send_email(username, email_address, key)
+                async_process(rest_key_timelock, args=(database, username), kwargs={'timeout': 5})
         else:
             raise Exception("The form of this 'type' doesn't exist!")
 

@@ -4,11 +4,13 @@ if __name__ == "__main__":
     exit()  # prevents code from trying to run file afterwards.
 
 import pdb
+import time
+from multiprocessing import Array
 
 import pytest
 
 from . import GenericTestCase, Mock, db_execute_script
-from engine import Engine
+from engine import Engine, async_process
 from locations import Location
 from events import Condition, Trigger
 from hero import Hero
@@ -208,3 +210,25 @@ class TestEngine(GenericTestCase):
         assert len(hero.journal.current_quest_paths) == 1
         assert hero.journal.quest_paths[0].stage == 0
         assert len(hero.handlers) == 1
+
+
+# Test specific class
+# python3 -m pytest rpg_game_tests/test_engine.py::TestExtras
+class TestExtras(GenericTestCase):
+    def test_async_process(self):
+        output = Array('u', 3)  # What a mess. Shared values are a pain.
+
+        def foo(a, b=3):
+            time.sleep(0.1)
+            output[1] = str(a)
+            output[2] = str(b)
+            # print("Print inside async:", a, b)
+
+        async_process(foo, args=(3,), kwargs={'b': 5})
+        # print("Should print before asyning runs.")
+        output[0] = 'F'
+        time.sleep(0.5)
+        assert list(output) == ["F", '3', '5']
+
+    def test_rest_key_timelock(self):
+        pass
