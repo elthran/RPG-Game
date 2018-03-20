@@ -43,7 +43,7 @@ class User(Base):
     username = Column(String(50), unique=True, nullable=False)
     password = Column(Unicode(200, convert_unicode=False), nullable=False)
     email = Column(Unicode(200, convert_unicode=False))
-    reset_key = Column(Unicode(200, convert_unicode=False), default='')
+    reset_key = Column(Unicode(200, convert_unicode=False))
     timestamp = Column(DateTime)
     is_admin = Column(Boolean)
     inbox_alert = Column(Boolean)

@@ -324,6 +324,7 @@ def reset_password():
         user = database.get_user_by_username(request.form['username'])
         if user.reset_key:
             user.reset_key = None
+            user.password = database.encrypt(request.form['password'])
             return redirect(url_for('login'), code=307)
     return redirect(url_for('login'))
 

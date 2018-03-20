@@ -334,6 +334,12 @@ class EZDB:
 
         self.session.add(Hero(user=user))
 
+    @staticmethod
+    def encrypt(s):
+        return bcrypt.hashpw(
+            base64.b64encode(hashlib.sha256(s.encode()).digest()),
+            bcrypt.gensalt(PASSWORD_HASH_COST))
+
     def add_new_user(self, username, password, email=''):
         """Create a new user account with this username and password.
 
@@ -344,13 +350,7 @@ class EZDB:
         """
 
         # hash and save a password
-        hashed_password = bcrypt.hashpw(
-            base64.b64encode(hashlib.sha256(password.encode()).digest()),
-            bcrypt.gensalt(PASSWORD_HASH_COST))
-        hashed_email = bcrypt.hashpw(
-            base64.b64encode(hashlib.sha256(email.encode()).digest()),
-            bcrypt.gensalt(PASSWORD_HASH_COST))
-        user = User(username=username, password=hashed_password, email=hashed_email,
+        user = User(username=username, password=EZDB.encrypt(password), email=EZDB.encrypt(email),
                     timestamp=EZDB.now())
         self.session.add(user)
         return user
@@ -387,7 +387,7 @@ class EZDB:
         """Add a reset key to the user account and return it."""
         user = self.session.query(User).filter_by(username=username).first()
         key = os.urandom(256)
-        urlsafe_key = base64.urlsafe_b64encode(hashlib.sha256(str(key).encode()).digest())
+        urlsafe_key = base64.urlsafe_b64encode(hashlib.sha256(key).digest())
         user.reset_key = urlsafe_key
         return urlsafe_key
 
@@ -398,7 +398,10 @@ class EZDB:
         Additionally make sure you can't use a blank reset key.
         """
         user = self.session.query(User).filter_by(username=username).first()
-        if user.reset_key and str(user.reset_key.encode()) == key:
+        # For some reason the key get converted to binary then back
+        # so it looks like "b'______'" instead of b'________' or
+        # '_________'. I strip the "b'" of the start and "'" of the end.
+        if user.reset_key and user.reset_key == key[2:-1]:
             return True
         return False
 
