@@ -267,7 +267,7 @@ def update_current_location(f):
     return wrap_current_location
 
 
-def send_email(user, address):
+def send_email(user, address, key):
     """Send an email to the passed address.
 
     This could later be improved to send other types of emails but right
@@ -288,15 +288,20 @@ def send_email(user, address):
     sender = "elthran.online@no-reply.ca"
     receivers = [address]
 
+    # url = 'https://mydomain.com/reset=' + token_urlsafe()
+    # if server:
+    # link = "https://elthran.pythonanywhere.com/reset/?user={}&&key={}".format(user, key)
+    link = "http://127.0.0.1:5000/reset?user={}&&key={}".format(user, key)
+
     message = """From: Elthran Online <{sender}>
 To: Owner of account '{user}' <{address}>
 MIME-Version: 1.0
 Content-type: text/html
-Subject: "Reset link for ElthranOnline"
-<p>Hi Owner of account '{user}',</p>
-<p>Please click this link <> to reset your account.
-You will be prompted to enter a new account password.</p>
-""".format(sender=sender, user=user, address=address)
+Subject: Reset link for ElthranOnline
+<pre>Hi Owner of account '{user}',
+    Please click this link <a href="{link}">{link}</a> to reset your account.
+You will be prompted to enter a new account password.</pre>
+""".format(sender=sender, user=user, address=address, link=link)
 
     try:
         smtp_obj = smtplib.SMTP('localhost')
@@ -308,6 +313,19 @@ You will be prompted to enter a new account password.</p>
             print("Error: unable to send email")
     except ConnectionRefusedError:
         print("You need to setup your stmp server correctly.")
+
+
+@app.route("/reset", methods=["GET", "POST"])
+def reset_password():
+    if request.method == "GET":
+        if database.validate_reset(request.args['user'], request.args['key']):
+            return render_template("reset.html", username=request.args['user'])
+    elif request.method == "POST":
+        user = database.get_user_by_username(request.form['username'])
+        if user.reset_key:
+            user.reset_key = None
+            return redirect(url_for('login'), code=307)
+    return redirect(url_for('login'))
 
 
 # use decorators to link the function to a url
@@ -349,7 +367,8 @@ def login():
             print("Validating email address ...")
             if database.validate_email(username, email_address):
                 print("Trying to send mail ...")
-                send_email(username, email_address)
+                key = database.setup_account_for_reset(username)
+                send_email(username, email_address, key)
         else:
             raise Exception("The form of this 'type' doesn't exist!")
 

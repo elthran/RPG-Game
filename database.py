@@ -12,9 +12,11 @@ import base64
 import importlib
 import datetime
 import random
+import os
 # Testing only
 import pdb
 from pprint import pprint
+
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -324,10 +326,21 @@ class EZDB:
     def get_user_by_username(self, username):
         return self.session.query(User).filter_by(username=username).first()
 
+    def add_new_hero_to_user(self, user):
+        """Create a new blank character object for a user.
+
+        May not be future proof if a user has multiple heroes.
+        """
+
+        self.session.add(Hero(user=user))
+
     def add_new_user(self, username, password, email=''):
-        """Add a user to the username with a given a unique username and a password.
+        """Create a new user account with this username and password.
+
+        And optional email.
 
         The password is encrypted with bcrypt.
+        The email is encrypted separately with bcrypt.
         """
 
         # hash and save a password
@@ -337,7 +350,6 @@ class EZDB:
         hashed_email = bcrypt.hashpw(
             base64.b64encode(hashlib.sha256(email.encode()).digest()),
             bcrypt.gensalt(PASSWORD_HASH_COST))
-        print(hashed_email)
         user = User(username=username, password=hashed_password, email=hashed_email,
                     timestamp=EZDB.now())
         self.session.add(user)
@@ -345,6 +357,11 @@ class EZDB:
 
     @scoped_session
     def validate_email(self, username, email):
+        """Check if the passed email matches the email for this account.
+
+        Email is encrypted separately. You can't decrypt the email even
+        if you know the user name. This might be inconvenient at some point.
+        """
         user = self.session.query(User).filter_by(username=username).first()
         if user is not None:
             # check a password
@@ -352,14 +369,6 @@ class EZDB:
                 base64.b64encode(hashlib.sha256(email.encode()).digest()),
                 user.email.encode())
         return None
-
-    def add_new_hero_to_user(self, user):
-        """Create a new blank character object for a user.
-
-        May not be future proof if a user has multiple heroes.
-        """
-
-        self.session.add(Hero(user=user))
 
     @scoped_session
     def validate(self, username, password):
@@ -372,6 +381,26 @@ class EZDB:
                 base64.b64encode(hashlib.sha256(password.encode()).digest()),
                 user.password.encode())
         return None
+
+    @scoped_session
+    def setup_account_for_reset(self, username):
+        """Add a reset key to the user account and return it."""
+        user = self.session.query(User).filter_by(username=username).first()
+        key = os.urandom(256)
+        urlsafe_key = base64.urlsafe_b64encode(hashlib.sha256(str(key).encode()).digest())
+        user.reset_key = urlsafe_key
+        return urlsafe_key
+
+    @scoped_session
+    def validate_reset(self, username, key):
+        """Make sure the reset key matches.
+
+        Additionally make sure you can't use a blank reset key.
+        """
+        user = self.session.query(User).filter_by(username=username).first()
+        if user.reset_key and str(user.reset_key.encode()) == key:
+            return True
+        return False
 
     def fetch_hero_by_username(self, username, character_name=None):
         """Return hero objected based on username_or_id and character_name.
