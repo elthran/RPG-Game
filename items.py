@@ -162,7 +162,7 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
         Modifies the final and next_value with the Class's format spec.
         """
 
-        temp = """<h1>{{ item.name }}</h1><h2>{{ item.description }}</h2><ul>
+        temp = """<h2>{{ item.name }}</h2><p>{{ item.description }}</p><ul>
         {% for prof in item.proficiencies %}
         {% if prof.base != 0 %}<li> - {{ prof.display_name }}: +{{ prof.base }}</li>{% endif %}
         {% if prof.modifier != 0 %}<li> - {{ prof.display_name }}: +{{ prof.modifier }}%</li>{% endif %}
@@ -186,7 +186,7 @@ class Wearable(Item):
         self.garment = False
         self.weapon = False
         self.jewelry = False
-        self.style = style
+        self.style = style  # Used to determine the display image. It's a prefix added to the item.
         self.max_durability = max_durability
         self.item_rating = item_rating
 

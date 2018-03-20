@@ -286,29 +286,23 @@ users = [marlen, admin]
 ##########
 all_store_items = [
     ChestArmour("Cloth Tunic", buy_price=18, description="A simple cloth tunic.", template=True,
-                proficiency_data=[('Defence', {'base': 5})]),
-    Ring("Silver Ring", 8, template=True, style="silver"),
+                proficiency_data=[
+                    ('Defence', {'base': 5})]),
     TwoHandedWeapon("Gnarled Staff", buy_price=13, description="An old, simple walking stick.", template=True,
                     proficiency_data=[
                         ('Damage', {'base': 15}),
                         ('Combat', {'modifier': 10})]),
-    Shield("Small Shield", buy_price=15,
+    Shield("Small Shield", buy_price=25, description="A simple wooden shield.", template=True,
            proficiency_data=[
                 ('Block', {'base': 25}),
-                ('BlockAmount', {'base': 15})],
-           template=True),
-    OneHandedWeapon("Big Dagger", buy_price=10,
+                ('BlockAmount', {'base': 15})]),
+    OneHandedWeapon("Rusted Dagger", buy_price=23, description="A rusted dagger in poor condition.", template=True,
                     proficiency_data=[
-                        ('Damage', {'base': 300}),
-                        ('Combat', {'base': 600}),
-                        ('Speed', {'base': 2})],
-                    template=True),
-    OneHandedWeapon("Small Dagger", buy_price=5,
+                        ('Damage', {'base': 5}),
+                        ('Speed', {'base': 0.5})]),
+    Ring("Silver Ring", buy_price=35, description="A silver ring with no markings. Nothing seems special about it.", template=True, style="silver",
                     proficiency_data=[
-                        ('Damage', {'base': 30}),
-                        ('Combat', {'base': 60}),
-                        ('Speed', {'base': 1})],
-                    template=True)
+                        ('Luckiness', {'base': 1})])
     ]
 
 all_marketplace_items = [
