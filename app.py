@@ -439,6 +439,7 @@ def logout(hero=None):
     flash("Thank you for playing! Your have successfully logged out.")
     return redirect(url_for('login'))
 
+
 # this gets called if you are logged in and there is no character info stored
 @app.route('/create_character', methods=['GET', 'POST'])
 @login_required
@@ -465,6 +466,10 @@ def create_character(hero=None):
         user_response = "...I don't remember what happened. My name is"
         user_text_placeholder = "Character Name"
         if request.method == 'POST':
+            if request.is_json:
+                data = request.get_json()
+                if 'form' in data:
+                    request.form =data['form']
             hero.name = request.form["get_data"].title()
             page_image = "blacksmith"
             generic_text = ""
@@ -483,6 +488,7 @@ def create_character(hero=None):
     return render_template('generic_dialogue.html', page_image=page_image,
                            generic_text=generic_text, npc_text=npc_text, user_action=user_action, user_response=user_response,
                            user_text_placeholder=user_text_placeholder)
+
 
 @app.route('/choose_character', methods=['GET', 'POST'])
 @login_required

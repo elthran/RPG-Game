@@ -27,11 +27,11 @@ or reply by choosing an option "make choice" -->
         <p>{{ generic_text }}</p>
 
         {% for line in npc_text %}
-            <h3>{{ npc_text[0] }}:</h3> {{ npc_text[1] }}
+        <h3>{{ line[0] }}:</h3> <p>{{ line[1] }}</p>
         {% endfor %}
 
         {% if user_action == "get text" %}
-            <form action="" method="post">
+            <form method="post" onsubmit="return sendToPy(event, updateFullPage, null, null, getFormData);">
                 {{ user_response }}
                 <input type="text" placeholder="{{ user_text_placeholder }}" name="get_data" value="{{ request.form.get_data }}" autofocus tabindex=1 />
                 <input type="submit" value="Next" tabindex=2 />
@@ -39,7 +39,7 @@ or reply by choosing an option "make choice" -->
 
         {% elif user_action == "make choice" %}
             {% for response in user_response %}
-            <button class="genericAccordion" data-py-function="temp_temp" data="" data-js-callback="genericAccordion">{{ response[0] }}</button>
+            <button class="genericAccordion" onclick="genericAccordion(this);">{{ response[0] }}</button>
             <div class="genericAccordionPanel">
                 <h2>{{ response[1] }}<button class="upgradeButton" data-py-function="choose_background" data="{{ response[2] }}" id="backgroundResponse" data-js-callback="refreshPage">
                 </h2>

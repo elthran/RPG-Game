@@ -692,11 +692,31 @@ function updateMessageTable(xhttp, oldData) {
     }
 }
 
+function getFormData(form) {
+//    log("Preprocessor for forms!")
+//    log(form);
+    var data = {"form": {}};
+    var i;
+    for (i=0; i < form.length; i++) {
+        if (form.elements[i].name !== "") {
+            data.form[form.elements[i].name] = form.elements[i].value;
+        }
+    }
+    return data;
+}
+
+function updateFullPage(xhttp, oldData) {
+//    log("Callback to updateFullPage!");
+//    log(xhttp);
+//    log(oldData);
+    document.write(xhttp.response);
+}
+
 
 /* Server communication v2
 Usage:
     <form onsubmit="return sendToPy(
-        event, updateMessageTable, null, null, getIdsFromCheckboxes);></form>
+        event, updateMessageTable, null, null, getIdsFromCheckboxes);"></form>
     OR
     <button onclick="sendToPy(
         event, someCallBack, "some_python_command_func", null,
