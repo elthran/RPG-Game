@@ -716,18 +716,12 @@ def ability_tree(spec, hero=None):
 @uses_hero
 def inventory_page(hero=None):
     page_title = "Inventory"
-    total_armour = 0
-    for item in hero.inventory.equipped:
-        try:
-            total_armour += item.armour_value
-        except AttributeError:
-            pass  # item might not have an armour value so ignore.
     # for item in hero.inventory:
     #     if item.wearable:
     #         item.check_if_improvement()
     return render_template(
         'inventory.html', hero=hero, page_title=page_title,
-        isinstance=isinstance, getattr=getattr, test_value=total_armour)
+        isinstance=isinstance, getattr=getattr)
 
 @app.route('/quest_log')
 @login_required

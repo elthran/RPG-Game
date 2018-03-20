@@ -44,8 +44,7 @@ class TestInventory(GenericTestCase):
         db.session.commit()
 
         # Add stock item/template combo - helmet/head armour.
-        template = HeadArmour("Medium Helmet", 4, armour_value=3,
-                              template=True)
+        template = HeadArmour("Medium Helmet", 4, template=True)
         db.session.add(template)
         db.session.commit()
         item = template.clone()
@@ -339,8 +338,7 @@ class TestInventory(GenericTestCase):
         
     def test_unequip_legs(self):
         """See if you can unequip some pants!"""
-        pants_template = LegArmour("Medium Pants", 7, armour_value=25,
-                                   template=True)
+        pants_template = LegArmour("Medium Pants", 7, template=True)
         self.db.session.add(pants_template)
         self.db.session.commit()
         pants = self.db.create_item(pants_template.id)

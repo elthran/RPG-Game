@@ -285,14 +285,6 @@ users = [marlen, admin]
 # Items
 ##########
 all_store_items = [
-    LegArmour("Medium Pants", 7, armour_value=25, template=True),
-    ChestArmour("Medium Tunic", 2, armour_value=25, template=True),
-    ChestArmour("Strong Tunic", 5, armour_value=250, template=True),
-    HeadArmour("Weak Helmet", 2, armour_value=1, template=True),
-    HeadArmour("Medium Helmet", 4, armour_value=3, template=True),
-    FootArmour("Light Boots", 3, armour_value=3, template=True),
-    ArmArmour("Light Sleeves", 4, armour_value=5, template=True),
-    HandArmour("Light Gloves", 5, armour_value=7, template=True),
     Ring("Silver Ring", 8, template=True, style="silver"),
     TwoHandedWeapon("Small Polearm", buy_price=5,
                     proficiency_data=[

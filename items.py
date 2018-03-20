@@ -125,13 +125,6 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
             item.proficiencies[key] = prof.clone()
         return item
 
-    @property
-    def armour_value(self):
-        try:
-            return self.proficiencies['defence'].final
-        except KeyError:
-            return 0
-
     def is_equipped(self):
         # Untested!
         return (self.unequipped_position is None
@@ -247,7 +240,7 @@ class Garment(Wearable):
         'polymorphic_identity': "Garment",
     }
 
-    def __init__(self, *args, armour_value=1, **kwargs):
+    def __init__(self, *args, **kwargs):
         """Create a new garment template.
 
         Alternate possible armour syntax:
@@ -255,8 +248,6 @@ class Garment(Wearable):
         """
         super().__init__(*args, **kwargs)
         self.garment = True
-        self.proficiencies['defence'] = proficiencies.Defence(
-            base=armour_value, template=True)
 
 
 class HeadArmour(Garment):
