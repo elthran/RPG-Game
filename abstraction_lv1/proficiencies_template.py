@@ -106,13 +106,13 @@ class Proficiency(TemplateMixin, Base):
     def next_value(self):
         """Return the value this proficiency will have if it is updated."""
         return round((self.scale_by_level(level=self.level+1) + self.base) *
-                     (self.modifier + 1), self.num_of_decimals)
+                     ((self.modifier + 100) / 100), self.num_of_decimals)
 
     @property
     def final(self):
         """Return the scaled value + base + modifier percent."""
         return round((self.scale_by_level() + self.base) *
-                     (self.modifier + 1), self.num_of_decimals)
+                     ((self.modifier + 100) / 100), self.num_of_decimals)
 
     @property
     def percent(self):

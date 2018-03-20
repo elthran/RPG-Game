@@ -118,7 +118,7 @@
 		<h2>Defence</h2>
 		<div class="leftPageHalf">
 				<ul>
-					<li>Toughness:</li>
+					<li>Defence:</li>
 					<li>Block Chance:</li>
 					<li>Block Amount:</li>
 					<li>Fatigue:</li>
@@ -134,7 +134,7 @@
 		</div>
 		<div class="rightPageHalf textRight">
 			<ul>
-				<li>{{ proficiencies.defence.final }}</li>
+				<li>{{ proficiencies.defence.final }}%</li>
 				<li>{% if hero.inventory.hero.inventory.left_hand.type == "Shield"%}{{ proficiencies.block.final }}%{% else %}<font color="red">-</font>{% endif %}</li>
 				<li>{% if hero.inventory.hero.inventory.left_hand.type == "Shield"%}{{ proficiencies.block_amount.final }}%{% else %}<font color="red">-</font>{% endif %}</li>
 				<li>{{ proficiencies.fatigue.current }}</li>

@@ -8,7 +8,7 @@ Conviction,How quickly you are able to gain the devotion of a god.,None,linear,0
 Courage,How capable you are of overcoming your fears. The greater your courage then the greater the obstacles you will be capable of facing.,Willpower,linear,0,1,0,FALSE,FALSE
 Damage,Your capability of inflicting damage through melee. This determines the greatest posssible damage you can deal in a single blow.,Brawn,linear,1,1,0,FALSE,FALSE
 Combat,The likelihood that your attack will hit for maximum damage.,Brawn,linear,10,2,0,FALSE,TRUE
-Defence,Your ability to take physical damage. All physical damaged received is reduced.,Resilience,linear,0,1,0,FALSE,TRUE
+Defence,Your ability to take physical damage. This combines with your armour to reduce all physical damaged received.,Resilience,linear,0,1,0,FALSE,TRUE
 Detection,Determines the chance that you will uncover enemy traps and ambushes.,Survivalism,linear,0,3,0,FALSE,TRUE
 Encumbrance,Your ability to fight in combat while carrying cumbersome gear.,Brawn,linear,0,5,0,FALSE,TRUE
 Endurance,Number of actions you can perform each day.,Resilience,linear,5,0.5,0,FALSE,FALSE

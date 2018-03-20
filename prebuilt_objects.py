@@ -285,13 +285,13 @@ users = [marlen, admin]
 # Items
 ##########
 all_store_items = [
+    ChestArmour("Cloth Tunic", buy_price=18, description="A simple cloth tunic.", template=True,
+                proficiency_data=[('Defence', {'base': 5})]),
     Ring("Silver Ring", 8, template=True, style="silver"),
-    TwoHandedWeapon("Small Polearm", buy_price=5,
+    TwoHandedWeapon("Gnarled Staff", buy_price=13, description="An old, simple walking stick.", template=True,
                     proficiency_data=[
-                        ('Damage', {'base': 30}),
-                        ('Combat', {'base': 60}),
-                        ('Speed', {'base': 1})],
-                    template=True),
+                        ('Damage', {'base': 15}),
+                        ('Combat', {'modifier': 10})]),
     Shield("Small Shield", buy_price=15,
            proficiency_data=[
                 ('Block', {'base': 25}),
