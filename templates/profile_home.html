@@ -4,7 +4,7 @@
 <h1 style="text-align:center;">General</h1>
 <table class="profileColumns">
 	<tr>
-		<th colspan="2">Basics</th>
+		<th colspan="2">Basic Information</th>
 	</tr>
 	<tr>
 		<td>Name</td>
@@ -113,7 +113,7 @@
 <h1 style="text-align:center;">Combat</h1>
 <table class="profileColumns">
 	<tr>
-		<th colspan="2">Basics</th>
+		<th colspan="2">Offense</th>
 	</tr>
 	<tr>
 		<td>Average Damage</td>
@@ -152,14 +152,14 @@
 		<td>{{ proficiencies.parry.final }}%</td>
 	</tr>
 	<tr>
-		<td>Parry</td>
-		<td>{{ proficiencies.riposte.final }}%</td>
+		<td>Fatigue</td>
+		<td>{{ proficiencies.fatigue.current }}</td>
 	</tr>
 </table>
 
 <table class="profileColumns">
 	<tr>
-		<th colspan="2">Skills</th>
+		<th colspan="2">Defence</th>
 	</tr>
 	<tr>
 		<td>Defence</td>
@@ -172,10 +172,6 @@
 	<tr>
 		<td>Block Amount</td>
 		<td>{% if hero.inventory.hero.inventory.left_hand.type == "Shield"%}{{ proficiencies.block_amount.final }}%{% else %}<font color="red">-</font>{% endif %}</td>
-	</tr>
-	<tr>
-		<td>Fatigue</td>
-		<td>{{ proficiencies.fatigue.current }}</td>
 	</tr>
 	<tr>
 		<td>Resist Frost</td>
@@ -198,15 +194,15 @@
 		<td>{{ proficiencies.resist_poison.final }}%</td>
 	</tr>
 	<tr>
-		<td>Resist Blunt Damage</td>
+		<td>Resist Blunt</td>
 		<td>{{ proficiencies.resist_blunt.final }}%</td>
 	</tr>
 	<tr>
-		<td>Resist Slashing Damage</td>
+		<td>Resist Slashing</td>
 		<td>{{ proficiencies.resist_slashing.final }}%</td>
 	</tr>
 	<tr>
-		<td>Resist Piercing Damage</td>
+		<td>Resist Piercing</td>
 		<td>{{ proficiencies.resist_piercing.final }}%</td>
 	</tr>
 </table>
@@ -240,15 +236,15 @@
 	</tr>
 	<tr>
 		<td>Experience Gain</td>
-		<td>{{ proficiencies.understanding.final }}%</td>
+		<td>{% if proficiencies.understanding.final %}+{{ proficiencies.understanding.final }}%{% else %}-{% endif %}</td>
 	</tr>
 	<tr>
 		<td>Devotion Gain</td>
-		<td>{{ proficiencies.conviction.final }}%</td>
+		<td>{% if proficiencies.conviction.final %}+{{ proficiencies.conviction.final }}%{% else %}-{% endif %}</td>
 	</tr>
 	<tr>
 		<td>Renown Gain</td>
-		<td>{{ proficiencies.reputation.final }}%</td>
+		<td>{% if proficiencies.reputation.final %}+{{ proficiencies.reputation.final }}%{% else %}-{% endif %}</td>
 	</tr>
 </table>
 {% endblock %}
