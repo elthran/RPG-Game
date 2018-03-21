@@ -41,8 +41,12 @@ or reply by choosing an option "make choice" -->
             {% for response in user_response %}
             <button class="genericAccordion" onclick="genericAccordion(this);">{{ response[0] }}</button>
             <div class="genericAccordionPanel">
-                <h2>{{ response[1] }}<button class="upgradeButton" data-py-function="choose_background" data="{{ response[2] }}" id="backgroundResponse" data-js-callback="refreshPage">
-                </h2>
+                <h3>{{ response[1][0] }}</h3><button class="upgradeButton" onclick="sendToPy(event, redirect, 'choose_background', {'background': '{{ response[2] }}'});"></button>
+                <ul>
+                    {% for option in response[1][1] %}
+                    <li>{{ option }}</li>
+                    {% endfor %}
+                </ul>
             </div>
             {% endfor %}
 
@@ -50,7 +54,7 @@ or reply by choosing an option "make choice" -->
 
         <!--
         {% for text in conversation %}
-           <button class="genericAccordion" data-py-function="temp_temp" data="" data-js-callback="genericAccordion">{{ text[0] }}</button>
+           <button class="genericAccordion" onclick="genericAccordion(this);">{{ text[0] }}</button>
                 <div class="genericAccordionPanel">
                     <h2>{{ text }} <a href="">Choose</a></h2>
                 </div>

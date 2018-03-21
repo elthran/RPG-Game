@@ -476,8 +476,8 @@ def create_character(hero=None):
             npc_text = [("Stranger", "Where do you come from, child?")]
             user_action = "make choice"
             user_response = [
-                ("My father was a great warlord from the north.", "Gain <ul><li>+1 Brawn</li></ul>", "Barbarian"),
-                ("My father was a great missionary traveling to the west.", "Gain <ul><li>+1 Intellect</li></ul>", "Missionary")]
+                ("My father was a great warlord from the north.", ["Gain", ("+1 Brawn",)], "Barbarian"),
+                ("My father was a great missionary traveling to the west.", ["Gain", ("+1 Intellect",)], "Missionary")]
             user_text_placeholder = ""
     elif hero.background == "":
         # This is needed if the user names there hero but leaves the page and returns later. But I will write it out later.

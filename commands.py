@@ -345,14 +345,13 @@ class Command:
         return jsonify(description=quest.description, reward=quest.reward_experience)
 
     @staticmethod
-    def choose_background(hero, database, arg_dict, **kwargs):
-        background = arg_dict.get('data', None, type=str)
-        hero.background = background
+    def choose_background(hero, database, data, **kwargs):
+        hero.background = data["background"]
         if hero.background == "Barbarian":
             hero.attributes.brawn.level += 1
         elif hero.background == "Missionary":
             hero.attributes.intellect.level += 1
-        return "success".format()
+        return "/home"
 
     @staticmethod
     def get_message_content_and_sender_by_id(hero, database, arg_dict, **kwargs):
