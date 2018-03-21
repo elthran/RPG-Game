@@ -11,12 +11,12 @@
 			<ul>
 				<li>Name:</li>
 				<li>Age:</li>
-				{% if hero.renown %}}<li>Renown:</li>{% endif %}
-				{% if hero.devotion %}}<li>Devotion:</li>{% endif %}
-				{% if hero.virtue %}}<li>Virtue:</li>{% endif %}
+				<li>Renown:</li>
+				<li>Devotion:</li>
+				<li>Virtue:</li>
 				<li>Experience:</li>
 				<li>Health:</li>
-				{% if proficiencies.sanctity.final %}<li>Sanctity:</li>{% endif %}
+				<li>Sanctity:</li>
 				<li>Storage:</li>
 				<li>Endurance:</li>
 				<li>Player Kills:</li>
@@ -28,12 +28,12 @@
 			<ul>
 				<li>{{ hero.character_name}}</li>
 				<li>{{ hero.age }}</li>
-				{% if hero.renown %}<li>{{ hero.character_name}}</li>{% endif %}
-				{% if hero.devotion %}}<li>Devotion: {{ hero.age }}</li>{% endif %}
-				{% if hero.virtue %}}<li>{{ hero.virtue }}</li>{% endif %}
+				<li>{{ hero.renown}}</li>
+				<li>{{ hero.devotion }}</li>
+				<li>{{ hero.virtue }}</li>
 				<li>{{ hero.experience }} / {{ hero.experience_maximum }}</li>
 				<li>{{ hero.base_proficiencies['health'].current }} / {{ hero.proficiencies.health.final|int }}</li>
-				{% if proficiencies.sanctity.final %}<li>{{ proficiencies.sanctity.current|int }} / {{ proficiencies.sanctity.final }}</li>{% endif %}
+				<li>{{ proficiencies.sanctity.current }} / {{ proficiencies.sanctity.final|int }}</li>
 				<li>{{ hero.base_proficiencies['storage'].current }} / {{ proficiencies.storage.final|int }}</li>
 				<li>{{ hero.base_proficiencies['endurance'].current }} / {{ proficiencies.endurance.final|int }}</li>
 				<li>{{ hero.journal.achievements.player_kills }}</li>
@@ -157,6 +157,7 @@
 		<h2>Weapon Skills</h2>
 		<div class="leftPageHalf">
 			<ul>
+				<li>Affinity:</li>
 				<li>Blunt:</li>
 				<li>Piercing:</li>
 				<li>Slashing:</li>
@@ -164,9 +165,10 @@
 		</div>
 		<div class="rightPageHalf textRight">
 			<ul>
+				<li>{{ proficiencies.weapon_affinity.final }}%</li>
 				<li>{{ proficiencies.blunt.final }}%</li>
-					<li>{{ proficiencies.piercing.final }}%</li>
-					<li>{{ proficiencies.slashing.final }}%</li>
+				<li>{{ proficiencies.piercing.final }}%</li>
+				<li>{{ proficiencies.slashing.final }}%</li>
 			</ul>
 		</div>
 	</div>
@@ -175,13 +177,15 @@
 		<div class="leftPageHalf">
 				<ul>
 					<li>Experience:</li>
-					<li>Reputation:</li>
+					<li>Devotion:</li>
+					<li>Renown:</li>
 				</ul>
 		</div>
 		<div class="rightPageHalf textRight">
 			<ul>
 				<li>{{ proficiencies.understanding.final }}%</li>
-				<li>{{ proficiencies.renown.final }}%</li>
+				<li>{{ proficiencies.conviction.final }}%</li>
+				<li>{{ proficiencies.reputation.final }}%</li>
 			</ul>
 		</div>
 	</div>

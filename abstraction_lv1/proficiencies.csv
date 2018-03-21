@@ -34,7 +34,7 @@ Precision,Chance to critically hit enemies. A critical hit always hits for maxim
 Recovery,How quickly you recover from poisons and the negative effects of different ailments.,Vitality,linear,0,10,0,FALSE,TRUE
 Redemption,For each two levels of redemption you recover one sanctity each day.,Divinity,linear,0,0.5,0,FALSE,FALSE
 Regeneration,For each two levels of regeneration you recover one additional health each day.,Vitality,linear,1,0.5,0,FALSE,FALSE
-Renown,The magnitutde of which your actions affect your reputation.,Charisma,linear,0,5,0,FALSE,TRUE
+Reputation,The magnitutde of which your actions affect your renown.,Charisma,linear,0,5,0,FALSE,TRUE
 Resist blunt,Ability to resist blunt damage,Resilience,linear,0,3,0,FALSE,TRUE
 Resist flame,Ability to resist flame damage,Resilience,linear,0,3,0,FALSE,TRUE
 Resist frost,Ability to resist frost damage,Resilience,linear,0,3,0,FALSE,TRUE
@@ -64,4 +64,5 @@ BlockAmount,Amount of damage absorbed when a shield successfully blocks,None,lin
 Blunt,Skill with blunt weapons,None,linear,0,0,0,TRUE,TRUE
 Piercing,Skill with piercing weapons,None,linear,0,0,0,TRUE,TRUE
 Slashing,Skill with slashing weapons,None,linear,0,0,0,TRUE,TRUE
+WeaponAffinity,How accustomed to your current weapon you are,None,linear,0,0,0,TRUE,TRUE
 

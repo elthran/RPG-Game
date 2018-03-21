@@ -4,7 +4,6 @@
 {% block block1 %}
 {% for item in hero.inventory %}
 {% if item.name == "Gnarled Staff" %}{{ item.proficiencies.combat }}{% endif %}
-{{ item }}
 {% endfor %}
         <!-- This is the inventory page and displays everything your character wears/owns and gives you CMD buttons to equip/unequip -->
         {% set inventory = hero.inventory %}
