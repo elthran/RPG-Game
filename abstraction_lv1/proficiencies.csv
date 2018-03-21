@@ -24,7 +24,7 @@ Killshot,Damage multiplier added when performing a critical hit.,Agility,linear,
 Knowledge,UNUSED,Intellect,linear,0,0,0,FALSE,FALSE
 Literacy,UNUSED,Intellect,linear,0,0,0,FALSE,FALSE
 Logistics,UNUSED,Pathfinding,linear,0,0,0,FALSE,FALSE
-Luckiness,A bonus chance of having incredibly good luck.,Fortuity,linear,0,1,0,FALSE,TRUE
+Luck,A bonus chance of having incredibly good luck.,Fortuity,linear,0,1,0,FALSE,TRUE
 Mountaineering,UNUSED,Pathfinding,linear,0,0,0,FALSE,FALSE
 Navigator,UNUSED,Pathfinding,linear,0,0,0,FALSE,FALSE
 Oration,UNUSED,Charisma,linear,0,0,0,FALSE,FALSE

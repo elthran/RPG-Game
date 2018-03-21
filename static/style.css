@@ -898,3 +898,20 @@ Centered margin is 275px left/right.
     text-decoration: none;
     cursor: pointer;
 }
+
+/* Below is what the main profile page will look like */
+.profileColumns { /* The main tables which displays all your profile information */
+    width: 500px;   /* Double this is about the width of the page. If you find this is too large on most screens, then simply shrink this number. */
+    margin: 10px;  /* Adds some spacebetween the tables. Looks a bit nicer */
+    float: left;  /* Makes sure the tables sit side by side and not on top of each other. */
+    border: 1px solid black;   /* My design sense is terrible. I just added this for now. Feel free to suggest a nicer outline. */
+}
+
+.profileColumns tr:nth-child(odd) { /* Makes every second row a different color */
+    background: azure;
+}
+
+.profileColumns tr:hover :not(th) { /* Highlights the current row that you are moused over, but makes the the heading can't be selected */
+    background: yellow;
+}
+/* End of main profile page code */
