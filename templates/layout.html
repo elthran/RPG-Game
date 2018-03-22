@@ -9,11 +9,11 @@
     <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
 </head>
 
-<body onscroll="stickyTopAndBottom();" style="min-height:815px;">
-    <div class="sidebar" id="sidebar">
+<body onscroll="stickyTopAndBottom();" style="min-height:815px;background:#bbc;">
+    <div class="sidebar" id="sidebar" style="border-radius:10px;border-width:1px;border-style:outset;">
         <div>
             <h1>{{ hero.name }}</h1>
-            <img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px" />
+            <img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px" style="border-radius:3%;border-width:1px;border-style:inset;" />
             Age: {{ hero.age }}
             <br>Gold: <span id="heroGold">{{ hero.gold }}</span>
         </div>

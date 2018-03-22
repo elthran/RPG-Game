@@ -174,8 +174,8 @@ function stickyTopAndBottom() {
     var newOffset = window.pageYOffset;
     var sidebarDiv = document.getElementById("sidebar");
     var minOffset = 10;
-    // I don't know why * 3 but it works.
-    var maxOffset = sidebarDiv.scrollHeight - window.innerHeight + minOffset;
+    var extraBottomSpacing = 5;  // compensates for bottom being too close.
+    var maxOffset = sidebarDiv.scrollHeight - window.innerHeight + minOffset + extraBottomSpacing;
     var currentOffset = parseInt(window.getComputedStyle(sidebarDiv, "style").top.slice(0, -2));
     var scrollYDirection = (lastYOffset < newOffset
         ? "down"
