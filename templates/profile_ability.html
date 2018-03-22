@@ -52,7 +52,7 @@
                 <button class="genericTooltipTrigger"
                             onclick="sendToPy(event, abilityTooltip, 'change_ability_tooltip', {'id': {{ ability.id }}});">
                     {{ ability.name}}
-                    {% if ability.level %}<div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level }}</div>{% endif %} <!-- If you have points in this, show the user how many -->
+                    <div style="display: inline" id="ability-{{ ability.id }}">{{ ability.level if ability.level > 0 else '' }}</div> <!-- If you have points in this, show the user how many -->
                 </button>
             </li>
         {% endfor %}

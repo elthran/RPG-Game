@@ -15,7 +15,7 @@
                             <li>
                                 <button class="genericTooltipTrigger"
                                         onclick="sendToPy(event, proficiencyTooltip, 'change_proficiency_tooltip', {'id': {{ proficiency.id }}});">
-                                    {{ proficiency.display_name}} {% if proficiency.level %}<div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level }}</div>{% endif %}
+                                    {{ proficiency.display_name}} <div style="display: inline" id="proficiency-{{ proficiency.id }}">{{ proficiency.level if proficiency.level > 0 else '' }}</div>
                                 </button>
                             </li>
                         {% endif %}

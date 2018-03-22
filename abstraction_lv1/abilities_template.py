@@ -279,7 +279,7 @@ class AuraAbility(Ability):
                       <h2>{{ ability.description }}</h2>
                       {% if ability.level %}<h3>Current: {{ ability.current }}</h3>{% endif %}
                       {% if not ability.is_max_level() %}<h3>Next: {{ ability.next }}</h3>{% else %}<h3>This ability is at its maximum level.</h3>{% endif %}
-                      {% if not ability.is_max_level() %}
+                      {% if not ability.is_max_level() and ((ability.tree == "Basic" and ability.hero.basic_ability_points) or (ability.tree == "Archetype" and ability.hero.archetype_ability_points))%}
                       <button id=levelUpAbilityButton class="upgradeButton" onclick="sendToPy(event, abilityTooltip, 'update_ability', {'id': {{ ability.id }}});"></button>
                       {% endif %}"""
         {% endraw %}

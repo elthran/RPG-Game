@@ -309,12 +309,22 @@ class Command:
     def update_ability(hero, database, data, **kwargs):
         ability_id = data['id']
         ability = database.get_ability_by_id(ability_id)
-        if hero.basic_ability_points <= 0 or ability.is_max_level():
-            return "error: no ability_points or ability is at max level."
-        hero.basic_ability_points -= 1
+        points_remaining = 0
+        if ability.tree == "Basic":
+            if hero.basic_ability_points <= 0 or ability.is_max_level():
+                return "error: no basic_ability_points or ability is at max level."
+            hero.basic_ability_points -= 1
+            points_remaining = hero.basic_ability_points
+        elif ability.tree == "Archetype":
+            if hero.archetype_ability_points <= 0 or ability.is_max_level():
+                return "error: no archetype_ability_points or ability is at max level."
+            hero.archetype_ability_points -= 1
+            points_remaining = hero.archetype_ability_points
+        else:
+            return "error: code not built for ability.tree == {}".format(ability.type)
         ability.level += 1 # Should be a level_up() function instead?
         return jsonify(tooltip=ability.tooltip,
-                       pointsRemaining=hero.basic_ability_points,
+                       pointsRemaining=points_remaining,
                        level=ability.level)
 
     @staticmethod

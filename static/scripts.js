@@ -768,10 +768,20 @@ function postJSON(url, oldData, callback) {
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState === 4 && xhttp.status === 200) {
             if (callback) {
+                // If the python code returns JSON formatted data:
+                // 1. run the "notification" code if that flag was passed.
+                // 2. send only the data to the callback.
                 if (xhttp.getResponseHeader("Content-Type") === "application/json") {
                     var response = JSON.parse(xhttp.responseText);
                     showGlobalNotificationButton(response["isNotice"], true);
                     callback(response, oldData);
+                // If the python code sends back an error i.e. "return "error: ...."
+                // print it to the console.
+                } else if (xhttp.responseText.substring(0, 5) === "error") {
+                        console.log("Python code returned an error:");
+                        console.log(xhttp.responseText);
+                // Otherwise handle it by passing the response to the callback.
+                // The callback function will need to parse the xhttp personally.
                 } else {
                     callback(xhttp, oldData);
                 }
