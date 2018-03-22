@@ -412,7 +412,7 @@ class Hero(SessionHoistMixin, Base):
             # convert dict of values into dict of database objects
             Class = getattr(proficiencies, type_)
             summed[key_name] = Class(level=lvl, base=base, modifier=mod)
-            summed[key_name].current = prof.current
+            summed[key_name].current = self.base_proficiencies[key_name].current
 
             # If proficiencies exists update it. If not just return this
             # mapped object.
