@@ -106,6 +106,13 @@
         {% block block2 %}{% endblock %}
         <!-- This ends the main body container of the page -->
     </div>
+    {{ notifications }}
+{% if hero.journal.notification %}
+<div class="temporaryNotice" onclick="sendToPy(event, showGlobalModal, 'send_notification_data');">
+    <h3>{{ hero.journal.notification.name }}</h3>
+    <p>{{ hero.journal.notification.description }}</p>
+</div>
+{% endif %}
 </body>
 </html>
 

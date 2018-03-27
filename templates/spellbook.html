@@ -2,6 +2,7 @@
 
 {% extends "layout.html" %}
 {% block block1 %}
+
 <center>Spellbook</center>
 {% for ability in hero.abilities if ability.castable and ability.level > 0 %}
 {{ ability.name.title() }}

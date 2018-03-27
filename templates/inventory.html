@@ -2,6 +2,7 @@
 <!-- This shows the admin page -->
 {% extends "layout.html" %}
 {% block block1 %}
+<h1 style="text-align:center;">Inventory</h1>
 {% for item in hero.inventory %}
 {% if item.name == "Gnarled Staff" %}{{ item.proficiencies.combat }}{% endif %}
 {% endfor %}
