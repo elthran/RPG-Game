@@ -533,14 +533,11 @@ class Hero(SessionHoistMixin, Base):
         If current_location is a city ... set value of current_city as well.
         If not remove the value of current_city.
         """
-        if location.type in ("cave", "town"):
+        if location.type in ("town",):
             self.current_city = location
-
-        # So the game remembers your last visited city
-        if location.type == 'town':
-            self.last_city = location
-        if location.type == 'map':
-            self.current_world = location
+            # So the game remembers your last visited city
+            if location != self.current_city:
+                self.last_city = location
         return location
 
     def get_other_heroes_at_current_location(self):

@@ -252,6 +252,14 @@ def update_current_location(f):
     def wrap_current_location(*args, **kwargs):
         hero = kwargs['hero']
         location = database.get_object_by_name('Location', kwargs['name'])
+        # check if you are leaving your current town if dead.
+        # Bounce you back to the hosptial.
+        # You tried to leave and passed out ... the kindly guards helped you back to the hospital.
+        # if hero.base_proficiencies.health.current == 0:
+        #     n = location
+        #     while True:
+        #         location.
+        #
         hero.current_location = location
         engine.spawn(
             'move_event',
