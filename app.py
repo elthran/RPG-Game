@@ -695,7 +695,7 @@ def inbox(outbox, hero=None):
 @app.route('/spellbook')
 @uses_hero
 def spellbook(hero=None):
-    print(hero.journal.notification)
+    print(hero.journal.notifications)
     return render_template('spellbook.html', page_title="Spellbook", hero=hero)
 
 

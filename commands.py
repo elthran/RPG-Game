@@ -22,7 +22,8 @@ def set_notification_active(f):
     def wrap_set_notice_active(hero, *args, **kwargs):
         response = f(hero, *args, **kwargs)
         # print("Using the set notification active code!")
-        notice = str(bool(hero.journal.notification)).lower()
+        # notice = str(bool(hero.journal.notification)).lower()
+        notice = str(False).lower()  # debuging
         try:
             new_data = b'\n  "isNotice": ' + notice.encode() + b', '
             response.data = b"{" + new_data + response.data[1:]
@@ -380,48 +381,16 @@ class Command:
         It would wrap any function and tack the "activate notification button"
         function and data on the end of any Json capable response?
         """
+        notice = database.get_object_by_id("Entry", data['id'])
 
-        header_template = """
-            {% if quest_notification.total_reward %}
-                <h1>{{ quest_notification.name }}</h1>
-            {% else %}
-                <h1>{{ quest_notification.name }}</h1>
-                <h2>Stage: {{ quest_notification.stage }} / {{ quest_notification.stages }}</h2>
-            {% endif %}
-        """
-        body_template = """
-            {% if quest_notification.total_reward %}
-                <h2>Completed!</h2>
-            {% else %}
-                <h2>Current Step:</h2>
-                <h3>{{ quest_notification.current_quest.name }}</h3>
-            {% endif %}
-        """
-        footer_template = """
-            {% if quest_notification.total_reward %}
-                <h3>Total reward: {{ quest_notification.total_reward }}xp</h3>
-            {% else %}
-                <h3>Reward: {{ quest_notification.current_quest.reward }}xp</h3>
-            {% endif %}
-        """
-
-        # notice = hero.journal.quest_notification
-        notice = hero.journal.notification.get_description()
-
-        header = render_template_string(header_template,
-                                        quest_notification=notice)
-        body = render_template_string(body_template,
-                                      quest_notification=notice)
-        footer = render_template_string(footer_template,
-                                        quest_notification=notice)
-
-        data = jsonify(header=header, body=body, footer=footer)
+        data = jsonify(header=notice.header, body=notice.body, footer=notice.footer)
 
         # print("Sending Notice content to JS.")
         # pprint(data)
 
         # Clear quest notification
-        hero.journal.notification = None
+        # Should delete this notice when it has been viewed.
+        notice.journal = None
         return data
 
     # @staticmethod

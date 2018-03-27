@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         requestArray.unshift(clickedButton);
                         // Send the last element to check if we should show a
                         // notification.
-                        showGlobalNotificationButton(requestArray[requestArray.length-1]);
+//                        showGlobalNotificationButton(requestArray[requestArray.length-1]);
                         jsFunction.apply(document, requestArray);
                     }
                 }
@@ -520,6 +520,7 @@ function showGlobalNotificationButton(isNotice, isJSON) {
     return null; // If this variable was a valid isNotice return nothing.
 }
 
+// Consider moving much of this to HTML?
 function showGlobalModal(response, oldData) {
     // Add content data to modal
     header = document.getElementById("globalMessageModalHeaderContent");
@@ -532,7 +533,7 @@ function showGlobalModal(response, oldData) {
     // Get the modal
     var modal = document.getElementById('globalMessage');
     // Get the button that opens the modal
-    var clickedButton = document.getElementById("globalNotificationButton");
+    var clickedButton = document.getElementById("notice-" + oldData['id']);
     // Get the <span> element that closes the modal
     var span = document.querySelector(".closeGlobalModal");
     // When the user clicks the button, open the modal
@@ -555,7 +556,7 @@ function showGlobalModal(response, oldData) {
         }
     });
 
-    clickedButton.style.visibility = "hidden";
+    clickedButton.style.display = "none";
 }
 
 // Choose character page, confirms user choice of hero.
@@ -773,7 +774,7 @@ function postJSON(url, oldData, callback) {
                 // 2. send only the data to the callback.
                 if (xhttp.getResponseHeader("Content-Type") === "application/json") {
                     var response = JSON.parse(xhttp.responseText);
-                    showGlobalNotificationButton(response["isNotice"], true);
+//                    showGlobalNotificationButton(response["isNotice"], true);
                     callback(response, oldData);
                 // If the python code sends back an error i.e. "return "error: ...."
                 // print it to the console.

@@ -44,6 +44,7 @@ from proficiencies import Proficiency
 from events import Trigger
 from forum import Forum, Board, Thread
 from bestiary2 import MonsterTemplate
+from journal import Entry
 import prebuilt_objects
 
 from session_helpers import scoped_session, safe_commit_session
