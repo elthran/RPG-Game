@@ -249,7 +249,7 @@ class Entry(Base):
                     <h2>Stage: {{ quest_notification.stage }} / {{ quest_notification.stages }}</h2>
                 {% endif %}
             """
-        return render_template_string(header_template, quest_notification=self.obj)
+        return render_template_string(header_template, quest_notification=self.obj.get_description())
 
     @property
     def body(self):
@@ -265,7 +265,7 @@ class Entry(Base):
             """
 
         return render_template_string(body_template,
-                                      quest_notification=self.obj)
+                                      quest_notification=self.obj.get_description())
 
     @property
     def footer(self):
@@ -279,4 +279,4 @@ class Entry(Base):
                 {% endif %}
             """
         return render_template_string(footer_template,
-                                      quest_notification=self.obj)
+                                      quest_notification=self.obj.get_description())
