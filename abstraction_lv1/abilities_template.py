@@ -212,6 +212,23 @@ class CastableAbility(Ability):
         super().__init__(*args, **kwargs)
         self.castable = True
 
+    @property
+    def tooltip(self):
+        """Create a tooltip for each variable.
+
+        Modifies the final and next_value with the Class's format spec.
+        """
+        {% raw %}
+        temp = """<h1>{{ ability.name }} (Level {{ ability.level }})</h1>
+                      <h2>{{ ability.description }}</h2>
+                      {% if ability.level %}<h3>Current: {{ ability.current }}</h3>{% endif %}
+                      {% if not ability.is_max_level() %}<h3>Next: {{ ability.next }}</h3>{% else %}<h3>This ability is at its maximum level.</h3>{% endif %}
+                      {% if not ability.is_max_level() and ((ability.tree == "Basic" and ability.hero.basic_ability_points) or (ability.tree == "Archetype" and ability.hero.archetype_ability_points))%}
+                      <button id=levelUpAbilityButton class="upgradeButton" onclick="sendToPy(event, abilityTooltip, 'update_ability', {'id': {{ ability.id }}});"></button>
+                      {% endif %}"""
+        {% endraw %}
+        return render_template_string(temp, ability=self)
+
     def cast(self, hero):
         """Use the ability. Like casting a spell.
 
@@ -220,12 +237,11 @@ class CastableAbility(Ability):
         NOTE: returns False if spell is too expensive (cost > proficiencies.sanctity.current)
         If cast is succesful then return value is True.
         """
-        if hero.base_proficiencies['sanctity'].current < 1:
+        if hero.base_proficiencies['sanctity'].current < 0:
             return False
         else:
             hero.base_proficiencies['sanctity'].current -= 1
             return True
-
 
 class AuraAbility(Ability):
     __mapper_args__ = {

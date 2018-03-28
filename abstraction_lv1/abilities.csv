@@ -5,7 +5,7 @@ Backstab,AuraAbility,Archetype,Scoundrel,3,You are more likely to attack first i
 Bash,AuraAbility,Archetype,Brute,3,(BROKEN)You deal more damage with blunt weapons.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0
 Blackhearted,AuraAbility,Archetype,Scoundrel,3,(BROKEN)Lose virtue faster.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0
 Charmer,AuraAbility,Archetype,Opportunist,3,(BROKEN)You are more likely to succeed when choosing charm dialogues.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0
-Discipline,AuraAbility,Basic,None,5,Gain devotion faster. Master this ability to unlock the Ascetic archetype.,{{ (level) * 1 }}%,{{ (level + 1) * 1 }}%,TRUE,Conviction,1
+Discipline,AuraAbility,Basic,None,5,Gain devotion faster. Master this ability to unlock the Ascetic archetype.,{{ (level) * 1 }}%,{{ (level + 1) * 1 }}%,TRUE,Piety,1
 Haggler,AuraAbility,Archetype,Opportunist,3,Prices at shops are cheaper.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Bartering,5
 MartialArts,AuraAbility,Archetype,Ascetic,3,You deal more damage in combat.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Damage,5
 Meditation,AuraAbility,Archetype,Ascetic,3,Regenerate sanctity per day.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Redemption,5

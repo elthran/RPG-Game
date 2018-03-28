@@ -521,42 +521,14 @@ function showGlobalNotificationButton(isNotice, isJSON) {
 }
 
 // Consider moving much of this to HTML?
-function showGlobalModal(response, oldData) {
-    // Add content data to modal
-    header = document.getElementById("globalMessageModalHeaderContent");
-    header.innerHTML = response["header"];
-    body = document.getElementById("globalMessageModalBodyContent");
-    body.innerHTML = response["body"];
-    footer = document.getElementById("globalMessageModalFooterContent");
-    footer.innerHTML = response["footer"];
-
-    // Get the modal
-    var modal = document.getElementById('globalMessage');
-    // Get the button that opens the modal
+function redirectUserFromNotification(response, oldData) {
+    // Redirect the user to the appropriate page
+    // Close the notification
     var clickedButton = document.getElementById("notice-" + oldData['id']);
-    // Get the <span> element that closes the modal
-    var span = document.querySelector(".closeGlobalModal");
-    // When the user clicks the button, open the modal
-    modal.style.display = "block";
-    // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
-        modal.style.display = "none";
-    }
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-
-    // Handle ESC key (key code 27) to close modal.
-    document.addEventListener('keyup', function(event) {
-        if (event.keyCode == 27) {
-            modal.style.display = "none";
-        }
-    });
-
     clickedButton.style.display = "none";
+    if (response["redirect"] == "True") {
+        window.location.href = response["url"]
+    }
 }
 
 // Choose character page, confirms user choice of hero.

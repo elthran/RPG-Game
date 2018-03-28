@@ -41,9 +41,6 @@ class Hero(SessionHoistMixin, Base):
     house = Column(String(50))
     experience = Column(Integer)
     experience_maximum = Column(Integer)
-    renown = Column(Integer)  # How famous you are
-    virtue = Column(Integer)  # How good/evil you are
-    devotion = Column(Integer)  # How religious you are
     gold = Column(Integer)
 
     basic_ability_points = Column(Integer)
@@ -298,9 +295,6 @@ class Hero(SessionHoistMixin, Base):
         self.experience_percent = 0
         self.experience = 0
         self.experience_maximum = 10
-        self.renown = 0
-        self.virtue = 0
-        self.devotion = 0
         self.gold = 50
 
         # Spendable points

@@ -382,8 +382,7 @@ class Command:
         function and data on the end of any Json capable response?
         """
         notice = database.get_object_by_id("Entry", data['id'])
-
-        data = jsonify(header=notice.header, body=notice.body, footer=notice.footer)
+        data = jsonify(header=notice.header, body=notice.body, footer=notice.footer, url=notice.url, redirect=data['redirect'])
 
         # print("Sending Notice content to JS.")
         # pprint(data)

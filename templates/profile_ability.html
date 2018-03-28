@@ -48,7 +48,6 @@
 	<div style="float:left;width:600px;border:dotted;">
         <ul>
         {% for ability in all_abilities %}
-            {{ ability }}
             <li>
                 <button class="genericTooltipTrigger"
                             onclick="sendToPy(event, abilityTooltip, 'change_ability_tooltip', {'id': {{ ability.id }}});">
