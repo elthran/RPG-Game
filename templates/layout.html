@@ -101,12 +101,17 @@
         <!-- This ends the main body container of the page -->
     </div>
     <!-- This displays notifications stacked on the bottom left of the page -->
-{% for notice in hero.journal.notifications %}
-<div id="notice-{{ notice.id }}" class="temporaryNotice" onclick="sendToPy(event, showGlobalModal, 'send_notification_data', {'id': {{ notice.id }}});">
-    <h3>{{ notice.name }}</h3>
-    <p>{{ notice.description }}</p>
-</div>
-{% endfor %}
+    <div id="temporaryNoticeContainer">
+        {% for notice in hero.journal.notifications %}
+        <div id="notice-{{ notice.id }}" class="temporaryNotice" onclick="sendToPy(event, redirectUserFromNotification, 'send_notification_data', {'id': {{ notice.id }}, 'redirect': 'True'});">
+            <button id="temporaryNoticeClose" onclick="sendToPy(event, redirectUserFromNotification, 'send_notification_data', {'id': {{ notice.id }}, 'redirect': 'False'});">x</button>
+            <h1>{{ notice.header }}</h1>
+            <h2>{{ notice.body }}</h2>
+            <h3>{{ notice.footer }}</h3>
+            <p>{{ notice.redirect_message }}</p>
+        </div>
+        {% endfor %}
+    </div>
 </body>
 </html>
 

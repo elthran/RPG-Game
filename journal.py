@@ -277,10 +277,9 @@ class Entry(Base):
         if self.type == "quest_path":
             header_template = """
                 {% if quest_notification.total_reward %}
-                    <h1>{{ quest_notification.name }}</h1>
+                    {{ quest_notification.name }}
                 {% else %}
-                    <h1>{{ quest_notification.name }}</h1>
-                    <h2>Stage: {{ quest_notification.stage }} / {{ quest_notification.stages }}</h2>
+                    {{ quest_notification.name }} ({{ quest_notification.stage }} / {{ quest_notification.stages }})
                 {% endif %}
             """
         return render_template_string(header_template, quest_notification=self.obj.get_description())
@@ -291,10 +290,9 @@ class Entry(Base):
         if self.type == "quest_path":
             body_template = """
                 {% if quest_notification.total_reward %}
-                    <h2>Completed!</h2>
+                    Completed!
                 {% else %}
-                    <h2>Current Step:</h2>
-                    <h3>{{ quest_notification.current_quest.name }}</h3>
+                    Required: {{ quest_notification.current_quest.name }}
                 {% endif %}
             """
 
@@ -307,10 +305,21 @@ class Entry(Base):
         if self.type == "quest_path":
             footer_template = """
                 {% if quest_notification.total_reward %}
-                    <h3>Total reward: {{ quest_notification.total_reward }}xp</h3>
+                    Total reward: {{ quest_notification.total_reward }}xp
                 {% else %}
-                    <h3>Reward: {{ quest_notification.current_quest.reward }}xp</h3>
+                    Reward: {{ quest_notification.current_quest.reward }}xp
                 {% endif %}
             """
         return render_template_string(footer_template,
                                       quest_notification=self.obj.get_description())
+
+    @property
+    def url(self):
+        url_template = "/quest_log"
+        return render_template_string(url_template)
+
+    @property
+    def redirect_message(self):
+        url_template = "Click anywhere in this box to visit your journal."
+        return render_template_string(url_template)
+

@@ -23,7 +23,7 @@ import proficiencies
 from base_classes import Base, attribute_mapped_dict_hybrid
 import pdb
 
-ALL_ABILITIES = [('Apprentice', 'AuraAbility', 'Archetype', 'Ascetic', 3, 'You are capable of learning additional spells.', '{{ (level) * 1 }}', '{{ (level + 1) * 1 }}', True, 'SpellLimit', 1), ('Arcanum', 'AuraAbility', 'Basic', 'None', 5, 'Gain maximum sanctity. Master this ability to unlock the Philosopher archetype.', '{{ (level) * 2 }}', '{{ (level + 1) * 2 }}', True, 'Sanctity', 2), ('Backstab', 'AuraAbility', 'Archetype', 'Scoundrel', 3, 'You are more likely to attack first in combat.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'FirstStrike', 5), ('Bash', 'AuraAbility', 'Archetype', 'Brute', 3, '(BROKEN)You deal more damage with blunt weapons.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0), ('Blackhearted', 'AuraAbility', 'Archetype', 'Scoundrel', 3, '(BROKEN)Lose virtue faster.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0), ('Charmer', 'AuraAbility', 'Archetype', 'Opportunist', 3, '(BROKEN)You are more likely to succeed when choosing charm dialogues.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0), ('Discipline', 'AuraAbility', 'Basic', 'None', 5, 'Gain devotion faster. Master this ability to unlock the Ascetic archetype.', '{{ (level) * 1 }}%', '{{ (level + 1) * 1 }}%', True, 'Conviction', 1), ('Haggler', 'AuraAbility', 'Archetype', 'Opportunist', 3, 'Prices at shops are cheaper.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Bartering', 5), ('MartialArts', 'AuraAbility', 'Archetype', 'Ascetic', 3, 'You deal more damage in combat.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Damage', 5), ('Meditation', 'AuraAbility', 'Archetype', 'Ascetic', 3, 'Regenerate sanctity per day.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Redemption', 5), ('Poet', 'AuraAbility', 'Basic', 'None', 5, 'Gain renown faster. Master this ability to unlock the Opportunist archetype.', '{{ (level) * 1 }}', '{{ (level + 1) * 1 }}', True, 'Reputation', 1), ('Relentless', 'AuraAbility', 'Basic', 'None', 5, 'Gain maximum health. Master this ability to unlock the Brute archetype.', '{{ (level) * 3 }}', '{{ (level + 1) * 3 }}', True, 'Health', 3), ('Scholar', 'AuraAbility', 'Archetype', 'Philosopher', 3, 'Gain experience faster.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Understanding', 5), ('Skinner', 'AuraAbility', 'Archetype', 'Survivalist', 3, '(BROKEN)You have a chance of obtaining a usable fur after kiling a beast.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0), ('Strider', 'AuraAbility', 'Archetype', 'Survivalist', 3, '(BROKEN)Traveling on the map requires less endurance.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0), ('Student', 'AuraAbility', 'Archetype', 'Philosopher', 3, '(BROKEN)You are capable of learning additional spells.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0), ('Traveler', 'AuraAbility', 'Basic', 'None', 5, 'Reveal more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', '{{ (level) * 1 }}', '{{ (level + 1) * 1 }}', True, 'Vision', 1), ('Trickster', 'AuraAbility', 'Basic', 'None', 5, 'Become harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', '{{ (level) * 3 }}', '{{ (level + 1) * 3 }}', True, 'Stealth', 3), ('Vigilance', 'AuraAbility', 'Archetype', 'Survivalist', 3, '(BROKEN)You are less likely to be ambushed.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0), ('FameBombTest', 'CastableAbility', 'Basic', 'None', 3, 'Gain instant fame with this silly test spell.', '{{ (level) * 3 }}', '{{ (level + 1) * 3 }}', True, 'Renown', 3)]
+ALL_ABILITIES = [('Apprentice', 'AuraAbility', 'Archetype', 'Ascetic', 3, 'You are capable of learning additional spells.', '{{ (level) * 1 }}', '{{ (level + 1) * 1 }}', True, 'SpellLimit', 1), ('Arcanum', 'AuraAbility', 'Basic', 'None', 5, 'Gain maximum sanctity. Master this ability to unlock the Philosopher archetype.', '{{ (level) * 2 }}', '{{ (level + 1) * 2 }}', True, 'Sanctity', 2), ('Backstab', 'AuraAbility', 'Archetype', 'Scoundrel', 3, 'You are more likely to attack first in combat.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'FirstStrike', 5), ('Bash', 'AuraAbility', 'Archetype', 'Brute', 3, '(BROKEN)You deal more damage with blunt weapons.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0), ('Blackhearted', 'AuraAbility', 'Archetype', 'Scoundrel', 3, '(BROKEN)Lose virtue faster.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0), ('Charmer', 'AuraAbility', 'Archetype', 'Opportunist', 3, '(BROKEN)You are more likely to succeed when choosing charm dialogues.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0), ('Discipline', 'AuraAbility', 'Basic', 'None', 5, 'Gain devotion faster. Master this ability to unlock the Ascetic archetype.', '{{ (level) * 1 }}%', '{{ (level + 1) * 1 }}%', True, 'Piety', 1), ('Haggler', 'AuraAbility', 'Archetype', 'Opportunist', 3, 'Prices at shops are cheaper.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Bartering', 5), ('MartialArts', 'AuraAbility', 'Archetype', 'Ascetic', 3, 'You deal more damage in combat.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Damage', 5), ('Meditation', 'AuraAbility', 'Archetype', 'Ascetic', 3, 'Regenerate sanctity per day.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Redemption', 5), ('Poet', 'AuraAbility', 'Basic', 'None', 5, 'Gain renown faster. Master this ability to unlock the Opportunist archetype.', '{{ (level) * 1 }}', '{{ (level + 1) * 1 }}', True, 'Reputation', 1), ('Relentless', 'AuraAbility', 'Basic', 'None', 5, 'Gain maximum health. Master this ability to unlock the Brute archetype.', '{{ (level) * 3 }}', '{{ (level + 1) * 3 }}', True, 'Health', 3), ('Scholar', 'AuraAbility', 'Archetype', 'Philosopher', 3, 'Gain experience faster.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Understanding', 5), ('Skinner', 'AuraAbility', 'Archetype', 'Survivalist', 3, '(BROKEN)You have a chance of obtaining a usable fur after kiling a beast.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0), ('Strider', 'AuraAbility', 'Archetype', 'Survivalist', 3, '(BROKEN)Traveling on the map requires less endurance.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0), ('Student', 'AuraAbility', 'Archetype', 'Philosopher', 3, '(BROKEN)You are capable of learning additional spells.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0), ('Traveler', 'AuraAbility', 'Basic', 'None', 5, 'Reveal more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', '{{ (level) * 1 }}', '{{ (level + 1) * 1 }}', True, 'Vision', 1), ('Trickster', 'AuraAbility', 'Basic', 'None', 5, 'Become harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', '{{ (level) * 3 }}', '{{ (level + 1) * 3 }}', True, 'Stealth', 3), ('Vigilance', 'AuraAbility', 'Archetype', 'Survivalist', 3, '(BROKEN)You are less likely to be ambushed.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0), ('FameBombTest', 'CastableAbility', 'Basic', 'None', 3, 'Gain instant fame with this silly test spell.', '{{ (level) * 3 }}', '{{ (level + 1) * 3 }}', True, 'Renown', 3)]
 
 ALL_NAMES = ['Apprentice', 'Arcanum', 'Backstab', 'Bash', 'Blackhearted', 'Charmer', 'Discipline', 'Fame bomb test', 'Haggler', 'Martial arts', 'Meditation', 'Poet', 'Relentless', 'Scholar', 'Skinner', 'Strider', 'Student', 'Traveler', 'Trickster', 'Vigilance']
 ALL_ATTRIBUTE_NAMES = ['apprentice', 'arcanum', 'backstab', 'bash', 'blackhearted', 'charmer', 'discipline', 'fame_bomb_test', 'haggler', 'martial_arts', 'meditation', 'poet', 'relentless', 'scholar', 'skinner', 'strider', 'student', 'traveler', 'trickster', 'vigilance']
@@ -220,6 +220,22 @@ class CastableAbility(Ability):
         super().__init__(*args, **kwargs)
         self.castable = True
 
+    @property
+    def tooltip(self):
+        """Create a tooltip for each variable.
+
+        Modifies the final and next_value with the Class's format spec.
+        """
+
+        temp = """<h1>{{ ability.name }} (Level {{ ability.level }})</h1>
+                      <h2>{{ ability.description }}</h2>
+                      {% if ability.level %}<h3>Current: {{ ability.current }}</h3>{% endif %}
+                      {% if not ability.is_max_level() %}<h3>Next: {{ ability.next }}</h3>{% else %}<h3>This ability is at its maximum level.</h3>{% endif %}
+                      {% if not ability.is_max_level() and ((ability.tree == "Basic" and ability.hero.basic_ability_points) or (ability.tree == "Archetype" and ability.hero.archetype_ability_points))%}
+                      <button id=levelUpAbilityButton class="upgradeButton" onclick="sendToPy(event, abilityTooltip, 'update_ability', {'id': {{ ability.id }}});"></button>
+                      {% endif %}"""
+        return render_template_string(temp, ability=self)
+
     def cast(self, hero):
         """Use the ability. Like casting a spell.
 
@@ -228,12 +244,11 @@ class CastableAbility(Ability):
         NOTE: returns False if spell is too expensive (cost > proficiencies.sanctity.current)
         If cast is succesful then return value is True.
         """
-        if hero.base_proficiencies['sanctity'].current < 1:
+        if hero.base_proficiencies['sanctity'].current < 0:
             return False
         else:
             hero.base_proficiencies['sanctity'].current -= 1
             return True
-
 
 class AuraAbility(Ability):
     __mapper_args__ = {
@@ -358,7 +373,7 @@ class Discipline(AuraAbility):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__(name='Discipline', tree='Basic', tree_type='None', max_level=5, description='Gain devotion faster. Master this ability to unlock the Ascetic archetype.', current='{{ (level) * 1 }}%', next='{{ (level + 1) * 1 }}%', learnable=True, proficiency_data=[('Conviction', {'base': 1})])
+        super().__init__(name='Discipline', tree='Basic', tree_type='None', max_level=5, description='Gain devotion faster. Master this ability to unlock the Ascetic archetype.', current='{{ (level) * 1 }}%', next='{{ (level + 1) * 1 }}%', learnable=True, proficiency_data=[('Piety', {'base': 1})])
 
         for key, value in kwargs:
             setattr(self, key, value)

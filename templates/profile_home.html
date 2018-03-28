@@ -20,19 +20,15 @@
 	</tr>
 	<tr>
 		<td>Renown</td>
-		<td>{{ hero.renown }}</td>
-	</tr>
-	<tr>
-		<td>Prof Renown</td>
-		<td>{{ proficiencies.renown.final|int }}</td>
+		<td>{{ hero.base_proficiencies['renown'].current }}</td>
 	</tr>
 	<tr>
 		<td>Devotion</td>
-		<td>{{ hero.devotion }}</td>
+		<td>{{ hero.base_proficiencies['devotion'].current }}</td>
 	</tr>
 	<tr>
 		<td>Virtue</td>
-		<td>{{ hero.virtue }}</td>
+		<td>{{ hero.base_proficiencies['virtue'].current }}</td>
 	</tr>
 	<tr>
 		<td>Health</td>
@@ -243,12 +239,16 @@
 		<td>{% if proficiencies.understanding.final %}+{{ proficiencies.understanding.final }}%{% else %}-{% endif %}</td>
 	</tr>
 	<tr>
-		<td>Devotion Gain</td>
-		<td>{% if proficiencies.conviction.final %}+{{ proficiencies.conviction.final }}%{% else %}-{% endif %}</td>
-	</tr>
-	<tr>
 		<td>Renown Gain</td>
 		<td>{% if proficiencies.reputation.final %}+{{ proficiencies.reputation.final }}%{% else %}-{% endif %}</td>
+	</tr>
+	<tr>
+		<td>Devotion Gain</td>
+		<td>{% if proficiencies.piety.final %}+{{ proficiencies.piety.final }}%{% else %}-{% endif %}</td>
+	</tr>
+	<tr>
+		<td>Virtue Gain</td>
+		<td>{% if proficiencies.dualism.final %}+{{ proficiencies.dualism.final }}%{% else %}-{% endif %}</td>
 	</tr>
 </table>
 {% endblock %}

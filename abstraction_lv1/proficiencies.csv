@@ -4,12 +4,12 @@ Adventuring,Your skill at exploring new places. This increases your likelihood o
 Bartering,Your skill at negotiating prices. It reduces the price you pay when buying any item from a vendor.,Charisma,linear,0,2,0,FALSE,TRUE
 Block,Skill with a shield. If a shield is equipped then the amount of damage blocked is increased.,Resilience,linear,0,2,0,FALSE,TRUE
 Charm,How likeable you are. It increases the speed of how quickly people begin to trust you.,Charisma,linear,0,5,0,FALSE,TRUE
-Conviction,How quickly you are able to gain the devotion of a god.,None,linear,0,2,0,FALSE,TRUE
+Combat,Your proficiency in fighting. The greater combat proficiency you have then the more damage you do on each attack.,Brawn,linear,1,1,0,FALSE,FALSE
 Courage,How capable you are of overcoming your fears. The greater your courage then the greater the obstacles you will be capable of facing.,Willpower,linear,0,1,0,FALSE,FALSE
 Damage,Your capability of inflicting damage through melee. This is added to your combat skill and determines the greatest posssible damage you can deal in a single blow.,Brawn,linear,1,2,0,FALSE,FALSE
-Combat,Your proficiency in fighting. The greater combat proficiency you have then the more damage you do on each attack.,Brawn,linear,1,1,0,FALSE,FALSE
 Defence,Your ability to take physical damage. This combines with your armour to reduce all physical damaged received.,Resilience,linear,0,1,0,FALSE,TRUE
 Detection,Determines the chance that you will uncover enemy traps and ambushes.,Survivalism,linear,0,3,0,FALSE,TRUE
+Dualism,How quickly you are able to change your virtue.,None,linear,0,2,0,FALSE,TRUE
 Encumbrance,Your ability to fight in combat while carrying cumbersome gear.,Brawn,linear,0,5,0,FALSE,TRUE
 Endurance,Number of actions you can perform each day.,Resilience,linear,5,0.5,0,FALSE,FALSE
 Evade,Your ability to dodge enemy attacks. Gives a bonus chance for enemies to miss their close combat attacks.,Quickness,linear,0,2,0,FALSE,TRUE
@@ -30,6 +30,7 @@ Navigator,UNUSED,Pathfinding,linear,0,0,0,FALSE,FALSE
 Oration,UNUSED,Charisma,linear,0,0,0,FALSE,FALSE
 Parry,The likelihood that you can parry an incoming attack.,Quickness,linear,0,2,0,FALSE,TRUE
 Pickpocketing,Increases the chance that you will successfully pickpocket someone.,Agility,linear,0,5,0,FALSE,TRUE
+Piety,How quickly you are able to gain the devotion of a god.,None,linear,0,2,0,FALSE,TRUE
 Precision,Chance to critically hit enemies. A critical hit always hits for maximum damage and then applies your killshot multiplier to that value.,Agility,linear,0,1,0,FALSE,TRUE
 Recovery,How quickly you recover from poisons and the negative effects of different ailments.,Vitality,linear,0,10,0,FALSE,TRUE
 Redemption,For each two levels of redemption you recover one sanctity each day.,Divinity,linear,0,0.5,0,FALSE,FALSE
@@ -67,4 +68,6 @@ Slashing,Skill with slashing weapons,None,linear,0,0,0,TRUE,TRUE
 WeaponAffinity,How accustomed to your current weapon you are,None,linear,0,0,0,TRUE,TRUE
 
 Renown,How famous you are,None,linear,0,0,0,TRUE,FALSE
+Virtue,How good or evil you are,None,linear,0,0,0,TRUE,FALSE
+Devotion,How religious you are,None,linear,0,0,0,TRUE,FALSE
 
