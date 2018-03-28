@@ -1,6 +1,6 @@
 from locations import Location
 from abilities import Ability
-from specializations import ArchetypeSpecialization
+import specializations
 from game import User
 from hero import Hero
 from quests import Quest, QuestPath
@@ -80,7 +80,7 @@ town.update()
 
 """
 town.display.places_of_interest=[
-("/store/greeting", "Blacksmith", "Shops"),
+("/town/blacksmith", "Blacksmith", "Shops"),
 ("/barracks", "Barracks"),
 ("/marketplace/greeting", "Marketplace"),
 ("/tavern", "Tavern", "Other"),
@@ -90,10 +90,10 @@ town.display.places_of_interest=[
 ]
 """
 blacksmith = Location('Blacksmith', 'store')
-blacksmith.children.append(Location('armoury', 'store'))
-blacksmith.children.append(Location('weaponry', 'store'))
-marketplace = Location('Marketplace', 'marketplace')
-marketplace.children.append(Location('general', 'marketplace'))
+#blacksmith.children.append(Location('armoury', 'blacksmith'))
+#blacksmith.children.append(Location('weaponry', 'store'))
+marketplace = Location('Marketplace', 'store')
+#marketplace.children.append(Location('general', 'marketplace'))
 tavern = Location("Red Dragon Inn", 'tavern')
 
 barracks = Location('Barracks', 'barracks')
@@ -188,7 +188,7 @@ visit_blacksmith_trigger = Trigger(
 
 buy_item_from_blacksmith_trigger = Trigger(
     'buy_event',
-    conditions=[blacksmith_is_parent_of_current_location_condition],
+    conditions=[blacksmith_condition],
     extra_info_for_humans='Should activate when buy code runs and '
                           'hero.current_location.id == id of the blacksmith.'
 )
@@ -271,11 +271,13 @@ when prebuilt_objects are preloaded into the database.
 admin = User(username="admin", password="admin", is_admin=True)
 admin.prestige = 371
 adminHero = Hero(name="Admin", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
+adminHero.proficiency_points = 10
 admin.heroes = [adminHero]
 
 marlen = User(username="marlen", password="brunner", is_admin=True)
 marlen.prestige = 309
 haldon = Hero(name="Haldon", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
+haldon.proficiency_points = 7
 marlen.heroes = [haldon]
 users = [marlen, admin]
 
@@ -283,70 +285,41 @@ users = [marlen, admin]
 # Items
 ##########
 all_store_items = [
-    LegArmour("Medium Pants", 7, armour_value=25, template=True),
-    ChestArmour("Medium Tunic", 2, armour_value=25, template=True),
-    ChestArmour("Strong Tunic", 5, armour_value=250, template=True),
-    HeadArmour("Weak Helmet", 2, armour_value=1, template=True),
-    HeadArmour("Medium Helmet", 4, armour_value=3, template=True),
-    FootArmour("Light Boots", 3, armour_value=3, template=True),
-    ArmArmour("Light Sleeves", 4, armour_value=5, template=True),
-    HandArmour("Light Gloves", 5, armour_value=7, template=True),
-    Ring("Silver Ring", 8, template=True, style="silver"),
-    TwoHandedWeapon("Medium Polearm", buy_price=5, damage_minimum=30,
-                    damage_maximum=60, speed_speed=1, template=True),
-    TwoHandedWeapon("Small Polearm", buy_price=5, damage_minimum=30,
-                    damage_maximum=60, speed_speed=1, template=True),
-    Shield("Small Shield", buy_price=10, template=True),
-    OneHandedWeapon("Big Dagger", buy_price=10,
-                    damage_minimum=300, damage_maximum=600, speed_speed=2,
-                    template=True),
-    OneHandedWeapon("Small Dagger", buy_price=5,
-                    damage_minimum=30, damage_maximum=60, speed_speed=1,
-                    template=True),
-    OneHandedWeapon("Poisoned Dagger", buy_price=5,
-                    damage_minimum=2, damage_maximum=10, damage_modifier=1,
-                    resist_poison_modifier=25, template=True),
-    Shield("Ice Buckler", buy_price=100, max_durability=3,
-           damage_minimum=2, damage_maximum=10, damage_modifier=1,
-           block_chance=50, block_modifier=50,
-           resist_frost_modifier=30, template=True),
-    Shield("Rare Fire Buckler", buy_price=100, max_durability=3,
-           damage_minimum=2, damage_maximum=10, damage_modifier=1,
-           block_chance=50, block_modifier=50,
-           resist_frost_modifier=30, template=True),
-    TwoHandedWeapon("Simple Staff", buy_price=100, max_durability=3,
-                    damage_minimum=2, damage_maximum=10, damage_modifier=1,
-                    template=True)
+    ChestArmour("Cloth Tunic", buy_price=18, description="A simple cloth tunic.", template=True,
+                proficiency_data=[
+                    ('Defence', {'base': 5})]),
+    TwoHandedWeapon("Gnarled Staff", buy_price=13, description="An old, simple walking stick.", template=True,
+                    proficiency_data=[
+                        ('Damage', {'base': 15}),
+                        ('Combat', {'modifier': 10})]),
+    Shield("Small Shield", buy_price=25, description="A simple wooden shield.", template=True,
+           proficiency_data=[
+                ('Block', {'base': 25}),
+                ('BlockAmount', {'base': 15})]),
+    OneHandedWeapon("Rusted Dagger", buy_price=23, description="A rusted dagger in poor condition.", template=True,
+                    proficiency_data=[
+                        ('Damage', {'base': 5}),
+                        ('Speed', {'base': 0.5})]),
+    Ring("Silver Ring", buy_price=35, description="A silver ring with no markings. Nothing seems special about it.", template=True, style="silver",
+                    proficiency_data=[
+                        ('Luck', {'base': 1})])
     ]
 
 all_marketplace_items = [
-    Consumable("Minor Health Potion", 3, healing_amount=10, template=True),
-    Consumable("Major Health Potion", 6, healing_amount=50, template=True),
-    Consumable("Major Faith Potion", 6, sanctity_amount=50, template=True),
-    Consumable("Major Awesome Max Potion", 6000, sanctity_amount=50,
+    Consumable("Minor Health Potion", 3,
+               proficiency_data=[('Health', {'base': 10})], template=True),
+    Consumable("Major Health Potion", 6,
+               proficiency_data=[('Health', {'base': 50})], template=True),
+    Consumable("Major Faith Potion", 6,
+               proficiency_data=[('Sanctity', {'base': 50})], template=True),
+    Consumable("Major Awesome Max Potion", 6000,
+               proficiency_data=[('Sanctity', {'base': 50})],
                template=True)
 ]
 
-all_specializations = [
-    ArchetypeSpecialization('Brute', 
-                            'A character who uses strength and combat to solve problems.  Proficient with many types of weapons.',
-        'Brawn of 6, Any Weapon Talent ~ 10'),
-    ArchetypeSpecialization('Scoundrel', 
-                            'A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.', 
-                            'Dagger Talent of 6, Virtue of -100'),
-    ArchetypeSpecialization('Ascetic', 
-                            'A character who focuses on disciplining mind and body. They use a combination of combat and intellect.', 
-                            '10 Errands Complete, Virtue of 100, Willpower of 4'),
-    ArchetypeSpecialization('Survivalist', 
-                            'A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.', 
-                            '5 Locations Discovered, 10 Animals in Bestiary'),
-    ArchetypeSpecialization('Philosopher', 
-                            'A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.', 
-                            'Intellect of 7, Books Read of 10'),
-    ArchetypeSpecialization('Opportunist', 
-                            'A character who solves problems using speech and dialogue.', 
-                            'Charisma of 7, Fame of 200')
-]
+all_specializations = [getattr(specializations, cls_name)(template=True)
+                       for cls_name in specializations.ALL_CLASS_NAMES]
+
 
 basic_forum = Forum("Basic")  # Create the first forum
 all_forums = [basic_forum]  # Add it to the list of forums to be generated on game init

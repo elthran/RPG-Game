@@ -778,7 +778,7 @@ Centered margin is 275px left/right.
     position: absolute;
     z-index: 1;
     top: 50%;
-    width: inherit;
+    width: 250px;
 }
 
 .inventory-tooltip:hover .inventory-tooltip-text {
@@ -898,3 +898,52 @@ Centered margin is 275px left/right.
     text-decoration: none;
     cursor: pointer;
 }
+
+/* Below is what the main profile page will look like */
+.profileColumns { /* The main tables which displays all your profile information */
+    width: 500px;   /* Double this is about the width of the page. If you find this is too large on most screens, then simply shrink this number. */
+    margin: 10px;  /* Adds some spacebetween the tables. Looks a bit nicer */
+    float: left;  /* Makes sure the tables sit side by side and not on top of each other. */
+    border: 1px solid black;   /* My design sense is terrible. I just added this for now. Feel free to suggest a nicer outline. */
+}
+
+.profileColumns tr:nth-child(odd) { /* Makes every second row a different color */
+    background: azure;
+}
+
+.profileColumns tr:hover :not(th) { /* Highlights the current row that you are moused over, but makes the the heading can't be selected */
+    background: yellow;
+}
+/* End of main profile page code */
+
+/* Messing around with new notice here */
+.temporaryNotice {
+    position: fixed;
+    z-index: 101;
+    padding: 5px;
+    margin: 10px;
+    width: 300px;
+    bottom: 0;
+    right: 0;
+    background: green;
+    color: white;
+    text-align: center;
+    overflow: hidden;
+    text-shadow: 1.5px 1.5px black;
+    box-shadow: 0 0 5px black;
+}
+
+.temporaryNotice h3 {
+    font-size: 20px;
+    color: lightgray;
+    padding: 0px;
+    margin: 0px;
+}
+
+#temporaryNoticeClose {
+    float:right;
+    display:inline-block;
+    padding:2px 5px;
+    background:#ccc;
+}
+/* End of notice messing */

@@ -49,15 +49,32 @@ Project breakdown:
 """
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
+from flask import render_template_string
+from sqlalchemy import (
+    Column, Integer, String, DateTime, ForeignKey, Boolean, Table
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import validates
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import orm
+from sqlalchemy.orm import column_property
+from sqlalchemy import select, and_
+from sqlalchemy.ext.orderinglist import ordering_list
 
 from base_classes import Base
-
+from achievements import Achievements
+from quests import QuestPath
 # For testing
 import pdb
+
+# journal_quest_path_association_table = Table(
+#     'journal_quest_path_association',
+#     Base.metadata,
+#     Column('journal_id', Integer, ForeignKey('journal.id',
+#                                              ondelete="SET NULL")),
+#     Column('quest_path_id', Integer, ForeignKey('quest_path.id',
+#                                                 ondelete="SET NULL"))
+# )
 
 
 # I think I can combine the entry and Journal.
@@ -72,16 +89,80 @@ class Journal(Base):
     # Hero to Journal is One to One
     hero_id = Column(Integer, ForeignKey('hero.id',
                                          ondelete="CASCADE"))
-    hero = relationship("Hero", back_populates='journal')
+    hero = relationship(
+        "Hero",
+        back_populates='journal',
+        cascade="all, delete-orphan",
+        single_parent=True)
 
     # Journal to QuestPath is One to Many
     # QuestPath provides many special methods.
     quest_paths = relationship("QuestPath", back_populates='journal',
-                               foreign_keys="[QuestPath.journal_id]")
+                               cascade="all, delete-orphan",
+                               foreign_keys="[QuestPath.journal_id]",
+                               order_by="QuestPath.name")
 
-    notification = relationship("QuestPath",
-                                foreign_keys="[QuestPath.notification_id]",
-                                uselist=False)
+    _current_quest_paths = relationship(
+        "QuestPath",
+        primaryjoin="and_(Journal.id==QuestPath.journal_id, "
+                    "QuestPath.completed==False)",
+        cascade="all, delete-orphan",
+        order_by="QuestPath.name"
+    )
+
+    @property
+    def current_quest_paths(self):
+        return self._current_quest_paths
+
+    _notifications = relationship(
+        "Entry",
+        back_populates="journal",
+        order_by="Entry.position",
+        collection_class=ordering_list('position'),
+        cascade="all, delete-orphan")
+
+    @property
+    def notifications(self):
+        return Journal.MockNotificationOrderingList(self)
+
+    @notifications.setter
+    def notifications(self, value):
+        """Assign to self._notifications directly.
+
+        I'm not totally sure this is enough. If you passed in a list of items ...
+        it might be best to vet them and make sure that they are actually
+        Entry objects.
+        """
+        self._notifications = value
+
+    class MockNotificationOrderingList:
+        def __init__(self, journal):
+            self.journal = journal
+
+        def append(self, item):
+            self.journal._notifications.append(Entry(item))
+
+        def insert(self, index, entity):
+            self.journal._notifications.insert(index, Entry(entity))
+
+        def __iter__(self):
+            return self.journal._notifications.__iter__()
+
+        def __repr__(self):
+            return self.journal._notifications.__repr__()
+
+        def __getattribute__(self, item):
+            # pdb.set_trace()
+            if item in ['append', 'insert', 'journal']:
+                return object.__getattribute__(self, item)
+            else:
+                return self.journal._notifications.__getattribute__(item)
+
+
+    # Journal to Achievements is One to One.
+    achievements = relationship("Achievements", back_populates="journal",
+                                uselist=False,
+                                cascade="all, delete-orphan")
 
     # @property
     # def quest_notification(self):
@@ -95,10 +176,16 @@ class Journal(Base):
         Activate the current_quest as well.
         """
         if quest_path.template:
-            quest_path = quest_path.build_new_from_template()
-        quest_path.activate(self.hero)
-        self.notification = quest_path
+            quest_path = quest_path.clone()
+        self.notifications.append(quest_path)
+        # self.notifications.append(Entry(quest_path))
         return quest_path
+
+    def __init__(self):
+        self.achievements = Achievements()
+
+        # This will let you create an entry object using an instantiated journal
+        # hero.journal.notifications.append(hero.journal.Entry(some_object))
 
     # Each journal can have many entries
     # entries = relationship("Entry", back_populates='journal')
@@ -108,41 +195,122 @@ class Journal(Base):
     #     self.entries.append(entry)
 
 
-# class Entry(Base):
-#     __tablename__ = 'entry'
-#
-#     id = Column(Integer, primary_key=True)
-#
-#     timestamp = Column(DateTime)
-#     info = Column(String(50))
-#
-#     # relationships
-#     journal_id = Column(Integer, ForeignKey('journal.id'))
-#     journal = relationship("Journal", back_populates='entries')
-#
-#     # Each entry can have object (beast, person or place)
-#     # I may need to build the inverse of the relationship ... not positive
-#     # though.
-#     _beast = relationship()
-#     _person = relationship()
-#     _place = relationship("Location")
-#     _quest_path = relationship("QuestPath")
-#
-#     @hybrid_property
-#     def obj(self):
-#         return self._beast or self._person or self._place or self._quest_path
-#
-#     @obj.setter
-#     def obj(self, value):
-#         """Assign object to appropriate column."""
-#         dir(value)
-#         pdb.set_trace()
-#         if value.type == "beast":
-#             self._beast = value
-#         elif value.type == "person":
-#             self._person = value
-#         elif value.type == "quest_path":
-#             self._quest_path = value
-#         else:
-#             raise "TypeError: 'obj' does not accept " \
-#                   "type '{}':".format(value.type)
+class Entry(Base):
+    """Various entries into the Journal class.
+
+    For the Notifications:
+        each object should have a get_description method.
+    So you can do:
+    for obj in journal.notifications:
+        obj.get_description()
+    """
+    __tablename__ = 'entry'
+
+    id = Column(Integer, primary_key=True)
+
+    timestamp = Column(DateTime)
+    position = Column(Integer)
+    info = Column(String(50))
+    name = Column(String(50))
+    description = Column(String(200))
+    type = Column(String(50))
+
+    # relationships
+    journal_id = Column(Integer, ForeignKey('journal.id', ondelete="CASCADE"))
+    journal = relationship("Journal", back_populates='_notifications')
+
+    # Each entry can have object (beast, person or place)
+    # I may need to build the inverse of the relationship ... not positive
+    # though.
+    # _beast = relationship()
+    # _person = relationship()
+    # _place = relationship("Location")
+    _beast = Column(String(50))
+    _person = Column(String(50))
+    _place = Column(String(50))
+    _quest_path = relationship("QuestPath")
+    _quest_path_id = Column(Integer, ForeignKey('quest_path.id'))
+
+    @hybrid_property
+    def obj(self):
+        """Return whichever object has a connection with this one."""
+        # pdb.set_trace()
+        return self._beast or self._person or self._place or self._quest_path
+
+    @obj.setter
+    def obj(self, value):
+        """Assign object to appropriate column.
+
+        From @elthran - not implemented
+        That’s simple. I’m going to do about 4 types:
+        - quest
+        - achievement
+        - friend message
+        - generic notice (like level up)
+        """
+        # dir(value)
+        # pdb.set_trace()
+        if value.__tablename__ == "beast":
+            self._beast = value
+            self.type = "beast"
+        elif value.__tablename__ == "person":
+            self._person = value
+            self.type = "person"
+        elif value.__tablename__ == "quest_path":
+            self._quest_path = value
+            self.type = "quest_path"
+        else:
+            raise "TypeError: 'obj' does not accept " \
+                  "__tablename__ '{}':".format(value.type)
+
+    def __init__(self, obj):
+        # pdb.set_trace()
+        self.obj = obj
+        self.name = obj.name
+        self.description = obj.description
+
+    # all of these can be way more generic and get there data from files.
+    # Could even add this code in the the into the 'obj.setter' code.
+    @property
+    def header(self):
+        header_template = None
+        if self.type == "quest_path":
+            header_template = """
+                {% if quest_notification.total_reward %}
+                    <h1>{{ quest_notification.name }}</h1>
+                {% else %}
+                    <h1>{{ quest_notification.name }}</h1>
+                    <h2>Stage: {{ quest_notification.stage }} / {{ quest_notification.stages }}</h2>
+                {% endif %}
+            """
+        return render_template_string(header_template, quest_notification=self.obj.get_description())
+
+    @property
+    def body(self):
+        body_template = None
+        if self.type == "quest_path":
+            body_template = """
+                {% if quest_notification.total_reward %}
+                    <h2>Completed!</h2>
+                {% else %}
+                    <h2>Current Step:</h2>
+                    <h3>{{ quest_notification.current_quest.name }}</h3>
+                {% endif %}
+            """
+
+        return render_template_string(body_template,
+                                      quest_notification=self.obj.get_description())
+
+    @property
+    def footer(self):
+        footer_template = None
+        if self.type == "quest_path":
+            footer_template = """
+                {% if quest_notification.total_reward %}
+                    <h3>Total reward: {{ quest_notification.total_reward }}xp</h3>
+                {% else %}
+                    <h3>Reward: {{ quest_notification.current_quest.reward }}xp</h3>
+                {% endif %}
+            """
+        return render_template_string(footer_template,
+                                      quest_notification=self.obj.get_description())

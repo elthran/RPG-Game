@@ -23,12 +23,14 @@ def named_relationship_mixin_factory(container_name, cls_name, names):
     for false_name in names:
         attr_name = false_name.lower().replace(" ", "_")
         name = false_name.title().replace(" ", '')
-        dct[attr_name] = lambda cls, name=name: relationship(
-                name,
-                primaryjoin="and_({}.id=={}.{}_id, {}.name=='{}')".format(
-                    container_name, cls_name, container_name.lower(),
-                    cls_name, name),
-                back_populates=container_name.lower(), uselist=False)
+        dct[attr_name] = lambda cls, name_=name: relationship(
+            name_,
+            primaryjoin="and_({}.id=={}.{}_id, {}.name=='{}')".format(
+                container_name, cls_name, container_name.lower(),
+                cls_name, name_),
+            back_populates=container_name.lower(),
+            uselist=False,
+            cascade="all, delete-orphan")
 
         dct[attr_name] = declared_attr(dct[attr_name])
 
@@ -97,7 +99,7 @@ class TemplateMixin(object):
     def __init__(*arg, template=True, **kwarg)
         self.template = template
 
-    def build_new_from_template(self):
+    def clone(self):
         return FooBar(*arg, **kwarg, template=False)
 
     Should include a validator that automates template building:
@@ -105,7 +107,7 @@ class TemplateMixin(object):
     @validates('trigger')
     def valid_trigger(self, key, trigger):
         if trigger.template:
-            trigger = trigger.build_new_from_template()
+            trigger = trigger.clone()
         return trigger
 
     !Important!
@@ -129,7 +131,7 @@ class TemplateMixin(object):
         col._creation_order = cls.id._creation_order + 0.5
         return col
 
-    def build_new_from_template(self):
+    def clone(self):
         """Build a new object from a given template object.
 
         Code should look something like:
