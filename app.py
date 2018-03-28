@@ -543,6 +543,7 @@ def reset_character(stat_type, hero=None):
 @uses_hero
 def admin(path="modify_self", hero=None):
     hero.base_proficiencies['endurance'].current = 0
+    print("Visiting the admin page has set your Endurance to 0. This is for testing purposes.")
     admin_form_content = None
     if path == "edit_database":
         pass

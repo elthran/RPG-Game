@@ -66,3 +66,5 @@ Piercing,Skill with piercing weapons,None,linear,0,0,0,TRUE,TRUE
 Slashing,Skill with slashing weapons,None,linear,0,0,0,TRUE,TRUE
 WeaponAffinity,How accustomed to your current weapon you are,None,linear,0,0,0,TRUE,TRUE
 
+Renown,How famous you are,None,linear,0,0,0,TRUE,FALSE
+
