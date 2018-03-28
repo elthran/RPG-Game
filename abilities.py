@@ -205,16 +205,12 @@ class Ability(Base):
 
 class CastableAbility(Ability):
     castable = Column(Boolean)
-    sanctity_cost = Column(Integer)
-    endurance_cost = Column(Integer)
-    heal_amount = Column(Integer)
-    gold_amount = Column(Integer)
 
     __mapper_args__ = {
         'polymorphic_identity': 'CastableAbility',
     }
 
-    def __init__(self, *args, sanctity_cost=0, endurance_cost=0, heal_amount=0, gold_amount=0, **kwargs):
+    def __init__(self, *args, **kwargs):
         """Build a new ArchetypeAbility object.
 
         Note: self.type must be set in __init__ to polymorphic_identity.
@@ -223,10 +219,6 @@ class CastableAbility(Ability):
         """
         super().__init__(*args, **kwargs)
         self.castable = True
-        self.sanctity_cost = sanctity_cost
-        self.endurance_cost = endurance_cost
-        self.heal_amount = heal_amount
-        self.gold_amount = gold_amount
 
     def cast(self, hero):
         """Use the ability. Like casting a spell.
@@ -236,13 +228,10 @@ class CastableAbility(Ability):
         NOTE: returns False if spell is too expensive (cost > proficiencies.sanctity.current)
         If cast is succesful then return value is True.
         """
-        if hero.get_summed_proficiencies('sanctity').current < self.sanctity_cost or hero.get_summed_proficiencies('endurance').current < self.endurance_cost:
+        if hero.base_proficiencies['sanctity'].current < 1:
             return False
         else:
-            hero.base_proficiencies['sanctity'].current -= self.sanctity_cost
-            hero.base_proficiencies['endurance'].current -= self.endurance_cost
-            hero.base_proficiencies['health'].current += self.heal_amount
-            hero.gold += self.gold_amount
+            hero.base_proficiencies['sanctity'].current -= 1
             return True
 
 
