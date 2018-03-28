@@ -917,14 +917,17 @@ Centered margin is 275px left/right.
 /* End of main profile page code */
 
 /* Messing around with new notice here */
-.temporaryNotice {
+#temporaryNoticeContainer {
     position: fixed;
     z-index: 101;
+    bottom: 0;
+    right: 0;
+}
+
+.temporaryNotice {
     padding: 5px;
     margin: 10px;
     width: 300px;
-    bottom: 0;
-    right: 0;
     background: green;
     color: white;
     text-align: center;
@@ -956,9 +959,8 @@ Centered margin is 275px left/right.
 }
 
 #temporaryNoticeClose {
-    float:right;
-    display:inline-block;
-    padding:2px 5px;
-    background:#ccc;
+    position: absolute;
+    left: 15px;
+    cursor: pointer;
 }
 /* End of notice messing */
