@@ -56,6 +56,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import validates
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import orm
 from sqlalchemy.orm import column_property
 from sqlalchemy import select, and_
 from sqlalchemy.ext.orderinglist import ordering_list
@@ -83,12 +84,6 @@ class Journal(Base):
     __tablename__ = 'journal'
 
     id = Column(Integer, primary_key=True)
-
-    # crude hack to make adding notifications easier.
-    # use journal.notifications.append(journal.Entry(some_object))
-    @property
-    def Entry(self):
-        return globals()['Entry']
 
     # Relationships
     # Hero to Journal is One to One
@@ -119,12 +114,50 @@ class Journal(Base):
     def current_quest_paths(self):
         return self._current_quest_paths
 
-    notifications = relationship(
+    _notifications = relationship(
         "Entry",
         back_populates="journal",
         order_by="Entry.position",
         collection_class=ordering_list('position'),
         cascade="all, delete-orphan")
+
+    @property
+    def notifications(self):
+        return Journal.MockNotificationOrderingList(self)
+
+    @notifications.setter
+    def notifications(self, value):
+        """Assign to self._notifications directly.
+
+        I'm not totally sure this is enough. If you passed in a list of items ...
+        it might be best to vet them and make sure that they are actually
+        Entry objects.
+        """
+        self._notifications = value
+
+    class MockNotificationOrderingList:
+        def __init__(self, journal):
+            self.journal = journal
+
+        def append(self, item):
+            self.journal._notifications.append(Entry(item))
+
+        def insert(self, index, entity):
+            self.journal._notifications.insert(index, Entry(entity))
+
+        def __iter__(self):
+            return self.journal._notifications.__iter__()
+
+        def __repr__(self):
+            return self.journal._notifications.__repr__()
+
+        def __getattribute__(self, item):
+            # pdb.set_trace()
+            if item in ['append', 'insert', 'journal']:
+                return object.__getattribute__(self, item)
+            else:
+                return self.journal._notifications.__getattribute__(item)
+
 
     # Journal to Achievements is One to One.
     achievements = relationship("Achievements", back_populates="journal",
@@ -144,12 +177,13 @@ class Journal(Base):
         """
         if quest_path.template:
             quest_path = quest_path.clone()
-        # pdb.set_trace()
-        self.notifications.append(Entry(quest_path))
+        self.notifications.append(quest_path)
+        # self.notifications.append(Entry(quest_path))
         return quest_path
 
     def __init__(self):
         self.achievements = Achievements()
+
         # This will let you create an entry object using an instantiated journal
         # hero.journal.notifications.append(hero.journal.Entry(some_object))
 
@@ -183,7 +217,7 @@ class Entry(Base):
 
     # relationships
     journal_id = Column(Integer, ForeignKey('journal.id', ondelete="CASCADE"))
-    journal = relationship("Journal", back_populates='notifications')
+    journal = relationship("Journal", back_populates='_notifications')
 
     # Each entry can have object (beast, person or place)
     # I may need to build the inverse of the relationship ... not positive

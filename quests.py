@@ -251,7 +251,7 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
             hero.gain_experience(quest.reward_experience + self.reward_experience)
         else:
             hero.gain_experience(quest.reward_experience)
-        self.journal.notifications.append(self.journal.Entry(self))
+        self.journal.notifications.append(self)
         # replace with journal.add_notifications()?
 
     def run(self):
