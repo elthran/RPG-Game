@@ -357,6 +357,8 @@ class Command:
 
     @staticmethod
     def choose_background(hero, database, data, **kwargs):
+        if not hero.creation_phase:
+            return "/login"
         hero.background = data["background"]
         if hero.background == "Barbarian":
             hero.attributes.brawn.level += 1
