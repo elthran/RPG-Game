@@ -380,18 +380,12 @@ function itemPurchasedPopup(response) {
 // I moved this function here instead of putting it at the bottom of each page which uses my accordion. BUT for some reason if I put it here
 // it becomes glitchy. I need to click the element twice for it to work now. I need to solve it before I move them all here.
 function genericAccordion(button) {
-    var allProfs = document.getElementsByClassName("genericAccordion");
-    var index;
-    for (index = 0; index < allProfs.length; index++) {
-        allProfs[index].addEventListener("click", function() {
-            this.classList.toggle("active");
-            var panel = this.nextElementSibling;
-            if (panel.style.display === "block") {
-                panel.style.display = "none";
-            } else {
-                panel.style.display = "block";
-            }
-        });
+    button.classList.toggle("active");
+    var panel = button.nextElementSibling;
+    if (panel.style.display === "block") {
+        panel.style.display = "none";
+    } else {
+        panel.style.display = "block";
     }
 }
 
@@ -665,14 +659,58 @@ function updateMessageTable(xhttp, oldData) {
     }
 }
 
+function getFormData(form) {
+    // Attempt to avoid using Form post and send the form data manually.
+    // <form method="post" onsubmit="return sendToPy(event, updateFullPage, null, null, getFormData);">
+//    log("Preprocessor for forms!")
+//    log(form);
+    var data = {"form": {}};
+    var i;
+    for (i=0; i < form.length; i++) {
+        if (form.elements[i].name !== "") {
+            data.form[form.elements[i].name] = form.elements[i].value;
+        }
+    }
+    return data;
+}
+
+function updateFullPage(xhttp, oldData) {
+    // Update the entire current page with a xhttp.response object.
+    // e.g. return render_tempate('/home')
+    // Would hard-write this page using passed data.
+    // Probably a terrible idea.
+//    log("Callback to updateFullPage!");
+//    log(xhttp);
+//    log(oldData);
+    document.open();
+    document.write(xhttp.response);
+    document.close();
+}
+
+function redirect(xhttp, oldData) {
+    // redirect the browser to the passed url.
+    // e.g. return "/home" (in commands.py) would redirect to the home page.
+//    log(xhttp.responseText);
+    window.location.assign(xhttp.responseText);
+}
+
+// See https://stackoverflow.com/questions/1865837/whats-the-difference-between-window-location-and-window-location-replace#1865840
+// This function will reload the current page AND prevent the user from
+// going backwards to the current version of the page.
+// NOTE: unless this page has extra handling ... there is nothing preventing
+// the user from typing in the correct url.
+function reloadReplaceURL(xhttp, oldData) {
+    window.location.replace(oldData['location']);
+}
+
 
 /* Server communication v2
 Usage:
     <form onsubmit="return sendToPy(
-        event, updateMessageTable, null, null, getIdsFromCheckboxes);></form>
+        event, updateMessageTable, null, null, getIdsFromCheckboxes);"></form>
     OR
     <button onclick="sendToPy(
-        event, someCallBack, "some_python_command_func", null,
+        event, someCallBack, 'some_python_command_func', null,
         somePreprocess);"></button>
 
 NOTE: Form must have a return method too.

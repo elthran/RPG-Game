@@ -21,7 +21,7 @@
         <h3>Explore this location</h3>
         {% for place in places_of_interest['children'] %}
                 <a href="{{ place.url }}">Choose</a>
-            <button class="genericAccordion" data-py-function="temp_temp" data="" data-js-callback="genericAccordion">{{ place.name }}</button>
+            <button class="genericAccordion" onclick="genericAccordion(this);">{{ place.name }}</button>
             <div class="genericAccordionPanel">
                 <h2>{{ place.display.paragraph }} <a href="{{ place.url }}">Choose</a></h2>
             </div><br>
@@ -34,7 +34,7 @@
         <h3>Other Heroes</h3>
         {% for hero in people_of_interest %}
             <a href="{{ person.user.username }}">Choose</a>
-            <button class="genericAccordion" data-py-function="temp_temp" data="" data-js-callback="genericAccordion">{{ place.name }}</button>
+            <button class="genericAccordion" onclick="genericAccordion(this);">{{ place.name }}</button>
             <div class="genericAccordionPanel">
                 <h2><a href=/display_users/see_user/{{ person.user.username }}>{{ hero.name }}</h2>
             </div><br>
@@ -47,7 +47,7 @@
         <h3>Explore nearby locations</h3>
         {% for place in places_of_interest['siblings'] %}
             <a href="{{ place.url }}">Choose</a>
-           <button class="genericAccordion" data-py-function="temp_temp" data="" data-js-callback="genericAccordion">{{ place.name }}</button>
+           <button class="genericAccordion" onclick="genericAccordion(this);">{{ place.name }}</button>
                 <div class="genericAccordionPanel">
                     <h2>{{ place.display.paragraph }} <a href="{{ place.url }}">Choose</a></h2>
                 </div>
