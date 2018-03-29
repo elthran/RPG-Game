@@ -31,7 +31,7 @@ or reply by choosing an option "make choice" -->
         {% endfor %}
 
         {% if user_action == "get text" %}
-            <form method="post" onsubmit="return sendToPy(event, updateFullPage, null, null, getFormData);">
+            <form method="post" onsubmit="return sendToPy(event, reloadReplaceURL, null, null, getFormData);">
                 {{ user_response }}
                 <input type="text" placeholder="{{ user_text_placeholder }}" name="get_data" value="{{ request.form.get_data }}" autofocus tabindex=1 />
                 <input type="submit" value="Next" tabindex=2 />
@@ -41,7 +41,7 @@ or reply by choosing an option "make choice" -->
             {% for response in user_response %}
             <button class="genericAccordion" onclick="genericAccordion(this);">{{ response[0] }}</button>
             <div class="genericAccordionPanel">
-                <h3>{{ response[1][0] }}</h3><button class="upgradeButton" onclick="sendToPy(event, redirect, 'choose_background', {'background': '{{ response[2] }}'});"></button>
+                <h3>{{ response[1][0] }}</h3><button class="upgradeButton" onclick="sendToPy(event, reloadReplaceURL, null, {'response': '{{ response[2] }}'});"></button>
                 <ul>
                     {% for option in response[1][1] %}
                     <li>{{ option }}</li>

@@ -419,10 +419,25 @@ def choose_character():
 @login_required
 @uses_hero
 def create_character(hero=None):
+    page_image = ""
     # This should prevent anyone getting here if they haven't been sent
     # by the login -> create account code.
     if not hero.creation_phase:
         return redirect(url_for('home'))
+    # Accept regular or json form data.
+    if request.method == 'POST':
+        if request.is_json:
+            data = request.get_json()
+            if 'form' in data:
+                request.form = data['form']
+        if hero.name is None:
+            hero.name = request.form["get_data"].title()
+        elif hero.background is None:
+            hero.background = data["response"]
+            if hero.background == "Barbarian":
+                hero.attributes.brawn.level += 1
+            elif hero.background == "Missionary":
+                hero.attributes.intellect.level += 1
 
     if len(hero.journal.quest_paths) == 0:
         hero.journal.quest_paths = database.get_default_quest_paths()
@@ -431,9 +446,9 @@ def create_character(hero=None):
         hero.current_world = database.get_default_world()
         hero.current_location = database.get_default_location()
 
-    if hero.name is None or hero.background is None:
+    if hero.name is None:
         page_image = "beached"
-        generic_text =  "You awake to great pain and confusion as you hear footsteps " \
+        generic_text = "You awake to great pain and confusion as you hear footsteps " \
                     "approaching in the sand. Unsure of where you are, you quickly look " \
                     "around for something to defend yourself. A firm and inquisitive voice " \
                     "pierces the air."
@@ -441,25 +456,17 @@ def create_character(hero=None):
         user_action = "get text"
         user_response = "...I don't remember what happened. My name is"
         user_text_placeholder = "Character Name"
-        if request.method == 'POST':
-            if request.is_json:
-                data = request.get_json()
-                if 'form' in data:
-                    request.form = data['form']
-            hero.name = request.form["get_data"].title()
-            page_image = "blacksmith"
-            generic_text = ""
-            npc_text = [("Stranger", "Where do you come from, child?")]
-            user_action = "make choice"
-            user_response = [
-                ("My father was a great warlord from the north.", ["Gain", ("+1 Brawn",)], "Barbarian"),
-                ("My father was a great missionary traveling to the west.", ["Gain", ("+1 Intellect",)], "Missionary")]
-            user_text_placeholder = ""
-    elif hero.background == "":
+    elif hero.background is None:
         # This is needed if the user names there hero but leaves the page and returns later. But I will write it out later.
-        pass
+        page_image = "character_background"
+        generic_text = ""
+        user_text_placeholder = ""
+        npc_text = [("Stranger", "Where do you come from, child?")]
+        user_action = "make choice"
+        user_response = [
+            ("My father was a great warlord from the north.", ["Gain", ("+1 Brawn",)], "Barbarian"),
+            ("My father was a great missionary traveling to the west.", ["Gain", ("+1 Intellect",)], "Missionary")]
     else:
-        pdb.set_trace()
         hero.creation_phase = False  # Prevent the user from returning here.
         hero.refresh_character(full=True)
         return redirect(url_for('home'))
@@ -671,7 +678,6 @@ def spellbook(hero=None):
     return render_template('spellbook.html', page_title="Spellbook", hero=hero)
 
 
-
 # PROFILE PAGES (Basically the home page of the game with your character
 # display and stats)
 @app.route('/home')
@@ -692,7 +698,6 @@ def home(hero=None):
     # session['valid_moves'] \
     #  = hero.current_world.show_directions(hero.current_location)
     # session['valid_moves'].append(hero.current_location.id)
-    hero.creation_phase = False
 
     return render_template(
         'profile_home.html', page_title="Profile", hero=hero, profile=True,

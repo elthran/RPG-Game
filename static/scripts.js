@@ -694,6 +694,15 @@ function redirect(xhttp, oldData) {
     window.location.assign(xhttp.responseText);
 }
 
+// See https://stackoverflow.com/questions/1865837/whats-the-difference-between-window-location-and-window-location-replace#1865840
+// This function will reload the current page AND prevent the user from
+// going backwards to the current version of the page.
+// NOTE: unless this page has extra handling ... there is nothing preventing
+// the user from typing in the correct url.
+function reloadReplaceURL(xhttp, oldData) {
+    window.location.replace(oldData['location']);
+}
+
 
 /* Server communication v2
 Usage:
