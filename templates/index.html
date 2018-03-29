@@ -38,9 +38,7 @@
                 <br>
                 <p>Go back to login? <a class="loginAlternateButton" title="Switch to login" href="#" onclick="toggleLoginRegister(this);return false;" data="login">Login</a></p>
             </form>
-            {% if error %}
-            <p id="error" class="error">{{ error }} <a class="loginAlternateButton" title="Switch to reset password" href="#" onclick="toggleLoginRegister(this);return false;" data="reset">Forgot password?</a></p>
-            {% endif %}
+            <p id="error" class="error {{ '' if error else 'hide' }}">{{ error }} <a class="loginAlternateButton" title="Switch to reset password" href="#" onclick="toggleLoginRegister(this);return false;" data="reset">Forgot password?</a></p>
       </div>
     </div>
 </body>

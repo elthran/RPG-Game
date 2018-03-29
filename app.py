@@ -332,7 +332,8 @@ def login():
     error = None
     # Should prevent contamination between logging in with 2 different
     # accounts.
-    session.clear()
+    session.clear()  # I'm not sure this is still a good idea ..
+    # pprint(session)
     # I might remove this later ...
     # This fixed a bug in the server that I have now fixe with
     # if 'logged_in' in session and session['logged_in']
@@ -360,6 +361,7 @@ def login():
                 user = database.add_new_user(username, password, email=email_address)
                 database.add_new_hero_to_user(user)
                 session['logged_in'] = True
+                user.heroes[0].creation_phase = True  # At this point only one hero should exist
         elif request.form['type'] == "reset":
             print("Validating email address ...")
             if database.validate_email(username, email_address):
@@ -380,109 +382,6 @@ def login():
 
     return render_template('index.html', error=error, username=username)
 
-
-# route for handling the account creation page logic
-# @app.route('/password_recovery', methods=['GET', 'POST'])
-# def password_recovery():
-#     error = "Password Not Found"
-#
-#     if request.method == 'POST':
-#         username = request.form['username']
-#
-#         con = sqlite3.connect('static/user.db')
-#         with con:
-#             cur = con.cursor()
-#             cur.execute("SELECT * FROM Users")
-#             rows = cur.fetchall()
-#             for row in rows:
-#                 if row[0] == username:
-#                     error = "We found your password, but it was hashed into"
-#                         "this: " + row[1] + ". We are unable to decode the"
-#                         " jargon. Sorry, please restart the game!"
-#         con.close()
-#     return render_template('index.html', error=error, password_recovery=True)
-
-
-# route for handling the account creation page logic
-"""
-@app.route('/create_account', methods=['GET', 'POST'])
-def create_account():
-    error = None
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        if database.get_user_id(username):
-            error = "Username already exists!"
-        else:
-            user = database.add_new_user(username, password)
-            database.add_new_hero_to_user(user)
-            # database.add_world_map_to_hero() maybe?
-            return redirect(url_for('login'))
-    return render_template('index.html', error=error, create_account=True)
-    """
-
-
-@app.route('/add_new_character')
-def add_new_character():
-    user = database.get_object_by_id("User", session['id'])
-    database.add_new_hero_to_user(user)
-    return redirect(url_for('choose_character'))
-
-
-# this gets called if you press "logout"
-@app.route('/logout')
-@login_required
-@uses_hero
-def logout(hero=None):
-    hero.refresh_character()
-    session.pop('logged_in', None)
-    flash("Thank you for playing! Your have successfully logged out.")
-    return redirect(url_for('login'))
-
-# this gets called if you are logged in and there is no character info stored
-@app.route('/create_character', methods=['GET', 'POST'])
-@login_required
-@uses_hero
-def create_character(hero=None):
-    if len(hero.journal.quest_paths) == 0:
-        hero.journal.quest_paths = database.get_default_quest_paths()
-
-    if hero.current_world is None:
-        hero.current_world = database.get_default_world()
-        hero.current_location = database.get_default_location()
-
-    if hero.background is not None:
-        hero.background = "Barbarian"
-
-    if hero.name is None:
-        page_image = "beached"
-        generic_text =  "You awake to great pain and confusion as you hear footsteps " \
-                    "approaching in the sand. Unsure of where you are, you quickly look " \
-                    "around for something to defend yourself. A firm and inquisitive voice " \
-                    "pierces the air."
-        npc_text = [("Stranger", "Who are you and what are you doing here?")]
-        user_action = "get text"
-        user_response = "...I don't remember what happened. My name is"
-        user_text_placeholder = "Character Name"
-        if request.method == 'POST':
-            hero.name = request.form["get_data"].title()
-            page_image = "blacksmith"
-            generic_text = ""
-            npc_text = [("Stranger", "Where do you come from, child?")]
-            user_action = "make choice"
-            user_response = [
-                ("My father was a great warlord from the north.", "Gain <ul><li>+1 Brawn</li></ul>", "Barbarian"),
-                ("My father was a great missionary traveling to the west.", "Gain <ul><li>+1 Intellect</li></ul>", "Missionary")]
-            user_text_placeholder = ""
-    elif hero.background == "":
-        # This is needed if the user names there hero but leaves the page and returns later. But I will write it out later.
-        pass
-    else:
-        hero.refresh_character(full=True)
-        return redirect(url_for('home'))
-    return render_template('generic_dialogue.html', page_image=page_image,
-                           generic_text=generic_text, npc_text=npc_text, user_action=user_action, user_response=user_response,
-                           user_text_placeholder=user_text_placeholder)
 
 @app.route('/choose_character', methods=['GET', 'POST'])
 @login_required
@@ -508,10 +407,82 @@ def choose_character():
     flash(hero.login_alerts)
     hero.login_alerts = ""
     # If it's a new character, send them to create_character url
-    if hero.character_name is None: # Whats the difference between character_name and name?
+    # pdb.set_trace()
+    if hero.creation_phase:
         return redirect(url_for('create_character'))
     # If the character already exist go straight the main home page!
     return redirect(url_for('home'))
+
+
+# this gets called if you are logged in and there is no character info stored
+@app.route('/create_character', methods=['GET', 'POST'])
+@login_required
+@uses_hero
+def create_character(hero=None):
+    page_image = ""
+    # This should prevent anyone getting here if they haven't been sent
+    # by the login -> create account code.
+    if not hero.creation_phase:
+        return redirect(url_for('home'))
+    # Accept regular or json form data.
+    if request.method == 'POST':
+        if request.is_json:
+            data = request.get_json()
+            if 'form' in data:
+                request.form = data['form']
+        if hero.name is None:
+            hero.name = request.form["get_data"].title()
+        elif hero.background is None:
+            hero.background = data["response"]
+            if hero.background == "Barbarian":
+                hero.attributes.brawn.level += 1
+            elif hero.background == "Missionary":
+                hero.attributes.intellect.level += 1
+
+    if len(hero.journal.quest_paths) == 0:
+        hero.journal.quest_paths = database.get_default_quest_paths()
+
+    if hero.current_world is None:
+        hero.current_world = database.get_default_world()
+        hero.current_location = database.get_default_location()
+
+    if hero.name is None:
+        page_image = "beached"
+        generic_text = "You awake to great pain and confusion as you hear footsteps " \
+                    "approaching in the sand. Unsure of where you are, you quickly look " \
+                    "around for something to defend yourself. A firm and inquisitive voice " \
+                    "pierces the air."
+        npc_text = [("Stranger", "Who are you and what are you doing here?")]
+        user_action = "get text"
+        user_response = "...I don't remember what happened. My name is"
+        user_text_placeholder = "Character Name"
+    elif hero.background is None:
+        # This is needed if the user names there hero but leaves the page and returns later. But I will write it out later.
+        page_image = "character_background"
+        generic_text = ""
+        user_text_placeholder = ""
+        npc_text = [("Stranger", "Where do you come from, child?")]
+        user_action = "make choice"
+        user_response = [
+            ("My father was a great warlord from the north.", ["Gain", ("+1 Brawn",)], "Barbarian"),
+            ("My father was a great missionary traveling to the west.", ["Gain", ("+1 Intellect",)], "Missionary")]
+    else:
+        hero.creation_phase = False  # Prevent the user from returning here.
+        hero.refresh_character(full=True)
+        return redirect(url_for('home'))
+    return render_template('generic_dialogue.html', page_image=page_image, generic_text=generic_text, npc_text=npc_text, user_action=user_action, user_response=user_response, user_text_placeholder=user_text_placeholder)
+
+
+# this gets called if you press "logout"
+@app.route('/logout')
+@login_required
+@uses_hero
+def logout(hero=None):
+    # hero.refresh_character()  # probably no longer wanted?
+    # session.pop('logged_in', None)  # I'm not sure why you might want this instead of a full clear ..
+    session.clear()
+    flash("Thank you for playing! Your have successfully logged out.")
+    return redirect(url_for('login'))
 
 
 # An admin button that lets you reset your character. Currently doesnt reset attributes/proficiencies, nor inventory and other stuff. Should be rewritten as something
@@ -581,6 +552,13 @@ def admin(path="modify_self", hero=None):
             ("Attribute_points", hero.attribute_points),
             ("Proficiency_Points", hero.proficiency_points)]
     return render_template('admin.html', hero=hero, admin=admin_form_content, path=path)  # return a string
+
+
+@app.route('/add_new_character')
+def add_new_character():
+    user = database.get_object_by_id("User", session['id'])
+    database.add_new_hero_to_user(user)
+    return redirect(url_for('choose_character'))
 
 
 # The if statement works and displays the user page as normal. Now if you
@@ -698,7 +676,6 @@ def inbox(outbox, hero=None):
 def spellbook(hero=None):
     print(hero.journal.notifications)
     return render_template('spellbook.html', page_title="Spellbook", hero=hero)
-
 
 
 # PROFILE PAGES (Basically the home page of the game with your character

@@ -33,6 +33,7 @@ class Hero(SessionHoistMixin, Base):
     __tablename__ = 'hero'
 
     id = Column(Integer, primary_key=True)
+    creation_phase = Column(Boolean)
     name = Column(String(50))  # Was nullable=False now it isn't. I hope that is a good idea.
     character_name = orm.synonym('name')
 
@@ -291,7 +292,6 @@ class Hero(SessionHoistMixin, Base):
         # self.calling = SpecializationContainer()
         # self.pantheon = SpecializationContainer()
         self.house = None
-        self.background = ""
         self.experience_percent = 0
         self.experience = 0
         self.experience_maximum = 10
