@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         requestArray.unshift(clickedButton);
                         // Send the last element to check if we should show a
                         // notification.
-                        showGlobalNotificationButton(requestArray[requestArray.length-1]);
+//                        showGlobalNotificationButton(requestArray[requestArray.length-1]);
                         jsFunction.apply(document, requestArray);
                     }
                 }
@@ -174,8 +174,8 @@ function stickyTopAndBottom() {
     var newOffset = window.pageYOffset;
     var sidebarDiv = document.getElementById("sidebar");
     var minOffset = 10;
-    // I don't know why * 3 but it works.
-    var maxOffset = sidebarDiv.scrollHeight - window.innerHeight + minOffset;
+    var extraBottomSpacing = 5;  // compensates for bottom being too close.
+    var maxOffset = sidebarDiv.scrollHeight - window.innerHeight + minOffset + extraBottomSpacing;
     var currentOffset = parseInt(window.getComputedStyle(sidebarDiv, "style").top.slice(0, -2));
     var scrollYDirection = (lastYOffset < newOffset
         ? "down"
@@ -514,42 +514,15 @@ function showGlobalNotificationButton(isNotice, isJSON) {
     return null; // If this variable was a valid isNotice return nothing.
 }
 
-function showGlobalModal(response, oldData) {
-    // Add content data to modal
-    header = document.getElementById("globalMessageModalHeaderContent");
-    header.innerHTML = response["header"];
-    body = document.getElementById("globalMessageModalBodyContent");
-    body.innerHTML = response["body"];
-    footer = document.getElementById("globalMessageModalFooterContent");
-    footer.innerHTML = response["footer"];
-
-    // Get the modal
-    var modal = document.getElementById('globalMessage');
-    // Get the button that opens the modal
-    var clickedButton = document.getElementById("globalNotificationButton");
-    // Get the <span> element that closes the modal
-    var span = document.querySelector(".closeGlobalModal");
-    // When the user clicks the button, open the modal
-    modal.style.display = "block";
-    // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
-        modal.style.display = "none";
+// Consider moving much of this to HTML?
+function redirectUserFromNotification(response, oldData) {
+    // Redirect the user to the appropriate page
+    // Close the notification
+    var clickedButton = document.getElementById("notice-" + oldData['id']);
+    clickedButton.style.display = "none";
+    if (response["redirect"] == "True") {
+        window.location.href = response["url"]
     }
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-
-    // Handle ESC key (key code 27) to close modal.
-    document.addEventListener('keyup', function(event) {
-        if (event.keyCode == 27) {
-            modal.style.display = "none";
-        }
-    });
-
-    clickedButton.style.visibility = "hidden";
 }
 
 // Choose character page, confirms user choice of hero.
@@ -797,10 +770,20 @@ function postJSON(url, oldData, callback) {
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState === 4 && xhttp.status === 200) {
             if (callback) {
+                // If the python code returns JSON formatted data:
+                // 1. run the "notification" code if that flag was passed.
+                // 2. send only the data to the callback.
                 if (xhttp.getResponseHeader("Content-Type") === "application/json") {
                     var response = JSON.parse(xhttp.responseText);
-                    showGlobalNotificationButton(response["isNotice"], true);
+//                    showGlobalNotificationButton(response["isNotice"], true);
                     callback(response, oldData);
+                // If the python code sends back an error i.e. "return "error: ...."
+                // print it to the console.
+                } else if (xhttp.responseText.substring(0, 5) === "error") {
+                        console.log("Python code returned an error:");
+                        console.log(xhttp.responseText);
+                // Otherwise handle it by passing the response to the callback.
+                // The callback function will need to parse the xhttp personally.
                 } else {
                     callback(xhttp, oldData);
                 }

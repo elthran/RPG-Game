@@ -197,16 +197,12 @@ class Ability(Base):
 
 class CastableAbility(Ability):
     castable = Column(Boolean)
-    sanctity_cost = Column(Integer)
-    endurance_cost = Column(Integer)
-    heal_amount = Column(Integer)
-    gold_amount = Column(Integer)
 
     __mapper_args__ = {
         'polymorphic_identity': 'CastableAbility',
     }
 
-    def __init__(self, *args, sanctity_cost=0, endurance_cost=0, heal_amount=0, gold_amount=0, **kwargs):
+    def __init__(self, *args, **kwargs):
         """Build a new ArchetypeAbility object.
 
         Note: self.type must be set in __init__ to polymorphic_identity.
@@ -215,58 +211,6 @@ class CastableAbility(Ability):
         """
         super().__init__(*args, **kwargs)
         self.castable = True
-        self.sanctity_cost = sanctity_cost
-        self.endurance_cost = endurance_cost
-        self.heal_amount = heal_amount
-        self.gold_amount = gold_amount
-
-    def cast(self, hero):
-        """Use the ability. Like casting a spell.
-
-        use:
-        ability.activate(hero)
-        NOTE: returns False if spell is too expensive (cost > proficiencies.sanctity.current)
-        If cast is succesful then return value is True.
-        """
-        if hero.get_summed_proficiencies('sanctity').current < self.sanctity_cost or hero.get_summed_proficiencies('endurance').current < self.endurance_cost:
-            return False
-        else:
-            hero.base_proficiencies['sanctity'].current -= self.sanctity_cost
-            hero.base_proficiencies['endurance'].current -= self.endurance_cost
-            hero.base_proficiencies['health'].current += self.heal_amount
-            hero.gold += self.gold_amount
-            return True
-
-
-class AuraAbility(Ability):
-    __mapper_args__ = {
-        'polymorphic_identity': 'AuraAbility',
-    }
-
-    health_maximum = Column(Integer)
-    sanctity_maximum = Column(Integer)
-    damage_maximum = Column(Integer)
-    damage_minimum = Column(Integer)
-    understanding_modifier = Column(Integer)
-    stealth_chance = Column(Integer)
-    firststrike_chance = Column(Integer)
-
-    def __init__(self, *args, health_maximum=0, sanctity_maximum=0, damage_maximum=0, damage_minimum=0, understanding_modifier=0, stealth_chance=0, sanctity_regeneration=0, firststrike_chance=0, **kwargs):
-        """Build a new Archetype_Ability object.
-
-        Note: self.type must be set in __init__ to polymorphic identity.
-        If no __init__ method then type gets set automagically.
-        If type not set then call to 'super' overwrites type.
-        """
-        super().__init__(*args, **kwargs)
-
-        self.health_maximum = health_maximum
-        self.sanctity_maximum = sanctity_maximum
-        self.damage_maximum = damage_maximum
-        self.damage_minimum = damage_minimum
-        self.understanding_modifier = understanding_modifier
-        self.stealth_chance = stealth_chance
-        self.firststrike_chance = firststrike_chance
 
     @property
     def tooltip(self):
@@ -279,7 +223,52 @@ class AuraAbility(Ability):
                       <h2>{{ ability.description }}</h2>
                       {% if ability.level %}<h3>Current: {{ ability.current }}</h3>{% endif %}
                       {% if not ability.is_max_level() %}<h3>Next: {{ ability.next }}</h3>{% else %}<h3>This ability is at its maximum level.</h3>{% endif %}
-                      {% if not ability.is_max_level() %}
+                      {% if not ability.is_max_level() and ((ability.tree == "Basic" and ability.hero.basic_ability_points) or (ability.tree == "Archetype" and ability.hero.archetype_ability_points))%}
+                      <button id=levelUpAbilityButton class="upgradeButton" onclick="sendToPy(event, abilityTooltip, 'update_ability', {'id': {{ ability.id }}});"></button>
+                      {% endif %}"""
+        {% endraw %}
+        return render_template_string(temp, ability=self)
+
+    def cast(self, hero):
+        """Use the ability. Like casting a spell.
+
+        use:
+        ability.activate(hero)
+        NOTE: returns False if spell is too expensive (cost > proficiencies.sanctity.current)
+        If cast is succesful then return value is True.
+        """
+        if hero.base_proficiencies['sanctity'].current < 0:
+            return False
+        else:
+            hero.base_proficiencies['sanctity'].current -= 1
+            return True
+
+class AuraAbility(Ability):
+    __mapper_args__ = {
+        'polymorphic_identity': 'AuraAbility',
+    }
+
+    def __init__(self, *args, **kwargs):
+        """Build a new Archetype_Ability object.
+
+        Note: self.type must be set in __init__ to polymorphic identity.
+        If no __init__ method then type gets set automagically.
+        If type not set then call to 'super' overwrites type.
+        """
+        super().__init__(*args, **kwargs)
+
+    @property
+    def tooltip(self):
+        """Create a tooltip for each variable.
+
+        Modifies the final and next_value with the Class's format spec.
+        """
+        {% raw %}
+        temp = """<h1>{{ ability.name }} (Level {{ ability.level }})</h1>
+                      <h2>{{ ability.description }}</h2>
+                      {% if ability.level %}<h3>Current: {{ ability.current }}</h3>{% endif %}
+                      {% if not ability.is_max_level() %}<h3>Next: {{ ability.next }}</h3>{% else %}<h3>This ability is at its maximum level.</h3>{% endif %}
+                      {% if not ability.is_max_level() and ((ability.tree == "Basic" and ability.hero.basic_ability_points) or (ability.tree == "Archetype" and ability.hero.archetype_ability_points))%}
                       <button id=levelUpAbilityButton class="upgradeButton" onclick="sendToPy(event, abilityTooltip, 'update_ability', {'id': {{ ability.id }}});"></button>
                       {% endif %}"""
         {% endraw %}

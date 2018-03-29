@@ -549,6 +549,7 @@ def reset_character(stat_type, hero=None):
 @uses_hero
 def admin(path="modify_self", hero=None):
     hero.base_proficiencies['endurance'].current = 0
+    print("Visiting the admin page has set your Endurance to 0. This is for testing purposes.")
     admin_form_content = None
     if path == "edit_database":
         pass
@@ -558,9 +559,9 @@ def admin(path="modify_self", hero=None):
             hero.age = int(request.form["Age"])
             hero.experience = int(request.form["Experience"])
             hero.experience_maximum = int(request.form["Experience_maximum"])
-            hero.renown = int(request.form["Renown"])
-            hero.virtue = int(request.form["Virtue"])
-            hero.devotion = int(request.form["Devotion"])
+            hero.base_proficiencies['renown'].current = int(request.form["Renown"])
+            hero.base_proficiencies['virtue'].current = int(request.form["Virtue"])
+            hero.base_proficiencies['devotion'].current = int(request.form["Devotion"])
             hero.gold = int(request.form["Gold"])
             hero.basic_ability_points = int(request.form["Basic_ability_points"])
             hero.archetype_ability_points = int(request.form["Archetype_ability_points"])
@@ -575,9 +576,9 @@ def admin(path="modify_self", hero=None):
             ("Age", hero.age),
             ("Experience", hero.experience),
             ("Experience_maximum", hero.experience_maximum),
-            ("Renown", hero.renown),
-            ("Virtue", hero.virtue),
-            ("Devotion", hero.devotion),
+            ("Renown", hero.base_proficiencies['renown'].current),
+            ("Virtue", hero.base_proficiencies['virtue'].current),
+            ("Devotion", hero.base_proficiencies['devotion'].current),
             ("Gold", hero.gold),
             ("Basic_ability_points", hero.basic_ability_points),
             ("Archetype_ability_points", hero.archetype_ability_points),
@@ -701,6 +702,7 @@ def inbox(outbox, hero=None):
 @app.route('/spellbook')
 @uses_hero
 def spellbook(hero=None):
+    print(hero.journal.notifications)
     return render_template('spellbook.html', page_title="Spellbook", hero=hero)
 
 

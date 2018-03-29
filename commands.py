@@ -22,7 +22,8 @@ def set_notification_active(f):
     def wrap_set_notice_active(hero, *args, **kwargs):
         response = f(hero, *args, **kwargs)
         # print("Using the set notification active code!")
-        notice = str(bool(hero.journal.notification)).lower()
+        # notice = str(bool(hero.journal.notification)).lower()
+        notice = str(False).lower()  # debuging
         try:
             new_data = b'\n  "isNotice": ' + notice.encode() + b', '
             response.data = b"{" + new_data + response.data[1:]
@@ -309,12 +310,22 @@ class Command:
     def update_ability(hero, database, data, **kwargs):
         ability_id = data['id']
         ability = database.get_ability_by_id(ability_id)
-        if hero.basic_ability_points <= 0 or ability.is_max_level():
-            return "error: no ability_points or ability is at max level."
-        hero.basic_ability_points -= 1
+        points_remaining = 0
+        if ability.tree == "Basic":
+            if hero.basic_ability_points <= 0 or ability.is_max_level():
+                return "error: no basic_ability_points or ability is at max level."
+            hero.basic_ability_points -= 1
+            points_remaining = hero.basic_ability_points
+        elif ability.tree == "Archetype":
+            if hero.archetype_ability_points <= 0 or ability.is_max_level():
+                return "error: no archetype_ability_points or ability is at max level."
+            hero.archetype_ability_points -= 1
+            points_remaining = hero.archetype_ability_points
+        else:
+            return "error: code not built for ability.tree == {}".format(ability.type)
         ability.level += 1 # Should be a level_up() function instead?
         return jsonify(tooltip=ability.tooltip,
-                       pointsRemaining=hero.basic_ability_points,
+                       pointsRemaining=points_remaining,
                        level=ability.level)
 
     @staticmethod
@@ -369,48 +380,15 @@ class Command:
         It would wrap any function and tack the "activate notification button"
         function and data on the end of any Json capable response?
         """
-
-        header_template = """
-            {% if quest_notification.total_reward %}
-                <h1>{{ quest_notification.name }}</h1>
-            {% else %}
-                <h1>{{ quest_notification.name }}</h1>
-                <h2>Stage: {{ quest_notification.stage }} / {{ quest_notification.stages }}</h2>
-            {% endif %}
-        """
-        body_template = """
-            {% if quest_notification.total_reward %}
-                <h2>Completed!</h2>
-            {% else %}
-                <h2>Current Step:</h2>
-                <h3>{{ quest_notification.current_quest.name }}</h3>
-            {% endif %}
-        """
-        footer_template = """
-            {% if quest_notification.total_reward %}
-                <h3>Total reward: {{ quest_notification.total_reward }}xp</h3>
-            {% else %}
-                <h3>Reward: {{ quest_notification.current_quest.reward }}xp</h3>
-            {% endif %}
-        """
-
-        # notice = hero.journal.quest_notification
-        notice = hero.journal.notification.get_description()
-
-        header = render_template_string(header_template,
-                                        quest_notification=notice)
-        body = render_template_string(body_template,
-                                      quest_notification=notice)
-        footer = render_template_string(footer_template,
-                                        quest_notification=notice)
-
-        data = jsonify(header=header, body=body, footer=footer)
+        notice = database.get_object_by_id("Entry", data['id'])
+        data = jsonify(header=notice.header, body=notice.body, footer=notice.footer, url=notice.url, redirect=data['redirect'])
 
         # print("Sending Notice content to JS.")
         # pprint(data)
 
         # Clear quest notification
-        hero.journal.notification = None
+        # Should delete this notice when it has been viewed.
+        notice.journal = None
         return data
 
     # @staticmethod

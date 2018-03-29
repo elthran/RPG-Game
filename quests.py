@@ -144,8 +144,8 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
         self.handler.activate(self.current_quest.trigger, journal.hero)
         return journal
 
-    notification_id = Column(Integer, ForeignKey("journal.id",
-                                                 ondelete="CASCADE"))
+    # notification_id = Column(Integer, ForeignKey("journal.id",
+    #                                              ondelete="CASCADE"))
 
     # Each Path can be connected to any quest.
     # Each Quest can be connected to multiple paths.
@@ -251,7 +251,8 @@ class QuestPath(TemplateMixin, HandlerMixin, Base):
             hero.gain_experience(quest.reward_experience + self.reward_experience)
         else:
             hero.gain_experience(quest.reward_experience)
-        self.journal.notification = self
+        self.journal.notifications.append(self)
+        # replace with journal.add_notifications()?
 
     def run(self):
         """Special handler method over ride.

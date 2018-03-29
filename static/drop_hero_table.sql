@@ -1,5 +1,6 @@
 USE `test`;
 
+DROP table IF EXISTS `entry`;
 DROP TABLE IF EXISTS `quest_path_to_quest_association`;
 DROP TABLE IF EXISTS `quest`;
 DROP TABLE IF EXISTS `quest_path`;

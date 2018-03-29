@@ -302,7 +302,7 @@ all_store_items = [
                         ('Speed', {'base': 0.5})]),
     Ring("Silver Ring", buy_price=35, description="A silver ring with no markings. Nothing seems special about it.", template=True, style="silver",
                     proficiency_data=[
-                        ('Luckiness', {'base': 1})])
+                        ('Luck', {'base': 1})])
     ]
 
 all_marketplace_items = [

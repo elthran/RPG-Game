@@ -195,7 +195,7 @@ class TestEngine(GenericTestCase):
     def test_wrong_event(self):
         hero = Hero(name="Elthran")
         hero.journal.quest_paths.append(self.inventory_path)
-        hero.journal.notification = None
+        hero.journal.notifications = []
         self.db.session.add(hero)
         self.db.session.commit()
 
