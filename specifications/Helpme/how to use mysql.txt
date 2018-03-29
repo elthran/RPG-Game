@@ -8,7 +8,7 @@ mysql> USE `elthran$rpg_database`;
 # Problem with $ sign in name requires quotes!
 
 # To export to file (data only)
-$ mysqldump -h elthran.mysql.pythonanywhere-services.com -u elthran -p7ArQMuTUSoxXqEfzYfUR 'elthran$rgp_database' -t > mydb_data.sql
+$ mysqldump -h elthran.mysql.pythonanywhere-services.com -u elthran -p7ArQMuTUSoxXqEfzYfUR 'elthran$rpg_database' -t > mydb_data.sql
 
 # To export to file (structure only)
 # May require modification .. e.g.
@@ -26,7 +26,7 @@ $ mysql -u USER -pPASSWORD -e "SQL_QUERY"
 
 
 # NOTE: powershell prevents you from using '<'
-# try using -e "souce path/to/file.sql" instead or switching to cmd.
+# try using -e "source path/to/file.sql" instead or switching to cmd.
 PS> cmd
 > mysql args < file.sql
 OR
