@@ -45,7 +45,7 @@ Ideas:
 import warnings
 import pdb
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Table
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy import orm
@@ -79,6 +79,8 @@ class Display(Base):
     a list of or statements ... only one should be set at a time.
     """
     # One location -> one display (bidirectional)
+    location_id = Column(Integer, ForeignKey('location.id',
+                                             ondelete="CASCADE"))
     _location = relationship('Location', uselist=False,
                              back_populates='display')
 
@@ -157,18 +159,27 @@ class Display(Base):
         self.page_image = self.obj.type.lower() + '.jpg'
 
 
-class AdjacentLocation(Base):
-    """Allow for locations to connect to other locations.
+"""
+Allow for locations to connect to other locations.
 
-    This is done through a in/out path architecture and
-    is horrifically complex. See:
-    http://docs.sqlalchemy.org/en/latest/orm/join_conditions.html#self-referential-many-to-many-relationship
-    """
-    __tablename__ = 'adjacent_location'
-    out_adjacent_id = Column(Integer, ForeignKey('location.id'),
-                             primary_key=True)
-    in_adjacent_id = Column(Integer, ForeignKey('location.id'),
-                            primary_key=True)
+This is done through a in/out path architecture and
+is horrifically complex. See:
+http://docs.sqlalchemy.org/en/latest/orm/join_conditions.html#self-referential-many-to-many-relationship
+NOTE: The docs might be wrong? I'll have to test and see if this works ...
+but I tried making both columns primary keys and it didn't work.
+But reading the normal association_table info no primary keys are used at all.
+"""
+adjacent_location_association = Table(
+    "adjacent_location_association",
+    Base.metadata,
+    # Column("id", Integer, primary_key=True),
+    Column("out_adjacent_id", Integer,
+           ForeignKey("location.id",
+                      ondelete="SET NULL")),
+    Column("in_adjacent_id", Integer,
+           ForeignKey("location.id",
+                      ondelete="SET NULL"))
+)
 
 
 class Location(Base):
@@ -206,32 +217,38 @@ class Location(Base):
     # Think a hex grid
 
     id = Column(Integer, primary_key=True)
-    parent_id = Column(Integer, ForeignKey('location.id'))   # What does this do?
+    # What does this do? ... I have no idea (marlen)
+    # Parent foreign key has the ondelete="CASCADE"
+    parent_id = Column(Integer, ForeignKey('location.id', ondelete="CASCADE"))
     name = Column(String(50), nullable=False, unique=True)
     url = Column(String(50))   # What does this do?
     type = Column(String(50))   # What does this do?
 
     terrain = Column(String(50)) # Tells the game what monsters to generate
 
+    # Children relationship has the cascade="all, delete-orphan"
     children = relationship("Location", back_populates="parent",
-                            foreign_keys=[parent_id])
-    parent = relationship("Location", remote_side=[id],
+                            foreign_keys="[Location.parent_id]",
+                            cascade="all, delete-orphan")
+    parent = relationship("Location", remote_side="[Location.id]",
                           back_populates="children",
-                          foreign_keys=[parent_id])
+                          foreign_keys="[Location.parent_id]")
     locations = orm.synonym('children')   # What does this do?
     encompassing_location = orm.synonym('parent')   # What does this do?
 
+    # I have no clue about how to deal with deletes for many to many...
     _out_adjacent = relationship(
         "Location",
-        secondary="adjacent_location",
-        primaryjoin="Location.id==adjacent_location.c.out_adjacent_id",
-        secondaryjoin="Location.id==adjacent_location.c.in_adjacent_id",
+        secondary="adjacent_location_association",
+        primaryjoin="Location.id==adjacent_location_association.c.out_adjacent_id",
+        secondaryjoin="Location.id==adjacent_location_association.c.in_adjacent_id",
         backref="_in_adjacent",
-        foreign_keys='[AdjacentLocation.out_adjacent_id, '
-                     'AdjacentLocation.in_adjacent_id]')
+        foreign_keys='[adjacent_location_association.c.out_adjacent_id, '
+                     'adjacent_location_association.c.in_adjacent_id]')
 
     # External relationships
     # Many heroes -> one map/world. (bidirectional)
+    # Don't cascade the delete for Heroes!
     heroes = relationship("Hero", back_populates='current_world',
                           foreign_keys='[Hero.map_id]')
     # Each current_location -> can be held by Many Heroes (bidirectional)
@@ -249,8 +266,8 @@ class Location(Base):
     )
 
     # One location -> one display (bi)
-    display_id = Column(Integer, ForeignKey('display.id'))
-    display = relationship("Display", back_populates='_location')
+    display = relationship("Display", back_populates='_location',
+                           uselist=False, cascade="all, delete-orphan")
 
     # @orm.validates('adjacent')
     # def build_adjacency(self, key, sibling):
@@ -427,185 +444,4 @@ class Location(Base):
         if self.parent:
             places['parent'] = self.parent
         return places
-
-
-# # Marked for refactor
-# # Consider using a grid and implementing (x,y) coordinates for each location.
-# class Location(Base):
-#     """A place a hero can travel to that is storable in the database.
-#
-#     Note: adjacent_locations is a list of integers. Note a list of locations,
-#     I could figure out how to do that.
-#     Maybe when I implement x,y coordinates for each location it could
-#     calculate the adjacent ones
-#     automatically.
-#     Note: 'location_type' is now 'type'. But you can still use location_type
-#     because orm.synonym! ... bam!
-#
-#     Use:
-#     loc1 = Location(id=1, name="test")
-#     loc1.adjacent_locations = [2, 3, 4]
-#     """
-#     __tablename__ = "location"
-#
-#     id = Column(Integer, primary_key=True)
-#     name = Column(String(50), nullable=False)
-#     type = Column(String(50))
-#     location_type = orm.synonym('type')
-#     url = Column(String(50))
-#
-#     map_id = Column(Integer, ForeignKey('map.id'))
-#     map = relationship("Map", foreign_keys=[map_id], back_populates="locations")
-#     location_world = orm.synonym('map')
-#
-#     display = relationship("Display", uselist=False)
-#
-#     def __init__(self, name, id=None):
-#         self.id = id
-#         self.name = name
-#         self.adjacent_locations = []
-#         self.url = "/{}/{}".format(self.type, self.name)
-#
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity':'Location',
-#         'polymorphic_on':type
-#     }
-#
-#
-#     @hybrid_property
-#     def adjacent_locations(self):
-#         """Return a list of ids of adjacent locations.
-#         """
-#         return [element.value for element in self._adjacent_locations]
-#
-#
-#     @adjacent_locations.setter
-#     def adjacent_locations(self, values):
-#         """Create list of BaseListElement objects.
-#         """
-#         self._adjacent_locations = [BaseListElement(value) for value in values]
-#
-#
-# class Town(Location):
-#     """Town object database ready class.
-#
-#     Basically adds a display and identity of "Town" to the location object.
-#     """
-#     __tablename__ = "town"
-#
-#     id = Column(Integer, ForeignKey('location.id'), primary_key=True)
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity':'Town',
-#     }
-#
-#
-# class Cave(Location):
-#     """Cave object database ready class.
-#
-#     Basically adds a display and identity of "Cave" to the location object.
-#     """
-#     __tablename__ = "cave"
-#
-#     id = Column(Integer, ForeignKey('location.id'), primary_key=True)
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity':'Cave',
-#     }
-#
-#
-# class Map(Base):
-#     """Basically a location clone but without the mess of joins and relationship problems :P.
-#
-#     Solves: Incest ...
-#     """
-#     __tablename__ = "map"
-#
-#     id = Column(Integer, primary_key=True)
-#     name = Column(String(50), nullable=False)
-#     type = Column(String(50))
-#     location_type = orm.synonym('type')
-#
-#     locations = relationship("Location", foreign_keys='[Location.map_id]', back_populates="map")
-#     all_map_locations = orm.synonym('locations')
-#
-#     display = relationship("Display", uselist=False)
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity':'Map',
-#         'polymorphic_on':type
-#     }
-#
-#     @hybrid_property
-#     def adjacent_locations(self):
-#         """Return a list of ids of adjacent locations.
-#         """
-#         return [element.value for element in self._adjacent_locations]
-#
-#
-#     @adjacent_locations.setter
-#     def adjacent_locations(self, values):
-#         """Create list of BaseListElement objects.
-#         """
-#         self._adjacent_locations = [BaseListElement(value) for value in values]
-#
-#
-#     # def __str__(self):
-#         # locations = str([location.name for location in self.locations])
-#         # try:
-#             # return """<{}(id={}, name='{}', type='{}', adjacent_locations={}, locations={}, display={}>""".format(self.type, self.id, self.name, self.type, self.adjacent_locations, locations, self.display)
-#         # except AttributeError:
-#             # return """<{}(id={}, name='{}', type='{}', adjacent_locations={}, locations={}, display={}>""".format(self.type, self.id, self.name, self.type, self.adjacent_locations, locations, self.display)
-#
-#
-# class WorldMap(Map):
-#     __tablename__ = "world_map"
-#
-#     id = Column(Integer, ForeignKey('map.id'), primary_key=True)
-#
-#     __mapper_args__ = {
-#         'polymorphic_identity':'WorldMap',
-#     }
-#
-#     #Marked for rebuild
-#     #Creates attribute map_cities. Prehaps should be a relations?
-#     #And map_cities should probably be map_city? Or some other name that actually explains
-#     #what it does??
-#     #This function modifes the object and returns a value. It should only do one or the other.
-#     def show_directions(self, current_location):
-#         """Return a list of directions you can go from your current_location.
-#
-#         ALSO! modifies the attribute map_cities and places_of_interest.
-#         map_cities is only a single value of either a cave or a town.
-#         """
-#         assert current_location in self.locations
-#
-#         directions = current_location.adjacent_locations
-#         if directions == []:
-#             directions = [1,2,3]
-#
-#         self.map_cities = []
-#         if current_location.type in ["Town", "Cave"]:
-#             self.map_cities = [current_location]
-#
-#         if self.map_cities:
-#             city = self.map_cities[0]
-#             self.display.places_of_interest = [("/{}/{}".format(city.type, city.name), city.name)]
-#
-#         return directions
-#
-#
-#     # temporarily location_id is the same as the index in the list of all_map_locations
-#     def find_location(self, location_id):
-#         return self.all_map_locations[location_id]
-#
-#
-# #Just another synonym for backwards compatability (which id don't know if it even works?)
-# World_Map = WorldMap
-
- 
-if __name__ == "__main__":
-    pass
-
 
