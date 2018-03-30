@@ -18,7 +18,8 @@ if __name__ == "__main__":
         print("Database deleted!")
     elif args.m:
         os.system('mysql -u elthran -p7ArQMuTUSoxXqEfzYfUR -e "DROP DATABASE IF EXISTS rpg_database;"')
-        os.system("python3 -c 'import database;database.EZDB(\"mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database\", debug=False, testing=True);print(\"Blank database initialized!\")'")
+        os.system('mysql -u elthran -p7ArQMuTUSoxXqEfzYfUR -e "CREATE DATABASE rpg_database;"')
+        # os.system("python3 -c 'import database;database.EZDB(\"mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database\", debug=False, testing=True);print(\"Blank database initialized!\")'")
         exit(0)
 
     try:

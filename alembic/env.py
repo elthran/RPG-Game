@@ -25,9 +25,9 @@ old_path = os.path.dirname(os.path.abspath(__file__)).split('\\')
 new_path = '\\'.join(old_path[:-1])
 # -1 refers to how many levels of directory to go up
 sys.path.insert(0, new_path)
-from base_classes import Base
+from database import base_classes
 sys.path.pop(0)
-target_metadata = Base.metadata
+target_metadata = base_classes.Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
