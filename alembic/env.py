@@ -25,9 +25,27 @@ old_path = os.path.dirname(os.path.abspath(__file__)).split('\\')
 new_path = '\\'.join(old_path[:-1])
 # -1 refers to how many levels of directory to go up
 sys.path.insert(0, new_path)
-from database import base_classes
+from attributes import *
+from bestiary import *
+from bestiary2 import *
+from combat_simulator import *
+from events import *
+from factories import *
+from forum import *
+from game import *
+from hero import *
+from inbox import *
+from inventory import *
+from items import *
+from journal import *
+from locations import *
+from proficiencies import *
+from proficiencies_monsters import *
+from quests import *
+from specializations import *
+from base_classes import *
 sys.path.pop(0)
-target_metadata = base_classes.Base.metadata
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
