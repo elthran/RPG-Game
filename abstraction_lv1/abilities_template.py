@@ -107,7 +107,7 @@ class Ability(Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, max_level, description, current=0, next=0, hidden=True, learnable=False, tree="basic", tree_type="", cost=1, proficiency_data=()):
+    def __init__(self, name, max_level, description, current=0, next=0, hidden=True, learnable=False, tree="basic", tree_type="", cost=0, proficiency_data=()):
         """Build a basic ability object.
 
         Note: arguments (name, hero, max_level, etc.) that require input are
@@ -284,7 +284,7 @@ class {{ value[0] }}({{ value[1] }}):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__(name='{{ value[0] }}', tree='{{ value[2] }}', tree_type='{{ value[3] }}', max_level={{ value[4] }}, description='{{ value[5] }}', current='{{ value[6] }}', next='{{ value[7] }}', learnable={{ value[8] }}, proficiency_data=[('{{ value[9] }}', {'base': {{ value[10] }}})])
+        super().__init__(name='{{ value[0] }}', tree='{{ value[2] }}', tree_type='{{ value[3] }}', max_level={{ value[4] }}, description='{{ value[5] }}', current='{{ value[6] }}', next='{{ value[7] }}', learnable={{ value[8] }}, cost={{ value[9] }}, proficiency_data=[('{{ value[10] }}', {'base': {{ value[11] }}})])
 
         for key, value in kwargs:
             setattr(self, key, value)
