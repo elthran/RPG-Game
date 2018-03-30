@@ -12,7 +12,7 @@
     {% else %}Free
     {% endif %}</h2>
 [{{ ability.description }}]<br>
-<button onclick="sendToPy(event, refreshPage, 'cast_spell', {'id': {{ ability.id }}});">Cast {{ ability.name.title() }}</button>
+<button onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ ability.id }}});">Cast {{ ability.name.title() }}</button>
 {% else %}
 You have no spells
 {% endfor %}

@@ -246,11 +246,15 @@ class CastableAbility(Ability):
         NOTE: returns False if spell is too expensive (cost > proficiencies.sanctity.current)
         If cast is succesful then return value is True.
         """
-        if hero.base_proficiencies['sanctity'].current < 0:
-            return False
-        else:
-            hero.base_proficiencies['sanctity'].current -= 1
-            return True
+        if hero.base_proficiencies['sanctity'].current < self.sanctity_cost:
+            print("Trying to cast a spell but you have not enough sanctity.")
+            return "error: not enough sanctity"
+        if hero.base_proficiencies['endurance'].current < self.endurance_cost:
+            print("Trying to cast a spell but you have not enough endurance.")
+            return "error: not enough endurance"
+        hero.base_proficiencies['sanctity'].current -= self.sanctity_cost
+        hero.base_proficiencies['endurance'].current -= self.endurance_cost
+        return "success"
 
 class AuraAbility(Ability):
     __mapper_args__ = {

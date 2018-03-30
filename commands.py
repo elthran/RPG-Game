@@ -248,9 +248,7 @@ class Command:
     def cast_spell(hero, database, data, **kwargs):
         spell_id = data['id']
         spell = database.get_ability_by_id(spell_id)
-        print(spell)
-        spell.cast(hero)
-        return "success"
+        return spell.cast(hero)
 
     @staticmethod
     def change_attribute_tooltip(hero, database, arg_dict, **kwargs):

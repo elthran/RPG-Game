@@ -140,6 +140,10 @@ function toggleLoginRegister(button) {
     }
 }
 
+function doNothing() { // This should be removed soon. I'm just not sure how to get SendToPy to not run any JS function.
+    return;
+}
+
 function checkPasswordMatch() {
     var continueButton = document.getElementById("continueButton");
     var errorDiv = document.getElementById("error");
