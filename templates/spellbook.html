@@ -7,8 +7,8 @@
 {% for ability in hero.abilities if ability.castable and ability.level > 0 %}
 <h1>{{ ability.name.title() }}</h1>
 <h2>Cost:
-    {% if ability.sanctity_cost %}(Sanctity Cost: {{ ability.sanctity_cost }})
-    {% elif ability.endurance_cost %}(Endurance Cost: {{ ability.endurance_cost }})
+    {% if ability.sanctity_cost %}{{ ability.sanctity_cost }} Sanctity
+    {% elif ability.endurance_cost %}{{ ability.endurance_cost }} Endurance
     {% else %}Free
     {% endif %}</h2>
 [{{ ability.description }}]<br>
