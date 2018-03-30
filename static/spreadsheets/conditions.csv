@@ -1,0 +1,3 @@
+HeroAttribute,Comparison,QueryObject,QueryFilterBy
+current_location,==,Location,name=’Blacksmith’
+current_location.parent,==,Location,name=’Blacksmith’
