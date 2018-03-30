@@ -1,11 +1,22 @@
+if __name__ == "__main__":
+    import os
+    os.system("python3 -m pytest -vv rpg_game_tests/test_{}".format(__file__))
+    exit()  # prevents code from trying to run file afterwards.
+
 """
 This file will become very important. I would like to switch to handling
 events here. And everything else that the User doesn't need to know about.
 """
 import pdb
+import time
+from multiprocessing import Process
+
+import werkzeug.serving
 
 from events import Event
 from pprint import pprint
+from database import UPDATE_INTERVAL
+from session_helpers import scoped_session
 
 
 class Engine:
@@ -45,19 +56,41 @@ class Engine:
         event = Event(event_name, hero_id=hero.id, description=description)
         self.db.add_object(event)
 
-        triggers = self.db.get_all_triggers_by(event_name, hero.id)
-        for trigger in triggers:
-            trigger.evaluate()
-            if trigger.completed:
-                print("Trigger completed!")
-                trigger.pprint()
-
-        handlers = self.db.get_all_handlers_with_completed_triggers(hero)
         # return the "Blacksmith" quest object ...
         # Since its completion trigger is completed ...
         # It is now completed. Run the method that you run when trigger
         # completes.
-        for handler in handlers:
-            print("A handler with a completed trigger!")
-            handler.pprint()
-            handler.run()  # This should be overridden by the subclass.
+        for handler in hero.handlers:
+            # print("A handler with a completed trigger!")
+            # handler.pprint()
+            if handler.evaluate(event):
+                handler.run()
+
+
+def game_clock(database):
+    """Run the update all heroes code every x seconds."""
+    if not werkzeug.serving.is_running_from_reloader():
+        while True:
+            time.sleep(UPDATE_INTERVAL)
+            database.update_time_all_heroes()
+
+
+# Maybe make this a decorator?
+def async_process(func, args=(), kwargs={}):
+    """Start a new asynchronous process.
+
+    These processes might respawn if the server restarts.
+    """
+
+    Process(target=func, args=args, kwargs=kwargs).start()
+
+
+@scoped_session
+def rest_key_timelock(database, username, timeout=5):
+    """Erase the user reset key after x minutes."""
+
+    # pdb.set_trace()
+    timeout *= 60  # Convert minute time to seconds required by time.sleep.
+    time.sleep(timeout)
+    user = database.get_user_by_username(username)
+    user.reset_key = None

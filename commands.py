@@ -21,8 +21,9 @@ def set_notification_active(f):
     @wraps(f)
     def wrap_set_notice_active(hero, *args, **kwargs):
         response = f(hero, *args, **kwargs)
-        print("Using the set notification active code!")
-        notice = str(bool(hero.journal.notification)).lower()
+        # print("Using the set notification active code!")
+        # notice = str(bool(hero.journal.notification)).lower()
+        notice = str(False).lower()  # debuging
         try:
             new_data = b'\n  "isNotice": ' + notice.encode() + b', '
             response.data = b"{" + new_data + response.data[1:]
@@ -271,105 +272,88 @@ class Command:
         return "success".format()
 
     @staticmethod
-    def change_proficiency_tooltip(hero, database, arg_dict, **kwargs):
-        tooltip_id = arg_dict.get('data', None, type=int)
-        proficiency = database.get_proficiency_by_id(tooltip_id)
-        tooltip = proficiency.tooltip.replace(";", "</li><li>")
-        tooltip = "<h2>" + proficiency.name + "</h2>" + proficiency.description + "<ul><li>" + tooltip + "</li></ul>"
-        return "{}".format(tooltip)
-
-    @staticmethod
-    def update_proficiency(hero, database, arg_dict, **kwargs):
+    def update_proficiency(hero, database, data, **kwargs):
         """Raise proficiency level, decrement proficiency_points.
 
         Return status of: success, hide_all, hide_this.
         "success" means hide none ... maybe I should call it that instead?
         """
-        id = arg_dict.get('data', None, type=int)
-        proficiency = database.get_proficiency_by_id(id)
-        #tooltip = change_proficiency_tooltip(hero, database, arg_dict, **kwargs)
-        #print(tooltip)
+        proficiency_id = data['id']
+        proficiency = database.get_proficiency_by_id(proficiency_id)
+
         # Defensive coding: command buttons should be hidden by JavaScript
         # when no longer valid due to the return values of this function.
-        # If for some reason they are still clickable return error to JS console.
-        if hero.proficiency_points <= 0 or proficiency.is_max_level():
+        # If for some reason they are still clickable return error to
+        # JS console.
+        if hero.proficiency_points <= 0 or proficiency.is_max_level:
             return "error: no proficiency_points or proficiency is at max level."
+
         hero.proficiency_points -= 1
         proficiency.level_up()
-        proficiency.update(hero)
-        tooltip = proficiency.tooltip.replace(";", "</li><li>")
-        tooltip = "<h2>" + proficiency.name + "</h2>" + proficiency.description + "<ul><li>" + tooltip + "</li></ul>"
-        if hero.proficiency_points == 0:
-            return "hide_all&&{}".format(tooltip)
-        elif proficiency.is_max_level():
-            return "hide_this&&{}".format(tooltip)
-        return "success&&{}".format(tooltip)
+        return jsonify(tooltip=proficiency.tooltip,
+                       pointsRemaining=hero.proficiency_points,
+                       level=proficiency.level)
 
     @staticmethod
-    def change_ability_tooltip(hero, database, arg_dict, **kwargs):
-        # I want to pass in the actual attribute here instead of the description. That way I can assign the attribute name and description to the tooltip.
-        # Unfortunately, I don't know how to pull the attribute object from the database. I need a get_attribute_by_name() function in database.py
-        ability_id = arg_dict.get('data', None, type=int)
+    def change_proficiency_tooltip(hero, database, data, **kwargs):
+        tooltip_id = data['id']
+        proficiency = database.get_proficiency_by_id(tooltip_id)
+        return jsonify(tooltip=proficiency.tooltip)
+
+    @staticmethod
+    def change_ability_tooltip(hero, database, data, **kwargs):
+        tooltip_id = data['id']
+        ability = database.get_ability_by_id(tooltip_id)
+        return jsonify(tooltip=ability.tooltip)
+
+    @staticmethod
+    def update_ability(hero, database, data, **kwargs):
+        ability_id = data['id']
         ability = database.get_ability_by_id(ability_id)
-        tooltip = ability.get_description()
-        return "{}&&{}".format(tooltip, ability.image)
+        points_remaining = 0
+        if ability.tree == "Basic":
+            if hero.basic_ability_points <= 0 or ability.is_max_level():
+                return "error: no basic_ability_points or ability is at max level."
+            hero.basic_ability_points -= 1
+            points_remaining = hero.basic_ability_points
+        elif ability.tree == "Archetype":
+            if hero.archetype_ability_points <= 0 or ability.is_max_level():
+                return "error: no archetype_ability_points or ability is at max level."
+            hero.archetype_ability_points -= 1
+            points_remaining = hero.archetype_ability_points
+        else:
+            return "error: code not built for ability.tree == {}".format(ability.type)
+        ability.level += 1 # Should be a level_up() function instead?
+        return jsonify(tooltip=ability.tooltip,
+                       pointsRemaining=points_remaining,
+                       level=ability.level)
 
     @staticmethod
-    def update_ability(hero, database, arg_dict, **kwargs):
-        ability_id = arg_dict.get('data', None, type=int)
-        if hero.basic_ability_points <= 0:
-            return "error: no attribute points"
-        for ability in hero.abilities:
-            if ability.id == ability_id: # This code terminates as soon as it finds the ability which matches the id
-                ability.level += 1
-                tooltip = ability.get_description()
-                hero.basic_ability_points -= 1
-                if hero.basic_ability_points == 0:
-                    return "hide_all&&{}".format(tooltip)
-                if ability.level >= ability.max_level:
-                    return "hide_this&&{}".format(tooltip)
-                return "success&&{}".format(tooltip)
+    def update_specialization(hero, database, data, **kwargs):
+        spec_id = data['id']
+        specialization = database.get_object_by_id("Specialization", spec_id)
+        # spec.level += 1 or something?
 
-    @staticmethod
-    def change_ability_choice_tooltip(hero, database, arg_dict, **kwargs):
-        choice = arg_dict.get('data', None, type=str)
-        choice = choice.split("-")
-        image = choice[0]
-        description = choice[1]
-        return "{}&&{}".format(description, image)
-
-    @staticmethod
-    def update_specialization(hero, database, arg_dict, **kwargs):
-        print(arg_dict)
-        choice = arg_dict.get('data', None, type=str)
-        print(choice)
-        spec = choice.split("_")
-        spec_type, spec_name = spec[0], spec[1].title()
-        specialization = database.get_object_by_name("Specialization", spec_name)
-        setattr(hero.specializations, spec_type, specialization)
-        return "success".format()
+        # You can ignore templating here as hero takes care of it.
+        hero.specializations = specialization
+        pprint(hero.specializations)
+        spec = data['spec']
+        print("The hero's " + spec + " should be " + specialization.name)
+        # PLEASE MAKE THE ABOVE PRINT STATEMENT TRUE!!!!!!!!!!!!!!!!!!!!!!!
+        #specialization = database.get_object_by_name("Specialization", choice)
+        #setattr(hero.specializations, choice, specialization)
+        return jsonify(tooltip="Temp", pointsRemaining=0, level=0)
 
     # This should be combined with function below when I know how to pass a path.id
     @staticmethod
-    def change_path_tooltip(hero, database, arg_dict, **kwargs):
-        choice = arg_dict.get('data', None, type=str)
-        return "{}&&{}".format(choice, "50gold")
+    def change_path_tooltip(hero, database, data, **kwargs):
+        path = database.get_object_by_id("QuestPath", data['id'])
+        return jsonify(description=path.description, reward=path.total_reward)
 
     @staticmethod
-    def change_quest_tooltip(hero, database, arg_dict, **kwargs):
-        quest_id = arg_dict.get('data', None, type=int)
-        quest = database.get_object_by_id("Quest", quest_id)
-        return "{}&&{}".format(quest.description, quest.reward_experience)
-
-    @staticmethod
-    def choose_background(hero, database, arg_dict, **kwargs):
-        background = arg_dict.get('data', None, type=str)
-        hero.background = background
-        if hero.background == "Barbarian":
-            hero.attributes.brawn.level += 1
-        elif hero.background == "Missionary":
-            hero.attributes.intellect.level += 1
-        return "success".format()
+    def change_quest_tooltip(hero, database, data, **kwargs):
+        quest = database.get_object_by_id("Quest", data['id'])
+        return jsonify(description=quest.description, reward=quest.reward_experience)
 
     @staticmethod
     def get_message_content_and_sender_by_id(hero, database, arg_dict, **kwargs):
@@ -387,48 +371,15 @@ class Command:
         It would wrap any function and tack the "activate notification button"
         function and data on the end of any Json capable response?
         """
+        notice = database.get_object_by_id("Entry", data['id'])
+        data = jsonify(header=notice.header, body=notice.body, footer=notice.footer, url=notice.url, redirect=data['redirect'])
 
-        header_template = """
-            {% if quest_notification.total_reward %}
-                <h1>{{ quest_notification.name }}</h1>
-            {% else %}
-                <h1>{{ quest_notification.name }}</h1>
-                <h2>Stage: {{ quest_notification.stage }} / {{ quest_notification.stages }}</h2>
-            {% endif %}
-        """
-        body_template = """
-            {% if quest_notification.total_reward %}
-                <h2>Completed!</h2>
-            {% else %}
-                <h2>Current Step:</h2>
-                <h3>{{ quest_notification.current_quest.name }}</h3>
-            {% endif %}
-        """
-        footer_template = """
-            {% if quest_notification.total_reward %}
-                <h3>Total reward: {{ quest_notification.total_reward }}xp</h3>
-            {% else %}
-                <h3>Reward: {{ quest_notification.current_quest.reward }}xp</h3>
-            {% endif %}
-        """
-
-        # notice = hero.journal.quest_notification
-        notice = hero.journal.notification.get_description()
-
-        header = render_template_string(header_template,
-                                        quest_notification=notice)
-        body = render_template_string(body_template,
-                                      quest_notification=notice)
-        footer = render_template_string(footer_template,
-                                        quest_notification=notice)
-
-        data = jsonify(header=header, body=body, footer=footer)
-
-        print("Sending Notice content to JS.")
-        pprint(data)
+        # print("Sending Notice content to JS.")
+        # pprint(data)
 
         # Clear quest notification
-        hero.journal.notification = None
+        # Should delete this notice when it has been viewed.
+        notice.journal = None
         return data
 
     # @staticmethod

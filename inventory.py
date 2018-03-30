@@ -5,12 +5,12 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
-from sqlalchemy.orm.session import object_session
-
 from base_classes import Base
 
+from session_helpers import SessionHoistMixin, safe_commit_session
 
-class Inventory(Base):
+
+class Inventory(SessionHoistMixin, Base):
     """Store a list of items for the hero.
 
     This is a special class that will allow me to do more natural pythonic operations
@@ -180,6 +180,7 @@ class Inventory(Base):
         for item in items:
             self.equip(item)
 
+    @safe_commit_session
     def equip(self, item, index=None):
         """Equip the an item in the correct slot -> Return ids of items replaced.
 
@@ -191,7 +192,7 @@ class Inventory(Base):
 
         I must:
             1. remove and item from a slot.
-            2. commit the change (using object_session)
+            2. commit the change (using @safe_commit_session)
             3. add new item to slot.
 
         NOTE: Id of the passed item is not returned.
@@ -209,12 +210,11 @@ class Inventory(Base):
         # Use the 3rd item state. Not equipped and not unequipped.
         # a.k.a. the 'limbo' state!
         # This also allows you to equip an item that has not been added yet.
-        session = object_session(self)
-        session.add(item)
+        self.session.add(item)
         item.inventory_id = self.id
         item.equipped = None
         item.unequipped_position = None
-        session.commit()
+        self.session.commit()
 
         if item.type in Inventory.slots_used_by_item_type:
             slots_used = Inventory.slots_used_by_item_type[item.type]
@@ -226,7 +226,7 @@ class Inventory(Base):
             # Get lowest empty slot.
             if not index:
                 index = self.get_lowest_empty_ring_pos()
-                old_item = self.get_ring_at_pos(index)
+            old_item = self.get_ring_at_pos(index)
             if old_item:
                 old_items = [old_item]
                 self.unequip(old_item)
@@ -244,7 +244,7 @@ class Inventory(Base):
 
         # Finally move the item from Limbo to Equip state.
         item.equipped = True
-        session.commit()
+        self.session.commit()
 
         return [item.id for item in old_items]
 
@@ -259,6 +259,7 @@ class Inventory(Base):
 
         self.add_item(item)
 
+    @safe_commit_session
     def add_item(self, item):
         """Add an item to the unequipped slot of this inventory.
 
@@ -270,22 +271,20 @@ class Inventory(Base):
         # And reset it to totally unequipped.
         # Then commit, otherwise it might still have a handler in another
         # location.
-        session = object_session(self)
-        session.add(item)
+        self.session.add(item)
         self.remove_item(item)
 
         self.unequipped.reorder()  # Reorder might do a commit?
         self.unequipped.append(item)
         item.equipped = False  # Required to add this to the unequipped list.
-        session.commit()
 
+    @safe_commit_session
     def remove_item(self, item):
         """Remove a given item from any inventory it might be in."""
         item.ring_position = None
         item.equipped = None
         item.unequipped_position = None
         item.inventory_id = None
-        object_session(self).commit()
 
     def get_ring_at_pos(self, n):
         """Return the ring on this finger or None if none there.
@@ -331,4 +330,3 @@ class Inventory(Base):
         """
         all_items = self.unequipped + self.equipped
         return (item for item in all_items)
-

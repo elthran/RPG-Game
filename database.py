@@ -7,20 +7,22 @@ Mainly using the tutorial at:
     http://docs.sqlalchemy.org/en/latest/orm/tutorial.html
 
 """
-from functools import wraps
 import hashlib
+import base64
 import importlib
-import os
 import datetime
 import random
+import os
 # Testing only
 import pdb
 from pprint import pprint
 
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import sqlalchemy.exc
 from sqlalchemy import desc
+import sqlalchemy.exc
+import bcrypt
 
 # Base is the initialize SQLAlchemy base class. It is used to set up the
 # table metadata.
@@ -30,11 +32,11 @@ from sqlalchemy import desc
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 import base_classes
 # Internal game modules
-from game import User
+from game import User, round_number_intelligently
 from inbox import Inbox, Message
 from hero import Hero
-from abilities import Abilities, Ability
-from specializations import Specialization
+from abilities import Ability
+from specializations import Specialization, Archetype, Calling, Pantheon
 from locations import Location
 from items import Item
 from quests import Quest, QuestPath
@@ -42,58 +44,16 @@ from proficiencies import Proficiency
 from events import Trigger
 from forum import Forum, Board, Thread
 from bestiary2 import MonsterTemplate
+from journal import Entry
 import prebuilt_objects
 
-
-def scoped_session(f):
-    """Provide a transactional scope around a series of operations.
-
-    NOTE: don't use this on any function that returns a database object as
-    you will get a detached instance error!
-    """
-
-    @wraps(f)
-    def wrap_scoped_session(*args, **kwargs):
-        self = args[0]
-        self.session = EZDB.Session(bind=self.engine)
-        retval = f(*args, **kwargs)
-        try:
-            self.session.commit()
-        except:
-            self.session.rollback()
-            raise
-        finally:
-            self.session.close()
-        if hasattr(retval, '_sa_instance_state'):
-            raise Exception("Don't use scoped_session when you are returning a database object!")
-        return retval
-    return wrap_scoped_session
-
-
-def safe_commit_session(f):
-    """Wrap a commit and rollback in one. Add and commit returned value.
-
-    I don't really know what happens if this crashes and rollsback ..
-    is the session clean or corrupt? Does it loose the data?
-    I guess it throws and exception .. so maybe that is ok.
-    """
-    @wraps(f)
-    def wrap_safe_commit_session(*args, **kwargs):
-        self = args[0]
-        retval = f(*args, **kwargs)
-        self.session.add(retval)
-        try:
-            self.session.commit()
-        except:
-            self.session.rollback()
-            raise
-        return retval
-
-    return wrap_safe_commit_session
-
+from session_helpers import scoped_session, safe_commit_session
 
 # Constants#
-SECOND_PER_ENDURANCE = 10
+# UPDATE_INTERVAL = 3600  # One endurance per hour.
+UPDATE_INTERVAL = 30 # One endurance per 30 seconds
+PASSWORD_HASH_COST = 10
+Session = sessionmaker()
 
 
 class EZDB:
@@ -104,8 +64,6 @@ class EZDB:
 
     All add_* methods should end with a commit!
     """
-    Session = None
-
     def __init__(self, database="sqlite:///:memory:", debug=True,
                  testing=False):
         """Create a basic SQLAlchemy engine and session.
@@ -136,10 +94,13 @@ class EZDB:
             database+ "?charset=utf8mb4", pool_recycle=3600, echo=debug)
 
         base_classes.Base.metadata.create_all(engine, checkfirst=True)
-        EZDB.Session = sessionmaker(bind=engine)
+
+        # Set up Session for this engine.
+        Session.configure(bind=engine)
+        self.Session = Session
 
         self.engine = engine
-        self.session = EZDB.Session()
+        self.session = self.Session()
         if first_run and not testing:
             self.add_prebuilt_objects()
 
@@ -174,8 +135,9 @@ class EZDB:
             for obj in obj_list:
                 self.session.add(obj)
                 if isinstance(obj, User):
-                    obj.password = hashlib.md5(
-                        obj.password.encode()).hexdigest()
+                    obj.password = bcrypt.hashpw(
+                        base64.b64encode(hashlib.sha256(obj.password.encode()).digest()),
+                        bcrypt.gensalt(PASSWORD_HASH_COST))
                     obj.timestamp = EZDB.now()
                 self.update()
         default_quest_paths = self.get_default_quest_paths()
@@ -230,6 +192,37 @@ class EZDB:
             raise IndexError(
                 "No '{}' with id '{}' exists.".format(obj_name, obj_id))
 
+    def get_all_objects(self, obj_name, template=True):
+        """Return all objects given a class name and template condition.
+
+        Return error if name doesn't exist in global scope.
+        obj = getattr(globals(), name)
+
+        Name must be properly capitalized!
+
+        NOTE: if object isn't template compatible it returns it anyways.
+        Just ignore the template flag.
+        """
+
+        try:
+            obj = globals()[obj_name]
+        except IndexError:
+            raise Exception(
+                "Object name: '{}' is not an "
+                "object, or has not been imported into "
+                "'database' module yet.".format(obj_name))
+        db_obj = None
+        try:
+            db_obj = self.session.query(obj).filter_by(template=template).all()
+        except sqlalchemy.exc.InvalidRequestError as ex:
+            if "has no property 'template'" in str(ex):
+                db_obj = self.session.query(obj).all()
+        if db_obj:
+            return db_obj
+        else:
+            raise IndexError(
+                "No '{}' objects exist.".format(obj_name))
+
     def get_learnable_abilities(self, hero):
         """Get all learnable abilities of a given hero."""
         return self.session.query(Ability).\
@@ -261,7 +254,7 @@ class EZDB:
         Autocommit using @safe_commit_session.
         """
         template = self.session.query(Item).get(template_id)
-        item = template.build_new_from_template()
+        item = template.clone()
         return item
 
     def get_random_item(self):
@@ -273,9 +266,13 @@ class EZDB:
         return item
 
     def get_all_users(self):
-        """Return all Users order_by name.
+        """Return all Users order_by id.
         """
         return self.session.query(User).order_by(User.id).all()
+
+    def get_all_heroes(self):
+        """Return all Hero objects ordered by id."""
+        return self.session.query(Hero).order_by(Hero.id).all()
 
     def get_ability_by_id(self, ability_id):
         """Return an ability from its ID."""
@@ -330,18 +327,6 @@ class EZDB:
     def get_user_by_username(self, username):
         return self.session.query(User).filter_by(username=username).first()
 
-    def add_new_user(self, username, password, email=''):
-        """Add a user to the username with a given a unique username and a password.
-
-        The password is hashed.
-        """
-
-        hashed_password = hashlib.md5(password.encode()).hexdigest()
-        user = User(username=username, password=hashed_password, email=email,
-                    timestamp=EZDB.now())
-        self.session.add(user)
-        return user
-
     def add_new_hero_to_user(self, user):
         """Create a new blank character object for a user.
 
@@ -350,14 +335,76 @@ class EZDB:
 
         self.session.add(Hero(user=user))
 
+    @staticmethod
+    def encrypt(s):
+        return bcrypt.hashpw(
+            base64.b64encode(hashlib.sha256(s.encode()).digest()),
+            bcrypt.gensalt(PASSWORD_HASH_COST))
+
+    def add_new_user(self, username, password, email=''):
+        """Create a new user account with this username and password.
+
+        And optional email.
+
+        The password is encrypted with bcrypt.
+        The email is encrypted separately with bcrypt.
+        """
+
+        # hash and save a password
+        user = User(username=username, password=EZDB.encrypt(password), email=EZDB.encrypt(email),
+                    timestamp=EZDB.now())
+        self.session.add(user)
+        return user
+
+    @scoped_session
+    def validate_email(self, username, email):
+        """Check if the passed email matches the email for this account.
+
+        Email is encrypted separately. You can't decrypt the email even
+        if you know the user name. This might be inconvenient at some point.
+        """
+        user = self.session.query(User).filter_by(username=username).first()
+        if user is not None:
+            # check a password
+            return bcrypt.checkpw(
+                base64.b64encode(hashlib.sha256(email.encode()).digest()),
+                user.email.encode())
+        return None
+
     @scoped_session
     def validate(self, username, password):
         """Check if password if valid for user.
         """
         user = self.session.query(User).filter_by(username=username).first()
         if user is not None:
-            return user.password == hashlib.md5(password.encode()).hexdigest()
+            # check a password
+            return bcrypt.checkpw(
+                base64.b64encode(hashlib.sha256(password.encode()).digest()),
+                user.password.encode())
         return None
+
+    @scoped_session
+    def setup_account_for_reset(self, username):
+        """Add a reset key to the user account and return it."""
+        user = self.session.query(User).filter_by(username=username).first()
+        key = os.urandom(256)
+        urlsafe_key = base64.urlsafe_b64encode(hashlib.sha256(key).digest())
+        user.reset_key = urlsafe_key
+        return urlsafe_key
+
+    @scoped_session
+    def validate_reset(self, username, key):
+        """Make sure the reset key matches.
+
+        Additionally make sure you can't use a blank reset key.
+        """
+        user = self.session.query(User).filter_by(username=username).first()
+        # For some reason the key get converted to binary then back
+        # so it looks like "b'______'" instead of b'________' or
+        # '_________'. I strip the "b'" of the start and "'" of the end.
+        if user.reset_key and user.reset_key == key[2:-1]:
+            return True
+        return False
 
     def fetch_hero_by_username(self, username, character_name=None):
         """Return hero objected based on username_or_id and character_name.
@@ -432,7 +479,7 @@ class EZDB:
             raise
         finally:
             self.session.close()
-            self.session = EZDB.Session()
+            self.session = self.Session()
 
     def add_object(self, obj):
         """Add an object to the database.
@@ -441,27 +488,30 @@ class EZDB:
         """
         self.session.add(obj)
 
-    def get_all_handlers_with_completed_triggers(self, hero):
-        """Return all the handler objects with completed triggers.
-
-        This occurs when an event has happened that 'completed' a trigger
-        for a given event.
-        """
-        objs = [QuestPath]
-        handlers = []
-        for obj in objs:
-            handlers += self.session.query(obj).\
-                filter(obj.trigger_is_completed).\
-                filter(obj._hero_id == hero.id).all()
-
-        return handlers
-
-    def get_all_triggers_by(self, event_name, hero_id):
-        """Return all triggers for this hero that fit a given event."""
-
-        return self.session.query(
-            Trigger).filter_by(
-            event_name=event_name, hero_id=hero_id).all()
+    # def get_all_handlers_with_completed_triggers(self, hero):
+    #     """Return all the handler objects with completed triggers.
+    #
+    #     This occurs when an event has happened that 'completed' a trigger
+    #     for a given event.
+    #     """
+    #     objs = [QuestPath]
+    #     handlers = []
+    #     for obj in objs:
+    #         handlers += self.session.query(obj).\
+    #             filter(obj.trigger_is_completed).\
+    #             filter(obj._hero_id == hero.id).all()
+    #
+    #     return handlers
+    #
+    # def get_all_triggers_by(self, event_name, hero_id):
+    #     """Return all triggers for this hero that fit a given event."""
+    #
+    #     return self.session.query(
+    #         Trigger).filter_by(
+    #         event_name=event_name, hero_id=hero_id).all()
+    #
+    # def get_all_garbage_triggers(self):
+    #     return self.session.query(Trigger).filter_by(event_name="Deactivated").all()
 
     def hero_has_quest_path_named(self, hero, name):
         """Returns True if hero has a ques_path of the given name.
@@ -490,10 +540,21 @@ class EZDB:
         """
         return datetime.datetime.utcnow()
 
+    def update_time_all_heroes(self):
+        """Run update_time on all hero objects.
+
+        Consider moving the While True: + sleep somewhere else?
+        Seems a little out of place here.
+        """
+
+        for hero in self.get_all_heroes():
+            self.update_time(hero)
+
     # Marked for renaming as it effects Hero endurance as well as time.
     # Consider update_endurance_and_time()
     # Or update_game_clock
     # Or update_hero_clock
+    @safe_commit_session
     def update_time(self, hero):
         """Update the game time clock of a specific Hero and endurance values.
 
@@ -506,19 +567,29 @@ class EZDB:
         Suggestion: Currently only affects the passed Hero, perhaps it
         should update all heroes?
         """
-        timestamp = hero.timestamp
-        time_diff = (EZDB.now() - timestamp).total_seconds()
-        endurance_increment = int(time_diff / SECOND_PER_ENDURANCE)
-        hero.proficiencies.endurance.current += endurance_increment
 
-        if hero.proficiencies.endurance.current \
-                > hero.proficiencies.endurance.maximum:
-            hero.proficiencies.endurance.current \
-                = hero.proficiencies.endurance.maximum
+        endurance = hero.base_proficiencies['endurance']
+        summed_endurance = hero.get_summed_proficiencies('endurance')
+        stamina = hero.get_summed_proficiencies('stamina')
+        stamina = round_number_intelligently(stamina.final)
+        endurance.current = min(endurance.current + stamina, summed_endurance.final)
 
-        # Only update if endurance has been incremented.
-        if endurance_increment:
-            hero.timestamp = EZDB.now()
+        health = hero.base_proficiencies['health']
+        summed_health = hero.get_summed_proficiencies('health')
+        regeneration = hero.get_summed_proficiencies('regeneration')
+        regeneration = round_number_intelligently(regeneration.final)
+        health.current = min(health.current + regeneration, summed_health.final)
+
+        sanctity = hero.base_proficiencies['sanctity']
+        summed_sanctity = hero.get_summed_proficiencies('sanctity')
+        redemption = hero.get_summed_proficiencies('redemption')
+        redemption = round_number_intelligently(redemption.final)
+        sanctity.current = min(sanctity.current + redemption, summed_sanctity.final)
+
+        for item in hero.equipped_items():
+            item.affinity += 1
+
+        # print("Hero {} updated on schedule.".format(hero.id))
 
     # def get_world(self, name):
     #     """Return WorldMap object from database using by name.
