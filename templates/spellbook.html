@@ -5,12 +5,14 @@
 
 <center>Spellbook</center>
 {% for ability in hero.abilities if ability.castable and ability.level > 0 %}
-{{ ability.name.title() }}
+<h1>{{ ability.name.title() }}</h1>
+<h2>Cost:
     {% if ability.sanctity_cost %}(Sanctity Cost: {{ ability.sanctity_cost }})
     {% elif ability.endurance_cost %}(Endurance Cost: {{ ability.endurance_cost }})
-    {% endif %}
-<button data={{ ability.id }} data-py-function="cast_spell">cast</button>
+    {% else %}Free
+    {% endif %}</h2>
 [{{ ability.description }}]<br>
+<button onclick="sendToPy(event, refreshPage, 'cast_spell', {'id': {{ ability.id }}});">Cast {{ ability.name.title() }}</button>
 {% else %}
 You have no spells
 {% endfor %}

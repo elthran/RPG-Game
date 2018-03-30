@@ -245,10 +245,11 @@ class Command:
                            command="equip", idsToUnequip=ids_to_unequip)
 
     @staticmethod
-    def cast_spell(hero, database, arg_dict, **kwargs):
-        ability_id = arg_dict.get('data', None, type=int)
-        ability = database.get_ability_by_id(ability_id)
-        ability.cast(hero)
+    def cast_spell(hero, database, data, **kwargs):
+        spell_id = data['id']
+        spell = database.get_ability_by_id(spell_id)
+        print(spell)
+        spell.cast(hero)
         return "success"
 
     @staticmethod
