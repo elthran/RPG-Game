@@ -5,9 +5,14 @@ Revises: 2705b1c78056
 Create Date: 2018-03-29 19:33:17.451842
 
 """
+import importlib
+
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
+# rpg = importlib.import_module("RPG-game", "*")
+rpg = __import__("RPG-Game")
+import pdb;pdb.set_trace()
 
 # revision identifiers, used by Alembic.
 revision = 'b476621dc83e'
