@@ -40,6 +40,14 @@ git reset --hard HEAD
 git revert HEAD  # HEAD~1 reverts the last 2 commits, HEAD~n reverts the last n+1 commits
 git push
 
+## To undo some of the changes in a commit.
+# NOTE: Cancel the pupop/commit dialogue after 'git revert' (don't save).
+# NOTE: 'git reset' unstages the commit you just avoided pushing
+# git interactive commit with PyCharm (ctrl + k) and revert needed changes
+git revert <commit-id>
+git reset HEAD~1
+# finally commit with PyCharm
+
 #BEST FIX GUIDE EVER!
 https://sethrobertson.github.io/GitFixUm/fixup.html
 

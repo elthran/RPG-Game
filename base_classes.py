@@ -9,18 +9,159 @@ Mainly using the tutorial at:
 This class is imported first and can be used to add generic methods to all
 database objects. Like a __str__ function that I can actually read.
 """
+from functools import lru_cache
+import operator
 import inspect
 import pdb
+from pprint import pprint
 
+from sqlalchemy.orm.collections import MappedCollection, collection
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import orm
 import sqlalchemy
 
-from pprint import pprint
+
+def attribute_mapped_dict_hybrid(key):
+    """A dictionary-based collection type with attribute-based keying.
+
+    See http://docs.sqlalchemy.org/en/latest/orm/collections.html#sqlalchemy.orm.collections.attribute_mapped_collection
+    Returns a MappedCollection factory with a keying based on the ‘attr_name’
+    attribute of entities in the collection, where attr_name is the string
+    name of the attribute.
+
+    The key value must be immutable for the lifetime of the object.
+    You can not, for example, map on foreign key values if those key values
+    will change during the session, i.e. from None to a database-assigned
+    integer after a session flush.
+
+    As far as I can see ... this shouldn't work at all. Clearly it does.
+    Wish I understood how.
+    """
+    return lambda: DictHybrid(key_attr=key)
+
+
+class DictHybrid(MappedCollection):
+    """A Python object that acts like a JS one.
+
+    You can assign values via attribute or via key.
+    e.g.
+        obj.foo = obj['foo'] all but really special keys :P
+
+    The attribute_mapped_dict_hybrid
+    allows me to build a factory for this class similar to
+    sqlalchemy.orm.collections.attribute_mapped_collection(attr_name)
+
+    Defaults to keying on object 'type'.
+    """
+
+    invalid_keys = {'__emulates__', 'id', 'keyfunc', '_sa_adapter'}
+
+    def __init__(self, *args, key_attr='type', **kwargs):
+        """Create a new DictHybrid with keying on 'type'.
+
+        This is mostly cloned code I don't understand. I hope it doesn't
+        break. I have a test suite so if it does break I should be able
+        to come up with a solid fix.
+
+        You can create a new internal dict by passing in a dict
+        or by by passing tuples of key, value pairs.
+        """
+        super().__init__(operator.attrgetter(key_attr))
+        for arg in args:
+            if isinstance(arg, dict):
+                for k, v in arg.items():
+                    self[k] = v
+
+        if kwargs:
+            for k, v in kwargs.items():
+                self[k] = v
+
+    @collection.internally_instrumented
+    def __setitem__(self, key, value, _sa_initiator=None):
+        """Instrumented version of dict setitem.
+
+        I don't know how this works."""
+        super().__setitem__(key, value, _sa_initiator)
+
+    @collection.internally_instrumented
+    def __delitem__(self, key, _sa_initiator=None):
+        """Instrumented version of dict delitem.
+
+        I don't know how this works."""
+        super().__delitem__(key, _sa_initiator)
+
+    def __getattr__(self, attr):
+        """Overloaded getattr method with custom handling.
+
+        Any attribute that isn't in {'__emulates__', 'id', 'keyfunc'}
+        gets called as a key to the dictionary.
+
+        I'm not sure why these aren't ... how it works though is:
+
+        self.id ... returns self.id like a normal object.
+        self.some_key ... returns self[some_key] as though self was a dict.
+        """
+        if attr not in self.invalid_keys:
+            return self[attr]
+        return self.get(attr)
+
+    @collection.internally_instrumented
+    def __setattr__(self, key, _sa_initiator=None):
+        """Overloaded and Instrumented setattr method with custom handling.
+
+        Any attribute that isn't in {'keyfunc', '_sa_adapter'}
+        gets added as a key to the dictionary.
+
+        I'm not sure why these aren't ... how it works though is:
+
+        self.keyfunc = somefunc ... sets self.keyfunc like a normal object.
+        self.some_key ... sets self[some_key] as though self was a dict.
+        """
+        if key not in self.invalid_keys:
+            self.__setitem__(key, _sa_initiator)
+        super().__setattr__(key, _sa_initiator)
+
+    def __delattr__(self, item):
+        """Makes object delatter act like dict delitem.
+
+        del self.some_key ... does del self[some_key]
+        as though self was a dict.
+        """
+        self.__delitem__(item)
+
+    def sorted_keys(self):
+        """Returns the the dictionary keys of self as a sorted frozenset.
+
+        It is frozen so it can be used in a cache function.
+        I don't really know how this works ... but it should allow repeated
+        calls to sorted_keys to be very fast.
+        """
+        keys = self._key_sort(frozenset(self.keys()))
+        return (x for x in sorted(keys))
+
+    @staticmethod
+    @lru_cache(maxsize=16)
+    def _key_sort(keys):
+        """Cached sort method.
+
+        Cache uses frozenset so it should be order independent?
+        """
+        return sorted(keys)
+
+    def __iter__(self):
+        """Return all the values (sorted by keys) of this dict as an iterator.
+
+        If you want the normal dict method for __iter__ do:
+        self.keys() instead. This will return unsorted keys.
+        """
+
+        return (self[key] for key in self.sorted_keys())
+
+    def sorted_items(self):
+        """Return the keys and values sorted by keys."""
+        return ((k, self[k]) for k in self.sorted_keys())
 
 
 class Base(object):
@@ -72,6 +213,10 @@ class Base(object):
 
         data |= hierarchy_keys
 
+        # Remove special hoisted variable that I add in Mixin.
+        # I don't know why it even exits in the MRO.
+        data.discard('session')
+
         # Remove weird SQLAlchemy var available to higher class but no
         # lower ones.
         keys_to_remove = set()
@@ -93,7 +238,6 @@ class Base(object):
     def data_to_string(self, data):
         for key in sorted(data):
             value = getattr(self, key)
-            # pdb.set_trace()
             if value and (type(value) == orm.collections.InstrumentedList or
                           type(value) ==
                           sqlalchemy.ext.orderinglist.OrderingList):
@@ -217,211 +361,266 @@ Base = declarative_base(cls=Base, metadata=metadata)
 # This used a class factory to build a class called base in the local
 # context. Why I can't just import Base I have no idea.
 # And I know how to use it.
-    
 
-class BaseListElement(Base):
-    """Stores list objects in database.
-    
-    To implement:
-    1. add line in this class:
-        parent_table_name_id = Column(Integer,
-            ForeignKey('parent_table_name.id'))
-    2. add line in foreign class: _my_list = relationship("BaseListElement")
-    3. add method to foreign class:
-    @hybrid_property
-    def my_list(self):
-        '''Return a list of elements.
-        '''
-        return [element.value for element in self._my_list]
 
-    4. add method to foreign class:
-    @my_list.setter
-    def my_list(self, values):
-        '''Create list of BaseListElement objects.
-        '''
-        self._my_list = [BaseListElement(value) for value in values]
-    
-    See Location class for example implementation.
-    5. Probably a better way using decorators ...?
-    """
-    __tablename__ = "base_list"
-    id = Column(Integer, primary_key=True)
-    int_value = Column(Integer)
-    str_value = Column(String(50))
-    
-    dict_id_keys = Column(Integer, ForeignKey('base_dict.id'))
-    dict_id_values = Column(Integer, ForeignKey('base_dict.id'))
-    
-    def __init__(self, value):
-        """Build BaseListElement from value.
-        """
-        self.value = value
-    
-    @hybrid_property
-    def value(self):
-        """Return value of list element.
-        
-        Can be string or integer.
-        """
-        return self.int_value or self.str_value
-
-    @value.setter
-    def value(self, value):
-        """Assign value to appropriate column.
-        
-        Currently implements the strings and integers.
-        """
-        if isinstance(value, str):
-            self.str_value = value
-        elif isinstance(value, int):
-            self.int_value = value
-        else:
-            raise "TypeError: BaseListElement does not accept " \
-                "type '{}':".format(type(value))
+# class BaseListElement(Base):
+#     """Stores list objects in database.
+#
+#     To implement:
+#     1. add line in this class:
+#         parent_table_name_id = Column(Integer,
+#             ForeignKey('parent_table_name.id'))
+#     2. add line in foreign class: _my_list = relationship("BaseListElement")
+#     3. add method to foreign class:
+#     @hybrid_property
+#     def my_list(self):
+#         '''Return a list of elements.
+#         '''
+#         return [element.value for element in self._my_list]
+#
+#     4. add method to foreign class:
+#     @my_list.setter
+#     def my_list(self, values):
+#         '''Create list of BaseListElement objects.
+#         '''
+#         self._my_list = [BaseListElement(value) for value in values]
+#
+#     See Location class for example implementation.
+#     5. Probably a better way using decorators ...?
+#     """
+#     __tablename__ = "base_list"
+#     id = Column(Integer, primary_key=True)
+#     int_value = Column(Integer)
+#     str_value = Column(String(50))
+#
+#     # dict_id_keys = Column(Integer, ForeignKey('base_dict.id',
+#     #                                           ondelete="CASCADE"))
+#     # dict_id_values = Column(Integer, ForeignKey('base_dict.id',
+#     #                                             ondelete="CASCADE"))
+#
+#     def __init__(self, value):
+#         """Build BaseListElement from value.
+#         """
+#         self.value = value
+#
+#     @hybrid_property
+#     def value(self):
+#         """Return value of list element.
+#
+#         Can be string or integer.
+#         """
+#         return self.int_value or self.str_value
+#
+#     @value.setter
+#     def value(self, value):
+#         """Assign value to appropriate column.
+#
+#         Currently implements the strings and integers.
+#         """
+#         if isinstance(value, str):
+#             self.str_value = value
+#         elif isinstance(value, int):
+#             self.int_value = value
+#         else:
+#             raise "TypeError: BaseListElement does not accept " \
+#                 "type '{}':".format(type(value))
+#
+#     def __str__(self):
+#         """Return pretty string version of data.
+#         """
+#         return repr(self.value)
             
-    def __str__(self):
-        """Return pretty string version of data.
-        """
-        return repr(self.value)
-            
 
-class BaseItem(Base):
-    __tablename__ = 'base_item'
-    id = Column(Integer, primary_key=True)
-    str_key = Column(String(50))
-    int_key = Column(Integer)
-    str_value = Column(String(50))
-    int_value = Column(Integer)
-    
-    base_dict_id = Column(Integer, ForeignKey('base_dict.id'))
-    def __init__(self, key, value):
-        self.key = key
-        self.value = value
-    
-    @hybrid_property
-    def key(self):
-        """Return key of appropriate type.
-        
-        Can be string or integer.
-        """
-        return self.int_key or self.str_key
-
-
-    @key.setter
-    def key(self, key):
-        """Assign key to appropriate typed column.
-        
-        Currently implements strings and integers.
-        """
-        if type(key) is type(str()):
-            self.str_key = key
-        elif type(key) is type(int()):
-            self.int_key = key
-        else:
-            raise "TypeError: BaseItem does not accept type '{}':".format(type(key))
-
-    @hybrid_property
-    def value(self):
-        """Return value of appropriate type.
-        
-        Can be string or integer.
-        """
-        return self.int_value or self.str_value
-
-
-    @value.setter
-    def value(self, value):
-        """Assign value to appropriate typed column.
-        
-        Currently implements strings and integers.
-        """
-        if type(value) is type(str()):
-            self.str_value = value
-        elif type(value) is type(int()):
-            self.int_value = value
-        else:
-            raise "TypeError: BaseItem does not accept type '{}':".format(type(value))
-    
-
-class BaseDict(Base):
-    """Mimic a dictionary but be storable in a database.
-    
-    
-    """
-    __tablename__ = "base_dict"
-    id = Column(Integer, primary_key=True)
-    
-    base_items = relationship("BaseItem")
-    
-    def __init__(self, d={}):
-        """Build a list of items and a matching dictionary.
-        
-        The dictionary should act as a hash table/index for the list.
-        """
-        self.d_items = {}
-        for key in d:
-            self.d_items[key] = BaseItem(key, d[key])
-            self.base_items.append(self.d_items[key])
-            assert self.d_items[key] is self.base_items[-1]
- 
-             
-    @orm.reconstructor
-    def rebuild_d_items(self):
-        self.d_items = {}
-        for item in self.base_items:
-            self.d_items[item.key] = item
-        
-    
-    def remove(self, key):
-        base_item = self.d_items.pop(key, None)
-        if base_item:
-            self.base_items.remove(base_item)
-            
-            
-    def __getitem__(self, key):
-        """Get value of key using a dict key name or list index.
-        """
-
-        return self.d_items[key].value
-            
-            
-    def __setitem__(self, key, value):
-        """Change value at key or create key with value.
-        """
-        try:
-            self.d_items[key].value = value
-        except KeyError as ex:
-            self.add(key, value)
-            
-    def add(self, key, value):
-        """Add an element to the end of the dictionary.
-        
-        """
-        self.d_items[key] = BaseItem(key, value)
-        self.base_items.append(self.d_items[key])
-    
-    def keys(self):
-        return (item.key for item in self.base_items)
-    
-    def values(self):
-        return (item.value for item in self.base_items)
-        
-    def items(self):
-        return ((item.key, item.value) for item in self.base_items)
-        
-    # def __iter__(self):
-        # return (key for key in self.d_items)
-        
-    def __str__(self):
-        """Return pretty string version of data.
-        
-        """
-        
-        data = ', '.join(['{}: {}'.format(repr(item.key), repr(item.value))
-            for item in self.base_items])
-        return "BaseDict{" + data + "}"
- 
+# class BaseItem(Base):
+#     __tablename__ = 'base_item'
+#     id = Column(Integer, primary_key=True)
+#     str_key = Column(String(50))
+#     int_key = Column(Integer)
+#     str_value = Column(String(50))
+#     int_value = Column(Integer)
+#
+#     base_dict_id = Column(Integer, ForeignKey('base_dict.id',
+#                                               ondelete="CASCADE"))
+#     def __init__(self, key, value):
+#         self.key = key
+#         self.value = value
+#
+#     @hybrid_property
+#     def key(self):
+#         """Return key of appropriate type.
+#
+#         Can be string or integer.
+#         """
+#         return self.int_key or self.str_key
+#
+#
+#     @key.setter
+#     def key(self, key):
+#         """Assign key to appropriate typed column.
+#
+#         Currently implements strings and integers.
+#         """
+#         if type(key) is type(str()):
+#             self.str_key = key
+#         elif type(key) is type(int()):
+#             self.int_key = key
+#         else:
+#             raise "TypeError: BaseItem does not accept type '{}':".format(type(key))
+#
+#     @hybrid_property
+#     def value(self):
+#         """Return value of appropriate type.
+#
+#         Can be string or integer.
+#         """
+#         return self.int_value or self.str_value
+#
+#
+#     @value.setter
+#     def value(self, value):
+#         """Assign value to appropriate typed column.
+#
+#         Currently implements strings and integers.
+#         """
+#         if type(value) is type(str()):
+#             self.str_value = value
+#         elif type(value) is type(int()):
+#             self.int_value = value
+#         else:
+#             raise "TypeError: BaseItem does not accept type '{}':".format(type(value))
+#
+#
+# class BaseDict(Base):
+#     """Mimic a dictionary but be storable in a database.
+#
+#
+#     """
+#     __tablename__ = "base_dict"
+#     id = Column(Integer, primary_key=True)
+#
+#     base_items = relationship("BaseItem", cascade="all, delete-orphan")
+#
+#     def __init__(self, d={}):
+#         """Build a list of items and a matching dictionary.
+#
+#         The dictionary should act as a hash table/index for the list.
+#         """
+#         self.d_items = {}
+#         for key in d:
+#             self.d_items[key] = BaseItem(key, d[key])
+#             self.base_items.append(self.d_items[key])
+#             assert self.d_items[key] is self.base_items[-1]
+#
+#
+#     @orm.reconstructor
+#     def rebuild_d_items(self):
+#         self.d_items = {}
+#         for item in self.base_items:
+#             self.d_items[item.key] = item
+#
+#
+#     def remove(self, key):
+#         base_item = self.d_items.pop(key, None)
+#         if base_item:
+#             self.base_items.remove(base_item)
+#
+#
+#     def __getitem__(self, key):
+#         """Get value of key using a dict key name or list index.
+#         """
+#
+#         return self.d_items[key].value
+#
+#
+#     def __setitem__(self, key, value):
+#         """Change value at key or create key with value.
+#         """
+#         try:
+#             self.d_items[key].value = value
+#         except KeyError as ex:
+#             self.add(key, value)
+#
+#     def add(self, key, value):
+#         """Add an element to the end of the dictionary.
+#
+#         """
+#         self.d_items[key] = BaseItem(key, value)
+#         self.base_items.append(self.d_items[key])
+#
+#     def keys(self):
+#         return (item.key for item in self.base_items)
+#
+#     def values(self):
+#         return (item.value for item in self.base_items)
+#
+#     def items(self):
+#         return ((item.key, item.value) for item in self.base_items)
+#
+#     # def __iter__(self):
+#         # return (key for key in self.d_items)
+#
+#     def __str__(self):
+#         """Return pretty string version of data.
+#
+#         """
+#
+#         data = ', '.join(['{}: {}'.format(repr(item.key), repr(item.value))
+#             for item in self.base_items])
+#         return "BaseDict{" + data + "}"
 
 
-
-
+# class Map(dict):
+#     """
+#     Example:
+#     m = Map({'first_name': 'Eduardo'}, last_name='Pool', age=24, sports=['Soccer'])
+#
+#     Should allow a dictionary to behave like an object.
+#     So you can do either ->
+#     map['some_key']
+#     OR
+#     map.some_key
+#
+#     NOTE: the iterator function is not normal for dictionaries.
+#     It returns .values() (ordered) not .keys() (random)
+#     """
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         for arg in args:
+#             if isinstance(arg, dict):
+#                 for k, v in arg.items():
+#                     self[k] = v
+#
+#         if kwargs:
+#             for k, v in kwargs.items():
+#                 self[k] = v
+#
+#         self.sorted_keys = sorted(self.keys())
+#
+#     def __getattr__(self, attr):
+#         return self.get(attr)
+#
+#     def __setattr__(self, key, value):
+#         self.__setitem__(key, value)
+#
+#     def __setitem__(self, key, value):
+#         super(Map, self).__setitem__(key, value)
+#         self.__dict__.update({key: value})
+#
+#     def __delattr__(self, item):
+#         self.__delitem__(item)
+#
+#     def __delitem__(self, key):
+#         super(Map, self).__delitem__(key)
+#         del self.__dict__[key]
+#
+#     def __iter__(self):
+#         """Return all the values (sorted by key) of this Map as an iterator.
+#
+#         Overrides default of returning .keys() (unsorted).
+#         Now returns .values() (sorted by .keys())
+#         """
+#         if self.sorted_keys:
+#             # pdb.set_trace()
+#             return (self[key] for key in self.sorted_keys)
+#         self.sorted_keys = sorted(self.keys())
+#         return (self[key] for key in self.sorted_keys)

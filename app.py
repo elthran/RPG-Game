@@ -11,6 +11,7 @@ from pprint import pprint  # For testing!
 from functools import wraps
 from random import choice
 import os
+import time
 
 from flask import (
     Flask, render_template, redirect, url_for, request, session,
@@ -21,8 +22,6 @@ import werkzeug
 
 from game import Game
 import combat_simulator
-from attributes import \
-    ATTRIBUTE_INFORMATION  # Since attribute information was hand typed out in both modules, it was causing bugs. Seems cleaner to import it and then only edit it in one place
 # Marked for restructure! Avoid use of import * in production code.
 from bestiary import *
 from commands import Command
@@ -30,7 +29,7 @@ from commands import Command
 # MUST be imported _after_ all other game objects but
 # _before_ any of them are used.
 from database import EZDB
-from engine import Engine
+from engine import Engine, game_clock, async_process, rest_key_timelock
 from forum import Board, Thread, Post
 from bestiary2 import create_monster, MonsterTemplate
 
@@ -44,9 +43,23 @@ engine = Engine(database)
 # initialization
 game = Game()
 
-# create the application object
-app = Flask(__name__)
+
+def create_app():
+    # create the application object
+    app = Flask(__name__)
+    # pdb.set_trace()
+
+    async_process(game_clock, args=(database,))
+    return app
+
+
+app = create_app()
 sslify = SSLify(app)
+
+# Should replace on server with custom (not pushed to github).
+# import os
+# os.urandom(24)
+# '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
 app.secret_key = 'starcraft'
 
 ALWAYS_VALID_URLS = [
@@ -250,6 +263,68 @@ def update_current_location(f):
     return wrap_current_location
 
 
+def send_email(user, address, key):
+    """Send an email to the passed address.
+
+    This could later be improved to send other types of emails but right
+    now it will only send a reset email.
+    """
+    # Import smtplib for the actual sending function
+    import smtplib
+
+    # Import the email modules we'll need
+    # from email.mime.text import MIMEText
+
+    # Open a plain text file for reading.  For this example, assume that
+    # the text file contains only ASCII characters.
+    # with open("static/") as fp:
+    #     # Create a text/plain message
+    #     msg = MIMEText(fp.read())
+
+    sender = "elthran.online@no-reply.ca"
+    receivers = [address]
+
+    # url = 'https://mydomain.com/reset=' + token_urlsafe()
+    # if server:
+    # link = "https://elthran.pythonanywhere.com/reset/?user={}&&key={}".format(user, key)
+    link = "http://127.0.0.1:5000/reset?user={}&&key={}".format(user, key)
+
+    message = """From: Elthran Online <{sender}>
+To: Owner of account '{user}' <{address}>
+MIME-Version: 1.0
+Content-type: text/html
+Subject: Reset link for ElthranOnline
+<pre>Hi Owner of account '{user}',
+    Please click this link <a href="{link}">{link}</a> to reset your account.
+You will be prompted to enter a new account password.</pre>
+""".format(sender=sender, user=user, address=address, link=link)
+
+    try:
+        smtp_obj = smtplib.SMTP('localhost')
+        try:
+            smtp_obj.sendmail(sender, receivers, message)
+            smtp_obj.quit()
+            print("Successfully sent email")
+        except smtplib.SMTPException:
+            print("Error: unable to send email")
+    except ConnectionRefusedError:
+        print("You need to setup your stmp server correctly.")
+
+
+@app.route("/reset", methods=["GET", "POST"])
+def reset_password():
+    if request.method == "GET":
+        if database.validate_reset(request.args['user'], request.args['key']):
+            return render_template("reset.html", username=request.args['user'])
+    elif request.method == "POST":
+        user = database.get_user_by_username(request.form['username'])
+        if user.reset_key:
+            user.reset_key = None
+            user.password = database.encrypt(request.form['password'])
+            return redirect(url_for('login'), code=307)
+    return redirect(url_for('login'))
+
+
 # use decorators to link the function to a url
 # route for handling the login page logic
 @app.route('/login', methods=['GET', 'POST'])
@@ -257,15 +332,18 @@ def login():
     error = None
     # Should prevent contamination between logging in with 2 different
     # accounts.
-    session.clear()
+    session.clear()  # I'm not sure this is still a good idea ..
+    # pprint(session)
     # I might remove this later ...
     # This fixed a bug in the server that I have now fixe with
     # if 'logged_in' in session and session['logged_in']
     session['logged_in'] = False
 
+    username = request.form['username'] if 'username' in request.form else ""
+    password = request.form['password'] if 'password' in request.form else ""
+    email_address = request.form['email'] if 'email' in request.form else ""
+
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
         if request.form['type'] == "login":
             # Otherwise, we are just logging in normally
             if database.validate(username, password):
@@ -273,16 +351,24 @@ def login():
             # Marked for upgrade, consider checking if user exists
             # and redirect to account creation page.
             else:
-                error = 'Invalid Credentials. Please try again.'
+                error = 'Invalid Credentials.'
         elif request.form['type'] == "register":
             # See if new_username has a valid input.
             # This only works if they are creating an account
             if database.get_user_id(username):
                 error = "Username already exists!"
             else:
-                user = database.add_new_user(username, password)
+                user = database.add_new_user(username, password, email=email_address)
                 database.add_new_hero_to_user(user)
                 session['logged_in'] = True
+                user.heroes[0].creation_phase = True  # At this point only one hero should exist
+        elif request.form['type'] == "reset":
+            print("Validating email address ...")
+            if database.validate_email(username, email_address):
+                print("Trying to send mail ...")
+                key = database.setup_account_for_reset(username)
+                send_email(username, email_address, key)
+                async_process(rest_key_timelock, args=(database, username), kwargs={'timeout': 5})
         else:
             raise Exception("The form of this 'type' doesn't exist!")
 
@@ -294,111 +380,8 @@ def login():
             # Maybe should just go directly to home page.
             return redirect(url_for('choose_character'))
 
-    return render_template('index.html', error=error)
+    return render_template('index.html', error=error, username=username)
 
-
-# route for handling the account creation page logic
-# @app.route('/password_recovery', methods=['GET', 'POST'])
-# def password_recovery():
-#     error = "Password Not Found"
-#
-#     if request.method == 'POST':
-#         username = request.form['username']
-#
-#         con = sqlite3.connect('static/user.db')
-#         with con:
-#             cur = con.cursor()
-#             cur.execute("SELECT * FROM Users")
-#             rows = cur.fetchall()
-#             for row in rows:
-#                 if row[0] == username:
-#                     error = "We found your password, but it was hashed into"
-#                         "this: " + row[1] + ". We are unable to decode the"
-#                         " jargon. Sorry, please restart the game!"
-#         con.close()
-#     return render_template('index.html', error=error, password_recovery=True)
-
-
-# route for handling the account creation page logic
-"""
-@app.route('/create_account', methods=['GET', 'POST'])
-def create_account():
-    error = None
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        if database.get_user_id(username):
-            error = "Username already exists!"
-        else:
-            user = database.add_new_user(username, password)
-            database.add_new_hero_to_user(user)
-            # database.add_world_map_to_hero() maybe?
-            return redirect(url_for('login'))
-    return render_template('index.html', error=error, create_account=True)
-    """
-
-
-@app.route('/add_new_character')
-def add_new_character():
-    user = database.get_object_by_id("User", session['id'])
-    database.add_new_hero_to_user(user)
-    return redirect(url_for('choose_character'))
-
-
-# this gets called if you press "logout"
-@app.route('/logout')
-@login_required
-@uses_hero
-def logout(hero=None):
-    hero.refresh_character()
-    session.pop('logged_in', None)
-    flash("Thank you for playing! Your have successfully logged out.")
-    return redirect(url_for('login'))
-
-# this gets called if you are logged in and there is no character info stored
-@app.route('/create_character', methods=['GET', 'POST'])
-@login_required
-@uses_hero
-def create_character(hero=None):
-    if len(hero.journal.quest_paths) == 0:
-        hero.journal.quest_paths = database.get_default_quest_paths()
-
-    if hero.current_world is None:
-        hero.current_world = database.get_default_world()
-        hero.current_location = database.get_default_location()
-
-    if hero.background is not None:
-        hero.background = "Barbarian"
-
-    if hero.name is None:
-        page_image = "beached"
-        generic_text =  "You awake to great pain and confusion as you hear footsteps " \
-                    "approaching in the sand. Unsure of where you are, you quickly look " \
-                    "around for something to defend yourself. A firm and inquisitive voice " \
-                    "pierces the air."
-        npc_text = [("Stranger", "Who are you and what are you doing here?")]
-        user_action = "get text"
-        user_response = "...I don't remember what happened. My name is"
-        user_text_placeholder = "Character Name"
-        if request.method == 'POST':
-            hero.name = request.form["get_data"].title()
-            page_image = "blacksmith"
-            generic_text = ""
-            npc_text = [("Stranger", "Where do you come from, child?")]
-            user_action = "make choice"
-            user_response = [
-                ("My father was a great warlord from the north.", "Gain <ul><li>+1 Brawn</li></ul>", "Barbarian"),
-                ("My father was a great missionary traveling to the west.", "Gain <ul><li>+1 Intellect</li></ul>", "Missionary")]
-            user_text_placeholder = ""
-    elif hero.background == "":
-        # This is needed if the user names there hero but leaves the page and returns later. But I will write it out later.
-        pass
-    else:
-        hero.refresh_character(full=True)
-        return redirect(url_for('home'))
-    return render_template('generic_dialogue.html', page_image=page_image,
-                           generic_text=generic_text, npc_text=npc_text, user_action=user_action, user_response=user_response,
-                           user_text_placeholder=user_text_placeholder)
 
 @app.route('/choose_character', methods=['GET', 'POST'])
 @login_required
@@ -421,14 +404,85 @@ def choose_character():
     # Now I need to work out how to make game not global *sigh*
     # (Marlen)
     game.set_hero(hero)
-    game.set_enemy(monster_generator(hero.age))
     flash(hero.login_alerts)
     hero.login_alerts = ""
     # If it's a new character, send them to create_character url
-    if hero.character_name is None: # Whats the difference between character_name and name?
+    # pdb.set_trace()
+    if hero.creation_phase:
         return redirect(url_for('create_character'))
     # If the character already exist go straight the main home page!
     return redirect(url_for('home'))
+
+
+# this gets called if you are logged in and there is no character info stored
+@app.route('/create_character', methods=['GET', 'POST'])
+@login_required
+@uses_hero
+def create_character(hero=None):
+    page_image = ""
+    # This should prevent anyone getting here if they haven't been sent
+    # by the login -> create account code.
+    if not hero.creation_phase:
+        return redirect(url_for('home'))
+    # Accept regular or json form data.
+    if request.method == 'POST':
+        if request.is_json:
+            data = request.get_json()
+            if 'form' in data:
+                request.form = data['form']
+        if hero.name is None:
+            hero.name = request.form["get_data"].title()
+        elif hero.background is None:
+            hero.background = data["response"]
+            if hero.background == "Barbarian":
+                hero.attributes.brawn.level += 1
+            elif hero.background == "Missionary":
+                hero.attributes.intellect.level += 1
+
+    if len(hero.journal.quest_paths) == 0:
+        hero.journal.quest_paths = database.get_default_quest_paths()
+
+    if hero.current_world is None:
+        hero.current_world = database.get_default_world()
+        hero.current_location = database.get_default_location()
+
+    if hero.name is None:
+        page_image = "beached"
+        generic_text = "You awake to great pain and confusion as you hear footsteps " \
+                    "approaching in the sand. Unsure of where you are, you quickly look " \
+                    "around for something to defend yourself. A firm and inquisitive voice " \
+                    "pierces the air."
+        npc_text = [("Stranger", "Who are you and what are you doing here?")]
+        user_action = "get text"
+        user_response = "...I don't remember what happened. My name is"
+        user_text_placeholder = "Character Name"
+    elif hero.background is None:
+        # This is needed if the user names there hero but leaves the page and returns later. But I will write it out later.
+        page_image = "character_background"
+        generic_text = ""
+        user_text_placeholder = ""
+        npc_text = [("Stranger", "Where do you come from, child?")]
+        user_action = "make choice"
+        user_response = [
+            ("My father was a great warlord from the north.", ["Gain", ("+1 Brawn",)], "Barbarian"),
+            ("My father was a great missionary traveling to the west.", ["Gain", ("+1 Intellect",)], "Missionary")]
+    else:
+        hero.creation_phase = False  # Prevent the user from returning here.
+        hero.refresh_character(full=True)
+        return redirect(url_for('home'))
+    return render_template('generic_dialogue.html', page_image=page_image, generic_text=generic_text, npc_text=npc_text, user_action=user_action, user_response=user_response, user_text_placeholder=user_text_placeholder)
+
+
+# this gets called if you press "logout"
+@app.route('/logout')
+@login_required
+@uses_hero
+def logout(hero=None):
+    # hero.refresh_character()  # probably no longer wanted?
+    # session.pop('logged_in', None)  # I'm not sure why you might want this instead of a full clear ..
+    session.clear()
+    flash("Thank you for playing! Your have successfully logged out.")
+    return redirect(url_for('login'))
 
 
 # An admin button that lets you reset your character. Currently doesnt reset attributes/proficiencies, nor inventory and other stuff. Should be rewritten as something
@@ -458,8 +512,10 @@ def reset_character(stat_type, hero=None):
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 @uses_hero
-def admin(path=None, hero=None):
-    admin = None
+def admin(path="modify_self", hero=None):
+    hero.base_proficiencies['endurance'].current = 0
+    print("Visiting the admin page has set your Endurance to 0. This is for testing purposes.")
+    admin_form_content = None
     if path == "edit_database":
         pass
     elif path == "modify_self":
@@ -468,26 +524,26 @@ def admin(path=None, hero=None):
             hero.age = int(request.form["Age"])
             hero.experience = int(request.form["Experience"])
             hero.experience_maximum = int(request.form["Experience_maximum"])
-            hero.renown = int(request.form["Renown"])
-            hero.virtue = int(request.form["Virtue"])
-            hero.devotion = int(request.form["Devotion"])
+            hero.base_proficiencies['renown'].current = int(request.form["Renown"])
+            hero.base_proficiencies['virtue'].current = int(request.form["Virtue"])
+            hero.base_proficiencies['devotion'].current = int(request.form["Devotion"])
             hero.gold = int(request.form["Gold"])
             hero.basic_ability_points = int(request.form["Basic_ability_points"])
             hero.archetype_ability_points = int(request.form["Archetype_ability_points"])
             hero.calling_ability_points = int(request.form["Calling_ability_points"])
-            hero.pantheon_ability_points = int(request.form["Pantheon_ability_points"])
+            hero.pantheon_ability_points = int(request.form["Pantheonic_ability_points"])
             hero.attribute_points = int(request.form["Attribute_points"])
             hero.proficiency_points = int(request.form['Proficiency_Points'])
             hero.refresh_character(full=True)
             return redirect(url_for('home'))
 
-        admin = [
+        admin_form_content = [
             ("Age", hero.age),
             ("Experience", hero.experience),
             ("Experience_maximum", hero.experience_maximum),
-            ("Renown", hero.renown),
-            ("Virtue", hero.virtue),
-            ("Devotion", hero.devotion),
+            ("Renown", hero.base_proficiencies['renown'].current),
+            ("Virtue", hero.base_proficiencies['virtue'].current),
+            ("Devotion", hero.base_proficiencies['devotion'].current),
             ("Gold", hero.gold),
             ("Basic_ability_points", hero.basic_ability_points),
             ("Archetype_ability_points", hero.archetype_ability_points),
@@ -495,7 +551,14 @@ def admin(path=None, hero=None):
             ("Pantheonic_ability_points", hero.pantheon_ability_points),
             ("Attribute_points", hero.attribute_points),
             ("Proficiency_Points", hero.proficiency_points)]
-    return render_template('admin.html', hero=hero, admin=admin, path=path)  # return a string
+    return render_template('admin.html', hero=hero, admin=admin_form_content, path=path)  # return a string
+
+
+@app.route('/add_new_character')
+def add_new_character():
+    user = database.get_object_by_id("User", session['id'])
+    database.add_new_hero_to_user(user)
+    return redirect(url_for('choose_character'))
 
 
 # The if statement works and displays the user page as normal. Now if you
@@ -611,8 +674,8 @@ def inbox(outbox, hero=None):
 @app.route('/spellbook')
 @uses_hero
 def spellbook(hero=None):
+    print(hero.journal.notifications)
     return render_template('spellbook.html', page_title="Spellbook", hero=hero)
-
 
 
 # PROFILE PAGES (Basically the home page of the game with your character
@@ -627,7 +690,7 @@ def home(hero=None):
     """
 
     # Is this supposed to update the time of all hero objects?
-    database.update_time(hero)
+    # database.update_time(hero)
 
     # Not implemented. Control user moves on map.
     # Sets up initial valid moves on the map.
@@ -637,7 +700,8 @@ def home(hero=None):
     # session['valid_moves'].append(hero.current_location.id)
 
     return render_template(
-        'profile_home.html', page_title="Profile", hero=hero, profile=True)
+        'profile_home.html', page_title="Profile", hero=hero, profile=True,
+        proficiencies=hero.get_summed_proficiencies())
 
 
 # This gets called anytime you have  attribute points to spend
@@ -657,48 +721,41 @@ def attributes(hero=None):
 @uses_hero
 def proficiencies(hero=None):
     # This page is literally just a html page with tooltips and proficiency level up buttons. No python code is needed. Python only tells html which page to load.
-    return render_template('profile_proficiencies.html', page_title="Proficiencies", hero=hero, all_attributes=hero.attributes
-                           ,all_proficiencies=hero.proficiencies)
+    return render_template('profile_proficiencies.html', page_title="Proficiencies", hero=hero, all_attributes=hero.attributes, all_proficiencies=hero.base_proficiencies)
 
 
 @app.route('/ability_tree/<spec>')
 @login_required
 @uses_hero
 def ability_tree(spec, hero=None):
-    all_abilities = []
-    becomeType = None
-    all_type_choices = []
-    if spec == "basic":
-        points_remaining = hero.basic_ability_points
-    elif spec == "archetype":
-        points_remaining = hero.archetype_ability_points
-        if hero.specializations.archetype is None:
-            becomeType = "archetype"
+    # for prof in hero.get_summed_proficiencies():
+    #     if prof.name == "stealth" or prof.name == "health":
+    #         print(prof,"\n")
+    if spec == "archetype" and hero.specializations.archetype is None: # On the archetype pagebut the hero doesn't have one!
+        becomeType = "archetype"
+        spec_choices = database.get_all_objects("Archetype")
+    elif spec == "calling" and hero.specializations.calling is None: # On the archetype pagebut the hero doesn't have one!
+        becomeType = "calling"
+        spec_choices = database.get_all_objects("Calling")
+    elif spec == "pantheon" and hero.specializations.pantheon is None: # On the archetype pagebut the hero doesn't have one!
+        becomeType = "pantheon"
+        spec_choices = database.get_all_objects("Pantheon")
+    else:
+        becomeType = None
+        spec_choices = []
 
-            # all_specializations = database.get_all_specializations()
-            # see EZDB.get_all_users() -- maybe sort by name?
-            all_type_choices = [("brute", "A character who uses strength and combat to solve problems. Proficient with many types of weapons."),
-                                ("scoundrel", "A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery."),
-                                ("ascetic", "A character who focuses on disciplining mind and body. They use a combination of combat and intellect."),
-                                ("survivalist", "A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration."),
-                                ("philosopher", "A character who uses intellect to solve problems. Excels at any task requiring powers of the mind."),
-                                ("opportunist", "A character who solves problems using speech and dialogue.")]
-    elif spec == "calling":
-        points_remaining = hero.calling_ability_points
-        if hero.calling == None:
-            becomeType = "archetype"
-            all_type_choices = [("thief", "A character who specializes in thievery and stealth.")]
-    elif spec == "pantheon":
-        points_remaining = hero.pantheon_ability_points
-        if hero.pantheon == None:
-            becomeType = "pantheon"
-            all_type_choices = [("ashari'", "Goddess of the sun")]
+    all_abilities = []
     for ability in hero.abilities:
-        if ability.hidden == False and ability.tree == spec:
-            all_abilities.append(ability)
-    return render_template('profile_ability.html', page_title="Abilities", hero=hero, ability_tree=spec,
-                           all_abilities=all_abilities, points_remaining=points_remaining, becomeType=becomeType,
-                           all_type_choices=all_type_choices)
+        if ability.hidden == False and ability.tree == spec.title(): # This checks if the ability is the correct basic/archetpe/calling/pantheon
+            if spec == "basic": # If its basic thenit passed and always gets added
+                all_abilities.append(ability)
+            elif spec == "archetype" and hero.specializations.archetype: # If it's archetype and the hero has chosen an archetype...
+                if hero.specializations.archetype.name == ability.tree_type: # If the chosen archetype matches the ability's archetype add it
+                    all_abilities.append(ability)
+
+    return render_template('profile_ability.html', hero=hero, ability_tree=spec,
+                           all_abilities=all_abilities, becomeType=becomeType,
+                           spec_choices=spec_choices)
 
 
 @app.route('/inventory_page')
@@ -706,18 +763,12 @@ def ability_tree(spec, hero=None):
 @uses_hero
 def inventory_page(hero=None):
     page_title = "Inventory"
-    total_armour = 0
-    for item in hero.inventory.equipped:
-        try:
-            total_armour += item.armour_value
-        except AttributeError:
-            pass  # item might not have an armour value so ignore.
     # for item in hero.inventory:
     #     if item.wearable:
     #         item.check_if_improvement()
     return render_template(
         'inventory.html', hero=hero, page_title=page_title,
-        isinstance=isinstance, getattr=getattr, test_value=total_armour)
+        isinstance=isinstance, getattr=getattr)
 
 @app.route('/quest_log')
 @login_required
@@ -778,6 +829,17 @@ def atlas(hero=None, map_id=0):
 @login_required
 @uses_hero
 def achievements(hero=None, achievement_id=0):
+    """
+def achievement_log(hero=None):
+    achievements = hero.journal.achievements
+    page_title = "Achievements"
+    return render_template(
+        'journal.html', hero=hero, achievement_log=True,
+        completed_achievements=achievements.completed_achievements,
+        kill_achievements=achievements.kill_achievements,
+        kill_quests={},
+        page_title=page_title)  # return a string
+    """
     page_title = "Achievements"
     all_achievements = [(1, "Kill 3 Wolves", 5)]
     if achievement_id == "0":
@@ -830,7 +892,59 @@ def under_construction(hero=None):
     page_title = "Under Construction"
     return render_template('layout.html', page_title=page_title, hero=hero)  # return a string
 
+@app.route('/map/<name>')
+@app.route('/town/<name>')
+@app.route('/dungeon/<name>')
+@app.route('/explorable/<name>')
+@login_required
+@uses_hero
+@update_current_location
+@url_protect
+def move(name='', hero=None, location=None):
+    """Set up a directory for the hero to move to.
 
+    Arguments are in the form of a url and are sent by the data that can be
+    found with the 'view page source' command in the browser window.
+    """
+    # pdb.set_trace()
+    hero.current_terrain = location.terrain # Set the hero's terrain to the terrain type of the place he just moved to.
+    if location.type == 'map':
+        # location.pprint() # Why do we have this?
+        other_heroes = []
+    else:
+        other_heroes = hero.get_other_heroes_at_current_location()
+
+    return render_template(
+        'move.html', hero=hero,
+        page_title=location.display.page_title,
+        page_heading=location.display.page_heading,
+        page_image=location.display.page_image,
+        paragraph=location.display.paragraph,
+        people_of_interest=other_heroes,
+        places_of_interest=location.places_of_interest)
+
+# Currently runs blacksmith and marketplace
+@app.route('/store/<name>')
+@login_required
+@uses_hero
+@update_current_location
+def store(name, hero=None, location=None):
+    # print(hero.current_city)
+    if name == "Blacksmith":
+        dialogue = "I have the greatest armoury in all of Thornwall!" # This should be pulled from pre_built objects
+        items_for_sale = database.get_all_store_items()
+    elif name == "Marketplace":
+        dialogue = "I have trinkets from all over the world! Please take a look."
+        items_for_sale = database.get_all_marketplace_items()
+    else:
+        error = "Trying to get to the store but the store name is not valid."
+        render_template('broken_page_link', error=error)
+    return render_template('store.html', hero=hero,
+                           dialogue=dialogue,
+                           items_for_sale=items_for_sale,
+                           page_title=location.display.page_title)
+
+# Currently runs old man's hut
 @app.route('/building/<name>')
 @login_required
 @uses_hero
@@ -855,38 +969,6 @@ def building(name='', hero=None, location=None):
         people_of_interest=other_heroes,
         places_of_interest=location.places_of_interest)
 
-
-@app.route('/map/<name>')
-@app.route('/town/<name>')
-@app.route('/dungeon/<name>')
-@app.route('/explorable/<name>')
-@login_required
-@uses_hero
-@update_current_location
-@url_protect
-def move(name='', hero=None, location=None):
-    """Set up a directory for the hero to move to.
-
-    Arguments are in the form of a url and are sent by the data that can be
-    found with the 'view page source' command in the browser window.
-    """
-    # pdb.set_trace()
-    hero.current_terrain = location.terrain # Set the hero's terrain to the terrain type of the place he just moved to.
-    if location.type == 'map':
-        location.pprint() # Why do we have this?
-        other_heroes = []
-    else:
-        other_heroes = hero.get_other_heroes_at_current_location()
-
-    return render_template(
-        'move.html', hero=hero,
-        page_title=location.display.page_title,
-        page_heading=location.display.page_heading,
-        page_image=location.display.page_image,
-        paragraph=location.display.paragraph,
-        people_of_interest=other_heroes,
-        places_of_interest=location.places_of_interest)
-
 @app.route('/barracks/<name>')
 @login_required
 @uses_hero
@@ -896,7 +978,7 @@ def barracks(name='', hero=None, location=None):
     # Dead heros wont be able to move on the map and will immediately get
     # moved to ahospital until they heal. So locations won't need to factor
     # in the "if"of the hero being dead
-    if hero.proficiencies.health.current <= 0:
+    if hero.get_summed_proficiencies('health').current <= 0:
         location.display.page_heading = "Your hero is currently dead."
         location.display.page_image = "dead.jpg"
         location.children = None
@@ -923,7 +1005,7 @@ def barracks(name='', hero=None, location=None):
 @update_current_location
 def dungeon_entrance(name='', hero=None, location=None):
     location.display.page_heading = " You are in the dungeon and exploring!"
-    hero.current_dungeon_floor = 0
+    hero.journal.achievements.current_dungeon_floor = 0
     hero.current_dungeon_progress = 0
     hero.random_encounter_monster = False
     explore_dungeon = database.get_object_by_name('Location', 'Explore Dungeon')
@@ -938,7 +1020,7 @@ def dungeon_entrance(name='', hero=None, location=None):
 @update_current_location
 def explore_dungeon(name='', hero=None, location=None, extra_data=None):
     # For convenience
-    location.display.page_heading = "Current Floor of dungeon: " + str(hero.current_dungeon_floor)
+    location.display.page_heading = "Current Floor of dungeon: " + str(hero.journal.achievements.current_dungeon_floor)
     if extra_data == "Entering": # You just arrived into the dungeon
         location.display.page_heading += "You explore deeper into the dungeon!"
         page_links = [("Walk deeper into the", "/explore_dungeon/Explore%20Dungeon/None", "dungeon", ".")]
@@ -956,18 +1038,17 @@ def explore_dungeon(name='', hero=None, location=None, extra_data=None):
     encounter_chance = randint(0, 100)
     if hero.random_encounter_monster == True: # You have a monster waiting for you from before
         location.display.page_heading += "The monster paces in front of you."
-        enemy = monster_generator(hero.current_dungeon_floor + 1) # This should be a saved monster and not re-generated :(
-        game.set_enemy(enemy)
+        enemy = monster_generator(hero.journal.achievements.current_dungeon_floor + 1) # This should be a saved monster and not re-generated :(
         page_links = [("Attack the ", "/battle/monster", "monster", "."),
                       ("Attempt to ", "/dungeon_entrance/Dungeon%20Entrance", "flee", ".")]
     else: # You continue exploring
-        hero.current_dungeon_floor_progress += 1
-        if encounter_chance > (100 - (hero.current_dungeon_floor_progress*4)):
-            hero.current_dungeon_floor += 1
-            if hero.current_dungeon_floor > hero.deepest_dungeon_floor:
-                hero.deepest_dungeon_floor = hero.current_dungeon_floor
-            hero.current_dungeon_floor_progress = 0
-            location.display.page_heading = "You descend to a deeper level of the dungeon!! Current Floor of dungeon: " + str(hero.current_dungeon_floor)
+        hero.journal.achievements.current_dungeon_floor_progress += 1
+        if encounter_chance > (100 - (hero.journal.achievements.current_dungeon_floor_progress*4)):
+            hero.journal.achievements.current_dungeon_floor += 1
+            if hero.journal.achievements.current_dungeon_floor > hero.journal.achievements.deepest_dungeon_floor:
+                hero.journal.achievements.deepest_dungeon_floor = hero.journal.achievements.current_dungeon_floor
+            hero.journal.achievements.current_dungeon_floor_progress = 0
+            location.display.page_heading = "You descend to a deeper level of the dungeon!! Current Floor of dungeon: " + str(hero.journal.achievements.current_dungeon_floor)
             page_links = [("Start ", "/explore_dungeon/Explore%20Dungeon/None", "exploring", " this level of the dungeon.")]
         elif encounter_chance > 35: # You find a monster! Oh no!
             # Not sure how to move the session query to the database as I need to pull the terrain attribute first
@@ -981,9 +1062,8 @@ def explore_dungeon(name='', hero=None, location=None, extra_data=None):
             print("If you were running the new bestiary code, you would be fighting a " + monster.name + " (level " + str(monster.level) + "), because you are in terrain type " + hero.current_terrain + ".")
 
             location.display.page_heading += "You come across a terrifying monster lurking in the shadows."
-            enemy = monster_generator(hero.current_dungeon_floor+1)
+            enemy = monster_generator(hero.journal.achievements.current_dungeon_floor+1)
             hero.current_dungeon_monster = True
-            game.set_enemy(enemy)
             page_links = [("Attack the ", "/battle/monster", "monster", "."),
                           ("Attempt to ", "/dungeon_entrance/Dungeon%20Entrance", "flee", ".")]
         elif encounter_chance > 15: # You find an item!
@@ -992,7 +1072,7 @@ def explore_dungeon(name='', hero=None, location=None, extra_data=None):
         else:
             location.display.page_heading += " You explore deeper into the dungeon!"
             page_links = [("Walk deeper into the", "/explore_dungeon/Explore%20Dungeon/None", "dungeon", ".")]
-    location.display.page_heading += " Current progress on this floor: " + str(hero.current_dungeon_floor_progress)
+    location.display.page_heading += " Current progress on this floor: " + str(hero.journal.achievements.current_dungeon_floor_progress)
     return render_template('dungeon_exploring.html', hero=hero, game=game, page_links=page_links)  # return a string
 
 # From /barracks
@@ -1011,7 +1091,7 @@ def spar(name='', hero=None, location=None):
         # This gives you experience and also returns how much
         # experience you gained
         modified_spar_benefit = hero.gain_experience(spar_benefit)
-        hero.proficiencies.endurance.current -= 1
+        hero.base_proficiencies['endurance'].current -= 1
         location.display.page_heading = \
             "You spend some time sparring with the trainer at the barracks." \
             " You spend {} gold and gain {} experience.".format(
@@ -1031,6 +1111,7 @@ def arena(name='', hero=None, location=None):
     """
     # If I try to check if the enemy has 0 health and there is no enemy,
     # I randomly get an error
+    """
     if not game.has_enemy:
         enemy = monster_generator(hero.age - 6)
         if enemy.name == "Wolf":
@@ -1043,138 +1124,79 @@ def arena(name='', hero=None, location=None):
     location.display.page_title = "War Room"
     location.display.page_heading = "Welcome to the arena " + hero.name + "!"
     location.display.page_image = str(game.enemy.name) + '.jpg'
+
+    profs = game.enemy.get_summed_proficiencies()
     conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
                     ("Level: ", str(game.enemy.level), "Combat Details"),
-                    ("Health: ", str(game.enemy.proficiencies.health.current) + " / " + str(
-                        game.enemy.proficiencies.health.maximum)),
-                    ("Damage: ", str(game.enemy.proficiencies.damage.minimum) + " - " + str(
-                        game.enemy.proficiencies.damage.maximum)),
-                    ("Attack Speed: ", str(game.enemy.proficiencies.speed.speed)),
-                    ("Accuracy: ", str(game.enemy.proficiencies.accuracy.accuracy) + "%"),
-                    ("First Strike: ", str(game.enemy.proficiencies.first_strike.chance) + "%"),
-                    ("Critical Hit Chance: ", str(game.enemy.proficiencies.killshot.chance) + "%"),
-                    ("Critical Hit Modifier: ", str(game.enemy.proficiencies.killshot.modifier)),
-                    ("Defence: ", str(game.enemy.proficiencies.defence.modifier) + "%"),
-                    ("Evade: ", str(game.enemy.proficiencies.evade.chance) + "%"),
-                    ("Parry: ", str(game.enemy.proficiencies.parry.chance) + "%"),
-                    ("Riposte: ", str(game.enemy.proficiencies.riposte.chance) + "%"),
-                    ("Block Chance: ", str(game.enemy.proficiencies.block.chance) + "%"),
-                    ("Block Reduction: ", str(game.enemy.proficiencies.block.modifier) + "%")]
+                    ("Health: ", str(profs.health.get_base()) + " / " + str(
+                        profs.health.final)),
+                    ("Damage: ", str(profs.damage.final) + " - " + str(
+                        profs.damage.final)),
+                    ("Attack Speed: ", str(profs.speed.final)),
+                    ("Accuracy: ", str(profs.accuracy.final) + "%"),
+                    ("First Strike: ", str(profs.first_strike.final) + "%"),
+                    ("Critical Hit Chance: ", str(profs.killshot.final) + "%"),
+                    ("Critical Hit Modifier: ", str(profs.killshot.final)),
+                    ("Defence: ", str(profs.defence.final) + "%"),
+                    ("Evade: ", str(profs.evade.final) + "%"),
+                    ("Parry: ", str(profs.parry.final) + "%"),
+                    ("Riposte: ", str(profs.riposte.final) + "%"),
+                    ("Block Chance: ", str(profs.block.final) + "%"),
+                    ("Block Reduction: ", str(profs.block.final) + "%")]
+                    """
     page_links = [("Challenge the enemy to a ", "/battle/monster", "fight", "."),
                   ("Go back to the ", "/barracks/Barracks", "Barracks", ".")]
     return render_template(
         'building_default.html', page_title=location.display.page_title,
         page_heading=location.display.page_heading,
         page_image=location.display.page_image, hero=hero, game=game,
-        page_links=page_links, enemy_info=conversation, enemy=game.enemy)
+        page_links=page_links, enemy_info=conversation)
 
 
 # this gets called if you fight in the arena
-@app.route('/battle/<this_user>')
+@app.route('/battle/<enemy_user>')
 @login_required
 @uses_hero
-def battle(this_user=None, hero=None):
-    page_title = "Battle"
-    page_heading = "Fighting"
-    print("running function: battle2")
+def battle(enemy_user=None, hero=None):
     page_links = [("Return to your ", "/home", "profile", " page.")]
-    if this_user == "monster":
+    if enemy_user == "monster": # Ideally if this is an integer then search for a monster with that ID.
         pass
-    else:
-        enemy = database.fetch_hero_by_username(this_user)
-        enemy.login_alerts += "You have been attacked!-"
-        game.set_enemy(enemy)
-        game.enemy.experience_rewarded = 5
-        game.enemy.items_rewarded = []
-    hero.proficiencies.health.current, game.enemy.proficiencies.health.current, battle_log = combat_simulator.battle_logic(hero, game.enemy) # This should return the full heroes, not just their health
-    game.has_enemy = False
-    if hero.proficiencies.health.current == 0:
-        page_title = "Defeat!"
-        page_heading = "You have died."
-        location = database.get_object_by_name('Location', hero.last_city.name)
+    else:   # If it's not an integer, then it's a username. Search for that user's hero.
+        enemy = database.fetch_hero_by_username(enemy_user)
+        # enemy.login_alerts += "You have been attacked!-"     This will be changed to the new notification system.
+        enemy.experience_rewarded = enemy.age # For now you just get 1 experience for each level the other hero was
+        enemy.items_rewarded = []   # Currently you get no items for killing another user
+    battle_log = combat_simulator.battle_logic(hero, enemy) # Not sure if the combat sim should update the database or return the heros to be updated here
+    hero.current_dungeon_monster = False # Whether you win or lose, the monster will now be gone.
+    if hero.base_proficiencies['health'].current == 0: # First see if the player died.
+        location = database.get_object_by_name('Location', hero.last_city.name) # Return hero to last visited city
         hero.current_location = location
-        hero.current_dungeon_monster = False
-        hero.deaths += 1
-    else:
-        """
-        for item in hero.equipped_items:
-            item.durability -= 1
-            if item.durability <= 0:
-                item.broken = True
-        # This code is for the bestiary and should add one to your kill count for that species of monster. If it's a new species it shouls add it to your book.
-        newMonster = True
-        for key, value in hero.kill_quests.items():
-            if key == game.enemy.species:
-                hero.kill_quests[key] += 1
-                if hero.kill_quests[key] == 2:
-                    for achievement in hero.completed_achievements:
-                        if achievement[0] == "Kill a " + game.enemy.species:
-                            hero.completed_achievements.remove(achievement)
-                            break
-                    hero.completed_achievements.append(("Kill two " + game.enemy.species_plural, "10"))
-                    hero.experience += 10
-                newMonster = False
-                break
-        if newMonster is not None:
-            #hero.kill_quests[game.enemy.species] = 1
-            hero.completed_achievements.append(("Kill a " + game.enemy.species, "5"))
-            for monster in bestiary_data:
-                if monster.name == game.enemy.name:
-                    hero.bestiary.append(monster)
-            hero.experience += 5
-        """
-        experience_gained = hero.gain_experience(game.enemy.experience_rewarded)  # * hero.experience_gain_modifier  THIS IS CAUSING A WEIRD BUG? I don't know why
-        if this_user == "monster":
-            hero.monster_kills += 1
-        else:
-            hero.player_kills += 1
-            game.enemy.deaths += 1
-            location = database.get_object_by_name('Location', game.enemy.last_city.name)
-            game.enemy.current_location = location
-        if len(game.enemy.items_rewarded) > 0:
-            for item in game.enemy.items_rewarded:
+        hero.current_dungeon_monster = False  # Reset any progress in any dungeon he was in
+        hero.journal.achievements.deaths += 1  # Record that the hero has another death
+        battle_log.append("You were defeated. You gain no experience and your account should be deleted.")
+        if enemy_user != "monster":
+            enemy.player_kills += 1
+    else:  # Ok, the hero is not dead. Currently that means he won! Since we don't have ties yet.
+        experience_gained = str(hero.gain_experience(enemy.experience_rewarded)) # This works PERFECTLY as intended!
+        if enemy_user == "monster": # This needs updating. If you killed a monster then the next few lines should differ from a user
+            hero.journal.achievements.monster_kills += 1
+            pass
+        else: # Ok, you killed a user!
+            hero.journal.achievements.player_kills += 1  # You get a player kill score!
+            enemy.journal.achievements.deaths += 1  # Make sure they get their death recorded!
+            location = database.get_object_by_name('Location', enemy.last_city.name) # Send them to their last visited city
+            enemy.current_location = location
+        if len(enemy.items_rewarded) > 0: # Give the hero any items earned! This probably should be completely redone.
+            for item in enemy.items_rewarded:
                 if not any(items.name == item.name for items in hero.inventory):
                     hero.inventory.append(item)
                 else:
                     for items in hero.inventory:
                         if items.name == item.name:
                             items.amount_owned += 1
-        page_title = "Victory!"
-        page_heading = "You have defeated the " + str(game.enemy.name) + " and gained " + str(experience_gained) + " experience!"
+                battle_log.append("You have defeated the " + enemy.name + " and gained " + experience_gained + " experience!")
         page_links = [("Return to where you ", hero.current_location.url, "were", ".")]
-        hero.current_dungeon_monster = False
-    return render_template(
-        'battle.html', page_title=page_title, page_heading=page_heading,
-        battle_log=battle_log, hero=hero, enemy=game.enemy,
-        page_links=page_links)
-
-
-# a.k.a. "Blacksmith"
-@app.route('/store/<name>')
-@login_required
-@uses_hero
-@update_current_location
-# @spawns_event
-def store(name, hero=None, location=None):
-    page_title = "Store"
-    items_for_sale = []
-    if name == "Blacksmith":
-        page_links = [("Take a look at the ", "/store/armoury", "armour", "."), ("Let's see what ", "/store/weaponry", "weapons", " are for sale.")]
-        return render_template('store.html', hero=hero, page_title=page_title, page_links=page_links)  # return a string
-    elif name == "armoury":
-        page_links = [("Let me see the ", "/store/weaponry", "weapons", " instead.")]
-        for item in database.get_all_store_items():
-            if item.garment or item.jewelry:
-                items_for_sale.append(item)
-    elif name == "weaponry":
-        page_links = [("I think I'd rather look at your ", "/store/armoury", "armour", " selection.")]
-        for item in database.get_all_store_items():
-            if item.weapon:
-                items_for_sale.append(item)
-    return render_template('store.html', hero=hero, items_for_sale=items_for_sale, page_title=page_title,
-                           page_links=page_links)  # return a string
-
-
+    return render_template('battle.html', battle_log=battle_log, hero=hero, enemy=enemy, page_links=page_links)
 
 # @app.route('/tavern')
 @app.route('/tavern/<name>', methods=['GET', 'POST'])

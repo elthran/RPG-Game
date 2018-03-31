@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         requestArray.unshift(clickedButton);
                         // Send the last element to check if we should show a
                         // notification.
-                        showGlobalNotificationButton(requestArray[requestArray.length-1]);
+//                        showGlobalNotificationButton(requestArray[requestArray.length-1]);
                         jsFunction.apply(document, requestArray);
                     }
                 }
@@ -114,16 +114,46 @@ function refreshPage() {
 
 // Allows the user to switch between the register and login forms.
 function toggleLoginRegister(button) {
+    var tag = button.getAttribute('data');
     var registerForm = document.getElementById("register-form");
     var loginForm = document.getElementById("login-form");
-    if (window.getComputedStyle(registerForm).display === "none") {
+    var resetForm = document.getElementById("reset-form");
+    var errorDiv = document.getElementById("error");
+    if (tag === "register") {
         registerForm.style.display = "block";
         loginForm.style.display = "none";
+        resetForm.style.display = "none";
+        errorDiv.style.display = "none";
         document.getElementById("registerFocus").focus();
-    } else {
+    } else if (tag === "login") {
         registerForm.style.display = "none";
         loginForm.style.display = "block";
+        resetForm.style.display = "none";
+        errorDiv.style.display = "none";
         document.getElementById("loginFocus").focus();
+    } else if (tag === "reset") {
+        registerForm.style.display = "none";
+        loginForm.style.display = "none";
+        resetForm.style.display = "block";
+        errorDiv.style.display = "none";
+        document.getElementById("resetFocus").focus();
+    }
+}
+
+function checkPasswordMatch() {
+    var continueButton = document.getElementById("continueButton");
+    var errorDiv = document.getElementById("error");
+    var password = document.getElementById("password").value;
+    var passwordCheck = document.getElementById("passwordCheck").value;
+
+    if (password != passwordCheck) {
+        errorDiv.innerHTML = "These passwords don't match!";
+        continueButton.disabled = true;
+        continueButton.style.background = "#5e9960";
+    } else {
+        errorDiv.innerHTML = "These passwords match.";
+        continueButton.disabled = false;
+        continueButton.style.background = "#4CAF50";
     }
 }
 
@@ -144,8 +174,8 @@ function stickyTopAndBottom() {
     var newOffset = window.pageYOffset;
     var sidebarDiv = document.getElementById("sidebar");
     var minOffset = 10;
-    // I don't know why * 3 but it works.
-    var maxOffset = sidebarDiv.scrollHeight - window.innerHeight + minOffset;
+    var extraBottomSpacing = 5;  // compensates for bottom being too close.
+    var maxOffset = sidebarDiv.scrollHeight - window.innerHeight + minOffset + extraBottomSpacing;
     var currentOffset = parseInt(window.getComputedStyle(sidebarDiv, "style").top.slice(0, -2));
     var scrollYDirection = (lastYOffset < newOffset
         ? "down"
@@ -350,18 +380,12 @@ function itemPurchasedPopup(response) {
 // I moved this function here instead of putting it at the bottom of each page which uses my accordion. BUT for some reason if I put it here
 // it becomes glitchy. I need to click the element twice for it to work now. I need to solve it before I move them all here.
 function genericAccordion(button) {
-    var allProfs = document.getElementsByClassName("genericAccordion");
-    var index;
-    for (index = 0; index < allProfs.length; index++) {
-        allProfs[index].addEventListener("click", function() {
-            this.classList.toggle("active");
-            var panel = this.nextElementSibling;
-            if (panel.style.display === "block") {
-                panel.style.display = "none";
-            } else {
-                panel.style.display = "block";
-            }
-        });
+    button.classList.toggle("active");
+    var panel = button.nextElementSibling;
+    if (panel.style.display === "block") {
+        panel.style.display = "none";
+    } else {
+        panel.style.display = "block";
     }
 }
 
@@ -391,44 +415,24 @@ function updateAttribute(button, status) {
     }
 }
 
-function proficiencyTooltip(button, tooltip) {
-    var newTooltip = {};
+function proficiencyTooltip(response, oldData) {
+    var newTooltip;
     newTooltip = document.getElementById("proficiencyTooltip");
-    newTooltip.innerHTML = tooltip;
-}
-
-function updateProficiency(button, status, tooltip) {
-    "use strict";
-    proficiencyTooltip(button, tooltip);
-    var id = 0;
-    var i = 0;
-    var heroProfPointsDiv = {};
-    var profCurrentLvDiv = {};
-    var buttonsNodeList = {};
-    id = button.getAttribute("data");
-    profCurrentLvDiv = document.getElementById("proficiency-" + id);
-    heroProfPointsDiv = document.getElementById("points_remaining");
-    profCurrentLvDiv.innerHTML = parseInt(profCurrentLvDiv.innerHTML) + 1;
-    heroProfPointsDiv.innerHTML = parseInt(heroProfPointsDiv.innerHTML) - 1;
-    if (status === "hide_this") { //hide this button
-        button.style.display = "none";
-    } else if (status === "hide_all") { //hide all buttons
-        buttonsNodeList = document.querySelectorAll("button[class=upgradeButton]");
-        for (i = 0; i < buttonsNodeList.length; i++) {
-            buttonsNodeList[i].style.display = "none";
-        }
+    newTooltip.innerHTML = response.tooltip;
+    if ("pointsRemaining" in response) {
+        document.getElementById("pointsRemaining").innerHTML = response.pointsRemaining;
+        document.getElementById("proficiency-" + oldData.id).innerHTML = response.level;
     }
 }
 
-function abilityTooltip(button, tooltip, image) {
-    var newTooltip = {};
-    var newImage = {};
-    var startImage = '<img src="/static/images/';
-    var endImage = '.jpg" alt="none" style="display:block;margin-left:auto;margin-right:auto;height:200px;width:200px;">';
-    newTooltip = document.getElementById("attributeTooltip");
-    newTooltip.innerHTML = tooltip;
-    newImage = document.getElementById("attributeImage");
-    newImage.innerHTML = startImage + image + endImage;
+function abilityTooltip(response, oldData) {
+    var newTooltip;
+    newTooltip = document.getElementById("abilityTooltip");
+    newTooltip.innerHTML = response.tooltip;
+    if ("pointsRemaining" in response) {
+        document.getElementById("pointsRemaining").innerHTML = response.pointsRemaining;
+        document.getElementById("ability-" + oldData.id).innerHTML = response.level;
+    }
 }
 
 function updateAbility(button, status, tooltip) {
@@ -467,13 +471,15 @@ function abilityChoiceTooltip(button, description, image) {
     newImage.innerHTML = startImage + image + endImage;
 }
 
-function questTooltip(button, description, reward) {
-    var newTooltip = {};
-    var tooltipReward = {};
+function questTooltip(response, oldData) {
+    "use strict";
+    var newTooltip;
+    var tooltipReward;
+
     newTooltip = document.getElementById("questTooltip");
-    newTooltip.innerHTML = description;
+    newTooltip.innerHTML = response.description;
     tooltipReward = document.getElementById("questReward");
-    tooltipReward.innerHTML = "<h3>Your reward for completing the quest is: " + reward +"</h3>";
+    tooltipReward.innerHTML = "<h3>Your reward for completing this quest is: " + response.reward +"xp</h3>";
 }
 
 function pageReload(button) {
@@ -508,42 +514,15 @@ function showGlobalNotificationButton(isNotice, isJSON) {
     return null; // If this variable was a valid isNotice return nothing.
 }
 
-function showGlobalModal(response, oldData) {
-    // Add content data to modal
-    header = document.getElementById("globalMessageModalHeaderContent");
-    header.innerHTML = response["header"];
-    body = document.getElementById("globalMessageModalBodyContent");
-    body.innerHTML = response["body"];
-    footer = document.getElementById("globalMessageModalFooterContent");
-    footer.innerHTML = response["footer"];
-
-    // Get the modal
-    var modal = document.getElementById('globalMessage');
-    // Get the button that opens the modal
-    var clickedButton = document.getElementById("globalNotificationButton");
-    // Get the <span> element that closes the modal
-    var span = document.querySelector(".closeGlobalModal");
-    // When the user clicks the button, open the modal
-    modal.style.display = "block";
-    // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
-        modal.style.display = "none";
+// Consider moving much of this to HTML?
+function redirectUserFromNotification(response, oldData) {
+    // Redirect the user to the appropriate page
+    // Close the notification
+    var clickedButton = document.getElementById("notice-" + oldData['id']);
+    clickedButton.style.display = "none";
+    if (response["redirect"] == "True") {
+        window.location.href = response["url"]
     }
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-
-    // Handle ESC key (key code 27) to close modal.
-    document.addEventListener('keyup', function(event) {
-        if (event.keyCode == 27) {
-            modal.style.display = "none";
-        }
-    });
-
-    clickedButton.style.visibility = "hidden";
 }
 
 // Choose character page, confirms user choice of hero.
@@ -680,14 +659,58 @@ function updateMessageTable(xhttp, oldData) {
     }
 }
 
+function getFormData(form) {
+    // Attempt to avoid using Form post and send the form data manually.
+    // <form method="post" onsubmit="return sendToPy(event, updateFullPage, null, null, getFormData);">
+//    log("Preprocessor for forms!")
+//    log(form);
+    var data = {"form": {}};
+    var i;
+    for (i=0; i < form.length; i++) {
+        if (form.elements[i].name !== "") {
+            data.form[form.elements[i].name] = form.elements[i].value;
+        }
+    }
+    return data;
+}
+
+function updateFullPage(xhttp, oldData) {
+    // Update the entire current page with a xhttp.response object.
+    // e.g. return render_tempate('/home')
+    // Would hard-write this page using passed data.
+    // Probably a terrible idea.
+//    log("Callback to updateFullPage!");
+//    log(xhttp);
+//    log(oldData);
+    document.open();
+    document.write(xhttp.response);
+    document.close();
+}
+
+function redirect(xhttp, oldData) {
+    // redirect the browser to the passed url.
+    // e.g. return "/home" (in commands.py) would redirect to the home page.
+//    log(xhttp.responseText);
+    window.location.assign(xhttp.responseText);
+}
+
+// See https://stackoverflow.com/questions/1865837/whats-the-difference-between-window-location-and-window-location-replace#1865840
+// This function will reload the current page AND prevent the user from
+// going backwards to the current version of the page.
+// NOTE: unless this page has extra handling ... there is nothing preventing
+// the user from typing in the correct url.
+function reloadReplaceURL(xhttp, oldData) {
+    window.location.replace(oldData['location']);
+}
+
 
 /* Server communication v2
 Usage:
     <form onsubmit="return sendToPy(
-        event, updateMessageTable, null, null, getIdsFromCheckboxes);></form>
+        event, updateMessageTable, null, null, getIdsFromCheckboxes);"></form>
     OR
     <button onclick="sendToPy(
-        event, someCallBack, "some_python_command_func", null,
+        event, someCallBack, 'some_python_command_func', null,
         somePreprocess);"></button>
 
 NOTE: Form must have a return method too.
@@ -756,10 +779,20 @@ function postJSON(url, oldData, callback) {
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState === 4 && xhttp.status === 200) {
             if (callback) {
+                // If the python code returns JSON formatted data:
+                // 1. run the "notification" code if that flag was passed.
+                // 2. send only the data to the callback.
                 if (xhttp.getResponseHeader("Content-Type") === "application/json") {
                     var response = JSON.parse(xhttp.responseText);
-                    showGlobalNotificationButton(response["isNotice"], true);
+//                    showGlobalNotificationButton(response["isNotice"], true);
                     callback(response, oldData);
+                // If the python code sends back an error i.e. "return "error: ...."
+                // print it to the console.
+                } else if (xhttp.responseText.substring(0, 5) === "error") {
+                        console.log("Python code returned an error:");
+                        console.log(xhttp.responseText);
+                // Otherwise handle it by passing the response to the callback.
+                // The callback function will need to parse the xhttp personally.
                 } else {
                     callback(xhttp, oldData);
                 }

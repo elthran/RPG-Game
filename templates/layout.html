@@ -9,29 +9,29 @@
     <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
 </head>
 
-<body onscroll="stickyTopAndBottom();">
-    <div class="sidebar" id="sidebar">
+<body onscroll="stickyTopAndBottom();" style="min-height:815px;background:#bbc;">
+    <div class="sidebar" id="sidebar" style="border-radius:10px;border-width:1px;border-style:outset;">
         <div>
             <h1>{{ hero.name }}</h1>
-            <img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px" />
+            <img src="/static/images/character.jpg" alt="Sample" width="100px" height="100px" style="border-radius:3%;border-width:1px;border-style:inset;" />
             Age: {{ hero.age }}
             <br>Gold: <span id="heroGold">{{ hero.gold }}</span>
         </div>
         <div class="sideBarProgressDiv">Health:
             <div class="sideBarProgressMeter">
-                <span style="width:{{ hero.proficiencies.health.percent }}%"></span>
+                <span style="width:{{ hero.get_summed_proficiencies('health').percent }}%"></span>
             </div>
         </div>
-        {% if hero.proficiencies.sanctity.maximum %}
+        {% if hero.get_summed_proficiencies('sanctity').final %}
         <div class="sideBarProgressDiv">Sanctity:
             <div class="sideBarProgressMeter sidebarSanctity">
-                <span style="width:{{ hero.proficiencies.sanctity.percent }}%"></span>
+                <span style="width:{{ hero.get_summed_proficiencies('sanctity').percent }}%"></span>
             </div>
         </div>
         {% endif %}
         <div class="sideBarProgressDiv">Endurance:
             <div class="sideBarProgressMeter sidebarEndurance">
-                <span style="width:{{ hero.proficiencies.endurance.percent }}%"></span>
+                <span style="width:{{ hero.get_summed_proficiencies('endurance').percent }}%"></span>
             </div>
         </div>
         <div class="sideBarProgressDiv">Progress:
@@ -68,8 +68,6 @@
     <div class="content">
         {% block nav_bar %}{% endblock %}
         <div style="clear:both;"></div>
-        <!-- This calls a notification script to run if the Hero has any new quests completed -->
-        <button id="globalNotificationButton" onclick="sendToPy(event, showGlobalModal, 'send_notification_data');" style={% if hero.journal.notification %}"display: initial;"{% else %}"visibility: hidden;"{% endif %}>Achievement Progress!</button>
         <!--Global Notification modal-->
         <!--
         It starts out invisible but is activated using the button above.
@@ -97,14 +95,22 @@
             </div>
         </div>
         <div style="clear:both;"></div>
-        <!-- This displays notifications at the top of the page -->
-        {% for notice in notifications %}
-            {{ notice }}
-        {% endfor %}
         <!-- This is info pulled from other html files -->
         {% block block1 %}{% endblock %}
         {% block block2 %}{% endblock %}
         <!-- This ends the main body container of the page -->
+    </div>
+    <!-- This displays notifications stacked on the bottom left of the page -->
+    <div id="temporaryNoticeContainer">
+        {% for notice in hero.journal.notifications %}
+        <div id="notice-{{ notice.id }}" class="temporaryNotice" onclick="sendToPy(event, redirectUserFromNotification, 'send_notification_data', {'id': {{ notice.id }}, 'redirect': 'True'});">
+            <button id="temporaryNoticeClose" onclick="sendToPy(event, redirectUserFromNotification, 'send_notification_data', {'id': {{ notice.id }}, 'redirect': 'False'});">x</button>
+            <h1>{{ notice.header }}</h1>
+            <h2>{{ notice.body }}</h2>
+            <h3>{{ notice.footer }}</h3>
+            <p>{{ notice.redirect_message }}</p>
+        </div>
+        {% endfor %}
     </div>
 </body>
 </html>
