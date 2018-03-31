@@ -3,20 +3,30 @@
 {% extends "layout.html" %}
 {% block block1 %}
 
-<center>Spellbook</center>
-{% for ability in hero.abilities if ability.castable and ability.level > 0 %}
-<h1>{{ ability.name.title() }}</h1>
-<h2>Cost:
-    {% if ability.sanctity_cost %}{{ ability.sanctity_cost }} Sanctity
-    {% elif ability.endurance_cost %}{{ ability.endurance_cost }} Endurance
-    {% else %}Free
-    {% endif %}</h2>
-[{{ ability.description }}]<br>
-<button onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ ability.id }}});">Cast {{ ability.name.title() }}</button>
-{% else %}
-You have no spells
-{% endfor %}
-
+<h1 style="text-align:center;">Spellbook</h1>
+<div class="spellbook">
+    <div class="spellList">
+    <table>
+    {% for ability in hero.abilities if ability.castable and ability.level > 0 %}
+    <tr>
+        <td><img class="spellIcon" onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ ability.id }}});" src="/static/images/abilities/sample{{ loop.index }}.jpg" rowspan="2"></td>
+        <td><h1>{{ ability.name.title() }}</h1><h2>{{ ability.description }}</h2></td>
+    </tr>
+    {% else %}
+    You have no spells
+    {% endfor %}
+    </div>
+    </table>
+</div>
 
 {% endblock %}
 
+{# <!--
+<h2>Cost:
+            {% if ability.sanctity_cost %}{{ ability.sanctity_cost }} Sanctity
+            {% elif ability.endurance_cost %}{{ ability.endurance_cost }} Endurance
+            {% else %}Free
+            {% endif %}</h2>
+        [{{ ability.description }}]<br>
+        <button onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ ability.id }}});">Cast {{ ability.name.title() }}</button>
+--> #}

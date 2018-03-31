@@ -1,22 +1,22 @@
 Name,Type,Tree,TreeType,Maximum,Description,Current,Next,Learnable,Prof1,Value1,Prof2,Value2,SanctityCost,EnduranceCost
-Apprentice,AuraAbility,Archetype,Ascetic,3,You are capable of learning additional spells.,{{ (level) * 1 }},{{ (level + 1) * 1 }},TRUE,SpellLimit,1,Understanding,0,0,0
-Arcanum,AuraAbility,Basic,None,5,Gain maximum sanctity. Master this ability to unlock the Philosopher archetype.,{{ (level) * 2 }},{{ (level + 1) * 2 }},TRUE,Sanctity,2,Understanding,0,0,0
-Backstab,AuraAbility,Archetype,Scoundrel,3,You are more likely to attack first in combat.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,FirstStrike,5,Understanding,0,0,0
-Bash,AuraAbility,Archetype,Brute,3,(BROKEN)You deal more damage with blunt weapons.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,0,0
-Blackhearted,AuraAbility,Archetype,Scoundrel,3,(BROKEN)Lose virtue faster.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,0,0
-Charmer,AuraAbility,Archetype,Opportunist,3,(BROKEN)You are more likely to succeed when choosing charm dialogues.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,0,0
-Discipline,AuraAbility,Basic,None,5,Gain devotion faster. Master this ability to unlock the Ascetic archetype.,{{ (level) * 1 }}%,{{ (level + 1) * 1 }}%,TRUE,Piety,1,Understanding,0,0,0
-Haggler,AuraAbility,Archetype,Opportunist,3,Prices at shops are cheaper.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Bartering,5,Understanding,0,0,0
-MartialArts,AuraAbility,Archetype,Ascetic,3,You deal more damage in combat.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Damage,5,Understanding,0,0,0
-Meditation,AuraAbility,Archetype,Ascetic,3,Regenerate sanctity per day.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Redemption,5,Understanding,0,0,0
-Poet,AuraAbility,Basic,None,5,Gain renown faster. Master this ability to unlock the Opportunist archetype.,{{ (level) * 1 }},{{ (level + 1) * 1 }},TRUE,Reputation,1,Understanding,0,0,0
-Relentless,AuraAbility,Basic,None,5,Gain maximum health. Master this ability to unlock the Brute archetype.,{{ (level) * 3 }},{{ (level + 1) * 3 }},TRUE,Health,3,Understanding,0,0,0
-Scholar,AuraAbility,Archetype,Philosopher,3,Gain experience faster.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Understanding,5,Understanding,0,0,0
-Skinner,AuraAbility,Archetype,Survivalist,3,(BROKEN)You have a chance of obtaining a usable fur after kiling a beast.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,0,0
-Strider,AuraAbility,Archetype,Survivalist,3,(BROKEN)Traveling on the map requires less endurance.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,0,0
-Student,AuraAbility,Archetype,Philosopher,3,(BROKEN)You are capable of learning additional spells.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,0,0
-Traveler,AuraAbility,Basic,None,5,Reveal more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.,{{ (level) * 1 }},{{ (level + 1) * 1 }},TRUE,Vision,1,Understanding,0,0,0
-Trickster,AuraAbility,Basic,None,5,Become harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.,{{ (level) * 3 }},{{ (level + 1) * 3 }},TRUE,Stealth,3,Understanding,0,0,0
-Vigilance,AuraAbility,Archetype,Survivalist,3,(BROKEN)You are less likely to be ambushed.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,0,0
-FameBombTest,CastableAbility,Basic,None,3,Spend 2 sanctity to gain instant fame with this silly test spell.,{{ (level) * 3 }},{{ (level + 1) * 3 }},TRUE,Renown,3,Understanding,0,2,0
-VirtueBombTest,CastableAbility,Basic,None,3,Spend 1 endurance to gain instant virtue with this silly spell for testing purposes.,{{ (level) * 2 }},{{ (level + 1) * 2 }},TRUE,Virtue,2,Understanding,0,0,1
+Apprentice,AuraAbility,Archetype,Ascetic,3,You are capable of learning additional spells.,{{ (level) * 1 }},{{ (level + 1) * 1 }},TRUE,SpellLimit,1,Understanding,0,Null,Null
+Arcanum,AuraAbility,Basic,None,5,Gain maximum sanctity. Master this ability to unlock the Philosopher archetype.,{{ (level) * 2 }},{{ (level + 1) * 2 }},TRUE,Sanctity,2,Understanding,0,Null,Null
+Backstab,AuraAbility,Archetype,Scoundrel,3,You are more likely to attack first in combat.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,FirstStrike,5,Understanding,0,Null,Null
+Bash,AuraAbility,Archetype,Brute,3,(BROKEN)You deal more damage with blunt weapons.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,Null,Null
+Blackhearted,AuraAbility,Archetype,Scoundrel,3,(BROKEN)Lose virtue faster.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,Null,Null
+Charmer,AuraAbility,Archetype,Opportunist,3,(BROKEN)You are more likely to succeed when choosing charm dialogues.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,Null,Null
+Discipline,AuraAbility,Basic,None,5,Gain devotion faster. Master this ability to unlock the Ascetic archetype.,{{ (level) * 1 }}%,{{ (level + 1) * 1 }}%,TRUE,Piety,1,Understanding,0,Null,Null
+Haggler,AuraAbility,Archetype,Opportunist,3,Prices at shops are cheaper.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Bartering,5,Understanding,0,Null,Null
+MartialArts,AuraAbility,Archetype,Ascetic,3,You deal more damage in combat.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Damage,5,Understanding,0,Null,Null
+Meditation,AuraAbility,Archetype,Ascetic,3,Regenerate sanctity per day.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Redemption,5,Understanding,0,Null,Null
+Poet,AuraAbility,Basic,None,5,Gain renown faster. Master this ability to unlock the Opportunist archetype.,{{ (level) * 1 }},{{ (level + 1) * 1 }},TRUE,Reputation,1,Understanding,0,Null,Null
+Relentless,AuraAbility,Basic,None,5,Gain maximum health. Master this ability to unlock the Brute archetype.,{{ (level) * 3 }},{{ (level + 1) * 3 }},TRUE,Health,3,Understanding,0,Null,Null
+Scholar,AuraAbility,Archetype,Philosopher,3,Gain experience faster.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Understanding,5,Understanding,0,Null,Null
+Skinner,AuraAbility,Archetype,Survivalist,3,(BROKEN)You have a chance of obtaining a usable fur after kiling a beast.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,Null,Null
+Strider,AuraAbility,Archetype,Survivalist,3,(BROKEN)Traveling on the map requires less endurance.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,Null,Null
+Student,AuraAbility,Archetype,Philosopher,3,(BROKEN)You are capable of learning additional spells.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,Null,Null
+Traveler,AuraAbility,Basic,None,5,Reveal more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.,{{ (level) * 1 }},{{ (level + 1) * 1 }},TRUE,Vision,1,Understanding,0,Null,Null
+Trickster,AuraAbility,Basic,None,5,Become harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.,{{ (level) * 3 }},{{ (level + 1) * 3 }},TRUE,Stealth,3,Understanding,0,Null,Null
+Vigilance,AuraAbility,Archetype,Survivalist,3,(BROKEN)You are less likely to be ambushed.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,Null,Null
+FameBombTest,CastableAbility,Basic,None,3,Spend 2 sanctity to gain instant fame with this silly test spell.,{{ (level) * 3 }},{{ (level + 1) * 3 }},TRUE,Renown,0,Understanding,0,2,0
+VirtueBombTest,CastableAbility,Basic,None,3,Spend 1 endurance to gain instant virtue with this silly spell for testing purposes.,{{ (level) * 2 }},{{ (level + 1) * 2 }},TRUE,Virtue,0,Understanding,0,0,1
