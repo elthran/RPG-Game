@@ -985,8 +985,9 @@ Centered margin is 275px left/right.
 
 .spellList {
     position: relative;
-    margin: 50px 0 0 85px; /* Creates a margin away from the left and top */
+    margin: 75px 0 0 85px; /* Creates a margin away from the left and top */
     width: 400px;
+    height: 500px;
     float: left;
     border: dotted;
     overflow: hidden;
@@ -1035,17 +1036,17 @@ Centered margin is 275px left/right.
 }
 
 .spellbookTurnPage {
+    float: left;
     height: 30px;
     width: 30px;
     border: dotted;
-    margin: 0 0 0 940px;
 }
 
 .spellbookTurnPageForward {
+    float: right;
     height: 30px;
     width: 30px;
     border: dotted;
-    margin: 40px 0 0 940px;
 }
 
 .spellbookTurnPage img {

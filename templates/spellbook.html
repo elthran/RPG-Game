@@ -2,9 +2,9 @@
 
 {% extends "layout.html" %}
 {% block block1 %}
-
 <h1 style="text-align:center;">Spellbook</h1>
-<h2 style="text-align:center;">Current page: <span id="currentPage">{{ hero.spellbook_page }}</span></h2>
+<h2 style="text-align:center;">Spells: {{ spells|length }}</h2>
+<h2 style="text-align:center;">Current page: <span id="currentPage">{{ hero.spellbook_page }}</span> / {{ max_pages }}</h2>
 <div class="spellbook">
     <div class="spellList">
         <table>
@@ -33,13 +33,11 @@
         </table>
     </div>
     <div style="clear:both;"></div>
-    {% if hero.spellbook_page > 1 %}
-    <div id="turnSpellbookBack" class="spellbookTurnPage">
-        <img src="/static/images/abilities/backward.jpg" onclick="sendToPy(event, turnSpellbookPage, 'turn_spellbook_page', {'direction': 'backward'});">
+    <div id="turnSpellbookBack" class="spellbookTurnPage" {% if hero.spellbook_page <= 1 %}style="display:none;"{% endif %}>
+        <img src="/static/images/abilities/backward.jpg" onclick="sendToPy(event, turnSpellbookPage, 'turn_spellbook_page', {'direction': 'backward', 'max': {{ max_pages }}});">
     </div>
-    {% endif %}
-    <div class="spellbookTurnPageForward">
-        <img src="/static/images/abilities/forward.jpg" onclick="sendToPy(event, turnSpellbookPage, 'turn_spellbook_page', {'direction': 'forward'});">
+    <div id="turnSpellbookForward" class="spellbookTurnPageForward" {% if hero.spellbook_page >= max_pages %}style="display:none;"{% endif %}>
+        <img src="/static/images/abilities/forward.jpg" onclick="sendToPy(event, turnSpellbookPage, 'turn_spellbook_page', {'direction': 'forward', 'max': {{ max_pages }}});">
     </div>
 </div>
 

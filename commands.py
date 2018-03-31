@@ -252,11 +252,13 @@ class Command:
 
     @staticmethod
     def turn_spellbook_page(hero, database, data, **kwargs):
+        page_max = data['max']
+        print(page_max)
         if data['direction'] == "forward":
-            hero.spellbook_page += 1
+            hero.spellbook_page = min(hero.spellbook_page+1,page_max)
         else:
-            hero.spellbook_page -= 1
-        return jsonify(page=hero.spellbook_page)
+            hero.spellbook_page = max(hero.spellbook_page-1,1)
+        return jsonify(page=hero.spellbook_page, page_max=page_max)
 
     @staticmethod
     def change_attribute_tooltip(hero, database, arg_dict, **kwargs):
