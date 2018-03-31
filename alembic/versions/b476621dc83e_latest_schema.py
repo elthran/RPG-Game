@@ -5,14 +5,21 @@ Revises: 2705b1c78056
 Create Date: 2018-03-29 19:33:17.451842
 
 """
-import importlib
-
+import pdb
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
-# rpg = importlib.import_module("RPG-game", "*")
-rpg = __import__("RPG-Game")
-import pdb;pdb.set_trace()
+from pprint import pprint
+import os
+import sys
+
+# Get the name of the current directory for this file and split it.
+old_path = os.path.dirname(__file__).split(os.sep)
+new_path = os.sep.join(old_path[:-2])
+# -2 refers to how many levels of directory to go up
+sys.path.insert(0, new_path)
+from __init__ import *
+sys.path.pop(0)
 
 # revision identifiers, used by Alembic.
 revision = 'b476621dc83e'

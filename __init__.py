@@ -1,21 +1,21 @@
-from .abilities import *
-from .achievements import *
-from .attributes import *
-from .bestiary import *
-from .bestiary2 import *
-from .combat_simulator import *
-from .events import *
-from .factories import *
-from .forum import *
-from .game import *
-from .hero import *
-from .inbox import *
-from .inventory import *
-from .items import *
-from .journal import *
-from .locations import *
-from .proficiencies import *
-from .proficiencies_monsters import *
-from .quests import *
-from .specializations import *
-from .base_classes import *
+import abilities
+import achievements
+import attributes
+import bestiary
+import bestiary2
+import combat_simulator
+import events
+import factories
+import forum
+import game
+import hero
+import inbox
+import inventory
+import items
+import journal
+import locations
+import proficiencies
+import proficiencies_monsters
+import quests
+import specializations
+import base_classes
