@@ -2,19 +2,43 @@
 
 {% extends "layout.html" %}
 {% block block1 %}
-
-<center>Spellbook</center>
-{% for ability in hero.abilities if ability.castable and ability.level > 0 %}
-{{ ability.name.title() }}
-    {% if ability.sanctity_cost %}(Sanctity Cost: {{ ability.sanctity_cost }})
-    {% elif ability.endurance_cost %}(Endurance Cost: {{ ability.endurance_cost }})
-    {% endif %}
-<button data={{ ability.id }} data-py-function="cast_spell">cast</button>
-[{{ ability.description }}]<br>
-{% else %}
-You have no spells
-{% endfor %}
-
+<h1 style="text-align:center;">Spellbook</h1>
+<h2 style="text-align:center;">Spells: {{ spells|length }}</h2>
+<h2 style="text-align:center;">Current page: <span id="currentPage">{{ hero.spellbook_page }}</span> / {{ max_pages }}</h2>
+<div class="spellbook">
+    <div class="spellList">
+        <table>
+            {% for spell in spells %}
+            {% if (loop.index * hero.spellbook_page) < 5 %}
+            <tr>
+                <td><img class="spellIcon" onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ spell.id }}});" src="/static/images/abilities/{{ loop.index }}.jpg" rowspan="2"></td>
+                <td><h1>{{ spell.name.title() }}</h1><h2>{{ spell.description }}</h2></td>
+            </tr>
+            {% endif %}
+            {% else %}
+            You have no spells
+            {% endfor %}
+        </table>
+    </div>
+    <div class="spellList" style="margin-left:50px;">
+        <table>
+            {% for spell in spells %}
+            {% if (loop.index * hero.spellbook_page) > 4 and (loop.index * hero.spellbook_page) < 9 %}
+            <tr>
+                <td><img class="spellIcon" onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ spell.id }}});" src="/static/images/abilities/{{ loop.index }}.jpg" rowspan="2"></td>
+                <td><h1>{{ spell.name.title() }}</h1><h2>{{ spell.description }}</h2></td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </table>
+    </div>
+    <div style="clear:both;"></div>
+    <div id="turnSpellbookBack" class="spellbookTurnPage" {% if hero.spellbook_page <= 1 %}style="display:none;"{% endif %}>
+        <img src="/static/images/abilities/backward.jpg" onclick="sendToPy(event, turnSpellbookPage, 'turn_spellbook_page', {'direction': 'backward', 'max': {{ max_pages }}});">
+    </div>
+    <div id="turnSpellbookForward" class="spellbookTurnPageForward" {% if hero.spellbook_page >= max_pages %}style="display:none;"{% endif %}>
+        <img src="/static/images/abilities/forward.jpg" onclick="sendToPy(event, turnSpellbookPage, 'turn_spellbook_page', {'direction': 'forward', 'max': {{ max_pages }}});">
+    </div>
+</div>
 
 {% endblock %}
-

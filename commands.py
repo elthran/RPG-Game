@@ -245,11 +245,20 @@ class Command:
                            command="equip", idsToUnequip=ids_to_unequip)
 
     @staticmethod
-    def cast_spell(hero, database, arg_dict, **kwargs):
-        ability_id = arg_dict.get('data', None, type=int)
-        ability = database.get_ability_by_id(ability_id)
-        ability.cast(hero)
-        return "success"
+    def cast_spell(hero, database, data, **kwargs):
+        spell_id = data['id']
+        spell = database.get_ability_by_id(spell_id)
+        return spell.cast(hero)
+
+    @staticmethod
+    def turn_spellbook_page(hero, database, data, **kwargs):
+        page_max = data['max']
+        print(page_max)
+        if data['direction'] == "forward":
+            hero.spellbook_page = min(hero.spellbook_page+1,page_max)
+        else:
+            hero.spellbook_page = max(hero.spellbook_page-1,1)
+        return jsonify(page=hero.spellbook_page, page_max=page_max)
 
     @staticmethod
     def change_attribute_tooltip(hero, database, arg_dict, **kwargs):

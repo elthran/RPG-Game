@@ -32,6 +32,7 @@ from database import EZDB
 from engine import Engine, game_clock, async_process, rest_key_timelock
 from forum import Board, Thread, Post
 from bestiary2 import create_monster, MonsterTemplate
+from math import ceil
 
 # INIT AND LOGIN FUNCTIONS
 # for server code swap this over:
@@ -674,8 +675,12 @@ def inbox(outbox, hero=None):
 @app.route('/spellbook')
 @uses_hero
 def spellbook(hero=None):
-    print(hero.journal.notifications)
-    return render_template('spellbook.html', page_title="Spellbook", hero=hero)
+    spells = []
+    for ability in hero.abilities:
+        if ability.castable and ability.level > 0:
+            spells.append(ability)
+    max_pages = max(ceil(len(spells)/8), 1)
+    return render_template('spellbook.html', page_title="Spellbook", hero=hero, spells=spells, max_pages=max_pages)
 
 
 # PROFILE PAGES (Basically the home page of the game with your character

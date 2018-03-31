@@ -140,6 +140,29 @@ function toggleLoginRegister(button) {
     }
 }
 
+function doNothing() { // This should be removed soon. I'm just not sure how to get SendToPy to not run any JS function.
+    return;
+}
+
+function turnSpellbookPage(response) {
+    var newPage = document.getElementById("currentPage");
+    var turnBack = document.getElementById("turnSpellbookBack");
+    var turnForward = document.getElementById("turnSpellbookForward");
+    newPage.innerHTML = response.page;
+    if (response.page <= 1) {
+        turnBack.style.display = 'none';
+    } else if (turnBack.style.display === 'none') {
+        turnBack.style.display = 'block';
+    }
+    if (response.page >= response.page_max) {
+        turnForward.style.display = 'none';
+    } else if (turnForward.style.display === 'none') {
+        turnForward.style.display = 'block';
+    }
+    console.log(response.page)
+    console.log(response.page_max)
+}
+
 function checkPasswordMatch() {
     var continueButton = document.getElementById("continueButton");
     var errorDiv = document.getElementById("error");

@@ -42,9 +42,11 @@ class Ability(Base):
     max_level = Column(Integer)
     # Maybe description should be unique? use: unique=True as keyword.
     description = Column(String(200))
+    castable = Column(Boolean)
     _current = Column(String(50))
     _next = Column(String(50))
-    cost = Column(String(50))
+    sanctity_cost = Column(Integer)
+    endurance_cost = Column(Integer)
 
     # Note: Original code used default of "Unknown"
     # I chopped the BasicAbility class as redundant. Now I am going to
@@ -107,7 +109,7 @@ class Ability(Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, max_level, description, current=0, next=0, hidden=True, learnable=False, tree="basic", tree_type="", cost=1, proficiency_data=()):
+    def __init__(self, name, max_level, description, spell_thing="", current=0, next=0, hidden=True, learnable=False, tree="basic", tree_type="", proficiency_data=(), spell_data=(), sanctity_cost=0, endurance_cost=0):
         """Build a basic ability object.
 
         Note: arguments (name, hero, max_level, etc.) that require input are
@@ -127,9 +129,9 @@ class Ability(Base):
         self.level = 0
         self.max_level = max_level  # Highest level that this ability can get to
         self.description = description  # Describe what it does
+        self.castable = False
         self._current = current
         self._next = next
-        self.cost = cost
         if learnable:   # If the ability starts as a default of learnable, then it shouldn't start hidden to the player
             self.hidden = False
         else:
@@ -146,6 +148,17 @@ class Ability(Base):
             # pdb.set_trace()
             obj = Class(**arg_dict)
             self.proficiencies[obj.name] = obj
+
+        # Jacob did this. I need some help setting it up. This should be for casting spells.
+        for class_name, arg_dict in spell_data:
+            Class = getattr(proficiencies, class_name)
+            # pdb.set_trace()
+            obj = Class(**arg_dict)
+            self.proficiencies[obj.name] = obj
+
+        # These and the one above should only be in castable.
+        self.sanctity_cost = sanctity_cost
+        self.endurance_cost = endurance_cost
 
     # @property
     # def display_name(self):
@@ -196,8 +209,6 @@ class Ability(Base):
 
 
 class CastableAbility(Ability):
-    castable = Column(Boolean)
-
     __mapper_args__ = {
         'polymorphic_identity': 'CastableAbility',
     }
@@ -237,11 +248,15 @@ class CastableAbility(Ability):
         NOTE: returns False if spell is too expensive (cost > proficiencies.sanctity.current)
         If cast is succesful then return value is True.
         """
-        if hero.base_proficiencies['sanctity'].current < 0:
-            return False
-        else:
-            hero.base_proficiencies['sanctity'].current -= 1
-            return True
+        if hero.base_proficiencies['sanctity'].current < self.sanctity_cost:
+            print("Trying to cast a spell but you have not enough sanctity.")
+            return "error: not enough sanctity"
+        if hero.base_proficiencies['endurance'].current < self.endurance_cost:
+            print("Trying to cast a spell but you have not enough endurance.")
+            return "error: not enough endurance"
+        hero.base_proficiencies['sanctity'].current -= self.sanctity_cost
+        hero.base_proficiencies['endurance'].current -= self.endurance_cost
+        return "success"
 
 class AuraAbility(Ability):
     __mapper_args__ = {
@@ -284,8 +299,11 @@ class {{ value[0] }}({{ value[1] }}):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__(name='{{ value[0] }}', tree='{{ value[2] }}', tree_type='{{ value[3] }}', max_level={{ value[4] }}, description='{{ value[5] }}', current='{{ value[6] }}', next='{{ value[7] }}', learnable={{ value[8] }}, proficiency_data=[('{{ value[9] }}', {'base': {{ value[10] }}})])
-
+        {% if value[1] == 'AuraAbility' %}
+        super().__init__(name='{{ value[0] }}', tree='{{ value[2] }}', tree_type='{{ value[3] }}', max_level={{ value[4] }}, description='{{ value[5] }}', current='{{ value[6] }}', next='{{ value[7] }}', learnable={{ value[8] }}, proficiency_data=[('{{ value[9] }}', {'base': {{ value[10] }}}), ('{{ value[11] }}', {'base': {{ value[12] }}})])
+        {% elif value[1] == 'CastableAbility' %}
+        super().__init__(name='{{ value[0] }}', tree='{{ value[2] }}', tree_type='{{ value[3] }}', max_level={{ value[4] }}, description='{{ value[5] }}', current='{{ value[6] }}', next='{{ value[7] }}', learnable={{ value[8] }}, proficiency_data=[], spell_data=[('{{ value[9] }}', {'base': {{ value[10] }}}), ('{{ value[11] }}', {'base': {{ value[12] }}})], sanctity_cost={{ value[13] }}, endurance_cost={{ value[14] }})
+        {% endif %}
         for key, value in kwargs:
             setattr(self, key, value)
 {% if loop.last %}

@@ -964,3 +964,100 @@ Centered margin is 275px left/right.
     cursor: pointer;
 }
 /* End of notice messing */
+
+/* Messing around with spellbook */
+.spellbook {
+    background-image: url("/static/images/abilities/spellbook.jpg");
+    width:1023px;
+    height:658px;
+    margin: 75px;
+    border: dotted;
+    overflow: hidden; /* This keeps the margin from collapsing */
+}
+
+.spellbook h1 {
+    font-size: 15px;
+}
+
+.spellbook h2 {
+    font-size: 12px;
+}
+
+.spellList {
+    position: relative;
+    margin: 75px 0 0 85px; /* Creates a margin away from the left and top */
+    width: 400px;
+    height: 500px;
+    float: left;
+    border: dotted;
+    overflow: hidden;
+}
+
+.spellList tr {
+}
+
+.spellIcon {
+    width: 75px;
+    height: 100px;
+    margin: 5px;
+    cursor: pointer;
+    outline: none;
+    color: #fff;
+    background-color: #4CAF50;
+    border: 2px solid;
+    border-color: green;
+    border-radius: 15px;
+    box-shadow: 0 9px #999;
+}
+
+.spellIcon:hover {
+    -webkit-border-radius: 10px;
+    border-color: red;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 0px 0px 30px 0px rgba(0, 255, 0, 0.67);
+    -moz-box-shadow: 0px 0px 30px 0px rgba(0, 255, 0, 0.67);
+    box-shadow: 0px 0px 30px 0px rgba(0, 255, 0, 0.67);
+}
+
+.spellIcon:last-of-type:hover {
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 0px 0px 30px 0px rgba(232, 0, 0, 0.67);
+    -moz-box-shadow: 0px 0px 30px 0px rgba(232, 0, 0, 0.67);
+    box-shadow: 0px 0px 30px 0px rgba(232, 0, 0, 0.67);
+}
+
+.spellIcon:active {
+    background-color: #3e8e41;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+.spellbookTurnPage {
+    float: left;
+    height: 30px;
+    width: 30px;
+    border: dotted;
+}
+
+.spellbookTurnPageForward {
+    float: right;
+    height: 30px;
+    width: 30px;
+    border: dotted;
+}
+
+.spellbookTurnPage img {
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
+}
+
+.spellbookTurnPageForward img {
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
+}
+/* End of spellbook messing */
