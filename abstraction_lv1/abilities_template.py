@@ -42,6 +42,7 @@ class Ability(Base):
     max_level = Column(Integer)
     # Maybe description should be unique? use: unique=True as keyword.
     description = Column(String(200))
+    castable = Column(Boolean)
     _current = Column(String(50))
     _next = Column(String(50))
     sanctity_cost = Column(Integer)
@@ -128,6 +129,7 @@ class Ability(Base):
         self.level = 0
         self.max_level = max_level  # Highest level that this ability can get to
         self.description = description  # Describe what it does
+        self.castable = False
         self._current = current
         self._next = next
         if learnable:   # If the ability starts as a default of learnable, then it shouldn't start hidden to the player
@@ -207,8 +209,6 @@ class Ability(Base):
 
 
 class CastableAbility(Ability):
-    castable = Column(Boolean)
-
     __mapper_args__ = {
         'polymorphic_identity': 'CastableAbility',
     }

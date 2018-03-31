@@ -4,29 +4,37 @@
 {% block block1 %}
 
 <h1 style="text-align:center;">Spellbook</h1>
+<h2 style="text-align:center;">Current page: <span>{{ page }}</span></h2>
 <div class="spellbook">
     <div class="spellList">
-    <table>
-    {% for ability in hero.abilities if ability.castable and ability.level > 0 %}
-    <tr>
-        <td><img class="spellIcon" onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ ability.id }}});" src="/static/images/abilities/sample{{ loop.index }}.jpg" rowspan="2"></td>
-        <td><h1>{{ ability.name.title() }}</h1><h2>{{ ability.description }}</h2></td>
-    </tr>
-    {% else %}
-    You have no spells
-    {% endfor %}
+        <table>
+            {% for spell in spells %}
+            {% if (loop.index * page) < 5 %}
+            {{ loop.index }}
+            <tr>
+                <td><img class="spellIcon" onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ spell.id }}});" src="/static/images/abilities/sample{{ loop.index }}.jpg" rowspan="2"></td>
+                <td><h1>{{ spell.name.title() }}</h1><h2>{{ spell.description }}</h2></td>
+            </tr>
+            {% endif %}
+            {% else %}
+            You have no spells
+            {% endfor %}
+        </table>
     </div>
-    </table>
+    <div class="spellList" style="margin-left:50px;">
+        <table>
+            {% for spell in spells %}
+            {% if (loop.index * page) > 5 and (loop.index * page) < 10 %}
+            {{ loop.index }}
+            <tr>
+                <td><img class="spellIcon" onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ spell.id }}});" src="/static/images/abilities/sample{{ loop.index }}.jpg" rowspan="2"></td>
+                <td><h1>{{ spell.name.title() }}</h1><h2>{{ spell.description }}</h2></td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </table>
+    </div>
+    <button class="spellbookTurnPage"></button>
 </div>
 
 {% endblock %}
-
-{# <!--
-<h2>Cost:
-            {% if ability.sanctity_cost %}{{ ability.sanctity_cost }} Sanctity
-            {% elif ability.endurance_cost %}{{ ability.endurance_cost }} Endurance
-            {% else %}Free
-            {% endif %}</h2>
-        [{{ ability.description }}]<br>
-        <button onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ ability.id }}});">Cast {{ ability.name.title() }}</button>
---> #}
