@@ -678,9 +678,7 @@ def spellbook(hero=None):
     for ability in hero.abilities:
         if ability.castable and ability.level > 0:
             spells.append(ability)
-    print(spells)
-
-    return render_template('spellbook.html', page_title="Spellbook", hero=hero, spells=spells, page=1)
+    return render_template('spellbook.html', page_title="Spellbook", hero=hero, spells=spells)
 
 
 # PROFILE PAGES (Basically the home page of the game with your character

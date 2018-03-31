@@ -144,6 +144,15 @@ function doNothing() { // This should be removed soon. I'm just not sure how to 
     return;
 }
 
+function turnSpellbookPage(response) {
+    var newPage = document.getElementById("currentPage");
+    newPage.innerHTML = response.page;
+    if (newPage === 0) {
+        var turnBack = document.getElementById("turnSpellbookBack");
+            turnBack.style.display = "hidden";
+    }
+}
+
 function checkPasswordMatch() {
     var continueButton = document.getElementById("continueButton");
     var errorDiv = document.getElementById("error");

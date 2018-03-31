@@ -251,6 +251,14 @@ class Command:
         return spell.cast(hero)
 
     @staticmethod
+    def turn_spellbook_page(hero, database, data, **kwargs):
+        if data['direction'] == "forward":
+            hero.spellbook_page += 1
+        else:
+            hero.spellbook_page -= 1
+        return jsonify(page=hero.spellbook_page)
+
+    @staticmethod
     def change_attribute_tooltip(hero, database, arg_dict, **kwargs):
         # I want to pass in the actual attribute here instead of the description. That way I can assign the attribute name and description to the tooltip.
         # Unfortunately, I don't know how to pull the attribute object from the database. I need a get_attribute_by_name() function in database.py

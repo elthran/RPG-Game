@@ -55,6 +55,7 @@ class Hero(SessionHoistMixin, Base):
     # Checks if you are currently about to fight a monster
     current_terrain = Column(String(50))
     random_encounter_monster = Column(Boolean)
+    spellbook_page = Column(Integer)
 
     # Time code of when the (account?) was created
     timestamp = Column(DateTime)
@@ -308,6 +309,7 @@ class Hero(SessionHoistMixin, Base):
         # Achievements and statistics
         self.current_terrain = "city"
         self.random_encounter_monster = None
+        self.spellbook_page = 1
 
         # Time code and login alerts
         self.timestamp = datetime.datetime.utcnow()

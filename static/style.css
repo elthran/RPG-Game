@@ -967,10 +967,11 @@ Centered margin is 275px left/right.
 
 /* Messing around with spellbook */
 .spellbook {
-    background-image: url("/static/images/spellbook.jpg");
+    background-image: url("/static/images/abilities/spellbook.jpg");
     width:1023px;
     height:658px;
     margin: 75px;
+    border: dotted;
     overflow: hidden; /* This keeps the margin from collapsing */
 }
 
@@ -988,6 +989,7 @@ Centered margin is 275px left/right.
     width: 400px;
     float: left;
     border: dotted;
+    overflow: hidden;
 }
 
 .spellList tr {
@@ -999,12 +1001,12 @@ Centered margin is 275px left/right.
     margin: 5px;
     cursor: pointer;
     outline: none;
-  color: #fff;
-  background-color: #4CAF50;
-  border: 2px solid;
-  border-color: green;
-  border-radius: 15px;
-  box-shadow: 0 9px #999;
+    color: #fff;
+    background-color: #4CAF50;
+    border: 2px solid;
+    border-color: green;
+    border-radius: 15px;
+    box-shadow: 0 9px #999;
 }
 
 .spellIcon:hover {
@@ -1033,8 +1035,28 @@ Centered margin is 275px left/right.
 }
 
 .spellbookTurnPage {
-    height: 25px;
-    width: 25px;
-    right: 0;
+    height: 30px;
+    width: 30px;
+    border: dotted;
+    margin: 0 0 0 940px;
+}
+
+.spellbookTurnPageForward {
+    height: 30px;
+    width: 30px;
+    border: dotted;
+    margin: 40px 0 0 940px;
+}
+
+.spellbookTurnPage img {
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
+}
+
+.spellbookTurnPageForward img {
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
 }
 /* End of spellbook messing */

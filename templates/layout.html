@@ -68,33 +68,6 @@
     <div class="content">
         {% block nav_bar %}{% endblock %}
         <div style="clear:both;"></div>
-        <!--Global Notification modal-->
-        <!--
-        It starts out invisible but is activated using the button above.
-        Said button gets its data from python
-        -->
-        <div class="globalMessageModal" id="globalMessage">
-            <div class="globalMessageModalContent">
-                <div class="globalMessageModalHeader">
-                    <span class="closeGlobalModal">&times;</span>
-                    <span id="globalMessageModalHeaderContent">
-                        <!--Header content sent from Python-->
-                    </span>
-                </div>
-                <div class="globalMessageModalBody">
-                    <span id="globalMessageModalBodyContent">
-                        <!--Body content sent from Python-->
-                    </span>
-                    <!-- The code above needs to be tweaked -->
-                </div>
-                <div class="globalMessageModalFooter">
-                    <span id="globalMessageModalFooterContent">
-                        <!--Footer content sent from Python-->
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div style="clear:both;"></div>
         <!-- This is info pulled from other html files -->
         {% block block1 %}{% endblock %}
         {% block block2 %}{% endblock %}
