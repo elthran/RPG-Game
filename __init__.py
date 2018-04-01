@@ -19,3 +19,5 @@ import proficiencies_monsters
 import quests
 import specializations
 import base_classes
+
+# __all__ = []

@@ -34,6 +34,8 @@ import base_classes
 # Internal game modules
 from game import User, round_number_intelligently
 from inbox import Inbox, Message
+from attributes import Attribute
+from locations import Display
 from hero import Hero
 from abilities import Ability
 from specializations import Specialization, Archetype, Calling, Pantheon
