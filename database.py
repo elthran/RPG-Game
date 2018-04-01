@@ -91,7 +91,7 @@ class EZDB:
         # Select the database ... not sure if I need this.
         # Or if I should create a new engine instead ..
         engine = create_engine(
-            database+ "?charset=utf8mb4", pool_recycle=3600, echo=debug)
+            database + "?charset=utf8mb4", pool_recycle=3600, echo=debug)
 
         base_classes.Base.metadata.create_all(engine, checkfirst=True)
 
