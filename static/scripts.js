@@ -150,8 +150,28 @@ function turnSpellbookPage(response) {
     var turnForward = document.getElementById("turnSpellbookForward");
     var spell_info_1 = document.getElementById("spell_info_1");
     var spell_info_2 = document.getElementById("spell_info_2");
+    var spell_info_3 = document.getElementById("spell_info_3");
+    var spell_info_4 = document.getElementById("spell_info_4");
+    var spell_info_5 = document.getElementById("spell_info_5");
+    var spell_info_6 = document.getElementById("spell_info_6");
+    var spell_info_7 = document.getElementById("spell_info_7");
+    var spell_info_8 = document.getElementById("spell_info_8");
+    var spell_img_1 = document.getElementById("spell_img_1").src = response.spell_img_1;
+    var spell_img_2 = document.getElementById("spell_img_2").src = response.spell_img_2;
+    var spell_img_3 = document.getElementById("spell_img_3").src = response.spell_img_3;
+    var spell_img_4 = document.getElementById("spell_img_4").src = response.spell_img_4;
+    var spell_img_5 = document.getElementById("spell_img_5").src = response.spell_img_5;
+    var spell_img_6 = document.getElementById("spell_img_6").src = response.spell_img_6;
+    var spell_img_7 = document.getElementById("spell_img_7").src = response.spell_img_7;
+    var spell_img_8 = document.getElementById("spell_img_8").src = response.spell_img_8;
     spell_info_1.innerHTML = response.spell_info_1;
     spell_info_2.innerHTML = response.spell_info_2;
+    spell_info_3.innerHTML = response.spell_info_3;
+    spell_info_4.innerHTML = response.spell_info_4;
+    spell_info_5.innerHTML = response.spell_info_5;
+    spell_info_6.innerHTML = response.spell_info_6;
+    spell_info_7.innerHTML = response.spell_info_7;
+    spell_info_8.innerHTML = response.spell_info_8;
     newPage.innerHTML = response.page;
     if (response.page <= 1) {
         turnBack.style.display = 'none';

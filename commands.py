@@ -266,20 +266,22 @@ class Command:
             last_index = first_index + ((len(spells) - 1) % 8) + 1
         else:
             last_index = first_index + 8
-        spell_info = ["", "", "", "", "", "", "", ""]
+        spell_info = [" ", " ", " ", " ", " ", " ", " ", " "] # These need a space. Can't just be an empty string for some reason.
+        spell_img = ["/static/images/abilities/1.jpg", "/static/images/abilities/2.jpg", "/static/images/abilities/3.jpg", "/static/images/abilities/4.jpg",
+                     "/static/images/abilities/5.jpg", "/static/images/abilities/6.jpg", "/static/images/abilities/7.jpg", "/static/images/abilities/8.jpg"]
         counter = 0
         while (last_index - first_index) > counter:
             spell_info[counter] = "<h1>" + spells[first_index+counter].name.title() + "</h1><h2>" + spells[first_index+counter].description + "</h2>"
             counter += 1
         return jsonify(page=hero.spellbook_page, page_max=page_max,
-                       spell_info_1=spell_info[0],
-                       spell_info_2=spell_info[1],
-                       spell_info_3=spell_info[2],
-                       spell_info_4=spell_info[3],
-                       spell_info_5=spell_info[4],
-                       spell_info_6=spell_info[5],
-                       spell_info_7=spell_info[6],
-                       spell_info_8=spell_info[7])
+                       spell_info_1=spell_info[0], spell_img_1=spell_img[0],
+                       spell_info_2=spell_info[1], spell_img_2=spell_img[1],
+                       spell_info_3=spell_info[2], spell_img_3=spell_img[2],
+                       spell_info_4=spell_info[3], spell_img_4=spell_img[3],
+                       spell_info_5=spell_info[4], spell_img_5=spell_img[4],
+                       spell_info_6=spell_info[5], spell_img_6=spell_img[5],
+                       spell_info_7=spell_info[6], spell_img_7=spell_img[6],
+                       spell_info_8=spell_info[7], spell_img_8=spell_img[7])
 
     @staticmethod
     def change_attribute_tooltip(hero, database, arg_dict, **kwargs):

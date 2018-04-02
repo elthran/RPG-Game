@@ -675,8 +675,6 @@ def inbox(outbox, hero=None):
 @app.route('/spellbook')
 @uses_hero
 def spellbook(hero=None):
-    test = [0,1,2,3]
-    print(test[0:0], test[0:1])
     spells = []
     for ability in hero.abilities:
         if ability.castable and ability.level > 0:

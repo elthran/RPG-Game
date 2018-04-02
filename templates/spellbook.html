@@ -7,13 +7,11 @@
 <div class="spellbook">
     <div class="spellList">
         <table>
-            {% for spell in spells %}
-            {% if loop.index < 5 %}
+            {% for x in range(0,4) %}
             <tr>
-                <td><span id="spell_img_{{ loop.index }}"><img class="spellIcon" onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ spell.id }}});" src="/static/images/abilities/{{ loop.index }}.jpg" rowspan="2"></span></td>
-                <td><span id="spell_info_{{ loop.index }}"><h1>{{ spell.name.title() }}</h1><h2>{{ spell.description }}</h2></span></td>
+                <td><span id="spell_img_{{ x+1 }}">{% if x < spells|length %}<img class="spellIcon" onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ spells[x].id }}});" src="/static/images/abilities/{{ x+1 }}.jpg" rowspan="2">{% else %}<img class="spellIcon" onclick="sendToPy(event, doNothing, 'cast_spell', {'id': 0});" src="/static/images/abilities/0.jpg" rowspan="2" style="display:none;">{% endif %}</span></td>
+                <td><span id="spell_info_{{ x+1 }}">{% if x < spells|length %}<h1>{{ spells[x].name.title() }}</h1><h2>{{ spells[x].description }}</h2>{% endif %}</span></td>
             </tr>
-            {% endif %}
             {% else %}
             You have no spells
             {% endfor %}
@@ -21,13 +19,11 @@
     </div>
     <div class="spellList" style="margin-left:50px;">
         <table>
-            {% for spell in spells %}
-            {% if loop.index > 4 %}
+            {% for x in range(4,8) %}
             <tr>
-                <td><span id="spell_img_{{ loop.index }}"><img class="spellIcon" onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ spell.id }}});" src="/static/images/abilities/{{ loop.index }}.jpg" rowspan="2"></span></td>
-                <td><span id="spell_info_{{ loop.index }}"><h1>{{ spell.name.title() }}</h1><h2>{{ spell.description }}</h2></span></td>
+                <td><span id="spell_img_{{ x+1 }}">{% if x < spells|length %}<img class="spellIcon" onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ spells[x].id }}});" src="/static/images/abilities/{{ x+1 }}.jpg" rowspan="2">{% else %}<img class="spellIcon" src="/static/images/abilities/0.jpg" rowspan="2">{% endif %}</span></td>
+                <td><span id="spell_info_{{ x+1 }}">{% if x < spells|length %}<h1>{{ spells[x].name.title() }}</h1><h2>{{ spells[x].description }}</h2>{% endif %}</span></td>
             </tr>
-            {% endif %}
             {% endfor %}
         </table>
     </div>
