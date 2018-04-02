@@ -6,13 +6,13 @@
 		<li><a {% if profile %}style="background-color:Red;"{% endif %} href="/home">General</a></li>
 		<li><a {% if page_title == "Attributes" %}style="background-color:Red;" {% elif hero.attribute_points %}style="background-color:Blue;"{% endif %} href="/attributes">{% if hero.attribute_points %}Level Up!{% else %}Attributes{% endif %}</a></li>
 		<li><a {% if page_title == "Proficiencies" %}style="background-color:Red;"{% elif hero.proficiency_points %}style="background-color:Blue;"{% endif %} href="/proficiencies">{% if hero.proficiency_points %}Upgrade!{% else %}Proficiencies{% endif %}</a></li>
-		<li class="topbarDropdownOuter" {% if ability_tree %}style="background-color:Red;"{% endif %}>
+		<li class="topbarDropdownOuter" {% if ability_tree %}style="background-color:Red;"{% elif hero.basic_ability_points or hero.archetype_ability_points or hero.calling_ability_points or hero.pantheon_ability_points %}style="background-color:Blue;"{% endif %}>
 			<a href="/ability_tree/basic" style="display:inline-block;">Abilities</a>
 			<div class="topbarDropdownInner">
-				<a href="/ability_tree/basic">Basic</a>
-				<a href="/ability_tree/archetype">Archetype</a>
-				<a href="/ability_tree/calling">Calling</a>
-				<a href="/ability_tree/pantheon">Pantheon</a>
+				<a href="/ability_tree/basic" {% if hero.basic_ability_points %}style="background-color:Blue;"{% endif %}>Basic</a>
+				<a href="/ability_tree/archetype" {% if hero.archetype_ability_points %}style="background-color:Blue;"{% endif %}>Archetype</a>
+				<a href="/ability_tree/calling" {% if hero.calling_ability_points %}style="background-color:Blue;"{% endif %}>Calling</a>
+				<a href="/ability_tree/pantheon" {% if hero.pantheon_ability_points %}style="background-color:Blue;"{% endif %}>Pantheon</a>
 			</div>
 		</li>
 	</ul>
