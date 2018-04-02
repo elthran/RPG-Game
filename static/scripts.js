@@ -156,14 +156,57 @@ function turnSpellbookPage(response) {
     var spell_info_6 = document.getElementById("spell_info_6");
     var spell_info_7 = document.getElementById("spell_info_7");
     var spell_info_8 = document.getElementById("spell_info_8");
-    var spell_img_1 = document.getElementById("spell_img_1").src = response.spell_img_1;
-    var spell_img_2 = document.getElementById("spell_img_2").src = response.spell_img_2;
-    var spell_img_3 = document.getElementById("spell_img_3").src = response.spell_img_3;
-    var spell_img_4 = document.getElementById("spell_img_4").src = response.spell_img_4;
-    var spell_img_5 = document.getElementById("spell_img_5").src = response.spell_img_5;
-    var spell_img_6 = document.getElementById("spell_img_6").src = response.spell_img_6;
-    var spell_img_7 = document.getElementById("spell_img_7").src = response.spell_img_7;
-    var spell_img_8 = document.getElementById("spell_img_8").src = response.spell_img_8;
+    var spell_img_1 = document.getElementById("spell_img_1");
+    spell_img_1.src = "/static/images/abilities/" + response.spell_img_1 + ".jpg";
+    var spell_img_2 = document.getElementById("spell_img_2");
+    spell_img_2.src = "/static/images/abilities/" + response.spell_img_2 + ".jpg";
+    if (response.spell_img_2 === "empty_box") {
+        spell_img_2.style.display = "none";
+    } else {
+        spell_img_2.style.display = "inline-block";
+    }
+    var spell_img_3 = document.getElementById("spell_img_3");
+    spell_img_3.src = "/static/images/abilities/" + response.spell_img_3 + ".jpg";
+    if (response.spell_img_3 === "empty_box") {
+        spell_img_3.style.display = "none";
+    } else {
+        spell_img_3.style.display = "inline-block";
+    }
+    var spell_img_4 = document.getElementById("spell_img_4");
+    spell_img_4.src = "/static/images/abilities/" + response.spell_img_4 + ".jpg";
+    if (response.spell_img_4 === "empty_box") {
+        spell_img_4.style.display = "none";
+    } else {
+        spell_img_4.style.display = "inline-block";
+    }
+    var spell_img_5 = document.getElementById("spell_img_5");
+    spell_img_5.src = "/static/images/abilities/" + response.spell_img_5 + ".jpg";
+    if (response.spell_img_5 === "empty_box") {
+        spell_img_5.style.display = "none";
+    } else {
+        spell_img_5.style.display = "inline-block";
+    }
+    var spell_img_6 = document.getElementById("spell_img_6");
+    spell_img_6.src = "/static/images/abilities/" + response.spell_img_6 + ".jpg";
+    if (response.spell_img_6 === "empty_box") {
+        spell_img_6.style.display = "none";
+    } else {
+        spell_img_6.style.display = "inline-block";
+    }
+    var spell_img_7 = document.getElementById("spell_img_7");
+    spell_img_7.src = "/static/images/abilities/" + response.spell_img_7 + ".jpg";
+    if (response.spell_img_7 === "empty_box") {
+        spell_img_7.style.display = "none";
+    } else {
+        spell_img_7.style.display = "inline-block";
+    }
+    var spell_img_8 = document.getElementById("spell_img_8");
+    spell_img_8.src = "/static/images/abilities/" + response.spell_img_8 + ".jpg";
+    if (response.spell_img_8 === "empty_box") {
+        spell_img_8.style.display = "none";
+    } else {
+        spell_img_8.style.display = "inline-block";
+    }
     spell_info_1.innerHTML = response.spell_info_1;
     spell_info_2.innerHTML = response.spell_info_2;
     spell_info_3.innerHTML = response.spell_info_3;

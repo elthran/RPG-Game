@@ -267,11 +267,11 @@ class Command:
         else:
             last_index = first_index + 8
         spell_info = [" ", " ", " ", " ", " ", " ", " ", " "] # These need a space. Can't just be an empty string for some reason.
-        spell_img = ["/static/images/abilities/1.jpg", "/static/images/abilities/2.jpg", "/static/images/abilities/3.jpg", "/static/images/abilities/4.jpg",
-                     "/static/images/abilities/5.jpg", "/static/images/abilities/6.jpg", "/static/images/abilities/7.jpg", "/static/images/abilities/8.jpg"]
+        spell_img = ["empty_box", "empty_box", "empty_box", "empty_box", "empty_box", "empty_box", "empty_box", "empty_box"]
         counter = 0
         while (last_index - first_index) > counter:
             spell_info[counter] = "<h1>" + spells[first_index+counter].name.title() + "</h1><h2>" + spells[first_index+counter].description + "</h2>"
+            spell_img[counter] = spells[first_index+counter].image
             counter += 1
         return jsonify(page=hero.spellbook_page, page_max=page_max,
                        spell_info_1=spell_info[0], spell_img_1=spell_img[0],
