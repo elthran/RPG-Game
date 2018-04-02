@@ -148,6 +148,10 @@ function turnSpellbookPage(response) {
     var newPage = document.getElementById("currentPage");
     var turnBack = document.getElementById("turnSpellbookBack");
     var turnForward = document.getElementById("turnSpellbookForward");
+    var spell_info_1 = document.getElementById("spell_info_1");
+    var spell_info_2 = document.getElementById("spell_info_2");
+    spell_info_1.innerHTML = response.spell_info_1;
+    spell_info_2.innerHTML = response.spell_info_2;
     newPage.innerHTML = response.page;
     if (response.page <= 1) {
         turnBack.style.display = 'none';

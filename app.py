@@ -675,12 +675,19 @@ def inbox(outbox, hero=None):
 @app.route('/spellbook')
 @uses_hero
 def spellbook(hero=None):
+    test = [0,1,2,3]
+    print(test[0:0], test[0:1])
     spells = []
     for ability in hero.abilities:
         if ability.castable and ability.level > 0:
             spells.append(ability)
     max_pages = max(ceil(len(spells)/8), 1)
-    return render_template('spellbook.html', page_title="Spellbook", hero=hero, spells=spells, max_pages=max_pages)
+    first_index = (hero.spellbook_page - 1) * 8
+    if len(spells) <= first_index + 8:
+        last_index = first_index + ((len(spells) - 1) % 8) + 1
+    else:
+        last_index = first_index + 8
+    return render_template('spellbook.html', page_title="Spellbook", hero=hero, spells=spells[first_index:last_index], max_pages=max_pages)
 
 
 # PROFILE PAGES (Basically the home page of the game with your character

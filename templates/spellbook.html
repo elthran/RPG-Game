@@ -9,10 +9,10 @@
     <div class="spellList">
         <table>
             {% for spell in spells %}
-            {% if (loop.index * hero.spellbook_page) < 5 %}
+            {% if loop.index < 5 %}
             <tr>
-                <td><img class="spellIcon" onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ spell.id }}});" src="/static/images/abilities/{{ loop.index }}.jpg" rowspan="2"></td>
-                <td><h1>{{ spell.name.title() }}</h1><h2>{{ spell.description }}</h2></td>
+                <td><span id="spell_img_{{ loop.index }}"><img class="spellIcon" onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ spell.id }}});" src="/static/images/abilities/{{ loop.index }}.jpg" rowspan="2"></span></td>
+                <td><span id="spell_info_{{ loop.index }}"><h1>{{ spell.name.title() }}</h1><h2>{{ spell.description }}</h2></span></td>
             </tr>
             {% endif %}
             {% else %}
@@ -23,10 +23,10 @@
     <div class="spellList" style="margin-left:50px;">
         <table>
             {% for spell in spells %}
-            {% if (loop.index * hero.spellbook_page) > 4 and (loop.index * hero.spellbook_page) < 9 %}
+            {% if loop.index > 4 %}
             <tr>
-                <td><img class="spellIcon" onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ spell.id }}});" src="/static/images/abilities/{{ loop.index }}.jpg" rowspan="2"></td>
-                <td><h1>{{ spell.name.title() }}</h1><h2>{{ spell.description }}</h2></td>
+                <td><span id="spell_img_{{ loop.index }}"><img class="spellIcon" onclick="sendToPy(event, doNothing, 'cast_spell', {'id': {{ spell.id }}});" src="/static/images/abilities/{{ loop.index }}.jpg" rowspan="2"></span></td>
+                <td><span id="spell_info_{{ loop.index }}"><h1>{{ spell.name.title() }}</h1><h2>{{ spell.description }}</h2></span></td>
             </tr>
             {% endif %}
             {% endfor %}

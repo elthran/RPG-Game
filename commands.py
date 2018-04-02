@@ -253,12 +253,26 @@ class Command:
     @staticmethod
     def turn_spellbook_page(hero, database, data, **kwargs):
         page_max = data['max']
-        print(page_max)
         if data['direction'] == "forward":
             hero.spellbook_page = min(hero.spellbook_page+1,page_max)
         else:
             hero.spellbook_page = max(hero.spellbook_page-1,1)
-        return jsonify(page=hero.spellbook_page, page_max=page_max)
+        spells = []
+        for ability in hero.abilities:
+            if ability.castable and ability.level > 0:
+                spells.append(ability)
+        first_index = (hero.spellbook_page - 1) * 8
+        if len(spells) <= first_index + 8:
+            last_index = first_index + ((len(spells) - 1) % 8) + 1
+        else:
+            last_index = first_index + 8
+        spell_info_1 = "<h1>" + spells[first_index].name.title() + "</h1><h2>" + spells[first_index].description + "</h2>"
+        print(last_index - first_index)
+        if (last_index - first_index) > 2:
+            spell_info_2 = "<h1>" + spells[first_index+1].name.title() + "</h1><h2>" + spells[first_index+1].description + "</h2>"
+        else:
+            spell_info_2 = ""
+        return jsonify(page=hero.spellbook_page, page_max=page_max, spell_info_1=spell_info_1, spell_info_2=spell_info_2)
 
     @staticmethod
     def change_attribute_tooltip(hero, database, arg_dict, **kwargs):
