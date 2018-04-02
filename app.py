@@ -509,16 +509,15 @@ def reset_character(stat_type, hero=None):
 
 
 # this is a temporary page that lets you modify any attributes for testing
-@app.route('/admin/<path>', methods=['GET', 'POST'])
+@app.route('/admin/<path>/<path2>', methods=['GET', 'POST'])
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 @uses_hero
-def admin(path="modify_self", hero=None):
-    hero.base_proficiencies['endurance'].current = 0
-    print("Visiting the admin page has set your Endurance to 0. This is for testing purposes.")
+def admin(path="modify_self", path2="users", hero=None):
     admin_form_content = None
     if path == "edit_database":
-        pass
+        sorted_heroes = database.fetch_sorted_heroes("id", False)
+        return render_template('admin.html', hero=hero, path=path, path2=path2, all_heroes=sorted_heroes)  # return a string
     elif path == "modify_self":
         page_title = "Admin"
         if request.method == 'POST':
@@ -1407,7 +1406,7 @@ def about_page(hero=None):
     info = "The game is being created by Elthran and Haldon, with some help " \
            "from Gnahz. Any inquiries can be made to elthranRPG@gmail.com"
     return render_template('about.html', hero=hero, page_title="About",
-                           gameVersion="0.00.02", about_info=info)
+                           gameVersion="0.11.26", info=info)
 
 
 ###testing by Marlen ####
