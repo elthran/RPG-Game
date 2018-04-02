@@ -43,7 +43,7 @@ from locations import Location
 from items import Item
 from quests import Quest, QuestPath
 from proficiencies import Proficiency
-from events import Trigger
+from events import Trigger, Event
 from forum import Forum, Board, Thread
 from bestiary2 import MonsterTemplate
 from journal import Entry
