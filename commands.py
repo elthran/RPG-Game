@@ -266,13 +266,20 @@ class Command:
             last_index = first_index + ((len(spells) - 1) % 8) + 1
         else:
             last_index = first_index + 8
-        spell_info_1 = "<h1>" + spells[first_index].name.title() + "</h1><h2>" + spells[first_index].description + "</h2>"
-        print(last_index - first_index)
-        if (last_index - first_index) > 2:
-            spell_info_2 = "<h1>" + spells[first_index+1].name.title() + "</h1><h2>" + spells[first_index+1].description + "</h2>"
-        else:
-            spell_info_2 = ""
-        return jsonify(page=hero.spellbook_page, page_max=page_max, spell_info_1=spell_info_1, spell_info_2=spell_info_2)
+        spell_info = ["", "", "", "", "", "", "", ""]
+        counter = 0
+        while (last_index - first_index) > counter:
+            spell_info[counter] = "<h1>" + spells[first_index+counter].name.title() + "</h1><h2>" + spells[first_index+counter].description + "</h2>"
+            counter += 1
+        return jsonify(page=hero.spellbook_page, page_max=page_max,
+                       spell_info_1=spell_info[0],
+                       spell_info_2=spell_info[1],
+                       spell_info_3=spell_info[2],
+                       spell_info_4=spell_info[3],
+                       spell_info_5=spell_info[4],
+                       spell_info_6=spell_info[5],
+                       spell_info_7=spell_info[6],
+                       spell_info_8=spell_info[7])
 
     @staticmethod
     def change_attribute_tooltip(hero, database, arg_dict, **kwargs):
