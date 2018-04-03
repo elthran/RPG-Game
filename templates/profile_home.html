@@ -250,6 +250,10 @@
 		<td>Virtue Gain</td>
 		<td>{% if proficiencies.dualism.final %}+{{ proficiencies.dualism.final }}%{% else %}-{% endif %}</td>
 	</tr>
+	<tr>
+		<td>Lifesteal</td>
+		<td>{% if proficiencies.lifesteal.final %}+{{ proficiencies.lifesteal.final|int }} per hit{% else %}-{% endif %}</td>
+	</tr>
 </table>
 {% endblock %}
 

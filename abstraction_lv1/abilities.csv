@@ -27,3 +27,4 @@ IgnoreTest4,CastableAbility,Basic,None,3,Irrelevant,Irrelevant,Irrelevant,TRUE,V
 IgnoreTest5,CastableAbility,Basic,None,3,Irrelevant,Irrelevant,Irrelevant,TRUE,Virtue,0,Understanding,0,0,0
 IgnoreTest6,CastableAbility,Basic,None,3,Irrelevant,Irrelevant,Irrelevant,TRUE,Virtue,0,Understanding,0,0,0
 IgnoreTest7,CastableAbility,Basic,None,3,Irrelevant,Irrelevant,Irrelevant,TRUE,Virtue,0,Understanding,0,0,0
+LifestealTest,AuraAbility,Basic,None,3,You steal life per hit,Amount stolen: {{ (level) * 1 }},Amount stolen: {{ (level + 1) * 1 }},TRUE,Lifesteal,1,Understanding,0,Null,Null
