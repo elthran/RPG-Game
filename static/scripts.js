@@ -140,10 +140,6 @@ function toggleLoginRegister(button) {
     }
 }
 
-function doNothing() { // This should be removed soon. I'm just not sure how to get SendToPy to not run any JS function.
-    return;
-}
-
 function turnSpellbookPage(response) {
     var newPage = document.getElementById("currentPage");
     var turnBack = document.getElementById("turnSpellbookBack");
@@ -158,6 +154,7 @@ function turnSpellbookPage(response) {
     var spell_info_8 = document.getElementById("spell_info_8");
     var spell_img_1 = document.getElementById("spell_img_1");
     spell_img_1.src = "/static/images/abilities/" + response.spell_img_1 + ".jpg";
+    spell_img_1.onclick = sendToPy(event, null, 'cast_spell', {'id': response.spell_id_1});
     var spell_img_2 = document.getElementById("spell_img_2");
     spell_img_2.src = "/static/images/abilities/" + response.spell_img_2 + ".jpg";
     if (response.spell_img_2 === "empty_box") {

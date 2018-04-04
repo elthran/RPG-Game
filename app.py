@@ -1184,7 +1184,7 @@ def battle(enemy_user=None, hero=None):
         hero.journal.achievements.deaths += 1  # Record that the hero has another death
         battle_log.append("You were defeated. You gain no experience and your account should be deleted.")
         if enemy_user != "monster":
-            #enemy.player_kills += 1  Commented out becauseMarlen has broken this variable.
+            enemy.journal.achievements.player_kills += 1
             pass
     else:  # Ok, the hero is not dead. Currently that means he won! Since we don't have ties yet.
         experience_gained = str(hero.gain_experience(enemy.experience_rewarded)) # This works PERFECTLY as intended!
