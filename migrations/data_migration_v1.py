@@ -35,13 +35,17 @@ def migrate_users():
     for old_user in old_session.query(old_user_table).all():
         # don't add in the default users [user.username for user in db.prebuilt_objects.users]
         # I could also just drop the first 2 user objects?
-        if old_user.username not in ['admin', 'marlen']:
+        if old_user.username not in [user.username for user in database.get_all_users()]:
             user = database.add_new_user(old_user.username, old_user.password, email=old_user.email_address)
             user.timestamp = old_user.timstamp
             user.prestige = old_user.prestige
+            user.is_admin = old_user.is_admin
+            migrate_inbox(user, old_user)
+            migrate_posts(user, old_user)
 
             database.add_new_hero_to_user(user)
     """
+    # upgrade
     op.add_column('inbox', sa.Column('user_id', sa.Integer(), nullable=True))
     op.create_foreign_key(op.f('fk_inbox_user_id_user'), 'inbox', 'user', ['user_id'], ['id'], ondelete='CASCADE')
     op.drop_constraint('fk_post_user_id_user', 'post', type_='foreignkey')
@@ -50,7 +54,25 @@ def migrate_users():
     op.add_column('user', sa.Column('reset_key', sa.Unicode(length=200), nullable=True))
     op.drop_constraint('fk_user_inbox_id_inbox', 'user', type_='foreignkey')
     op.drop_column('user', 'inbox_id')
+    
+    # downgrade
+    op.add_column('user', sa.Column('inbox_id', mysql.INTEGER(display_width=11), autoincrement=False, nullable=True))
+    op.create_foreign_key('fk_user_inbox_id_inbox', 'user', 'inbox', ['inbox_id'], ['id'])
+    op.drop_column('user', 'reset_key')
+    op.drop_constraint(op.f('fk_post_user_id_user'), 'post', type_='foreignkey')
+    op.drop_constraint(op.f('fk_post_thread_id_thread'), 'post', type_='foreignkey')
+    op.create_foreign_key('fk_post_user_id_user', 'post', 'user', ['user_id'], ['id'])
+    op.drop_constraint(op.f('fk_inbox_user_id_user'), 'inbox', type_='foreignkey')
+    op.drop_column('inbox', 'user_id')
     """
+
+
+def migrate_inbox(user, old_user):
+    pass
+
+
+def migrate_posts(user, old_user):
+    pass
 
 
 if __name__ == "__main__":
