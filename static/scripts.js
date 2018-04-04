@@ -160,7 +160,7 @@ function turnSpellbookPage(response) {
         } else {
             spell_img.style.display = "inline-block";
             spell_img.src = "/static/images/abilities/" + response.spell_imgs[i] + ".jpg";
-            spell_img.onclick = sendToPy(event, printHello, 'cast_spell', {'id': response.spell_ids[i]});
+            spell_img.onclick = function() {sendToPy(event, null, 'cast_spell', {'id': response.spell_ids[i]});}
             spell_info.innerHTML = response.spell_infos[i];
         }
     }

@@ -281,6 +281,8 @@ class Command:
             spell_ids.append("0")
             spell_imgs.append("empty_box")
             spell_infos.append(" ")
+        for i in range(8):
+            print(spell_ids[i], spell_imgs[i], spell_infos[i])
         return jsonify(page=hero.spellbook_page, page_max=page_max, spell_ids=spell_ids, spell_imgs=spell_imgs, spell_infos=spell_infos)
 
     @staticmethod
