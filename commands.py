@@ -278,7 +278,7 @@ class Command:
             spell_imgs.append(spells[i].image)
             spell_infos.append("<h1>" + spells[i].name.title() + "</h1><h2>" + spells[i].description + "</h2>")
         for i in range(8 - (last_index - first_index)):
-            spell_ids.append("0")
+            spell_ids.append(0)
             spell_imgs.append("empty_box")
             spell_infos.append(" ")
         for i in range(8):
