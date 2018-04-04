@@ -140,78 +140,31 @@ function toggleLoginRegister(button) {
     }
 }
 
+function printHello() {
+    console.log("Hello");
+}
+
 function turnSpellbookPage(response) {
     var newPage = document.getElementById("currentPage");
     var turnBack = document.getElementById("turnSpellbookBack");
     var turnForward = document.getElementById("turnSpellbookForward");
-    var spell_info_1 = document.getElementById("spell_info_1");
-    var spell_info_2 = document.getElementById("spell_info_2");
-    var spell_info_3 = document.getElementById("spell_info_3");
-    var spell_info_4 = document.getElementById("spell_info_4");
-    var spell_info_5 = document.getElementById("spell_info_5");
-    var spell_info_6 = document.getElementById("spell_info_6");
-    var spell_info_7 = document.getElementById("spell_info_7");
-    var spell_info_8 = document.getElementById("spell_info_8");
-    var spell_img_1 = document.getElementById("spell_img_1");
-    spell_img_1.src = "/static/images/abilities/" + response.spell_img_1 + ".jpg";
-    spell_img_1.onclick = sendToPy(event, null, 'cast_spell', {'id': response.spell_id_1});
-    var spell_img_2 = document.getElementById("spell_img_2");
-    spell_img_2.src = "/static/images/abilities/" + response.spell_img_2 + ".jpg";
-    if (response.spell_img_2 === "empty_box") {
-        spell_img_2.style.display = "none";
-    } else {
-        spell_img_2.style.display = "inline-block";
+    /* This section will update the images, buttons, and text of the 7 spells */
+    var spell_info;
+    var spell_img;
+    for (var i=0; i < 8; i++) {
+        spell_info = document.getElementById("spell_info_" + (i+1));
+        spell_img = document.getElementById("spell_img_" + (i+1));
+        if (response.spell_imgs[i] === "empty_box") {
+            spell_img.style.display = "none";
+            spell_info.innerHTML = " ";
+        } else {
+            spell_img.style.display = "inline-block";
+            spell_img.src = "/static/images/abilities/" + response.spell_imgs[i] + ".jpg";
+            spell_img.onclick = sendToPy(event, printHello, 'cast_spell', {'id': response.spell_ids[i]});
+            spell_info.innerHTML = response.spell_infos[i];
+        }
     }
-    var spell_img_3 = document.getElementById("spell_img_3");
-    spell_img_3.src = "/static/images/abilities/" + response.spell_img_3 + ".jpg";
-    if (response.spell_img_3 === "empty_box") {
-        spell_img_3.style.display = "none";
-    } else {
-        spell_img_3.style.display = "inline-block";
-    }
-    var spell_img_4 = document.getElementById("spell_img_4");
-    spell_img_4.src = "/static/images/abilities/" + response.spell_img_4 + ".jpg";
-    if (response.spell_img_4 === "empty_box") {
-        spell_img_4.style.display = "none";
-    } else {
-        spell_img_4.style.display = "inline-block";
-    }
-    var spell_img_5 = document.getElementById("spell_img_5");
-    spell_img_5.src = "/static/images/abilities/" + response.spell_img_5 + ".jpg";
-    if (response.spell_img_5 === "empty_box") {
-        spell_img_5.style.display = "none";
-    } else {
-        spell_img_5.style.display = "inline-block";
-    }
-    var spell_img_6 = document.getElementById("spell_img_6");
-    spell_img_6.src = "/static/images/abilities/" + response.spell_img_6 + ".jpg";
-    if (response.spell_img_6 === "empty_box") {
-        spell_img_6.style.display = "none";
-    } else {
-        spell_img_6.style.display = "inline-block";
-    }
-    var spell_img_7 = document.getElementById("spell_img_7");
-    spell_img_7.src = "/static/images/abilities/" + response.spell_img_7 + ".jpg";
-    if (response.spell_img_7 === "empty_box") {
-        spell_img_7.style.display = "none";
-    } else {
-        spell_img_7.style.display = "inline-block";
-    }
-    var spell_img_8 = document.getElementById("spell_img_8");
-    spell_img_8.src = "/static/images/abilities/" + response.spell_img_8 + ".jpg";
-    if (response.spell_img_8 === "empty_box") {
-        spell_img_8.style.display = "none";
-    } else {
-        spell_img_8.style.display = "inline-block";
-    }
-    spell_info_1.innerHTML = response.spell_info_1;
-    spell_info_2.innerHTML = response.spell_info_2;
-    spell_info_3.innerHTML = response.spell_info_3;
-    spell_info_4.innerHTML = response.spell_info_4;
-    spell_info_5.innerHTML = response.spell_info_5;
-    spell_info_6.innerHTML = response.spell_info_6;
-    spell_info_7.innerHTML = response.spell_info_7;
-    spell_info_8.innerHTML = response.spell_info_8;
+    /* This section will update the flip left/right page buttons */
     newPage.innerHTML = response.page;
     if (response.page <= 1) {
         turnBack.style.display = 'none';
@@ -223,8 +176,6 @@ function turnSpellbookPage(response) {
     } else if (turnForward.style.display === 'none') {
         turnForward.style.display = 'block';
     }
-    console.log(response.page)
-    console.log(response.page_max)
 }
 
 function checkPasswordMatch() {

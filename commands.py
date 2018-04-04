@@ -248,7 +248,7 @@ class Command:
     def cast_spell(hero, database, data, **kwargs):
         spell_id = data['id']
         spell = database.get_ability_by_id(spell_id)
-        print("Casting spell: ", spell.name, spell.id)
+        print("Casting spell called ", spell.name, "with spell id of ", spell.id)
         spell.cast(hero)
         return "success"
 
@@ -259,6 +259,7 @@ class Command:
             hero.spellbook_page = min(hero.spellbook_page+1,page_max)
         else:
             hero.spellbook_page = max(hero.spellbook_page-1,1)
+        # The code below determines which spells to show based on what page you are on (up to 8 spells).
         spells = []
         for ability in hero.abilities:
             if ability.castable and ability.level > 0:
@@ -268,24 +269,19 @@ class Command:
             last_index = first_index + ((len(spells) - 1) % 8) + 1
         else:
             last_index = first_index + 8
-        spell_info = [" ", " ", " ", " ", " ", " ", " ", " "] # These need a space. Can't just be an empty string for some reason.
-        spell_img = ["empty_box", "empty_box", "empty_box", "empty_box", "empty_box", "empty_box", "empty_box", "empty_box"]
-        spell_id = [1,1,1,1,1,1,1,1]
-        counter = 0
-        while (last_index - first_index) > counter:
-            spell_info[counter] = "<h1>" + spells[first_index+counter].name.title() + "</h1><h2>" + spells[first_index+counter].description + "</h2>"
-            spell_img[counter] = spells[first_index+counter].image
-            spell_id[counter] = spells[first_index+counter].id
-            counter += 1
-        return jsonify(page=hero.spellbook_page, page_max=page_max,
-                       spell_info_1=spell_info[0], spell_img_1=spell_img[0], spell_id_1=spell_id[0],
-                       spell_info_2=spell_info[1], spell_img_2=spell_img[1], spell_id_2=spell_id[1],
-                       spell_info_3=spell_info[2], spell_img_3=spell_img[2], spell_id_3=spell_id[2],
-                       spell_info_4=spell_info[3], spell_img_4=spell_img[3], spell_id_4=spell_id[3],
-                       spell_info_5=spell_info[4], spell_img_5=spell_img[4], spell_id_5=spell_id[4],
-                       spell_info_6=spell_info[5], spell_img_6=spell_img[5], spell_id_6=spell_id[5],
-                       spell_info_7=spell_info[6], spell_img_7=spell_img[6], spell_id_7=spell_id[6],
-                       spell_info_8=spell_info[7], spell_img_8=spell_img[7], spell_id_8=spell_id[7])
+        # The code below extracts the data from the shown spells to send to JavaScript.
+        spell_ids = []
+        spell_imgs = []
+        spell_infos = []
+        for i in range(first_index,last_index):
+            spell_ids.append(spells[i].id)
+            spell_imgs.append(spells[i].image)
+            spell_infos.append("<h1>" + spells[i].name.title() + "</h1><h2>" + spells[i].description + "</h2>")
+        for i in range(8 - (last_index - first_index)):
+            spell_ids.append("0")
+            spell_imgs.append("empty_box")
+            spell_infos.append(" ")
+        return jsonify(page=hero.spellbook_page, page_max=page_max, spell_ids=spell_ids, spell_imgs=spell_imgs, spell_infos=spell_infos)
 
     @staticmethod
     def change_attribute_tooltip(hero, database, arg_dict, **kwargs):
