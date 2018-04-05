@@ -151,10 +151,10 @@ function turnSpellbookPage(response) {
     /* This section will update the images, buttons, and text of the 7 spells */
     var spell_info;
     var spell_img;
+    var spell_ids = response.spell_ids;
     for (var i=0; i < 8; i++) {
         spell_info = document.getElementById("spell_info_" + (i+1));
         spell_img = document.getElementById("spell_img_" + (i+1));
-        var spellID = Number(response.spell_ids[i]);
         if (response.spell_imgs[i] === "empty_box") {
             spell_img.style.display = "none";
             spell_info.innerHTML = " ";
@@ -162,14 +162,11 @@ function turnSpellbookPage(response) {
             spell_img.style.display = "inline-block";
             spell_info.innerHTML = response.spell_infos[i];
             spell_img.src = "/static/images/abilities/" + response.spell_imgs[i] + ".jpg";
-            spell_img.onclick = function (event) {
-                "use strict";
-                sendToPy(event, null, "cast_spell", {"id": spellID});
-            };
+            spell_img.setAttribute( "onclick", "sendToPy(event, null, 'cast_spell', {'id': " + spell_ids[i] + "} )" );
         }
     }
     /* This section will update the flip left/right page buttons */
-    newPage.innerHTML = response.page;
+    newPage.innerHTML = response.page; /* tells you what page you are on */
     if (response.page <= 1) {
         turnBack.style.display = 'none';
     } else if (turnBack.style.display === 'none') {
