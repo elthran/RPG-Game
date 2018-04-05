@@ -154,13 +154,14 @@ function turnSpellbookPage(response) {
     for (var i=0; i < 8; i++) {
         spell_info = document.getElementById("spell_info_" + (i+1));
         spell_img = document.getElementById("spell_img_" + (i+1));
+        var spellID = Number(response.spell_ids[i]);
         if (response.spell_imgs[i] === "empty_box") {
             spell_img.style.display = "none";
             spell_info.innerHTML = " ";
         } else {
             spell_img.style.display = "inline-block";
+            spell_info.innerHTML = response.spell_infos[i];
             spell_img.src = "/static/images/abilities/" + response.spell_imgs[i] + ".jpg";
-            var spellID = response.spell_ids[i];
             spell_img.onclick = function (event) {
                 "use strict";
                 sendToPy(event, null, "cast_spell", {"id": spellID});
