@@ -15,6 +15,7 @@ from __init__ import *
 import database as db
 from build_code import normalize_class_name
 from rpg_game_tests.test_helpers import db_execute_script
+from migrations import migration_helpers
 sys.path.pop(0)
 
 Session = sa.orm.sessionmaker()
@@ -39,15 +40,17 @@ def migrate_users():
     NOTE2: heroes are migrated separately as well.
     """
     old_user_table = old_meta.tables['user']
+    migration_helpers.truncate_table('user', database.engine)
+    migration_helpers.truncate_table('inbox', database.engine)
     for old_user in old_session.query(old_user_table).all():
-        # don't add in the default users [user.username for user in db.prebuilt_objects.users]
-        # I could also just drop the first 2 user objects?
-        if old_user.username not in [user.username for user in database.get_all_users()]:
-            user = database.add_new_user(old_user.username, old_user.password, email=old_user.email)
-            user.timestamp = old_user.timestamp
-            user.prestige = old_user.prestige
-            user.is_admin = old_user.is_admin
-            migrate_inbox(user, old_user)
+        user = database.add_new_user(old_user.username, old_user.password, email=old_user.email)
+        user.password = old_user.password
+        user.email = old_user.email
+        user.timestamp = old_user.timestamp
+        user.prestige = old_user.prestige
+        user.is_admin = old_user.is_admin
+        user.reset_key = True  # allows the password migration handle to work.
+        migrate_inbox(user, old_user)
 
     database.update()
     """
@@ -87,52 +90,8 @@ def migrate_forum():
     this should be cloned in wholesale rather than user by user.
     """
 
-    old_posts_dump = """TRUNCATE TABLE `forum`;
-TRUNCATE TABLE `board`;
-TRUNCATE TABLE `thread`;
-TRUNCATE TABLE `post`;
+    db_execute_script("migrations/replace_forum_data_v1.sql", database)
 
---
--- Dumping data for table `forum`
---
-
-LOCK TABLES `forum` WRITE;
-/*!40000 ALTER TABLE `forum` DISABLE KEYS */;
-INSERT INTO `forum` VALUES (1,'Basic');
-/*!40000 ALTER TABLE `forum` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `board`
---
-
-LOCK TABLES `board` WRITE;
-/*!40000 ALTER TABLE `board` DISABLE KEYS */;
-INSERT INTO `board` VALUES (1,1,'General');
-/*!40000 ALTER TABLE `board` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `thread`
---
-
-LOCK TABLES `thread` WRITE;
-/*!40000 ALTER TABLE `thread` DISABLE KEYS */;
-INSERT INTO `thread` VALUES (1,1,'Enemies only missing ','Tntdj360','you need to make it so the enemies actually hit people so they have to decide when they want to fight and when they want to leave','General','2018-03-06 01:02:35');
-/*!40000 ALTER TABLE `thread` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `post`
---
-
-LOCK TABLES `post` WRITE;
-/*!40000 ALTER TABLE `post` DISABLE KEYS */;
-INSERT INTO `post` VALUES (1,1,3,'nevermind i just died to a dog\r\n','2018-03-06 01:03:39');
-/*!40000 ALTER TABLE `post` ENABLE KEYS */;
-UNLOCK TABLES;
-"""
-    db_execute_script(old_posts_dump, database)
 
     """
     Example of schema migration.
@@ -155,6 +114,8 @@ UNLOCK TABLES;
 
 def migrate_heroes():
     old_hero_table = old_meta.tables['hero']
+    migration_helpers.truncate_table('hero', database.engine)
+    migration_helpers.truncate_table('inventory', database.engine)
     for old_hero in old_session.query(old_hero_table).all():
         # don't add in the default users [user.username for user in db.prebuilt_objects.users]
         # I could also just drop the first 2 user objects?
@@ -162,8 +123,26 @@ def migrate_heroes():
         # should ignore prebuilt heroes ... not built
         user = database.get_object_by_id("User", old_hero.user_id)
         hero = database.add_new_hero_to_user(user)
+        # pdb.set_trace()
+        migration_helpers.set_all(old_hero, hero)
+        migrate_items(hero, old_hero)  # Currently give hero gold instead.
 
     database.update()
+
+
+def migrate_items(hero, old_hero):
+    gold = 0
+    old_inv = old_session.query(old_meta.tables['inventory']).filter_by(id=old_hero.id).one()
+    old_items = old_session.query(old_meta.tables['item']).filter_by(inventory_id=old_inv.id).all()
+    for old_item in old_items:
+        template_item = database.session.query(db.Item).filter_by(name=old_item.name, template=True).one()
+        if template_item:
+            item = database.create_item(template_item.id)
+            hero.inventory.add_item(item)
+            migration_helpers.set_all(old_item, item)
+        else:
+            # Give Player gold instead of migrating items. Lame :P
+            hero.gold = item.buy_price
 
 
 if __name__ == "__main__":

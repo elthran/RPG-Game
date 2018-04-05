@@ -1,5 +1,6 @@
+import os
+
 if __name__ == "__main__":
-    import os
     os.system("python3 -m pytest -vv {}".format(__file__))
     exit()  # prevents code from trying to run file afterwards.
 
@@ -72,9 +73,8 @@ def db_execute_script(path, ezdb):
     """
 
     with open(path, 'r') as file:
-        pdb.set_trace()
         for line in file:
-            if line != '\n' and not any([line.startswith('--'), line.startswith("/*")]):
+            if line != os.linesep and not any([line.startswith('--'), line.startswith("/*")]):
                 ezdb.engine.execute(line)
 
 

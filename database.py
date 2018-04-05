@@ -398,6 +398,7 @@ class EZDB:
         """
         if user.reset_key and user.password == hashlib.md5(password.encode()).hexdigest():
             user.password = EZDB.encrypt(password)
+            user.reset_key = None
 
     @scoped_session
     def setup_account_for_reset(self, username):
