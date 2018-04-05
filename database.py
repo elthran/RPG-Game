@@ -334,8 +334,9 @@ class EZDB:
 
         May not be future proof if a user has multiple heroes.
         """
-
-        self.session.add(Hero(user=user))
+        hero = Hero(user=user)
+        self.session.add(hero)
+        return hero
 
     @staticmethod
     def encrypt(s):
@@ -376,14 +377,27 @@ class EZDB:
     @scoped_session
     def validate(self, username, password):
         """Check if password if valid for user.
+
+        Check for data_migration 'reset_key' ... if exists use old style
+        password validation ... then convert password to new style.
         """
         user = self.session.query(User).filter_by(username=username).first()
         if user is not None:
+            self.attempt_password_migration(user, password)
             # check a password
             return bcrypt.checkpw(
                 base64.b64encode(hashlib.sha256(password.encode()).digest()),
                 user.password.encode())
         return None
+
+    @safe_commit_session
+    def attempt_password_migration(self, user, password):
+        """Update password to new style if valid.
+
+        If user has reset key, and valid old style password.
+        """
+        if user.reset_key and user.password == hashlib.md5(password.encode()).hexdigest():
+            user.password = EZDB.encrypt(password)
 
     @scoped_session
     def setup_account_for_reset(self, username):

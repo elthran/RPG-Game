@@ -14,6 +14,7 @@ from __init__ import *
 
 import database as db
 from build_code import normalize_class_name
+from rpg_game_tests.test_helpers import db_execute_script
 sys.path.pop(0)
 
 Session = sa.orm.sessionmaker()
@@ -31,19 +32,24 @@ database = db.EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_d
 # Most important is to migrate the user!
 # create a new user with data from old user.
 def migrate_users():
-    old_user_table = old_meta['user']
+    """Migrate the user data by creating new user accounts.
+
+    NOTE: posts aren't migrated user by user but wholesale as they are unmodified.
+    I haven't finished the hero migration part of the user migration yet.
+    NOTE2: heroes are migrated separately as well.
+    """
+    old_user_table = old_meta.tables['user']
     for old_user in old_session.query(old_user_table).all():
         # don't add in the default users [user.username for user in db.prebuilt_objects.users]
         # I could also just drop the first 2 user objects?
         if old_user.username not in [user.username for user in database.get_all_users()]:
-            user = database.add_new_user(old_user.username, old_user.password, email=old_user.email_address)
-            user.timestamp = old_user.timstamp
+            user = database.add_new_user(old_user.username, old_user.password, email=old_user.email)
+            user.timestamp = old_user.timestamp
             user.prestige = old_user.prestige
             user.is_admin = old_user.is_admin
             migrate_inbox(user, old_user)
-            migrate_posts(user, old_user)
 
-            database.add_new_hero_to_user(user)
+    database.update()
     """
     # upgrade
     op.add_column('inbox', sa.Column('user_id', sa.Integer(), nullable=True))
@@ -68,15 +74,102 @@ def migrate_users():
 
 
 def migrate_inbox(user, old_user):
+    # Nothing to migrate ... as inbox is just a container.
+    # Migrate messages here instead.
+    # No Messages to migrate ... so doing nothing :P
     pass
 
 
-def migrate_posts(user, old_user):
-    pass
+def migrate_forum():
+    """Migrate all the forum content in the game.
+
+    After analysis of the Post table (then subsequent forum, board and thread tables)
+    this should be cloned in wholesale rather than user by user.
+    """
+
+    old_posts_dump = """TRUNCATE TABLE `forum`;
+TRUNCATE TABLE `board`;
+TRUNCATE TABLE `thread`;
+TRUNCATE TABLE `post`;
+
+--
+-- Dumping data for table `forum`
+--
+
+LOCK TABLES `forum` WRITE;
+/*!40000 ALTER TABLE `forum` DISABLE KEYS */;
+INSERT INTO `forum` VALUES (1,'Basic');
+/*!40000 ALTER TABLE `forum` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `board`
+--
+
+LOCK TABLES `board` WRITE;
+/*!40000 ALTER TABLE `board` DISABLE KEYS */;
+INSERT INTO `board` VALUES (1,1,'General');
+/*!40000 ALTER TABLE `board` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `thread`
+--
+
+LOCK TABLES `thread` WRITE;
+/*!40000 ALTER TABLE `thread` DISABLE KEYS */;
+INSERT INTO `thread` VALUES (1,1,'Enemies only missing ','Tntdj360','you need to make it so the enemies actually hit people so they have to decide when they want to fight and when they want to leave','General','2018-03-06 01:02:35');
+/*!40000 ALTER TABLE `thread` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `post`
+--
+
+LOCK TABLES `post` WRITE;
+/*!40000 ALTER TABLE `post` DISABLE KEYS */;
+INSERT INTO `post` VALUES (1,1,3,'nevermind i just died to a dog\r\n','2018-03-06 01:03:39');
+/*!40000 ALTER TABLE `post` ENABLE KEYS */;
+UNLOCK TABLES;
+"""
+    db_execute_script(old_posts_dump, database)
+
+    """
+    Example of schema migration.
+    This appears to be only adding in the Cascade. Which might not be a good idea?
+    I can't remember how it works ... if it means that when I delete the Post
+     ... the User gets deleted :P rather than the other way around.
+    # Upgrade
+    op.drop_constraint('fk_post_thread_id_thread', 'post', type_='foreignkey')
+    op.drop_constraint('fk_post_user_id_user', 'post', type_='foreignkey')
+    op.create_foreign_key(op.f('fk_post_thread_id_thread'), 'post', 'thread', ['thread_id'], ['id'], ondelete='CASCADE')
+    op.create_foreign_key(op.f('fk_post_user_id_user'), 'post', 'user', ['user_id'], ['id'], ondelete='CASCADE')
+    
+    # Downgrade
+    op.drop_constraint(op.f('fk_post_user_id_user'), 'post', type_='foreignkey')
+    op.drop_constraint(op.f('fk_post_thread_id_thread'), 'post', type_='foreignkey')
+    op.create_foreign_key('fk_post_user_id_user', 'post', 'user', ['user_id'], ['id'])
+    op.create_foreign_key('fk_post_thread_id_thread', 'post', 'thread', ['thread_id'], ['id'])
+    """
+
+
+def migrate_heroes():
+    old_hero_table = old_meta.tables['hero']
+    for old_hero in old_session.query(old_hero_table).all():
+        # don't add in the default users [user.username for user in db.prebuilt_objects.users]
+        # I could also just drop the first 2 user objects?
+
+        # should ignore prebuilt heroes ... not built
+        user = database.get_object_by_id("User", old_hero.user_id)
+        hero = database.add_new_hero_to_user(user)
+
+    database.update()
 
 
 if __name__ == "__main__":
     migrate_users()
+    migrate_forum()
+    migrate_heroes()
     exit("It didn't crash!")
 
 # # generic one.

@@ -72,8 +72,9 @@ def db_execute_script(path, ezdb):
     """
 
     with open(path, 'r') as file:
+        pdb.set_trace()
         for line in file:
-            if line != '\n' and not line.startswith('--'):
+            if line != '\n' and not any([line.startswith('--'), line.startswith("/*")]):
                 ezdb.engine.execute(line)
 
 
