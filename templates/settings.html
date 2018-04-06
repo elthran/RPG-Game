@@ -1,0 +1,16 @@
+<!-- This shows the admin page -->
+
+{% extends "layout.html" %}
+{% block block1 %}
+<h1>Settings</h1>
+<div class="topbar">
+    <ul>
+        <li><a href="/settings/basic" {% if choice == "basic" %}style="background-color:Red;"{% endif %}>Basic</a></li>
+        <li><a href="/settings/advanced" {% if choice == "advanced" %}style="background-color:Red;"{% endif %}>Advanced</a></li>
+    </ul>
+</div>
+<div style="clear: both;"></div>
+{% if choice == "basic" %}
+{{ user }}
+{% endif %}
+{% endblock %}

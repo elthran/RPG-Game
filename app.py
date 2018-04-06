@@ -686,6 +686,12 @@ def spellbook(hero=None):
         last_index = first_index + 8
     return render_template('spellbook.html', page_title="Spellbook", hero=hero, spells=spells[first_index:last_index], max_pages=max_pages)
 
+@app.route('/settings/<choice>')
+@uses_hero
+def settings(hero=None, choice="basic"):
+    print(hero.user)
+    return render_template('settings.html', hero=hero, user=hero.user, choice=choice)
+
 
 # PROFILE PAGES (Basically the home page of the game with your character
 # display and stats)
