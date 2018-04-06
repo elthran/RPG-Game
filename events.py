@@ -291,9 +291,9 @@ class HandlerMixin(object):
     # The backref here populates the list of handler mixin stubs.
     @declared_attr
     def handler(cls):
-        return relationship("Handler", cascade="all, delete-orphan",
-                            single_parent=True,
-                            backref=backref(cls.__tablename__, uselist=False))
+        return relationship(
+            "Handler",
+            backref=backref(cls.__tablename__, uselist=False, cascade="all, delete-orphan"))
 
     @property
     def new_handler(self):
