@@ -8,10 +8,8 @@ def truncate_table(name, engine):
     engine.execute("SET FOREIGN_KEY_CHECKS=1;")
 
 
-def set_all(old, new):
+def set_all(old, new, except_=[]):
     """Migrate the data from one object to another."""
     for key in old.keys():
-        try:
+        if key not in except_:
             setattr(new, key, getattr(old, key))
-        except AttributeError:
-            pass

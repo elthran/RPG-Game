@@ -16,6 +16,9 @@ import database as db
 from build_code import normalize_class_name
 from rpg_game_tests.test_helpers import db_execute_script
 from migrations import migration_helpers
+
+os.system('mysql -u elthran -p7ArQMuTUSoxXqEfzYfUR -e "DROP DATABASE IF EXISTS rpg_database;"')
+database = db.EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database", debug=False)
 sys.path.pop(0)
 
 Session = sa.orm.sessionmaker()
@@ -26,8 +29,6 @@ old_meta = sa.MetaData(bind=old_engine)
 old_meta.reflect()
 
 old_session = Session(bind=old_engine)
-
-database = db.EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database", debug=False)
 
 
 # Most important is to migrate the user!
@@ -116,6 +117,8 @@ def migrate_heroes():
     old_hero_table = old_meta.tables['hero']
     migration_helpers.truncate_table('hero', database.engine)
     migration_helpers.truncate_table('inventory', database.engine)
+    migration_helpers.truncate_table('journal', database.engine)
+    migration_helpers.truncate_table('proficiency', database.engine)
     for old_hero in old_session.query(old_hero_table).all():
         # don't add in the default users [user.username for user in db.prebuilt_objects.users]
         # I could also just drop the first 2 user objects?
@@ -135,14 +138,15 @@ def migrate_items(hero, old_hero):
     old_inv = old_session.query(old_meta.tables['inventory']).filter_by(id=old_hero.id).one()
     old_items = old_session.query(old_meta.tables['item']).filter_by(inventory_id=old_inv.id).all()
     for old_item in old_items:
-        template_item = database.session.query(db.Item).filter_by(name=old_item.name, template=True).one()
+        template_item = database.session.query(db.Item).filter_by(name=old_item.name, template=True).first()
         if template_item:
             item = database.create_item(template_item.id)
             hero.inventory.add_item(item)
-            migration_helpers.set_all(old_item, item)
+            migration_helpers.set_all(old_item, item, except_=['id'])
         else:
             # Give Player gold instead of migrating items. Lame :P
-            hero.gold = item.buy_price
+            hero.gold = old_item.buy_price
+        database.session.commit()
 
 
 if __name__ == "__main__":
