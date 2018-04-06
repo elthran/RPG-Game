@@ -286,6 +286,17 @@ class Command:
         return jsonify(page=hero.spellbook_page, page_max=page_max, spell_ids=spell_ids, spell_imgs=spell_imgs, spell_infos=spell_infos)
 
     @staticmethod
+    def verify_password(hero, database, data, **kwargs):
+        # I want to pass in the actual attribute here instead of the description. That way I can assign the attribute name and description to the tooltip.
+        # Unfortunately, I don't know how to pull the attribute object from the database. I need a get_attribute_by_name() function in database.py
+        password = data['password']
+        if database.validate(hero.user.username, password):
+            success = "yes"
+        else:
+            success = "no"
+        return jsonify(success=success, button="password")
+
+    @staticmethod
     def change_attribute_tooltip(hero, database, arg_dict, **kwargs):
         # I want to pass in the actual attribute here instead of the description. That way I can assign the attribute name and description to the tooltip.
         # Unfortunately, I don't know how to pull the attribute object from the database. I need a get_attribute_by_name() function in database.py

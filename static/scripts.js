@@ -140,10 +140,6 @@ function toggleLoginRegister(button) {
     }
 }
 
-function printHello() {
-    console.log("Hello");
-}
-
 function turnSpellbookPage(response) {
     var newPage = document.getElementById("currentPage");
     var turnBack = document.getElementById("turnSpellbookBack");

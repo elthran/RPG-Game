@@ -686,11 +686,24 @@ def spellbook(hero=None):
         last_index = first_index + 8
     return render_template('spellbook.html', page_title="Spellbook", hero=hero, spells=spells[first_index:last_index], max_pages=max_pages)
 
-@app.route('/settings/<choice>')
+@app.route('/settings/<tab>/<choice>', methods=['GET', 'POST'])
 @uses_hero
-def settings(hero=None, choice="basic"):
-    print(hero.user)
-    return render_template('settings.html', hero=hero, user=hero.user, choice=choice)
+def settings(hero=None, tab="basic", choice="none"):
+    message = None
+    if request.method == 'POST':
+        if request.form['type'] == "change_password":
+            if request.form['verify_password'] == "true":
+                new_password = request.form['new_password']
+                user = hero.user
+                user.password = database.encrypt(new_password)
+                print("password changed")
+                message="Password changed!"
+            else:
+                print("old password was wrong")
+                message="old password was wrong"
+        elif request.form['type'] == "update_email":
+            email = request.form['email'] if 'email' in request.form else ""
+    return render_template('settings.html', hero=hero, user=hero.user, tab=tab, choice=choice, message=message)
 
 
 # PROFILE PAGES (Basically the home page of the game with your character
