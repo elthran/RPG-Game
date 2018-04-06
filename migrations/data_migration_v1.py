@@ -115,10 +115,29 @@ def migrate_forum():
 
 def migrate_heroes():
     old_hero_table = old_meta.tables['hero']
+    migration_helpers.truncate_table('ability', database.engine)
+    migration_helpers.truncate_table('achievements', database.engine)
+    migration_helpers.truncate_table('achievement', database.engine)
+    migration_helpers.truncate_table('attribute', database.engine)
+    # Don't need to drop the adjacent_location_association, board, display,
+    # event or forum tables.
+    migration_helpers.truncate_table('entry', database.engine)
+    migration_helpers.truncate_table('handler', database.engine)
+    # Don't need to drop the condition, condition_to_trigger, or trigger tables.
     migration_helpers.truncate_table('hero', database.engine)
     migration_helpers.truncate_table('inventory', database.engine)
+    # Don't need to drop the item table.
     migration_helpers.truncate_table('journal', database.engine)
-    migration_helpers.truncate_table('proficiency', database.engine)
+    # Don't need to drop the location, message, monster_template, or post tables.
+    migration_helpers.truncate_table_keep_some('proficiency', database.engine, where='template=true', reset_ids=True)
+    # Don't need to drop quest table.
+    pdb.set_trace()  # Maybe I shouldn't have been using truncate?
+    # And instead should drop the columns normally?
+    migration_helpers.truncate_table_keep_some('quest_path', database.engine, where='template=true', no_fk_checks=True)
+    migration_helpers.truncate_table_keep_some('quest_path_to_quest', database.engine, where='quest_path_id not in quest_path')
+    # Don't need to drop specialization, thread, trigger, or user table.
+    # database.add(db.prebuilt_objects)
+    pdb.set_trace()
     for old_hero in old_session.query(old_hero_table).all():
         # don't add in the default users [user.username for user in db.prebuilt_objects.users]
         # I could also just drop the first 2 user objects?

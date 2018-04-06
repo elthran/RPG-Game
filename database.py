@@ -137,9 +137,7 @@ class EZDB:
             for obj in obj_list:
                 self.session.add(obj)
                 if isinstance(obj, User):
-                    obj.password = bcrypt.hashpw(
-                        base64.b64encode(hashlib.sha256(obj.password.encode()).digest()),
-                        bcrypt.gensalt(PASSWORD_HASH_COST))
+                    obj.password = EZDB.encrypt(obj.password)
                     obj.timestamp = EZDB.now()
                 self.update()
         default_quest_paths = self.get_default_quest_paths()
@@ -340,9 +338,21 @@ class EZDB:
 
     @staticmethod
     def encrypt(s):
+        """Encrypt a string with the builtin hash cost."""
         return bcrypt.hashpw(
             base64.b64encode(hashlib.sha256(s.encode()).digest()),
             bcrypt.gensalt(PASSWORD_HASH_COST))
+
+    @staticmethod
+    def check_encrypted(plain, cypher):
+        """Check if a string matches the cypher string.
+
+        You can use this to check if password is valid.
+        It encrypts the plain text variant and compares it to the cypher text one.
+        """
+        return bcrypt.checkpw(
+                base64.b64encode(hashlib.sha256(plain.encode()).digest()),
+                cypher.encode())
 
     def add_new_user(self, username, password, email=''):
         """Create a new user account with this username and password.
