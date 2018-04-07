@@ -17,10 +17,6 @@
 {% if tab == "profile" %}
 None.
 {% elif tab == "security" %}
-<ul>
-	<li><a href="/settings/security/password">Change Password</a></li>
-	<li><a href="/settings/security/email">Update Email</a></li>
-</ul>
 <button class="settingsAccordion">Password Change</button>
 <div class="settingsPanel">
 	<form method="post" action="" autocomplete="off">
@@ -39,10 +35,10 @@ None.
 	<form method="post" action="" autocomplete="off">
 		<input class="hide" type="text" name="type" value="update_email" />
 		<ul>
-			<li>New Email: <input id="oldPassword" type="password" placeholder="old password" tabindex=2 /></li>
+			<li>New Email: <input id="newEmail" type="email" tabindex=1 name="new_email" /></li>
 		</ul>
-		<button id="passwordButton" type="submit">Update Email</button>
-		<span id="passwordInfo"></span>
+		<button id="emailButton" type="submit" disabled="true">Update Email</button>
+		<span id="emailInfo" style="color:red;">Invalid email</span>
 	</form>
 </div>
 {% endif %}
@@ -65,25 +61,32 @@ for (i = 0; i < acc.length; i++) {
 
 document.getElementById("newPassword").addEventListener("input", verifyPassword);
 document.getElementById("newPassword2").addEventListener("input", verifyPassword);
-document.getElementById("passwordButton").addEventListener("onclick", passwordMessage);
+document.getElementById("newEmail").addEventListener("input", verifyEmail);
 
 function verifyPassword() {
     sendToPy(event, toggleButton, 'verify_password', {'password': document.getElementById("newPassword").value, 'password2': document.getElementById("newPassword2").value});
 }
 
+function verifyEmail() {
+    sendToPy(event, toggleButton, 'verify_email', {'email': document.getElementById("newEmail").value});
+}
+
 function toggleButton(response) {
-	var verify = document.getElementById("passwordButton");
-	var info = document.getElementById("passwordInfo");
-	console.log(response.success);
+	var verify = document.getElementById(response.button + "Button");
+	var info = document.getElementById(response.button + "Info");
 	if (response.success === "yes") {
 		verify.disabled = false;
 		info.style.color = "green";
-		info.innerHTML = "Passwords match";
+		if (response.button === "password") {
+			info.innerHTML = "Passwords match";
+		} else if (response.button === "email") {
+			info.innerHTML = "Valid email";
+		}
 	} else {
 		verify.disabled = true;
 		info.style.color = "red";
 		info.innerHTML = response.success;
-		}
+	}
 }
 </script>
 {% endblock %}

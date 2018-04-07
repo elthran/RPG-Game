@@ -696,13 +696,14 @@ def settings(hero=None, tab="profile", choice="none"):
                 new_password = request.form['new_password']
                 user = hero.user
                 user.password = database.encrypt(new_password)
-                print("password changed")
-                message="Password changed!"
+                message = "Password changed!"
             else:
                 print("wrong password!")
                 message = "You entered the wrong password. Password change failed."
         elif request.form['type'] == "update_email":
-            email = request.form['email'] if 'email' in request.form else ""
+            email = request.form['new_email']
+            # Need a line of code here to ACTUALLY change your email address!!!!
+            message = "Email address changed to: " + email
     return render_template('settings.html', hero=hero, user=hero.user, tab=tab, choice=choice, message=message)
 
 

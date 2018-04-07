@@ -1,5 +1,6 @@
 import pdb
 from pprint import pprint
+import re
 
 from functools import wraps
 from flask import render_template_string, jsonify
@@ -296,6 +297,18 @@ class Command:
         else:
             success = "yes"
         return jsonify(success=success, button="password")
+
+    @staticmethod
+    def verify_email(hero, database, data, **kwargs):
+        addressToVerify = data['email']
+        match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', addressToVerify)
+        if match == None:
+            print('Bad Syntax')
+            success="invalid syntax"
+        else:
+            print('Good Syntax')
+            success="yes"
+        return jsonify(success=success, button="email")
 
     @staticmethod
     def change_attribute_tooltip(hero, database, arg_dict, **kwargs):
