@@ -288,15 +288,21 @@ class Command:
 
     @staticmethod
     def verify_password(hero, database, data, **kwargs):
+        field = data['field']
         password = data['password']
         password2 = data['password2']
         if len(password)< 5:
-            success = "Too short"
+            success = "no"
+            message = "Password is too short"
         elif password != password2:
-            success = "Don't match"
+            success = "no"
+            message = "Passwords don't match"
+            if field != "2":
+                field = "0"
         else:
             success = "yes"
-        return jsonify(success=success, button="password")
+            message = "Passwords match"
+        return jsonify(success=success, message=message, button="password", field=field, fields=2)
 
     @staticmethod
     def verify_email(hero, database, data, **kwargs):
@@ -304,11 +310,13 @@ class Command:
         match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', addressToVerify)
         if match == None:
             print('Bad Syntax')
-            success="invalid syntax"
+            success = "no"
+            message = "Invalid syntax"
         else:
             print('Good Syntax')
-            success="yes"
-        return jsonify(success=success, button="email")
+            success= "yes"
+            message = "Valid email"
+        return jsonify(success=success, message=message, button="email", field="1", fields=1)
 
     @staticmethod
     def change_attribute_tooltip(hero, database, arg_dict, **kwargs):

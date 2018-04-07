@@ -1086,4 +1086,26 @@ Centered margin is 275px left/right.
     background-color: white;
     overflow: hidden;
 }
+
+.settingsList li {
+    margin: 0 0 60px 0;
+}
+
+.settingsButton {
+    width:200px;
+    height:40px;
+}
+
+.settingsTooltip {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+}
+
 /* End of settings page */
