@@ -60,8 +60,8 @@ for (i = 0; i < acc.length; i++) {
     });
 }
 
-document.getElementById("newPassword").addEventListener("input", function() {sendToPy(event, toggleButton, 'verify_password', {'password': document.getElementById("newPassword").value, 'password2': document.getElementById("newPassword2").value, 'field': '1'})});
-document.getElementById("newPassword2").addEventListener("input", function() {sendToPy(event, toggleButton, 'verify_password', {'password': document.getElementById("newPassword").value, 'password2': document.getElementById("newPassword2").value, 'field': '2'})});
+document.getElementById("newPassword").addEventListener("input", function(event) {sendToPy(event, toggleButton, 'verify_password', {'password': document.getElementById("newPassword").value, 'password2': document.getElementById("newPassword2").value, 'field': '1'})});
+document.getElementById("newPassword2").addEventListener("input", function(event) {sendToPy(event, toggleButton, 'verify_password', {'password': document.getElementById("newPassword").value, 'password2': document.getElementById("newPassword2").value, 'field': '2'})});
 document.getElementById("newEmail").addEventListener("input", verifyEmail);
 
 function verifyPassword() {
