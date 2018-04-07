@@ -688,19 +688,19 @@ def spellbook(hero=None):
 
 @app.route('/settings/<tab>/<choice>', methods=['GET', 'POST'])
 @uses_hero
-def settings(hero=None, tab="basic", choice="none"):
+def settings(hero=None, tab="profile", choice="none"):
     message = None
     if request.method == 'POST':
-        if request.form['type'] == "change_password":
-            if request.form['verify_password'] == "true":
+        if request.form['type'] == "update_password":
+            if database.validate(hero.user.username, request.form['old_password']):
                 new_password = request.form['new_password']
                 user = hero.user
                 user.password = database.encrypt(new_password)
                 print("password changed")
                 message="Password changed!"
             else:
-                print("old password was wrong")
-                message="old password was wrong"
+                print("wrong password!")
+                message = "You entered the wrong password. Password change failed."
         elif request.form['type'] == "update_email":
             email = request.form['email'] if 'email' in request.form else ""
     return render_template('settings.html', hero=hero, user=hero.user, tab=tab, choice=choice, message=message)

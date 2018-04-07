@@ -287,13 +287,14 @@ class Command:
 
     @staticmethod
     def verify_password(hero, database, data, **kwargs):
-        # I want to pass in the actual attribute here instead of the description. That way I can assign the attribute name and description to the tooltip.
-        # Unfortunately, I don't know how to pull the attribute object from the database. I need a get_attribute_by_name() function in database.py
         password = data['password']
-        if database.validate(hero.user.username, password):
-            success = "yes"
+        password2 = data['password2']
+        if len(password)< 5:
+            success = "Too short"
+        elif password != password2:
+            success = "Don't match"
         else:
-            success = "no"
+            success = "yes"
         return jsonify(success=success, button="password")
 
     @staticmethod

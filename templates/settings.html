@@ -6,59 +6,83 @@
 <h1>Settings</h1>
 <div class="topbar">
 	<ul>
-		<li><a href="/settings/basic/none" {% if tab == "basic" %}style="background-color:Red;"{% endif %}>Basic</a></li>
-		<li><a href="/settings/advanced/none" {% if tab == "advanced" %}style="background-color:Red;"{% endif %}>Advanced</a></li>
+		<li><a href="/settings/profile/none" {% if tab == "profile" %}style="background-color:Red;"{% endif %}>Profile</a></li>
+		<li><a href="/settings/security/none" {% if tab == "security" %}style="background-color:Red;"{% endif %}>Security</a></li>
 	</ul>
 </div>
 <div style="clear: both;"></div>
 {% if message %}
 <h2 style="margin-left:500px;"><font color="green">{{ message }}</font></h2>
 {% endif %}
-{% if tab == "basic" %}
+{% if tab == "profile" %}
+None.
+{% elif tab == "security" %}
 <ul>
-	<li><a href="/settings/basic/password">Change Password</a></li>
-	<li><a href="/settings/basic/email">Update Email</a></li>
+	<li><a href="/settings/security/password">Change Password</a></li>
+	<li><a href="/settings/security/email">Update Email</a></li>
 </ul>
-	{% if choice == "password" %}
-	<h1>Password Change</h1>
+<button class="settingsAccordion">Password Change</button>
+<div class="settingsPanel">
 	<form method="post" action="" autocomplete="off">
-		<input class="hide" type="text" name="type" value="change_password" />
-		<input id="verify-password" class="hide" type="text" name="verify_password"/>
+		<input class="hide" type="text" name="type" value="update_password" />
 		<ul>
-			<li>Old Password: <input id="oldPassword" type="password" placeholder="old password" tabindex=2 /></li>
-			<li>New Password: <input type="password" placeholder="new password" name="new_password" tabindex=2 /></li>
+			<li>Old Password: <input type="password" name="old_password" tabindex=1 /></li>
+			<li>New Password: <input id="newPassword" type="password" name="new_password" tabindex=2 /></li>
+			<li>Repeat Password: <input id="newPassword2" type="password" tabindex=3 /></li>
 		</ul>
-		<button id="passwordButton" type="submit">Update password</button>
-		<span id="passwordInfo"></span>
+		<button id="passwordButton" type="submit" disabled="true">Update password</button>
+		<span id="passwordInfo" style="color:red;">Too short</span>
 	</form>
-	{% elif choice == "email" %}
-	<h1>Update Email</h1>
+</div>
+<button class="settingsAccordion">Update Email</button>
+<div class="settingsPanel">
 	<form method="post" action="" autocomplete="off">
 		<input class="hide" type="text" name="type" value="update_email" />
 		<ul>
-			<li>Email Address: <input type="email" placeholder="email" name="email" tabindex=2 /></li>
+			<li>New Email: <input id="oldPassword" type="password" placeholder="old password" tabindex=2 /></li>
 		</ul>
-		<button tabindex=2>Update email address</button>
+		<button id="passwordButton" type="submit">Update Email</button>
+		<span id="passwordInfo"></span>
 	</form>
-	{% endif %}
-{% elif tab == "advanced" %}
-Advanced settings are not available.
+</div>
 {% endif %}
 
 <script>
-document.getElementById("oldPassword").addEventListener("input", verifyPassword);
+
+var acc = document.getElementsByClassName("settingsAccordion");
+var i;
+for (i = 0; i < acc.length; i++) {
+    acc[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var panel = this.nextElementSibling;
+        if (panel.style.display === "block") {
+            panel.style.display = "none";
+        } else {
+            panel.style.display = "block";
+        }
+    });
+}
+
+document.getElementById("newPassword").addEventListener("input", verifyPassword);
+document.getElementById("newPassword2").addEventListener("input", verifyPassword);
 document.getElementById("passwordButton").addEventListener("onclick", passwordMessage);
 
 function verifyPassword() {
-    sendToPy(event, enable_button, 'verify_password', {'password': document.getElementById("oldPassword").value});
+    sendToPy(event, toggleButton, 'verify_password', {'password': document.getElementById("newPassword").value, 'password2': document.getElementById("newPassword2").value});
 }
 
-function enable_button(response) {
-	var verify = document.getElementById("verify-" + response.button);
+function toggleButton(response) {
+	var verify = document.getElementById("passwordButton");
+	var info = document.getElementById("passwordInfo");
+	console.log(response.success);
 	if (response.success === "yes") {
-		verify.value = "true";
-	} else if (response.success === "no") {
-		verify.value = "false";
+		verify.disabled = false;
+		info.style.color = "green";
+		info.innerHTML = "Passwords match";
+	} else {
+		verify.disabled = true;
+		info.style.color = "red";
+		info.innerHTML = response.success;
 		}
 }
 </script>
