@@ -62,7 +62,7 @@ class Hero(SessionHoistMixin, Base):
     # Date of last login
     last_login = Column(String(50))
 
-    login_alerts = Column(String(50))  # Testing messages when you are attacked or get a new message
+    login_alerts = Column(String(200))  # Testing messages when you are attacked or get a new message
 
     # Relationships
     # User to Hero. One to many. Ordered!

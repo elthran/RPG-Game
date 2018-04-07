@@ -126,7 +126,6 @@ def migrate_forum():
 
 def migrate_heroes():
     old_hero_table = old_meta.tables['hero']
-    pdb.set_trace()
     for old_hero in old_session.query(old_hero_table).all():
         # don't add in the default users [user.username for user in db.prebuilt_objects.users]
         # I could also just drop the first 2 user objects?
@@ -142,7 +141,6 @@ def migrate_heroes():
 
 
 def migrate_items(hero, old_hero):
-    gold = 0
     old_inv = old_session.query(old_meta.tables['inventory']).filter_by(id=old_hero.id).one()
     old_items = old_session.query(old_meta.tables['item']).filter_by(inventory_id=old_inv.id).all()
     for old_item in old_items:
@@ -153,7 +151,7 @@ def migrate_items(hero, old_hero):
             migration_helpers.set_all(old_item, item, except_=['id'])
         else:
             # Give Player gold instead of migrating items. Lame :P
-            hero.gold = old_item.buy_price
+            hero.gold += old_item.buy_price
         database.session.commit()
 
 
