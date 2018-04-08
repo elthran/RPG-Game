@@ -269,18 +269,15 @@ when prebuilt_objects are preloaded into the database.
 """
 ##########
 admin = User(username="admin", password="admin", is_admin=True)
-admin.prestige = 371
+admin.prestige = 500
 adminHero = Hero(name="Admin", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
-adminHero.proficiency_points = 10
 admin.heroes = [adminHero]
 
 marlen = User(username="marlen", password="brunner", is_admin=True)
-marlen.prestige = 309
+marlen.prestige = 500
 haldon = Hero(name="Haldon", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
-haldon.proficiency_points = 7
 marlen.heroes = [haldon]
 users = [marlen, admin]
-
 ##########
 # Items
 ##########

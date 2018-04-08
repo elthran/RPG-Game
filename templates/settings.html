@@ -15,7 +15,11 @@
 <h2 style="margin-left:500px;"><font color="green">{{ message }}</font></h2>
 {% endif %}
 {% if tab == "profile" %}
-None.
+<ul style="font-size:25px;">
+	<li style="margin: 0 0 15px 0;">Username: {{ hero.user.username }}</li>
+	<li style="margin: 0 0 15px 0;">Join Date: {{ hero.user.timestamp }}</li>
+	<li style="margin: 0 0 15px 0;">Account Prestige: {{ hero.user.prestige }}</li>
+</ul>
 {% elif tab == "security" %}
 <button class="settingsAccordion">Password Change</button>
 <div class="settingsPanel">
@@ -36,7 +40,7 @@ None.
 	<form method="post" action="" autocomplete="off">
 		<input class="hide" type="text" name="type" value="update_email" />
 		<ul>
-			<li>New Email: <input id="newEmail" type="email" tabindex=1 name="new_email" /></li>
+			<li>{% if hero.user.email %}Change{% else %}Add{% endif %} Email Address: <input id="newEmail" type="email" tabindex=1 name="new_email" /></li>
 		</ul>
 		<button id="emailButton" class="settingsButton" type="submit" disabled="true">Update Email</button>
 		<span id="emailInfo1" style="color:red;">Invalid email</span>

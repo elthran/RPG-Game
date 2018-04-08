@@ -1064,7 +1064,7 @@ Centered margin is 275px left/right.
 
 /* Settings Page */
 .settingsAccordion {
-    background-color: #eee;
+    background-color: lightgray;
     color: #444;
     cursor: pointer;
     padding: 18px;
@@ -1098,7 +1098,7 @@ Centered margin is 275px left/right.
 
 .settingsTooltip {
     visibility: hidden;
-    width: 120px;
+    width: 250px;
     background-color: black;
     color: #fff;
     text-align: center;

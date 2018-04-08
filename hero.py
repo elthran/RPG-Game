@@ -299,7 +299,7 @@ class Hero(SessionHoistMixin, Base):
         self.gold = 50
 
         # Spendable points
-        self.basic_ability_points = 5
+        self.basic_ability_points = 0
         self.archetype_ability_points = 0
         self.calling_ability_points = 0
         self.pantheon_ability_points = 0
