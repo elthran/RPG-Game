@@ -13,7 +13,7 @@ sys.path.insert(0, new_path)
 from __init__ import *
 
 import database as db
-from build_code import normalize_class_name
+from build_code import normalize_class_name, normalize_attrib_name
 from rpg_game_tests.test_helpers import db_execute_script
 from migrations import migration_helpers
 
@@ -135,7 +135,9 @@ def migrate_heroes():
         hero = database.add_new_hero_to_user(user)
         # pdb.set_trace()
         migration_helpers.set_all(old_hero, hero)
-        migrate_items(hero, old_hero)  # Currently give hero gold instead.
+        migrate_items(hero, old_hero)  # Currently mostly gives hero gold instead.
+        migrate_abilities(hero, old_hero)
+        migrate_attributes(hero, old_hero)
 
     database.update()
 
@@ -153,6 +155,37 @@ def migrate_items(hero, old_hero):
             # Give Player gold instead of migrating items. Lame :P
             hero.gold += old_item.buy_price
         database.session.commit()
+
+
+def migrate_abilities(hero, old_hero):
+    old_abilities_container = old_session.query(old_meta.tables['abilities']).filter_by(id=old_hero.id).one()
+    old_ability_table = old_meta.tables['ability']
+    old_abilities = old_session.query(old_ability_table).filter_by(abilities_id=old_abilities_container.id).filter(old_ability_table.c.level > 0).all()
+    for old_ability in old_abilities:
+        try:
+            hero.abilities[normalize_attrib_name(old_ability.name)].level = old_ability.level
+        except KeyError:
+            hero.basic_ability_points += old_ability.level
+    database.session.commit()
+
+
+def migrate_attributes(hero, old_hero):
+    container_table = old_meta.tables['attributes']
+    old_container = old_session.query(container_table).filter_by(id=old_hero.id).one()
+    old_attrib_table = old_meta.tables['attribute']
+    # Pass in a dict comprehension of the filter criteria? ... or strings?
+    # Build this query:
+    # select all rows where a column name ends in '_id' and the value of that column is old_container.id
+    # e.g. query().filter(or_(agility_id==3, brawn_id==3))
+    # But with proper column objects ... and as strings so the == will work?
+
+    id_columns = [col_name for col_name in old_attrib_table.c.keys() if col_name.endswith('_id')]
+    ids = [old_container.id] * len(id_columns)
+    name_id_tuples = [var for var in zip(id_columns, ids)]
+    id_col_text = [sa.text("{}={}".format(name, old_container.id)) for name in id_columns]
+    pdb.set_trace()
+    old_attribs = old_session.query(old_attrib_table).filter(sa.or_(id_col_text))
+    # This might work .filter(sa.or_(**id_col_kwargs))
 
 
 if __name__ == "__main__":
