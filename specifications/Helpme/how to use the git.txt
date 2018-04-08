@@ -76,3 +76,11 @@ $ git stash pop -> reaply and drop stash.
 Merging
 How to pull a file from another branch
 $ git checkout <branch_name> -- <paths>
+
+## Find accidentally deleted branches  (never use git push --all --prune :P)
+https://git-scm.com/book/be/v2/Git-Internals-Maintenance-and-Data-Recovery#_data_recovery
+$ git fsck --full
+# This will list a bunch of dangling commits.
+# Go to each commit and see if you can figure out what branch it used to be.
+# Recreate and republish each branch.
+$ git checkout -b <branch> <commit-hash>

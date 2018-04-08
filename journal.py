@@ -229,7 +229,7 @@ class Entry(Base):
     _person = Column(String(50))
     _place = Column(String(50))
     _quest_path = relationship("QuestPath")
-    _quest_path_id = Column(Integer, ForeignKey('quest_path.id'))
+    _quest_path_id = Column(Integer, ForeignKey('quest_path.id', ondelete="CASCADE"))
 
     @hybrid_property
     def obj(self):

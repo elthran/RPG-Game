@@ -21,6 +21,7 @@ if __name__ == "__main__":
                         action='store_true')
     parser.add_argument("-g", help="Print a nice graph of the code profile.",
                         action='store_true')
+    parser.add_argument("-m", help="Make blank database for migrations.", action='store_true')
     args = parser.parse_args()
 
     if args.p == []:
@@ -33,7 +34,8 @@ if __name__ == "__main__":
     elif platform.system() == "Linux":
         os.system("clear && printf '\033[3J'")
 
-    print("Take a look at Alembic (and 'clean_start.py' code) if you get database errors!")
+    print("If you get database errors your schema is probably out of date.")
+    print("try running `clean_start.py -f` Warning: this deletes the current database!")
     if args.f:
         os.system('mysql -u elthran -p7ArQMuTUSoxXqEfzYfUR -e "DROP DATABASE IF EXISTS rpg_database;"')
         print("Database deleted!")
@@ -48,8 +50,12 @@ if __name__ == "__main__":
     elif args.g:
         os.system("gprof2dot -f pstats code_profile.pstats | "
                   "dot -Tpng -o code_profile.png")
+    elif args.m:
+        os.system('mysql -u elthran -p7ArQMuTUSoxXqEfzYfUR -e "DROP DATABASE IF EXISTS old_rpg_database;"')
+        os.system("python3 -c 'import database;database.EZDB(\"mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@localhost/old_rpg_database\", debug=False, testing=True);print(\"Blank database \'old_rpg_database\' with current schema initialized!\")'")
+        exit(0)
 
-    if not any([args.c, args.p, args.t, args.g]):
+    if not any([args.c, args.p, args.t, args.g, args.m]):
         try:
             os.system("python3 app.py")
         except KeyboardInterrupt:

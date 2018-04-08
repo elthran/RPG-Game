@@ -100,7 +100,7 @@ quest_path_to_quest_association = Table(
     "quest_path_to_quest_association",
     Base.metadata,
     Column("quest_path_id", Integer, ForeignKey("quest_path.id",
-                                                ondelete="SET NULL")),
+                                                ondelete="CASCADE")),
     Column("quest_id", Integer, ForeignKey("quest.id", ondelete="SET NULL"))
 )
 

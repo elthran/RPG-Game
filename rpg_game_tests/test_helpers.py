@@ -1,5 +1,6 @@
+import os
+
 if __name__ == "__main__":
-    import os
     os.system("python3 -m pytest -vv {}".format(__file__))
     exit()  # prevents code from trying to run file afterwards.
 
@@ -67,13 +68,18 @@ def db_execute_script(path, ezdb):
     ezdb can be any database like thing that has an attached
     'engine'.
 
-    NOTE: this can't handle comments and can only handle files
+    NOTE: this can't handle comments and can only handle functions
     that are one line long.
+
+    I want to improve this so that I can execute multi-line input.
     """
 
     with open(path, 'r') as file:
+        wait = False
+        ignore = False
+        long_line = ''
         for line in file:
-            if line != '\n' and not line.startswith('--'):
+            if line != os.linesep and not any([line.startswith('--'), line.startswith("/*")]):
                 ezdb.engine.execute(line)
 
 

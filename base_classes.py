@@ -349,7 +349,15 @@ class Base(object):
 
 
 # Initialize SQLAlchemy base class.
-Base = declarative_base(cls=Base)
+convention = {
+  "ix": 'ix_%(column_0_label)s',
+  "uq": "uq_%(table_name)s_%(column_0_name)s",
+  "ck": "ck_%(table_name)s_%(column_0_name)s",
+  "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+  "pk": "pk_%(table_name)s"
+}
+metadata = sqlalchemy.MetaData(naming_convention=convention)
+Base = declarative_base(cls=Base, metadata=metadata)
 # This used a class factory to build a class called base in the local
 # context. Why I can't just import Base I have no idea.
 # And I know how to use it.

@@ -34,6 +34,8 @@ import base_classes
 # Internal game modules
 from game import User, round_number_intelligently
 from inbox import Inbox, Message
+from attributes import Attribute
+from locations import Display
 from hero import Hero
 from abilities import Ability
 from specializations import Specialization, Archetype, Calling, Pantheon
@@ -41,7 +43,7 @@ from locations import Location
 from items import Item
 from quests import Quest, QuestPath
 from proficiencies import Proficiency
-from events import Trigger
+from events import Trigger, Event
 from forum import Forum, Board, Thread
 from bestiary2 import MonsterTemplate
 from journal import Entry
@@ -91,7 +93,7 @@ class EZDB:
         # Select the database ... not sure if I need this.
         # Or if I should create a new engine instead ..
         engine = create_engine(
-            database+ "?charset=utf8mb4", pool_recycle=3600, echo=debug)
+            database + "?charset=utf8mb4", pool_recycle=3600, echo=debug)
 
         base_classes.Base.metadata.create_all(engine, checkfirst=True)
 
@@ -135,9 +137,7 @@ class EZDB:
             for obj in obj_list:
                 self.session.add(obj)
                 if isinstance(obj, User):
-                    obj.password = bcrypt.hashpw(
-                        base64.b64encode(hashlib.sha256(obj.password.encode()).digest()),
-                        bcrypt.gensalt(PASSWORD_HASH_COST))
+                    obj.password = EZDB.encrypt(obj.password)
                     obj.timestamp = EZDB.now()
                 self.update()
         default_quest_paths = self.get_default_quest_paths()
@@ -332,14 +332,27 @@ class EZDB:
 
         May not be future proof if a user has multiple heroes.
         """
-
-        self.session.add(Hero(user=user))
+        hero = Hero(user=user)
+        self.session.add(hero)
+        return hero
 
     @staticmethod
     def encrypt(s):
+        """Encrypt a string with the builtin hash cost."""
         return bcrypt.hashpw(
             base64.b64encode(hashlib.sha256(s.encode()).digest()),
             bcrypt.gensalt(PASSWORD_HASH_COST))
+
+    @staticmethod
+    def check_encrypted(plain, cypher):
+        """Check if a string matches the cypher string.
+
+        You can use this to check if password is valid.
+        It encrypts the plain text variant and compares it to the cypher text one.
+        """
+        return bcrypt.checkpw(
+                base64.b64encode(hashlib.sha256(plain.encode()).digest()),
+                cypher.encode())
 
     def add_new_user(self, username, password, email=''):
         """Create a new user account with this username and password.
@@ -374,14 +387,28 @@ class EZDB:
     @scoped_session
     def validate(self, username, password):
         """Check if password if valid for user.
+
+        Check for data_migration 'reset_key' ... if exists use old style
+        password validation ... then convert password to new style.
         """
         user = self.session.query(User).filter_by(username=username).first()
         if user is not None:
+            self.attempt_password_migration(user, password)
             # check a password
             return bcrypt.checkpw(
                 base64.b64encode(hashlib.sha256(password.encode()).digest()),
                 user.password.encode())
         return None
+
+    @safe_commit_session
+    def attempt_password_migration(self, user, password):
+        """Update password to new style if valid.
+
+        If user has reset key, and valid old style password.
+        """
+        if user.reset_key and user.password == hashlib.md5(password.encode()).hexdigest():
+            user.password = EZDB.encrypt(password)
+            user.reset_key = None
 
     @scoped_session
     def setup_account_for_reset(self, username):
