@@ -34,7 +34,8 @@ if __name__ == "__main__":
     elif platform.system() == "Linux":
         os.system("clear && printf '\033[3J'")
 
-    print("Take a look at Alembic (and 'clean_start.py' code) if you get database errors!")
+    print("If you get database errors your schema is probably out of date.")
+    print("try running `clean_start.py -f` Warning: this deletes the current database!")
     if args.f:
         os.system('mysql -u elthran -p7ArQMuTUSoxXqEfzYfUR -e "DROP DATABASE IF EXISTS rpg_database;"')
         print("Database deleted!")

@@ -138,6 +138,8 @@ def migrate_heroes():
         migrate_items(hero, old_hero)  # Currently mostly gives hero gold instead.
         migrate_abilities(hero, old_hero)
         migrate_attributes(hero, old_hero)
+        migrate_skill(old_hero, hero, 'proficiencies', 'proficiency', container='base_proficiencies')
+        migrate_specializations(old_hero, hero)
 
     database.update()
 
@@ -176,16 +178,61 @@ def migrate_attributes(hero, old_hero):
     # Pass in a dict comprehension of the filter criteria? ... or strings?
     # Build this query:
     # select all rows where a column name ends in '_id' and the value of that column is old_container.id
-    # e.g. query().filter(or_(agility_id==3, brawn_id==3))
-    # But with proper column objects ... and as strings so the == will work?
+    # e.g. query().filter(or_(agility_id=3, brawn_id=3))
+    # But with proper column objects ... and as strings so the = will work?
+    # Solution! pass an expanded list of text(column=value) and expand it into the or
+    # i.e.
+    #     id_columns = [col_name for col_name in old_attrib_table.c.keys() if col_name.endswith('_id')]
+    #     ids = [old_container.id] * len(id_columns)
+    #     id_col_text = [sa.text("{}={}".format(var[0], var[1])) for var in zip(id_columns, ids)]
+    #     .filter(sa.or_(*id_col_text))
 
     id_columns = [col_name for col_name in old_attrib_table.c.keys() if col_name.endswith('_id')]
     ids = [old_container.id] * len(id_columns)
-    name_id_tuples = [var for var in zip(id_columns, ids)]
-    id_col_text = [sa.text("{}={}".format(name, old_container.id)) for name in id_columns]
-    pdb.set_trace()
-    old_attribs = old_session.query(old_attrib_table).filter(sa.or_(id_col_text))
-    # This might work .filter(sa.or_(**id_col_kwargs))
+    # name_id_tuples = [var for var in zip(id_columns, ids)]
+    # example_values = ["{}={}".format(var[0], var[1]) for var in zip(id_columns, ids)]
+    id_col_text = [sa.text("{}={}".format(var[0], var[1])) for var in zip(id_columns, ids)]
+    old_attribs = old_session.query(old_attrib_table).filter(sa.or_(*id_col_text), old_attrib_table.c.level > 1).all()
+    for old_attrib in old_attribs:
+        try:
+            hero.attributes[normalize_attrib_name(old_attrib.name)].level = old_attrib.level
+        except KeyError:
+            hero.attribute_points += old_attrib.level - 1  # -1, Accommodate base level of 1.
+    database.session.commit()
+
+
+def migrate_skill(old_hero, hero, old_container_name, main, base=0, container="", points_var=""):
+    container_table = old_meta.tables[old_container_name]
+    old_container = old_session.query(container_table).filter_by(id=old_hero.id).one()
+    old_skill_table = old_meta.tables[main]
+
+    # filter_by uses expanded dictionary of values
+    # e.g.
+    # {"{}_id".format(container):old_container.id} ->
+    # {'proficiencies_id': 3}
+    # so ...
+    # filter_by(**{"{}_id".format(container):old_container.id}) ->
+    # filter_by(proficiencies_id=3)
+    old_skills = old_session.query(old_skill_table).filter_by(**{"{}_id".format(old_container_name): old_container.id}).filter(old_skill_table.c.level > base).all()
+
+    for old_skill in old_skills:
+        container = container or old_container_name
+        try:
+            getattr(hero, container)[normalize_attrib_name(old_skill.name)].level = old_skill.level
+        except KeyError:
+            # If points_var is passed use it.
+            points_var = points_var or main + "_points"
+            setattr(hero, points_var, getattr(hero, points_var) + old_skill.level - base)
+    database.session.commit()
+
+
+def migrate_specializations(old_hero, hero):
+    """I'm chosing to ignore this as the original implementation is bugged.
+
+    The specialization ids would be overridden by the last active hero.
+    It looks like I built a Many to one
+    """
+    pass
 
 
 if __name__ == "__main__":
@@ -194,113 +241,117 @@ if __name__ == "__main__":
     migrate_heroes()
     exit("It didn't crash!")
 
-# # generic one.
-# # pdb.set_trace()
-# # Iterate through all the table objects in the old database's schema.
-# for name, table in old_meta.tables.items():
-#     # Get class name from table name for dummy object creation.
-#     cls_name = normalize_class_name(name)
-#     # Return each row in each table. (all the data in the database one row at a time).
-#     for old_obj in old_session.query(table).all():
-#         try:
-#             obj = db.get_object_by_id(cls_name, old_obj.id)
-#         except IndexError:
-#             obj = None
-#             # Need to create a new object as there isn't one to overwrite.
-#             # These objects should have been all imported into the database module.
-#             try:
-#                 Class = getattr(database, cls_name)
-#             except KeyError:
-#                 Class = None
-#                 print("'{}' class not found in database module. Import it there.".format(cls_name))
-#             # Make a new dummy object that is then going to be replaced with new fields.
-#             # Get the signature of the objects constructor. This will allow me
-#             # to create a new object using default arguments.
-#             if Class:
-#                 sig = inspect.signature(Class)
-#                 # Get some appropriately typed values for the constructor signature.
-#                 # Should return a list of arguments to pass to the dummy class
-#                 # constructor.
-#                 args = [getattr(old_obj, key) if key in old_obj else sig.parameters[key].default if sig.parameters[key].default != sig.empty else None for key in sig.parameters.keys() if key != 'kwargs']
-#                 print(args)
-#                 try:
-#                     obj = Class(*args)
-#                 except:
-#                     pdb.set_trace()
-#                 db.session.add(obj)
-#         except KeyError:
-#             obj = None
-#             print("'{}' class not found in database module. Import it there.".format(cls_name))
-#         except AttributeError:
-#             # This is some kind of association object.
-#             # I haven't worked out how to clone the variables safely.
-#             # If I could query the new objects by row id?
-#             obj = None
-#             print(old_obj)
-#             if name in ("adjacent_location", "quest_path_to_quest"):
-#                 continue  # ignore the tables listed above.
-#             pdb.set_trace()
-#         # Update dummy object with migrated data.
-#         if obj:
-#             for key in old_obj.keys():
-#                 value = getattr(old_obj, key)
-#                 if key == 'polymorphic_identity':
-#                     pdb.set_trace()
-#                 try:
-#                     setattr(obj, key, value)
-#                 except AttributeError:
-#                     print("'{}' has no attribute '{}'".format(cls_name, key))
-#             db.update()
+# I'm keeping this old code because some of the tricks I came up with ...
+# I'm not sure if I could again.
+"""
+# generic one.
+# pdb.set_trace()
+# Iterate through all the table objects in the old database's schema.
+for name, table in old_meta.tables.items():
+    # Get class name from table name for dummy object creation.
+    cls_name = normalize_class_name(name)
+    # Return each row in each table. (all the data in the database one row at a time).
+    for old_obj in old_session.query(table).all():
+        try:
+            obj = db.get_object_by_id(cls_name, old_obj.id)
+        except IndexError:
+            obj = None
+            # Need to create a new object as there isn't one to overwrite.
+            # These objects should have been all imported into the database module.
+            try:
+                Class = getattr(database, cls_name)
+            except KeyError:
+                Class = None
+                print("'{}' class not found in database module. Import it there.".format(cls_name))
+            # Make a new dummy object that is then going to be replaced with new fields.
+            # Get the signature of the objects constructor. This will allow me
+            # to create a new object using default arguments.
+            if Class:
+                sig = inspect.signature(Class)
+                # Get some appropriately typed values for the constructor signature.
+                # Should return a list of arguments to pass to the dummy class
+                # constructor.
+                args = [getattr(old_obj, key) if key in old_obj else sig.parameters[key].default if sig.parameters[key].default != sig.empty else None for key in sig.parameters.keys() if key != 'kwargs']
+                print(args)
+                try:
+                    obj = Class(*args)
+                except:
+                    pdb.set_trace()
+                db.session.add(obj)
+        except KeyError:
+            obj = None
+            print("'{}' class not found in database module. Import it there.".format(cls_name))
+        except AttributeError:
+            # This is some kind of association object.
+            # I haven't worked out how to clone the variables safely.
+            # If I could query the new objects by row id?
+            obj = None
+            print(old_obj)
+            if name in ("adjacent_location", "quest_path_to_quest"):
+                continue  # ignore the tables listed above.
+            pdb.set_trace()
+        # Update dummy object with migrated data.
+        if obj:
+            for key in old_obj.keys():
+                value = getattr(old_obj, key)
+                if key == 'polymorphic_identity':
+                    pdb.set_trace()
+                try:
+                    setattr(obj, key, value)
+                except AttributeError:
+                    print("'{}' has no attribute '{}'".format(cls_name, key))
+            db.update()
 
 
-# user_table = old_meta.tables['user']
-# for old_obj in old_session.query(user_table).all():
-#     try:
-#         obj = db.get_object_by_id("User", old_obj.id)
-#     except IndexError:
-#         obj = None
-#         # get default args ....
-#         # pass them to constructor
-#         # This should create a new dummy object which should have the appropriate default arguments.
-#         try:
-#             Class = getattr(database, "User")
-#         except KeyError:
-#             Class = None
-#             print("User object not found")
-#         # pdb.set_trace()
-#         # Make a new dummy object that is then going to be replaced with new fields.
-#         # Get the signature of the objects constructor
-#         if Class:
-#             sig = inspect.signature(Class)
-#             # Get some appropriately typed values for the constructor signature.
-#             args = (getattr(old_obj, key) for key in sig.parameters.keys())
-#             obj = Class(*args)
-#             db.session.add(obj)
-#     # pdb.set_trace()
-#     # Update dummy object with migrated data.
-#     if obj:
-#         for key in old_obj.keys():
-#             try:
-#                 setattr(obj, key, getattr(old_obj, key))
-#             except KeyError:
-#                 pass
-#         db.update()
+user_table = old_meta.tables['user']
+for old_obj in old_session.query(user_table).all():
+    try:
+        obj = db.get_object_by_id("User", old_obj.id)
+    except IndexError:
+        obj = None
+        # get default args ....
+        # pass them to constructor
+        # This should create a new dummy object which should have the appropriate default arguments.
+        try:
+            Class = getattr(database, "User")
+        except KeyError:
+            Class = None
+            print("User object not found")
+        # pdb.set_trace()
+        # Make a new dummy object that is then going to be replaced with new fields.
+        # Get the signature of the objects constructor
+        if Class:
+            sig = inspect.signature(Class)
+            # Get some appropriately typed values for the constructor signature.
+            args = (getattr(old_obj, key) for key in sig.parameters.keys())
+            obj = Class(*args)
+            db.session.add(obj)
+    # pdb.set_trace()
+    # Update dummy object with migrated data.
+    if obj:
+        for key in old_obj.keys():
+            try:
+                setattr(obj, key, getattr(old_obj, key))
+            except KeyError:
+                pass
+        db.update()
 
-# ability_table = old_meta.tables['hero']
-#
-# AbilitiesTemp = type("AbilitiesTemp", (), {})
-# sa.orm.mapper(AbilitiesTemp, abilities_table)
-# Temp = type('Temp', (object,), {})
-# sa.orm.mapper(Temp, ability_table)
-#
-#     ability_query = session.query(ability_table).all()
-#
-#     for obj in ability_query:
-#         abilities_id = getattr(obj, "abilities_id")
-#         if abilities_id:
-#             abilities_obj = session.query(AbilitiesTemp).get(abilities_id)  # Allows get with temp object.
-#             obj = session.query(Temp).get(obj.id)  # get modifiable version of object.
-#             setattr(obj, 'hero_id', abilities_obj.hero_id)
-#             # print(abilities_id, abilities_obj.id, abilities_obj.hero_id, obj.hero_id)
-#             session.commit()
-#     exit()
+ability_table = old_meta.tables['hero']
+
+AbilitiesTemp = type("AbilitiesTemp", (), {})
+sa.orm.mapper(AbilitiesTemp, abilities_table)
+Temp = type('Temp', (object,), {})
+sa.orm.mapper(Temp, ability_table)
+
+    ability_query = session.query(ability_table).all()
+
+    for obj in ability_query:
+        abilities_id = getattr(obj, "abilities_id")
+        if abilities_id:
+            abilities_obj = session.query(AbilitiesTemp).get(abilities_id)  # Allows get with temp object.
+            obj = session.query(Temp).get(obj.id)  # get modifiable version of object.
+            setattr(obj, 'hero_id', abilities_obj.hero_id)
+            # print(abilities_id, abilities_obj.id, abilities_obj.hero_id, obj.hero_id)
+            session.commit()
+    exit()
+"""
