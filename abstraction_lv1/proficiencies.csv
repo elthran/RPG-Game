@@ -71,5 +71,7 @@ Renown,How famous you are,None,linear,0,0,0,TRUE,FALSE
 Virtue,How good or evil you are,None,linear,0,0,0,TRUE,FALSE
 Devotion,How religious you are,None,linear,0,0,0,TRUE,FALSE
 
-Lifesteal,Amount of life stolen per hit,None,linear,0,0,0,TRUE,TRUE
+LifestealStatic,Amount of life stolen per hit,None,linear,0,0,0,TRUE,TRUE
+LifestealPercent,Amount of life stolen per hit as percent of damage dealt,None,linear,0,0,0,TRUE,TRUE
+
 

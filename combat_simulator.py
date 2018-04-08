@@ -45,9 +45,10 @@ def determine_if_critical_hit(attacker):
 def add_killshot_multiplier(attacker, damage):
     return (damage * attacker.get_summed_proficiencies('killshot').final)
 
-def determine_life_steal(attacker):
-    amount = int(attacker.get_summed_proficiencies('lifesteal').final)
-    return amount
+def determine_life_steal(attacker, base_damage):
+    static_amount = int(attacker.get_summed_proficiencies('lifesteal_static').final)
+    percent_amount = round_number_intelligently((attacker.get_summed_proficiencies('lifesteal_percent').final / 100) * base_damage)
+    return static_amount + percent_amount
 
 
 """
@@ -95,13 +96,15 @@ def battle_logic(active_player, inactive_player):
             base_damage = calculate_damage(attacker, defender)
             if determine_if_critical_hit(attacker):
                 combat_log.append(attacker.name + " lands a critical hit!")
-                damage = add_killshot_multiplier(attacker, base_damage)
+                base_damage = add_killshot_multiplier(attacker, base_damage)
             else:
                 combat_log.append(attacker.name + " hits.")
-            lifesteal = determine_life_steal(attacker)
+            lifesteal = determine_life_steal(attacker, base_damage)
             if lifesteal:
                 defender.base_proficiencies['health'].current -= lifesteal
                 attacker.base_proficiencies['health'].current += lifesteal
+                if attacker.base_proficiencies['health'].current > attacker.get_summed_proficiencies('health').final:
+                    attacker.base_proficiencies['health'].current = attacker.get_summed_proficiencies('health').final
                 combat_log.append(attacker.name + " steals " + str(lifesteal) + " life! He now has " + str(attacker.base_proficiencies['health'].current) + " life remaining.")
             defender.base_proficiencies['health'].current -= base_damage
             combat_log.append(defender.name + " takes " + str(base_damage) + ". He has " + str(defender.base_proficiencies['health'].current) + " health remaining.")
