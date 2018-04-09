@@ -391,7 +391,6 @@ def login():
                 key = database.setup_account_for_reset(username)
                 send_email(username, email_address, key)
                 async_process(rest_key_timelock, args=(database, username), kwargs={'timeout': 5})
-                redirect(url_for('login'))
         else:
             raise Exception("The form of this 'type' doesn't exist!")
 
