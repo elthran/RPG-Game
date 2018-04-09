@@ -38,7 +38,7 @@ from bestiary2 import create_monster, MonsterTemplate
 from database import EZDB
 
 # INIT AND LOGIN FUNCTIONS
-if 'liveconsole' not in gethostname():  # Running on local machine.
+if 'liveweb' not in gethostname():  # Running on local machine.
     from dotenv import load_dotenv
     load_dotenv(os.path.join(os.path.dirname(os.path.realpath(__file__)), '.env'))
     database_url = os.environ.get('LOCAL_DATABASE_URL')
@@ -1480,7 +1480,7 @@ if __name__ == '__main__':
     # hero.inventory.append(QuestItem("Copper Coin", hero, 50))
     # for item in hero.inventory:
     #     item.amount_owned = 5
-    if 'liveconsole' not in gethostname():  # Running on local machine.
+    if 'liveweb' not in gethostname():  # Running on local machine.
         # Remove when not testing.
         app.jinja_env.trim_blocks = True
         app.jinja_env.lstrip_blocks = True
