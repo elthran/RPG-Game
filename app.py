@@ -5,7 +5,6 @@
 #                                                                            #
 # ///////////////////////////////////////////////////////////////////////////#
 
-
 import pdb  # For testing!
 from pprint import pprint  # For testing!
 from functools import wraps
@@ -17,8 +16,20 @@ from flask import (
     Flask, render_template, redirect, url_for, request, session,
     flash, send_from_directory)
 from flask_sslify import SSLify
-
 import werkzeug
+try:
+    import sendgrid
+    from sendgrid.helpers.mail import Email, Content, Mail
+except ImportError:
+    print("If you want to use email reset feature install sendgrid.")
+    print("sudo -H pip3.5 install sendgrid")
+    print("""
+echo "export SENDGRID_API_KEY='YOUR_API_KEY'" > sendgrid.env
+echo "sendgrid.env" >> .gitignore
+source ./sendgrid.env
+""")
+    print("Ask me (marlen) for the key.")
+from math import ceil
 
 from game import Game
 import combat_simulator
@@ -28,17 +39,20 @@ from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
 # _before_ any of them are used.
-from database import EZDB
 from engine import Engine, game_clock, async_process, rest_key_timelock
 from forum import Board, Thread, Post
 from bestiary2 import create_monster, MonsterTemplate
-from math import ceil
+from database import EZDB
 
 # INIT AND LOGIN FUNCTIONS
 # for server code swap this over:
 # database = EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@elthran.mysql.pythonanywhere-services.com/elthran$rpg_database", debug=False)
 database = EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database", debug=False)
 engine = Engine(database)
+
+# using SendGrid's Python Library
+# https://github.com/sendgrid/sendgrid-python
+sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
 
 # Disable will need to be restructured (Marlen)
 # initialization
@@ -48,7 +62,16 @@ game = Game()
 def create_app():
     # create the application object
     app = Flask(__name__)
+
+    # Should replace on server with custom (not pushed to github).
+    # import os
+    # os.urandom(24)
+    # '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
+    #app.config.from_object('config')
+    app.secret_key = 'starcraft'
     # pdb.set_trace()
+    # Maybe later sg = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY']))
+    # When I learn how to use instances for Flask to hide these keys.
 
     async_process(game_clock, args=(database,))
     return app
@@ -56,12 +79,6 @@ def create_app():
 
 app = create_app()
 sslify = SSLify(app)
-
-# Should replace on server with custom (not pushed to github).
-# import os
-# os.urandom(24)
-# '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
-app.secret_key = 'starcraft'
 
 ALWAYS_VALID_URLS = [
     '/login', '/home', '/about', '/inventory_page', '/quest_log',
@@ -270,17 +287,6 @@ def send_email(user, address, key):
     This could later be improved to send other types of emails but right
     now it will only send a reset email.
     """
-    # Import smtplib for the actual sending function
-    import smtplib
-
-    # Import the email modules we'll need
-    # from email.mime.text import MIMEText
-
-    # Open a plain text file for reading.  For this example, assume that
-    # the text file contains only ASCII characters.
-    # with open("static/") as fp:
-    #     # Create a text/plain message
-    #     msg = MIMEText(fp.read())
 
     sender = "elthran.online@no-reply.ca"
     receivers = [address]
@@ -290,26 +296,25 @@ def send_email(user, address, key):
     # link = "https://elthran.pythonanywhere.com/reset/?user={}&&key={}".format(user, key)
     link = "http://127.0.0.1:5000/reset?user={}&&key={}".format(user, key)
 
-    message = """From: Elthran Online <{sender}>
-To: Owner of account '{user}' <{address}>
-MIME-Version: 1.0
-Content-type: text/html
-Subject: Reset link for ElthranOnline
-<pre>Hi Owner of account '{user}',
+    from_email = Email("Elthran Online <{sender}>".format(sender=sender))
+    to_email = Email("Owner of account '{user}' <{address}>".format(user=user, address=address))
+    subject = "Reset link for ElthranOnline"
+
+    message = Content("text/html", """<pre>Hi Owner of account '{user}',
     Please click this link <a href="{link}">{link}</a> to reset your account.
 You will be prompted to enter a new account password.</pre>
-""".format(sender=sender, user=user, address=address, link=link)
+""".format(user=user, link=link))
 
+    mail = Mail(from_email, subject, to_email, message)
     try:
-        smtp_obj = smtplib.SMTP('localhost')
-        try:
-            smtp_obj.sendmail(sender, receivers, message)
-            smtp_obj.quit()
-            print("Successfully sent email")
-        except smtplib.SMTPException:
-            print("Error: unable to send email")
+        response = sg.client.mail.send.post(request_body=mail.get())
+        print(response.status_code)
+        print(response.body)
+        print(response.headers)
+        print("Successfully sent email")
     except ConnectionRefusedError:
-        print("You need to setup your stmp server correctly.")
+        print("Error: unable to send email")
+        print("You need to setup your sendgrid server correctly.")
 
 
 @app.route("/reset", methods=["GET", "POST"])
