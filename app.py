@@ -11,25 +11,18 @@ from functools import wraps
 from random import choice
 import os
 import time
+from math import ceil
+from socket import gethostname
 
 from flask import (
     Flask, render_template, redirect, url_for, request, session,
     flash, send_from_directory)
 from flask_sslify import SSLify
 import werkzeug
-try:
-    import sendgrid
-    from sendgrid.helpers.mail import Email, Content, Mail
-except ImportError:
-    print("If you want to use email reset feature install sendgrid.")
-    print("sudo -H pip3.5 install sendgrid")
-    print("""
-echo "export SENDGRID_API_KEY='YOUR_API_KEY'" > sendgrid.env
-echo "sendgrid.env" >> .gitignore
-source ./sendgrid.env
-""")
-    print("Ask me (marlen) for the key.")
-from math import ceil
+
+import sendgrid
+from sendgrid.helpers.mail import Email, Content, Mail
+
 
 from game import Game
 import combat_simulator
@@ -45,9 +38,14 @@ from bestiary2 import create_monster, MonsterTemplate
 from database import EZDB
 
 # INIT AND LOGIN FUNCTIONS
-# for server code swap this over:
-# database = EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@elthran.mysql.pythonanywhere-services.com/elthran$rpg_database", debug=False)
-database = EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database", debug=False)
+if 'liveconsole' not in gethostname():  # Running on local machine.
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(os.path.dirname(os.path.realpath(__file__)), '.env'))
+    database_url = os.environ.get('LOCAL_DATABASE_URL')
+else:  # Running on server which runs dotenv from WSGI file.
+    database_url = os.environ.get('SERVER_DATABASE_URL')
+
+database = EZDB(database_url, debug=False)
 engine = Engine(database)
 
 # using SendGrid's Python Library
@@ -68,8 +66,7 @@ def create_app():
     # os.urandom(24)
     # '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
     #app.config.from_object('config')
-    app.secret_key = 'starcraft'
-    # pdb.set_trace()
+    app.secret_key = os.environ.get('SECRET_KEY')
     # Maybe later sg = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY']))
     # When I learn how to use instances for Flask to hide these keys.
 
@@ -293,8 +290,9 @@ def send_email(user, address, key):
 
     # url = 'https://mydomain.com/reset=' + token_urlsafe()
     # if server:
-    # link = "https://elthran.pythonanywhere.com/reset/?user={}&&key={}".format(user, key)
-    link = "http://127.0.0.1:5000/reset?user={}&&key={}".format(user, key)
+    # link = "https://elthran.pythonanywhere.com/reset?user={}&&key={}".format(user, key)
+    # Gets generic url that should work on server or local machine.
+    link = "{}reset?user={}&&key={}".format(request.url_root, user, key)
 
     from_email = Email("Elthran Online <{sender}>".format(sender=sender))
     to_email = Email("Owner of account '{user}' <{address}>".format(user=user, address=address))
@@ -1164,23 +1162,22 @@ def arena(name='', hero=None, location=None):
     """
     # If I try to check if the enemy has 0 health and there is no enemy,
     # I randomly get an error
-    """
-    if not game.has_enemy:
-        enemy = monster_generator(hero.age - 6)
-        if enemy.name == "Wolf":
-            enemy.items_rewarded.append((QuestItem("Wolf Pelt", hero, 50)))
-        if enemy.name == "Scout":
-            enemy.items_rewarded.append((QuestItem("Copper Coin", hero, 50)))
-        if enemy.name == "Spider":
-            enemy.items_rewarded.append((QuestItem("Spider Leg", hero, 50)))
-        game.set_enemy(enemy)
+
+    enemy = monster_generator(hero.age - 6)
+        # if enemy.name == "Wolf":
+        #     enemy.items_rewarded.append((QuestItem("Wolf Pelt", hero, 50)))
+        # if enemy.name == "Scout":
+        #     enemy.items_rewarded.append((QuestItem("Copper Coin", hero, 50)))
+        # if enemy.name == "Spider":
+        #     enemy.items_rewarded.append((QuestItem("Spider Leg", hero, 50)))
     location.display.page_title = "War Room"
     location.display.page_heading = "Welcome to the arena " + hero.name + "!"
-    location.display.page_image = str(game.enemy.name) + '.jpg'
+    location.display.page_image = str(enemy.name) + '.jpg'
 
-    profs = game.enemy.get_summed_proficiencies()
-    conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
-                    ("Level: ", str(game.enemy.level), "Combat Details"),
+    profs = enemy.get_summed_proficiencies()
+
+    conversation = [("Name: ", str(enemy.name), "Enemy Details"),
+                    ("Level: ", str(enemy.level), "Combat Details"),
                     ("Health: ", str(profs.health.get_base()) + " / " + str(
                         profs.health.final)),
                     ("Damage: ", str(profs.damage.final) + " - " + str(
@@ -1196,7 +1193,7 @@ def arena(name='', hero=None, location=None):
                     ("Riposte: ", str(profs.riposte.final) + "%"),
                     ("Block Chance: ", str(profs.block.final) + "%"),
                     ("Block Reduction: ", str(profs.block.final) + "%")]
-                    """
+
     page_links = [("Challenge the enemy to a ", "/battle/monster", "fight", "."),
                   ("Go back to the ", "/barracks/Barracks", "Barracks", ".")]
     return render_template(
@@ -1483,9 +1480,9 @@ if __name__ == '__main__':
     # hero.inventory.append(QuestItem("Copper Coin", hero, 50))
     # for item in hero.inventory:
     #     item.amount_owned = 5
-
-    # Remove when not testing.
-    app.jinja_env.trim_blocks = True
-    app.jinja_env.lstrip_blocks = True
-    app.jinja_env.auto_reload = True
-    app.run(debug=True)
+    if 'liveconsole' not in gethostname():  # Running on local machine.
+        # Remove when not testing.
+        app.jinja_env.trim_blocks = True
+        app.jinja_env.lstrip_blocks = True
+        app.jinja_env.auto_reload = True
+        app.run(debug=True)
