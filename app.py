@@ -322,13 +322,11 @@ def send_email(user, address, key):
     mail = Mail(from_email, subject, to_email, message)
     try:
         response = sg.client.mail.send.post(request_body=mail.get())
-        print(response.status_code)
-        print(response.body)
-        print(response.headers)
         print("Successfully sent email")
-    except ConnectionRefusedError:
+    except Exception as ex:
         print("Error: unable to send email")
         print("You need to setup your sendgrid server correctly.")
+        print(ex)  # Fail gracefully ... should probably send error to user
 
 
 @app.route("/reset", methods=["GET", "POST"])
