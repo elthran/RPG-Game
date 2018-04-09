@@ -14,7 +14,8 @@
         <div class="loginDiv">
             <form id="login-form" class="login-form" action="" method="post">
                 <input class="hide" type="text" name="type" value="login" />
-                <input id="loginFocus" class="hide" type="text" placeholder="username" name="username" value="{{ username }}" />
+                <input id="loginFocus" class="hide" type="text" name="username" value="{{ username }}" />
+                <input class="hide" type="text" name="key" value="{{ key }}" />
                 <input id="password" onkeyup="checkPasswordMatch();" type="password" placeholder="password" name="password" tabindex=1 autofocus />
                 <input id="passwordCheck" onkeyup="checkPasswordMatch();" type="password" placeholder="repeat password" name="passwordCheck" tabindex=2/ >
                 <button id="continueButton" tabindex=3>Confirm and log in</button>

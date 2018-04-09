@@ -333,13 +333,14 @@ def send_email(user, address, key):
 def reset_password():
     if request.method == "GET":
         if database.validate_reset(request.args['user'], request.args['key']):
-            return render_template("reset.html", username=request.args['user'])
+            return render_template("reset.html", username=request.args['user'], key=request.args['key'])
     elif request.method == "POST":
-        user = database.get_user_by_username(request.form['username'])
-        if user.reset_key:
-            user.reset_key = None
-            user.password = database.encrypt(request.form['password'])
-            return redirect(url_for('login'), code=307)
+        if database.validate_reset(request.form['username'], request.form['key']):
+            user = database.get_user_by_username(request.form['username'])
+            if user.reset_key:
+                user.reset_key = None
+                user.password = database.encrypt(request.form['password'])
+                return redirect(url_for('login'), code=307)
     return redirect(url_for('login'))
 
 
@@ -390,6 +391,7 @@ def login():
                 key = database.setup_account_for_reset(username)
                 send_email(username, email_address, key)
                 async_process(rest_key_timelock, args=(database, username), kwargs={'timeout': 5})
+                redirect(url_for('login'))
         else:
             raise Exception("The form of this 'type' doesn't exist!")
 
