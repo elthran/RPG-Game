@@ -499,7 +499,6 @@ def create_character(hero=None):
 # this gets called if you press "logout"
 @app.route('/logout')
 @login_required
-@uses_hero
 def logout(hero=None):
     # hero.refresh_character()  # probably no longer wanted?
     # session.pop('logged_in', None)  # I'm not sure why you might want this instead of a full clear ..
