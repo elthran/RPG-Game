@@ -269,11 +269,15 @@ when prebuilt_objects are preloaded into the database.
 """
 ##########
 admin = User(username="admin", password="admin", is_admin=True)
+admin.signature = "I am admin."
+admin.avatar = "1"
 admin.prestige = 500
 adminHero = Hero(name="Admin", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
 admin.heroes = [adminHero]
 
 marlen = User(username="marlen", password="brunner", is_admin=True)
+marlen.signature = "Insert some joke about Haldon here."
+marlen.avatar = "2"
 marlen.prestige = 500
 haldon = Hero(name="Haldon", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
 marlen.heroes = [haldon]

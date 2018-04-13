@@ -49,6 +49,7 @@ class User(Base):
     inbox_alert = Column(Boolean)
     prestige = Column(Integer)
     avatar = Column(String(50))
+    signature = Column(String(50))
 
     # Relationships
     # Each user can have one inbox. One to One (bidirectional).
@@ -80,6 +81,7 @@ class User(Base):
         self.inbox_alert = False
         self.prestige = 0
         self.avatar = "0"
+        self.signature = "No signature"
 
 class Notification(object):
     def send_notification(title="Attention!", content="Something interesting has happened.", url="/home"):

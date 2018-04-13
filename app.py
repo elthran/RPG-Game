@@ -920,7 +920,9 @@ def forum(hero=None, board_id=0, thread_id=0):
             current_thread.write_post(new_post)
             hero.user.prestige += 1 # Give the user prestige. It's used to track meta activities and is unrelated to gameplay
 
-    return render_template('forum.html', hero=hero, current_forum=current_forum, current_board=current_board, current_thread=current_thread, page_title=page_title)  # return a string
+    return render_template('forum.html', hero=hero,
+                           current_forum=current_forum, current_board=current_board, current_thread=current_thread,
+                           page_title=page_title, get_author=database.get_user_by_username)  # return a string
 
 @app.route('/under_construction')
 @login_required

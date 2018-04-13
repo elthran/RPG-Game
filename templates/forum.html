@@ -100,12 +100,12 @@
 <!-- The user has chosen a thread. Let them read the posts in the thread! -->
     <h1>Topic: {{ current_thread.name }}</h1>
     {% for post in current_thread.posts %}
+    {% set author = get_author(post.author) %}
         <div class="forumPostContainer">
             <div class="forumPostAuthor">
-                {{ post.author }}
-                <br><br>Author's Prestige Rank
-                {# I want to run {{ get_user_by_username(post.author).prestige }} #}
-                <br><br><br><br>Author's Avatar
+                {{ author.username.title() }}
+                <br><br>{{ author.prestige }} Prestige
+                <br><br><img src="/static/images/avatars/{{ author.avatar }}.jpg" alt="No avatar">
             </div>
             <div class="forumPostContent">
                 <div class="forumPostHeader">
@@ -121,7 +121,7 @@
                     {{ post.content }}
                 </div>
                 <div class="forumPostFooter">
-                    Author's Signature (not included yet)
+                    {{ author.signature }}
                 </div>
             </div>
         </div>
@@ -130,7 +130,7 @@
     <form action="" method="post">
         <input type="hidden" name="form_type" value="viewing_old_thread"> <!-- Tells python to run code for an existing thread -->
         <textarea cols="100" rows="10" type="text" name="post_content"></textarea>
-        <br><input style="float:left;margin-left:700px;" type="submit" value="Post Reply">
+        <br><input style="float:left;margin-left:650px;" type="submit" value="Post Reply">
     </form>
     <br><br><br>
     <a href="/forum/{{ current_board.id }}/0" style="font-size:25px;">Return to board</a><br><br>
