@@ -321,7 +321,6 @@ class Command:
     @staticmethod
     def change_avatar(hero, database, data, **kwargs):
         avatar = data['id']
-        print(avatar)
         hero.user.avatar = avatar
         return "success"
 
