@@ -109,6 +109,7 @@ class Thread(HumanReadableMixin, Base):
     description = Column(String(200))
     category = Column(String(50))
     timestamp = Column(DateTime)
+    views = Column(Integer)
 
     def __init__(self, name="unnamed thread", creator="None", description="", category="General"):
         self.name = name
@@ -116,6 +117,7 @@ class Thread(HumanReadableMixin, Base):
         self.description = description
         self.category = category
         self.timestamp = datetime.datetime.utcnow()
+        self.views = 0
 
     def write_post(self, post):
         self.posts.append(post)

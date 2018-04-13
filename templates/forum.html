@@ -57,7 +57,7 @@
                         <td style="width:35%">{{ thread.description }}</td>
                         <td style="width:15%;text-align:center;">
                             {{ thread.posts|length }} Replies
-                            <br>5 Views
+                            <br>{{ thread.views }} Views
                         </td>
                         <td style="width:20%;text-align:center;">
                             {% if thread.posts|length %}

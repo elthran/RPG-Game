@@ -895,6 +895,7 @@ def forum(hero=None, board_id=0, thread_id=0):
         current_board = None
     try:
         current_thread = database.get_object_by_id("Thread", int(thread_id))
+        current_thread.views += 1
     except:
         current_thread = None
 
