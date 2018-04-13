@@ -908,10 +908,12 @@ def forum(hero=None, board_id=0, thread_id=0):
         elif form_type == "new_thread": # If starting new thread
             thread_name = request.form["thread_name"]
             thread_description = request.form["thread_description"]
-            thread_board = request.form["thread_board"]
-            thread_board = database.get_object_by_name("Board", thread_board)
+            thread_board = database.get_object_by_name("Board", request.form["thread_board"])
             new_thread = Thread(thread_name, hero.user.username, thread_description)
             thread_board.create_thread(new_thread)
+            if len(request.form["thread_post"]) > 0: # If they typed a new post, add it to the new thread
+                new_post = Post(request.form["thread_post"], hero.user)
+                new_thread.write_post(new_post)
         else: # If repyling
             post_content = request.form["post_content"]
             new_post = Post(post_content, hero.user)

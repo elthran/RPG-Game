@@ -77,20 +77,24 @@
         </table>
         <br><br><br>
 
-        <h3>Create a new thread</h3>
-        <form action="" method="post">
-            <input type="hidden" name="form_type" value="new_thread"> <!-- Tells python to run code for creating a new thread -->
-            <input type="text" name="thread_name" placeholder="Title of thread">
-            <br><input type="text" name="thread_description" placeholder="Description of thread">
-            Board: <select name="thread_board">
-                        <option value="{{ current_board.name }}">{{ current_board.name }}</option>
-                    {% for board in current_forum.boards if board.name != current_board.name %}
-                        <option value="{{ board.name }}">{{ board.name }}</option>
-                    {% endfor %}
-                    </select>
-            <input type="submit" value="Create">
-        </form>
-        <br><br><br><a href="/forum/0/0" style="font-size:25px;">Return to forum home</a><br><br><br>
+<h3>Create a new thread</h3>
+<form action="" method="post">
+    <ul class="forumCreateThreadList">
+        <input type="hidden" name="form_type" value="new_thread"> <!-- Tells python to run code for creating a new thread -->
+        <li><input type="text" name="thread_name" placeholder="Title of thread"></li>
+        <li><input type="text" name="thread_description" placeholder="Description of thread"></li>
+        <li>Board:
+            <select name="thread_board">
+                <option value="{{ current_board.name }}">{{ current_board.name }}</option>
+                {% for board in current_forum.boards if board.name != current_board.name %}
+                <option value="{{ board.name }}">{{ board.name }}</option>
+                {% endfor %}
+            </select></li>
+        <li><textarea cols="100" rows="10" type="text" name="thread_post" placeholder="Type your post here"></textarea></li>
+        <li><input type="submit" value="Create new thread"></li>
+    </ul>
+</form>
+<br><br><br><a href="/forum/0/0" style="font-size:25px;">Return to forum home</a><br><br><br>
     {% endif %}
 {% else %}
 <!-- The user has chosen a thread. Let them read the posts in the thread! -->

@@ -384,6 +384,31 @@ ul {
     padding: 25px 0 0 0;
 }
 
+.forumCreateThreadList li {
+    margin-bottom: 10px;
+}
+
+.forumCreateThreadList input, textarea, select {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    border: 5px solid #BEBEBE;
+    padding: 5px;
+    margin: 0px;
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -ms-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out;
+    outline: none;
+}
+
+.forumCreateThreadList input:focus, .forumCreateThreadList textarea:focus {
+    -moz-box-shadow: 0 0 8px #88D5E9;
+    -webkit-box-shadow: 0 0 8px #88D5E9;
+    box-shadow: 0 0 8px #88D5E9;
+    border: 1px solid #88D5E9;
+}
+
 /* Topbar that runs horizontal to any page */
 .topbar {
 	float: left;
