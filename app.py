@@ -907,8 +907,10 @@ def forum(hero=None, board_id=0, thread_id=0):
         elif form_type == "new_thread": # If starting new thread
             thread_name = request.form["thread_name"]
             thread_description = request.form["thread_description"]
+            thread_board = request.form["thread_board"]
+            thread_board = database.get_object_by_name("Board", thread_board)
             new_thread = Thread(thread_name, hero.user.username, thread_description)
-            current_board.create_thread(new_thread)
+            thread_board.create_thread(new_thread)
         else: # If repyling
             post_content = request.form["post_content"]
             new_post = Post(post_content, hero.user)

@@ -16,7 +16,7 @@
             </tr>
             {% for board in current_forum.boards %}
                 <tr>
-                    <td style="width:50%;"><a href="/forum/{{ board.id }}/0"{{ board.title }}>{{ board.title }}</a></td>
+                    <td style="width:50%;"><a href="/forum/{{ board.id }}/0"{{ board.name }}>{{ board.name }}</a></td>
                     <td style="width:10%;text-align:center;">{{ board.threads|length }}</td>
                     <td style="width:10%;text-align:center;">{{ board.get_post_count() }}</td>
                     <td style="width:30%;text-align:center;">
@@ -40,7 +40,7 @@
         {% endif %}
     {% else %}
     <!-- He already has chosen a board. So show the threads on that board -->
-        <h1>Current Board: {{ current_board.title }}</h1>
+        <h1>Current Board: {{ current_board.name }}</h1>
         <table class="forumTable">
             <tr>
                 <th>Thread</th>
@@ -51,7 +51,7 @@
                 {% for thread in current_board.threads %}
                     <tr>
                         <td style="width:30%;font-size:15px;">
-                            <a href="/forum/{{ current_board.id }}/{{ thread.id }}" style="font-size:25px;">{{ thread.title }}</a>
+                            <a href="/forum/{{ current_board.id }}/{{ thread.id }}" style="font-size:25px;">{{ thread.name }}</a>
                             <br>Created by: {{ thread.creator }}
                         </td>
                         <td style="width:35%">{{ thread.description }}</td>
@@ -79,18 +79,22 @@
 
         <h3>Create a new thread</h3>
         <form action="" method="post">
-                <input type="hidden" name="form_type" value="new_thread"> <!-- Tells python to run code for creating a new thread -->
-            Thread name:
-                <input type="text" name="thread_name">
-            Description:
-                <input type="text" name="thread_description">
+            <input type="hidden" name="form_type" value="new_thread"> <!-- Tells python to run code for creating a new thread -->
+            <input type="text" name="thread_name" placeholder="Title of thread">
+            <br><input type="text" name="thread_description" placeholder="Description of thread">
+            Board: <select name="thread_board">
+                        <option value="{{ current_board.name }}">{{ current_board.name }}</option>
+                    {% for board in current_forum.boards if board.name != current_board.name %}
+                        <option value="{{ board.name }}">{{ board.name }}</option>
+                    {% endfor %}
+                    </select>
             <input type="submit" value="Create">
         </form>
         <br><br><br><a href="/forum/0/0" style="font-size:25px;">Return to forum home</a><br><br><br>
     {% endif %}
 {% else %}
 <!-- The user has chosen a thread. Let them read the posts in the thread! -->
-    <h1>Topic: {{ current_thread.title }}</h1>
+    <h1>Topic: {{ current_thread.name }}</h1>
     {% for post in current_thread.posts %}
         <div class="forumPostContainer">
             <div class="forumPostAuthor">
@@ -102,10 +106,10 @@
             <div class="forumPostContent">
                 <div class="forumPostHeader">
                 {% if loop.index == 1 %}
-                    <a href="/forum/{{ current_board.id }}/{{ current_thread.id }}" style="font-size:25px;">{{ current_thread.title }}</a>
+                    <a href="/forum/{{ current_board.id }}/{{ current_thread.id }}" style="font-size:25px;">{{ current_thread.name }}</a>
                     Original Post at {{ post.human_readable_time() }}
                 {% else %}
-                    <a href="/forum/{{ current_board.id }}/{{ current_thread.id }}" style="font-size:25px;">Re: {{ current_thread.title }}</a>
+                    <a href="/forum/{{ current_board.id }}/{{ current_thread.id }}" style="font-size:25px;">Re: {{ current_thread.name }}</a>
                     Reply #{{ loop.index - 1 }} at {{ post.human_readable_time() }}
                 {% endif %}
                 </div>

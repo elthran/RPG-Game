@@ -13,15 +13,15 @@ class Forum(Base):
 
     id = Column(Integer, primary_key=True)
 
-    title = Column(String(50))
+    name = Column(String(50))
 
     # Relationships
     # Many to One with Category
     boards = relationship("Board", back_populates="forum",
                           cascade="all, delete-orphan")
 
-    def __init__(self, title):
-        self.title = title
+    def __init__(self, name):
+        self.name = name
 
     def create_board(self, board):
         self.boards.append(board)
@@ -53,10 +53,10 @@ class Board(HumanReadableMixin, Base):
     threads = relationship("Thread", back_populates="board",
                            cascade="all, delete-orphan")
 
-    title = Column(String(50))
+    name = Column(String(50))
 
-    def __init__(self, title):
-        self.title = title
+    def __init__(self, name):
+        self.name = name
 
     def create_thread(self, thread):
         self.threads.append(thread)
@@ -104,14 +104,14 @@ class Thread(HumanReadableMixin, Base):
         return max((post for post in self.posts), key=lambda p: p.timestamp,
                    default=None)
 
-    title = Column(String(50))
+    name = Column(String(50))
     creator = Column(String(50))
     description = Column(String(200))
     category = Column(String(50))
     timestamp = Column(DateTime)
 
-    def __init__(self, title="unnamed thread", creator="None", description="", category="General"):
-        self.title = title
+    def __init__(self, name="unnamed thread", creator="None", description="", category="General"):
+        self.name = name
         self.creator = creator.title()
         self.description = description
         self.category = category
