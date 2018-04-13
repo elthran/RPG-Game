@@ -30,9 +30,9 @@
 <button class="settingsAccordion">Avatar</button>
 <div class="settingsPanel">
 	{% for i in range(1,4) %}
-  <img class="avatarImageSelect" id="img-{{ i }}" src="/static/images/avatars/{{ i }}.jpg" alt="Img {{ i }}" value="{{ i }}">
+  		<img class="avatarImageSelect" id="img-{{ i }}" src="/static/images/avatars/{{ i }}.jpg" alt="Img {{ i }}" {% if i|string == hero.user.avatar %}style="border:thick solid blue"{% endif %}>
 	{% endfor %}
-	<button id="changeAvatar" class="settingsButton" onclick="sendToPy(event, null, 'change_avatar', {'id': 3});">Change Avatar</button>
+	<button id="changeAvatar" class="settingsButton" onclick="sendToPy(event, null, 'change_avatar', {'id': {{ hero.user.avatar }}});">Change Avatar</button>
 </div>
 {% elif tab == "security" %}
 <button class="settingsAccordion">Account Prestige</button>
@@ -81,6 +81,8 @@ var acc = document.getElementsByClassName("avatarImageSelect");
 var i;
 for (i = 0; i < acc.length; i++) {
     acc[i].addEventListener("click", function() {
+    	submitButton = document.getElementById("changeAvatar");
+    	submitButton.setAttribute("onclick", "sendToPy(event, null, 'change_avatar', {'id': " + (i) + "})");
     	for (i = 0; i < acc.length; i++) {
     		acc[i].style.border = "none";
     	};
