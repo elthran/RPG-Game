@@ -319,6 +319,13 @@ class Command:
         return jsonify(success=success, message=message, button="email", field="1", fields=1)
 
     @staticmethod
+    def change_avatar(hero, database, data, **kwargs):
+        avatar = data['id']
+        print(avatar)
+        hero.user.avatar = avatar
+        return "success"
+
+    @staticmethod
     def change_attribute_tooltip(hero, database, arg_dict, **kwargs):
         # I want to pass in the actual attribute here instead of the description. That way I can assign the attribute name and description to the tooltip.
         # Unfortunately, I don't know how to pull the attribute object from the database. I need a get_attribute_by_name() function in database.py

@@ -15,13 +15,27 @@
 <h2 style="margin-left:500px;"><font color="green">{{ message }}</font></h2>
 {% endif %}
 {% if tab == "profile" %}
-<ul style="font-size:25px;">
-	<li style="margin: 0 0 15px 0;">Username: {{ hero.user.username }}</li>
-	<li style="margin: 0 0 15px 0;">Join Date: {{ hero.user.timestamp }}</li>
-	<li style="margin: 0 0 15px 0;">Account Prestige: {{ hero.user.prestige }}</li>
-</ul>
+<button class="settingsAccordion">Username</button>
+<div class="settingsPanel">
+	{{ hero.user.username.title() }}
+</div>
+<button class="settingsAccordion">Join Date</button>
+<div class="settingsPanel">
+	{{ hero.user.timestamp }}
+</div>
+<button class="settingsAccordion">Account Prestige</button>
+<div class="settingsPanel">
+	{{ hero.user.prestige }}
+</div>
+<button class="settingsAccordion">Avatar</button>
+<div class="settingsPanel">
+	{% for i in range(1,4) %}
+  <img class="avatarImageSelect" id="img-{{ i }}" src="/static/images/avatars/{{ i }}.jpg" alt="Img {{ i }}" value="{{ i }}">
+	{% endfor %}
+	<button id="changeAvatar" class="settingsButton" onclick="sendToPy(event, null, 'change_avatar', {'id': 3});">Change Avatar</button>
+</div>
 {% elif tab == "security" %}
-<button class="settingsAccordion">Password Change</button>
+<button class="settingsAccordion">Account Prestige</button>
 <div class="settingsPanel">
 	<form method="post" action="" autocomplete="off">
 		<input class="hide" type="text" name="type" value="update_password" />
@@ -63,10 +77,30 @@ for (i = 0; i < acc.length; i++) {
         }
     });
 }
+var acc = document.getElementsByClassName("avatarImageSelect");
+var i;
+for (i = 0; i < acc.length; i++) {
+    acc[i].addEventListener("click", function() {
+    	for (i = 0; i < acc.length; i++) {
+    		acc[i].style.border = "none";
+    	};
+        console.log(this.id);
+        this.style.border = "thick solid blue";
+    });
+}
 
-document.getElementById("newPassword").addEventListener("input", function(event) {sendToPy(event, toggleButton, 'verify_password', {'password': document.getElementById("newPassword").value, 'password2': document.getElementById("newPassword2").value, 'field': '1'})});
-document.getElementById("newPassword2").addEventListener("input", function(event) {sendToPy(event, toggleButton, 'verify_password', {'password': document.getElementById("newPassword").value, 'password2': document.getElementById("newPassword2").value, 'field': '2'})});
-document.getElementById("newEmail").addEventListener("input", verifyEmail);
+var newPassword = document.getElementById("newPassword");
+if (newPassword) {
+	newPassword.addEventListener("input", function(event) {sendToPy(event, toggleButton, 'verify_password', {'password': document.getElementById("newPassword").value, 'password2': document.getElementById("newPassword2").value, 'field': '1'})});
+}
+var newPassword2 = document.getElementById("newPassword2");
+if (newPassword2) {
+	document.getElementById("newPassword2").addEventListener("input", function(event) {sendToPy(event, toggleButton, 'verify_password', {'password': document.getElementById("newPassword").value, 'password2': document.getElementById("newPassword2").value, 'field': '2'})});
+}
+var newEmail = document.getElementById("newEmail");
+if (newEmail) {
+	newEmail.addEventListener("input", verifyEmail);
+}
 
 function verifyPassword() {
     sendToPy(event, toggleButton, 'verify_password', {'password': document.getElementById("newPassword").value, 'password2': document.getElementById("newPassword2").value});
