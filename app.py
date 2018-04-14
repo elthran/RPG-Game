@@ -19,6 +19,7 @@ from flask import (
     flash, send_from_directory)
 from flask_sslify import SSLify
 import werkzeug
+from celery import Celery
 
 import sendgrid
 from sendgrid.helpers.mail import Email, Content, Mail
@@ -32,7 +33,7 @@ from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
 # _before_ any of them are used.
-from engine import Engine, game_clock, async_process, rest_key_timelock
+from engine import Engine, game_clock, async_process, rest_key_timelock, async_process_factory
 from forum import Board, Thread, Post
 from bestiary2 import create_monster, MonsterTemplate
 from database import EZDB
@@ -56,26 +57,18 @@ sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
 # initialization
 game = Game()
 
-
-def create_app():
-    # create the application object
-    app = Flask(__name__)
-
-    # Should replace on server with custom (not pushed to github).
-    # import os
-    # os.urandom(24)
-    # '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
-    #app.config.from_object('config')
-    app.secret_key = os.environ.get('SECRET_KEY')
-    # Maybe later sg = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY']))
-    # When I learn how to use instances for Flask to hide these keys.
-
-    async_process(game_clock, args=(database,))
-    return app
-
-
-app = create_app()
+app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY')
 sslify = SSLify(app)
+
+# Asynchronous execution.
+# app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
+# app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+#
+# celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+# celery.conf.update(app.config)
+#
+# clock_task = celery.task(game_clock).delay(database)
 
 ALWAYS_VALID_URLS = [
     '/login', '/home', '/about', '/inventory_page', '/quest_log',
@@ -321,7 +314,8 @@ def send_email(user, address, key):
 
     mail = Mail(from_email, subject, to_email, message)
     try:
-        response = sg.client.mail.send.post(request_body=mail.get())
+        # response = sg.client.mail.send.post(request_body=mail.get())
+        print("Dummy send email ... fix before committing.")
         print("Successfully sent email")
     except Exception as ex:
         print("Error: unable to send email")
@@ -389,7 +383,8 @@ def login():
             if database.validate_email(username, email_address):
                 print("Trying to send mail ...")
                 key = database.setup_account_for_reset(username)
-                send_email(username, email_address, key)
+                # send_email(username, email_address, key)
+                pdb.set_trace()
                 async_process(rest_key_timelock, args=(database, username), kwargs={'timeout': 5})
         else:
             raise Exception("The form of this 'type' doesn't exist!")

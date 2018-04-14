@@ -31,3 +31,13 @@ PS> cmd
 > mysql args < file.sql
 OR
 PS> mysql args -e "source file.sql"
+
+
+# Update a single cell in a single table.
+UPDATE my_table SET my_column=new value WHERE id=some_value;
+e.g. to update the current endurance of my hero.
+mysql> select id, name from hero;
+# my hero id is 1.
+mysql> select * from proficiency where hero_id=1 and type_="Endurance";
+# Id was 105 ... endurance current value was 5.
+mysql> update proficiency set current=1 where id=105;
