@@ -115,9 +115,13 @@ function refreshPage() {
 function successMessage(response) {
     console.log("at successMessage")
     var message = document.getElementById(response.name + "Success");
+    message.style.display = 'block';
     message.innerHTML = "Updated!";
     message.style.color = 'green';
     message.style.fontWeight = 'bold';
+    setTimeout(function () {
+        message.style.display='none';
+    }, 1000);
 }
 
 // Allows the user to switch between the register and login forms.
