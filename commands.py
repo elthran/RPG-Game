@@ -321,8 +321,18 @@ class Command:
     @staticmethod
     def change_avatar(hero, database, data, **kwargs):
         avatar = data['id']
+        name = data['name']
+        print(signature)
         hero.user.avatar = avatar
-        return "success"
+        return jsonify(name=name)
+
+    @staticmethod
+    def change_signature(hero, database, data, **kwargs):
+        signature = data['id']
+        name = data['name']
+        print(signature)
+        hero.user.signature = signature
+        return jsonify(name=name)
 
     @staticmethod
     def change_attribute_tooltip(hero, database, arg_dict, **kwargs):

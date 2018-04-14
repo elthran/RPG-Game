@@ -30,13 +30,16 @@
 <button class="settingsAccordion">Avatar</button>
 <div class="settingsPanel">
 	{% for i in range(1,4) %}
-  		<img class="avatarImageSelect" id="img-{{ i }}" src="/static/images/avatars/{{ i }}.jpg" alt="{{ i }}" {% if i|string == hero.user.avatar %}style="border:thick solid blue"{% endif %}>
+	<img class="avatarImageSelect" id="img-{{ i }}" src="/static/images/avatars/{{ i }}.jpg" alt="{{ i }}" {% if i|string == hero.user.avatar %}style="border:thick solid blue"{% endif %}>
 	{% endfor %}
-	<button id="changeAvatar" class="settingsButton" onclick="sendToPy(event, null, 'change_avatar', {'id': {{ hero.user.avatar }}});">Change Avatar</button>
+	<button id="changeAvatar" class="settingsButton" onclick="sendToPy(event, successMessage, 'change_avatar', {'id': {{ hero.user.avatar }}, 'name': 'avatar'});">Change Avatar</button>
+	<span id="avatarSuccess"></span>
 </div>
 <button class="settingsAccordion">Signature</button>
 <div class="settingsPanel">
-	{{ hero.user.signature }}
+	<input id="newSignature" type="text" value="{{ hero.user.signature }}" style="width:500px;" />
+	<button id="signatureButton" class="settingsButton" onclick="sendToPy(event, successMessage, 'change_signature', {'id': '{{ hero.user.signature }}', 'name': 'signature'});">Change Signature</button>
+	<span id="signatureSuccess"></span>
 </div>
 {% elif tab == "security" %}
 <button class="settingsAccordion">Account Prestige</button>
@@ -89,7 +92,7 @@ var i;
 for (i = 0; i < acc.length; i++) {
     acc[i].addEventListener("click", function() {
     	submitButton = document.getElementById("changeAvatar");
-    	submitButton.setAttribute("onclick", "sendToPy(event, null, 'change_avatar', {'id': " + event.target.alt + "})");
+    	submitButton.setAttribute("onclick", "sendToPy(event, successMessage, 'change_avatar', {'id': " + event.target.alt + ", 'name': 'avatar'})");
     	for (i = 0; i < acc.length; i++) {
     		acc[i].style.border = "none";
     	};
@@ -110,11 +113,21 @@ var newEmail = document.getElementById("newEmail");
 if (newEmail) {
 	newEmail.addEventListener("input", verifyEmail);
 }
+var newSignature = document.getElementById("newSignature");
+if (newSignature) {
+	newSignature.addEventListener("input", toggleSignature);
+}
 function verifyPassword() {
     sendToPy(event, toggleButton, 'verify_password', {'password': document.getElementById("newPassword").value, 'password2': document.getElementById("newPassword2").value});
 }
 function verifyEmail() {
     sendToPy(event, toggleButton, 'verify_email', {'email': document.getElementById("newEmail").value});
+}
+function toggleSignature() {
+	var newSignature = document.getElementById("newSignature");
+	var signatureButton = document.getElementById("signatureButton");
+	console.log(signatureButton);
+	signatureButton.setAttribute( "onclick", "sendToPy(event, successMessage, 'change_signature', {'id': '" + newSignature.value + "', 'name': 'signature'} )" );
 }
 function toggleButton(response) {
 	var i;

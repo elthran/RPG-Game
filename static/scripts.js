@@ -112,6 +112,12 @@ function refreshPage() {
     location.reload();
 }
 
+function successMessage(response) {
+    console.log("at successMessage")
+    var message = document.getElementById(response.name + "Success");
+    message.innerHTML = "Success";
+}
+
 // Allows the user to switch between the register and login forms.
 function toggleLoginRegister(button) {
     var tag = button.getAttribute('data');
