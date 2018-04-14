@@ -1088,6 +1088,12 @@ Centered margin is 275px left/right.
 /* End of spellbook messing */
 
 /* Settings Page */
+.settingsSuccess {
+    float: right;
+    color: green;
+    font-weight: bold;
+}
+
 .settingsAccordion {
     background-color: lightgray;
     color: #444;

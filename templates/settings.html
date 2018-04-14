@@ -33,13 +33,13 @@
 	<img class="avatarImageSelect" id="img-{{ i }}" src="/static/images/avatars/{{ i }}.jpg" alt="{{ i }}" {% if i|string == hero.user.avatar %}style="border:thick solid blue"{% endif %}>
 	{% endfor %}
 	<button id="changeAvatar" class="settingsButton" onclick="sendToPy(event, successMessage, 'change_avatar', {'id': '{{ hero.user.avatar }}', 'name': 'avatar'});">Change Avatar</button>
-	<span id="avatarSuccess"></span>
+	<span id="avatarSuccess" class="settingsSuccess"></span>
 </div>
 <button class="settingsAccordion">Signature</button>
 <div class="settingsPanel">
 	<input id="newSignature" type="text" value="{{ hero.user.signature }}" style="width:500px;" />
 	<button id="signatureButton" class="settingsButton" onclick="sendToPy(event, successMessage, 'change_signature', {'signature': '{{ hero.user.signature }}', 'name': 'signature'});">Update Signature</button>
-	<span id="signatureSuccess"></span>
+	<span id="signatureSuccess" class="settingsSuccess"></span>
 </div>
 {% elif tab == "security" %}
 <button class="settingsAccordion">Password</button>
