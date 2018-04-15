@@ -20,13 +20,13 @@ from inbox import Inbox
 
 from random import random
 
-
 class Game(object):
     def __init__(self, hero=None):
         self.hero = hero
         self.has_enemy = False
+        # The two below may need to be in the database? I'm not sure. Will need to see how they work with multiple users.
         self.global_chat_user_list = {}
-        self.global_chat = []  # I am not sure if this should goin database? Just very temporary chat log that all users can see
+        self.global_chat = []
 
     def set_hero(self, hero):
         self.hero = hero

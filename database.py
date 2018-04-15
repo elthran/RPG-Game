@@ -32,7 +32,7 @@ import bcrypt
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 import base_classes
 # Internal game modules
-from game import Game, User, round_number_intelligently
+from game import User, round_number_intelligently
 from inbox import Inbox, Message
 from attributes import Attribute
 from locations import Display
