@@ -90,9 +90,15 @@ for (i = 0; i < acc.length; i++) {
 var acc = document.getElementsByClassName("avatarImageSelect");
 var i;
 for (i = 0; i < acc.length; i++) {
-    acc[i].addEventListener("click", function() {
+    // NOTE: the following 'event's refer to 2 different things.
+    // function(event) -> event.target.alt - refers to the event spawned when the acc[i] image
+    // is clicked. The event.target here is the <img>.
+    //
+    // sendToPy(event) - refers to the event spawned when the changeAvatar button is clicked.
+    // The event.target here would be the changeAvatar <button>.
+    acc[i].addEventListener("click", function(event) {
     	submitButton = document.getElementById("changeAvatar");
-    	submitButton.setAttribute("onclick", "sendToPy(event, successMessage, 'change_avatar', {'id': '" + event.target.alt + "', 'name': 'avatar'})");
+    	submitButton.setAttribute("onclick", "sendToPy(event, successMessage, 'change_avatar', {'id': '" + event.target.alt + "', 'name': 'avatar'});");
     	for (i = 0; i < acc.length; i++) {
     		acc[i].style.border = "none";
     	};
