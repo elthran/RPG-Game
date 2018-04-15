@@ -608,11 +608,20 @@ def display_user_page(page_type, page_detail, hero=None):
 def global_chat(hero=None):
     if request.method == 'POST':
         message = request.form["message"]
-        # MUST BE A BETTER WAY TO FORMAT THE TIME
+        # THERE MUST BE A BETTER WAY TO FORMAT THE TIME
         itsnow = EZDB.now()
         the_hour = str((itsnow.hour + 17) % 24)
         the_minute = str(itsnow.minute)
         the_second = str(itsnow.second)
+        users_needing_to_be_removed = []
+        for user, time_stamp in game.global_chat_user_list.items():
+            if ((int(the_minute) - time_stamp) % 60 >= 5):
+                users_needing_to_be_removed.append(user)
+        for user in users_needing_to_be_removed:
+            try:
+                del game.global_chat_user_list[user]
+            except:
+                print("Attempting to delete user '" + user + "' from chat list, but user not found.")
         if len(the_hour) < 2:
             the_hour = "0" + the_hour
         if len(the_minute) < 2:
@@ -620,12 +629,12 @@ def global_chat(hero=None):
         if len(the_second) < 2:
             the_second = "0" + the_second
         printnow = the_hour + ":" + the_minute + ":" + the_second
-        # END OF SHITTY TIME FORMAT. TOOK 11 LINES OF CODE TO TURN IT INTO A DECENT PICTURE
         game.global_chat.append((printnow, hero.name, message))  # Currently it just appends tuples to the chat list, containing the hero's name and the message
-        if len(game.global_chat) > 5:  # After it reaches 5 messages, more messages will delete theoldest ones
+        game.global_chat_user_list[hero.user.username] = int(the_minute)
+        if len(game.global_chat) > 15:  # After it reaches 15 messages, more messages will delete the oldest ones
             game.global_chat = game.global_chat[1:]
-        return render_template('global_chat.html', hero=hero, chat=game.global_chat)
-    return render_template('global_chat.html', page_title="Chat", hero=hero, chat=game.global_chat)
+        return render_template('global_chat.html', hero=hero, chat=game.global_chat, users_in_chat=game.global_chat_user_list)
+    return render_template('global_chat.html', page_title="Chat", hero=hero, chat=game.global_chat, users_in_chat=game.global_chat_user_list)
 
 
 @app.route('/inbox/<outbox>', methods=['GET', 'POST'])
