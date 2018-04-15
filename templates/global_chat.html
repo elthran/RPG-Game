@@ -14,9 +14,9 @@
 </ul>
 <div align="right">
 	Users:
-	{% for user in users_in_chat %}
+	{% for i in range(5) %}
 		<font color="red">
-			<br>{{ user.name }}
+			<br>{{ i }}
 		</font>
 	{% endfor %}
 </div>
