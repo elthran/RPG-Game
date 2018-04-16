@@ -11,25 +11,6 @@ div.row > * {
     box-sizing: border-box;
 }
 
-.col-1 {width: 8.33%;}
-.col-2 {width: 16.5%;}
-.col-3 {width: 25%;}
-.col-4 {width: 33.33%;}
-.col-5 {width: 41.66%;}
-.col-6 {width: 50%;}
-.col-7 {width: 58.33%;}
-.col-8 {width: 66.66%;}
-.col-9 {width: 75%;}
-.col-10 {width: 83.33%;}
-.col-11 {width: 91.66%;}
-.col-12 {width: 100%;}
-
-[class*="col-"] {
-    float: left;
-    padding: 10px;
-    border: 1px dotted gray;
-}
-
 .row::after {
     content: "";
     clear: both;
@@ -41,9 +22,7 @@ div.row > * {
 /* Basic Content throughout the game */
 /* NOTE: All html files are default id='content'. This is passed in through layout.html */
 .content {
-	/* margin-left: 175px; */ /* This needs to match the sidebars width, so all content is pushed away from the sidebar */
 	position: absolute;
-	top: 20px;
     left: 220px;
     min-height: 750px; /* The size of the sidebar. */
 }
@@ -413,7 +392,6 @@ ul {
 .topbar {
 	float: left;
 	width: auto;
-	margin-top: -25px; /* Pushes it right to the top of the page */
 }
 
 .topbar ul {
@@ -474,6 +452,14 @@ outline: 2px solid black;
 
 .leftPageHalf > .textRight,.rightPageHalf > .textRight {
     text-align: right;
+}
+
+.col-2 {
+    width: 16.5%;
+}
+
+.col-8 {
+    width: 66.6%;
 }
 
 /* Profile Pages */
@@ -891,7 +877,7 @@ Centered margin is 275px left/right.
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
     padding-top: 100px; /* Location of the box */
-    left: 0;
+    left: 500px;
     top: 0;
     width: 100%; /* Full width */
     height: 100%; /* Full height */
