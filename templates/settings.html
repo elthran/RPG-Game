@@ -53,7 +53,7 @@
 			<li>Repeat Password<br><br><input id="newPassword2" type="password" tabindex=3 />
 				<span id="passwordInfo2" class="settingsTooltip"></span></li>
 		</ul>
-		<button id="passwordButton" class="settingsButton" type="submit" disabled="true">Update password</button>
+		<button id="passwordButton" class="settingsButton" type="submit" disabled>Update password</button>
 	</form>
 </div>
 <button class="settingsAccordion">Update Email</button>
@@ -63,7 +63,7 @@
 		<ul>
 			<li>{% if hero.user.email %}Change{% else %}Add{% endif %} Email Address: <input id="newEmail" type="email" tabindex=1 name="new_email" /></li>
 		</ul>
-		<button id="emailButton" class="settingsButton" type="submit" disabled="true">Update Email</button>
+		<button id="emailButton" class="settingsButton" type="submit" disabled>Update Email</button>
 		<span id="emailInfo1"></span>
 	</form>
 </div>

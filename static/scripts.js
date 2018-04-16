@@ -119,7 +119,7 @@ function successMessage(response) {
     message.innerHTML = "Updated!";
     setTimeout(function () {
         message.style.display='none';
-    }, 1000);
+    }, 1500);
 }
 
 // Allows the user to switch between the register and login forms.

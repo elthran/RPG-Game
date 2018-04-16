@@ -93,31 +93,39 @@ class Pantheon(Specialization):
 
 def Brute(template=False):
     return Archetype("Brute", "A character who uses strength and combat to solve problems. Proficient with many types of weapons.", "Brawn of 6, Any Weapon Talent ~ 10", template=template)
+# What do the two lines of code below do?
 
 
 def Scoundrel(template=False):
     return Archetype("Scoundrel", "A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.", "Dagger Talent of 6, Virtue of -100", template=template)
+# What do the two lines of code below do?
 
 
 def Ascetic(template=False):
     return Archetype("Ascetic", "A character who focuses on disciplining mind and body. They use a combination of combat and intellect.", "10 Errands Complete, Virtue of 100, Willpower of 4", template=template)
+# What do the two lines of code below do?
 
 
 def Survivalist(template=False):
     return Archetype("Survivalist", "A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.", "5 Locations Discovered, 10 Animals in Bestiary", template=template)
+# What do the two lines of code below do?
 
 
 def Philosopher(template=False):
     return Archetype("Philosopher", "A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.", "Intellect of 7, Books Read of 10", template=template)
+# What do the two lines of code below do?
 
 
 def Opportunist(template=False):
     return Archetype("Opportunist", "A character who solves problems using speech and dialogue.", "Charisma of 7, Fame of 200", template=template)
+# What do the two lines of code below do?
 
 
 def TestCalling(template=False):
     return Calling("TestCalling", "A blacksmith dude.", "Be a dude ... who likes hitting hot metal.", template=template)
+# What do the two lines of code below do?
 
 
 def TestPantheon(template=False):
     return Pantheon("TestPantheon", "A fire god dude.", "Be a Pyro ... and a dude.", template=template)
+# What do the two lines of code below do?

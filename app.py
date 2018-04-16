@@ -9,9 +9,7 @@
 import pdb  # For testing!
 from pprint import pprint  # For testing!
 from functools import wraps
-from random import choice
 import os
-import time
 
 from flask import (
     Flask, render_template, redirect, url_for, request, session,
@@ -89,6 +87,7 @@ def url_protect(f):
         # Everything after this will run just before the function
         # runs but not during function setup.
         # There is probably cleaner way?
+        # This code will never run? - Elthran
         try:
             session['logged_in']
         except RuntimeError:
@@ -1076,7 +1075,7 @@ def explore_dungeon(name='', hero=None, location=None, extra_data=None):
         page_links = [("Pick up the ", "/explore_dungeon/Explore%20Dungeon/None", "item", ".")]
         return render_template('dungeon_exploring.html', hero=hero, game=game, page_links=page_links)
     encounter_chance = randint(0, 100)
-    if hero.random_encounter_monster == True: # You have a monster waiting for you from before
+    if hero.random_encounter_monster: # You have a monster waiting for you from before
         location.display.page_heading += "The monster paces in front of you."
         enemy = monster_generator(hero.journal.achievements.current_dungeon_floor + 1) # This should be a saved monster and not re-generated :(
         page_links = [("Attack the ", "/battle/monster", "monster", "."),
@@ -1190,7 +1189,7 @@ def arena(name='', hero=None, location=None):
         'building_default.html', page_title=location.display.page_title,
         page_heading=location.display.page_heading,
         page_image=location.display.page_image, hero=hero, game=game,
-        page_links=page_links, enemy_info=conversation)
+        page_links=page_links)
 
 
 # this gets called if you fight in the arena

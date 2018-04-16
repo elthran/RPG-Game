@@ -5,7 +5,6 @@
 #                                                                              #
 #//////////////////////////////////////////////////////////////////////////////#
 from sqlalchemy import Column, Integer, String, Boolean
-from random import randint, choice
 
 from base_classes import Base
 

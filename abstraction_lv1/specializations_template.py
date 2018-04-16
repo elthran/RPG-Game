@@ -90,6 +90,7 @@ class Pantheon(Specialization):
 {% set requirements = spec[3] %}
 def {{ cls_name }}(template=False):
     return {{ spec_type }}("{{ cls_name }}", "{{ description }}", "{{ requirements }}", template=template)
+# What do the two lines of code below do?
 {% if loop.last %}
 {% else %}
 

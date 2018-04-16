@@ -1,5 +1,4 @@
 from locations import Location
-from abilities import Ability
 import specializations
 from game import User
 from hero import Hero
@@ -10,7 +9,7 @@ from items import (
 )
 from events import Trigger, Condition
 from random import choice # To create pre-built adjectives
-from forum import Forum, Board, Thread, Post
+from forum import Forum, Board
 from bestiary2 import MonsterTemplate
 
 # for testing
