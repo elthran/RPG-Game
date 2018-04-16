@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='style.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
 </head>
 
 <body onscroll="stickyTopAndBottom();" style="min-height:815px;background:#bbc;">
@@ -86,6 +85,7 @@
         </div>
         {% endfor %}
     </div>
+<script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
 </body>
 </html>
 

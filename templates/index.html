@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='style.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
 </head>
 
 <body class="loginBody">
@@ -41,5 +40,6 @@
             <p id="error" class="error {{ '' if error else 'hide' }}">{{ error }} <a class="loginAlternateButton" title="Switch to reset password" href="#" onclick="toggleLoginRegister(this);return false;" data="reset">Forgot password?</a></p>
       </div>
     </div>
+<script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
 </body>
 </html>
