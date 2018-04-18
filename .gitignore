@@ -9,3 +9,4 @@ static/database.db-journal
 .cache/
 templates/desktop.ini
 .pytest_cache/
+.env

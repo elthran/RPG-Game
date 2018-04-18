@@ -5,20 +5,24 @@
 #                                                                            #
 # ///////////////////////////////////////////////////////////////////////////#
 
-
 import pdb  # For testing!
 from pprint import pprint  # For testing!
 from functools import wraps
 from random import choice
 import os
 import time
+from math import ceil
+from socket import gethostname
 
 from flask import (
     Flask, render_template, redirect, url_for, request, session,
     flash, send_from_directory)
 from flask_sslify import SSLify
-
 import werkzeug
+
+import sendgrid
+from sendgrid.helpers.mail import Email, Content, Mail
+
 
 from game import Game
 import combat_simulator
@@ -28,17 +32,25 @@ from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
 # _before_ any of them are used.
-from database import EZDB
 from engine import Engine, game_clock, async_process, rest_key_timelock
 from forum import Board, Thread, Post
 from bestiary2 import create_monster, MonsterTemplate
-from math import ceil
+from database import EZDB
 
 # INIT AND LOGIN FUNCTIONS
-# for server code swap this over:
-# database = EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@elthran.mysql.pythonanywhere-services.com/elthran$rpg_database", debug=False)
-database = EZDB("mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database", debug=False)
+if 'liveweb' not in gethostname():  # Running on local machine.
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(os.path.dirname(os.path.realpath(__file__)), '.env'))
+    database_url = os.environ.get('LOCAL_DATABASE_URL')
+else:  # Running on server which runs dotenv from WSGI file.
+    database_url = os.environ.get('SERVER_DATABASE_URL')
+
+database = EZDB(database_url, debug=False)
 engine = Engine(database)
+
+# using SendGrid's Python Library
+# https://github.com/sendgrid/sendgrid-python
+sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
 
 # Disable will need to be restructured (Marlen)
 # initialization
@@ -48,7 +60,15 @@ game = Game()
 def create_app():
     # create the application object
     app = Flask(__name__)
-    # pdb.set_trace()
+
+    # Should replace on server with custom (not pushed to github).
+    # import os
+    # os.urandom(24)
+    # '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
+    #app.config.from_object('config')
+    app.secret_key = os.environ.get('SECRET_KEY')
+    # Maybe later sg = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY']))
+    # When I learn how to use instances for Flask to hide these keys.
 
     async_process(game_clock, args=(database,))
     return app
@@ -56,12 +76,6 @@ def create_app():
 
 app = create_app()
 sslify = SSLify(app)
-
-# Should replace on server with custom (not pushed to github).
-# import os
-# os.urandom(24)
-# '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
-app.secret_key = 'starcraft'
 
 ALWAYS_VALID_URLS = [
     '/login', '/home', '/about', '/inventory_page', '/quest_log',
@@ -270,59 +284,63 @@ def send_email(user, address, key):
     This could later be improved to send other types of emails but right
     now it will only send a reset email.
     """
-    # Import smtplib for the actual sending function
-    import smtplib
-
-    # Import the email modules we'll need
-    # from email.mime.text import MIMEText
-
-    # Open a plain text file for reading.  For this example, assume that
-    # the text file contains only ASCII characters.
-    # with open("static/") as fp:
-    #     # Create a text/plain message
-    #     msg = MIMEText(fp.read())
 
     sender = "elthran.online@no-reply.ca"
     receivers = [address]
 
     # url = 'https://mydomain.com/reset=' + token_urlsafe()
     # if server:
-    # link = "https://elthran.pythonanywhere.com/reset/?user={}&&key={}".format(user, key)
-    link = "http://127.0.0.1:5000/reset?user={}&&key={}".format(user, key)
+    # link = "https://elthran.pythonanywhere.com/reset?user={}&&key={}".format(user, key)
+    # Gets generic url that should work on server or local machine.
+    link = "{}reset?user={}&&key={}".format(request.url_root, user, key)
 
-    message = """From: Elthran Online <{sender}>
-To: Owner of account '{user}' <{address}>
-MIME-Version: 1.0
-Content-type: text/html
-Subject: Reset link for ElthranOnline
-<pre>Hi Owner of account '{user}',
-    Please click this link <a href="{link}">{link}</a> to reset your account.
-You will be prompted to enter a new account password.</pre>
-""".format(sender=sender, user=user, address=address, link=link)
+    from_email = Email("Elthran Online <{sender}>".format(sender=sender))
+    to_email = Email("Owner of account '{user}' <{address}>".format(user=user, address=address))
+    subject = "Reset link for ElthranOnline"
 
+    message = Content("text/html", """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>Reset Password Email</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body style="margin: 0; padding: 0;">
+ <table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+   <td>
+    <p>Hi Owner of account '{user}',</p>
+    <p>&#9;Please click this link <a clicktracking=off href="{link}">{link}</a> to reset your account.</p>
+    <p>You will be prompted to enter a new account password.</p>
+   </td>
+  </tr>
+ </table>
+</body>
+</html>
+""".format(user=user, link=link))
+
+    mail = Mail(from_email, subject, to_email, message)
     try:
-        smtp_obj = smtplib.SMTP('localhost')
-        try:
-            smtp_obj.sendmail(sender, receivers, message)
-            smtp_obj.quit()
-            print("Successfully sent email")
-        except smtplib.SMTPException:
-            print("Error: unable to send email")
-    except ConnectionRefusedError:
-        print("You need to setup your stmp server correctly.")
+        response = sg.client.mail.send.post(request_body=mail.get())
+        print("Successfully sent email")
+    except Exception as ex:
+        print("Error: unable to send email")
+        print("You need to setup your sendgrid server correctly.")
+        print(ex)  # Fail gracefully ... should probably send error to user
 
 
 @app.route("/reset", methods=["GET", "POST"])
 def reset_password():
     if request.method == "GET":
         if database.validate_reset(request.args['user'], request.args['key']):
-            return render_template("reset.html", username=request.args['user'])
+            return render_template("reset.html", username=request.args['user'], key=request.args['key'])
     elif request.method == "POST":
-        user = database.get_user_by_username(request.form['username'])
-        if user.reset_key:
-            user.reset_key = None
-            user.password = database.encrypt(request.form['password'])
-            return redirect(url_for('login'), code=307)
+        if database.validate_reset(request.form['username'], request.form['key']):
+            user = database.get_user_by_username(request.form['username'])
+            if user.reset_key:
+                user.reset_key = None
+                user.password = database.encrypt(request.form['password'])
+                return redirect(url_for('login'), code=307)
     return redirect(url_for('login'))
 
 
@@ -480,7 +498,6 @@ def create_character(hero=None):
 # this gets called if you press "logout"
 @app.route('/logout')
 @login_required
-@uses_hero
 def logout(hero=None):
     # hero.refresh_character()  # probably no longer wanted?
     # session.pop('logged_in', None)  # I'm not sure why you might want this instead of a full clear ..
@@ -1150,23 +1167,22 @@ def arena(name='', hero=None, location=None):
     """
     # If I try to check if the enemy has 0 health and there is no enemy,
     # I randomly get an error
-    """
-    if not game.has_enemy:
-        enemy = monster_generator(hero.age - 6)
-        if enemy.name == "Wolf":
-            enemy.items_rewarded.append((QuestItem("Wolf Pelt", hero, 50)))
-        if enemy.name == "Scout":
-            enemy.items_rewarded.append((QuestItem("Copper Coin", hero, 50)))
-        if enemy.name == "Spider":
-            enemy.items_rewarded.append((QuestItem("Spider Leg", hero, 50)))
-        game.set_enemy(enemy)
+
+    enemy = monster_generator(hero.age - 6)
+        # if enemy.name == "Wolf":
+        #     enemy.items_rewarded.append((QuestItem("Wolf Pelt", hero, 50)))
+        # if enemy.name == "Scout":
+        #     enemy.items_rewarded.append((QuestItem("Copper Coin", hero, 50)))
+        # if enemy.name == "Spider":
+        #     enemy.items_rewarded.append((QuestItem("Spider Leg", hero, 50)))
     location.display.page_title = "War Room"
     location.display.page_heading = "Welcome to the arena " + hero.name + "!"
-    location.display.page_image = str(game.enemy.name) + '.jpg'
+    location.display.page_image = str(enemy.name) + '.jpg'
 
-    profs = game.enemy.get_summed_proficiencies()
-    conversation = [("Name: ", str(game.enemy.name), "Enemy Details"),
-                    ("Level: ", str(game.enemy.level), "Combat Details"),
+    profs = enemy.get_summed_proficiencies()
+
+    conversation = [("Name: ", str(enemy.name), "Enemy Details"),
+                    ("Level: ", str(enemy.level), "Combat Details"),
                     ("Health: ", str(profs.health.get_base()) + " / " + str(
                         profs.health.final)),
                     ("Damage: ", str(profs.damage.final) + " - " + str(
@@ -1182,7 +1198,7 @@ def arena(name='', hero=None, location=None):
                     ("Riposte: ", str(profs.riposte.final) + "%"),
                     ("Block Chance: ", str(profs.block.final) + "%"),
                     ("Block Reduction: ", str(profs.block.final) + "%")]
-                    """
+
     page_links = [("Challenge the enemy to a ", "/battle/monster", "fight", "."),
                   ("Go back to the ", "/barracks/Barracks", "Barracks", ".")]
     return render_template(
@@ -1469,9 +1485,9 @@ if __name__ == '__main__':
     # hero.inventory.append(QuestItem("Copper Coin", hero, 50))
     # for item in hero.inventory:
     #     item.amount_owned = 5
-
-    # Remove when not testing.
-    app.jinja_env.trim_blocks = True
-    app.jinja_env.lstrip_blocks = True
-    app.jinja_env.auto_reload = True
-    app.run(debug=True)
+    if 'liveweb' not in gethostname():  # Running on local machine.
+        # Remove when not testing.
+        app.jinja_env.trim_blocks = True
+        app.jinja_env.lstrip_blocks = True
+        app.jinja_env.auto_reload = True
+        app.run(debug=True)

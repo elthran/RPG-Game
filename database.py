@@ -415,7 +415,8 @@ class EZDB:
         """Add a reset key to the user account and return it."""
         user = self.session.query(User).filter_by(username=username).first()
         key = os.urandom(256)
-        urlsafe_key = base64.urlsafe_b64encode(hashlib.sha256(key).digest())
+        key = base64.urlsafe_b64encode(hashlib.sha256(key).digest())
+        urlsafe_key = str(key)[2:-2]
         user.reset_key = urlsafe_key
         return urlsafe_key
 
@@ -429,7 +430,7 @@ class EZDB:
         # For some reason the key get converted to binary then back
         # so it looks like "b'______'" instead of b'________' or
         # '_________'. I strip the "b'" of the start and "'" of the end.
-        if user.reset_key and user.reset_key == key[2:-1]:
+        if user.reset_key and user.reset_key == key:
             return True
         return False
 
