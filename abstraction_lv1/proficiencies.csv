@@ -73,5 +73,6 @@ Devotion,How religious you are,None,linear,0,0,0,TRUE,FALSE
 
 LifestealStatic,Amount of life stolen per hit,None,linear,0,0,0,TRUE,TRUE
 LifestealPercent,Amount of life stolen per hit as percent of damage dealt,None,linear,0,0,0,TRUE,TRUE
+PoisonAmount, Amount of damage enemytakes from poison each turn. Poison lasts for 3 rounds unless reapplied.,None,linear,0,0,0,TRUE,TRUE
 
 

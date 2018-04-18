@@ -50,45 +50,23 @@ def determine_life_steal(attacker, base_damage):
     percent_amount = round_number_intelligently((attacker.get_summed_proficiencies('lifesteal_percent').final / 100) * base_damage)
     return static_amount + percent_amount
 
+def apply_poison(attacker, defender, counter):
+    if int(attacker.get_summed_proficiencies('poison_amount').final) > 0:
+        counter[defender.name] = 3
+    return counter
 
-"""
-def determine_block_chance(chance):
-    print ("Chance to block is: " + str(chance) + "%")
-    if randint(0,100) < chance:
-        return True
-    return False
+def calculate_poison_damage(inflictor, receiver):
+    poison = int(inflictor.get_summed_proficiencies('poison_amount').final)
+    poison *= (1 - int(receiver.get_summed_proficiencies('resist_poison').final))
+    return poison
 
-def determine_block_amount(original_damage, modifier):
-    print ("You will block this percent of damage: " + str(modifier) + "%")
-    damage = original_damage * (1 - modifier)
-    if damage < 1:
-        damage = 1
-    return damage
-
-def determine_parry_chance(chance):
-    print ("Chance to parry is: " + str(chance) + "%")
-    if randint(0,100) < chance:
-        return True
-    return False
-
-def determine_riposte_chance(chance):
-    print ("Chance to riposte is: " + str(chance) + "%")
-    if randint(0,100) < chance:
-        return True
-    return False
-
-def lower_fatigue(fatigue):
-    fatigue -= 1
-    if fatigue < 0:
-        fatigue = 0
-    return fatigue
-"""
 # BUG: Lifesteal lets you go beyond maximum HP. Also let's enemy drop below 0. Easy fix!
 
 def battle_logic(active_player, inactive_player):
     """ Runs the entire battle simulator """
     # Currently just takes 1 away from health of whoever attacks slower each round. Ends when someone dies.
     combat_log = ["At the start of the battle: " + active_player.name + " Health: " + str(active_player.base_proficiencies['health'].current) + "  " + inactive_player.name + " Health: " + str(inactive_player.base_proficiencies['health'].current)]
+    poison_counter = {active_player.name: 0, inactive_player.name: 0}
     while active_player.base_proficiencies['health'].current > 0 and inactive_player.base_proficiencies['health'].current > 0:
         attacker,defender = determine_attacker(active_player,inactive_player)
         combat_log.append(attacker.name + " is attacking.")
@@ -106,6 +84,19 @@ def battle_logic(active_player, inactive_player):
                 if attacker.base_proficiencies['health'].current > attacker.get_summed_proficiencies('health').final:
                     attacker.base_proficiencies['health'].current = attacker.get_summed_proficiencies('health').final
                 combat_log.append(attacker.name + " steals " + str(lifesteal) + " life! He now has " + str(attacker.base_proficiencies['health'].current) + " life remaining.")
+            poison_counter = apply_poison(attacker, defender, poison_counter)
+            for combatant in poison_counter:
+                if combatant == attacker.name:
+                    receiever = attacker
+                    inflictor = defender
+                else:
+                    receiever = defender
+                    inflictor = attacker
+                if poison_counter[combatant] > 0:
+                    poison_counter[combatant] -= 1
+                    poison = calculate_poison_damage(inflictor, receiever)
+                    receiever.base_proficiencies['health'].current -= poison
+                    combat_log.append(receiever.name + " takes " + str(poison) + " poison damage!")
             defender.base_proficiencies['health'].current -= base_damage
             combat_log.append(defender.name + " takes " + str(base_damage) + ". He has " + str(defender.base_proficiencies['health'].current) + " health remaining.")
             #lifesteal = determine_life_steal(attacker)
