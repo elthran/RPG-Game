@@ -54,7 +54,7 @@ def apply_poison(attacker, defender, counter, combat_log):
     random = randint(1, 100)
     if (attacker.get_summed_proficiencies('poison_chance').final > random) and (attacker.get_summed_proficiencies('poison_amount').final > 0):
         counter[defender.name] = attacker.get_summed_proficiencies('poison_duration').final
-        combat_log.append(attacker.name + " has applied a poison! It will last" + str(counter[defender.name]) + " more rounds.")
+        combat_log.append(attacker.name + " has applied a poison! It will last " + str(int(counter[defender.name])) + " more rounds.")
     return counter,combat_log
 
 def calculate_poison_damage(inflictor, receiver):

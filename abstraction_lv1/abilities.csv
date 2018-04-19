@@ -28,5 +28,6 @@ IgnoreTest5,CastableAbility,Basic,None,3,Irrelevant,Irrelevant,Irrelevant,TRUE,V
 IgnoreTest6,CastableAbility,Basic,None,3,Irrelevant,Irrelevant,Irrelevant,TRUE,Virtue,0,Understanding,0,0,0
 IgnoreTest7,CastableAbility,Basic,None,3,Irrelevant,Irrelevant,Irrelevant,TRUE,Virtue,0,Understanding,0,0,0
 PoisonedBlades,AuraAbility,Archetype,Scoundrel,3,Successful attacks apply a poison to the enemy,Damage per turn: {{ (level) * 1 }},Damage per turn: {{ (level + 1) * 1 }},TRUE,PoisonAmount,1,Understanding,0,Null,Null
+PoisonMastery,AuraAbility,Archetype,Scoundrel,3,Your poisons last an additional round, +{{ (level) * 1 }} rounds,+{{ (level + 1) * 1 }} rounds,TRUE,PoisonDuration,1,Understanding,0,Null,Null
 VampiricAura,AuraAbility,Basic,None,3,You steal life per hit,Amount stolen: {{ (level) * 1 }},Amount stolen: {{ (level + 1) * 1 }},TRUE,LifestealStatic,1,Understanding,0,Null,Null
 Lifeleech,AuraAbility,Basic,None,3,You steal life based on how much damage you deal in combat,Percent of damage dealt: {{ (level) * 5 }},Percent of damage dealt: {{ (level + 1) * 5 }},TRUE,LifestealPercent,5,Understanding,0,Null,Null
