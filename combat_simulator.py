@@ -50,10 +50,12 @@ def determine_life_steal(attacker, base_damage):
     percent_amount = round_number_intelligently((attacker.get_summed_proficiencies('lifesteal_percent').final / 100) * base_damage)
     return static_amount + percent_amount
 
-def apply_poison(attacker, defender, counter):
-    if int(attacker.get_summed_proficiencies('poison_amount').final) > 0:
-        counter[defender.name] = 3
-    return counter
+def apply_poison(attacker, defender, counter, combat_log):
+    random = randint(1, 100)
+    if (attacker.get_summed_proficiencies('poison_chance').final > random) and (attacker.get_summed_proficiencies('poison_amount').final > 0):
+        counter[defender.name] = attacker.get_summed_proficiencies('poison_duration').final
+        combat_log.append(attacker.name + " has applied a poison! It will last" + str(counter[defender.name]) + " more rounds.")
+    return counter,combat_log
 
 def calculate_poison_damage(inflictor, receiver):
     poison = int(inflictor.get_summed_proficiencies('poison_amount').final)
@@ -68,9 +70,22 @@ def battle_logic(active_player, inactive_player):
     combat_log = ["At the start of the battle: " + active_player.name + " Health: " + str(active_player.base_proficiencies['health'].current) + "  " + inactive_player.name + " Health: " + str(inactive_player.base_proficiencies['health'].current)]
     poison_counter = {active_player.name: 0, inactive_player.name: 0}
     while active_player.base_proficiencies['health'].current > 0 and inactive_player.base_proficiencies['health'].current > 0:
+        for combatant in poison_counter:
+            if combatant == active_player.name:
+                receiever = active_player
+                inflictor = inactive_player
+            else:
+                receiever = inactive_player
+                inflictor = active_player
+            if poison_counter[combatant] > 0:
+                poison_counter[combatant] -= 1
+                poison = calculate_poison_damage(inflictor, receiever)
+                receiever.base_proficiencies['health'].current -= poison
+                combat_log.append(receiever.name + " takes " + str(poison) + " poison damage!")
+        print(poison_counter) # TEMP
         attacker,defender = determine_attacker(active_player,inactive_player)
         combat_log.append(attacker.name + " is attacking.")
-        if determine_if_hits(attacker, defender):
+        if determine_if_hits(attacker, defender): # If there is a hit, you need to check for lifesteal, applying poison, etc.
             base_damage = calculate_damage(attacker, defender)
             if determine_if_critical_hit(attacker):
                 combat_log.append(attacker.name + " lands a critical hit!")
@@ -84,25 +99,9 @@ def battle_logic(active_player, inactive_player):
                 if attacker.base_proficiencies['health'].current > attacker.get_summed_proficiencies('health').final:
                     attacker.base_proficiencies['health'].current = attacker.get_summed_proficiencies('health').final
                 combat_log.append(attacker.name + " steals " + str(lifesteal) + " life! He now has " + str(attacker.base_proficiencies['health'].current) + " life remaining.")
-            poison_counter = apply_poison(attacker, defender, poison_counter)
-            for combatant in poison_counter:
-                if combatant == attacker.name:
-                    receiever = attacker
-                    inflictor = defender
-                else:
-                    receiever = defender
-                    inflictor = attacker
-                if poison_counter[combatant] > 0:
-                    poison_counter[combatant] -= 1
-                    poison = calculate_poison_damage(inflictor, receiever)
-                    receiever.base_proficiencies['health'].current -= poison
-                    combat_log.append(receiever.name + " takes " + str(poison) + " poison damage!")
+            poison_counter,combat_log = apply_poison(attacker, defender, poison_counter, combat_log)
             defender.base_proficiencies['health'].current -= base_damage
             combat_log.append(defender.name + " takes " + str(base_damage) + ". He has " + str(defender.base_proficiencies['health'].current) + " health remaining.")
-            #lifesteal = determine_life_steal(attacker)
-            #if lifesteal > 0:
-            #    attacker.base_proficiencies['health'].current += lifesteal
-            #    combat_log.append(attacker.name + " steals " + str(lifesteal) + " life!")
         else:
             combat_log.append(attacker.name + " misses.")
 
