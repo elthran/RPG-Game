@@ -254,10 +254,20 @@
 		<td>Lifesteal</td>
 		<td>{% if proficiencies.lifesteal_static.final %}+{{ proficiencies.lifesteal_static.final|int }} per hit{% else %}-{% endif %} and {% if proficiencies.lifesteal_percent.final %}+{{ proficiencies.lifesteal_percent.final }}% of damage dealt{% else %}-{% endif %}</td>
 	</tr>
-	<tr>
-		<td>Poison Damage</td>
-		<td>{% if proficiencies.poison_amount.final %}+{{ proficiencies.poison_amount.final|int }}{% else %}-{% endif %}</td>
-	</tr>
+	{% if proficiencies.poison_amount.final %}
+		<tr>
+			<td>Poison Damage</td>
+			<td>{{ proficiencies.poison_amount.final|int }}</td>
+		</tr>
+		<tr>
+			<td>Poison Duration</td>
+			<td>{{ proficiencies.poison_duration.final|int }}</td>
+		</tr>
+		<tr>
+			<td>Poison Chance</td>
+			<td>{{ proficiencies.poison_chance.final|int }}%</td>
+		</tr>
+	{% endif %}
 </table>
 {% endblock %}
 
