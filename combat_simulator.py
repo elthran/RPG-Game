@@ -86,7 +86,7 @@ def battle_logic(active_player, inactive_player):
     poison_counter = {active_player.name: 0, inactive_player.name: 0}
     frozen_counter = {active_player.name: False, inactive_player.name: False}
     while active_player.base_proficiencies['health'].current > 0 and inactive_player.base_proficiencies['health'].current > 0:
-        for combatant in poison_counter:
+        for combatant in poison_counter: # Apply poison damage and record each tick
             if combatant == active_player.name:
                 receiever = active_player
                 inflictor = inactive_player
@@ -98,16 +98,16 @@ def battle_logic(active_player, inactive_player):
                 poison = calculate_poison_damage(inflictor, receiever)
                 receiever.base_proficiencies['health'].current -= poison
                 combat_log.append(receiever.name + " takes " + str(poison) + " poison damage!")
-        for combatant in frozen_counter:
+        attacker,defender,combat_log = determine_attacker(active_player, inactive_player, frozen_counter, combat_log)
+        combat_log.append(attacker.name + " is attacking.")
+        for combatant in frozen_counter:    # Check if frozen players will thaw
             if active_player.name == combatant:
                 combatant = active_player
             elif inactive_player.name == combatant:
                 combatant = inactive_player
-            if frozen_counter[combatant.name] and randint(1,100) > combatant.get_summed_proficiencies('thawing_chance').final:
+            if frozen_counter[combatant.name] and combatant.get_summed_proficiencies('thawing_chance').final > randint(1,100):
                 combat_log.append(combatant.name + " thaws out! They may attack as normal.")
                 frozen_counter[combatant.name] = False
-        attacker,defender,combat_log = determine_attacker(active_player, inactive_player, frozen_counter, combat_log)
-        combat_log.append(attacker.name + " is attacking.")
         if determine_if_hits(attacker, defender): # If there is a hit, you need to check for lifesteal, applying poison, etc.
             base_damage = calculate_damage(attacker, defender)
             if determine_if_critical_hit(attacker):

@@ -269,9 +269,13 @@
 		</tr>
 	{% endif %}
 	<tr>
-			<td>Freezing Chance</td>
-			<td>{% if proficiencies.freezing_chance.final %}{{ proficiencies.freezing_chance.final|int }}%{% else %}-{% endif %}</td>
-		</tr>
+		<td>Freezing Chance</td>
+		<td>{% if proficiencies.freezing_chance.final %}{{ proficiencies.freezing_chance.final|int }}%{% else %}-{% endif %}</td>
+	</tr>
+	<tr>
+		<td>Thawing Chance</td>
+		<td>{% if proficiencies.thawing_chance.final %}{{ proficiencies.thawing_chance.final|int }}%{% else %}-{% endif %}</td>
+	</tr>
 </table>
 {% endblock %}
 
