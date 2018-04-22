@@ -73,9 +73,10 @@ Devotion,How religious you are,None,linear,0,0,0,TRUE,FALSE
 
 LifestealStatic,Amount of life stolen per hit,None,linear,0,0,0,TRUE,TRUE
 LifestealPercent,Amount of life stolen per hit as percent of damage dealt,None,linear,0,0,0,TRUE,TRUE
-PoisonAmount, Amount of damage enemytakes from poison each turn. Poison generally lasts for 2 rounds unless reapplied.,None,linear,0,0,0,TRUE,TRUE
-PoisonDuration, How many turns an enemy is poisoned for.,None,linear,2,0,0,TRUE,TRUE
-PoisonChance, Likelihood that a poisoned attack will inflict the enemy.,None,linear,25,0,0,TRUE,TRUE
-FreezingChance, Likelihood that an enemy is frozen after being attacked.,None,linear,0,0,0,TRUE,TRUE
+PoisonAmount,Amount of damage enemytakes from poison each turn. Poison generally lasts for 2 rounds unless reapplied.,None,linear,0,0,0,TRUE,TRUE
+PoisonDuration,How many turns an enemy is poisoned for.,None,linear,2,0,0,TRUE,TRUE
+PoisonChance,Likelihood that a poisoned attack will inflict the enemy.,None,linear,25,0,0,TRUE,TRUE
+FreezingChance,Likelihood that an enemy is frozen after being attacked.,None,linear,0,0,0,TRUE,TRUE
+ThawingChance,Likelihood that you will thaw each round in combat if frozen.,None,linear,50,0,0,TRUE,TRUE
 
 

@@ -99,9 +99,13 @@ def battle_logic(active_player, inactive_player):
                 receiever.base_proficiencies['health'].current -= poison
                 combat_log.append(receiever.name + " takes " + str(poison) + " poison damage!")
         for combatant in frozen_counter:
-            if frozen_counter[combatant] and randint(1,100) > 25:
-                combat_log.append(combatant + " thaws out! They may attack as normal.")
-                frozen_counter[combatant] = False
+            if active_player.name == combatant:
+                combatant = active_player
+            elif inactive_player.name == combatant:
+                combatant = inactive_player
+            if frozen_counter[combatant.name] and randint(1,100) > combatant.get_summed_proficiencies('thawing_chance').final:
+                combat_log.append(combatant.name + " thaws out! They may attack as normal.")
+                frozen_counter[combatant.name] = False
         attacker,defender,combat_log = determine_attacker(active_player, inactive_player, frozen_counter, combat_log)
         combat_log.append(attacker.name + " is attacking.")
         if determine_if_hits(attacker, defender): # If there is a hit, you need to check for lifesteal, applying poison, etc.
