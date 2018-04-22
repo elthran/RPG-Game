@@ -10,15 +10,23 @@
 from random import randint
 from game import round_number_intelligently
 
-def determine_attacker(active, inactive):
+def determine_attacker(active, inactive, frozen_counter, combat_log):
     """
     Your chance of attacking should be adding the two fighters' speeds together and seeing what % of that is yours.
     """
+    if frozen_counter[active.name] and not frozen_counter[inactive.name]:
+        combat_log.append(active.name + " is frozen! " + inactive.name + " automatically gets to attack.")
+        return inactive, active,combat_log
+    if frozen_counter[inactive.name] and not frozen_counter[active.name]:
+        combat_log.append(inactive.name + " is frozen! " + active.name + " automatically gets to attack.")
+        return active, inactive,combat_log
+    if frozen_counter[inactive.name] and frozen_counter[active.name]:
+        combat_log.append("Both players are frozen. Not sure how to code it so I just ignore it >.<")
     random = randint(1,int((active.get_summed_proficiencies('speed').final + inactive.get_summed_proficiencies('speed').final)*100))
     if active.get_summed_proficiencies('speed').final*100 > random:
-        return active,inactive
+        return active,inactive,combat_log
     else:
-        return inactive, active
+        return inactive, active,combat_log
 
 def determine_if_hits(attacker, defender):
     """
@@ -62,6 +70,13 @@ def calculate_poison_damage(inflictor, receiver):
     poison *= (1 - int(receiver.get_summed_proficiencies('resist_poison').final))
     return poison
 
+def apply_freezing(attacker, defender, combat_log, frozen_counter):
+    random = randint(1, 100)
+    if attacker.get_summed_proficiencies('freezing_chance').final > random:
+        combat_log.append(defender.name + " was frozen!")
+        frozen_counter[defender.name] = True
+    return combat_log, frozen_counter
+
 # BUG: Lifesteal lets you go beyond maximum HP. Also let's enemy drop below 0. Easy fix!
 
 def battle_logic(active_player, inactive_player):
@@ -69,6 +84,7 @@ def battle_logic(active_player, inactive_player):
     # Currently just takes 1 away from health of whoever attacks slower each round. Ends when someone dies.
     combat_log = ["At the start of the battle: " + active_player.name + " Health: " + str(active_player.base_proficiencies['health'].current) + "  " + inactive_player.name + " Health: " + str(inactive_player.base_proficiencies['health'].current)]
     poison_counter = {active_player.name: 0, inactive_player.name: 0}
+    frozen_counter = {active_player.name: False, inactive_player.name: False}
     while active_player.base_proficiencies['health'].current > 0 and inactive_player.base_proficiencies['health'].current > 0:
         for combatant in poison_counter:
             if combatant == active_player.name:
@@ -82,8 +98,11 @@ def battle_logic(active_player, inactive_player):
                 poison = calculate_poison_damage(inflictor, receiever)
                 receiever.base_proficiencies['health'].current -= poison
                 combat_log.append(receiever.name + " takes " + str(poison) + " poison damage!")
-        print(poison_counter) # TEMP
-        attacker,defender = determine_attacker(active_player,inactive_player)
+        for combatant in frozen_counter:
+            if frozen_counter[combatant] and randint(1,100) > 25:
+                combat_log.append(combatant + " thaws out! They may attack as normal.")
+                frozen_counter[combatant] = False
+        attacker,defender,combat_log = determine_attacker(active_player, inactive_player, frozen_counter, combat_log)
         combat_log.append(attacker.name + " is attacking.")
         if determine_if_hits(attacker, defender): # If there is a hit, you need to check for lifesteal, applying poison, etc.
             base_damage = calculate_damage(attacker, defender)
@@ -100,6 +119,7 @@ def battle_logic(active_player, inactive_player):
                     attacker.base_proficiencies['health'].current = attacker.get_summed_proficiencies('health').final
                 combat_log.append(attacker.name + " steals " + str(lifesteal) + " life! He now has " + str(attacker.base_proficiencies['health'].current) + " life remaining.")
             poison_counter,combat_log = apply_poison(attacker, defender, poison_counter, combat_log)
+            combat_log,frozen_counter = apply_freezing(attacker, defender, combat_log, frozen_counter)
             defender.base_proficiencies['health'].current -= base_damage
             combat_log.append(defender.name + " takes " + str(base_damage) + ". He has " + str(defender.base_proficiencies['health'].current) + " health remaining.")
         else:
