@@ -22,7 +22,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import desc
 import sqlalchemy.exc
-import bcrypt
 
 # Base is the initialize SQLAlchemy base class. It is used to set up the
 # table metadata.
@@ -50,11 +49,11 @@ from journal import Entry
 import prebuilt_objects
 
 from session_helpers import scoped_session, safe_commit_session
+import services
 
 # Constants#
 # UPDATE_INTERVAL = 3600  # One endurance per hour.
 UPDATE_INTERVAL = 30 # One endurance per 30 seconds
-PASSWORD_HASH_COST = 10
 Session = sessionmaker()
 
 
@@ -137,7 +136,7 @@ class EZDB:
             for obj in obj_list:
                 self.session.add(obj)
                 if isinstance(obj, User):
-                    obj.password = EZDB.encrypt(obj.password)
+                    obj.password = services.secrets.encrypt(obj.password)
                     obj.timestamp = EZDB.now()
                 self.update()
         default_quest_paths = self.get_default_quest_paths()
@@ -336,24 +335,6 @@ class EZDB:
         self.session.add(hero)
         return hero
 
-    @staticmethod
-    def encrypt(s):
-        """Encrypt a string with the builtin hash cost."""
-        return bcrypt.hashpw(
-            base64.b64encode(hashlib.sha256(s.encode()).digest()),
-            bcrypt.gensalt(PASSWORD_HASH_COST))
-
-    @staticmethod
-    def check_encrypted(plain, cypher):
-        """Check if a string matches the cypher string.
-
-        You can use this to check if password is valid.
-        It encrypts the plain text variant and compares it to the cypher text one.
-        """
-        return bcrypt.checkpw(
-                base64.b64encode(hashlib.sha256(plain.encode()).digest()),
-                cypher.encode())
-
     def add_new_user(self, username, password, email=''):
         """Create a new user account with this username and password.
 
@@ -364,7 +345,7 @@ class EZDB:
         """
 
         # hash and save a password
-        user = User(username=username, password=EZDB.encrypt(password), email=EZDB.encrypt(email),
+        user = User(username=username, password=services.secrets.encrypt(password), email=services.secrets.encrypt(email),
                     timestamp=EZDB.now())
         self.session.add(user)
         return user
@@ -379,9 +360,7 @@ class EZDB:
         user = self.session.query(User).filter_by(username=username).first()
         if user is not None:
             # check a password
-            return bcrypt.checkpw(
-                base64.b64encode(hashlib.sha256(email.encode()).digest()),
-                user.email.encode())
+            return services.secrets.check_cypher(email, user.email)
         return None
 
     @scoped_session
@@ -395,9 +374,7 @@ class EZDB:
         if user is not None:
             self.attempt_password_migration(user, password)
             # check a password
-            return bcrypt.checkpw(
-                base64.b64encode(hashlib.sha256(password.encode()).digest()),
-                user.password.encode())
+            return services.secrets.check_cypher(password, user.password)
         return None
 
     @safe_commit_session
@@ -407,7 +384,7 @@ class EZDB:
         If user has reset key, and valid old style password.
         """
         if user.reset_key and user.password == hashlib.md5(password.encode()).hexdigest():
-            user.password = EZDB.encrypt(password)
+            user.password = services.secrets.encrypt(password)
             user.reset_key = None
 
     @scoped_session
@@ -625,7 +602,7 @@ class EZDB:
     #     return self.session.query(WorldMap).filter_by(name=name).first()
 
     @scoped_session
-    def add(self, objects=[]):
+    def add(self, objects=()):
         try:
             self.session.add_all(objects)
         except TypeError as ex:

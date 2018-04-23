@@ -35,12 +35,13 @@ from commands import Command
 from engine import Engine, game_clock, async_process, rest_key_timelock
 from forum import Board, Thread, Post
 from bestiary2 import create_monster, MonsterTemplate
+import services
 from database import EZDB
 
 # INIT AND LOGIN FUNCTIONS
 if 'liveweb' not in gethostname():  # Running on local machine.
-    from dotenv import load_dotenv
-    load_dotenv(os.path.join(os.path.dirname(os.path.realpath(__file__)), '.env'))
+    import dotenv
+    dotenv.load_dotenv(os.path.join(os.path.dirname(os.path.realpath(__file__)), '.env'))
     database_url = os.environ.get('LOCAL_DATABASE_URL')
 else:  # Running on server which runs dotenv from WSGI file.
     database_url = os.environ.get('SERVER_DATABASE_URL')
@@ -339,7 +340,7 @@ def reset_password():
             user = database.get_user_by_username(request.form['username'])
             if user.reset_key:
                 user.reset_key = None
-                user.password = database.encrypt(request.form['password'])
+                user.password = services.sercrets.encrypt(request.form['password'])
                 return redirect(url_for('login'), code=307)
     return redirect(url_for('login'))
 
@@ -715,14 +716,14 @@ def settings(hero=None, tab="profile", choice="none"):
             if database.validate(hero.user.username, request.form['old_password']):
                 new_password = request.form['new_password']
                 user = hero.user
-                user.password = database.encrypt(new_password)
+                user.password = services.secrets.encrypt(new_password)
                 message = "Password changed!"
             else:
                 print("wrong password!")
                 message = "You entered the wrong password. Password change failed."
         elif request.form['type'] == "update_email":
             email = request.form['new_email']
-            hero.user.email = database.encrypt(email)
+            hero.user.email = services.secrets.encrypt(email)
             message = "Email address changed to: " + email
     return render_template('settings.html', hero=hero, user=hero.user, tab=tab, choice=choice, message=message)
 
