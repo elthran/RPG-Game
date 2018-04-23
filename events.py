@@ -6,8 +6,6 @@ if __name__ == "__main__":
     exit()  # prevents code from trying to run file afterwards.
 
 import datetime
-import pdb
-from pprint import pprint
 
 from sqlalchemy import (
     Column, Integer, String, DateTime, Boolean, ForeignKey, Table
@@ -15,10 +13,9 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import backref
-from sqlalchemy.orm import validates, column_property, deferred
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from base_classes import Base
+from models.base_classes import Base
 
 
 class Event(Base):

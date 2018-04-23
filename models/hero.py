@@ -3,10 +3,7 @@ if __name__ == "__main__":
     os.system("python3 -m pytest -vv rpg_game_tests/test_{}".format(__file__))
     exit()  # prevents code from trying to run file afterwards.
 
-import math
-import random
 import datetime
-import pdb
 
 from sqlalchemy import Column, Integer, String, DateTime, Boolean
 from sqlalchemy import ForeignKey
@@ -23,7 +20,7 @@ from inventory import Inventory
 from journal import Journal
 import specializations
 from session_helpers import SessionHoistMixin
-from base_classes import Base, DictHybrid, attribute_mapped_dict_hybrid
+from models.base_classes import Base, DictHybrid, attribute_mapped_dict_hybrid
 
 
 class Hero(SessionHoistMixin, Base):

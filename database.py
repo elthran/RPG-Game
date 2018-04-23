@@ -14,8 +14,6 @@ import datetime
 import random
 import os
 # Testing only
-import pdb
-from pprint import pprint
 
 
 from sqlalchemy import create_engine
@@ -29,23 +27,15 @@ import sqlalchemy.exc
 # What this actually means or does I have no idea but it is neccessary.
 # And I know how to use it.
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
-import base_classes
+from models import base_classes
 # Internal game modules
-from game import User, round_number_intelligently
-from inbox import Inbox, Message
-from attributes import Attribute
-from locations import Display
-from hero import Hero
+from game import round_number_intelligently
+from models.hero import Hero
 from abilities import Ability
-from specializations import Specialization, Archetype, Calling, Pantheon
 from locations import Location
 from items import Item
-from quests import Quest, QuestPath
+from models.quests import QuestPath
 from proficiencies import Proficiency
-from events import Trigger, Event
-from forum import Forum, Board, Thread
-from bestiary2 import MonsterTemplate
-from journal import Entry
 import prebuilt_objects
 
 from session_helpers import scoped_session, safe_commit_session

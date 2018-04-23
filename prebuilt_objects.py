@@ -1,20 +1,18 @@
 from locations import Location
-from abilities import Ability
 import specializations
-from game import User
-from hero import Hero
-from quests import Quest, QuestPath
+import models
+from models.hero import Hero
+from models.quests import Quest, QuestPath
 from items import (
-    OneHandedWeapon, Shield, TwoHandedWeapon, LegArmour, ChestArmour,
-    HeadArmour, FootArmour, ArmArmour, HandArmour, Ring, Consumable
+    OneHandedWeapon, Shield, TwoHandedWeapon, ChestArmour,
+    Ring, Consumable
 )
 from events import Trigger, Condition
 from random import choice # To create pre-built adjectives
-from forum import Forum, Board, Thread, Post
+from forum import Forum, Board
 from bestiary2 import MonsterTemplate
 
 # for testing
-import pdb
 
 """
 This module preloads all of its objects directly into the database or does
@@ -268,14 +266,14 @@ NOTE: password is set as plaintext here. It must (and currently is) hashed in da
 when prebuilt_objects are preloaded into the database.
 """
 ##########
-admin = User(username="admin", password="admin", is_admin=True)
+admin = models.accounts.Account(username="admin", password="admin", is_admin=True)
 admin.signature = "I am admin."
 admin.avatar = "1"
 admin.prestige = 500
 adminHero = Hero(name="Admin", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
 admin.heroes = [adminHero]
 
-marlen = User(username="marlen", password="brunner", is_admin=True)
+marlen = models.accounts.Account(username="marlen", password="brunner", is_admin=True)
 marlen.signature = "Insert some joke about Haldon here."
 marlen.avatar = "2"
 marlen.prestige = 500

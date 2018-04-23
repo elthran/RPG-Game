@@ -85,16 +85,12 @@ Considering:
 
 from sqlalchemy import Table, Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship, validates, column_property
-from sqlalchemy import orm
+from sqlalchemy.orm import relationship, validates
 from sqlalchemy.ext.orderinglist import ordering_list
 
-from base_classes import Base
+from models.base_classes import Base
 from events import HandlerMixin
 from factories import TemplateMixin
-import pdb
-from pprint import pprint
-
 
 quest_path_to_quest_association = Table(
     "quest_path_to_quest_association",

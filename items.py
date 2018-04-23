@@ -1,6 +1,4 @@
 # for testing
-from pprint import pprint
-import pdb
 
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import ForeignKey
@@ -10,7 +8,7 @@ from flask import render_template_string
 from factories import TemplateMixin
 import proficiencies
 from session_helpers import SessionHoistMixin, safe_commit_session
-from base_classes import Base, attribute_mapped_dict_hybrid
+from models.base_classes import Base, attribute_mapped_dict_hybrid
 """
 Item Specification:
     All hero specific attributes must be moved from the Template classes.

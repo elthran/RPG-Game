@@ -4,11 +4,9 @@ from sqlalchemy.orm import relationship
 from flask import render_template_string
 
 from factories import TemplateMixin
-from base_classes import Base
+from models.base_classes import Base
 
 # For testing
-from pprint import pprint
-import pdb
 
 
 ALL_PROFICIENCIES = {{ ALL_PROFICIENCIES }}

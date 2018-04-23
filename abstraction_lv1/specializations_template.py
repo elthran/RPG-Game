@@ -1,13 +1,10 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy import orm
-from flask import render_template_string
 
-from base_classes import Base
+from models.base_classes import Base
 from factories import TemplateMixin
 from build_code import normalize_attrib_name
-import pdb
 
 # This is a list of specializations. Your hero can have one of each type active at any time. There are 4 types of specs.
 # You get one basic spec which defines your basic character stats. Then you further choose an archetype (eg. Scoundrel -> Thief,

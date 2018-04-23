@@ -1,27 +1,28 @@
-from sqlalchemy import Column, Integer, String, Boolean
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
+import sqlalchemy as sa
+import sqlalchemy.orm as orm
 
-from base_classes import Base
+from models.base_classes import Base
 
 
 class Inbox(Base):
     __tablename__ = 'inbox'
 
-    id = Column(Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
 
     # Relationships
     # Each inbox has a single user. One to One (bidirectional).
-    user_id = Column(Integer, ForeignKey("user.id", ondelete="CASCADE"))
-    user = relationship("User", uselist=False, back_populates='inbox')
+    user_id = sa.Column(sa.Integer, sa.ForeignKey("user.id", ondelete="CASCADE"))
+    user = orm.relationship("User", uselist=False, back_populates='inbox')
 
     # Each inbox can have many sent messages One to Many
-    sent_messages = relationship("Message", back_populates='sender',
-                                 foreign_keys="[Message.sender_id]",
-                                 cascade="all, delete-orphan")
-    received_messages = relationship("Message", back_populates='receiver',
-                                     foreign_keys="[Message.receiver_id]",
-                                     cascade="all, delete-orphan")
+    sent_messages = orm.relationship(
+        "Message", back_populates='sender',
+        foreign_keys="[Message.sender_id]",
+        cascade="all, delete-orphan")
+    received_messages = orm.relationship(
+        "Message", back_populates='receiver',
+        foreign_keys="[Message.receiver_id]",
+        cascade="all, delete-orphan")
 
     def get_sent_messages(self):
         """Return a list of all sent messages.
@@ -65,20 +66,22 @@ class Inbox(Base):
 class Message(Base):
     __tablename__ = "message"
 
-    id = Column(Integer, primary_key=True)
-    content = Column(String(50))
-    unread = Column(Boolean)
+    id = sa.Column(sa.Integer, primary_key=True)
+    content = sa.Column(sa.String(50))
+    unread = sa.Column(sa.Boolean)
 
     # Relationships
     # Each user can send or receive multiple messages. One to Many (bi).
-    sender_id = Column(Integer, ForeignKey('inbox.id', ondelete="CASCADE"))
-    sender = relationship("Inbox", back_populates="sent_messages",
-                          foreign_keys="[Message.sender_id]")
-    receiver_id = Column(Integer, ForeignKey('inbox.id', ondelete="CASCADE"))
-    receiver = relationship("Inbox", back_populates="received_messages",
-                            foreign_keys="[Message.receiver_id]")
+    sender_id = sa.Column(sa.Integer, sa.ForeignKey('inbox.id', ondelete="CASCADE"))
+    sender = orm.relationship(
+        "Inbox", back_populates="sent_messages",
+        foreign_keys="[Message.sender_id]")
+    receiver_id = sa.Column(sa.Integer, sa.ForeignKey('inbox.id', ondelete="CASCADE"))
+    receiver = orm.relationship(
+        "Inbox", back_populates="received_messages",
+        foreign_keys="[Message.receiver_id]")
 
-    timestamp = Column(String(50))
+    timestamp = sa.Column(sa.String(50))
 
     def __init__(self, sender, receiver, content, time):
         """A message between two users with some content.

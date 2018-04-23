@@ -7,10 +7,8 @@ NOTE: every time I define a test I add it to the run_all function.
 
 I am using this tutorial https://docs.python.org/3.6/library/unittest.html
 """
-import pdb
 import unittest
 
-from base_classes import Base, BaseDict
 from database import EZDB
 from game import Hero
 from attributes import Attributes

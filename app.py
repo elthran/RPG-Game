@@ -36,7 +36,6 @@ from engine import Engine, game_clock, async_process, rest_key_timelock
 from forum import Board, Thread, Post
 from bestiary2 import create_monster, MonsterTemplate
 import services
-from database import EZDB
 
 # INIT AND LOGIN FUNCTIONS
 if 'liveweb' not in gethostname():  # Running on local machine.
@@ -46,7 +45,7 @@ if 'liveweb' not in gethostname():  # Running on local machine.
 else:  # Running on server which runs dotenv from WSGI file.
     database_url = os.environ.get('SERVER_DATABASE_URL')
 
-database = EZDB(database_url, debug=False)
+database = services.database.EZDB(database_url, debug=False)
 engine = Engine(database)
 
 # using SendGrid's Python Library

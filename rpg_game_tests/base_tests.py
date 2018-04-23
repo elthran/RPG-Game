@@ -9,12 +9,8 @@ I am using this tutorial https://docs.python.org/3.6/library/unittest.html
 '''
 from game import Hero
 
-from base_classes import Base, BaseDict
 from database import EZDB
-from base_classes import BaseItem, BaseDict
-import base_classes
-
-import pdb
+from models.base_classes import BaseItem, BaseDict
 
 import unittest
 

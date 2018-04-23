@@ -1,9 +1,7 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
-from sqlalchemy.orm import validates
-from sqlalchemy.ext.hybrid import hybrid_property
 
-from base_classes import Base
+from models.base_classes import Base
 
 
 class Achievements(Base):

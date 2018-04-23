@@ -3,7 +3,7 @@ import datetime
 from pprint import pformat
 
 from database import EZDB
-from game import User
+import models
 import locations
 
 """
@@ -65,11 +65,11 @@ class DatabaseTestCase(unittest.TestCase):
         """
         # I should be able to add a bunch of users from a text file.
         self.db.add_new_user('Marlen', 'Brunner')
-        user = self.db.session.query(User).get(1)
+        user = self.db.session.query(models.accounts.Account).get(1)
         str_user = user.pretty
         self.rebuild_instance()
 
-        user2 = self.db.session.query(User).get(1)
+        user2 = self.db.session.query(models.accounts.Account).get(1)
         self.assertEqual(user2.pretty, str_user)
 
     def test_get_user_id(self):

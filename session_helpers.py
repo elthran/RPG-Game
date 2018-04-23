@@ -1,9 +1,6 @@
-import pdb
 from functools import wraps
 
 from sqlalchemy.orm.exc import UnmappedInstanceError
-
-from base_classes import Base
 
 
 def scoped_session(f):

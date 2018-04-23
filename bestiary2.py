@@ -5,9 +5,8 @@
 #                                                                              #
 #//////////////////////////////////////////////////////////////////////////////#
 from sqlalchemy import Column, Integer, String, Boolean
-from random import randint, choice
 
-from base_classes import Base
+from models.base_classes import Base
 
 class MonsterTemplate(Base):
     __tablename__ = 'monster_template'

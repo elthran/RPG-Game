@@ -47,25 +47,21 @@ Project breakdown:
 9. Design event system link-in.
     -Journal entries should be populated by the occurrence of events
 """
-from datetime import datetime
 
 from flask import render_template_string
 from sqlalchemy import (
-    Column, Integer, String, DateTime, ForeignKey, Boolean, Table
+    Column, Integer, String, DateTime, ForeignKey
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import validates
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import orm
-from sqlalchemy.orm import column_property
-from sqlalchemy import select, and_
 from sqlalchemy.ext.orderinglist import ordering_list
 
-from base_classes import Base
+from models.base_classes import Base
 from achievements import Achievements
-from quests import QuestPath
+
+
 # For testing
-import pdb
 
 # journal_quest_path_association_table = Table(
 #     'journal_quest_path_association',

@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
-from base_classes import Base
+from models.base_classes import Base
 
 ALL_ATTRIBUTES = {{ ALL_ATTRIBUTES }}
 

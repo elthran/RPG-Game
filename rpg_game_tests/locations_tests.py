@@ -1,8 +1,7 @@
 import unittest
-from pprint import pprint
 import importlib
 
-from base_classes import Base
+from models.base_classes import Base
 from database import EZDB
 from locations import Location
 from game import Hero

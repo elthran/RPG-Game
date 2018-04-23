@@ -3,7 +3,6 @@ if __name__ == "__main__":
     os.system("python3 -m pytest -vv {}".format(__file__))
     exit()  # prevents code from trying to run file afterwards.
 
-import pdb
 import time
 from multiprocessing import Array
 
@@ -13,8 +12,8 @@ from . import GenericTestCase, Mock, db_execute_script
 from engine import Engine, async_process
 from locations import Location
 from events import Condition, Trigger
-from hero import Hero
-from quests import QuestPath, Quest
+from models.hero import Hero
+from models.quests import QuestPath, Quest
 
 
 @pytest.mark.incremental

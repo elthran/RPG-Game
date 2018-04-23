@@ -42,12 +42,10 @@ Ideas:
     long: /map/Map_Name/town/Town_Name/store/Store_Name
     short: /store/Store_name (basically the last part)
 """
-import warnings
-import pdb
 
 from sqlalchemy import Column, Integer, String, Table
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 from sqlalchemy import orm
 from sqlalchemy.ext.hybrid import hybrid_property
 # ###!IMPORTANT!####
@@ -55,7 +53,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 # Well ... ok, but for simplicity sake just pretend that that is true.
-from base_classes import Base
+from models.base_classes import Base
 
 
 class Display(Base):

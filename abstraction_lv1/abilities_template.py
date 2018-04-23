@@ -14,8 +14,7 @@ from flask import render_template_string
 import proficiencies
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 # Well ... ok, but for simplicity sake just pretend that that is true.
-from base_classes import Base, attribute_mapped_dict_hybrid
-import pdb
+from models.base_classes import Base, attribute_mapped_dict_hybrid
 
 ALL_ABILITIES = {{ ALL_ABILITIES }}
 
