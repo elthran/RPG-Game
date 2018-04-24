@@ -857,6 +857,7 @@ def atlas(hero=None, map_id=0):
     return render_template('journal.html', hero=hero, atlas=True, page_title=page_title,
                            all_maps=all_maps, display_map=display_map)  # return a string
 
+
 @app.route('/achievements/<achievement_id>')
 @login_required
 @uses_hero
@@ -881,6 +882,7 @@ def achievement_log(hero=None):
     return render_template('journal.html', hero=hero, achievement_log=True, page_title=page_title,
                            all_achievements=all_achievements, display_achievement=display_achievement)  # return a string
 
+
 @app.route('/forum/<board_id>/<thread_id>', methods=['GET', 'POST'])
 @login_required
 @uses_hero
@@ -901,28 +903,29 @@ def forum(hero=None, board_id=0, thread_id=0):
 
     if request.method == 'POST':
         form_type = request.form["form_type"]
-        if form_type == "new_board": # If starting new board
+        if form_type == "new_board":  # If starting new board
             board_name = request.form["board_name"]
             new_board = Board(board_name)
             current_forum.create_board(new_board)
-        elif form_type == "new_thread": # If starting new thread
+        elif form_type == "new_thread":  # If starting new thread
             thread_name = request.form["thread_name"]
             thread_description = request.form["thread_description"]
             thread_board = database.get_object_by_name("Board", request.form["thread_board"])
             new_thread = Thread(thread_name, hero.user.username, thread_description)
             thread_board.create_thread(new_thread)
-            if len(request.form["thread_post"]) > 0: # If they typed a new post, add it to the new thread
+            if len(request.form["thread_post"]) > 0:  # If they typed a new post, add it to the new thread
                 new_post = Post(request.form["thread_post"], hero.user)
                 new_thread.write_post(new_post)
         else: # If repyling
             post_content = request.form["post_content"]
             new_post = Post(post_content, hero.user)
             current_thread.write_post(new_post)
-            hero.user.prestige += 1 # Give the user prestige. It's used to track meta activities and is unrelated to gameplay
+            hero.user.prestige += 1  # Give the user prestige. It's used to track meta activities and is unrelated to gameplay
 
     return render_template('forum.html', hero=hero,
                            current_forum=current_forum, current_board=current_board, current_thread=current_thread,
                            page_title=page_title, get_author=database.get_user_by_username)  # return a string
+
 
 @app.route('/under_construction')
 @login_required
@@ -930,6 +933,7 @@ def forum(hero=None, board_id=0, thread_id=0):
 def under_construction(hero=None):
     page_title = "Under Construction"
     return render_template('layout.html', page_title=page_title, hero=hero)  # return a string
+
 
 @app.route('/map/<name>')
 @app.route('/town/<name>')
@@ -946,9 +950,10 @@ def move(name='', hero=None, location=None):
     found with the 'view page source' command in the browser window.
     """
     # pdb.set_trace()
-    hero.current_terrain = location.terrain # Set the hero's terrain to the terrain type of the place he just moved to.
+    # TODO move this to 'update_current_location'
+    hero.current_terrain = location.terrain  # Set the hero's terrain to the terrain type of the place he just moved to.
     if location.type == 'map':
-        # location.pprint() # Why do we have this?
+        # location.pprint() # Why do we have this? For debugging :P
         other_heroes = []
     else:
         other_heroes = hero.get_other_heroes_at_current_location()
@@ -962,6 +967,7 @@ def move(name='', hero=None, location=None):
         people_of_interest=other_heroes,
         places_of_interest=location.places_of_interest)
 
+
 # Currently runs blacksmith and marketplace
 @app.route('/store/<name>')
 @login_required
@@ -969,8 +975,11 @@ def move(name='', hero=None, location=None):
 @update_current_location
 def store(name, hero=None, location=None):
     # print(hero.current_city)
+    dialogue = None
+    items_for_sale = []
+
     if name == "Blacksmith":
-        dialogue = "I have the greatest armoury in all of Thornwall!" # This should be pulled from pre_built objects
+        dialogue = "I have the greatest armoury in all of Thornwall!"  # This should be pulled from pre_built objects
         items_for_sale = database.get_all_store_items()
     elif name == "Marketplace":
         dialogue = "I have trinkets from all over the world! Please take a look."
@@ -982,6 +991,7 @@ def store(name, hero=None, location=None):
                            dialogue=dialogue,
                            items_for_sale=items_for_sale,
                            page_title=location.display.page_title)
+
 
 # Currently runs old man's hut
 @app.route('/building/<name>')
@@ -1007,6 +1017,7 @@ def building(name='', hero=None, location=None):
         paragraph=location.display.paragraph,
         people_of_interest=other_heroes,
         places_of_interest=location.places_of_interest)
+
 
 @app.route('/barracks/<name>')
 @login_required
@@ -1037,20 +1048,20 @@ def barracks(name='', hero=None, location=None):
 
     return render_template('generic_location.html', hero=hero)
 
+
 # From /dungeon
 @app.route('/dungeon_entrance/<name>')
 @login_required
 @uses_hero
 @update_current_location
 def dungeon_entrance(name='', hero=None, location=None):
-    location.display.page_heading = " You are in the dungeon and exploring!"
     hero.journal.achievements.current_dungeon_floor = 0
     hero.current_dungeon_progress = 0
     hero.random_encounter_monster = False
-    explore_dungeon = database.get_object_by_name('Location', 'Explore Dungeon')
-    explore_dungeon.display.paragraph = "Take a step into the dungeon."
-    location.children = [explore_dungeon]
+    # explore_dungeon = database.get_object_by_name('Location', 'Explore Dungeon')
+    # location.children = [explore_dungeon]
     return render_template('generic_location.html', hero=hero, game=game)  # return a string
+
 
 # From /inside_dungeon
 @app.route('/explore_dungeon/<name>/<extra_data>')
@@ -1058,6 +1069,13 @@ def dungeon_entrance(name='', hero=None, location=None):
 @uses_hero
 @update_current_location
 def explore_dungeon(name='', hero=None, location=None, extra_data=None):
+
+    """
+    NOTE: @elthran You shouldn't modify location data as this will modify it for all heroes/users in the game.
+    Instead just pass this data to the template directly.
+    (Marlen)
+    """
+
     # For convenience
     location.display.page_heading = "Current Floor of dungeon: " + str(hero.journal.achievements.current_dungeon_floor)
     if extra_data == "Entering": # You just arrived into the dungeon

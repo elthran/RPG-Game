@@ -134,14 +134,24 @@ old_mans_hut.display.paragraph = "Nice to see you again kid. What do you need?"
 gate = Location('Village Gate', 'gate')
 town.children.append(gate)
 
+NUM_OF_DUNGEONS = 2
 # Child of Dungeon Entrance
-explore_dungeon = Location('Explore Dungeon', 'explore_dungeon')
-explore_dungeon.display.page_title = "Exploring"
+explorable_dungeons = []
+for n in range(NUM_OF_DUNGEONS):
+    explorable_dungeon = Location('Explore Dungeon{}'.format(n), 'explore_dungeon')
+    explorable_dungeon.display.page_title = "Exploring"
+    explorable_dungeons.append(explorable_dungeon)
+
 
 # Child of all "type == dungeon": Cave/Forest/etc.
-dungeon_entrance = Location('Dungeon Entrance', 'dungeon_entrance')
-dungeon_entrance.display.page_image = "generic_cave_entrance2.jpg"
-dungeon_entrance.children.append(explore_dungeon)
+dungeon_entrances = []
+for n in range(NUM_OF_DUNGEONS):
+    dungeon_entrance = Location('Dungeon Entrance{}'.format(n), 'dungeon_entrance')
+    dungeon_entrance.display.page_heading = "You are in the dungeon and exploring!"
+    dungeon_entrance.display.page_image = "generic_cave_entrance2.jpg"
+    dungeon_entrance.display.paragraph = "Take a step into the dungeon."
+    dungeon_entrance.children.append(explorable_dungeons[n])
+    dungeon_entrances.append(dungeon_entrance)
 
 cave = node_grid[2]
 cave.name = choice(adjective_list) + " Cave"
@@ -151,7 +161,7 @@ cave.update()
 cave.display.page_heading = "You are outside {}".format(cave.name)
 cave.display.page_image = "generic_cave_entrance.jpg"
 cave.display.paragraph = "There are many scary places to die within the cave. Have a look!"
-cave.children.append(dungeon_entrance)
+cave.children.append(dungeon_entrances[0])
 
 forest = node_grid[8]
 forest.name = choice(adjective_list) + " Forest"
@@ -161,7 +171,7 @@ forest.update()
 forest.display.page_heading = "You are outside {}".format(forest.name)
 forest.display.page_image = "generic_forest_entrance.jpg"
 forest.display.paragraph = "There are many scary places to die within the forest. Have a look!"
-forest.children.append(dungeon_entrance)
+forest.children.append(dungeon_entrances[1])
 
 node_grid[0].adjacent = [node_grid[1], node_grid[3], node_grid[5]]
 node_grid[1].adjacent = [node_grid[0], node_grid[2], node_grid[5]]
