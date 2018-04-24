@@ -365,4 +365,6 @@ all_monsters = [MonsterTemplate(name="Sewer Rat", species="Rat", species_plural=
                 ]
 
 game_monsters = [Hero(name="Sewer Rat", species="Rat", species_plural="Rats", level_max=10, cave=True, city=True)]
-game_monsters[0].monster = True
+
+for monster in game_monsters:
+    monster.is_monster = True

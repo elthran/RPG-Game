@@ -132,7 +132,8 @@ class EZDB:
                 prebuilt_objects.all_quests,
                 prebuilt_objects.all_specializations,
                 prebuilt_objects.all_forums,
-                prebuilt_objects.all_monsters]:
+                prebuilt_objects.all_monsters,
+                prebuilt_objects.game_monsters]:
             for obj in obj_list:
                 self.session.add(obj)
                 if isinstance(obj, User):
@@ -271,11 +272,14 @@ class EZDB:
 
     def get_all_heroes(self):
         """Return all Hero objects ordered by id."""
-        return self.session.query(Hero).order_by(Hero.id).all()
+        return self.session.query(Hero).filter_by(is_monster=False).order_by(Hero.id).all()
 
     def get_ability_by_id(self, ability_id):
         """Return an ability from its ID."""
         return self.session.query(Ability).get(ability_id)
+
+    def get_all_monsters(self):
+        return self.session.query(Hero).filter_by(is_monster=True).all()
 
     def get_all_store_items(self):
         """Return all items in the database ordered by name.
@@ -476,17 +480,17 @@ class EZDB:
         """
         if '.' not in attribute:
             if descending:
-                return self.session.query(Hero).order_by(desc(attribute)).all()
+                return self.session.query(Hero).filter_by(is_monster=False).order_by(desc(attribute)).all()
             else:
-                return self.session.query(Hero).order_by(attribute).all()
+                return self.session.query(Hero).filter_by(is_monster=False).order_by(attribute).all()
         elif attribute.startswith('user'):
             _, attribute = attribute.split('.')
             if descending:
                 return self.session.query(
-                    Hero).join(Hero.user).order_by(desc(attribute)).all()
+                    Hero).join(Hero.user).filter_by(is_monster=False).order_by(desc(attribute)).all()
             else:
                 return self.session.query(
-                    Hero).join(Hero.user).order_by(attribute).all()
+                    Hero).join(Hero.user).filter_by(is_monster=False).order_by(attribute).all()
         else:
             raise Exception("Trying to access an attribute that this code"
                             " does not accommodate.")

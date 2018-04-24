@@ -36,7 +36,7 @@ class Hero(SessionHoistMixin, Base):
     character_name = orm.synonym('name')
 
     # These needed for monsters.
-    monster = Column(Boolean)
+    is_monster = Column(Boolean)
     species = Column(String(50))
     species_plural = Column(String(50))
     maximum_level = Column(Integer)
@@ -295,7 +295,7 @@ class Hero(SessionHoistMixin, Base):
         self.journal = Journal()
 
         # Needed for monsters
-        self.monster = False
+        self.is_monster = False
         self.species = "Human"
         self.species_plural = "Humans"
         self.maximum_level = 99
