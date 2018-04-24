@@ -35,6 +35,14 @@ class Hero(SessionHoistMixin, Base):
     name = Column(String(50))  # Was nullable=False now it isn't. I hope that is a good idea.
     character_name = orm.synonym('name')
 
+    # These needed for monsters.
+    species = Column(String(50))
+    species_plural = Column(String(50))
+    maximum_level = Column(Integer)
+    cave = Column(Boolean)
+    city = Column(Boolean)
+    forest = Column(Boolean)
+
     background = Column(String(50)) # Temporary. It's replacing 'fathers job' for now
     age = Column(Integer)
     house = Column(String(50))
@@ -284,6 +292,14 @@ class Hero(SessionHoistMixin, Base):
 
         self.inventory = Inventory()
         self.journal = Journal()
+
+        # Needed for monsters
+        self.species = "Human"
+        self.species_plural = "Humans"
+        self.maximum_level = 99
+        self.cave = True
+        self.city = True
+        self.forest = True
 
         # Data and statistics
         self.age = 7
