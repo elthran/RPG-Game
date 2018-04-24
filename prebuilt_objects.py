@@ -64,6 +64,15 @@ starting_world.page_heading = "You are looking at the world map."
 starting_world.display.paragraph = "Be safe"
 starting_world.display.page_image = "htrae.jpg"
 
+"""
+Nodes used:
+    5 - Thornwall (town)
+    7 - Old Man's Hut (building)
+    2 - Cave (dungeon)
+    8 - Forest (dungeon)
+    4 - Outpost (town)
+"""
+
 node_grid = []
 for i in range(0, 12):
     node_grid.append(
@@ -77,6 +86,12 @@ town.type = 'town'
 town.terrain = 'city'
 town.update()
 
+town2 = node_grid[4]
+town2.name = "Outpost"
+town2.type = 'town'
+town2.terrain = 'city'
+town2.update()
+
 """
 town.display.places_of_interest=[
 ("/town/blacksmith", "Blacksmith", "Shops"),
@@ -88,13 +103,11 @@ town.display.places_of_interest=[
 ("/WorldMap/{}/{}".format(town.location_world.name, town.id), "World Map")
 ]
 """
-blacksmith = Location('Blacksmith', 'store')
-#blacksmith.children.append(Location('armoury', 'blacksmith'))
-#blacksmith.children.append(Location('weaponry', 'store'))
-marketplace = Location('Marketplace', 'store')
-#marketplace.children.append(Location('general', 'marketplace'))
-tavern = Location("Red Dragon Inn", 'tavern')
 
+# Town's children
+blacksmith = Location('Blacksmith', 'store')
+marketplace = Location('Marketplace', 'store')
+tavern = Location("Red Dragon Inn", 'tavern')
 barracks = Location('Barracks', 'barracks')
 spar = Location('Spar', 'spar')
 spar.display.page_title = "Sparring Room"
@@ -105,6 +118,10 @@ town.children.append(blacksmith)
 town.children.append(barracks)
 town.children.append(marketplace)
 town.children.append(tavern)
+
+# Outpost's children
+marketplace2 = Location('Marketplace2', 'store')
+town2.children.append(marketplace2)
 
 old_mans_hut = node_grid[7]
 old_mans_hut.name = "Old Man's Hut"
