@@ -66,10 +66,9 @@ def monster_generator(level):
     monster = Monster(*data, level=level)
     return monster
 
-def generate_monster(terrain=None):
-    #terrain = getattr(MonsterTemplate, terrain)
-    #monsters = database.session.query(MonsterTemplate).filter(terrain == True).all()
-    return Hero(name="monsterBoy")
+def generate_monster(hero, monsters):
+    #monsters = database.get_all_monsters(hero.current_terrain)    THIS SHOULD RUN AND "MONSTERS" SHOULDN'T BE PASSED IN AS A PARAMETER
+    return monsters[0]
 
 class NPC(object):
     def __init__(self, id, name, race, age):

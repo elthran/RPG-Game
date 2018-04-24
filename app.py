@@ -605,7 +605,12 @@ def display_user_page(page_type, page_detail, hero=None):
 @app.route('/global_chat', methods=['GET', 'POST'])
 @uses_hero
 def global_chat(hero=None):
-    monsters = database.get_all_monsters()
+
+    monsters = database.get_all_monsters(hero)
+    """
+    terrain = getattr(Hero, hero.current_terrain)
+    monsters = database.session.query(Hero).filter(is_monster == True, terrain == True).all()
+    """
     for monster in monsters:
         print(monster.name)
     if request.method == 'POST':
