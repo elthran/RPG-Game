@@ -363,3 +363,6 @@ all_monsters = [MonsterTemplate(name="Sewer Rat", species="Rat", species_plural=
                         forest=True,
                         agility=1.5, charisma=0, divinity=0.1, resilience=1.5, fortuity=1, quickness=1.7, willpower=0.5, brawn=1.5, vitality=0.8, intellect=0)
                 ]
+
+game_monsters = [Hero(name="Sewer Rat", species="Rat", species_plural="Rats", level_max=10, cave=True, city=True)]
+game_monsters[0].monster = True

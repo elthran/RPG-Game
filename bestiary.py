@@ -67,30 +67,9 @@ def monster_generator(level):
     return monster
 
 def generate_monster(terrain=None):
-    terrain = getattr(MonsterTemplate, terrain)
-    monsters = database.session.query(MonsterTemplate).filter(terrain == True).all()
-    print(monsters)
+    #terrain = getattr(MonsterTemplate, terrain)
+    #monsters = database.session.query(MonsterTemplate).filter(terrain == True).all()
     return Hero(name="monsterBoy")
-"""
-all_monsters = database.session.query(MonsterTemplate).filter().all()
-display_monster = database.get_object_by_id("MonsterTemplate", int(monster_id))
-
-bestiary_data = [("Feral Dog", archetypes["wolf"]),
-                 ("Giant Rat", archetypes["goblin"]),
-                 ("Poisonous Spider", archetypes["spider"])]
-
-all_monsters = [MonsterTemplate(name="Sewer Rat", species="Rat", species_plural="Rats", level_max=10, experience_rewarded=1, level_modifier=0.5,
-                        cave=True, city=True,
-                        agility=1.5, charisma=0, divinity=0.1, resilience=1.2, quickness=1.7, willpower=0.5, brawn=0.9, vitality=0.8, intellect=0),
-                MonsterTemplate(name="Rabid Dog", species="Dog", species_plural="Dogs", level_max=20, experience_rewarded=2,
-                        forest=True,
-                        agility=1.5, charisma=0, divinity=0.1, resilience=1.5, fortuity=1, quickness=1.7, willpower=0.5, brawn=1.5, vitality=0.8, intellect=0)
-                ]
-
-"""
-
-
-""" Don't bother looking below here"""
 
 class NPC(object):
     def __init__(self, id, name, race, age):

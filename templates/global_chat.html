@@ -4,6 +4,9 @@
 {% block block1 %}
 <h1>Global Chat Room</h1>
 {{ monster }}
+{% for monster in monsters %}
+{{ monster }}
+{% endfor %}
 <form method="post" action="" autocomplete="off">
 	<input type="text" name="message" value="">
 	<input type="submit" value="Send">

@@ -635,7 +635,7 @@ def global_chat(hero=None):
             game.global_chat = game.global_chat[1:]
         return render_template('global_chat.html', hero=hero, chat=game.global_chat, users_in_chat=game.global_chat_user_list)
     return render_template('global_chat.html', page_title="Chat", hero=hero, chat=game.global_chat, users_in_chat=game.global_chat_user_list,
-                           monster=monster)
+                           monster=monster, monsters=game_monsters)
 
 
 @app.route('/inbox/<outbox>', methods=['GET', 'POST'])
