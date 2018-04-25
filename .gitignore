@@ -9,4 +9,4 @@ static/database.db-journal
 .cache/
 templates/desktop.ini
 .pytest_cache/
-config.py
+private_config.py

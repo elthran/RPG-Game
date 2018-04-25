@@ -14,7 +14,7 @@ import werkzeug.serving
 
 from models import events
 from services.session_helpers import scoped_session
-import config
+import private_config
 
 
 class Engine:
@@ -69,7 +69,7 @@ def game_clock(database):
     """Run the update all heroes code every x seconds."""
     if not werkzeug.serving.is_running_from_reloader():
         while True:
-            time.sleep(config.UPDATE_INTERVAL)
+            time.sleep(private_config.UPDATE_INTERVAL)
             database.update_time_all_heroes()
 
 

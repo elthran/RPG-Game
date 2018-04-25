@@ -4,14 +4,14 @@ import hashlib
 
 import bcrypt
 
-import config
+import private_config
 
 
 def encrypt(s):
     """Encrypt a string with the builtin hash cost."""
     return bcrypt.hashpw(
         base64.b64encode(hashlib.sha256(s.encode()).digest()),
-        bcrypt.gensalt(config.PASSWORD_HASH_COST))
+        bcrypt.gensalt(private_config.PASSWORD_HASH_COST))
 
 
 def check_cypher(plain, cypher):

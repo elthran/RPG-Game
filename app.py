@@ -33,10 +33,12 @@ from engine import async_process, rest_key_timelock
 from models.forum import Board, Thread, Post
 from models.bestiary2 import create_monster, MonsterTemplate
 import services
+import models
 
+# For testing
 from models.hero import Hero
-pdb.set_trace()
-# engine = Engine(database)
+
+engine = Engine(database)
 
 # Disable will need to be restructured (Marlen)
 # initialization
@@ -46,14 +48,7 @@ game = Game()
 def create_app():
     # create the application object
     app = Flask(__name__)
-
-    # Should replace on server with custom (not pushed to github).
-    # import os
-    # os.urandom(24)
-    # '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
-    #app.config.from_object('config')
-    app.config.from_object('config')
-    app.secret_key = os.environ.get('SECRET_KEY')
+    app.config.from_object('private_config')
 
     # async_process(game_clock, args=(database,))
     return app

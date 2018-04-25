@@ -10,7 +10,7 @@ import models
 # from session_helpers import scoped_session, safe_commit_session
 import services
 
-import config
+import private_config
 
 # Constants#
 Session = sa.orm.sessionmaker()
@@ -135,9 +135,9 @@ class EZDB:
 
 # INIT AND LOGIN FUNCTIONS
 if 'liveweb' not in socket.gethostname():  # Running on local machine.
-    database_url = config.LOCAL_DATABASE_URL
+    database_url = private_config.LOCAL_DATABASE_URL
 else:  # Running on server which runs dotenv from WSGI file.
-    database_url = config.SERVER_DATABASE_URL
+    database_url = private_config.SERVER_DATABASE_URL
 
 
 ezdb = EZDB(database_url, debug=False)
