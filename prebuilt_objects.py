@@ -361,3 +361,7 @@ game_monsters = [Hero(name="Sewer Rat", species="Rat", species_plural="Rats", le
 for i in range(len(game_monsters)):
     game_monsters[i].is_monster = True
     game_monsters[i].monster_id = i+1
+    if game_monsters[i].name == "Sewer Rat":
+        game_monsters[i].base_proficiencies.poison_chance.base = 70
+        game_monsters[i].base_proficiencies.poison_duration.base = 2
+        game_monsters[i].base_proficiencies.poison_amount.base = 1
