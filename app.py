@@ -607,12 +607,9 @@ def display_user_page(page_type, page_detail, hero=None):
 def global_chat(hero=None):
 
     monsters = database.get_all_monsters(hero)
-    """
-    terrain = getattr(Hero, hero.current_terrain)
-    monsters = database.session.query(Hero).filter(is_monster == True, terrain == True).all()
-    """
-    for monster in monsters:
-        print(monster.name)
+    monster = generate_monster(hero, monsters)
+    print(monster.name)
+
     if request.method == 'POST':
         message = request.form["message"]
         # THERE MUST BE A BETTER WAY TO FORMAT THE TIME
@@ -1085,9 +1082,9 @@ def explore_dungeon(name='', hero=None, location=None, extra_data=None):
     """
 
     # For convenience
-    location.display.page_heading = "Current Floor of dungeon: " + str(hero.journal.achievements.current_dungeon_floor)
+    #location.display.page_heading = "Current Floor of dungeon: " + str(hero.journal.achievements.current_dungeon_floor)
     if extra_data == "Entering": # You just arrived into the dungeon
-        location.display.page_heading += "You explore deeper into the dungeon!"
+        #location.display.page_heading += "You explore deeper into the dungeon!"
         page_links = [("Walk deeper into the", "/explore_dungeon/Explore%20Dungeon/None", "dungeon", ".")]
         return render_template('dungeon_exploring.html', hero=hero, game=game, page_links=page_links)
     if extra_data == "Item":
@@ -1096,14 +1093,15 @@ def explore_dungeon(name='', hero=None, location=None, extra_data=None):
         # I think you need to use a different order of operations.
         # Like put the "add item" after the "pick up item" part
         discovered_item = database.get_random_item()
-        location.display.page_heading = "You find an item in the dungeon! It's a " + discovered_item.name
+        #location.display.page_heading = "You find an item in the dungeon! It's a " + discovered_item.name
         hero.inventory.add_item(discovered_item)
         page_links = [("Pick up the ", "/explore_dungeon/Explore%20Dungeon/None", "item", ".")]
         return render_template('dungeon_exploring.html', hero=hero, game=game, page_links=page_links)
     encounter_chance = randint(0, 100)
     if hero.random_encounter_monster: # You have a monster waiting for you from before
-        location.display.page_heading += "The monster paces in front of you."
-        enemy = monster_generator(hero.journal.achievements.current_dungeon_floor + 1) # This should be a saved monster and not re-generated :(
+        #location.display.page_heading += "The monster paces in front of you."
+        monsters = database.get_all_monsters(hero) # This should be a saved monster and not re-generated :(
+        monster = generate_monster(hero, monsters)
         page_links = [("Attack the ", "/battle/monster", "monster", "."),
                       ("Attempt to ", "/dungeon_entrance/Dungeon%20Entrance", "flee", ".")]
     else: # You continue exploring
@@ -1113,31 +1111,23 @@ def explore_dungeon(name='', hero=None, location=None, extra_data=None):
             if hero.journal.achievements.current_dungeon_floor > hero.journal.achievements.deepest_dungeon_floor:
                 hero.journal.achievements.deepest_dungeon_floor = hero.journal.achievements.current_dungeon_floor
             hero.journal.achievements.current_dungeon_floor_progress = 0
-            location.display.page_heading = "You descend to a deeper level of the dungeon!! Current Floor of dungeon: " + str(hero.journal.achievements.current_dungeon_floor)
+            #location.display.page_heading = "You descend to a deeper level of the dungeon!! Current Floor of dungeon: " + str(hero.journal.achievements.current_dungeon_floor)
             page_links = [("Start ", "/explore_dungeon/Explore%20Dungeon/None", "exploring", " this level of the dungeon.")]
         elif encounter_chance > 35: # You find a monster! Oh no!
-            # Not sure how to move the session query to the database as I need to pull the terrain attribute first
-            terrain = getattr(MonsterTemplate, hero.current_terrain)
-            monsters = database.session.query(MonsterTemplate).filter(terrain == True).all()
-            m = choice(monsters)  # Randomly choose a monster from the list
-            monster = create_monster(name=m.name, level=hero.age,
-                                     agility=m.agility, charisma=m.charisma, divinity=m.divinity, resilience=m.resilience,
-                                     fortuity=m.fortuity, pathfinding=m.pathfinding, quickness=m.quickness, willpower=m.willpower,
-                                     brawn=m.brawn, survivalism=m.survivalism, vitality=m.vitality, intellect=m.intellect)
-            print("If you were running the new bestiary code, you would be fighting a " + monster.name + " (level " + str(monster.level) + "), because you are in terrain type " + hero.current_terrain + ".")
+            monsters = database.get_all_monsters(hero)
+            monster = generate_monster(hero, monsters)
 
-            location.display.page_heading += "You come across a terrifying monster lurking in the shadows."
-            enemy = monster_generator(hero.journal.achievements.current_dungeon_floor+1)
+            #location.display.page_heading += "You come across a terrifying monster lurking in the shadows."
             hero.current_dungeon_monster = True
             page_links = [("Attack the ", "/battle/monster", "monster", "."),
                           ("Attempt to ", "/dungeon_entrance/Dungeon%20Entrance", "flee", ".")]
         elif encounter_chance > 15: # You find an item!
-            location.display.page_heading += "You find something shiny in a corner of the dungeon."
+            #location.display.page_heading += "You find something shiny in a corner of the dungeon."
             page_links = [("", "/explore_dungeon/Explore%20Dungeon/Item", "Investigate", " the light's source.")]
         else:
-            location.display.page_heading += " You explore deeper into the dungeon!"
+            #location.display.page_heading += " You explore deeper into the dungeon!"
             page_links = [("Walk deeper into the", "/explore_dungeon/Explore%20Dungeon/None", "dungeon", ".")]
-    location.display.page_heading += " Current progress on this floor: " + str(hero.journal.achievements.current_dungeon_floor_progress)
+    #location.display.page_heading += " Current progress on this floor: " + str(hero.journal.achievements.current_dungeon_floor_progress)
     return render_template('dungeon_exploring.html', hero=hero, game=game, page_links=page_links)  # return a string
 
 # From /barracks
@@ -1225,12 +1215,13 @@ def arena(name='', hero=None, location=None):
 def battle(enemy_user=None, hero=None):
     page_links = [("Return to your ", "/home", "profile", " page.")]
     if enemy_user == "monster": # Ideally if this is an integer then search for a monster with that ID.
-        pass
+        monsters = database.get_all_monsters(hero)
+        enemy = generate_monster(hero, monsters)
     else:   # If it's not an integer, then it's a username. Search for that user's hero.
         enemy = database.fetch_hero_by_username(enemy_user)
         # enemy.login_alerts += "You have been attacked!-"     This will be changed to the new notification system.
-        enemy.experience_rewarded = enemy.age # For now you just get 1 experience for each level the other hero was
-        enemy.items_rewarded = []   # Currently you get no items for killing another user
+    enemy.experience_rewarded = enemy.age  # For now you just get 1 experience for each level the other hero was
+    enemy.items_rewarded = []  # Currently you get no items for killing another user
     battle_log = combat_simulator.battle_logic(hero, enemy) # Not sure if the combat sim should update the database or return the heros to be updated here
     hero.current_dungeon_monster = False # Whether you win or lose, the monster will now be gone.
     if hero.base_proficiencies['health'].current == 0: # First see if the player died.
@@ -1243,7 +1234,7 @@ def battle(enemy_user=None, hero=None):
             enemy.journal.achievements.player_kills += 1
             pass
     else:  # Ok, the hero is not dead. Currently that means he won! Since we don't have ties yet.
-        experience_gained = str(hero.gain_experience(enemy.experience_rewarded)) # This works PERFECTLY as intended!
+        experience_gained = str(hero.gain_experience(3)) # Should be something like enemy.experience_rewarded
         if enemy_user == "monster": # This needs updating. If you killed a monster then the next few lines should differ from a user
             hero.journal.achievements.monster_kills += 1
             pass
@@ -1252,7 +1243,7 @@ def battle(enemy_user=None, hero=None):
             enemy.journal.achievements.deaths += 1  # Make sure they get their death recorded!
             location = database.get_object_by_name('Location', enemy.last_city.name) # Send them to their last visited city
             enemy.current_location = location
-        if len(enemy.items_rewarded) > 0: # Give the hero any items earned! This probably should be completely redone.
+        if len(enemy.items_rewarded) > 0:
             for item in enemy.items_rewarded:
                 if not any(items.name == item.name for items in hero.inventory):
                     hero.inventory.append(item)

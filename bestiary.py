@@ -67,7 +67,7 @@ def monster_generator(level):
     return monster
 
 def generate_monster(hero, monsters):
-    #monsters = database.get_all_monsters(hero.current_terrain)    THIS SHOULD RUN AND "MONSTERS" SHOULDN'T BE PASSED IN AS A PARAMETER
+    #monsters = database.get_all_monsters(hero)    THIS SHOULD RUN AND "MONSTERS" SHOULDN'T BE PASSED IN AS A PARAMETER
     return monsters[0]
 
 class NPC(object):
