@@ -1218,6 +1218,8 @@ def battle(enemy_user=None, hero=None):
     enemy.experience_rewarded = enemy.age  # For now you just get 1 experience for each level the other hero was
     enemy.items_rewarded = []  # Currently you get no items for killing another user
     battle_log = combat_simulator.battle_logic(hero, enemy) # Not sure if the combat sim should update the database or return the heros to be updated here
+    if enemy_user == "monster":
+        enemy.base_proficiencies['health'].current = enemy.base_proficiencies['health'].final
     hero.current_dungeon_monster = False # Whether you win or lose, the monster will now be gone.
     if hero.base_proficiencies['health'].current == 0: # First see if the player died.
         location = database.get_object_by_name('Location', hero.last_city.name) # Return hero to last visited city
@@ -1232,7 +1234,6 @@ def battle(enemy_user=None, hero=None):
         experience_gained = str(hero.gain_experience(3)) # Should be something like enemy.experience_rewarded
         if enemy_user == "monster": # This needs updating. If you killed a monster then the next few lines should differ from a user
             hero.journal.achievements.monster_kills += 1
-            pass
         else: # Ok, you killed a user!
             hero.journal.achievements.player_kills += 1  # You get a player kill score!
             enemy.journal.achievements.deaths += 1  # Make sure they get their death recorded!
