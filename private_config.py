@@ -15,7 +15,7 @@ NOTE: this file should be hidden and added to .gitignore!
 # MAIL_SUPPRESS_SEND : default app.testing
 # MAIL_ASCII_ATTACHMENTS : default False
 
-SENDGRID_API_KEY = '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'
+SENDGRID_API_KEY = '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'
 #NOTE: I should modify the database keys at some point too.
 LOCAL_DATABASE_URL = 'mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@localhost/rpg_database'
 SERVER_DATABASE_URL = 'mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@elthran.mysql.pythonanywhere-services.com/elthran$rpg_database'
@@ -23,7 +23,7 @@ SERVER_DATABASE_URL = 'mysql+mysqldb://elthran:7ArQMuTUSoxXqEfzYfUR@elthran.mysq
 # import os
 # os.urandom(24)
 # '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
-SECRET_KEY = '\xb7W\x87I5E\xffz\xf6$\xd4\xc6W\xc0"\xaaC\x81\xc0\x04F\x02P\x01'
+SECRET_KEY = ']\xf3\xa44\xdc++\x9e\xdd\xa3OR\xd2N\xfc,\x00o\xb6S8]\xcdQ'
 PASSWORD_HASH_COST = 10
 
 # UPDATE_INTERVAL = 3600  # One endurance per hour.
