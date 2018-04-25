@@ -278,10 +278,15 @@ class EZDB:
         """Return an ability from its ID."""
         return self.session.query(Ability).get(ability_id)
 
-    def get_all_monsters(self, hero):
-        terrain = getattr(Hero, hero.current_terrain)
-        print("looking in database for: ", terrain)
-        return self.session.query(Hero).filter_by(is_monster=True).filter(terrain == True).all()
+    def get_all_monsters(self, hero=None):
+        if hero == None:
+            return self.session.query(Hero).filter_by(is_monster=True).all()
+        else:
+            terrain = getattr(Hero, hero.current_terrain)
+            return self.session.query(Hero).filter_by(is_monster=True).filter(terrain == True).all()
+
+    def get_monster_by_id(self, id):
+        return self.session.query(Hero).filter_by(monster_id=id).one()
 
     def get_all_store_items(self):
         """Return all items in the database ordered by name.

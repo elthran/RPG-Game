@@ -367,5 +367,6 @@ all_monsters = [MonsterTemplate(name="Sewer Rat", species="Rat", species_plural=
 game_monsters = [Hero(name="Sewer Rat", species="Rat", species_plural="Rats", level_max=10, forest=True, city=True),
                  Hero(name="Giant Spider", species="Rat", species_plural="Rats", level_max=10, forest=True, city=False)]
 
-for monster in game_monsters:
-    monster.is_monster = True
+for i in range(len(game_monsters)):
+    game_monsters[i].is_monster = True
+    game_monsters[i].monster_id = i+1

@@ -43,6 +43,7 @@ class Hero(SessionHoistMixin, Base):
     cave = Column(Boolean)
     city = Column(Boolean)
     forest = Column(Boolean)
+    monster_id = Column(Integer)
 
     background = Column(String(50)) # Temporary. It's replacing 'fathers job' for now
     age = Column(Integer)
@@ -302,6 +303,7 @@ class Hero(SessionHoistMixin, Base):
         self.cave = True
         self.city = True
         self.forest = True
+        self.monster_id = 0
 
         # Data and statistics
         self.age = 7

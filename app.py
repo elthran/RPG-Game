@@ -605,11 +605,6 @@ def display_user_page(page_type, page_detail, hero=None):
 @app.route('/global_chat', methods=['GET', 'POST'])
 @uses_hero
 def global_chat(hero=None):
-
-    monsters = database.get_all_monsters(hero)
-    monster = generate_monster(hero, monsters)
-    print(monster.name)
-
     if request.method == 'POST':
         message = request.form["message"]
         # THERE MUST BE A BETTER WAY TO FORMAT THE TIME
@@ -819,11 +814,11 @@ def quest_log(hero=None):
 @uses_hero
 def bestiary(hero=None, monster_id=0):
     page_title = "Bestiary"
-    all_monsters = database.session.query(MonsterTemplate).filter().all()
+    all_monsters = database.get_all_monsters()
     if monster_id == "0":
         display_monster = None
     else:
-        display_monster = database.get_object_by_id("MonsterTemplate", int(monster_id))
+        display_monster = database.get_monster_by_id(monster_id)
     return render_template('journal.html', hero=hero, bestiary=True, page_title=page_title,
         all_monsters=all_monsters, display_monster=display_monster)
 
