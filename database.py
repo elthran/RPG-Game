@@ -32,13 +32,13 @@ from models import base_classes
 from game import round_number_intelligently
 from models.hero import Hero
 from abilities import Ability
-from locations import Location
-from items import Item
+from models.locations import Location
+from models.items import Item
 from models.quests import QuestPath
-from proficiencies import Proficiency
+from models.proficiencies import Proficiency
 import prebuilt_objects
 
-from session_helpers import scoped_session, safe_commit_session
+from services.session_helpers import scoped_session, safe_commit_session
 import services
 
 # Constants#

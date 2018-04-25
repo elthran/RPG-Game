@@ -11,8 +11,8 @@ class Inbox(Base):
 
     # Relationships
     # Each inbox has a single user. One to One (bidirectional).
-    user_id = sa.Column(sa.Integer, sa.ForeignKey("user.id", ondelete="CASCADE"))
-    user = orm.relationship("User", uselist=False, back_populates='inbox')
+    account_id = sa.Column(sa.Integer, sa.ForeignKey("account.id", ondelete="CASCADE"))
+    account = orm.relationship("Account", uselist=False, back_populates='inbox')
 
     # Each inbox can have many sent messages One to Many
     sent_messages = orm.relationship(

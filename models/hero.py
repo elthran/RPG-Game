@@ -15,11 +15,11 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from game import round_number_intelligently
 import attributes
 import abilities
-import proficiencies
-from inventory import Inventory
-from journal import Journal
+from models import proficiencies
+from models.inventory import Inventory
+from models.journal import Journal
 import specializations
-from session_helpers import SessionHoistMixin
+from services.session_helpers import SessionHoistMixin
 from models.base_classes import Base, DictHybrid, attribute_mapped_dict_hybrid
 
 
@@ -64,8 +64,8 @@ class Hero(SessionHoistMixin, Base):
     # Relationships
     # User to Hero. One to many. Ordered!
     # Note deleting the user deletes all their heroes!
-    user_id = Column(Integer, ForeignKey('user.id', ondelete="CASCADE"))
-    user = relationship("User", back_populates='heroes')
+    account_id = Column(Integer, ForeignKey('account.id', ondelete="CASCADE"))
+    account = relationship("Account", back_populates='heroes')
 
     # Many heroes -> one map/world. (bidirectional)
     map_id = Column(Integer, ForeignKey('location.id', ondelete="SET NULL"))

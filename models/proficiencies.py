@@ -9,7 +9,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from flask import render_template_string
 
-from factories import TemplateMixin
+from services.factories import TemplateMixin
 from models.base_classes import Base
 
 # For testing

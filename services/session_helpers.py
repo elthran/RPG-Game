@@ -1,6 +1,12 @@
 from functools import wraps
+import contextlib
 
+import sqlalchemy as sa
+import sqlalchemy.orm
 from sqlalchemy.orm.exc import UnmappedInstanceError
+
+# configure Session class with desired options
+Session = sa.orm.sessionmaker()
 
 
 def scoped_session(f):
@@ -64,3 +70,17 @@ class SessionHoistMixin:
     @property
     def session(self):
         return self._sa_instance_state.session
+
+
+@contextlib.contextmanager
+def session_scope(Session):
+    """Provide a transactional scope around a series of operations."""
+    session = Session()
+    try:
+        yield session
+        session.commit()
+    except:
+        session.rollback()
+        raise
+    finally:
+        session.close()

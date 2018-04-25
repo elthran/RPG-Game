@@ -89,8 +89,8 @@ from sqlalchemy.orm import relationship, validates
 from sqlalchemy.ext.orderinglist import ordering_list
 
 from models.base_classes import Base
-from events import HandlerMixin
-from factories import TemplateMixin
+from models import events
+from services.factories import TemplateMixin
 
 quest_path_to_quest_association = Table(
     "quest_path_to_quest_association",
@@ -101,7 +101,7 @@ quest_path_to_quest_association = Table(
 )
 
 
-class QuestPath(TemplateMixin, HandlerMixin, Base):
+class QuestPath(TemplateMixin, events.HandlerMixin, Base):
     """A list of sequential quests that must be completed in order.
 
     This path can spawn a new path at any point ... a new path may or may not

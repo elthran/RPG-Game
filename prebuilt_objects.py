@@ -1,16 +1,16 @@
-from locations import Location
+from models.locations import Location
 import specializations
 import models
 from models.hero import Hero
 from models.quests import Quest, QuestPath
-from items import (
+from models.items import (
     OneHandedWeapon, Shield, TwoHandedWeapon, ChestArmour,
     Ring, Consumable
 )
-from events import Trigger, Condition
+from models.events import Trigger, Condition
 from random import choice # To create pre-built adjectives
-from forum import Forum, Board
-from bestiary2 import MonsterTemplate
+from models.forum import Forum, Board
+from models.bestiary2 import MonsterTemplate
 
 # for testing
 
@@ -262,7 +262,7 @@ default_quest_paths = [
 ##########
 # Users (and heroes)
 """
-NOTE: password is set as plaintext here. It must (and currently is) hashed in database.py
+NOTE: password is set as plaintext here. It must (and currently is) hashed in connect_to_database.py
 when prebuilt_objects are preloaded into the database.
 """
 ##########

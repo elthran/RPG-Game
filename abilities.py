@@ -17,7 +17,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import orm
 from flask import render_template_string
 
-import proficiencies
+from models import proficiencies
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 # Well ... ok, but for simplicity sake just pretend that that is true.
 from models.base_classes import Base, attribute_mapped_dict_hybrid

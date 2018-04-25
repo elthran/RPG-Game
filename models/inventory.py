@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from models.base_classes import Base
 
-from session_helpers import SessionHoistMixin, safe_commit_session
+from services.session_helpers import SessionHoistMixin, safe_commit_session
 
 
 class Inventory(SessionHoistMixin, Base):

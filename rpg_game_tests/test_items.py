@@ -1,13 +1,10 @@
 import pytest
-import pdb
-from pprint import pprint
 
-from database import EZDB
 # from hero import Hero
 # from inventory import Inventory
 from . import GenericTestCase
 
-from items import Item, OneHandedWeapon, Ring
+from models.items import Item, OneHandedWeapon, Ring
 
 
 """

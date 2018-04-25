@@ -6,7 +6,7 @@ if __name__ == "__main__":
 from . import GenericTestCase, db_execute_script
 
 from models.hero import Hero
-from items import Ring
+from models.items import Ring
 
 
 class TestHero(GenericTestCase):

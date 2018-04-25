@@ -1,5 +1,6 @@
 import sqlalchemy as sa
-import sqlalchemy.orm as orm
+import sqlalchemy.orm
+
 from . import base_classes
 from . import inbox
 
@@ -9,7 +10,7 @@ class Account(base_classes.Base):
 
     This is database ready and connects to the Hero class.
     """
-    __tablename__ = 'user'
+    __tablename__ = 'account'
 
     id = sa.Column(sa.Integer, primary_key=True)
     username = sa.Column(sa.String(50), unique=True, nullable=False)
@@ -25,19 +26,18 @@ class Account(base_classes.Base):
 
     # Relationships
     # Each user can have one inbox. One to One (bidirectional).
-    inbox = orm.relationship("Inbox", back_populates="user", uselist=False,
-                         cascade="all, delete-orphan")
+    inbox = sa.orm.relationship("Inbox", back_populates="account", uselist=False, cascade="all, delete-orphan")
 
     # Many heroes -> one user
-    heroes = orm.relationship(
+    heroes = sa.orm.relationship(
         "Hero", order_by='Hero.character_name',
-        back_populates='user',
+        back_populates='account',
         cascade="all, delete-orphan")
 
     # Many to One with Posts
-    posts = orm.relationship(
+    posts = sa.orm.relationship(
         "Post", order_by="Post.timestamp.desc()",
-        back_populates="user", cascade="all, delete-orphan")
+        back_populates="account", cascade="all, delete-orphan")
 
     def __init__(self, username, password, email='', timestamp=None, is_admin=False):
         """Create a new user object.

@@ -5,9 +5,9 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from flask import render_template_string
 
-from factories import TemplateMixin
-import proficiencies
-from session_helpers import SessionHoistMixin, safe_commit_session
+from services.factories import TemplateMixin
+from models import proficiencies
+from services.session_helpers import SessionHoistMixin, safe_commit_session
 from models.base_classes import Base, attribute_mapped_dict_hybrid
 """
 Item Specification:

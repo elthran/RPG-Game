@@ -6,11 +6,8 @@
 # ///////////////////////////////////////////////////////////////////////////#
 
 import pdb  # For testing!
-from pprint import pprint  # For testing!
 from functools import wraps
-from random import choice
 import os
-import time
 from math import ceil
 from socket import gethostname
 
@@ -32,25 +29,14 @@ from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
 # _before_ any of them are used.
-from engine import Engine, game_clock, async_process, rest_key_timelock
-from forum import Board, Thread, Post
-from bestiary2 import create_monster, MonsterTemplate
+from engine import async_process, rest_key_timelock
+from models.forum import Board, Thread, Post
+from models.bestiary2 import create_monster, MonsterTemplate
 import services
 
-# INIT AND LOGIN FUNCTIONS
-if 'liveweb' not in gethostname():  # Running on local machine.
-    import dotenv
-    dotenv.load_dotenv(os.path.join(os.path.dirname(os.path.realpath(__file__)), '.env'))
-    database_url = os.environ.get('LOCAL_DATABASE_URL')
-else:  # Running on server which runs dotenv from WSGI file.
-    database_url = os.environ.get('SERVER_DATABASE_URL')
-
-database = services.database.EZDB(database_url, debug=False)
-engine = Engine(database)
-
-# using SendGrid's Python Library
-# https://github.com/sendgrid/sendgrid-python
-sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+from models.hero import Hero
+pdb.set_trace()
+# engine = Engine(database)
 
 # Disable will need to be restructured (Marlen)
 # initialization
@@ -66,16 +52,19 @@ def create_app():
     # os.urandom(24)
     # '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
     #app.config.from_object('config')
+    app.config.from_object('config')
     app.secret_key = os.environ.get('SECRET_KEY')
-    # Maybe later sg = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY']))
-    # When I learn how to use instances for Flask to hide these keys.
 
-    async_process(game_clock, args=(database,))
+    # async_process(game_clock, args=(database,))
     return app
 
 
 app = create_app()
 sslify = SSLify(app)
+
+# using SendGrid's Python Library
+# https://github.com/sendgrid/sendgrid-python
+sg = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY'])
 
 ALWAYS_VALID_URLS = [
     '/login', '/home', '/about', '/inventory_page', '/quest_log',
@@ -1477,7 +1466,7 @@ if __name__ == '__main__':
 
 
     # Not implemented ... should be moved to prebuilt_objects.py and implemented in
-    # database.py as get_default_quests()
+    # connect_to_database.py as get_default_quests()
     # Quest aren't actually implement yet but they will be soon!
     # Super temporary while testing quests
     # hero.inventory.append(QuestItem("Wolf Pelt", hero, 50))

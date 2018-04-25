@@ -7,16 +7,14 @@ if __name__ == "__main__":
 This file will become very important. I would like to switch to handling
 events here. And everything else that the User doesn't need to know about.
 """
-import pdb
 import time
 from multiprocessing import Process
 
 import werkzeug.serving
 
-from events import Event
-from pprint import pprint
-from database import UPDATE_INTERVAL
-from session_helpers import scoped_session
+from models import events
+from services.session_helpers import scoped_session
+import config
 
 
 class Engine:
@@ -53,7 +51,7 @@ class Engine:
         And complete this quest.
         """
         # pdb.set_trace()
-        event = Event(event_name, hero_id=hero.id, description=description)
+        event = events.Event(event_name, hero_id=hero.id, description=description)
         self.db.add_object(event)
 
         # return the "Blacksmith" quest object ...
@@ -71,7 +69,7 @@ def game_clock(database):
     """Run the update all heroes code every x seconds."""
     if not werkzeug.serving.is_running_from_reloader():
         while True:
-            time.sleep(UPDATE_INTERVAL)
+            time.sleep(config.UPDATE_INTERVAL)
             database.update_time_all_heroes()
 
 

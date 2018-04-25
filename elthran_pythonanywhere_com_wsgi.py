@@ -14,9 +14,9 @@ project_home = u'/home/elthran/rpg_game/'
 if project_home not in sys.path:
     sys.path = [project_home] + sys.path
 
-import os
-from dotenv import load_dotenv
-load_dotenv(os.path.join(project_home, '.env'))
+# import os
+# from dotenv import load_dotenv
+# load_dotenv(os.path.join(project_home, '.env'))
 
 # import flask app but need to call it "application" for WSGI to work
 from app import app as application

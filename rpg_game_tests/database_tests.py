@@ -1,10 +1,8 @@
 import unittest
 import datetime
-from pprint import pformat
 
 from database import EZDB
 import models
-import locations
 
 """
 This program runs as a test suite for the EasyDatabase class when it is

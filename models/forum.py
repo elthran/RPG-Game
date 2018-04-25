@@ -134,8 +134,8 @@ class Post(HumanReadableMixin, Base):
     thread = relationship("Thread", back_populates="posts")
 
     # One to Many with User class.
-    user_id = Column(Integer, ForeignKey('user.id', ondelete="CASCADE"))
-    user = relationship("User", back_populates="posts")
+    account_id = Column(Integer, ForeignKey('account.id', ondelete="CASCADE"))
+    account = relationship("Account", back_populates="posts")
 
     content = Column(String(50))
 

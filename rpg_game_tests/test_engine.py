@@ -10,8 +10,8 @@ import pytest
 
 from . import GenericTestCase, Mock, db_execute_script
 from engine import Engine, async_process
-from locations import Location
-from events import Condition, Trigger
+from models.locations import Location
+from models.events import Condition, Trigger
 from models.hero import Hero
 from models.quests import QuestPath, Quest
 

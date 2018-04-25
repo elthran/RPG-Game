@@ -15,10 +15,10 @@ from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import backref
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from models.base_classes import Base
+import models
 
 
-class Event(Base):
+class Event(models.base_classes.Base):
     """Allow extra functions to occur when a specific state is reached.
 
     E.g. when the hero moves to the Blacksmith shop complete the Visit
@@ -61,7 +61,9 @@ class Event(Base):
         # arg_dict.get('location', None, type=str)
 
 
-condition_to_trigger = Table('condition_to_trigger', Base.metadata,
+condition_to_trigger = Table(
+    'condition_to_trigger',
+    models.base_classes.Base.metadata,
     Column('condition_id', Integer, ForeignKey('condition.id',
                                                ondelete="SET NULL")),
     Column('trigger_id', Integer, ForeignKey('trigger.id',
@@ -69,7 +71,7 @@ condition_to_trigger = Table('condition_to_trigger', Base.metadata,
 )
 
 
-class Condition(Base):
+class Condition(models.base_classes.Base):
     """A function that takes a python string and evaluates to boolean.
 
     Factory?
@@ -122,7 +124,7 @@ class Condition(Base):
 # )
 
 
-class Trigger(Base):
+class Trigger(models.base_classes.Base):
     __tablename__ = 'trigger'
 
     id = Column(Integer, primary_key=True)
@@ -146,7 +148,7 @@ class Trigger(Base):
         self.conditions = conditions
 
 
-class Handler(Base):
+class Handler(models.base_classes.Base):
     __tablename__ = 'handler'
 
     id = Column(Integer, primary_key=True)

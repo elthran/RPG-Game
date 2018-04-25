@@ -9,18 +9,16 @@ Mainly using the tutorial at:
 This class is imported first and can be used to add generic methods to all
 database objects. Like a __str__ function that I can actually read.
 """
-from functools import lru_cache
+import functools
 import operator
-import inspect
-import pdb
-from pprint import pprint
 
-from sqlalchemy.orm.collections import MappedCollection, collection
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import orm
-import sqlalchemy
+import sqlalchemy as sa
+import sqlalchemy.orm
+import sqlalchemy.ext.orderinglist
+import sqlalchemy.orm.collections
+import sqlalchemy.ext.declarative
+
+import services
 
 
 def attribute_mapped_dict_hybrid(key):
@@ -42,7 +40,7 @@ def attribute_mapped_dict_hybrid(key):
     return lambda: DictHybrid(key_attr=key)
 
 
-class DictHybrid(MappedCollection):
+class DictHybrid(sa.orm.collections.MappedCollection):
     """A Python object that acts like a JS one.
 
     You can assign values via attribute or via key.
@@ -78,18 +76,20 @@ class DictHybrid(MappedCollection):
             for k, v in kwargs.items():
                 self[k] = v
 
-    @collection.internally_instrumented
+    @sa.orm.collections.collection.internally_instrumented
     def __setitem__(self, key, value, _sa_initiator=None):
         """Instrumented version of dict setitem.
 
         I don't know how this works."""
+        # noinspection PyArgumentList
         super().__setitem__(key, value, _sa_initiator)
 
-    @collection.internally_instrumented
+    @sa.orm.collections.collection.internally_instrumented
     def __delitem__(self, key, _sa_initiator=None):
         """Instrumented version of dict delitem.
 
         I don't know how this works."""
+        # noinspection PyArgumentList
         super().__delitem__(key, _sa_initiator)
 
     def __getattr__(self, attr):
@@ -107,7 +107,7 @@ class DictHybrid(MappedCollection):
             return self[attr]
         return self.get(attr)
 
-    @collection.internally_instrumented
+    @sa.orm.collections.collection.internally_instrumented
     def __setattr__(self, key, _sa_initiator=None):
         """Overloaded and Instrumented setattr method with custom handling.
 
@@ -142,7 +142,7 @@ class DictHybrid(MappedCollection):
         return (x for x in sorted(keys))
 
     @staticmethod
-    @lru_cache(maxsize=16)
+    @functools.lru_cache(maxsize=16)
     def _key_sort(keys):
         """Cached sort method.
 
@@ -199,6 +199,7 @@ class Base(object):
     def get_all_atts(self):
         if self.__class__ == Base:
             return set()
+        # noinspection PyUnresolvedReferences
         data = set(vars(self).keys()) | \
             set(self.__table__.columns.keys()) | \
             set(self.__mapper__.relationships.keys())
@@ -238,13 +239,13 @@ class Base(object):
     def data_to_string(self, data):
         for key in sorted(data):
             value = getattr(self, key)
-            if value and (type(value) == orm.collections.InstrumentedList or
+            if value and (type(value) == sa.orm.collections.InstrumentedList or
                           type(value) ==
-                          sqlalchemy.ext.orderinglist.OrderingList):
+                          sa.ext.orderinglist.OrderingList):
                 value = '[' + ', '.join(
                     "<{}(id={})>".format(e.__class__.__name__, e.id)
                     for e in value) + ']'
-            elif value and type(value) == orm.collections.MappedCollection:
+            elif value and type(value) == sa.orm.collections.MappedCollection:
                 value = "{" + ', '.join(
                     "{}: <{}(id={})>".format(k, v.__class__.__name__, v.id)
                     for k, v in value.items()) + '}'
@@ -302,6 +303,7 @@ class Base(object):
         return "\n<{}(\n{}\n)>\n".format(
             self.__class__.__name__, '\n'.join(lines))
 
+    @staticmethod
     def pretty_list(obj_list, key='id'):
         """Build a human readable string version of a list of objects.
 
@@ -347,6 +349,25 @@ class Base(object):
                 return False
         return True
 
+    Session = None
+
+    @classmethod
+    def query(cls):
+        with services.session_helpers.session_scope(cls.Session) as session:
+            return session.query(cls)
+
+    @classmethod
+    def first(cls):
+        return cls.query().first()
+
+    def save(self):
+        session = self._sa_instance_state.session
+        try:
+            session.commit()
+        except:
+            session.rollback()
+            raise
+
 
 # Initialize SQLAlchemy base class.
 convention = {
@@ -357,7 +378,7 @@ convention = {
   "pk": "pk_%(table_name)s"
 }
 metadata = sqlalchemy.MetaData(naming_convention=convention)
-Base = declarative_base(cls=Base, metadata=metadata)
+Base = sa.ext.declarative.declarative_base(cls=Base, metadata=metadata)
 # This used a class factory to build a class called base in the local
 # context. Why I can't just import Base I have no idea.
 # And I know how to use it.

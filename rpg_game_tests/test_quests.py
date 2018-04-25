@@ -2,7 +2,7 @@ import pytest
 
 from models.hero import Hero
 from models.quests import Quest, QuestPath
-from events import Handler, Trigger
+from models.events import Handler, Trigger
 from . import GenericTestCase, db_execute_script
 
 

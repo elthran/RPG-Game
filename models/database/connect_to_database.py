@@ -1,19 +1,19 @@
-import importlib
+# import importlib
+import pdb
+import socket
 import datetime
 
 import sqlalchemy as sa
-import sqlalchemy.orm as orm
+import sqlalchemy.orm
 
 import models
-import prebuilt_objects
-
 # from session_helpers import scoped_session, safe_commit_session
 import services
 
+import config
+
 # Constants#
-# UPDATE_INTERVAL = 3600  # One endurance per hour.
-UPDATE_INTERVAL = 30  # One endurance per 30 seconds
-Session = orm.sessionmaker()
+Session = sa.orm.sessionmaker()
 
 
 class EZDB:
@@ -54,10 +54,12 @@ class EZDB:
             database + "?charset=utf8mb4", pool_recycle=3600, echo=debug)
 
         models.base_classes.Base.metadata.create_all(engine, checkfirst=True)
+        models.base_classes.Base.metadata.bind = engine
 
         # Set up Session for this engine.
         Session.configure(bind=engine)
         self.Session = Session
+        models.base_classes.Base.Session = Session
 
         self.engine = engine
         self.session = self.Session()
@@ -80,7 +82,8 @@ class EZDB:
 
         # global prebuilt_objects
         # I can't remember why I need to reload this ...
-        importlib.reload(prebuilt_objects)
+        import prebuilt_objects
+        # importlib.reload(prebuilt_objects)
 
         for obj_list in [
                 prebuilt_objects.users,
@@ -128,3 +131,13 @@ class EZDB:
         return self.session.query(
             models.quests.QuestPath).filter_by(
             is_default=True, template=True).all()
+
+
+# INIT AND LOGIN FUNCTIONS
+if 'liveweb' not in socket.gethostname():  # Running on local machine.
+    database_url = config.LOCAL_DATABASE_URL
+else:  # Running on server which runs dotenv from WSGI file.
+    database_url = config.SERVER_DATABASE_URL
+
+
+ezdb = EZDB(database_url, debug=False)

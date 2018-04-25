@@ -3,7 +3,7 @@ import importlib
 
 from models.base_classes import Base
 from database import EZDB
-from locations import Location
+from models.locations import Location
 from game import Hero
 import prebuilt_objects
 
