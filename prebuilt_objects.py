@@ -355,13 +355,23 @@ basic_forum = Forum("Basic")  # Create the first forum
 all_forums = [basic_forum]  # Add it to the list of forums to be generated on game init
 basic_forum.create_board(Board("General"))  # Add a board to the forum so it doesn't seem so lonely
 
-game_monsters = [Hero(name="Sewer Rat", species="Rat", species_plural="Rats", level_max=10, forest=True, city=True),
-                 Hero(name="Giant Spider", species="Rat", species_plural="Rats", level_max=10, forest=True, city=False)]
+game_monsters = [Hero(name="Sewer Rat", species="Rat", level_max=10, forest=False, city=True),
+                 Hero(name="Giant Spider", species="Spider", level_max=10, forest=True, city=False),
+                 Hero(name="Rabid Dog", species="Dog", level_max=10, forest=False, city=True)]
 
 for i in range(len(game_monsters)):
     game_monsters[i].is_monster = True
     game_monsters[i].monster_id = i+1
-    if game_monsters[i].name == "Sewer Rat":
-        game_monsters[i].base_proficiencies.poison_chance.base = 70
-        game_monsters[i].base_proficiencies.poison_duration.base = 2
+    if game_monsters[i].species == "Rat":
+        game_monsters[i].species_plural = "Rats"
+        game_monsters[i].base_proficiencies.poison_chance.base = 15
+        game_monsters[i].base_proficiencies.poison_duration.base = 4
+        game_monsters[i].base_proficiencies.poison_amount.base = 2
+    if game_monsters[i].species == "Spider":
+        game_monsters[i].species_plural = "Spiders"
+        game_monsters[i].base_proficiencies.poison_chance.base = 35
+        game_monsters[i].base_proficiencies.poison_duration.base = 3
         game_monsters[i].base_proficiencies.poison_amount.base = 1
+    if game_monsters[i].species == "Dog":
+        game_monsters[i].species_plural = "Dogs"
+        game_monsters[i].base_proficiencies.health.current += 5

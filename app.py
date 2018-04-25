@@ -1069,7 +1069,6 @@ def dungeon_entrance(name='', hero=None, location=None):
 @uses_hero
 @update_current_location
 def explore_dungeon(name='', hero=None, location=None, extra_data=None):
-
     """
     NOTE: @elthran You shouldn't modify location data as this will modify it for all heroes/users in the game.
     Instead just pass this data to the template directly.
