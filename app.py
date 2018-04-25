@@ -21,7 +21,7 @@ import werkzeug
 from game import Game
 import combat_simulator
 # Marked for restructure! Avoid use of import * in production code.
-from bestiary import *
+from bestiary import generate_monster
 from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
@@ -29,8 +29,8 @@ from commands import Command
 from database import EZDB
 from engine import Engine, game_clock, async_process, rest_key_timelock
 from forum import Board, Thread, Post
-from bestiary2 import create_monster, MonsterTemplate
 from math import ceil
+from random import randint # Currently just used in the dungeon code I think
 
 # INIT AND LOGIN FUNCTIONS
 # for server code swap this over:
