@@ -132,7 +132,6 @@ class EZDB:
                 prebuilt_objects.all_quests,
                 prebuilt_objects.all_specializations,
                 prebuilt_objects.all_forums,
-                prebuilt_objects.all_monsters,
                 prebuilt_objects.game_monsters]:
             for obj in obj_list:
                 self.session.add(obj)
