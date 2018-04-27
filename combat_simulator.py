@@ -67,7 +67,11 @@ def apply_poison(attacker, defender, counter, combat_log):
 
 def calculate_poison_damage(inflictor, receiver):
     poison = int(inflictor.get_summed_proficiencies('poison_amount').final)
-    poison *= (1 - int(receiver.get_summed_proficiencies('resist_poison').final))
+    print("Iniy:", poison)
+    poison *= (100 - int(receiver.get_summed_proficiencies('resist_poison').final)) / 100
+    print("Mod: ", poison)
+    poison = round_number_intelligently(poison)
+    print("Rounded:", poison)
     return poison
 
 def apply_freezing(attacker, defender, combat_log, frozen_counter):

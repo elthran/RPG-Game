@@ -33,3 +33,4 @@ VampiricAura,AuraAbility,Basic,None,3,You steal life per hit,Amount stolen: {{ (
 Lifeleech,AuraAbility,Basic,None,3,You steal life based on how much damage you deal in combat,Percent of damage dealt: {{ (level) * 5 }},Percent of damage dealt: {{ (level + 1) * 5 }},TRUE,LifestealPercent,5,Understanding,0,Null,Null
 FrozenBlades,AuraAbility,Basic,None,5,Gives your weapon a chance of freezing enemies attacked,Chance to freeze: {{ level * 5 }},Chance to freeze: {{ (level + 1) * 5 }},TRUE,FreezingChance,5,Understanding,0,Null,Null
 FrozenHeart,AuraAbility,Basic,None,1,Makes you immediately thaw out if frozen in combat,Chance to thaw: 100%,Chance to thaw: 100%,TRUE,ThawingChance,50,Understanding,0,Null,Null
+Immunity,AuraAbility,Basic,None,3,Your poison resistance is increased,+{{ (level) * 25 }}%,+{{ (level + 1) * 25 }}%,TRUE,ResistPoison,25,Understanding,0,Null,Null
