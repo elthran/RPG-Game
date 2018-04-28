@@ -1,29 +1,29 @@
-Name,Type,Tree,TreeType,Maximum,Description,Current,Next,Learnable,Prof1,Value1,Prof2,Value2,SanctityCost,EnduranceCost
-Apprentice,AuraAbility,Archetype,Ascetic,10,Study of the arcane arts allows you to become capable of learning spells.,Number of Spells: +{{ (level) * 1 }},Number of Spells: +{{ (level+1) * 1 }},TRUE,SpellLimit,1,Understanding,0,Null,Null
-Arcanum,AuraAbility,Archetype,Ascetic,5,Through your studies you become capable of raising your maximum sanctity. <b>Master this ability to unlock the Philosopher calling</b>,{{ (level) * 2 }},{{ (level + 1) * 2 }},TRUE,Sanctity,2,Understanding,0,Null,Null
-Backstab,AuraAbility,Archetype,Scoundrel,5,You are more likely to attack first in combat.,First Strike: +{{ (level) * 3 }}%,First Strike: +{{ (level + 1) * 3 }}%,TRUE,FirstStrike,5,Understanding,0,Null,Null
-Bash,AuraAbility,Archetype,Brute,5,(BROKEN) Your proficiency with blunt weapons is increased.,Blunt Weapon Damage: %{{ (level) * 5 }}%,Blunt Weapon Damage: +{{ (level + 1) * 5 }}%,TRUE,Health,0,Understanding,0,Null,Null
-Blackhearted,AuraAbility,Archetype,Scoundrel,5,(BROKEN) Your sinister nature is more apparent. Evil acts cause your virtue to fall more quickly. <b>Master this ability to unlock the Assassin calling</b>,Virtue drops {{ (level) * 5 }}% faster,Virtue drops {{ (level+1) * 5 }}% faster,TRUE,Health,0,Understanding,0,Null,Null
-Charmer,AuraAbility,Archetype,Opportunist,5,(BROKEN)You are more likely to succeed when choosing charm dialogues.,Dialogue Success: +{{ (level) * 5 }}%,Dialogue Success: +{{ (level+1) * 5 }}%,TRUE,Health,0,Understanding,0,Null,Null
-Discipline,AuraAbility,Basic,None,5,Gain devotion faster. Master this ability to unlock the Ascetic archetype.,{{ (level) * 1 }}%,{{ (level + 1) * 1 }}%,TRUE,Piety,1,Understanding,0,Null,Null
-Haggler,AuraAbility,Archetype,Opportunist,5,You can get a better price at stores through negoations.,Store Prices: -{{ (level) * 2 }}%,Store Prices: -{{ (level+1) * 2 }}%,TRUE,Bartering,2,Understanding,0,Null,Null
-MartialArts,AuraAbility,Archetype,Ascetic,3,(BROKEN) You deal more damage in combat when fighting with no weapon.,Unarmed Damage: +{{ (level) * 50 }}%,Unarmed Damage: +{{ (level+1) * 50 }}%,TRUE,Damage,5,Understanding,0,Null,Null
-Meditation,AuraAbility,Archetype,Ascetic,3,Regenerate sanctity per day.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Redemption,5,Understanding,0,Null,Null
-Poet,AuraAbility,Basic,None,5,Gain renown faster. Master this ability to unlock the Opportunist archetype.,{{ (level) * 1 }},{{ (level + 1) * 1 }},TRUE,Reputation,1,Understanding,0,Null,Null
-Relentless,AuraAbility,Basic,None,5,Gain maximum health. Master this ability to unlock the Brute archetype.,{{ (level) * 3 }},{{ (level + 1) * 3 }},TRUE,Health,3,Understanding,0,Null,Null
-Scholar,AuraAbility,Archetype,Philosopher,3,Gain experience faster.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Understanding,5,Understanding,0,Null,Null
-Skinner,AuraAbility,Archetype,Survivalist,3,(BROKEN)You have a chance of obtaining a usable fur after kiling a beast.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,Null,Null
-Strider,AuraAbility,Archetype,Survivalist,3,(BROKEN)Traveling on the map requires less endurance.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,Null,Null
-Student,AuraAbility,Archetype,Philosopher,3,(BROKEN)You are capable of learning additional spells.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,Null,Null
-Traveler,AuraAbility,Basic,None,5,Reveal more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.,{{ (level) * 1 }},{{ (level + 1) * 1 }},TRUE,Vision,1,Understanding,0,Null,Null
-Trickster,AuraAbility,Basic,None,5,Become harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.,{{ (level) * 3 }},{{ (level + 1) * 3 }},TRUE,Stealth,3,Understanding,0,Null,Null
-Vigilance,AuraAbility,Archetype,Survivalist,3,(BROKEN)You are less likely to be ambushed.,{{ (level) * 5 }},{{ (level + 1) * 5 }},TRUE,Health,0,Understanding,0,Null,Null
-FameBombTest,CastableAbility,Basic,None,3,Spend 2 sanctity to gain instant fame with this silly test spell.,{{ (level) * 3 }},{{ (level + 1) * 3 }},TRUE,Renown,0,Understanding,0,2,0
-VirtueBombTest,CastableAbility,Basic,None,3,Spend 1 endurance to gain instant virtue with this silly spell for testing purposes.,{{ (level) * 2 }},{{ (level + 1) * 2 }},TRUE,Virtue,0,Understanding,0,0,1
-PoisonedBlades,AuraAbility,Archetype,Scoundrel,3,Successful attacks apply a poison to the enemy,Damage per turn: {{ (level) * 1 }},Damage per turn: {{ (level + 1) * 1 }},TRUE,PoisonAmount,1,Understanding,0,Null,Null
-PoisonMastery,AuraAbility,Archetype,Scoundrel,3,Your poisons last an additional round, +{{ (level) * 1 }} rounds,+{{ (level + 1) * 1 }} rounds,TRUE,PoisonDuration,1,Understanding,0,Null,Null
-VampiricAura,AuraAbility,Basic,None,3,You steal life per hit,Amount stolen: {{ (level) * 1 }},Amount stolen: {{ (level + 1) * 1 }},TRUE,LifestealStatic,1,Understanding,0,Null,Null
-Lifeleech,AuraAbility,Basic,None,3,You steal life based on how much damage you deal in combat,Percent of damage dealt: {{ (level) * 5 }},Percent of damage dealt: {{ (level + 1) * 5 }},TRUE,LifestealPercent,5,Understanding,0,Null,Null
-FrozenBlades,AuraAbility,Basic,None,5,Gives your weapon a chance of freezing enemies attacked,Chance to freeze: {{ level * 5 }},Chance to freeze: {{ (level + 1) * 5 }},TRUE,FreezingChance,5,Understanding,0,Null,Null
-FrozenHeart,AuraAbility,Basic,None,1,Makes you immediately thaw out if frozen in combat,Chance to thaw: 100%,Chance to thaw: 100%,TRUE,ThawingChance,50,Understanding,0,Null,Null
-Immunity,AuraAbility,Basic,None,3,Your poison resistance is increased,+{{ (level) * 25 }}%,+{{ (level + 1) * 25 }}%,TRUE,ResistPoison,25,Understanding,0,Null,Null
+Name,Type,Tree,TreeType,Maximum,Description,Current,Learnable,Prof1,Value1,Prof2,Value2,SanctityCost,EnduranceCost
+Apprentice,AuraAbility,Archetype,Ascetic,10,Study of the arcane arts allows you to become capable of learning spells.,Number of Spells: +{{ (level) * 1 }},TRUE,SpellLimit,1,Understanding,0,Null,Null
+Arcanum,AuraAbility,Archetype,Ascetic,5,Through your studies you become capable of raising your maximum sanctity. <b>Master this ability to unlock the Philosopher calling</b>,{{ (level) * 2 }},TRUE,Sanctity,2,Understanding,0,Null,Null
+Backstab,AuraAbility,Archetype,Scoundrel,5,You are more likely to attack first in combat.,First Strike: +{{ (level) * 3 }}%,TRUE,FirstStrike,5,Understanding,0,Null,Null
+Bash,AuraAbility,Archetype,Brute,5,(BROKEN) Your proficiency with blunt weapons is increased.,Blunt Weapon Damage: %{{ (level) * 5 }}%,TRUE,Health,0,Understanding,0,Null,Null
+Blackhearted,AuraAbility,Archetype,Scoundrel,5,(BROKEN) Your sinister nature is more apparent. Evil acts cause your virtue to fall more quickly. <b>Master this ability to unlock the Assassin calling</b>,Virtue drops {{ (level) * 5 }}% faster,TRUE,Health,0,Understanding,0,Null,Null
+Charmer,AuraAbility,Archetype,Opportunist,5,(BROKEN)You are more likely to succeed when choosing charm dialogues.,Dialogue Success: +{{ (level) * 5 }}%,TRUE,Health,0,Understanding,0,Null,Null
+Discipline,AuraAbility,Basic,None,5,Gain devotion faster. Master this ability to unlock the Ascetic archetype.,{{ (level) * 1 }}%,TRUE,Piety,1,Understanding,0,Null,Null
+Haggler,AuraAbility,Archetype,Opportunist,5,You can get a better price at stores through negoations.,Store Prices: -{{ (level) * 2 }}%,TRUE,Bartering,2,Understanding,0,Null,Null
+MartialArts,AuraAbility,Archetype,Ascetic,3,(BROKEN) You deal more damage in combat when fighting with no weapon.,Unarmed Damage: +{{ (level) * 50 }}%,TRUE,Damage,5,Understanding,0,Null,Null
+Meditation,AuraAbility,Archetype,Ascetic,3,Regenerate sanctity per day.,{{ (level) * 5 }},TRUE,Redemption,5,Understanding,0,Null,Null
+Poet,AuraAbility,Basic,None,5,Gain renown faster. Master this ability to unlock the Opportunist archetype.,{{ (level) * 1 }},TRUE,Reputation,1,Understanding,0,Null,Null
+Relentless,AuraAbility,Basic,None,5,Gain maximum health. Master this ability to unlock the Brute archetype.,{{ (level) * 3 }},TRUE,Health,3,Understanding,0,Null,Null
+Scholar,AuraAbility,Archetype,Philosopher,3,Gain experience faster.,{{ (level) * 5 }},TRUE,Understanding,5,Understanding,0,Null,Null
+Skinner,AuraAbility,Archetype,Survivalist,3,(BROKEN)You have a chance of obtaining a usable fur after kiling a beast.,{{ (level) * 5 }},TRUE,Health,0,Understanding,0,Null,Null
+Strider,AuraAbility,Archetype,Survivalist,3,(BROKEN)Traveling on the map requires less endurance.,{{ (level) * 5 }},TRUE,Health,0,Understanding,0,Null,Null
+Student,AuraAbility,Archetype,Philosopher,3,(BROKEN)You are capable of learning additional spells.,{{ (level) * 5 }},TRUE,Health,0,Understanding,0,Null,Null
+Traveler,AuraAbility,Basic,None,5,Reveal more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.,{{ (level) * 1 }},TRUE,Vision,1,Understanding,0,Null,Null
+Trickster,AuraAbility,Basic,None,5,Become harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.,{{ (level) * 3 }},TRUE,Stealth,3,Understanding,0,Null,Null
+Vigilance,AuraAbility,Archetype,Survivalist,3,(BROKEN)You are less likely to be ambushed.,{{ (level) * 5 }},TRUE,Health,0,Understanding,0,Null,Null
+FameBombTest,CastableAbility,Basic,None,3,Spend 2 sanctity to gain instant fame with this silly test spell.,{{ (level) * 3 }},TRUE,Renown,0,Understanding,0,2,0
+VirtueBombTest,CastableAbility,Basic,None,3,Spend 1 endurance to gain instant virtue with this silly spell for testing purposes.,{{ (level) * 2 }},TRUE,Virtue,0,Understanding,0,0,1
+PoisonedBlades,AuraAbility,Archetype,Scoundrel,3,Successful attacks apply a poison to the enemy,Damage per turn: {{ (level) * 1 }},TRUE,PoisonAmount,1,Understanding,0,Null,Null
+PoisonMastery,AuraAbility,Archetype,Scoundrel,3,Your poisons last an additional round,+{{ (level) * 1 }} rounds,TRUE,PoisonDuration,1,Understanding,0,Null,Null
+VampiricAura,AuraAbility,Basic,None,3,You steal life per hit,Amount stolen: {{ (level) * 1 }},TRUE,LifestealStatic,1,Understanding,0,Null,Null
+Lifeleech,AuraAbility,Basic,None,3,You steal life based on how much damage you deal in combat,Percent of damage dealt: {{ (level) * 5 }},TRUE,LifestealPercent,5,Understanding,0,Null,Null
+FrozenBlades,AuraAbility,Basic,None,5,Gives your weapon a chance of freezing enemies attacked,Chance to freeze: {{ (level)* 5 }},TRUE,FreezingChance,5,Understanding,0,Null,Null
+FrozenHeart,AuraAbility,Basic,None,1,Makes you immediately thaw out if frozen in combat,Chance to thaw: 100%,TRUE,ThawingChance,50,Understanding,0,Null,Null
+Immunity,AuraAbility,Basic,None,3,Your poison resistance is increased,+{{ (level) * 25 }}%,TRUE,ResistPoison,25,Understanding,0,Null,Null

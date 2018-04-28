@@ -292,6 +292,12 @@ class AuraAbility(Ability):
 
 {% for value in ALL_ABILITIES %}
 class {{ value[0] }}({{ value[1] }}):
+
+    """
+    The two lines below here should convert the 'current' ability bonus into the 'next' ability bonus. But it doesn't work. Please fix @klondike_marlen
+    """
+    next = '{{ value[6] }}'
+    next = next.replace("(level)", "(level+1)")
     attrib_name = "{{ normalize_attrib_name(value[0]) }}"
 
     __mapper_args__ = {
@@ -300,9 +306,9 @@ class {{ value[0] }}({{ value[1] }}):
 
     def __init__(self, *args, **kwargs):
         {% if value[1] == 'AuraAbility' %}
-        super().__init__(name='{{ value[0] }}', tree='{{ value[2] }}', tree_type='{{ value[3] }}', max_level={{ value[4] }}, description='{{ value[5] }}', current='{{ value[6] }}', next='{{ value[7] }}', learnable={{ value[8] }}, proficiency_data=[('{{ value[9] }}', {'base': {{ value[10] }}}), ('{{ value[11] }}', {'base': {{ value[12] }}})])
+        super().__init__(name='{{ value[0] }}', tree='{{ value[2] }}', tree_type='{{ value[3] }}', max_level={{ value[4] }}, description='{{ value[5] }}', current='{{ value[6] }}', next=next, learnable={{ value[7] }}, proficiency_data=[('{{ value[8] }}', {'base': {{ value[9] }}}), ('{{ value[10] }}', {'base': {{ value[11] }}})])
         {% elif value[1] == 'CastableAbility' %}
-        super().__init__(name='{{ value[0] }}', tree='{{ value[2] }}', tree_type='{{ value[3] }}', max_level={{ value[4] }}, description='{{ value[5] }}', current='{{ value[6] }}', next='{{ value[7] }}', learnable={{ value[8] }}, proficiency_data=[], spell_data=[('{{ value[9] }}', {'base': {{ value[10] }}}), ('{{ value[11] }}', {'base': {{ value[12] }}})], sanctity_cost={{ value[13] }}, endurance_cost={{ value[14] }})
+        super().__init__(name='{{ value[0] }}', tree='{{ value[2] }}', tree_type='{{ value[3] }}', max_level={{ value[4] }}, description='{{ value[5] }}', current='{{ value[6] }}', next=next, learnable={{ value[7] }}, proficiency_data=[], spell_data=[('{{ value[8] }}', {'base': {{ value[9] }}}), ('{{ value[10] }}', {'base': {{ value[11] }}})], sanctity_cost={{ value[12] }}, endurance_cost={{ value[13] }})
         {% endif %}
         for key, value in kwargs:
             setattr(self, key, value)
