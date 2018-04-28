@@ -306,7 +306,7 @@ class {{ value[0] }}({{ value[1] }}):
 
     def __init__(self, *args, **kwargs):
         {% if value[1] == 'AuraAbility' %}
-        super().__init__(name='{{ value[0] }}', tree='{{ value[2] }}', tree_type='{{ value[3] }}', max_level={{ value[4] }}, description='{{ value[5] }}', current='{{ value[6] }}', next=next, learnable={{ value[7] }}, proficiency_data=[('{{ value[8] }}', {'base': {{ value[9] }}}), ('{{ value[10] }}', {'base': {{ value[11] }}})])
+        super().__init__(name='{{ value[0] }}', tree='{{ value[2] }}', tree_type='{{ value[3] }}', max_level={{ value[4] }}, description='{{ value[5] }}', current='{{ value[6] }}', next=next, learnable={{ value[7] }}, proficiency_data=[('{{ value[8] }}', {'base': {{ value[9] }}}), {% if value[10] != 'Null' %}('{{ value[10] }}', {'base': {{ value[11] }}}){% endif %}])
         {% elif value[1] == 'CastableAbility' %}
         super().__init__(name='{{ value[0] }}', tree='{{ value[2] }}', tree_type='{{ value[3] }}', max_level={{ value[4] }}, description='{{ value[5] }}', current='{{ value[6] }}', next=next, learnable={{ value[7] }}, proficiency_data=[], spell_data=[('{{ value[8] }}', {'base': {{ value[9] }}}), ('{{ value[10] }}', {'base': {{ value[11] }}})], sanctity_cost={{ value[12] }}, endurance_cost={{ value[13] }})
         {% endif %}
