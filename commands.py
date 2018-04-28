@@ -419,7 +419,6 @@ class Command:
         hero.specializations = specialization
         pprint(hero.specializations)
         spec = data['spec']
-        print("The hero's " + spec + " should be " + specialization.name)
         # PLEASE MAKE THE ABOVE PRINT STATEMENT TRUE!!!!!!!!!!!!!!!!!!!!!!!
         #specialization = database.get_object_by_name("Specialization", choice)
         #setattr(hero.specializations, choice, specialization)
