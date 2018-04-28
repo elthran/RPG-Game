@@ -65,6 +65,7 @@ BlockAmount,Amount of damage absorbed when a shield successfully blocks,None,lin
 Blunt,Skill with blunt weapons,None,linear,0,0,0,TRUE,TRUE
 Piercing,Skill with piercing weapons,None,linear,0,0,0,TRUE,TRUE
 Slashing,Skill with slashing weapons,None,linear,0,0,0,TRUE,TRUE
+Unarmed,Skill with using your bare hands,None,linear,0,0,0,TRUE,TRUE
 WeaponAffinity,How accustomed to your current weapon you are,None,linear,0,0,0,TRUE,TRUE
 
 Renown,How famous you are,None,linear,0,0,0,TRUE,FALSE

@@ -2,12 +2,12 @@ Name,Type,Tree,TreeType,Maximum,Description,Current,Learnable,Prof1,Value1,Prof2
 Apprentice,AuraAbility,Archetype,Ascetic,10,Study of the arcane arts allows you to become capable of learning spells.,Number of Spells: +{{ (level) * 1 }},TRUE,SpellLimit,1,Null,-,-,-
 Arcanum,AuraAbility,Archetype,Ascetic,5,Through your studies you become capable of raising your maximum sanctity. <b>Master this ability to unlock the Philosopher calling</b>,{{ (level) * 2 }},TRUE,Sanctity,2,Null,-,-,-
 Backstab,AuraAbility,Archetype,Scoundrel,5,You are more likely to attack first in combat.,First Strike: +{{ (level) * 3 }}%,TRUE,FirstStrike,5,Null,-,-,-
-Bash,AuraAbility,Archetype,Brute,5,(BROKEN) Your proficiency with blunt weapons is increased.,Blunt Weapon Damage: %{{ (level) * 5 }}%,TRUE,Health,0,Null,-,-,-
-Blackhearted,AuraAbility,Archetype,Scoundrel,5,(BROKEN) Your sinister nature is more apparent. Evil acts cause your virtue to fall more quickly. <b>Master this ability to unlock the Assassin calling</b>,Virtue drops {{ (level) * 5 }}% faster,TRUE,Health,0,Null,-,-,-
-Charmer,AuraAbility,Archetype,Opportunist,5,(BROKEN)You are more likely to succeed when choosing charm dialogues.,Dialogue Success: +{{ (level) * 5 }}%,TRUE,Health,0,Null,-,-,-
+Bash,AuraAbility,Archetype,Brute,5,Your proficiency with blunt weapons is increased.,Blunt Weapon Damage: +{{ (level) * 5 }}%,TRUE,Blunt,5,Null,-,-,-
+Blackhearted,AuraAbility,Archetype,Scoundrel,5,Your sinister nature is more apparent. Actions affect your virtue more quickly. <b>Master this ability to unlock the Assassin calling</b>,Virtue drops {{ (level) * 5 }}% faster,TRUE,Dualism,5,Null,-,-,-
+Charmer,AuraAbility,Archetype,Opportunist,5,Your relation with other people raises much more quickly.,Dialogue Success: +{{ (level) * 5 }}%,TRUE,Charm,5,Null,-,-,-
 Discipline,AuraAbility,Basic,None,5,Gain devotion faster. Master this ability to unlock the Ascetic archetype.,{{ (level) * 1 }}%,TRUE,Piety,1,Null,-,-,-
 Haggler,AuraAbility,Archetype,Opportunist,5,You can get a better price at stores through negoations.,Store Prices: -{{ (level) * 2 }}%,TRUE,Bartering,2,Null,-,-,-
-MartialArts,AuraAbility,Archetype,Ascetic,3,(BROKEN) You deal more damage in combat when fighting with no weapon.,Unarmed Damage: +{{ (level) * 50 }}%,TRUE,Damage,5,Null,-,-,-
+MartialArts,AuraAbility,Archetype,Ascetic,3,You deal more damage in combat when fighting with no weapon.,Unarmed Damage: +{{ (level) * 50 }}%,TRUE,Unarmed,50,Null,-,-,-
 Meditation,AuraAbility,Archetype,Ascetic,3,Regenerate sanctity per day.,{{ (level) * 5 }},TRUE,Redemption,5,Null,-,-,-
 Poet,AuraAbility,Basic,None,5,Gain renown faster. Master this ability to unlock the Opportunist archetype.,{{ (level) * 1 }},TRUE,Reputation,1,Null,-,-,-
 Relentless,AuraAbility,Basic,None,5,Gain maximum health. Master this ability to unlock the Brute archetype.,{{ (level) * 3 }},TRUE,Health,3,Null,-,-,-
