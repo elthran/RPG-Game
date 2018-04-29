@@ -4,10 +4,10 @@ import sqlalchemy as sa
 import sqlalchemy.orm
 import sqlalchemy.ext.declarative
 
-from . import Base
+import models
 
 
-class Event(Base):
+class Event(models.Base):
     """Allow extra functions to occur when a specific state is reached.
 
     E.g. when the hero moves to the Blacksmith shop complete the Visit
@@ -52,13 +52,13 @@ class Event(Base):
 
 condition_to_trigger = sa.Table(
     'condition_to_trigger',
-    Base.metadata,
+    models.Base.metadata,
     sa.Column('condition_id', sa.Integer, sa.ForeignKey('condition.id', ondelete="SET NULL")),
     sa.Column('trigger_id', sa.Integer, sa.ForeignKey('trigger.id', ondelete="SET NULL"))
 )
 
 
-class Condition(Base):
+class Condition(models.Base):
     """A function that takes a python string and evaluates to boolean.
 
     Factory?
@@ -109,7 +109,7 @@ class Condition(Base):
 # )
 
 
-class Trigger(Base):
+class Trigger(models.Base):
     __tablename__ = 'trigger'
 
     id = sa.Column(sa.Integer, primary_key=True)
@@ -132,7 +132,7 @@ class Trigger(Base):
         self.conditions = conditions
 
 
-class Handler(Base):
+class Handler(models.Base):
     __tablename__ = 'handler'
 
     id = sa.Column(sa.Integer, primary_key=True)

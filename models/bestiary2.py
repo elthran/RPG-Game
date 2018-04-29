@@ -6,10 +6,10 @@
 # ///////////////////////////////////////////////////////////////////////#
 import sqlalchemy as sa
 
-from . import Base
+import models
 
 
-class MonsterTemplate(Base):
+class MonsterTemplate(models.Base):
     __tablename__ = 'monster_template'
 
     id = sa.Column(sa.Integer, primary_key=True)

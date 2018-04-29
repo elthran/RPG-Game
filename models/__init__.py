@@ -9,6 +9,7 @@ from . import inventory
 from . import items
 from . import journal
 from . import locations
+from . import mixins
 from . import proficiencies
 from . import quests
 

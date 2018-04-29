@@ -1,24 +1,22 @@
 import datetime
 
-from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy import ForeignKey
-from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import relationship
+import sqlalchemy as sa
+import sqlalchemy.orm
+import sqlalchemy.ext.hybrid
 
-from models.base_classes import Base
+import models
 
 
-class Forum(Base):
+class Forum(models.Base):
     __tablename__ = 'forum'
 
-    id = Column(Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
 
-    name = Column(String(50))
+    name = sa.Column(sa.String(50))
 
     # Relationships
     # Many to One with Category
-    boards = relationship("Board", back_populates="forum",
-                          cascade="all, delete-orphan")
+    boards = sa.orm.relationship("Board", back_populates="forum", cascade="all, delete-orphan")
 
     def __init__(self, name):
         self.name = name
@@ -27,33 +25,20 @@ class Forum(Base):
         self.boards.append(board)
 
 
-class HumanReadableMixin(object):
-    def human_readable_time(self):
-        """Human readable datetime string.
-
-        See https://docs.python.org/3.5/library/datetime.html#strftime-strptime-behavior
-
-        Currently returns formatted like:
-        Jan. 28 1:17pm
-        """
-        return self.timestamp.strftime("%b. %d %I:%M%p")
-
-
-class Board(HumanReadableMixin, Base):
+class Board(models.mixins.HumanReadableTimeMixin, models.Base):
     __tablename__ = "board"
 
-    id = Column(Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
 
     # Relationships
     # One to many with Forum
-    forum_id = Column(Integer, ForeignKey('forum.id', ondelete="CASCADE"))
-    forum = relationship("Forum", back_populates="boards")
+    forum_id = sa.Column(sa.Integer, sa.ForeignKey('forum.id', ondelete="CASCADE"))
+    forum = sa.orm.relationship("Forum", back_populates="boards")
 
     # Many to One with Threads
-    threads = relationship("Thread", back_populates="board",
-                           cascade="all, delete-orphan")
+    threads = sa.orm.relationship("Thread", back_populates="board", cascade="all, delete-orphan")
 
-    name = Column(String(50))
+    name = sa.Column(sa.String(50))
 
     def __init__(self, name):
         self.name = name
@@ -64,7 +49,7 @@ class Board(HumanReadableMixin, Base):
     def get_post_count(self):
         return sum((len(thread.posts) for thread in self.threads))
 
-    @hybrid_property
+    @sa.ext.hybrid.hybrid_property
     def most_recent_post(self):
         return max((thread.most_recent_post
                     for thread in self.threads
@@ -85,31 +70,29 @@ class Board(HumanReadableMixin, Base):
         return self.most_recent_post
 
 
-class Thread(HumanReadableMixin, Base):
+class Thread(models.mixins.HumanReadableTimeMixin, models.Base):
     __tablename__ = "thread"
 
-    id = Column(Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
 
     # Relationships
     # One to many with Forum
-    board_id = Column(Integer, ForeignKey('board.id', ondelete="CASCADE"))
-    board = relationship("Board", back_populates="threads")
+    board_id = sa.Column(sa.Integer, sa.ForeignKey('board.id', ondelete="CASCADE"))
+    board = sa.orm.relationship("Board", back_populates="threads")
 
     # Many to One with Posts
-    posts = relationship("Post", back_populates="thread",
-                         cascade="all, delete-orphan")
+    posts = sa.orm.relationship("Post", back_populates="thread", cascade="all, delete-orphan")
 
-    @hybrid_property
+    @sa.ext.hybrid.hybrid_property
     def most_recent_post(self):
         return max((post for post in self.posts), key=lambda p: p.timestamp,
                    default=None)
 
-    name = Column(String(50))
-    creator = Column(String(50))
-    description = Column(String(200))
-    category = Column(String(50))
-    timestamp = Column(DateTime)
-    views = Column(Integer)
+    name = sa.Column(sa.String(50))
+    creator = sa.Column(sa.String(50))
+    description = sa.Column(sa.String(200))
+    category = sa.Column(sa.String(50))
+    views = sa.Column(sa.Integer)
 
     def __init__(self, name="unnamed thread", creator="None", description="", category="General"):
         self.name = name
@@ -123,30 +106,27 @@ class Thread(HumanReadableMixin, Base):
         self.posts.append(post)
 
 
-class Post(HumanReadableMixin, Base):
+class Post(models.mixins.HumanReadableTimeMixin, models.Base):
     __tablename__ = "post"
 
-    id = Column(Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
 
     # Relationships
     # One to Many with Thread.
-    thread_id = Column(Integer, ForeignKey('thread.id', ondelete="CASCADE"))
-    thread = relationship("Thread", back_populates="posts")
+    thread_id = sa.Column(sa.Integer, sa.ForeignKey('thread.id', ondelete="CASCADE"))
+    thread = sa.orm.relationship("Thread", back_populates="posts")
 
     # One to Many with User class.
-    account_id = Column(Integer, ForeignKey('account.id', ondelete="CASCADE"))
-    account = relationship("Account", back_populates="posts")
+    account_id = sa.Column(sa.Integer, sa.ForeignKey('account.id', ondelete="CASCADE"))
+    account = sa.orm.relationship("Account", back_populates="posts")
 
-    content = Column(String(50))
+    content = sa.Column(sa.String(50))
 
-    @hybrid_property
+    @sa.ext.hybrid.hybrid_property
     def author(self):
         return self.user.username
-
-    timestamp = Column(DateTime)
 
     def __init__(self, content="Error: Content missing", user=None):
         self.content = content
         self.user = user
         self.timestamp = datetime.datetime.utcnow()
-
