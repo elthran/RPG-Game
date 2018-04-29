@@ -11,7 +11,7 @@ import unittest
 
 from database import EZDB
 from game import Hero
-from attributes import Attributes
+from models.attributes import Attributes
 import prebuilt_objects
 
 

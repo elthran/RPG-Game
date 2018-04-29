@@ -61,17 +61,6 @@ def safe_commit_session(f):
     return wrap_safe_commit_session
 
 
-class SessionHoistMixin:
-    """Hoist the _sa_instance_state.session attribute of this object.
-
-    I have no idea about the side effect of this. There is probably a proper
-    way to do this .. that doesn't access a protected member of the class.
-    """
-    @property
-    def session(self):
-        return self._sa_instance_state.session
-
-
 @contextlib.contextmanager
 def session_scope(Session):
     """Provide a transactional scope around a series of operations."""

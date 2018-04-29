@@ -1,126 +1,107 @@
-if __name__ == "__main__":
-    import os
-    os.system("python3 -m pytest -vv rpg_game_tests/test_{}".format(__file__))
-    exit()  # prevents code from trying to run file afterwards.
-
 import datetime
 
-from sqlalchemy import Column, Integer, String, DateTime, Boolean
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy import orm
-from sqlalchemy.orm import validates
-from sqlalchemy.ext.hybrid import hybrid_property
+import sqlalchemy as sa
+import sqlalchemy.orm
+import sqlalchemy.ext.hybrid
 
 from game import round_number_intelligently
-import attributes
-import abilities
-from models import proficiencies
-from models.inventory import Inventory
-from models.journal import Journal
-import specializations
-from services.session_helpers import SessionHoistMixin
-from models.base_classes import Base, DictHybrid, attribute_mapped_dict_hybrid
+import models
 
 
-class Hero(SessionHoistMixin, Base):
+class Hero(models.mixins.SessionHoistMixin, models.Base):
     """Store data about the Hero/Character object.
 
     """
     __tablename__ = 'hero'
 
-    id = Column(Integer, primary_key=True)
-    creation_phase = Column(Boolean)
-    name = Column(String(50))  # Was nullable=False now it isn't. I hope that is a good idea.
-    character_name = orm.synonym('name')
+    id = sa.Column(sa.Integer, primary_key=True)
+    creation_phase = sa.Column(sa.Boolean)
+    name = sa.Column(sa.String(50))  # Was nullable=False now it isn't. I hope that is a good idea.
+    character_name = sa.orm.synonym('name')
 
-    background = Column(String(50)) # Temporary. It's replacing 'fathers job' for now
-    age = Column(Integer)
-    house = Column(String(50))
-    experience = Column(Integer)
-    experience_maximum = Column(Integer)
-    gold = Column(Integer)
+    background = sa.Column(sa.String(50))  # Temporary. It's replacing 'fathers job' for now
+    age = sa.Column(sa.Integer)
+    house = sa.Column(sa.String(50))
+    experience = sa.Column(sa.Integer)
+    experience_maximum = sa.Column(sa.Integer)
+    gold = sa.Column(sa.Integer)
 
-    basic_ability_points = Column(Integer)
-    archetype_ability_points = Column(Integer)
-    calling_ability_points = Column(Integer)
-    pantheon_ability_points = Column(Integer)
-    attribute_points = Column(Integer)
-    proficiency_points = Column(Integer)
+    basic_ability_points = sa.Column(sa.Integer)
+    archetype_ability_points = sa.Column(sa.Integer)
+    calling_ability_points = sa.Column(sa.Integer)
+    pantheon_ability_points = sa.Column(sa.Integer)
+    attribute_points = sa.Column(sa.Integer)
+    proficiency_points = sa.Column(sa.Integer)
 
     # All elthran's new code for random stuff
     # Checks if you are currently about to fight a monster
-    current_terrain = Column(String(50))
-    random_encounter_monster = Column(Boolean)
-    spellbook_page = Column(Integer)
+    current_terrain = sa.Column(sa.String(50))
+    random_encounter_monster = sa.Column(sa.Boolean)
+    spellbook_page = sa.Column(sa.Integer)
 
     # Time code of when the (account?) was created
-    timestamp = Column(DateTime)
+    timestamp = sa.Column(sa.DateTime)
     # Date of last login
-    last_login = Column(String(50))
+    last_login = sa.Column(sa.String(50))
 
-    login_alerts = Column(String(200))  # Testing messages when you are attacked or get a new message
+    login_alerts = sa.Column(sa.String(200))  # Testing messages when you are attacked or get a new message
 
     # Relationships
     # User to Hero. One to many. Ordered!
     # Note deleting the user deletes all their heroes!
-    account_id = Column(Integer, ForeignKey('account.id', ondelete="CASCADE"))
-    account = relationship("Account", back_populates='heroes')
+    account_id = sa.Column(sa.Integer, sa.ForeignKey('account.id', ondelete="CASCADE"))
+    account = sa.orm.relationship("Account", back_populates='heroes')
 
     # Many heroes -> one map/world. (bidirectional)
-    map_id = Column(Integer, ForeignKey('location.id', ondelete="SET NULL"))
-    current_world = relationship("Location", back_populates='heroes',
-                                 foreign_keys='[Hero.map_id]')
+    map_id = sa.Column(sa.Integer, sa.ForeignKey('location.id', ondelete="SET NULL"))
+    current_world = sa.orm.relationship("Location", back_populates='heroes', foreign_keys='[Hero.map_id]')
     # Each current_location -> can be held by Many Heroes (bidirectional)
-    current_location_id = Column(Integer, ForeignKey('location.id',
-                                                     ondelete="SET NULL"))
-    current_location = relationship(
+    current_location_id = sa.Column(sa.Integer, sa.ForeignKey('location.id', ondelete="SET NULL"))
+    current_location = sa.orm.relationship(
         "Location", back_populates='heroes_by_current_location',
         foreign_keys='[Hero.current_location_id]')
 
     # Each current_city -> can be held by Many Heroes (bidirectional)
     # (Town or Cave)
-    city_id = Column(Integer, ForeignKey('location.id', ondelete="SET NULL"))
-    current_city = relationship(
+    city_id = sa.Column(sa.Integer, sa.ForeignKey('location.id', ondelete="SET NULL"))
+    current_city = sa.orm.relationship(
         "Location", back_populates='heroes_by_city',
         foreign_keys='[Hero.city_id]')
 
     # When you die, you should return to the last city you were at.
-    last_city_id = Column(Integer, ForeignKey('location.id',
-                                              ondelete="SET NULL"))
-    last_city = relationship(
+    last_city_id = sa.Column(sa.Integer, sa.ForeignKey('location.id', ondelete="SET NULL"))
+    last_city = sa.orm.relationship(
         "Location", back_populates='heroes_by_last_city',
         foreign_keys='[Hero.last_city_id]')
 
     # Each has a keyed list of abilities.
     # Deleting a Hero deletes all their Abilities.
-    abilities = relationship(
+    abilities = sa.orm.relationship(
         "Ability",
-        collection_class=attribute_mapped_dict_hybrid('attrib_name'),
+        collection_class=models.attribute_mapped_dict_hybrid('attrib_name'),
         back_populates='hero',
         cascade="all, delete-orphan")
 
     # Each Hero has One inventory. (One to One -> bidirectional)
     # inventory is list of character's items.
-    inventory = relationship("Inventory", back_populates="hero", uselist=False,
-                             cascade="all, delete-orphan")
+    inventory = sa.orm.relationship("Inventory", back_populates="hero", uselist=False, cascade="all, delete-orphan")
 
     # Attributes One to One despite the name
-    attributes = relationship(
+    attributes = sa.orm.relationship(
         "Attribute",
-        collection_class=attribute_mapped_dict_hybrid('attrib_name'),
+        collection_class=models.attribute_mapped_dict_hybrid('attrib_name'),
         back_populates='hero',
         cascade="all, delete-orphan")
 
     # Hero to Proficiency is One to Many
-    base_proficiencies = relationship(
+    base_proficiencies = sa.orm.relationship(
         "Proficiency",
-        collection_class=attribute_mapped_dict_hybrid('name'),
+        collection_class=models.attribute_mapped_dict_hybrid('name'),
         back_populates='hero',
         cascade="all, delete-orphan")
 
     # see http://docs.sqlalchemy.org/en/latest/orm/join_conditions.html#composite-secondary-joins
-    # all_proficiencies = relationship(
+    # all_proficiencies = sa.orm.relationship(
     #     "Proficiency",
     #     collection_class=attribute_mapped_dict_hybrid('name'),
     #     primaryjoin="join(Hero, Proficiency, Hero.id==Proficiency.hero_id)."
@@ -130,23 +111,22 @@ class Hero(SessionHoistMixin, Base):
     # )
 
     # Journal to Hero is One to One
-    journal = relationship('Journal', back_populates='hero', uselist=False,
-                           cascade="all, delete-orphan")
+    journal = sa.orm.relationship('Journal', back_populates='hero', uselist=False, cascade="all, delete-orphan")
 
     # # Each hero has many Triggers. One to Many
-    # triggers = relationship('Trigger', secondary='trigger_to_hero',
+    # triggers = sa.orm.relationship('Trigger', secondary='trigger_to_hero',
     #                         back_populates='heroes')
 
     # Hero to Handlers is One to Many.
-    handlers = relationship('Handler', back_populates='hero',
-                            cascade="all, delete-orphan")
+    handlers = sa.orm.relationship('Handler', back_populates='hero', cascade="all, delete-orphan")
 
     # @eltran ... this probably won't work as the var will disappear on
     # database reload.
     # variable used for keeping track of clicked attributes on the user table
     clicked_user_attribute = ""
 
-    @orm.validates('current_world')
+    # noinspection PyUnusedLocal
+    @sa.orm.validates('current_world')
     def validate_current_world(self, key, value):
         if 'map' == value.type:
             return value
@@ -156,13 +136,13 @@ class Hero(SessionHoistMixin, Base):
     # Hero to Specializations relationship - One to Many
     # These relationships can be modified through the 'specializations'
     # container.
-    _specializations = relationship(
+    _specializations = sa.orm.relationship(
         "Specialization",
-        collection_class=attribute_mapped_dict_hybrid("attrib_name"),
+        collection_class=models.attribute_mapped_dict_hybrid("attrib_name"),
         back_populates="hero",
         cascade="all, delete-orphan")
     # Hero to Calling is One to One
-    _calling = relationship(
+    _calling = sa.orm.relationship(
         "Specialization",
         primaryjoin="and_(Hero.id==Specialization.hero_id, "
                     "Specialization.type=='Calling')",
@@ -170,7 +150,7 @@ class Hero(SessionHoistMixin, Base):
         uselist=False,
         cascade="all, delete-orphan")
     # Hero to Archetype is One to One
-    _archetype = relationship(
+    _archetype = sa.orm.relationship(
         "Specialization",
         primaryjoin="and_(Hero.id==Specialization.hero_id, "
                     "Specialization.type=='Archetype')",
@@ -178,7 +158,7 @@ class Hero(SessionHoistMixin, Base):
         back_populates="hero",
         cascade="all, delete-orphan")
     # Hero to Pantheon is One to One.
-    _pantheon = relationship(
+    _pantheon = sa.orm.relationship(
         "Specialization",
         primaryjoin="and_(Hero.id==Specialization.hero_id, "
                     "Specialization.type=='Pantheon')",
@@ -186,7 +166,7 @@ class Hero(SessionHoistMixin, Base):
         back_populates="hero",
         cascade="all, delete-orphan")
 
-    @hybrid_property
+    @sa.ext.hybrid.hybrid_property
     def specializations(self):
         """Wrapper for the hero Specialziation objects.
 
@@ -212,7 +192,7 @@ class Hero(SessionHoistMixin, Base):
         hero.specializations.all.brute -> if this hero has Brute Spec.
         """
 
-        collection = DictHybrid(key_attr='attrib_name')
+        collection = models.DictHybrid(key_attr='attrib_name')
         collection['all'] = self._specializations
         collection['archetype'] = self._archetype
         collection['calling'] = self._calling
@@ -236,7 +216,7 @@ class Hero(SessionHoistMixin, Base):
         will have any effect.
         """
         if value.template:
-            getattr(specializations, value.name)().hero = self
+            getattr(models.specializations, value.name)().hero = self
         else:
             value.hero = self
 
@@ -251,8 +231,9 @@ class Hero(SessionHoistMixin, Base):
         """
 
         # Add all attributes to hero.
-        for cls_name in attributes.ALL_CLASS_NAMES:
-            AttributeClass = getattr(attributes, cls_name)
+        for cls_name in models.attributes.ALL_CLASS_NAMES:
+            # noinspection PyPep8Naming
+            AttributeClass = getattr(models.attributes, cls_name)
             AttributeClass().hero = self
 
         # set self.base_proficiencies
@@ -262,27 +243,30 @@ class Hero(SessionHoistMixin, Base):
         # obj = Accuracy()
         # accuracy.hero = self (current hero object)
         # hero.base_proficiencies['accuracy'] = Accuracy()
-        for cls_name in proficiencies.ALL_CLASS_NAMES:
+        for cls_name in models.proficiencies.ALL_CLASS_NAMES:
             # attributes.Attribute
-            ProfClass = getattr(proficiencies, cls_name)
+            # noinspection PyPep8Naming
+            ProfClass = getattr(models.proficiencies, cls_name)
             ProfClass().hero = self
 
         self.base_proficiencies['endurance'].current = self.base_proficiencies['endurance'].final
 
         # Attach one of each Ability to hero.
-        for cls_name in abilities.ALL_CLASS_NAMES:
-            AbilityClass = getattr(abilities, cls_name)
+        for cls_name in models.abilities.ALL_CLASS_NAMES:
+            # noinspection PyPep8Naming
+            AbilityClass = getattr(models.abilities, cls_name)
             AbilityClass().hero = self
 
         # Attach one of each Specialization to hero.
-        for cls_name in specializations.ALL_CLASS_NAMES:
-            Class = getattr(specializations, cls_name)
+        for cls_name in models.specializations.ALL_CLASS_NAMES:
+            # noinspection PyPep8Naming
+            Class = getattr(models.specializations, cls_name)
             obj = Class()
             if obj.type == "Specialization":
                 obj.hero = self
 
-        self.inventory = Inventory()
-        self.journal = Journal()
+        self.inventory = models.Inventory()
+        self.journal = models.Journal()
 
         # Data and statistics
         self.age = 7
@@ -319,7 +303,7 @@ class Hero(SessionHoistMixin, Base):
         self.refresh_character(full=True)
         self.init_on_load()
 
-    @orm.reconstructor
+    @sa.orm.reconstructor
     def init_on_load(self):
         """Runs when the database is reload and at the end of __init__.
         """
@@ -329,7 +313,8 @@ class Hero(SessionHoistMixin, Base):
         # resets experience_percent
         self.experience = self.experience
 
-    @validates('experience')
+    # noinspection PyUnusedLocal
+    @sa.orm.validates('experience')
     def validate_experience(self, key_name, current):
         # Update experience percent on experience change.
         try:
@@ -356,7 +341,7 @@ class Hero(SessionHoistMixin, Base):
         NOTE: the value of get_summed_proficiencies is saved in the
         hero.proficiencies attribute.
         This can be used for much increase efficiency. Since each call of
-        get_summed_proficiencies() rechecks _all_ proficiecies.
+        get_summed_proficiencies() rechecks _all_ proficiencies.
         The more efficient way is to do it once and then call
             hero.proficiencies afterwards. Until you need to recheck.
         You can also recheck just one value using:
@@ -364,8 +349,7 @@ class Hero(SessionHoistMixin, Base):
 
         """
 
-        all_other_proficiencies = self.equipped_items() + \
-                                  [obj for obj in self.abilities if obj.level]
+        all_other_proficiencies = self.equipped_items() + [obj for obj in self.abilities if obj.level]
 
         summed = {}
         if key_name:
@@ -403,7 +387,8 @@ class Hero(SessionHoistMixin, Base):
             lvl, base, mod, type_ = summed[key_name]
 
             # convert dict of values into dict of database objects
-            Class = getattr(proficiencies, type_)
+            # noinspection PyPep8Naming
+            Class = getattr(models.proficiencies, type_)
             summed[key_name] = Class(level=lvl, base=base, modifier=mod)
             summed[key_name].current = self.base_proficiencies[key_name].current
 
@@ -435,10 +420,12 @@ class Hero(SessionHoistMixin, Base):
             for key in summed:
                 lvl, base, mod, type_ = summed[key]
 
-                Class = getattr(proficiencies, type_)
+                # noinspection PyPep8Naming
+                Class = getattr(models.proficiencies, type_)
                 summed[key] = Class(level=lvl, base=base, modifier=mod)
                 summed[key].current = self.base_proficiencies[key].current
-            self.proficiencies = DictHybrid(summed, key_attr='name')
+            # noinspection PyAttributeOutsideInit
+            self.proficiencies = models.DictHybrid(summed, key_attr='name')
             return self.proficiencies
 
     def refresh_proficiencies(self):
@@ -463,7 +450,7 @@ class Hero(SessionHoistMixin, Base):
         self.experience_percent = round(self.experience / self.experience_maximum, 2) * 100
 
     def gain_experience(self, amount):
-        new_amount = amount * (1 + self.get_summed_proficiencies('understanding').final / 100) # Each value of understanding should add 1% exp gained
+        new_amount = amount * (1 + self.get_summed_proficiencies('understanding').final / 100)  # Each value of understanding should add 1% exp gained
         new_amount = round_number_intelligently(new_amount)
         self.experience += new_amount
         if self.experience >= self.experience_maximum:
@@ -475,7 +462,7 @@ class Hero(SessionHoistMixin, Base):
             self.archetype_ability_points += 1
             self.age += 1
             self.refresh_character(full=True)
-        return new_amount # This way you can just run this function anytime you want to add exp, it calculates your modifiers and updates, then returns the value in case you want to print it
+        return new_amount  # This way you can just run this function anytime you want to add exp, it calculates your modifiers and updates, then returns the value in case you want to print it
 
     def equipped_items(self):
         return self.inventory.equipped or []  # Might work without OR.
@@ -519,7 +506,8 @@ class Hero(SessionHoistMixin, Base):
             print("you have already logged in today (printed from game.py)")
         self.last_login = time[:10]
 
-    @validates('current_location')
+    # noinspection PyUnusedLocal
+    @sa.orm.validates('current_location')
     def validate_current_location(self, key, location):
         """Updates value of current_city on assignment.
 
@@ -545,3 +533,8 @@ class Hero(SessionHoistMixin, Base):
         return [hero
                 for hero in self.current_location.heroes_by_current_location
                 if self.id != hero.id]
+
+
+if __name__ == "__main__":
+    import os
+    os.system("python3 -m pytest -vv rpg_game_tests/test_{}".format(__file__))

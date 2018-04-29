@@ -1,10 +1,9 @@
 import unittest
-import pdb
 
 from database import EZDB
 from game import Hero
-from abilities import (
-    Ability, Archetype_Ability, Class_Ability, Religious_Ability
+from models.abilities import (
+    Ability, Archetype_Ability
 )
 # I don't know why it says this is unused ... maybe we can make it
 # obsolete? I mean you did say it made so of the variables hard to understand.

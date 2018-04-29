@@ -1,13 +1,13 @@
-from sqlalchemy import Column, Integer, ForeignKey
-from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm.collections import attribute_mapped_collection
-from models.base_classes import Base
+import sqlalchemy as sa
+import sqlalchemy.orm
+import sqlalchemy.orm.collections
+import sqlalchemy.ext.orderinglist
 
-from services.session_helpers import SessionHoistMixin, safe_commit_session
+import services
+import models
 
 
-class Inventory(SessionHoistMixin, Base):
+class Inventory(models.mixins.SessionHoistMixin, models.Base):
     """Store a list of items for the hero.
 
     This is a special class that will allow me to do more natural pythonic operations
@@ -41,7 +41,7 @@ class Inventory(SessionHoistMixin, Base):
     """
     __tablename__ = 'inventory'
 
-    id = Column(Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
 
     # Marked for restructuring as causes conflics with multiple heroes?
     # As in if hero1 has 4 of an item then hero2 will as well?
@@ -52,73 +52,73 @@ class Inventory(SessionHoistMixin, Base):
     # Relationships
     # Each Hero has One inventory. (One to One -> bidirectional)
     # inventory is list of character's items.
-    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
-    hero = relationship("Hero", back_populates='inventory')
+    hero_id = sa.Column(sa.Integer, sa.ForeignKey('hero.id', ondelete="CASCADE"))
+    hero = sa.orm.relationship("Hero", back_populates='inventory')
 
     # Item relationships
     # One to One
-    head = relationship(
+    head = sa.orm.relationship(
         "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
                             "Item.equipped, "
                             "Item.type=='HeadArmour')", uselist=False)
 
-    chest = relationship(
+    chest = sa.orm.relationship(
         "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
                             "Item.equipped, "
                             "Item.type=='ChestArmour')", uselist=False)
 
-    left_hand = relationship(
+    left_hand = sa.orm.relationship(
         "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
                             "Item.equipped, "
                             "Item.type=='Shield')", uselist=False)
 
-    right_hand = relationship(
+    right_hand = sa.orm.relationship(
         "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
                             "Item.equipped, "
                             "Item.type=='OneHandedWeapon')", uselist=False)
 
-    both_hands = relationship(
+    both_hands = sa.orm.relationship(
         "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
                             "Item.equipped, "
                             "Item.type=='TwoHandedWeapon')", uselist=False)
 
-    arm = relationship(
+    arm = sa.orm.relationship(
         "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
                             "Item.equipped, "
                             "Item.type=='ArmArmour')", uselist=False)
 
-    hand = relationship(
+    hand = sa.orm.relationship(
         "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
                             "Item.equipped, "
                             "Item.type=='HandArmour')", uselist=False)
 
-    leg = relationship(
+    leg = sa.orm.relationship(
         "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
                             "Item.equipped, "
                             "Item.type=='LegArmour')", uselist=False)
 
-    foot = relationship(
+    foot = sa.orm.relationship(
         "Item", primaryjoin="and_(Inventory.id==Item.inventory_id, "
                             "Item.equipped, "
                             "Item.type=='FootArmour')", uselist=False)
 
     # One to many
-    rings = relationship(
+    rings = sa.orm.relationship(
         "Item", order_by="Item.ring_position",
-        collection_class=attribute_mapped_collection('ring_position'),
+        collection_class=sa.orm.collections.attribute_mapped_collection('ring_position'),
         primaryjoin="and_(Inventory.id==Item.inventory_id, "
                     "Item.equipped,"
                     "Item.type=='Ring')")
 
-    unequipped = relationship(
+    unequipped = sa.orm.relationship(
         "Item", order_by="Item.unequipped_position",
-        collection_class=ordering_list("unequipped_position"),
+        collection_class=sa.ext.orderinglist.ordering_list("unequipped_position"),
         back_populates='inventory',
         primaryjoin="and_(Inventory.id==Item.inventory_id, "
                     "Item.equipped==False)",
         cascade="all, delete-orphan")
 
-    equipped = relationship(
+    equipped = sa.orm.relationship(
         "Item", order_by="Item.id",
         back_populates='inventory',
         primaryjoin="and_(Inventory.id==Item.inventory_id, "
@@ -177,7 +177,7 @@ class Inventory(SessionHoistMixin, Base):
         for item in items:
             self.equip(item)
 
-    @safe_commit_session
+    @services.safe_commit_session
     def equip(self, item, index=None):
         """Equip the an item in the correct slot -> Return ids of items replaced.
 
@@ -213,6 +213,7 @@ class Inventory(SessionHoistMixin, Base):
         item.unequipped_position = None
         self.session.commit()
 
+        # TODO understand/refactor slots_used variable.
         if item.type in Inventory.slots_used_by_item_type:
             slots_used = Inventory.slots_used_by_item_type[item.type]
 
@@ -256,7 +257,7 @@ class Inventory(SessionHoistMixin, Base):
 
         self.add_item(item)
 
-    @safe_commit_session
+    @services.safe_commit_session
     def add_item(self, item):
         """Add an item to the unequipped slot of this inventory.
 
@@ -275,7 +276,7 @@ class Inventory(SessionHoistMixin, Base):
         self.unequipped.append(item)
         item.equipped = False  # Required to add this to the unequipped list.
 
-    @safe_commit_session
+    @services.safe_commit_session
     def remove_item(self, item):
         """Remove a given item from any inventory it might be in."""
         item.ring_position = None

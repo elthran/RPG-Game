@@ -1,5 +1,5 @@
 from models.locations import Location
-import specializations
+from models import specializations
 import models
 from models.hero import Hero
 from models.quests import Quest, QuestPath

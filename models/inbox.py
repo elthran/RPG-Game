@@ -1,10 +1,10 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 
-from models.base_classes import Base
+import models
 
 
-class Inbox(Base):
+class Inbox(models.Base):
     __tablename__ = 'inbox'
 
     id = sa.Column(sa.Integer, primary_key=True)
@@ -63,7 +63,7 @@ class Inbox(Base):
         Message(self, receiver.inbox, content, time)
 
 
-class Message(Base):
+class Message(models.Base):
     __tablename__ = "message"
 
     id = sa.Column(sa.Integer, primary_key=True)

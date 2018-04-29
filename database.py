@@ -31,7 +31,7 @@ from models import base_classes
 # Internal game modules
 from game import round_number_intelligently
 from models.hero import Hero
-from abilities import Ability
+from models.abilities import Ability
 from models.locations import Location
 from models.items import Item
 from models.quests import QuestPath

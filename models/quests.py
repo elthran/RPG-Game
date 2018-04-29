@@ -1,3 +1,5 @@
+import models.mixins
+
 if __name__ == "__main__":
     import os
     os.system("python3 -m pytest -vv -s rpg_game_tests/test_{}".format(__file__))
@@ -101,7 +103,7 @@ quest_path_to_quest_association = Table(
 )
 
 
-class QuestPath(TemplateMixin, events.HandlerMixin, Base):
+class QuestPath(TemplateMixin, models.mixins.HandlerMixin, Base):
     """A list of sequential quests that must be completed in order.
 
     This path can spawn a new path at any point ... a new path may or may not
