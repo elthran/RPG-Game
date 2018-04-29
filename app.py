@@ -29,7 +29,7 @@ from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
 # _before_ any of them are used.
-from engine import async_process, rest_key_timelock
+from engine import Engine, async_process, rest_key_timelock
 from models.forum import Board, Thread, Post
 from models.bestiary2 import create_monster, MonsterTemplate
 import services
@@ -38,7 +38,7 @@ import models
 # For testing
 from models.hero import Hero
 
-engine = Engine(database)
+engine = Engine()
 
 # Disable will need to be restructured (Marlen)
 # initialization
@@ -217,7 +217,7 @@ def uses_hero(f):
     def wrap_uses_hero(*args, **kwargs):
         try:
             # print("Currently at the uses_hero function!")
-            hero = database.get_object_by_id("Hero", session["hero_id"])
+            hero = models.hero.Hero.get(session["hero_id"])
         except KeyError as ex:
             if not session:
                 # After making a POST request with AJAX the session
@@ -250,7 +250,7 @@ def update_current_location(f):
     @wraps(f)
     def wrap_current_location(*args, **kwargs):
         hero = kwargs['hero']
-        location = database.get_object_by_name('Location', kwargs['name'])
+        location = models.locations.Location.query().filter_by(name=kwargs['name']).one()
         hero.current_location = location
         engine.spawn(
             'move_event',

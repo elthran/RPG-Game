@@ -360,6 +360,10 @@ class Base(object):
     def first(cls):
         return cls.query().first()
 
+    @classmethod
+    def get(cls, id_):
+        return cls.query().get(id_)
+
     def save(self):
         session = self._sa_instance_state.session
         try:

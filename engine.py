@@ -18,8 +18,9 @@ import private_config
 
 
 class Engine:
-    def __init__(self, database):
-        self.db = database
+    def __init__(self):
+        pass
+        # self.db = database
         # self.events = {}
         # self.handlers = {}
 
@@ -52,7 +53,7 @@ class Engine:
         """
         # pdb.set_trace()
         event = events.Event(event_name, hero_id=hero.id, description=description)
-        self.db.add_object(event)
+        event.save()
 
         # return the "Blacksmith" quest object ...
         # Since its completion trigger is completed ...
