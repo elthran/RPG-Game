@@ -37,6 +37,7 @@ import models
 
 # For testing
 from models.hero import Hero
+pdb.set_trace()
 
 engine = Engine()
 

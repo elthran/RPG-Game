@@ -1,24 +1,13 @@
-if __name__ == "__main__":
-    import os
-    os.system("python3 -m pytest -vv "
-              "rpg_game_tests/test_conditions.py "
-              "rpg_game_tests/test_conditions.py")
-    exit()  # prevents code from trying to run file afterwards.
-
 import datetime
 
-from sqlalchemy import (
-    Column, Integer, String, DateTime, Boolean, ForeignKey, Table
-)
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.orm import backref
-from sqlalchemy.ext.hybrid import hybrid_property
+import sqlalchemy as sa
+import sqlalchemy.orm
+import sqlalchemy.ext.declarative
 
-import models
+from . import Base
 
 
-class Event(models.base_classes.Base):
+class Event(Base):
     """Allow extra functions to occur when a specific state is reached.
 
     E.g. when the hero moves to the Blacksmith shop complete the Visit
@@ -26,11 +15,11 @@ class Event(models.base_classes.Base):
     """
     __tablename__ = 'event'
 
-    id = Column(Integer, primary_key=True)
-    type = Column(String(50))
-    description = Column(String(200))
-    when = Column(DateTime)
-    hero_id = Column(Integer)
+    id = sa.Column(sa.Integer, primary_key=True)
+    type = sa.Column(sa.String(50))
+    description = sa.Column(sa.String(200))
+    when = sa.Column(sa.DateTime)
+    hero_id = sa.Column(sa.Integer)
 
     def __init__(self, event_type, hero_id=None, description=None):
         """Build and describe a game event.
@@ -61,17 +50,15 @@ class Event(models.base_classes.Base):
         # arg_dict.get('location', None, type=str)
 
 
-condition_to_trigger = Table(
+condition_to_trigger = sa.Table(
     'condition_to_trigger',
-    models.base_classes.Base.metadata,
-    Column('condition_id', Integer, ForeignKey('condition.id',
-                                               ondelete="SET NULL")),
-    Column('trigger_id', Integer, ForeignKey('trigger.id',
-                                             ondelete="SET NULL"))
+    Base.metadata,
+    sa.Column('condition_id', sa.Integer, sa.ForeignKey('condition.id', ondelete="SET NULL")),
+    sa.Column('trigger_id', sa.Integer, sa.ForeignKey('trigger.id', ondelete="SET NULL"))
 )
 
 
-class Condition(models.base_classes.Base):
+class Condition(Base):
     """A function that takes a python string and evaluates to boolean.
 
     Factory?
@@ -79,29 +66,27 @@ class Condition(models.base_classes.Base):
     hero.current_location.name == location.name
     """
     __tablename__ = 'condition'
-    id = Column(Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
 
-    hero_attribute = Column(String(50))
-    comparison = Column(String(2))
-    condition_attribute = Column(String(50))
-    code = Column(String(200))
+    hero_attribute = sa.Column(sa.String(50))
+    comparison = sa.Column(sa.String(2))
+    condition_attribute = sa.Column(sa.String(50))
+    code = sa.Column(sa.String(200))
 
     # Relationships
     # Condition to Trigger is Many To Many
-    triggers = relationship("Trigger", secondary=condition_to_trigger,
-                            back_populates="conditions")
+    triggers = sa.orm.relationship("Trigger", secondary=condition_to_trigger, back_populates="conditions")
 
     # Each condition might be connected to a location. One to One.
-    location_id = Column(Integer, ForeignKey('location.id',
-                                             ondelete="CASCADE"))
-    location = relationship('Location')
+    location_id = sa.Column(sa.Integer, sa.ForeignKey('location.id', ondelete="CASCADE"))
+    location = sa.orm.relationship('Location')
 
     def __init__(self, hero_attribute, comparison, object_of_comparison):
         """Build a condition object.
 
         The default initial comparison is:
         self.trigger.hero._some_passed_attribute_name_.id
-        NOTE: id is applied automatically this will need to be re-specced.
+        NOTE: id is applied automatically this will need to be respecced.
         """
 
         self.hero_attribute = hero_attribute
@@ -118,28 +103,27 @@ class Condition(models.base_classes.Base):
 
 
 # trigger_to_hero = Table('trigger_to_hero', Base.metadata,
-#     Column('hero_id', Integer, ForeignKey('hero.id', ondelete="SET NULL")),
-#     Column('trigger_id', Integer, ForeignKey('trigger.id',
+#     sa.Column('hero_id', Integer, ForeignKey('hero.id', ondelete="SET NULL")),
+#     sa.Column('trigger_id', Integer, ForeignKey('trigger.id',
 #                                              ondelete="SET NULL"))
 # )
 
 
-class Trigger(models.base_classes.Base):
+class Trigger(Base):
     __tablename__ = 'trigger'
 
-    id = Column(Integer, primary_key=True)
-    event_name = Column(String(50))
-    extra_info_for_humans = Column(String(200))
-    completed = Column(Boolean)
+    id = sa.Column(sa.Integer, primary_key=True)
+    event_name = sa.Column(sa.String(50))
+    extra_info_for_humans = sa.Column(sa.String(200))
+    completed = sa.Column(sa.Boolean)
 
     # # Relationship
     # # Many to Many with Heroes.
-    # heroes = relationship('Hero', secondary=trigger_to_hero,
+    # heroes = sa.orm.relationship('Hero', secondary=trigger_to_hero,
     #                       back_populates='triggers')
 
     # One to many with Conditions. Each trigger might have many conditions.
-    conditions = relationship("Condition", secondary=condition_to_trigger,
-                              back_populates="triggers")
+    conditions = sa.orm.relationship("Condition", secondary=condition_to_trigger, back_populates="triggers")
 
     def __init__(self, event_name, conditions, extra_info_for_humans=None):
         self.event_name = event_name
@@ -148,22 +132,22 @@ class Trigger(models.base_classes.Base):
         self.conditions = conditions
 
 
-class Handler(models.base_classes.Base):
+class Handler(Base):
     __tablename__ = 'handler'
 
-    id = Column(Integer, primary_key=True)
-    _master = Column(String(50))
+    id = sa.Column(sa.Integer, primary_key=True)
+    _master = sa.Column(sa.String(50))
 
     # Relationships
-    trigger_id = Column(Integer, ForeignKey('trigger.id', ondelete="CASCADE"))
-    trigger = relationship("Trigger")
+    trigger_id = sa.Column(sa.Integer, sa.ForeignKey('trigger.id', ondelete="CASCADE"))
+    trigger = sa.orm.relationship("Trigger")
 
-    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
-    hero = relationship("Hero")  # Don't set cascade here or you will delete the hero object.
+    hero_id = sa.Column(sa.Integer, sa.ForeignKey('hero.id', ondelete="CASCADE"))
+    hero = sa.orm.relationship("Hero")  # Don't set cascade here or you will delete the hero object.
 
-    @hybrid_property
-    def trigger_is_completed(self):
-        return self.evaluate()
+    # @sa.ext.hybrid.hybrid_property
+    # def trigger_is_completed(self):
+    #     return self.evaluate()
 
     # @declared_attr
     # def something(cls):
@@ -173,7 +157,7 @@ class Handler(models.base_classes.Base):
         """Create a new Handler object with the passed master.
 
         This is probably done by a class that sub-classes HandlerMixin and
-        is using the self.new_hander() method.
+        is using the self.new_handler() method.
         """
         self._master = master
 
@@ -283,20 +267,32 @@ class HandlerMixin(object):
     """
 
     # Add relationship to cls spec.
-    @declared_attr
+    # noinspection PyMethodParameters
+    @sa.ext.declarative.declared_attr
     def handler_id(cls):
-        return Column(Integer, ForeignKey('handler.id', ondelete="CASCADE"))
+        return sa.Column(sa.Integer, sa.ForeignKey('handler.id', ondelete="CASCADE"))
 
     # The backref here populates the list of handler mixin stubs.
-    @declared_attr
+    # noinspection PyUnresolvedReferences
+    # noinspection PyMethodParameters
+    @sa.ext.declarative.declared_attr
     def handler(cls):
-        return relationship(
+        return sa.orm.relationship(
             "Handler",
-            backref=backref(cls.__tablename__, uselist=False, cascade="all, delete-orphan"))
+            backref=sa.orm.backref(cls.__tablename__, uselist=False, cascade="all, delete-orphan"))
 
+    # noinspection PyUnresolvedReferences
     @property
     def new_handler(self):
         return lambda: Handler(self.__tablename__)
 
     def run(self):
         raise NotImplementedError("You need to override this on the '{}' class.".format(self.__class__))
+
+
+if __name__ == "__main__":
+    import os
+    os.system("python3 -m pytest -vv "
+              "rpg_game_tests/test_conditions.py "
+              "rpg_game_tests/test_conditions.py")
+    exit()  # prevents code from trying to run file afterwards.

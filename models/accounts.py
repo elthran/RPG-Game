@@ -1,11 +1,11 @@
 import sqlalchemy as sa
 import sqlalchemy.orm
 
-from . import base_classes
-from . import inbox
+from . import Base
+from . import Inbox
 
 
-class Account(base_classes.Base):
+class Account(Base):
     """User class holds data about the current gamer.
 
     This is database ready and connects to the Hero class.
@@ -45,7 +45,7 @@ class Account(base_classes.Base):
         The user gets special privileges if it is an admin.
         """
 
-        self.inbox = inbox.Inbox()
+        self.inbox = Inbox()
 
         self.username = username
         self.password = password

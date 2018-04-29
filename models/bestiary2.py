@@ -1,50 +1,51 @@
-#//////////////////////////////////////////////////////////////////////////////#
-#                                                                              #
-#  Author: Elthran B, Jimmy Zhang                                              #
-#  Email : jimmy.gnahz@gmail.com                                               #
-#                                                                              #
-#//////////////////////////////////////////////////////////////////////////////#
-from sqlalchemy import Column, Integer, String, Boolean
+# ///////////////////////////////////////////////////////////////////////#
+#                                                                        #
+#  Author: Elthran B, Jimmy Zhang                                        #
+#  Email : jimmy.gnahz@gmail.com                                         #
+#                                                                        #
+# ///////////////////////////////////////////////////////////////////////#
+import sqlalchemy as sa
 
-from models.base_classes import Base
+from . import Base
+
 
 class MonsterTemplate(Base):
     __tablename__ = 'monster_template'
 
-    id = Column(Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
 
-    name = Column(String(50))
-    species = Column(String(50))
-    species_plural = Column(String(50))
-    level_min = Column(Integer) # The lowest level it can ever be generated as. (So you can't generate a level 1 dragon for example)
-    level_max = Column(Integer) # The highest level you can ever generate as. (So you can't generatea level 75 rat for example)
-    experience_rewarded = Column(Integer)
+    name = sa.Column(sa.String(50))
+    species = sa.Column(sa.String(50))
+    species_plural = sa.Column(sa.String(50))
+    level_min = sa.Column(sa.Integer)  # The lowest level it can ever be generated as. (So you can't generate a level 1 dragon for example)
+    level_max = sa.Column(sa.Integer)  # The highest level you can ever generate as. (So you can't generate level 75 rat for example)
+    experience_rewarded = sa.Column(sa.Integer)
 
-    # Query requests which help determine which monster to pull for the occassion
-    city = Column(Boolean)
-    forest = Column(Boolean)
-    cave = Column(Boolean)
+    # Query requests which help determine which monster to pull for the occasion
+    city = sa.Column(sa.Boolean)
+    forest = sa.Column(sa.Boolean)
+    cave = sa.Column(sa.Boolean)
 
     # This is used to boost certain creatures. The stronger a creature would seem to be, the higher the boost it gets. For example, a rat
     # wouldn't seem to be as tough as a dog or human of the same level. So it would have a < 1 modifier. Default is 1.
-    level_modifier = Column(Integer)
+    level_modifier = sa.Column(sa.Integer)
 
     # For generating monsters, this is merely the stat distribution. It has nothing to do with their power level. A level 10 rat and a level 10
     # goblin would have the same amount of stat points to distribute. The values below just tell the game HOW to distribute them. So the goblin
     # should have higher points in intellect and brawn, but likely lower agility and quickness. The default of any value should be 1
     # If you set a value to 0, it means it will never have any points into that statistic (like a rat should have 0 charisma)
-    agility = Column(Integer)
-    charisma = Column(Integer)
-    divinity = Column(Integer)
-    resilience = Column(Integer)
-    fortuity = Column(Integer)
-    pathfinding = Column(Integer)
-    quickness = Column(Integer)
-    willpower = Column(Integer)
-    brawn = Column(Integer)
-    survivalism = Column(Integer)
-    vitality = Column(Integer)
-    intellect = Column(Integer)
+    agility = sa.Column(sa.Integer)
+    charisma = sa.Column(sa.Integer)
+    divinity = sa.Column(sa.Integer)
+    resilience = sa.Column(sa.Integer)
+    fortuity = sa.Column(sa.Integer)
+    pathfinding = sa.Column(sa.Integer)
+    quickness = sa.Column(sa.Integer)
+    willpower = sa.Column(sa.Integer)
+    brawn = sa.Column(sa.Integer)
+    survivalism = sa.Column(sa.Integer)
+    vitality = sa.Column(sa.Integer)
+    intellect = sa.Column(sa.Integer)
 
     def __init__(self, name, species="None", species_plural="None", level_min=1, level_max=99, experience_rewarded=0, level_modifier=1,
                  city=False, forest=False, cave=False,
@@ -75,12 +76,13 @@ class MonsterTemplate(Base):
         self.vitality = vitality
         self.intellect = intellect
 
+
 class Monster(object):
     def __init__(self, name, level, agility, charisma, divinity, resilience, fortuity, pathfinding,
                  quickness, willpower, brawn, survivalism, vitality, intellect):
         self.name = name
         self.level = level
-        #self.proficiencies = MonsterProficiencies()
+        # self.proficiencies = MonsterProficiencies()
 
         self.agility = agility
         self.charisma = charisma
@@ -99,12 +101,10 @@ class Monster(object):
         display = "Name: " + self.name + "\nLevel: " + str(self.level)
         return display
 
-def create_monster(name, level, agility, charisma, divinity, resilience, fortuity, pathfinding,
-                 quickness, willpower, brawn, survivalism, vitality, intellect):
+
+def create_monster(name, level, agility, charisma, divinity, resilience, fortuity, pathfinding, quickness, willpower, brawn, survivalism, vitality, intellect):
     stat_points = level + 5
     return Monster(name=name, level=level,
                    agility=agility, charisma=charisma, divinity=divinity, resilience=resilience,
                    fortuity=fortuity, pathfinding=pathfinding, quickness=quickness, willpower=willpower,
                    brawn=brawn, survivalism=survivalism, vitality=vitality, intellect=intellect)
-
-
