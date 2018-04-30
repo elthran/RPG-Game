@@ -53,13 +53,13 @@ class EZDB:
         engine = sa.create_engine(
             database + "?charset=utf8mb4", pool_recycle=3600, echo=debug)
 
-        models.base_classes.Base.metadata.create_all(engine, checkfirst=True)
-        models.base_classes.Base.metadata.bind = engine
+        models.Base.metadata.create_all(engine, checkfirst=True)
+        models.Base.metadata.bind = engine
 
         # Set up Session for this engine.
         Session.configure(bind=engine)
         self.Session = Session
-        models.base_classes.Base.Session = Session
+        models.Base.Session = Session
 
         self.engine = engine
         self.session = self.Session()
@@ -97,12 +97,12 @@ class EZDB:
                 prebuilt_objects.all_monsters]:
             for obj in obj_list:
                 self.session.add(obj)
-                if isinstance(obj, models.accounts.Account):
+                if isinstance(obj, models.Account):
                     obj.password = services.secrets.encrypt(obj.password)
                     obj.timestamp = datetime.datetime.utcnow()
                 self.update()
         default_quest_paths = self.get_default_quest_paths()
-        for hero in self.session.query(models.hero.Hero).all():
+        for hero in self.session.query(models.Hero).all():
             hero.journal.quest_paths = default_quest_paths
         self.update()
 

@@ -10,7 +10,7 @@ I am using this tutorial https://docs.python.org/3.6/library/unittest.html
 from game import Hero
 
 from database import EZDB
-from models.base_classes import BaseItem, BaseDict
+from models.basic_types import BaseItem, BaseDict
 
 import unittest
 

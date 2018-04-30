@@ -1,7 +1,7 @@
 import pytest
 
 from . import GenericTestCase
-from models.base_classes import DictHybrid, attribute_mapped_dict_hybrid
+from models import attribute_mapped_dict_hybrid, DictHybrid
 
 
 class TestDictHybrid:

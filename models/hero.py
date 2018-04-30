@@ -4,6 +4,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm
 import sqlalchemy.ext.hybrid
 
+import models.collections
 from game import round_number_intelligently
 import models
 
@@ -78,7 +79,7 @@ class Hero(models.mixins.SessionHoistMixin, models.Base):
     # Deleting a Hero deletes all their Abilities.
     abilities = sa.orm.relationship(
         "Ability",
-        collection_class=models.attribute_mapped_dict_hybrid('attrib_name'),
+        collection_class=models.collections.attribute_mapped_dict_hybrid('attrib_name'),
         back_populates='hero',
         cascade="all, delete-orphan")
 
@@ -89,14 +90,14 @@ class Hero(models.mixins.SessionHoistMixin, models.Base):
     # Attributes One to One despite the name
     attributes = sa.orm.relationship(
         "Attribute",
-        collection_class=models.attribute_mapped_dict_hybrid('attrib_name'),
+        collection_class=models.collections.attribute_mapped_dict_hybrid('attrib_name'),
         back_populates='hero',
         cascade="all, delete-orphan")
 
     # Hero to Proficiency is One to Many
     base_proficiencies = sa.orm.relationship(
         "Proficiency",
-        collection_class=models.attribute_mapped_dict_hybrid('name'),
+        collection_class=models.collections.attribute_mapped_dict_hybrid('name'),
         back_populates='hero',
         cascade="all, delete-orphan")
 
@@ -138,7 +139,7 @@ class Hero(models.mixins.SessionHoistMixin, models.Base):
     # container.
     _specializations = sa.orm.relationship(
         "Specialization",
-        collection_class=models.attribute_mapped_dict_hybrid("attrib_name"),
+        collection_class=models.collections.attribute_mapped_dict_hybrid("attrib_name"),
         back_populates="hero",
         cascade="all, delete-orphan")
     # Hero to Calling is One to One
@@ -192,7 +193,7 @@ class Hero(models.mixins.SessionHoistMixin, models.Base):
         hero.specializations.all.brute -> if this hero has Brute Spec.
         """
 
-        collection = models.DictHybrid(key_attr='attrib_name')
+        collection = models.collections.DictHybrid(key_attr='attrib_name')
         collection['all'] = self._specializations
         collection['archetype'] = self._archetype
         collection['calling'] = self._calling
@@ -425,7 +426,7 @@ class Hero(models.mixins.SessionHoistMixin, models.Base):
                 summed[key] = Class(level=lvl, base=base, modifier=mod)
                 summed[key].current = self.base_proficiencies[key].current
             # noinspection PyAttributeOutsideInit
-            self.proficiencies = models.DictHybrid(summed, key_attr='name')
+            self.proficiencies = models.collections.DictHybrid(summed, key_attr='name')
             return self.proficiencies
 
     def refresh_proficiencies(self):

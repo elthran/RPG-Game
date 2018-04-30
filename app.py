@@ -864,7 +864,7 @@ def under_construction(hero=None):
 @login_required
 @uses_hero
 @update_current_location
-@policies.url_protect
+# @policies.url_protect
 def move(name='', hero=None, location=None):
     """Set up a directory for the hero to move to.
 

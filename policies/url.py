@@ -21,9 +21,8 @@ def url_protect(f):
 
     @wraps(f)
     def wrap_url(*args, **kwargs):
-        #Currently disabled ... does nothing.
+        # Currently disabled ... does nothing.
         return f(*args, **kwargs)
-
 
         # Break immediately if server is just being set up.
         # Everything after this will run just before the function

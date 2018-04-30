@@ -1,4 +1,5 @@
-from .base_classes import Base, attribute_mapped_dict_hybrid, DictHybrid
+from .base_classes import Base
+from models.collections import attribute_mapped_dict_hybrid, DictHybrid
 from . import abilities
 from .accounts import Account
 from . import attributes
@@ -16,4 +17,4 @@ from . import proficiencies
 from . import quests
 from . import specializations
 
-from . import database
+# from . import database
