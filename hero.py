@@ -51,6 +51,7 @@ class Hero(SessionHoistMixin, Base):
     experience = Column(Integer)
     experience_maximum = Column(Integer)
     gold = Column(Integer)
+    damage_type = Column(String(50))
 
     basic_ability_points = Column(Integer)
     archetype_ability_points = Column(Integer)
@@ -315,6 +316,7 @@ class Hero(SessionHoistMixin, Base):
         self.experience = 0
         self.experience_maximum = 10
         self.gold = 50
+        self.damage_type = "Unarmed"
 
         # Spendable points
         self.basic_ability_points = 0

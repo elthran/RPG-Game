@@ -318,7 +318,7 @@ all_store_items = [
     ChestArmour("Cloth Tunic", buy_price=18, description="A simple cloth tunic.", template=True,
                 proficiency_data=[
                     ('Defence', {'base': 5})]),
-    TwoHandedWeapon("Gnarled Staff", buy_price=13, description="An old, simple walking stick.", template=True,
+    TwoHandedWeapon("Gnarled Staff", buy_price=13, description="An old, simple walking stick.", template=True, damage_type='Blunt',
                     proficiency_data=[
                         ('Strength', {'base': 15}),
                         ('Combat', {'modifier': 10})]),
@@ -326,7 +326,7 @@ all_store_items = [
            proficiency_data=[
                 ('Block', {'base': 25}),
                 ('BlockAmount', {'base': 15})]),
-    OneHandedWeapon("Rusted Dagger", buy_price=23, description="A rusted dagger in poor condition.", template=True,
+    OneHandedWeapon("Rusted Dagger", buy_price=23, description="A rusted dagger in poor condition.", template=True, damage_type='Piercing',
                     proficiency_data=[
                         ('Strength', {'base': 5}),
                         ('Speed', {'base': 0.5})]),

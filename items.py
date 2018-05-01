@@ -58,6 +58,7 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
     jewelry = Column(Boolean)
     max_durability = Column(Integer)
     wearable = Column(Boolean)
+    damage_type = Column(String(50))
 
     # extra special :P
     affinity = Column(Integer, default=0)
@@ -178,7 +179,7 @@ class Wearable(Item):
         'polymorphic_identity': "Wearable",
     }
 
-    def __init__(self, *args, max_durability=3, item_rating=10,
+    def __init__(self, *args, max_durability=3, item_rating=10, damage_type="Unarmed",
                  style="leather", **kwargs):
         super().__init__(*args, **kwargs)
         self.wearable = True
@@ -189,6 +190,7 @@ class Wearable(Item):
         self.style = style  # Used to determine the display image. It's a prefix added to the item.
         self.max_durability = max_durability
         self.item_rating = item_rating
+        self.damage_type = damage_type
 
 
 # Subclass of Item

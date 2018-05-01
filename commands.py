@@ -218,6 +218,9 @@ class Command:
         item_id = data['id']
         item = database.get_item_by_id(item_id)
         len_rings = None
+        # Elthran added the below clause. It changes your hero's damage type when a weapon is equipped.
+        if item.one_handed_weapon or item.two_handed_weapon:
+            hero.damage_type = item.damage_type
         if item.type == "Ring":
             lowest_empty_slot = hero.inventory.get_lowest_empty_ring_pos()
             primary_slot_type = "finger-{}".format(lowest_empty_slot)
