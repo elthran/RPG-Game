@@ -4,9 +4,8 @@ Adventuring,Your skill at exploring new places. This increases your likelihood o
 Bartering,Your skill at negotiating prices. It reduces the price you pay when buying any item from a vendor.,Charisma,linear,0,2,0,FALSE,TRUE
 Block,Skill with a shield. If a shield is equipped then the amount of damage blocked is increased.,Resilience,linear,0,2,0,FALSE,TRUE
 Charm,How likeable you are. It increases the speed of how quickly people begin to trust you.,Charisma,linear,0,5,0,FALSE,TRUE
-Combat,Your proficiency in fighting. The greater combat proficiency you have then the more damage you do on each attack.,Brawn,linear,1,1,0,FALSE,FALSE
+Combat,Your proficiency in fighting. The greater combat proficiency you have then the more damage you do with any attack.,Brawn,linear,1,1,0,FALSE,FALSE
 Courage,How capable you are of overcoming your fears. The greater your courage then the greater the obstacles you will be capable of facing.,Willpower,linear,0,1,0,FALSE,FALSE
-Damage,Your capability of inflicting damage through melee. This is added to your combat skill and determines the greatest posssible damage you can deal in a single blow.,Brawn,linear,1,2,0,FALSE,FALSE
 Defence,Your ability to take physical damage. This combines with your armour to reduce all physical damaged received.,Resilience,linear,0,1,0,FALSE,TRUE
 Detection,Determines the chance that you will uncover enemy traps and ambushes.,Survivalism,linear,0,3,0,FALSE,TRUE
 Dualism,How quickly you are able to change your virtue.,None,linear,0,2,0,FALSE,TRUE
@@ -51,6 +50,7 @@ Speed,How quickly you can attack in combat.,Quickness,linear,1,0.05,2,FALSE,FALS
 Stamina,For each four levels of stamina you recover one additional endurance each day.,Resilience,linear,1,0.25,0,FALSE,FALSE
 Stealth,Chance to avoid detection when attempting to stay concealed.,Agility,linear,0,2,0,FALSE,TRUE
 Storage,The amount of weight that you can carry.,Brawn,linear,10,3,0,FALSE,FALSE
+Strength,Your capability of inflicting damage through melee. This is added to your combat skill and determines the greatest posssible damage you can deal in a single blow.,Brawn,linear,1,2,0,FALSE,FALSE
 Survivalist,UNUSED,Survivalism,linear,0,0,0,FALSE,FALSE
 Trustworthiness,UNUSED,Charisma,linear,0,0,0,FALSE,FALSE
 Understanding,How much more quickly you level up.,Intellect,linear,0,1,0,FALSE,TRUE
@@ -67,6 +67,8 @@ Piercing,Skill with piercing weapons,None,linear,0,0,0,TRUE,TRUE
 Slashing,Skill with slashing weapons,None,linear,0,0,0,TRUE,TRUE
 Unarmed,Skill with using your bare hands,None,linear,0,0,0,TRUE,TRUE
 WeaponAffinity,How accustomed to your current weapon you are,None,linear,0,0,0,TRUE,TRUE
+FrostDamage,How much frost damage you do per attack,None,linear,0,0,0,TRUE,TRUE
+FlameDamage,How much flame damage you do per attack,None,linear,0,0,0,TRUE,TRUE
 
 Renown,How famous you are,None,linear,0,0,0,TRUE,FALSE
 Virtue,How good or evil you are,None,linear,0,0,0,TRUE,FALSE

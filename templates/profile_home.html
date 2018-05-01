@@ -124,13 +124,21 @@
 		<th colspan="2">Offense</th>
 	</tr>
 	<tr>
-		<td>Average Damage</td>
-		<td>{{ proficiencies.combat.final }}</td>
+		<td>Mundane Damage</td>
+		<td>{{ proficiencies.combat.final }}-{{ proficiencies.combat.final + proficiencies.strength.final }}</td>
 	</tr>
+	{% if proficiencies.frost_damage.final %}
 	<tr>
-		<td>Maximum Damage</td>
-		<td>{{ proficiencies.damage.final + proficiencies.combat.final }}</td>
+		<td>Frost Damage</td>
+		<td>{{ proficiencies.frost_damage.final }}</td>
 	</tr>
+	{% endif %}
+	{% if proficiencies.flame_damage.final %}
+	<tr>
+		<td>Flame Damage</td>
+		<td>{{ proficiencies.flame_damage.final }}</td>
+	</tr>
+	{% endif %}
 	<tr>
 		<td>Attack Speed</td>
 		<td>{{ proficiencies.speed.final }}</td>
