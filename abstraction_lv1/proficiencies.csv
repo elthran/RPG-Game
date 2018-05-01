@@ -36,6 +36,7 @@ Redemption,For each two levels of redemption you recover one sanctity each day.,
 Regeneration,For each two levels of regeneration you recover one additional health each day.,Vitality,linear,1,0.5,0,FALSE,FALSE
 Reputation,The magnitutde of which your actions affect your renown.,Charisma,linear,0,5,0,FALSE,TRUE
 Resist blunt,Ability to resist blunt damage,Resilience,linear,0,3,0,FALSE,TRUE
+Resist unarmed,Ability to resist blunt damage,Resilience,linear,0,3,0,FALSE,TRUE
 Resist flame,Ability to resist flame damage,Resilience,linear,0,3,0,FALSE,TRUE
 Resist frost,Ability to resist frost damage,Resilience,linear,0,3,0,FALSE,TRUE
 Resist holy,Ability to resist holy damage,Divinity,linear,0,3,0,FALSE,TRUE

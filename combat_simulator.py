@@ -39,8 +39,17 @@ def determine_if_hits(attacker, defender):
     return False
 
 def calculate_damage(attacker, defender):
-    damage = (attacker.get_summed_proficiencies('damage').final + attacker.get_summed_proficiencies('combat').final) / 2
-    damage = damage * (1 - defender.get_summed_proficiencies('defence').final)
+    damage = (attacker.get_summed_proficiencies('strength').final + attacker.get_summed_proficiencies('combat').final) / 2
+    damage *= (1 - defender.get_summed_proficiencies('defence').final)
+    damage_type = attacker.damage_type
+    if damage_type == "Unarmed":
+        damage *= (1 - defender.get_summed_proficiencies('resist_unarmed').final)
+    if damage_type == "Piercing":
+        damage *= (1 - defender.get_summed_proficiencies('resist_piercing').final)
+    if damage_type == "Slashing":
+        damage *= (1 - defender.get_summed_proficiencies('resist_slashing').final)
+    if damage_type == "Blunt":
+        damage *= (1 - defender.get_summed_proficiencies('resist_blunt').final)
     damage = max(round_number_intelligently(damage),1)
     return damage
 
@@ -100,7 +109,6 @@ def battle_logic(active_player, inactive_player):
                 receiever.base_proficiencies['health'].current -= poison
                 combat_log.append(receiever.name + " takes " + str(poison) + " poison damage!")
         attacker,defender,combat_log = determine_attacker(active_player, inactive_player, frozen_counter, combat_log)
-        combat_log.append(attacker.name + " is attacking.")
         for combatant in frozen_counter:    # Check if frozen players will thaw
             if active_player.name == combatant:
                 combatant = active_player
