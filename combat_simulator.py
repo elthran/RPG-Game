@@ -39,18 +39,19 @@ def determine_if_hits(attacker, defender):
     return False
 
 def calculate_damage(attacker, defender):
-    damage = (attacker.get_summed_proficiencies('strength').final + attacker.get_summed_proficiencies('combat').final) / 2
-    damage *= (1 - defender.get_summed_proficiencies('defence').final)
-    damage_type = attacker.damage_type
+    damage = randint(attacker.get_summed_proficiencies('combat').final,attacker.get_summed_proficiencies('strength').final+1) # Your damage done is a random number between your min/max damages
+    damage_reduction = 100 - defender.get_summed_proficiencies('defence').final # Start to calculate what % of your damage you actually do
+    damage_type = attacker.damage_type # Check damage type
     if damage_type == "Unarmed":
-        damage *= (1 - defender.get_summed_proficiencies('resist_unarmed').final)
+        damage_reduction -= defender.get_summed_proficiencies('resist_unarmed').final
     if damage_type == "Piercing":
-        damage *= (1 - defender.get_summed_proficiencies('resist_piercing').final)
+        damage_reduction -= defender.get_summed_proficiencies('resist_piercing').final
     if damage_type == "Slashing":
-        damage *= (1 - defender.get_summed_proficiencies('resist_slashing').final)
+        damage_reduction -= defender.get_summed_proficiencies('resist_slashing').final
     if damage_type == "Blunt":
-        damage *= (1 - defender.get_summed_proficiencies('resist_blunt').final)
-    damage = max(round_number_intelligently(damage),1)
+        damage_reduction -= defender.get_summed_proficiencies('resist_blunt').final
+    damage *= (damage_reduction / 100) # Multiply damage by the % of damage you actually do
+    damage = max(round_number_intelligently(damage),1) # Round to an integer using smart rounding
     return damage
 
 def determine_if_critical_hit(attacker):
