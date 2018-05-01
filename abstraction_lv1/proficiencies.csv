@@ -47,7 +47,7 @@ Resist slashing,Ability to resist slashing damage,Resilience,linear,0,3,0,FALSE,
 Riposte,UNUSED,Agility,linear,0,0,0,FALSE,FALSE
 Sanctity,Amount of sanctity you can have.,Divinity,linear,0,1,0,FALSE,FALSE
 Sanity,Your ability to resist mind altering affects.,Willpower,linear,0,3,0,FALSE,TRUE
-Speed,How quickly you can attack in combat.,Quickness,linear,1,0.05,2,FALSE,FALSE
+Speed,How quickly you can attack in combat.,Quickness,linear,1,0.03,3,FALSE,FALSE
 Stamina,For each four levels of stamina you recover one additional endurance each day.,Resilience,linear,1,0.25,0,FALSE,FALSE
 Stealth,Chance to avoid detection when attempting to stay concealed.,Agility,linear,0,2,0,FALSE,TRUE
 Storage,The amount of weight that you can carry.,Brawn,linear,10,3,0,FALSE,FALSE

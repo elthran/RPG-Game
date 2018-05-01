@@ -22,8 +22,9 @@ def determine_attacker(active, inactive, frozen_counter, combat_log):
         return active, inactive,combat_log
     if frozen_counter[inactive.name] and frozen_counter[active.name]:
         combat_log.append("Both players are frozen. Not sure how to code it so I just ignore it >.<")
-    random = randint(1,int((active.get_summed_proficiencies('speed').final + inactive.get_summed_proficiencies('speed').final)*100))
-    if active.get_summed_proficiencies('speed').final*100 > random:
+    player1 = randint(0,active.get_summed_proficiencies('speed').final*100)
+    player2 = randint(0,inactive.get_summed_proficiencies('speed').final*100)
+    if player1 >= player2:
         return active,inactive,combat_log
     else:
         return inactive, active,combat_log
@@ -32,9 +33,10 @@ def determine_if_hits(attacker, defender):
     """
     By default, you have a 75% chance of hitting. This can be modified by your accuracy and their evasion.
     """
-    random = randint(1,100)
-    attackers_chance = 75 + attacker.get_summed_proficiencies('accuracy').final - defender.get_summed_proficiencies('evade').final
-    if attackers_chance >= random:
+    random = randint(0,100)
+    attackers_chance = 75
+    attackers_chance += attacker.get_summed_proficiencies('accuracy').final - defender.get_summed_proficiencies('evade').final
+    if attackers_chance > random:
         return True
     return False
 
@@ -55,8 +57,8 @@ def calculate_damage(attacker, defender):
     return damage
 
 def determine_if_critical_hit(attacker):
-    random = randint(1,100)
-    if attacker.get_summed_proficiencies('precision').final >= random:
+    random = randint(0,100)
+    if attacker.get_summed_proficiencies('precision').final > random:
         return True
     return False
 

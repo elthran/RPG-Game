@@ -328,8 +328,8 @@ all_store_items = [
                 ('BlockAmount', {'base': 15})]),
     OneHandedWeapon("Rusted Dagger", buy_price=23, description="A rusted dagger in poor condition.", template=True, damage_type='Piercing',
                     proficiency_data=[
-                        ('Strength', {'base': 5}),
-                        ('Speed', {'base': 0.5})]),
+                        ('Strength', {'base': 7}),
+                        ('Speed', {'base': 0.6})]),
     Ring("Silver Ring", buy_price=35, description="A silver ring with no markings. Nothing seems special about it.", template=True, style="silver",
                     proficiency_data=[
                         ('Luck', {'base': 1})])
