@@ -154,6 +154,9 @@ def csv_or_module_data(name):
         key_name = 'ALL_' + name.upper()  # e.g. ALL_ABILITIES
         data[key_name] = []
         for i, row in enumerate(objs.itertuples(), 1):
+            # If first value is blank skip this row. Handles empty rows.
+            if row[1] != row[1]:  # check for nan, float('nan') != float('nan')
+                continue
             data[key_name].append(tuple(getattr(row, key)
                                   for key in tuple(objs.columns.values)))
     else:
