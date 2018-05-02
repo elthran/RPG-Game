@@ -38,7 +38,7 @@ class Proficiency(TemplateMixin, Base):
 
     # Main colums
     level = Column(Integer)
-    base = Column(Integer)
+    base = Column(Float)
     modifier = Column(Float)
 
     type_ = Column(String(50))
