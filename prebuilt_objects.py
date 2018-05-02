@@ -320,16 +320,18 @@ all_store_items = [
                     ('Defence', {'base': 5})]),
     TwoHandedWeapon("Gnarled Staff", buy_price=13, description="An old, simple walking stick.", template=True, damage_type='Blunt',
                     proficiency_data=[
+                        ('Combat', {'base': 2}),
                         ('Strength', {'base': 15}),
-                        ('Combat', {'modifier': 10})]),
+                        ('Combat', {'modifier': 100})]),
     Shield("Small Shield", buy_price=25, description="A simple wooden shield.", template=True,
            proficiency_data=[
                 ('Block', {'base': 25}),
                 ('BlockAmount', {'base': 15})]),
-    OneHandedWeapon("Rusted Dagger", buy_price=23, description="A rusted dagger in poor condition.", template=True, damage_type='Piercing',
+    OneHandedWeapon("Poisoned Dagger", buy_price=23, description="A rusted dagger in poor condition.", template=True, damage_type='Piercing',
                     proficiency_data=[
                         ('Strength', {'base': 7}),
-                        ('Speed', {'base': 0.6})]),
+                        ('Speed', {'base': 0.6}),
+                        ('PoisonAmount', {'base': 1})]),
     Ring("Silver Ring", buy_price=35, description="A silver ring with no markings. Nothing seems special about it.", template=True, style="silver",
                     proficiency_data=[
                         ('Luck', {'base': 1})])
