@@ -73,3 +73,20 @@ def session_scope(Session):
         raise
     finally:
         session.close()
+
+
+def save(self):
+    """Commit, handle errors, close the session, open a new one.
+
+    Provide a context manager type behavior for the session.
+    See:
+    http://docs.sqlalchemy.org/en/latest/orm/session_basics.html#when-do-i-construct-a-session-when-do-i-commit-it-and-when-do-i-close-it
+    """
+    try:
+        self.session.commit()
+    except:
+        self.session.rollback()
+        raise
+    finally:
+        self.session.close()
+        self.session = self.Session()

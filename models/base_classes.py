@@ -220,13 +220,7 @@ class Base(object):
     def get(cls, id_):
         return cls.query().get(id_)
 
-    def save(self):
-        session = self._sa_instance_state.session
-        try:
-            session.commit()
-        except:
-            session.rollback()
-            raise
+    save = database.sesson_helpers.save
 
 
 # Initialize SQLAlchemy base class.
@@ -237,8 +231,12 @@ convention = {
   "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
   "pk": "pk_%(table_name)s"
 }
+
+# This used a class factory to build a class called base in the local
+# context. The engine is a connection to the database. It should
+# be live at this point.
 metadata = sqlalchemy.MetaData(naming_convention=convention)
 Base = sa.ext.declarative.declarative_base(bind=database.engine, cls=Base, metadata=metadata)
-# This used a class factory to build a class called base in the local
-# context. Why I can't just import Base I have no idea.
-# And I know how to use it.
+
+Base.Session = sa.orm.sessionmaker(bind=database.engine)
+Base.session = Base.Session()
