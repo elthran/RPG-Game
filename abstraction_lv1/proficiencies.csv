@@ -4,7 +4,7 @@ Adventuring,Your skill at exploring new places. This increases your likelihood o
 Bartering,Your skill at negotiating prices. It reduces the price you pay when buying any item from a vendor.,Charisma,linear,0,2,0,FALSE,TRUE
 Block,Skill with a shield. If a shield is equipped then the amount of damage blocked is increased.,Resilience,linear,0,2,0,FALSE,TRUE
 Charm,How likeable you are. It increases the speed of how quickly people begin to trust you.,Charisma,linear,0,5,0,FALSE,TRUE
-Combat,Your proficiency in fighting. The greater combat proficiency you have then the more damage you do with any attack.,Brawn,linear,0,1,0,FALSE,FALSE
+Combat,Your proficiency in fighting. The greater combat proficiency you have then the more damage you do with any attack.,Brawn,linear,1,1,0,FALSE,FALSE
 Courage,How capable you are of overcoming your fears. The greater your courage then the greater the obstacles you will be capable of facing.,Willpower,linear,0,1,0,FALSE,FALSE
 Defence,Your ability to take physical damage. This combines with your armour to reduce all physical damaged received.,Resilience,linear,0,1,0,FALSE,TRUE
 Detection,Determines the chance that you will uncover enemy traps and ambushes.,Survivalism,linear,0,3,0,FALSE,TRUE

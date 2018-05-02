@@ -51,7 +51,6 @@ class Hero(SessionHoistMixin, Base):
     experience = Column(Integer)
     experience_maximum = Column(Integer)
     gold = Column(Integer)
-    damage_type = Column(String(50))
 
     basic_ability_points = Column(Integer)
     archetype_ability_points = Column(Integer)
@@ -316,7 +315,6 @@ class Hero(SessionHoistMixin, Base):
         self.experience = 0
         self.experience_maximum = 10
         self.gold = 50
-        self.damage_type = "Unarmed"
 
         # Spendable points
         self.basic_ability_points = 0
@@ -568,3 +566,21 @@ class Hero(SessionHoistMixin, Base):
         return [hero
                 for hero in self.current_location.heroes_by_current_location
                 if self.id != hero.id]
+
+    @property
+    def damage_type(self):
+        """Reflect damage type of equipped weapon.
+
+        # Elthran added the below clause. It changes your hero's damage type when a weapon is equipped.
+        if item.one_handed_weapon or item.two_handed_weapon:
+            hero.damage_type = item.damage_type
+        """
+        try:
+            right_hand = self.inventory.right_hand.damage_type
+        except AttributeError:
+            right_hand = None
+        try:
+            both_hands = self.inventory.both_hands.damage_type
+        except AttributeError:
+            both_hands = None
+        return right_hand or both_hands or 'Unarmed'
