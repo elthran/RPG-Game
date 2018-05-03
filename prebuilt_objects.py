@@ -321,7 +321,7 @@ all_store_items = [
     TwoHandedWeapon("Gnarled Staff", buy_price=13, description="An old, simple walking stick.", template=True, damage_type='Blunt',
                     proficiency_data=[
                         ('Strength', {'base': 15}),
-                        ('Combat', {'base': 2, 'modifier': 100})]),
+                        ('Combat', {'base': 0, 'modifier': 100})]),
     Shield("Small Shield", buy_price=25, description="A simple wooden shield.", template=True,
            proficiency_data=[
                 ('Block', {'base': 25}),
