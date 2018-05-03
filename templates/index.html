@@ -8,12 +8,12 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 
-<body class="loginBody">
+<body class="loginBody" onload="getfocus();">
     <div class="loginPage">
         <div class="loginDiv">
             <form id="register-form" class="hide" action="" method="post">
                 <input class="hide" type="text" name="type" value="register" />
-                <input id="registerFocus" type="text" placeholder="username" name="username" autofocus tabindex=1 />
+                <input id="registerFocus" type="text" placeholder="username" name="username" tabindex=1/>
                 <input type="password" placeholder="password" name="password" tabindex=2 />
                 <input type="email" placeholder="email" name="email" tabindex=3 />
                 <button tabindex=4>create account</button>
@@ -22,7 +22,7 @@
             </form>
             <form id="login-form" class="login-form" action="" method="post">
                 <input class="hide" type="text" name="type" value="login" />
-                <input id="loginFocus"  type="text" placeholder="username" name="username" autofocus tabindex=1 />
+                <input id="loginFocus"  type="text" placeholder="username" name="username" autofocus/>
                 <input type="password" placeholder="password" name="password" tabindex=2 />
                 <button tabindex=3>login</button>
                 <br>
