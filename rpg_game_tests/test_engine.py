@@ -9,7 +9,7 @@ from multiprocessing import Array
 import pytest
 
 from . import GenericTestCase, Mock, db_execute_script
-from engine import Engine, async_process
+from services.event_service import Engine, async_process
 from models.locations import Location
 from models.events import Condition, Trigger
 from models.hero import Hero

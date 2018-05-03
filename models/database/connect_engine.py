@@ -21,8 +21,8 @@ else:  # Running on server
 #         sounds like it does :).
 #         """
 
-debug = True
-testing = False
+debug = False
+testing = True
 first_run = False
 server = database_url[0:database_url.rindex('/')]
 name = database_url.split('/').pop()

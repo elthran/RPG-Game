@@ -1,8 +1,3 @@
-if __name__ == "__main__":
-    import os
-    os.system("python3 -m pytest -vv rpg_game_tests/test_{}".format(__file__))
-    exit()  # prevents code from trying to run file afterwards.
-
 """
 This file will become very important. I would like to switch to handling
 events here. And everything else that the User doesn't need to know about.
@@ -12,8 +7,8 @@ from multiprocessing import Process
 
 import werkzeug.serving
 
-from models import events
-from services.session_helpers import scoped_session
+import models
+from models import database
 import private_config
 
 
@@ -52,7 +47,7 @@ class Engine:
         And complete this quest.
         """
         # pdb.set_trace()
-        event = events.Event(event_name, hero_id=hero.id, description=description)
+        event = models.Event(event_name, hero_id=hero.id, description=description)
         event.save()
 
         # return the "Blacksmith" quest object ...
@@ -84,7 +79,7 @@ def async_process(func, args=(), kwargs={}):
     Process(target=func, args=args, kwargs=kwargs).start()
 
 
-@scoped_session
+@database.sessions.scoped_session
 def rest_key_timelock(database, username, timeout=5):
     """Erase the user reset key after x minutes."""
 
@@ -93,3 +88,9 @@ def rest_key_timelock(database, username, timeout=5):
     time.sleep(timeout)
     user = database.get_user_by_username(username)
     user.reset_key = None
+
+
+if __name__ == "__main__":
+    import os
+    os.system("python3 -m pytest -vv rpg_game_tests/test_{}".format(__file__))
+    exit()  # prevents code from trying to run file afterwards.

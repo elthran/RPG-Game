@@ -9,7 +9,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
 from models.base_classes import Base
-from services.factories import TemplateMixin
+from models.mixins import TemplateMixin
 from build_code import normalize_attrib_name
 
 # This is a list of specializations. Your hero can have one of each type active at any time. There are 4 types of specs.

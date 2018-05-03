@@ -92,7 +92,7 @@ from sqlalchemy.ext.orderinglist import ordering_list
 
 from models.base_classes import Base
 from models import events
-from services.factories import TemplateMixin
+from models.mixins import TemplateMixin
 
 quest_path_to_quest_association = Table(
     "quest_path_to_quest_association",

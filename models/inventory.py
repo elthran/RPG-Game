@@ -5,6 +5,7 @@ import sqlalchemy.ext.orderinglist
 
 import services
 import models
+from . import database
 
 
 class Inventory(models.mixins.SessionHoistMixin, models.Base):
@@ -177,7 +178,7 @@ class Inventory(models.mixins.SessionHoistMixin, models.Base):
         for item in items:
             self.equip(item)
 
-    @services.safe_commit_session
+    @database.sessions.safe_commit_session
     def equip(self, item, index=None):
         """Equip the an item in the correct slot -> Return ids of items replaced.
 
@@ -257,7 +258,7 @@ class Inventory(models.mixins.SessionHoistMixin, models.Base):
 
         self.add_item(item)
 
-    @services.safe_commit_session
+    @ database.sessions.safe_commit_session
     def add_item(self, item):
         """Add an item to the unequipped slot of this inventory.
 
@@ -276,7 +277,7 @@ class Inventory(models.mixins.SessionHoistMixin, models.Base):
         self.unequipped.append(item)
         item.equipped = False  # Required to add this to the unequipped list.
 
-    @services.safe_commit_session
+    @ database.sessions.safe_commit_session
     def remove_item(self, item):
         """Remove a given item from any inventory it might be in."""
         item.ring_position = None

@@ -4,7 +4,7 @@ from . import abilities
 from .accounts import Account
 from . import attributes
 from . import bestiary2
-from . import events
+from .events import Event
 from .forum import Forum
 from .hero import Hero
 from .inbox import Inbox

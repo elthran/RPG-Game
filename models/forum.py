@@ -4,7 +4,8 @@ import sqlalchemy as sa
 import sqlalchemy.orm
 import sqlalchemy.ext.hybrid
 
-import models
+# import models
+import models.mixins
 
 
 class Forum(models.Base):

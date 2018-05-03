@@ -1,0 +1,6 @@
+Following instructions from http://flask.pocoo.org/docs/0.12/patterns/packages/
+
+/home/marlen :rpg_game$ export FLASK_DEBUG=true
+/home/marlen :rpg_game$ export FLASK_APP=elthranonline
+/home/marlen :rpg_game$ pip3 install --user -e .
+/home/marlen :rpg_game$ python3 -m flask run

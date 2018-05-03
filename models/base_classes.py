@@ -16,7 +16,6 @@ import sqlalchemy.ext.orderinglist
 import sqlalchemy.orm.collections
 import sqlalchemy.ext.declarative
 
-import services
 from . import database
 
 
@@ -209,7 +208,7 @@ class Base(object):
 
     @classmethod
     def query(cls):
-        with services.session_helpers.session_scope(cls.Session) as session:
+        with database.sessions.session_scope(cls.Session) as session:
             return session.query(cls)
 
     @classmethod
@@ -220,7 +219,7 @@ class Base(object):
     def get(cls, id_):
         return cls.query().get(id_)
 
-    save = database.sesson_helpers.save
+    save = database.sessions.save
 
 
 # Initialize SQLAlchemy base class.

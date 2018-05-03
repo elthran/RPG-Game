@@ -1,15 +1,12 @@
 # for testing
 
-from sqlalchemy import Column, Integer, String, Boolean
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
-from flask import render_template_string
+import sqlalchemy as sa
+import sqlalchemy.orm
+import flask
+# from flask import render_template_string
 
-from services.factories import TemplateMixin
-from models import proficiencies, attribute_mapped_dict_hybrid
-from services.session_helpers import safe_commit_session
-from models.mixins import SessionHoistMixin
-from models.base_classes import Base
+import models.mixins
+from . import database
 
 """
 Item Specification:
@@ -27,7 +24,7 @@ Item Specification:
 """
 
 
-class Item(TemplateMixin, SessionHoistMixin, Base):
+class Item(models.mixins.TemplateMixin, models.mixins.SessionHoistMixin, models.Base):
     """Represent an unique version of an item or the template to create one.
 
     Each item exists in only one place.
@@ -42,64 +39,63 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
     """
     __tablename__ = "item"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50))
-    image = Column(String(50))
-    buy_price = Column(Integer)
-    type = Column(String(50))
-    description = Column(String(200))
+    id = sa.Column(sa.Integer, primary_key=True)
+    name = sa.Column(sa.String(50))
+    image = sa.Column(sa.String(50))
+    buy_price = sa.Column(sa.Integer)
+    type = sa.Column(sa.String(50))
+    description = sa.Column(sa.String(200))
 
-    broken = Column(Boolean)
-    consumable = Column(Boolean)
-    consumed = Column(Boolean)
-    item_rating = Column(Integer)
-    garment = Column(Boolean)
-    weapon = Column(Boolean)
-    jewelry = Column(Boolean)
-    max_durability = Column(Integer)
-    wearable = Column(Boolean)
+    broken = sa.Column(sa.Boolean)
+    consumable = sa.Column(sa.Boolean)
+    consumed = sa.Column(sa.Boolean)
+    item_rating = sa.Column(sa.Integer)
+    garment = sa.Column(sa.Boolean)
+    weapon = sa.Column(sa.Boolean)
+    jewelry = sa.Column(sa.Boolean)
+    max_durability = sa.Column(sa.Integer)
+    wearable = sa.Column(sa.Boolean)
 
     # extra special :P
-    affinity = Column(Integer, default=0)
+    affinity = sa.Column(sa.Integer, default=0)
 
     # Relationships
     # Each Item can have only one Inventory
-    inventory_id = Column(Integer, ForeignKey('inventory.id',
-                                              ondelete="CASCADE"))
-    inventory = relationship(
+    inventory_id = sa.Column(sa.Integer, sa.ForeignKey('inventory.id', ondelete="CASCADE"))
+    inventory = sa.orm.relationship(
         "Inventory", foreign_keys="[Item.inventory_id]")
 
     # Item to Proficiency is One to Many
-    proficiencies = relationship(
+    proficiencies = sa.orm.relationship(
         "Proficiency",
-        collection_class=attribute_mapped_dict_hybrid('name'),
+        collection_class=models.attribute_mapped_dict_hybrid('name'),
         back_populates='items',
         cascade="all, delete-orphan")
 
-    equipped = Column(Boolean)
-    ring_position = Column(Integer)
-    unequipped_position = Column(Integer)
+    equipped = sa.Column(sa.Boolean)
+    ring_position = sa.Column(sa.Integer)
+    unequipped_position = sa.Column(sa.Integer)
 
     __mapper_args__ = {
         'polymorphic_identity': "Item",
         'polymorphic_on': type
     }
 
-    def __init__(self, name, buy_price, description="A small item.", proficiency_data=[], template=False):
+    def __init__(self, name, buy_price, description="A small item.", proficiency_data=(), template=False):
         self.name = name
         self.buy_price = buy_price
         self.description = description
 
         # Initialize proficiencies
         for class_name, arg_dict in proficiency_data:
-            Class = getattr(proficiencies, class_name)
+            Class = getattr(models.proficiencies, class_name)
             # pdb.set_trace()
             obj = Class(**arg_dict, template=template)
             self.proficiencies[obj.name] = obj
 
         self.template = template
 
-    @safe_commit_session
+    @database.sessions.safe_commit_session
     def clone(self):
         if not self.template:
             raise Exception("Only use this method if obj.template == True.")
@@ -167,12 +163,12 @@ class Item(TemplateMixin, SessionHoistMixin, Base):
         {% if prof.base != 0 %}<li> - {{ prof.display_name }}: +{{ prof.base }}</li>{% endif %}
         {% if prof.modifier != 0 %}<li> - {{ prof.display_name }}: +{{ prof.modifier }}%</li>{% endif %}
         {% endfor %}</ul>"""
-        return render_template_string(temp, item=self)
+        return flask.render_template_string(temp, item=self)
 
 
 # Subclass of Item
 class Wearable(Item):
-    style = Column(String(50))
+    style = sa.Column(sa.String(50))
 
     __mapper_args__ = {
         'polymorphic_identity': "Wearable",
@@ -193,9 +189,9 @@ class Wearable(Item):
 
 # Subclass of Item
 class Weapon(Wearable):
-    one_handed_weapon = Column(Boolean)
-    shield = Column(Boolean)
-    two_handed_weapon = Column(Boolean)
+    one_handed_weapon = sa.Column(sa.Boolean)
+    shield = sa.Column(sa.Boolean)
+    two_handed_weapon = sa.Column(sa.Boolean)
 
     __mapper_args__ = {
         'polymorphic_identity': "Weapon",
@@ -255,7 +251,7 @@ class Garment(Wearable):
 
 
 class HeadArmour(Garment):
-    head_armour = Column(Boolean)
+    head_armour = sa.Column(sa.Boolean)
 
     __mapper_args__ = {
         'polymorphic_identity': "HeadArmour",
@@ -267,7 +263,7 @@ class HeadArmour(Garment):
 
 
 class ShoulderArmour(Garment):
-    shoulder_armour = Column(Boolean)
+    shoulder_armour = sa.Column(sa.Boolean)
     __mapper_args__ = {
         'polymorphic_identity': "ShoulderArmour",
     }
@@ -278,7 +274,7 @@ class ShoulderArmour(Garment):
 
 
 class ChestArmour(Garment):
-    chest_armour = Column(Boolean)
+    chest_armour = sa.Column(sa.Boolean)
     __mapper_args__ = {
         'polymorphic_identity': "ChestArmour",
     }
@@ -289,7 +285,7 @@ class ChestArmour(Garment):
 
 
 class LegArmour(Garment):
-    leg_armour = Column(Boolean)
+    leg_armour = sa.Column(sa.Boolean)
 
     __mapper_args__ = {
         'polymorphic_identity': "LegArmour",
@@ -301,7 +297,7 @@ class LegArmour(Garment):
 
 
 class FootArmour(Garment):
-    foot_armour = Column(Boolean)
+    foot_armour = sa.Column(sa.Boolean)
     __mapper_args__ = {
         'polymorphic_identity': "FootArmour",
     }
@@ -312,7 +308,7 @@ class FootArmour(Garment):
 
 
 class ArmArmour(Garment):
-    arm_armour = Column(Boolean)
+    arm_armour = sa.Column(sa.Boolean)
 
     __mapper_args__ = {
         'polymorphic_identity': "ArmArmour",
@@ -324,7 +320,7 @@ class ArmArmour(Garment):
 
 
 class HandArmour(Garment):
-    hand_armour = Column(Boolean)
+    hand_armour = sa.Column(sa.Boolean)
 
     __mapper_args__ = {
         'polymorphic_identity': "HandArmour",
@@ -347,7 +343,7 @@ class Jewelry(Wearable):
 
 
 class Ring(Jewelry):
-    ring = Column(Boolean)
+    ring = sa.Column(sa.Boolean)
 
     __mapper_args__ = {
         'polymorphic_identity': "Ring",
@@ -363,8 +359,8 @@ class Ring(Jewelry):
 
 # Subclass of Item
 class Consumable(Item):
-    healing_amount = Column(Integer)
-    sanctity_amount = Column(Integer)
+    healing_amount = sa.Column(sa.Integer)
+    sanctity_amount = sa.Column(sa.Integer)
 
     __mapper_args__ = {
         'polymorphic_identity': "Consumable",
@@ -389,7 +385,7 @@ class Consumable(Item):
 
 # New Class
 class QuestItem(Item):
-    quest_item = Column(Boolean)
+    quest_item = sa.Column(sa.Boolean)
     __mapper_args__ = {
         'polymorphic_identity': "QuestItem",
     }
