@@ -20,6 +20,7 @@
         <th><a href=/display_users/display/last_login>Last Login:</a></th>
     </tr>
     {% for hero in all_heroes %} <!-- Works great for now unless some fields are None. So needs to be addressed later. -->
+    {% set health = hero.get_summed_proficiencies('health') %}
     <tr>
         <td>{{ hero.user.id }}</td>
         <td>{% if hero.user.is_admin %}[Admin]{% else %}{{ hero.user.prestige }}{% if hero.user.prestige > 50 %}<img src="/static/images/star.jpg">{% endif %}{% endif %}</td>
@@ -29,7 +30,7 @@
         <td>{{ hero.journal.achievements.player_kills }}</td>
         <td>{{ hero.journal.achievements.monster_kills }}</td>
         <td>{{ hero.journal.achievements.deaths }}</td>
-        <td>{{ hero.base_proficiencies['health'].current }}/{{ hero.base_proficiencies['health'].final|int }}</td>
+        <td>{{ health.current }}/{{ health.final|int }}</td>
         <td>{% if hero.specializations.archetype.name %}{{ hero.specializations.archetype.name.title() }}{% else %}-{% endif %}</td>
         <td>{% if hero.last_login %}{{ hero.last_login }}{% else %}-{% endif %}</td>
     </tr>
