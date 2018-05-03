@@ -1,6 +1,9 @@
 import flask as fl
+
 from elthranonline import app
+
 import services
+import controller
 
 
 @app.route('/')
@@ -32,16 +35,10 @@ def login():
 
     if fl.request.method == 'POST':
         if fl.request.form['type'] == "login":
-            # The validate method runs a password migration script internally.
-            # Check for data_migration 'reset_key' ... if exists use old style
-            # password validation ... then convert password to new style.
-            # Otherwise, we are just logging in normally
-            import pdb; pdb.set_trace()
-            if services.validation.validate(username, password):
-                fl.session['logged_in'] = True
+            controller.login(username, password, fl.session)
             # Marked for upgrade, consider checking if user exists
             # and redirect to account creation page.
-            else:
+            if not fl.session['logged_in']:
                 error = 'Invalid Credentials.'
         elif fl.request.form['type'] == "register":
             # See if new_username has a valid input.

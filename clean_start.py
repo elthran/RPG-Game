@@ -39,6 +39,7 @@ if __name__ == "__main__":
     if args.f:
         os.system('mysql -u elthran -p7ArQMuTUSoxXqEfzYfUR -e "DROP DATABASE IF EXISTS rpg_database;"')
         print("Database deleted!")
+        os.system('python3 -c "import models.database.populate_database as pd; pd.create_all(); pd.add_prebuilt_objects()"')
     elif args.t:
         os.system("python3 -m cProfile -o code_profile.pstats app.py")
     elif args.c:
@@ -57,6 +58,6 @@ if __name__ == "__main__":
 
     if not any([args.c, args.p, args.t, args.g, args.m]):
         try:
-            os.system("python3 app.py")
+            os.system("python3 -m flask run")
         except KeyboardInterrupt:
             pass  # Only raise error from the actual program

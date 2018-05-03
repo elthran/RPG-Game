@@ -205,11 +205,18 @@ class Base(object):
         return True
 
     Session = None
+    session = None
+
+    # This way is cleaner ... but each query seems to create an
+    # instantly expiring session ...
+    # @classmethod
+    # def query(cls):
+    #     with database.sessions.session_scope(cls.Session) as session:
+    #         return session.query(cls)
 
     @classmethod
     def query(cls):
-        with database.sessions.session_scope(cls.Session) as session:
-            return session.query(cls)
+        return cls.session.query(cls)
 
     @classmethod
     def first(cls):
@@ -223,7 +230,13 @@ class Base(object):
     def filter_by(cls, **kwargs):
         return cls.query().filter_by(**kwargs)
 
-    save = database.sessions.save
+    @classmethod
+    def all(cls):
+        return cls.query().all()
+
+    @classmethod
+    def save(cls):
+        database.sessions.save(cls)  # resets session.
 
 
 # Initialize SQLAlchemy base class.

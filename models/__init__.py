@@ -14,7 +14,7 @@ from .journal import Journal
 from .locations import Location
 from . import mixins
 from . import proficiencies
-from . import quests
+from .quests import Quest, QuestPath
 from . import specializations
 
 # from . import database

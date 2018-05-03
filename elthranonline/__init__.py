@@ -4,6 +4,7 @@ import sendgrid
 
 import game
 import services
+import controller
 
 # For testing
 engine = services.event_service.Engine()
@@ -23,12 +24,12 @@ def create_app():
 
 
 app = create_app()
+# Must after app created http://flask.pocoo.org/docs/0.12/patterns/packages/
+# noinspection PyUnresolvedReferences
+import views
+
 sslify = flask_sslify.SSLify(app)
 
 # using SendGrid's Python Library
 # https://github.com/sendgrid/sendgrid-python
 sg = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY'])
-
-# Must after app created http://flask.pocoo.org/docs/0.12/patterns/packages/
-# noinspection PyUnresolvedReferences
-import views

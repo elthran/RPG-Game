@@ -24,7 +24,7 @@ Item Specification:
 """
 
 
-class Item(models.mixins.TemplateMixin, models.mixins.SessionHoistMixin, models.Base):
+class Item(models.mixins.TemplateMixin, models.Base):
     """Represent an unique version of an item or the template to create one.
 
     Each item exists in only one place.

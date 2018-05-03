@@ -4,7 +4,10 @@ from models.events import Handler
 
 
 class HumanReadableTimeMixin(object):
-    timestamp = sa.Column(sa.DateTime)
+    # noinspection PyMethodParameters
+    @sa.ext.declarative.declared_attr
+    def timestamp(cls):
+        return sa.Column(sa.DateTime)
 
     def human_readable_time(self):
         """Human readable datetime string.
@@ -81,17 +84,17 @@ class HandlerMixin(object):
         raise NotImplementedError("You need to override this on the '{}' class.".format(self.__class__))
 
 
-class SessionHoistMixin:
-    """Hoist the _sa_instance_state.session attribute of this object.
-
-    I have no idea about the side effect of this. There is probably a proper
-    way to do this .. that doesn't access a protected member of the class.
-    """
-
-    # noinspection PyUnresolvedReferences
-    @property
-    def session(self):
-        return self._sa_instance_state.session
+# class SessionHoistMixin(object):
+#     """Hoist the _sa_instance_state.session attribute of this object.
+#
+#     I have no idea about the side effect of this. There is probably a proper
+#     way to do this .. that doesn't access a protected member of the class.
+#     """
+#
+#     # noinspection PyUnresolvedReferences
+#     @property
+#     def session(self):
+#         return self._sa_instance_state.session
 
 
 class TemplateMixin(object):
@@ -127,8 +130,7 @@ class TemplateMixin(object):
 
     id = sa.Column(sa.Integer, primary_key=True)
 
-    # noinspection PyProtectedMember
-    @classmethod
+    # noinspection PyProtectedMember,PyMethodParameters
     @sa.ext.declarative.declared_attr
     def template(cls):
         col = sa.Column(sa.Boolean, default=False)

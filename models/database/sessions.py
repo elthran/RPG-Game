@@ -61,6 +61,9 @@ def safe_commit_session(f):
     return wrap_safe_commit_session
 
 
+# Seems to build sessions that expire too quickly.
+# I'm probably using this wrong.
+# noinspection PyPep8Naming
 @contextlib.contextmanager
 def session_scope(Session):
     """Provide a transactional scope around a series of operations."""

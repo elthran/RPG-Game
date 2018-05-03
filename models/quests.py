@@ -1,10 +1,3 @@
-import models.mixins
-
-if __name__ == "__main__":
-    import os
-    os.system("python3 -m pytest -vv -s rpg_game_tests/test_{}".format(__file__))
-    exit()  # prevents code from trying to run file afterwards.
-
 """
 
 THIS IS REALLY OUT OF DATE! ASK ME TO UPDATE IT. SAVE ME FROM MYSELF!
@@ -84,26 +77,21 @@ Considering:
         instead of a quest object ... and the trigger would cause a specific
         quest path to be chosen?       
 """
+import sqlalchemy as sa
+import sqlalchemy.orm
+import sqlalchemy.ext.orderinglist
 
-from sqlalchemy import Table, Column, Integer, String, Boolean
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship, validates
-from sqlalchemy.ext.orderinglist import ordering_list
+import models
 
-from models.base_classes import Base
-from models import events
-from models.mixins import TemplateMixin
-
-quest_path_to_quest_association = Table(
+quest_path_to_quest_association = sa.Table(
     "quest_path_to_quest_association",
-    Base.metadata,
-    Column("quest_path_id", Integer, ForeignKey("quest_path.id",
-                                                ondelete="CASCADE")),
-    Column("quest_id", Integer, ForeignKey("quest.id", ondelete="SET NULL"))
+    models.Base.metadata,
+    sa.Column("quest_path_id", sa.Integer, sa.ForeignKey("quest_path.id", ondelete="CASCADE")),
+    sa.Column("quest_id", sa.Integer, sa.ForeignKey("quest.id", ondelete="SET NULL"))
 )
 
 
-class QuestPath(TemplateMixin, models.mixins.HandlerMixin, Base):
+class QuestPath(models.mixins.TemplateMixin, models.mixins.HandlerMixin, models.Base):
     """A list of sequential quests that must be completed in order.
 
     This path can spawn a new path at any point ... a new path may or may not
@@ -117,22 +105,21 @@ class QuestPath(TemplateMixin, models.mixins.HandlerMixin, Base):
     """
     __tablename__ = 'quest_path'
     
-    id = Column(Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
 
-    name = Column(String(50))
-    description = Column(String(200))
-    reward_experience = Column(Integer)
-    stage = Column(Integer)
-    is_default = Column(Boolean)
-    completed = Column(Boolean, default=False)
+    name = sa.Column(sa.String(50))
+    description = sa.Column(sa.String(200))
+    reward_experience = sa.Column(sa.Integer)
+    stage = sa.Column(sa.Integer)
+    is_default = sa.Column(sa.Boolean)
+    completed = sa.Column(sa.Boolean, default=False)
 
     # Relationships
     # QuestPath to Journal is Many to One.
-    journal_id = Column(Integer, ForeignKey('journal.id', ondelete="SET NULL"))
-    journal = relationship("Journal", back_populates='quest_paths',
-                           foreign_keys="[QuestPath.journal_id]")
+    journal_id = sa.Column(sa.Integer, sa.ForeignKey('journal.id', ondelete="SET NULL"))
+    journal = sa.orm.relationship("Journal", back_populates='quest_paths', foreign_keys="[QuestPath.journal_id]")
 
-    @validates('journal')
+    @sa.orm.validates('journal')
     def activate_path(self, key, journal):
         """Activate the trigger for the current quest."""
 
@@ -142,22 +129,22 @@ class QuestPath(TemplateMixin, models.mixins.HandlerMixin, Base):
         self.handler.activate(self.current_quest.trigger, journal.hero)
         return journal
 
-    # notification_id = Column(Integer, ForeignKey("journal.id",
+    # notification_id = sa.Column(sa.Integer, ForeignKey("journal.id",
     #                                              ondelete="CASCADE"))
 
     # Each Path can be connected to any quest.
     # Each Quest can be connected to multiple paths.
     # The relationship is linear and ordered!
-    quests = relationship(
+    quests = sa.orm.relationship(
         "Quest",
         order_by="Quest.position",
-        collection_class=ordering_list('position'),
+        collection_class=sa.ext.orderinglist.ordering_list('position'),
         secondary=quest_path_to_quest_association,
         back_populates="quest_paths",
     )
 
     def __init__(self, name, description=name, reward_experience=5, stage=0,
-                 quests=[], is_default=False, template=True):
+                 quests=(), is_default=False, template=True):
         self.name = name
         self.description = description
         self.reward_experience = reward_experience
@@ -262,7 +249,7 @@ class QuestPath(TemplateMixin, models.mixins.HandlerMixin, Base):
         self.advance()
 
 
-class Quest(Base):
+class Quest(models.Base):
     """A class to describe quest objects that can be stored in a database.
     
     
@@ -274,15 +261,15 @@ class Quest(Base):
     """
     __tablename__ = "quest"
     
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50))
-    description = Column(String(200))
-    reward_experience = Column(Integer)
-    position = Column(Integer)
+    id = sa.Column(sa.Integer, primary_key=True)
+    name = sa.Column(sa.String(50))
+    description = sa.Column(sa.String(200))
+    reward_experience = sa.Column(sa.Integer)
+    position = sa.Column(sa.Integer)
 
     # Relationships
     # QuestPath many to many
-    quest_paths = relationship(
+    quest_paths = sa.orm.relationship(
         "QuestPath",
         secondary=quest_path_to_quest_association,
         back_populates='quests'
@@ -291,8 +278,8 @@ class Quest(Base):
     # Triggers Each Quest has a completion trigger. Each trigger can
     # complete multiple quests?
     # One to Many? (Later will be many to many).
-    trigger_id = Column(Integer, ForeignKey('trigger.id', ondelete="SET NULL"))
-    trigger = relationship("Trigger")
+    trigger_id = sa.Column(sa.Integer, sa.ForeignKey('trigger.id', ondelete="SET NULL"))
+    trigger = sa.orm.relationship("Trigger")
 
     def __init__(self, name, description=name, reward_experience=3,
                  trigger=None):
@@ -311,3 +298,7 @@ class Quest(Base):
 # class Primary_Quest(Quest):
     # def __init__(self, *args, **kwargs):
         # super().__init__(*args, **kwargs)
+
+if __name__ == "__main__":
+    import os
+    os.system("python3 -m pytest -vv -s rpg_game_tests/test_{}".format(__file__))

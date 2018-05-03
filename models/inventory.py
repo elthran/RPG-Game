@@ -3,12 +3,11 @@ import sqlalchemy.orm
 import sqlalchemy.orm.collections
 import sqlalchemy.ext.orderinglist
 
-import services
 import models
 from . import database
 
 
-class Inventory(models.mixins.SessionHoistMixin, models.Base):
+class Inventory(models.Base):
     """Store a list of items for the hero.
 
     This is a special class that will allow me to do more natural pythonic operations

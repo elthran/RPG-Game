@@ -9,7 +9,7 @@ from game import round_number_intelligently
 import models
 
 
-class Hero(models.mixins.SessionHoistMixin, models.Base):
+class Hero(models.Base):
     """Store data about the Hero/Character object.
 
     """
