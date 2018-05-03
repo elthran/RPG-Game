@@ -4,10 +4,7 @@ from models.events import Handler
 
 
 class HumanReadableTimeMixin(object):
-    @classmethod
-    @sa.ext.declarative.declared_attr
-    def timestamp(cls):
-        return sa.Column(sa.DateTime)
+    timestamp = sa.Column(sa.DateTime)
 
     def human_readable_time(self):
         """Human readable datetime string.

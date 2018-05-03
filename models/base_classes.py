@@ -219,6 +219,10 @@ class Base(object):
     def get(cls, id_):
         return cls.query().get(id_)
 
+    @classmethod
+    def filter_by(cls, **kwargs):
+        return cls.query().filter_by(**kwargs)
+
     save = database.sessions.save
 
 

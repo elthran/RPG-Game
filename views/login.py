@@ -36,7 +36,8 @@ def login():
             # Check for data_migration 'reset_key' ... if exists use old style
             # password validation ... then convert password to new style.
             # Otherwise, we are just logging in normally
-            if database.validate(username, password):
+            import pdb; pdb.set_trace()
+            if services.validation.validate(username, password):
                 fl.session['logged_in'] = True
             # Marked for upgrade, consider checking if user exists
             # and redirect to account creation page.
@@ -45,7 +46,7 @@ def login():
         elif fl.request.form['type'] == "register":
             # See if new_username has a valid input.
             # This only works if they are creating an account
-            if database.get_user_id(username):
+            if services.fetcher.get_user_id(username):
                 error = "Username already exists!"
             else:
                 user = database.add_new_user(username, password, email=email_address)

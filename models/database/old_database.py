@@ -303,16 +303,6 @@ class EZDB:
             QuestPath).filter_by(
             is_default=True, template=True).all()
 
-    @scoped_session
-    def get_user_id(self, username):
-        """Return the id of the user by username from the User's table.
-
-        """
-        user = self.session.query(User).filter_by(username=username).first()
-        if user is None:
-            return None
-        return user.id
-
     def get_user_by_username(self, username):
         return self.session.query(User).filter_by(username=username).first()
 
@@ -352,30 +342,6 @@ class EZDB:
             # check a password
             return services.secrets.check_cypher(email, user.email)
         return None
-
-    @scoped_session
-    def validate(self, username, password):
-        """Check if password if valid for user.
-
-        Check for data_migration 'reset_key' ... if exists use old style
-        password validation ... then convert password to new style.
-        """
-        user = self.session.query(User).filter_by(username=username).first()
-        if user is not None:
-            self.attempt_password_migration(user, password)
-            # check a password
-            return services.secrets.check_cypher(password, user.password)
-        return None
-
-    @safe_commit_session
-    def attempt_password_migration(self, user, password):
-        """Update password to new style if valid.
-
-        If user has reset key, and valid old style password.
-        """
-        if user.reset_key and user.password == hashlib.md5(password.encode()).hexdigest():
-            user.password = services.secrets.encrypt(password)
-            user.reset_key = None
 
     @scoped_session
     def setup_account_for_reset(self, username):
