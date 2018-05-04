@@ -50,6 +50,8 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy import orm
 from sqlalchemy.ext.hybrid import hybrid_property
+
+import geometry
 # ###!IMPORTANT!####
 # Sqlite does not implement sqlalchemy.ARRAY so don't try and use it.
 
@@ -265,9 +267,14 @@ class Location(Base):
         foreign_keys='[Hero.last_city_id]'
     )
 
+    journals = relationship('Journal', secondary="journal_to_location", back_populates="known_locations")
+
     # One location -> one display (bi)
     display = relationship("Display", back_populates='_location',
                            uselist=False, cascade="all, delete-orphan")
+
+    # One location -> one Point
+    point = relationship("Point", back_populates='location', uselist=False, cascade="all, delete-orphan")
 
     # @orm.validates('adjacent')
     # def build_adjacency(self, key, sibling):
@@ -348,7 +355,7 @@ class Location(Base):
                 )
             )
 
-    def __init__(self, name, location_type, parent=None, children=[]):
+    def __init__(self, name, location_type, parent=None, children=[], point=(0,0)):
         """Create a new location object that the hero can explore.
 
         :param location_type: e.g. map, town, store
@@ -373,6 +380,7 @@ class Location(Base):
         self.parent = parent
         self.children = children
         self.terrain = "none"
+        self.point = geometry.Point(*point)
         self.update()
 
     # @orm.reconstructor  # I uncommented this. I don't know why it was here.

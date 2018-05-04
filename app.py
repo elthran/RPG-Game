@@ -253,6 +253,11 @@ def update_current_location(f):
         hero = kwargs['hero']
         location = database.get_object_by_name('Location', kwargs['name'])
         hero.current_location = location
+
+        # Should be a controller function.
+        if location not in hero.journal.known_locations:
+            hero.journal.known_locations.append(location)
+
         engine.spawn(
             'move_event',
             hero,
@@ -843,12 +848,6 @@ def people_log(hero=None, npc_id=0):
     return render_template('journal.html', hero=hero, people_log=True, page_title=page_title,
                            all_npcs=all_npcs, display_npc=display_npc)  # return a string
 
-# Messing with nodes
-class Node():
-    def __init__(self, x, y):
-        self.name = "Htrae"
-        self.x_coordinate = x  # How far away from the left edge of the map
-        self.y_coordinate = y  # How far away from the top edge of the map
 
 @app.route('/atlas/<map_id>')
 @login_required
@@ -862,7 +861,14 @@ def atlas(hero=None, map_id=0):
         display_map = None
     else:
         display_map = database.get_object_by_id("Location", int(map_id))
-        nodes = [Node(125,125), Node(75,45)]
+        # Definitely a better way to do this ...
+        # Maybe known locations could be a nodelist of some kind?
+        for child in display_map.children:
+            if child in hero.journal.known_locations:
+                nodes.append(child)
+        if nodes:
+            print(nodes)
+            print(nodes[0].point)
     return render_template('journal.html', hero=hero, atlas=True, page_title=page_title,
                            all_maps=all_maps, display_map=display_map,
                            nodes=nodes)  # return a string

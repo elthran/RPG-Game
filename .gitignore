@@ -10,3 +10,4 @@ static/database.db-journal
 templates/desktop.ini
 .pytest_cache/
 private_config.py
+elthranonline.egg-info/

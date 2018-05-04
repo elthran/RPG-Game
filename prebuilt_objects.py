@@ -10,6 +10,7 @@ from items import (
 from events import Trigger, Condition
 from random import choice # To create pre-built adjectives
 from forum import Forum, Board
+import geometry
 
 # for testing
 import pdb
@@ -83,12 +84,14 @@ town = node_grid[5]
 town.name = "Thornwall"
 town.type = 'town'
 town.terrain = 'city'
+town.point = geometry.Point(125,125)
 town.update()
 
 town2 = node_grid[4]
 town2.name = "Outpost"
 town2.type = 'town'
 town2.terrain = 'city'
+town2.point = geometry.Point(75,45)
 town2.update()
 
 """

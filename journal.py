@@ -76,6 +76,12 @@ import pdb
 #                                                 ondelete="SET NULL"))
 # )
 
+journal_to_location = Table(
+    'journal_to_location', Base.metadata,
+    Column('journal_id', Integer, ForeignKey('journal.id', ondelete="SET NULL")),
+    Column('location_id', Integer, ForeignKey('location.id', ondelete="SET NULL"))
+)
+
 
 # I think I can combine the entry and Journal.
 # This would give me custom places such as beasts or quests in the Journal
@@ -158,7 +164,6 @@ class Journal(Base):
             else:
                 return self.journal._notifications.__getattribute__(item)
 
-
     # Journal to Achievements is One to One.
     achievements = relationship("Achievements", back_populates="journal",
                                 uselist=False,
@@ -180,6 +185,9 @@ class Journal(Base):
         self.notifications.append(quest_path)
         # self.notifications.append(Entry(quest_path))
         return quest_path
+
+    # I need to work out the cascade -> should be some kind of SET NULL.
+    known_locations = relationship("Location", secondary="journal_to_location", back_populates='journals')
 
     def __init__(self):
         self.achievements = Achievements()
