@@ -843,19 +843,29 @@ def people_log(hero=None, npc_id=0):
     return render_template('journal.html', hero=hero, people_log=True, page_title=page_title,
                            all_npcs=all_npcs, display_npc=display_npc)  # return a string
 
+# Messing with nodes
+class Node():
+    def __init__(self, x, y):
+        self.name = "Htrae"
+        self.x_coordinate = x  # How far away from the left edge of the map
+        self.y_coordinate = y  # How far away from the top edge of the map
+
 @app.route('/atlas/<map_id>')
 @login_required
 @uses_hero
 def atlas(hero=None, map_id=0):
     page_title = "Map"
+    nodes = []
     # Below is temporary map code as it's not currently set up
     all_maps = [database.get_object_by_id("Location", 1)]
     if map_id == "0":
         display_map = None
     else:
         display_map = database.get_object_by_id("Location", int(map_id))
+        nodes = [Node(125,125), Node(75,45)]
     return render_template('journal.html', hero=hero, atlas=True, page_title=page_title,
-                           all_maps=all_maps, display_map=display_map)  # return a string
+                           all_maps=all_maps, display_map=display_map,
+                           nodes=nodes)  # return a string
 
 
 @app.route('/achievements/<achievement_id>')

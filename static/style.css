@@ -1142,3 +1142,33 @@ Centered margin is 275px left/right.
 }
 
 /* End of settings page */
+
+/* Atlas and map stuff */
+.atlas_map {
+    position: relative;
+    width: 500px;
+    height: 400px;
+    overflow: hidden;
+    z-index:1;
+}
+
+.atlas_nodes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 25px;
+    height: 25px;
+    background-color: transparent;
+    background-image: url('background.jpg');
+    background-repeat: repeat;
+    background-attachment: scroll;
+    mix-blend-mode: multiply; /* makes background transparent */
+    z-index:2;
+}
+
+.atlas_nodes img {
+    width: 25px;
+    height: 25px;
+}
+
+/* End of Atlas stuff */

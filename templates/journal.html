@@ -127,7 +127,14 @@
                     <ul style="line-height:25px;">
                         <li>Country: {{ display_map.parent }}</li>
                         <li style="margin-top: 50px;">
-                            <img src="/static/images/maps/world_{{ display_map.display.page_image }}"/>
+                            <div class="atlas_map">
+                                <img src="/static/images/maps/world_{{ display_map.display.page_image }}" />
+                                <div class="atlas_nodes">
+                                    {% for node in nodes %}
+                                    <img src="/static/images/maps/city_node.jpg" style="margin-left:{{ node.x_coordinate }}px;margin-top:{{ node.y_coordinate }}px;" />
+                                    {% endfor %}
+                                </div>
+                            </div>
                         </li>
                     </ul>
                 {% else %}
