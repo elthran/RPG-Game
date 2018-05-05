@@ -878,7 +878,9 @@ def atlas(hero=None, map_id=0):
                 else:
                     print("Location node has no known type: ", child.type)
                     color = "yellow"
-                if child.url in possible_places:
+                if child.url == hero.current_location.url:
+                    url = "Self"
+                elif child.url in possible_places:
                     url = child.url
                 else:
                     url = "None"
