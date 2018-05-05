@@ -868,13 +868,23 @@ def atlas(hero=None, map_id=0):
             possible_places.append(place.url)
         for child in display_map.children:
             if child in hero.journal.known_locations:
-                if child.url in possible_places:
-                    nodes.append((child, child.url))
+                if child.type == "town":
+                    color = "red"
+                elif child.type == "explorable":
+                    color = "blue"
+                elif child.type == "dungeon":
+                    color = "green"
                 else:
-                    nodes.append((child, "None"))
+                    print("Location node has no known type: ", child.type)
+                    color = "yellow"
+                if child.url in possible_places:
+                    url = child.url
+                else:
+                    url = "None"
+                nodes.append((child, url, color))
         if nodes:
-            print(nodes)
-            print(nodes[0][0].point)
+            print("Nodes: ", nodes)
+            print("First node: ", nodes[0][0].point)
     return render_template('journal.html', hero=hero, atlas=True, page_title=page_title,
                            all_maps=all_maps, display_map=display_map,
                            nodes=nodes)  # return a string
