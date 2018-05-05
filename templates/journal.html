@@ -118,47 +118,45 @@
             </div>
         </div>
 
-    <!-- This shows the map log within the journal -->
-    {% elif atlas %}
-        <div style="position:relative;border:dotted;width:1200px;height:700px;padding:10px;scroll:auto;">
-            <div style="position:relative;float:left;width:800px;">
-                {% if display_map %}
-                    <h2>{{ display_map.name }}</h2>
-                    <ul style="line-height:25px;">
-                        <li>Country: {{ display_map.parent }}</li>
-                        <li style="margin-top: 50px;">
-                            <div class="atlas_map">
-                                <img src="/static/images/maps/world_{{ display_map.display.page_image }}" />
-                                <div class="atlas_nodes" style="cursor:pointer;">
-                                    {% for node in nodes %}
-                                        {% if node[1] != "None" %}
-                                            <a href={{ node[1] }}><img src="/static/images/maps/{{ node[2] }}_node.jpg" style="margin-left:{{ node[0].point.x }}px;margin-top:{{ node[0].point.y }}px;" onmouseenter="showText('{{ node[0].name }}', '{{ node[0].point.x }}', '{{ node[0].point.y }}')" onmouseout="hideText()"/></a>
-                                        {% else %}
-                                            <img src="/static/images/maps/{{ node[2] }}_node.jpg" style="margin-left:{{ node[0].point.x }}px;margin-top:{{ node[0].point.y }}px;" />
-                                        {% endif %}
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                {% else %}
-                    Here is a list of all the maps you have explored. Choose one from the list to see more.
-                {% endif %}
-
-                Mouse over a node to see its information<span id="nodeName" style="font-weight:bold;"></span>
-            </div>
-            <div style="position:relative;float:right;width:20%;height:100%;border:dotted;">
-                {% for map in all_maps %}
-                    <ul>
-                        <li><a href=/atlas/{{ map.id }}>{{ map.name }}</a></li>
-                    </ul>
-                {% endfor %}
+<!-- This shows the map log within the journal -->
+{% elif atlas %}
+<div style="position:relative;border:dotted;width:1200px;height:700px;padding:10px;scroll:auto;">
+    <div style="position:relative;float:left;width:800px;">
+        {% if display_map %}
+        <h2>{{ display_map.name }}</h2>
+        <div style="line-height:25px;">
+            Country: {{ display_map.parent }}
+            <div class="atlas_map">
+                <img src="/static/images/maps/world_{{ display_map.display.page_image }}" />
+                <div class="atlas_nodes" style="cursor:pointer;">
+                    {% for node in nodes %}
+                    {% if node[1] != "None" %}
+                    <a href={{ node[1] }}><img src="/static/images/maps/{{ node[2] }}_node.jpg" style="margin-left:{{ node[0].point.x }}px;margin-top:{{ node[0].point.y }}px;" onmouseenter="showText('{{ node[0].name }}', '{{ node[0].point.x }}', '{{ node[0].point.y }}')" onmouseout="hideText()"/></a>
+                    {% else %}
+                    <img src="/static/images/maps/{{ node[2] }}_node.jpg" style="margin-left:{{ node[0].point.x }}px;margin-top:{{ node[0].point.y }}px;" onmouseenter="showText('{{ node[0].name }}', '{{ node[0].point.x }}', '{{ node[0].point.y }}')" onmouseout="hideText()" />
+                    {% endif %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
-        {% for map in maps %}
-            {{ map }}
-            <img src="/static/images/maps/world_{{ map.display.page_image }}"/>
+        {% else %}
+        Here is a list of all the maps you have explored. Choose one from the list to see more.
+        {% endif %}
+
+        Mouse over a node to see its information<span id="nodeName" style="font-weight:bold;"></span>
+    </div>
+    <div style="position:relative;float:right;width:20%;height:100%;border:dotted;">
+        {% for map in all_maps %}
+        <ul>
+            <li><a href=/atlas/{{ map.id }}>{{ map.name }}</a></li>
+        </ul>
         {% endfor %}
+    </div>
+</div>
+{% for map in maps %}
+{{ map }}
+<img src="/static/images/maps/world_{{ map.display.page_image }}"/>
+{% endfor %}
 
     <!-- This shows the achievement log within the journal -->
     {% elif achievement_log %}

@@ -74,24 +74,30 @@ Nodes used:
 """
 
 node_grid = []
-for i in range(0, 12):
+for i in range(0, 10):
     node_grid.append(
         Location(name="Location{}".format(i),
                  location_type='explorable'))
 starting_world.children = node_grid
 
+node_grid[0].point = geometry.Point(75,120)
+node_grid[1].point = geometry.Point(170,135)
+node_grid[3].point = geometry.Point(75,165)
+node_grid[6].point = geometry.Point(230,175)
+node_grid[9].point = geometry.Point(230,235)
+
 town = node_grid[5]
 town.name = "Thornwall"
 town.type = 'town'
 town.terrain = 'city'
-town.point = geometry.Point(125,125)
+town.point = geometry.Point(175,175)
 town.update()
 
 town2 = node_grid[4]
 town2.name = "Outpost"
 town2.type = 'town'
 town2.terrain = 'city'
-town2.point = geometry.Point(400,200)
+town2.point = geometry.Point(60,195)
 town2.update()
 
 """
@@ -126,13 +132,13 @@ marketplace2 = Location('Marketplace2', 'store')
 town2.children.append(marketplace2)
 
 old_mans_hut = node_grid[7]
-old_mans_hut.name = "Old Man's Hut"
+old_mans_hut.name = "Old Man Hut"
 old_mans_hut.type = 'building'
 old_mans_hut.update()
 old_mans_hut.display.page_heading = "Old Man's Hut"
 old_mans_hut.display.page_image = 'hut.jpg'
 old_mans_hut.display.paragraph = "Nice to see you again kid. What do you need?"
-old_mans_hut.point = geometry.Point(300,200)
+old_mans_hut.point = geometry.Point(300,175)
 
 
 gate = Location('Village Gate', 'gate')
@@ -166,7 +172,7 @@ cave.display.page_heading = "You are outside {}".format(cave.name)
 cave.display.page_image = "generic_cave_entrance.jpg"
 cave.display.paragraph = "There are many scary places to die within the cave. Have a look!"
 cave.children.append(dungeon_entrances[0])
-cave.point = geometry.Point(300,300)
+cave.point = geometry.Point(240,75)
 
 forest = node_grid[8]
 forest.name = choice(adjective_list) + " Forest"
@@ -177,7 +183,7 @@ forest.display.page_heading = "You are outside {}".format(forest.name)
 forest.display.page_image = "generic_forest_entrance.jpg"
 forest.display.paragraph = "There are many scary places to die within the forest. Have a look!"
 forest.children.append(dungeon_entrances[1])
-forest.point = geometry.Point(150,350)
+forest.point = geometry.Point(60,235)
 
 node_grid[0].adjacent = [node_grid[1], node_grid[3], node_grid[5]]
 node_grid[1].adjacent = [node_grid[0], node_grid[2], node_grid[5]]
@@ -190,7 +196,6 @@ node_grid[6].adjacent = [node_grid[5], node_grid[7], node_grid[9]]
 node_grid[7].adjacent = [node_grid[6]]
 node_grid[8].adjacent = [node_grid[5]]
 node_grid[9].adjacent = [node_grid[5], node_grid[6]]
-node_grid[10].adjacent = []
 
 current_location = town
 game_worlds = [starting_world]  # Just chop this out and use world instead.
