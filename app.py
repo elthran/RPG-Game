@@ -855,7 +855,7 @@ def people_log(hero=None, npc_id=0):
 def atlas(hero=None, map_id=0):
     page_title = "Map"
     nodes = []
-    possible_places = []
+    possible_places = [hero.current_location.url]
     # Below is temporary map code as it's not currently set up
     all_maps = [database.get_object_by_id("Location", 1)]
     if map_id == "0":
@@ -868,6 +868,7 @@ def atlas(hero=None, map_id=0):
             possible_places.append(place.url)
         for child in display_map.children:
             if child in hero.journal.known_locations:
+                print(child.name, child.point.x, child.point.y)
                 if child.type == "town":
                     color = "red"
                 elif child.type == "explorable":

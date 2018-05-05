@@ -91,7 +91,7 @@ town2 = node_grid[4]
 town2.name = "Outpost"
 town2.type = 'town'
 town2.terrain = 'city'
-town2.point = geometry.Point(75,45)
+town2.point = geometry.Point(400,200)
 town2.update()
 
 """
@@ -132,6 +132,8 @@ old_mans_hut.update()
 old_mans_hut.display.page_heading = "Old Man's Hut"
 old_mans_hut.display.page_image = 'hut.jpg'
 old_mans_hut.display.paragraph = "Nice to see you again kid. What do you need?"
+old_mans_hut.point = geometry.Point(300,200)
+
 
 gate = Location('Village Gate', 'gate')
 town.children.append(gate)
@@ -164,6 +166,7 @@ cave.display.page_heading = "You are outside {}".format(cave.name)
 cave.display.page_image = "generic_cave_entrance.jpg"
 cave.display.paragraph = "There are many scary places to die within the cave. Have a look!"
 cave.children.append(dungeon_entrances[0])
+cave.point = geometry.Point(300,300)
 
 forest = node_grid[8]
 forest.name = choice(adjective_list) + " Forest"
@@ -174,6 +177,7 @@ forest.display.page_heading = "You are outside {}".format(forest.name)
 forest.display.page_image = "generic_forest_entrance.jpg"
 forest.display.paragraph = "There are many scary places to die within the forest. Have a look!"
 forest.children.append(dungeon_entrances[1])
+forest.point = geometry.Point(150,350)
 
 node_grid[0].adjacent = [node_grid[1], node_grid[3], node_grid[5]]
 node_grid[1].adjacent = [node_grid[0], node_grid[2], node_grid[5]]
