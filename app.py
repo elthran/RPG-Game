@@ -855,6 +855,7 @@ def people_log(hero=None, npc_id=0):
 def atlas(hero=None, map_id=0):
     page_title = "Map"
     nodes = []
+    possible_places = []
     # Below is temporary map code as it's not currently set up
     all_maps = [database.get_object_by_id("Location", 1)]
     if map_id == "0":
@@ -863,10 +864,14 @@ def atlas(hero=None, map_id=0):
         display_map = database.get_object_by_id("Location", int(map_id))
         # Definitely a better way to do this ...
         # Maybe known locations could be a nodelist of some kind?
+        for place in hero.current_location.places_of_interest['adjacent']:
+            possible_places.append(place.url)
         for child in display_map.children:
             if child in hero.journal.known_locations:
-                print("Child: ", child.url)
-                nodes.append((child, child.url))
+                if child.url in possible_places:
+                    nodes.append((child, child.url))
+                else:
+                    nodes.append((child, "None"))
         if nodes:
             print(nodes)
             print(nodes[0][0].point)
