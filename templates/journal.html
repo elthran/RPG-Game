@@ -131,7 +131,7 @@
                                 <img src="/static/images/maps/world_{{ display_map.display.page_image }}" />
                                 <div class="atlas_nodes">
                                     {% for node in nodes %}
-                                    <img src="/static/images/maps/city_node.jpg" style="margin-left:{{ node.point.x }}px;margin-top:{{ node.point.y }}px;" />
+                                    <a href={{ node[1] }}><img src="/static/images/maps/city_node.jpg" style="margin-left:{{ node[0].point.x }}px;margin-top:{{ node[0].point.y }}px;" /></a>
                                     {% endfor %}
                                 </div>
                             </div>

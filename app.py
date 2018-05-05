@@ -865,10 +865,11 @@ def atlas(hero=None, map_id=0):
         # Maybe known locations could be a nodelist of some kind?
         for child in display_map.children:
             if child in hero.journal.known_locations:
-                nodes.append(child)
+                print("Child: ", child.url)
+                nodes.append((child, child.url))
         if nodes:
             print(nodes)
-            print(nodes[0].point)
+            print(nodes[0][0].point)
     return render_template('journal.html', hero=hero, atlas=True, page_title=page_title,
                            all_maps=all_maps, display_map=display_map,
                            nodes=nodes)  # return a string
