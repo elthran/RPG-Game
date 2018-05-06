@@ -306,53 +306,6 @@ class EZDB:
     def get_user_by_username(self, username):
         return self.session.query(User).filter_by(username=username).first()
 
-    def add_new_hero_to_user(self, user):
-        """Create a new blank character object for a user.
-
-        May not be future proof if a user has multiple heroes.
-        """
-        hero = Hero(user=user)
-        self.session.add(hero)
-        return hero
-
-    def add_new_user(self, username, password, email=''):
-        """Create a new user account with this username and password.
-
-        And optional email.
-
-        The password is encrypted with bcrypt.
-        The email is encrypted separately with bcrypt.
-        """
-
-        # hash and save a password
-        user = User(username=username, password=services.secrets.encrypt(password), email=services.secrets.encrypt(email),
-                    timestamp=EZDB.now())
-        self.session.add(user)
-        return user
-
-    @scoped_session
-    def validate_email(self, username, email):
-        """Check if the passed email matches the email for this account.
-
-        Email is encrypted separately. You can't decrypt the email even
-        if you know the user name. This might be inconvenient at some point.
-        """
-        user = self.session.query(User).filter_by(username=username).first()
-        if user is not None:
-            # check a password
-            return services.secrets.check_cypher(email, user.email)
-        return None
-
-    @scoped_session
-    def setup_account_for_reset(self, username):
-        """Add a reset key to the user account and return it."""
-        user = self.session.query(User).filter_by(username=username).first()
-        key = os.urandom(256)
-        key = base64.urlsafe_b64encode(hashlib.sha256(key).digest())
-        urlsafe_key = str(key)[2:-2]
-        user.reset_key = urlsafe_key
-        return urlsafe_key
-
     @scoped_session
     def validate_reset(self, username, key):
         """Make sure the reset key matches.
@@ -491,15 +444,6 @@ class EZDB:
         """Return the quest path template of the given name."""
         return self.session.query(
             QuestPath).filter_by(name=name, template=True).one()
-
-    @staticmethod
-    def now():
-        """Return current UTC time as datetime object in string form.
-
-        NOTE: I am using UTC as we are working in different time
-        zones and I think it might screw up otherwise.
-        """
-        return datetime.datetime.utcnow()
 
     def update_time_all_heroes(self):
         """Run update_time on all hero objects.

@@ -41,15 +41,11 @@ def login():
             if not fl.session['logged_in']:
                 error = 'Invalid Credentials.'
         elif fl.request.form['type'] == "register":
-            # See if new_username has a valid input.
+            # See if new_username is a valid input.
             # This only works if they are creating an account
-            if services.fetcher.get_user_id(username):
+            controller.register(username, password, email_address, fl.session)
+            if not fl.session['logged_in']:
                 error = "Username already exists!"
-            else:
-                user = database.add_new_user(username, password, email=email_address)
-                database.add_new_hero_to_user(user)
-                fl.session['logged_in'] = True
-                user.heroes[0].creation_phase = True  # At this point only one hero should exist
         elif fl.request.form['type'] == "reset":
             print("Validating email address ...")
             if database.validate_email(username, email_address):

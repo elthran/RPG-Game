@@ -15,3 +15,16 @@ def validate(username, password):
         # check a password
         return services.secrets.check_cypher(password, account.password)
     return None
+
+
+def validate_email(username, email):
+    """Check if the passed email matches the email for this account.
+
+    Email is encrypted separately. You can't decrypt the email even
+    if you know the user name. This might be inconvenient at some point.
+    """
+    user = models.Account.filter_by(username=username).first()
+    if user is not None:
+        # check a password
+        return services.secrets.check_cypher(email, user.email)
+    return None
