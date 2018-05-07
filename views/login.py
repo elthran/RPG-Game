@@ -35,7 +35,7 @@ def login():
 
     if fl.request.method == 'POST':
         if fl.request.form['type'] == "login":
-            controller.login(username, password, fl.session)
+            controller.login_account(username, password, fl.session)
             # Marked for upgrade, consider checking if user exists
             # and redirect to account creation page.
             if not fl.session['logged_in']:
@@ -43,16 +43,14 @@ def login():
         elif fl.request.form['type'] == "register":
             # See if new_username is a valid input.
             # This only works if they are creating an account
-            controller.register(username, password, email_address, fl.session)
+            controller.register_account(username, password, email_address, fl.session)
             if not fl.session['logged_in']:
                 error = "Username already exists!"
         elif fl.request.form['type'] == "reset":
             print("Validating email address ...")
-            if database.validate_email(username, email_address):
+            resetting = controller.reset_account_via_email(username, email_address, fl.request.url_root, fl.session)
+            if resetting:
                 print("Trying to send mail ...")
-                key = database.setup_account_for_reset(username)
-                send_email(username, email_address, key)
-                # async_process(rest_key_timelock, args=(database, username), kwargs={'timeout': 5})
         else:
             raise Exception("The form of this 'type' doesn't exist!")
 

@@ -70,12 +70,12 @@ def game_clock(database):
 
 
 # Maybe make this a decorator?
-def async_process(func, args=(), kwargs={}):
+def async_process(func, args=(), kwargs=None):
     """Start a new asynchronous process.
 
     These processes might respawn if the server restarts.
     """
-
+    kwargs = {} if kwargs is None else kwargs  # Might not be needed?
     Process(target=func, args=args, kwargs=kwargs).start()
 
 

@@ -55,10 +55,6 @@ def create_app():
 app = create_app()
 sslify = SSLify(app)
 
-# using SendGrid's Python Library
-# https://github.com/sendgrid/sendgrid-python
-sg = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY'])
-
 
 @app.template_filter()
 def validate_hero_image(hero):
@@ -181,7 +177,7 @@ def update_current_location(f):
     return wrap_current_location
 
 
-def send_email(user, address, key):
+def send_email(account, address, key):
     """Send an email to the passed address.
 
     This could later be improved to send other types of emails but right
@@ -193,12 +189,12 @@ def send_email(user, address, key):
 
     # url = 'https://mydomain.com/reset=' + token_urlsafe()
     # if server:
-    # link = "https://elthran.pythonanywhere.com/reset?user={}&&key={}".format(user, key)
+    # link = "https://elthran.pythonanywhere.com/reset?account={}&&key={}".format(account, key)
     # Gets generic url that should work on server or local machine.
-    link = "{}reset?user={}&&key={}".format(request.url_root, user, key)
+    link = "{}reset?account={}&&key={}".format(request.url_root, account, key)
 
     from_email = Email("Elthran Online <{sender}>".format(sender=sender))
-    to_email = Email("Owner of account '{user}' <{address}>".format(user=user, address=address))
+    to_email = Email("Owner of account '{account}' <{address}>".format(account=account, address=address))
     subject = "Reset link for ElthranOnline"
 
     message = Content("text/html", """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -212,7 +208,7 @@ def send_email(user, address, key):
  <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr>
    <td>
-    <p>Hi Owner of account '{user}',</p>
+    <p>Hi Owner of account '{account}',</p>
     <p>&#9;Please click this link <a clicktracking=off href="{link}">{link}</a> to reset your account.</p>
     <p>You will be prompted to enter a new account password.</p>
    </td>
@@ -220,7 +216,7 @@ def send_email(user, address, key):
  </table>
 </body>
 </html>
-""".format(user=user, link=link))
+""".format(account=account, link=link))
 
     mail = Mail(from_email, subject, to_email, message)
     try:
@@ -229,20 +225,20 @@ def send_email(user, address, key):
     except Exception as ex:
         print("Error: unable to send email")
         print("You need to setup your sendgrid server correctly.")
-        print(ex)  # Fail gracefully ... should probably send error to user
+        print(ex)  # Fail gracefully ... should probably send error to account
 
 
 @app.route("/reset", methods=["GET", "POST"])
 def reset_password():
     if request.method == "GET":
-        if database.validate_reset(request.args['user'], request.args['key']):
-            return render_template("reset.html", username=request.args['user'], key=request.args['key'])
+        if database.validate_reset(request.args['account'], request.args['key']):
+            return render_template("reset.html", username=request.args['account'], key=request.args['key'])
     elif request.method == "POST":
         if database.validate_reset(request.form['username'], request.form['key']):
             user = database.get_user_by_username(request.form['username'])
-            if user.reset_key:
-                user.reset_key = None
-                user.password = services.sercrets.encrypt(request.form['password'])
+            if account.reset_key:
+                account.reset_key = None
+                account.password = services.sercrets.encrypt(request.form['password'])
                 return redirect(url_for('login'), code=307)
     return redirect(url_for('login'))
 
@@ -250,16 +246,16 @@ def reset_password():
 @app.route('/choose_character', methods=['GET', 'POST'])
 @login_required
 def choose_character():
-    user = database.get_object_by_id("User", session['id'])
-    # print(user)
+    account = database.get_object_by_id("Account", session['id'])
+    # print(account)
     # exit("testing choose character.")
     hero = None
-    if len(user.heroes) == 1:
-        hero = user.heroes[0]
+    if len(account.heroes) == 1:
+        hero = account.heroes[0]
     elif request.method == 'POST':
         hero = database.get_object_by_id("Hero", request.form['hero_id'])
     else:
-        return render_template('choose_character.html', user=user)
+        return render_template('choose_character.html', account=account)
 
     # Below is code for daily login reward. It's temporary as I am just trying to play with and learn about timestamps and whatnot.
     hero.check_daily_login_reward(str(EZDB.now()))
@@ -317,24 +313,24 @@ def create_character(hero=None):
                     "around for something to defend yourself. A firm and inquisitive voice " \
                     "pierces the air."
         npc_text = [("Stranger", "Who are you and what are you doing here?")]
-        user_action = "get text"
-        user_response = "...I don't remember what happened. My name is"
-        user_text_placeholder = "Character Name"
+        account_action = "get text"
+        account_response = "...I don't remember what happened. My name is"
+        account_text_placeholder = "Character Name"
     elif hero.background is None:
-        # This is needed if the user names there hero but leaves the page and returns later. But I will write it out later.
+        # This is needed if the account names there hero but leaves the page and returns later. But I will write it out later.
         page_image = "character_background"
         generic_text = ""
-        user_text_placeholder = ""
+        account_text_placeholder = ""
         npc_text = [("Stranger", "Where do you come from, child?")]
-        user_action = "make choice"
-        user_response = [
+        account_action = "make choice"
+        account_response = [
             ("My father was a great warlord from the north.", ["Gain", ("+1 Brawn",)], "Barbarian"),
             ("My father was a great missionary traveling to the west.", ["Gain", ("+1 Intellect",)], "Missionary")]
     else:
-        hero.creation_phase = False  # Prevent the user from returning here.
+        hero.creation_phase = False  # Prevent the account from returning here.
         hero.refresh_character(full=True)
         return redirect(url_for('home'))
-    return render_template('generic_dialogue.html', page_image=page_image, generic_text=generic_text, npc_text=npc_text, user_action=user_action, user_response=user_response, user_text_placeholder=user_text_placeholder)
+    return render_template('generic_dialogue.html', page_image=page_image, generic_text=generic_text, npc_text=npc_text, account_action=account_action, account_response=account_response, account_text_placeholder=account_text_placeholder)
 
 
 # this gets called if you press "logout"
@@ -418,16 +414,16 @@ def admin(path="modify_self", path2="users", hero=None):
 
 @app.route('/add_new_character')
 def add_new_character():
-    user = database.get_object_by_id("User", session['id'])
-    database.add_new_hero_to_user(user)
+    account = database.get_object_by_id("Account", session['id'])
+    database.add_new_hero_to_account(account)
     return redirect(url_for('choose_character'))
 
 
-# The if statement works and displays the user page as normal. Now if you
-# click on a user it should run the else statement and pass in the user's
+# The if statement works and displays the account page as normal. Now if you
+# click on a account it should run the else statement and pass in the account's
 # username (which is unique).
-# Now, I am having trouble sending the user to HTML. I can't seem to
-# understand how to store the user information as a variable.
+# Now, I am having trouble sending the account to HTML. I can't seem to
+# understand how to store the account information as a variable.
 @app.route('/display_users/<page_type>/<page_detail>', methods=['GET', 'POST'])
 @uses_hero
 def display_user_page(page_type, page_detail, hero=None):
@@ -450,7 +446,7 @@ def display_user_page(page_type, page_detail, hero=None):
         if request.method == 'POST':
             this_message = request.form['message']
             if len(this_message) > 1:
-                hero.user.inbox.send_message(this_user, this_message, str(EZDB.now()))
+                hero.account.inbox.send_message(this_user, this_message, str(EZDB.now()))
                 confirmation_message = "Message sent!"
             else:
                 confirmation_message = "Please type your message"
@@ -474,11 +470,11 @@ def global_chat(hero=None):
         the_second = str(itsnow.second)
         game.global_chat_user_list[hero] = int(the_minute)
         users_needing_to_be_removed = []
-        for user, time_stamp in game.global_chat_user_list.items():
+        for account, time_stamp in game.global_chat_user_list.items():
             if (int(the_minute) - time_stamp) % 60 > 5:
-                users_needing_to_be_removed.append(user)
-        for user in users_needing_to_be_removed:
-            del game.global_chat_user_list[user]
+                users_needing_to_be_removed.append(account)
+        for account in users_needing_to_be_removed:
+            del game.global_chat_user_list[account]
         if len(the_hour) < 2:
             the_hour = "0" + the_hour
         if len(the_minute) < 2:
@@ -498,7 +494,7 @@ def global_chat(hero=None):
 @app.route('/inbox/<outbox>', methods=['GET', 'POST'])
 @uses_hero
 def inbox(outbox, hero=None):
-    hero.user.inbox_alert = False # Your inbox alert will no longer glow until a new message is sent to you, even if you dont open all your letters
+    hero.account.inbox_alert = False # Your inbox alert will no longer glow until a new message is sent to you, even if you dont open all your letters
     if outbox == "outbox":
         outbox = True
     else:
@@ -518,15 +514,15 @@ def inbox(outbox, hero=None):
             if "replyToMessage" in request.form:
                 message = database.get_object_by_id("Message", request.form['message_id'])
                 content = request.form["replyContent"]
-                receiver = message.sender.user
-                hero.user.inbox.send_message(receiver, content, str(EZDB.now()))
+                receiver = message.sender.account
+                hero.account.inbox.send_message(receiver, content, str(EZDB.now()))
                 receiver.inbox_alert = True
             else:
                 content = request.form["newMessageContent"]
                 receiver = request.form["receiver"]
-                receiver = database.get_user_by_username(receiver)
+                receiver = database.get_account_by_username(receiver)
                 try:
-                    hero.user.inbox.send_message(receiver, content, str(EZDB.now()))
+                    hero.account.inbox.send_message(receiver, content, str(EZDB.now()))
                     receiver.inbox_alert = True
                 except AttributeError:
                     print("Message failed to send: the username does not exist")
@@ -554,7 +550,7 @@ def settings(hero=None, tab="profile", choice="none"):
     message = None
     if request.method == 'POST':
         if request.form['type'] == "update_password":
-            if database.validate(hero.user.username, request.form['old_password']):
+            if database.validate(hero.account.username, request.form['old_password']):
                 new_password = request.form['new_password']
                 user = hero.user
                 user.password = services.secrets.encrypt(new_password)
@@ -564,7 +560,7 @@ def settings(hero=None, tab="profile", choice="none"):
                 message = "You entered the wrong password. Password change failed."
         elif request.form['type'] == "update_email":
             email = request.form['new_email']
-            hero.user.email = services.secrets.encrypt(email)
+            hero.account.email = services.secrets.encrypt(email)
             message = "Email address changed to: " + email
     return render_template('settings.html', hero=hero, user=hero.user, tab=tab, choice=choice, message=message)
 
@@ -768,7 +764,7 @@ def forum(hero=None, board_id=0, thread_id=0):
             thread_name = request.form["thread_name"]
             thread_description = request.form["thread_description"]
             thread_board = database.get_object_by_name("Board", request.form["thread_board"])
-            new_thread = Thread(thread_name, hero.user.username, thread_description)
+            new_thread = Thread(thread_name, hero.account.username, thread_description)
             thread_board.create_thread(new_thread)
             if len(request.form["thread_post"]) > 0: # If they typed a new post, add it to the new thread
                 new_post = Post(request.form["thread_post"], hero.user)
@@ -777,7 +773,7 @@ def forum(hero=None, board_id=0, thread_id=0):
             post_content = request.form["post_content"]
             new_post = Post(post_content, hero.user)
             current_thread.write_post(new_post)
-            hero.user.prestige += 1 # Give the user prestige. It's used to track meta activities and is unrelated to gameplay
+            hero.account.prestige += 1 # Give the user prestige. It's used to track meta activities and is unrelated to gameplay
 
     return render_template('forum.html', hero=hero,
                            current_forum=current_forum, current_board=current_board, current_thread=current_thread,

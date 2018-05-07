@@ -52,7 +52,7 @@ def url_protect(f):
         valid_urls = ALWAYS_VALID_URLS
 
         hero = kwargs['hero']
-        if hero.user.is_admin:
+        if hero.account.is_admin:
             valid_urls.append('/admin')
 
         # print("Hero current location url: ", hero.current_location.url)
@@ -71,7 +71,7 @@ def url_protect(f):
         # It may need additional parsing.
         requested_move = request.path
         # pdb.set_trace()
-        if requested_move in valid_urls or hero.user.is_admin:
+        if requested_move in valid_urls or hero.account.is_admin:
             # print("url is valid")
             session['last_url'] = request.path
             return f(*args, **kwargs)

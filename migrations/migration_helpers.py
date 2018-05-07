@@ -69,7 +69,7 @@ def reset_table_ids_and_autoincrement(name, engine):
     engine.execute("ALTER TABLE `{name}` AUTO_INCREMENT = 1;".format(name=name))
 
 
-def set_all(old, new, except_=[]):
+def set_all(old, new, except_=()):
     """Migrate the data from one object to another."""
     for key in old.keys():
         if key not in except_:

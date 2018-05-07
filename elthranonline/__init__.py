@@ -29,7 +29,3 @@ app = create_app()
 import views
 
 sslify = flask_sslify.SSLify(app)
-
-# using SendGrid's Python Library
-# https://github.com/sendgrid/sendgrid-python
-sg = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY'])

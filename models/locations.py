@@ -346,7 +346,7 @@ class Location(Base):
                 )
             )
 
-    def __init__(self, name, location_type, parent=None, children=[]):
+    def __init__(self, name, location_type, parent=None, children=()):
         """Create a new location object that the hero can explore.
 
         :param location_type: e.g. map, town, store

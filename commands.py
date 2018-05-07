@@ -180,7 +180,7 @@ class Command:
     @staticmethod
     @set_notification_active
     def buy(hero, database, data, engine):
-        """Allow the user to buy items from the Blacksmith.
+        """Allow the hero to buy items from the Blacksmith.
 
         Returns an error if the character doesn't have enough gold.
         """
@@ -322,14 +322,14 @@ class Command:
     def change_avatar(hero, database, data, **kwargs):
         avatar = data['id']
         name = data['name']
-        hero.user.avatar = avatar
+        hero.account.avatar = avatar
         return jsonify(name=name)
 
     @staticmethod
     def change_signature(hero, database, data, **kwargs):
         signature = data['signature']
         name = data['name']
-        hero.user.signature = signature
+        hero.account.signature = signature
         return jsonify(name=name)
 
     @staticmethod
@@ -442,7 +442,7 @@ class Command:
         id = arg_dict.get('data', None, type=int)
         message = database.get_object_by_id("Message", id)
         message.unread = False #Marks the message as having been seen by the receiver
-        return "{}&&{}".format(message.content, message.sender.user.username)
+        return "{}&&{}".format(message.content, message.sender.account.username)
 
     @staticmethod
     def send_notification_data(hero, database, data, *args, **kwargs):
@@ -482,7 +482,7 @@ class Command:
     #     print("Attempting to generate a reply. Getting user now.")
     #     receiver = database.get_user_by_username(username)
     #     print("Generating reply to user: ", receiver.username)
-    #     hero.user.inbox.send_message(receiver, "TEST REPLY!", "55:55:55")
+    #     hero.account.inbox.send_message(receiver, "TEST REPLY!", "55:55:55")
     #     print ("Reply is successful. Message sent.")
     #     print("Sending message content back to JS.")
     #     return "message replied to successfully"

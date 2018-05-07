@@ -50,11 +50,11 @@
         </tr>
         {% endmacro %}
         {% if outbox %}
-            {% for message in hero.user.inbox.sent_messages %}
+            {% for message in hero.account.inbox.sent_messages %}
                 {{ message_list(message) }}
             {% endfor %}
         {% else %}
-            {% for message in hero.user.inbox.received_messages %}
+            {% for message in hero.account.inbox.received_messages %}
                 {{ message_list(message) }}
             {% endfor %}
         {% endif %}

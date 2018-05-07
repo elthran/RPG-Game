@@ -17,28 +17,28 @@
 {% if tab == "profile" %}
 <button class="settingsAccordion">Username</button>
 <div class="settingsPanel">
-	{{ hero.user.username.title() }}
+	{{ hero.account.username.title() }}
 </div>
 <button class="settingsAccordion">Join Date</button>
 <div class="settingsPanel">
-	{{ hero.user.timestamp }}
+	{{ hero.account.timestamp }}
 </div>
 <button class="settingsAccordion">Account Prestige</button>
 <div class="settingsPanel">
-	{{ hero.user.prestige }}
+	{{ hero.account.prestige }}
 </div>
 <button class="settingsAccordion">Avatar</button>
 <div class="settingsPanel">
 	{% for i in range(1,4) %}
-	<img class="avatarImageSelect" id="img-{{ i }}" src="/static/images/avatars/{{ i }}.jpg" alt="{{ i }}" {% if i|string == hero.user.avatar %}style="border:thick solid blue"{% endif %}>
+	<img class="avatarImageSelect" id="img-{{ i }}" src="/static/images/avatars/{{ i }}.jpg" alt="{{ i }}" {% if i|string == hero.account.avatar %}style="border:thick solid blue"{% endif %}>
 	{% endfor %}
-	<button id="changeAvatar" class="settingsButton" onclick="sendToPy(event, successMessage, 'change_avatar', {'id': '{{ hero.user.avatar }}', 'name': 'avatar'});">Change Avatar</button>
+	<button id="changeAvatar" class="settingsButton" onclick="sendToPy(event, successMessage, 'change_avatar', {'id': '{{ hero.account.avatar }}', 'name': 'avatar'});">Change Avatar</button>
 	<span id="avatarSuccess" class="settingsSuccess"></span>
 </div>
 <button class="settingsAccordion">Signature</button>
 <div class="settingsPanel">
-	<input id="newSignature" type="text" value="{{ hero.user.signature }}" style="width:500px;" />
-	<button id="signatureButton" class="settingsButton" onclick="sendToPy(event, successMessage, 'change_signature', {'signature': '{{ hero.user.signature }}', 'name': 'signature'});">Update Signature</button>
+	<input id="newSignature" type="text" value="{{ hero.account.signature }}" style="width:500px;" />
+	<button id="signatureButton" class="settingsButton" onclick="sendToPy(event, successMessage, 'change_signature', {'signature': '{{ hero.account.signature }}', 'name': 'signature'});">Update Signature</button>
 	<span id="signatureSuccess" class="settingsSuccess"></span>
 </div>
 {% elif tab == "security" %}
@@ -61,7 +61,7 @@
 	<form method="post" action="" autocomplete="off">
 		<input class="hide" type="text" name="type" value="update_email" />
 		<ul>
-			<li>{% if hero.user.email %}Change{% else %}Add{% endif %} Email Address: <input id="newEmail" type="email" tabindex=1 name="new_email" /></li>
+			<li>{% if hero.account.email %}Change{% else %}Add{% endif %} Email Address: <input id="newEmail" type="email" tabindex=1 name="new_email" /></li>
 		</ul>
 		<button id="emailButton" class="settingsButton" type="submit" disabled="true">Update Email</button>
 		<span id="emailInfo1"></span>

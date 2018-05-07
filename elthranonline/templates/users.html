@@ -22,9 +22,9 @@
     </tr>
     {% for hero in all_heroes %} <!-- Works great for now unless some fields are None. So needs to be addressed later. -->
     <tr>
-        <td>{{ hero.user.id }}</td>
-        <td>{{ hero.user.prestige }}{% if hero.user.prestige > 50 %}<img src="/static/images/star.jpg">{% endif %}</td>
-        <td><a href=/display_users/see_user/{{ hero.user.username }}>{{ hero.user.username }}</a> {% if hero.user.is_admin %}[ADMIN]{% endif %}</td>
+        <td>{{ hero.account.id }}</td>
+        <td>{{ hero.account.prestige }}{% if hero.account.prestige > 50 %}<img src="/static/images/star.jpg">{% endif %}</td>
+        <td><a href=/display_users/see_user/{{ hero.account.username }}>{{ hero.account.username }}</a> {% if hero.account.is_admin %}[ADMIN]{% endif %}</td>
         <td>{{ hero.character_name }}</td>
         <td>{{ hero.age }}</td>
         <td>{{ hero.journal.achievements.deepest_dungeon_floor }}</td>

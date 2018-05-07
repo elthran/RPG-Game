@@ -1,7 +1,7 @@
 import services
 
 
-def login(username, password, session={}):
+def login_account(username, password, session):
     # The validate method runs a password migration script internally.
     # Check for data_migration 'reset_key' ... if exists use old style
     # password validation ... then convert password to new style.

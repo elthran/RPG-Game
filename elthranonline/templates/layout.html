@@ -46,12 +46,12 @@
                 <li onclick="this.firstChild.click();"><a href=/spellbook>Spellbook</a></li>
                 <li onclick="this.firstChild.click();"><a href={{ hero.current_location.url }}>{{ hero.current_location.name.title() }}</a></li>
                 <li onclick="this.firstChild.click();"><a href=/quest_log>Journal</a></li>
-            {% if hero.user.is_admin %}
+            {% if hero.account.is_admin %}
                 <li onclick="this.firstChild.click();"><a href=/admin>Admin</a></li>
             {% endif %}
                 <li onclick="this.firstChild.click();"><a href=/display_users/display/id>Users</a></li>
                 <li onclick="this.firstChild.click();"><a href=/about>About</a></li>
-            {% if hero.user.inbox_alert %}
+            {% if hero.account.inbox_alert %}
                 <li onclick="this.firstChild.click();"><a href=/inbox/inbox><font color="blue">New Message</font></a></li>
             {% else %}
                 <li onclick="this.firstChild.click();"><a href=/inbox/inbox>Mailbox</a></li>
