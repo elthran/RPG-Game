@@ -58,6 +58,6 @@ if __name__ == "__main__":
 
     if not any([args.c, args.p, args.t, args.g, args.m]):
         try:
-            os.system("python3 -m flask run")
+            os.system("export FLASK_APP=elthranonline && export FLASK_DEBUG=true && python3 -m flask run")
         except KeyboardInterrupt:
             pass  # Only raise error from the actual program
