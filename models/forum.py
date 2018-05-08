@@ -9,10 +9,6 @@ import models.mixins
 
 
 class Forum(models.Base):
-    __tablename__ = 'forum'
-
-    id = sa.Column(sa.Integer, primary_key=True)
-
     name = sa.Column(sa.String(50))
 
     # Relationships
@@ -27,10 +23,6 @@ class Forum(models.Base):
 
 
 class Board(models.mixins.HumanReadableTimeMixin, models.Base):
-    __tablename__ = "board"
-
-    id = sa.Column(sa.Integer, primary_key=True)
-
     # Relationships
     # One to many with Forum
     forum_id = sa.Column(sa.Integer, sa.ForeignKey('forum.id', ondelete="CASCADE"))
@@ -72,10 +64,6 @@ class Board(models.mixins.HumanReadableTimeMixin, models.Base):
 
 
 class Thread(models.mixins.HumanReadableTimeMixin, models.Base):
-    __tablename__ = "thread"
-
-    id = sa.Column(sa.Integer, primary_key=True)
-
     # Relationships
     # One to many with Forum
     board_id = sa.Column(sa.Integer, sa.ForeignKey('board.id', ondelete="CASCADE"))
@@ -108,10 +96,6 @@ class Thread(models.mixins.HumanReadableTimeMixin, models.Base):
 
 
 class Post(models.mixins.HumanReadableTimeMixin, models.Base):
-    __tablename__ = "post"
-
-    id = sa.Column(sa.Integer, primary_key=True)
-
     # Relationships
     # One to Many with Thread.
     thread_id = sa.Column(sa.Integer, sa.ForeignKey('thread.id', ondelete="CASCADE"))

@@ -12,9 +12,6 @@ class Event(models.Base):
     E.g. when the hero moves to the Blacksmith shop complete the Visit
     the Blacksmith quest.
     """
-    __tablename__ = 'event'
-
-    id = sa.Column(sa.Integer, primary_key=True)
     type = sa.Column(sa.String(50))
     description = sa.Column(sa.String(200))
     when = sa.Column(sa.DateTime)
@@ -64,9 +61,6 @@ class Condition(models.Base):
 
     hero.current_location.name == location.name
     """
-    __tablename__ = 'condition'
-    id = sa.Column(sa.Integer, primary_key=True)
-
     hero_attribute = sa.Column(sa.String(50))
     comparison = sa.Column(sa.String(2))
     condition_attribute = sa.Column(sa.String(50))
@@ -109,9 +103,6 @@ class Condition(models.Base):
 
 
 class Trigger(models.Base):
-    __tablename__ = 'trigger'
-
-    id = sa.Column(sa.Integer, primary_key=True)
     event_name = sa.Column(sa.String(50))
     extra_info_for_humans = sa.Column(sa.String(200))
     completed = sa.Column(sa.Boolean)
@@ -132,9 +123,6 @@ class Trigger(models.Base):
 
 
 class Handler(models.Base):
-    __tablename__ = 'handler'
-
-    id = sa.Column(sa.Integer, primary_key=True)
     _master = sa.Column(sa.String(50))
 
     # Relationships

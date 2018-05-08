@@ -12,10 +12,6 @@ ALL_CLASS_NAMES = {{ class_names }}
 
 
 class {{ container_name }}(Base):
-    __tablename__ = "{{ container_table_name }}"
-
-    id = Column(Integer, primary_key=True)
-
     # Relationships
     # Hero to self is one to one.
     hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))

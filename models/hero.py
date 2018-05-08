@@ -5,7 +5,7 @@ import sqlalchemy.orm
 import sqlalchemy.ext.hybrid
 
 import models.collections
-from game import round_number_intelligently
+from models.game import round_number_intelligently
 import models
 
 
@@ -13,9 +13,6 @@ class Hero(models.Base):
     """Store data about the Hero/Character object.
 
     """
-    __tablename__ = 'hero'
-
-    id = sa.Column(sa.Integer, primary_key=True)
     creation_phase = sa.Column(sa.Boolean)
     name = sa.Column(sa.String(50))  # Was nullable=False now it isn't. I hope that is a good idea.
     character_name = sa.orm.synonym('name')
@@ -492,20 +489,6 @@ class Hero(models.Base):
                 # except AttributeError:
                 # assert location is None
                 # return None
-
-    def check_daily_login_reward(self, time):
-        if self.last_login == "":
-            self.login_alerts += "First time logging in!"
-            print("first time log in EVER (printed from game.py)")
-        elif self.last_login != time[:10]:
-            reward = 3
-            self.login_alerts += "Thanks for logging in today! You earn " + str(
-                reward) + " experience."
-            self.gain_experience(reward)
-            print("first time log in TODAY (printed from game.py)")
-        else:
-            print("you have already logged in today (printed from game.py)")
-        self.last_login = time[:10]
 
     # noinspection PyUnusedLocal
     @sa.orm.validates('current_location')

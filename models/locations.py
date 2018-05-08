@@ -60,9 +60,6 @@ class Display(Base):
     """Stores data for Location objects that is displayed in the game
     using html.
     """
-    __tablename__ = "display"
-
-    id = Column(Integer, primary_key=True)
     name = Column(String(50))
     page_title = orm.synonym('name')
     page_heading = Column(String(50))
@@ -202,7 +199,6 @@ class Location(Base):
         'dungeon', 'dungeon_entrance', 'explore_dungeon'
     ]
 
-    __tablename__ = 'location'
     # http://docs.sqlalchemy.org/en/latest/orm/extensions/
     # declarative/table_config.html
     # __table_args__ = (
@@ -214,7 +210,6 @@ class Location(Base):
     # Need validator for siblings - can't be parent or child, max of 6?
     # Think a hex grid
 
-    id = Column(Integer, primary_key=True)
     # What does this do? ... I have no idea (marlen)
     # Parent foreign key has the ondelete="CASCADE"
     parent_id = Column(Integer, ForeignKey('location.id', ondelete="CASCADE"))

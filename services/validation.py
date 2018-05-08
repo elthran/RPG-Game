@@ -1,5 +1,6 @@
 import models
-import services
+import services.migration
+import services.secrets
 
 
 def validate(username, password):

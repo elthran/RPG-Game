@@ -4,13 +4,11 @@ It has been set to read only so that you don't edit it without using
 'build_code.py'. Thought that may change in the future.
 """
 
-from sqlalchemy import Column, Integer, String, Boolean, Float
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
-from flask import render_template_string
+import sqlalchemy as sa
+import sqlalchemy.orm
+import flask
 
-from models.mixins import TemplateMixin
-from models.base_classes import Base
+import models
 
 # For testing
 
@@ -22,39 +20,35 @@ ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'bartering', 'block', 'block_a
 ALL_CLASS_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'BlockAmount', 'Blunt', 'CautionLevel', 'Charm', 'ClimbingAbility', 'Combat', 'Courage', 'Damage', 'Defence', 'Detection', 'Devotion', 'Dualism', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'FirstStrike', 'Flee', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'LifestealPercent', 'LifestealStatic', 'Literacy', 'Logistics', 'Luck', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Piercing', 'Piety', 'Precision', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'Reputation', 'ResistBlunt', 'ResistFlame', 'ResistFrost', 'ResistHoly', 'ResistPiercing', 'ResistPoison', 'ResistShadow', 'ResistSlashing', 'Riposte', 'Sanctity', 'Sanity', 'Slashing', 'Speed', 'SpellLimit', 'Stamina', 'Stealth', 'Storage', 'Survivalist', 'Trustworthiness', 'Understanding', 'Virtue', 'Vision', 'WeaponAffinity', 'Woodsman']
 
 
-class Proficiency(TemplateMixin, Base):
+class Proficiency(models.mixins.TemplateMixin, models.Base):
     """Proficiency class that stores data about a hero object.
     """
-    __tablename__ = "proficiency"
-    
-    id = Column(Integer, primary_key=True)
-
     # Relationships
     # Hero to Proficiencies is One to many?
-    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
-    hero = relationship("Hero", back_populates="base_proficiencies")
+    hero_id = sa.Column(sa.Integer, sa.ForeignKey('hero.id', ondelete="CASCADE"))
+    hero = sa.orm.relationship("Hero", back_populates="base_proficiencies")
 
     # Proficiency to Ability is One to Many
-    ability_id = Column(Integer, ForeignKey('ability.id', ondelete="CASCADE"))
-    ability = relationship("Ability", back_populates="proficiencies")
+    ability_id = sa.Column(sa.Integer, sa.ForeignKey('ability.id', ondelete="CASCADE"))
+    ability = sa.orm.relationship("Ability", back_populates="proficiencies")
 
     # Proficiency to Item is One to Many
-    item_id = Column(Integer, ForeignKey('item.id', ondelete="CASCADE"))
-    items = relationship("Item", back_populates="proficiencies")
+    item_id = sa.Column(sa.Integer, sa.ForeignKey('item.id', ondelete="CASCADE"))
+    items = sa.orm.relationship("Item", back_populates="proficiencies")
 
     # Main colums
-    level = Column(Integer)
-    base = Column(Integer)
-    modifier = Column(Float)
+    level = sa.Column(sa.Integer)
+    base = sa.Column(sa.Integer)
+    modifier = sa.Column(sa.Float)
 
-    type_ = Column(String(50))
-    attribute_type = Column(String(50))
-    description = Column(String(200))
-    # tooltip = Column(String(50))
-    reason_for_zero = Column(String(50))    # Maybe remove
-    current = Column(Integer)
-    hidden = Column(Boolean)
-    error = Column(String(50))
+    type_ = sa.Column(sa.String(50))
+    attribute_type = sa.Column(sa.String(50))
+    description = sa.Column(sa.String(200))
+    # tooltip = sa.Column(sa.String(50))
+    reason_for_zero = sa.Column(sa.String(50))    # Maybe remove
+    current = sa.Column(sa.Integer)
+    hidden = sa.Column(sa.Boolean)
+    error = sa.Column(sa.String(50))
 
     # In child classes this allows different levels of rounding.
     num_of_decimals = 0
@@ -142,7 +136,7 @@ class Proficiency(TemplateMixin, Base):
                   <h2>Next value: <font color="green">{{ formatted_next }}</font></h2>
                   <button id=levelUpProficiencyButton class="upgradeButton" onclick="sendToPy(event, proficiencyTooltip, 'update_proficiency', {'id': {{ prof.id }}});"></button>
                   {% elif prof.is_max_level %}<font color="red">Not enough {{ prof.attribute_type }}</font>{% endif %}</h2>"""
-        return render_template_string(
+        return flask.render_template_string(
             temp, prof=self,
             formatted_final=self.format_spec.format(self.final),
             formatted_next=self.format_spec.format(self.next_value))
@@ -172,6 +166,7 @@ class Accuracy(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Accuracy"
     }
@@ -210,6 +205,7 @@ class Adventuring(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Adventuring"
     }
@@ -248,6 +244,7 @@ class Bartering(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Bartering"
     }
@@ -286,6 +283,7 @@ class Block(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Block"
     }
@@ -331,6 +329,7 @@ class Charm(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Charm"
     }
@@ -369,6 +368,7 @@ class Combat(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Combat"
     }
@@ -407,6 +407,7 @@ class Courage(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Courage"
     }
@@ -445,6 +446,7 @@ class Damage(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Damage"
     }
@@ -483,6 +485,7 @@ class Defence(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Defence"
     }
@@ -521,6 +524,7 @@ class Detection(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Detection"
     }
@@ -559,6 +563,7 @@ class Dualism(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Dualism"
     }
@@ -597,6 +602,7 @@ class Encumbrance(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Encumbrance"
     }
@@ -635,6 +641,7 @@ class Endurance(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Endurance"
     }
@@ -673,6 +680,7 @@ class Evade(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Evade"
     }
@@ -711,6 +719,7 @@ class Explorer(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Explorer"
     }
@@ -749,6 +758,7 @@ class Faith(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Faith"
     }
@@ -787,6 +797,7 @@ class Fatigue(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Fatigue"
     }
@@ -825,6 +836,7 @@ class FirstStrike(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.1f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "FirstStrike"
     }
@@ -863,6 +875,7 @@ class Flee(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Flee"
     }
@@ -901,6 +914,7 @@ class Health(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Health"
     }
@@ -939,6 +953,7 @@ class Huntsman(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Huntsman"
     }
@@ -977,6 +992,7 @@ class Killshot(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Killshot"
     }
@@ -1015,6 +1031,7 @@ class Knowledge(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Knowledge"
     }
@@ -1053,6 +1070,7 @@ class Literacy(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Literacy"
     }
@@ -1091,6 +1109,7 @@ class Logistics(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Logistics"
     }
@@ -1129,6 +1148,7 @@ class Luck(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Luck"
     }
@@ -1167,6 +1187,7 @@ class Mountaineering(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Mountaineering"
     }
@@ -1205,6 +1226,7 @@ class Navigator(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Navigator"
     }
@@ -1243,6 +1265,7 @@ class Oration(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Oration"
     }
@@ -1281,6 +1304,7 @@ class Parry(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Parry"
     }
@@ -1319,6 +1343,7 @@ class Pickpocketing(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Pickpocketing"
     }
@@ -1357,6 +1382,7 @@ class Piety(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Piety"
     }
@@ -1395,6 +1421,7 @@ class Precision(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Precision"
     }
@@ -1433,6 +1460,7 @@ class Recovery(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Recovery"
     }
@@ -1471,6 +1499,7 @@ class Redemption(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Redemption"
     }
@@ -1509,6 +1538,7 @@ class Regeneration(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Regeneration"
     }
@@ -1547,6 +1577,7 @@ class Reputation(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Reputation"
     }
@@ -1585,6 +1616,7 @@ class ResistBlunt(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "ResistBlunt"
     }
@@ -1623,6 +1655,7 @@ class ResistFlame(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "ResistFlame"
     }
@@ -1661,6 +1694,7 @@ class ResistFrost(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "ResistFrost"
     }
@@ -1699,6 +1733,7 @@ class ResistHoly(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "ResistHoly"
     }
@@ -1737,6 +1772,7 @@ class ResistPiercing(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "ResistPiercing"
     }
@@ -1775,6 +1811,7 @@ class ResistPoison(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "ResistPoison"
     }
@@ -1813,6 +1850,7 @@ class ResistShadow(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "ResistShadow"
     }
@@ -1851,6 +1889,7 @@ class ResistSlashing(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "ResistSlashing"
     }
@@ -1889,6 +1928,7 @@ class Riposte(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Riposte"
     }
@@ -1927,6 +1967,7 @@ class Sanctity(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Sanctity"
     }
@@ -1965,6 +2006,7 @@ class Sanity(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Sanity"
     }
@@ -2003,6 +2045,7 @@ class Speed(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.2f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Speed"
     }
@@ -2041,6 +2084,7 @@ class Stamina(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Stamina"
     }
@@ -2079,6 +2123,7 @@ class Stealth(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Stealth"
     }
@@ -2117,6 +2162,7 @@ class Storage(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Storage"
     }
@@ -2155,6 +2201,7 @@ class Survivalist(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Survivalist"
     }
@@ -2193,6 +2240,7 @@ class Trustworthiness(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Trustworthiness"
     }
@@ -2231,6 +2279,7 @@ class Understanding(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Understanding"
     }
@@ -2269,6 +2318,7 @@ class CautionLevel(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "CautionLevel"
     }
@@ -2307,6 +2357,7 @@ class ClimbingAbility(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "ClimbingAbility"
     }
@@ -2345,6 +2396,7 @@ class SpellLimit(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "SpellLimit"
     }
@@ -2383,6 +2435,7 @@ class Vision(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Vision"
     }
@@ -2421,6 +2474,7 @@ class Woodsman(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Woodsman"
     }
@@ -2459,6 +2513,7 @@ class BlockAmount(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "BlockAmount"
     }
@@ -2497,6 +2552,7 @@ class Blunt(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Blunt"
     }
@@ -2535,6 +2591,7 @@ class Piercing(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Piercing"
     }
@@ -2573,6 +2630,7 @@ class Slashing(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Slashing"
     }
@@ -2611,6 +2669,7 @@ class WeaponAffinity(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "WeaponAffinity"
     }
@@ -2649,6 +2708,7 @@ class Renown(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Renown"
     }
@@ -2687,6 +2747,7 @@ class Virtue(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Virtue"
     }
@@ -2725,6 +2786,7 @@ class Devotion(Proficiency):
     is_percent = False  # Should be False but I'm getting an error
     format_spec = "{:.0f}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Devotion"
     }
@@ -2763,6 +2825,7 @@ class LifestealStatic(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "LifestealStatic"
     }
@@ -2801,6 +2864,7 @@ class LifestealPercent(Proficiency):
     is_percent = True  # Should be True but I'm getting an error
     format_spec = "{:.0f}%"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "LifestealPercent"
     }
@@ -2828,21 +2892,3 @@ class LifestealPercent(Proficiency):
         return round(0.0 * level, self.num_of_decimals)
 
 
-'''
-Old code that might need to be readded at some point.
-@staticmethod
-    def keys():
-        return [{% for value in prof[3] %}'{{ normalize_attrib_name(value[0]) }}'{% if not loop.last %}, {% endif %}{% endfor %}]
-
-    def items(self):
-        """Basically a dict.items() clone that looks like ((key, value),
-            (key, value), ...)
-
-        This is an iterator? Maybe it should be a list or a view?
-        """
-        return ((key, getattr(self, key)) for key in self.keys())
-
-    def __iter__(self):
-        """Return all the attributes of this object as an iterator."""
-        return (key for key in self.keys())
-'''

@@ -1,10 +1,8 @@
-from sqlalchemy import Column, Integer, String, Boolean, Float
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
-from flask import render_template_string
+import sqlalchemy as sa
+import sqlalchemy.orm
+import flask
 
-from models.mixins import TemplateMixin
-from models.base_classes import Base
+import models
 
 # For testing
 
@@ -14,39 +12,35 @@ ALL_PROFICIENCIES = {{ ALL_PROFICIENCIES }}
 {% import 'container_helpers.py' as container_helpers %}
 {{ container_helpers.build_container("Proficiency", "proficiencies", ALL_PROFICIENCIES, no_container=True) }}
 
-class Proficiency(TemplateMixin, Base):
+class Proficiency(models.mixins.TemplateMixin, models.Base):
     """Proficiency class that stores data about a hero object.
     """
-    __tablename__ = "proficiency"
-    
-    id = Column(Integer, primary_key=True)
-
     # Relationships
     # Hero to Proficiencies is One to many?
-    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
-    hero = relationship("Hero", back_populates="base_proficiencies")
+    hero_id = sa.Column(sa.Integer, sa.ForeignKey('hero.id', ondelete="CASCADE"))
+    hero = sa.orm.relationship("Hero", back_populates="base_proficiencies")
 
     # Proficiency to Ability is One to Many
-    ability_id = Column(Integer, ForeignKey('ability.id', ondelete="CASCADE"))
-    ability = relationship("Ability", back_populates="proficiencies")
+    ability_id = sa.Column(sa.Integer, sa.ForeignKey('ability.id', ondelete="CASCADE"))
+    ability = sa.orm.relationship("Ability", back_populates="proficiencies")
 
     # Proficiency to Item is One to Many
-    item_id = Column(Integer, ForeignKey('item.id', ondelete="CASCADE"))
-    items = relationship("Item", back_populates="proficiencies")
+    item_id = sa.Column(sa.Integer, sa.ForeignKey('item.id', ondelete="CASCADE"))
+    items = sa.orm.relationship("Item", back_populates="proficiencies")
 
     # Main colums
-    level = Column(Integer)
-    base = Column(Integer)
-    modifier = Column(Float)
+    level = sa.Column(sa.Integer)
+    base = sa.Column(sa.Integer)
+    modifier = sa.Column(sa.Float)
 
-    type_ = Column(String(50))
-    attribute_type = Column(String(50))
-    description = Column(String(200))
-    # tooltip = Column(String(50))
-    reason_for_zero = Column(String(50))    # Maybe remove
-    current = Column(Integer)
-    hidden = Column(Boolean)
-    error = Column(String(50))
+    type_ = sa.Column(sa.String(50))
+    attribute_type = sa.Column(sa.String(50))
+    description = sa.Column(sa.String(200))
+    # tooltip = sa.Column(sa.String(50))
+    reason_for_zero = sa.Column(sa.String(50))    # Maybe remove
+    current = sa.Column(sa.Integer)
+    hidden = sa.Column(sa.Boolean)
+    error = sa.Column(sa.String(50))
 
     # In child classes this allows different levels of rounding.
     num_of_decimals = 0
@@ -135,7 +129,7 @@ class Proficiency(TemplateMixin, Base):
                   <button id=levelUpProficiencyButton class="upgradeButton" onclick="sendToPy(event, proficiencyTooltip, 'update_proficiency', {'id': {{ prof.id }}});"></button>
                   {% elif prof.is_max_level %}<font color="red">Not enough {{ prof.attribute_type }}</font>{% endif %}</h2>"""
         {% endraw %}
-        return render_template_string(
+        return flask.render_template_string(
             temp, prof=self,
             formatted_final=self.format_spec.format(self.final),
             formatted_next=self.format_spec.format(self.next_value))
@@ -175,6 +169,7 @@ class {{ prof_class }}(Proficiency):
     is_percent = {{ percent }}  # Should be {{ percent }} but I'm getting an error
     format_spec = "{{ '{' }}:.{{ decimals }}f{{ '}' }}{{ '%' if percent else '' }}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "{{ prof_class }}"
     }
@@ -220,22 +215,3 @@ class {{ prof_class }}(Proficiency):
 
 
 {% endfor %}
-'''{% raw %}
-Old code that might need to be readded at some point.
-@staticmethod
-    def keys():
-        return [{% for value in prof[3] %}'{{ normalize_attrib_name(value[0]) }}'{% if not loop.last %}, {% endif %}{% endfor %}]
-
-    def items(self):
-        """Basically a dict.items() clone that looks like ((key, value),
-            (key, value), ...)
-
-        This is an iterator? Maybe it should be a list or a view?
-        """
-        return ((key, getattr(self, key)) for key in self.keys())
-
-    def __iter__(self):
-        """Return all the attributes of this object as an iterator."""
-        return (key for key in self.keys())
-{% endraw %}
-'''

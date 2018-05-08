@@ -9,9 +9,6 @@ class Account(models.Base):
 
     This is database ready and connects to the Hero class.
     """
-    __tablename__ = 'account'
-
-    id = sa.Column(sa.Integer, primary_key=True)
     username = sa.Column(sa.String(50), unique=True, nullable=False)
     password = sa.Column(sa.Unicode(200, convert_unicode=False), nullable=False)
     email = sa.Column(sa.Unicode(200, convert_unicode=False))

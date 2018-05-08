@@ -37,9 +37,6 @@ class Item(models.mixins.TemplateMixin, models.Base):
     buy_price : Price to buy the item
     level_req : level requirement
     """
-    __tablename__ = "item"
-
-    id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String(50))
     image = sa.Column(sa.String(50))
     buy_price = sa.Column(sa.Integer)
@@ -170,6 +167,7 @@ class Item(models.mixins.TemplateMixin, models.Base):
 class Wearable(Item):
     style = sa.Column(sa.String(50))
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Wearable",
     }
@@ -193,6 +191,7 @@ class Weapon(Wearable):
     shield = sa.Column(sa.Boolean)
     two_handed_weapon = sa.Column(sa.Boolean)
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Weapon",
     }
@@ -206,6 +205,7 @@ class Weapon(Wearable):
 
 
 class OneHandedWeapon(Weapon):
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "OneHandedWeapon",
     }
@@ -215,6 +215,7 @@ class OneHandedWeapon(Weapon):
 
 
 class Shield(Weapon):
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Shield",
     }
@@ -225,6 +226,7 @@ class Shield(Weapon):
 
 
 class TwoHandedWeapon(Weapon):
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "TwoHandedWeapon",
     }
@@ -236,6 +238,7 @@ class TwoHandedWeapon(Weapon):
 
 
 class Garment(Wearable):
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Garment",
     }
@@ -253,6 +256,7 @@ class Garment(Wearable):
 class HeadArmour(Garment):
     head_armour = sa.Column(sa.Boolean)
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "HeadArmour",
     }
@@ -264,6 +268,7 @@ class HeadArmour(Garment):
 
 class ShoulderArmour(Garment):
     shoulder_armour = sa.Column(sa.Boolean)
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "ShoulderArmour",
     }
@@ -275,6 +280,7 @@ class ShoulderArmour(Garment):
 
 class ChestArmour(Garment):
     chest_armour = sa.Column(sa.Boolean)
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "ChestArmour",
     }
@@ -287,6 +293,7 @@ class ChestArmour(Garment):
 class LegArmour(Garment):
     leg_armour = sa.Column(sa.Boolean)
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "LegArmour",
     }
@@ -298,6 +305,7 @@ class LegArmour(Garment):
 
 class FootArmour(Garment):
     foot_armour = sa.Column(sa.Boolean)
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "FootArmour",
     }
@@ -310,6 +318,7 @@ class FootArmour(Garment):
 class ArmArmour(Garment):
     arm_armour = sa.Column(sa.Boolean)
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "ArmArmour",
     }
@@ -322,6 +331,7 @@ class ArmArmour(Garment):
 class HandArmour(Garment):
     hand_armour = sa.Column(sa.Boolean)
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "HandArmour",
     }
@@ -333,6 +343,7 @@ class HandArmour(Garment):
 
 # New Class
 class Jewelry(Wearable):
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Jewelry",
     }
@@ -345,6 +356,7 @@ class Jewelry(Wearable):
 class Ring(Jewelry):
     ring = sa.Column(sa.Boolean)
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Ring",
     }
@@ -362,6 +374,7 @@ class Consumable(Item):
     healing_amount = sa.Column(sa.Integer)
     sanctity_amount = sa.Column(sa.Integer)
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Consumable",
     }
@@ -386,6 +399,7 @@ class Consumable(Item):
 # New Class
 class QuestItem(Item):
     quest_item = sa.Column(sa.Boolean)
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "QuestItem",
     }

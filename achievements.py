@@ -5,10 +5,6 @@ from models.base_classes import Base
 
 
 class Achievements(Base):
-    __tablename__ = 'achievements'
-
-    id = Column(Integer, primary_key=True)
-
     # Relationships
     # Achievements to Journal is One to One
     # Journal to Achievements is One to One.
@@ -58,10 +54,6 @@ class Achievements(Base):
 
 
 class Achievement(Base):
-    __tablename__ = "achievement"
-
-    id = Column(Integer, primary_key=True)
-
     # Relationships
     achievements_id = Column(Integer, ForeignKey("achievements.id",
                                                  ondelete="CASCADE"))

@@ -37,7 +37,7 @@ def login():
 
     if fl.request.method == 'POST':
         if fl.request.form['type'] == "login":
-            controller.login_account(username, password, fl.session)
+            controller.login.login_account(username, password, fl.session)
             # Marked for upgrade, consider checking if user exists
             # and redirect to account creation page.
             if not fl.session['logged_in']:

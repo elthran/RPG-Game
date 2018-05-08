@@ -5,7 +5,6 @@
 #                                                                            #
 # ///////////////////////////////////////////////////////////////////////////#
 
-import pdb  # For testing!
 from functools import wraps
 import os
 from math import ceil
@@ -17,11 +16,7 @@ from flask import (
 from flask_sslify import SSLify
 import werkzeug
 
-import sendgrid
-from sendgrid.helpers.mail import Email, Content, Mail
-
-
-from game import Game
+from models.game import Game
 import combat_simulator
 # Marked for restructure! Avoid use of import * in production code.
 from bestiary import *
@@ -29,7 +24,7 @@ from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
 # _before_ any of them are used.
-from services.event_service import Engine, async_process, rest_key_timelock
+from services.event_service import Engine
 from models.forum import Board, Thread, Post
 from models.bestiary2 import create_monster, MonsterTemplate
 import services
@@ -158,57 +153,6 @@ def update_current_location(f):
     return wrap_current_location
 
 
-def send_email(account, address, key):
-    """Send an email to the passed address.
-
-    This could later be improved to send other types of emails but right
-    now it will only send a reset email.
-    """
-
-    sender = "elthran.online@no-reply.ca"
-    receivers = [address]
-
-    # url = 'https://mydomain.com/reset=' + token_urlsafe()
-    # if server:
-    # link = "https://elthran.pythonanywhere.com/reset?account={}&&key={}".format(account, key)
-    # Gets generic url that should work on server or local machine.
-    link = "{}reset?account={}&&key={}".format(request.url_root, account, key)
-
-    from_email = Email("Elthran Online <{sender}>".format(sender=sender))
-    to_email = Email("Owner of account '{account}' <{address}>".format(account=account, address=address))
-    subject = "Reset link for ElthranOnline"
-
-    message = Content("text/html", """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
- <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <title>Reset Password Email</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-</head>
-<body style="margin: 0; padding: 0;">
- <table border="0" cellpadding="0" cellspacing="0" width="100%">
-  <tr>
-   <td>
-    <p>Hi Owner of account '{account}',</p>
-    <p>&#9;Please click this link <a clicktracking=off href="{link}">{link}</a> to reset your account.</p>
-    <p>You will be prompted to enter a new account password.</p>
-   </td>
-  </tr>
- </table>
-</body>
-</html>
-""".format(account=account, link=link))
-
-    mail = Mail(from_email, subject, to_email, message)
-    try:
-        response = sg.client.mail.send.post(request_body=mail.get())
-        print("Successfully sent email")
-    except Exception as ex:
-        print("Error: unable to send email")
-        print("You need to setup your sendgrid server correctly.")
-        print(ex)  # Fail gracefully ... should probably send error to account
-
-
 @app.route("/reset", methods=["GET", "POST"])
 def reset_password():
     if request.method == "GET":
@@ -222,37 +166,6 @@ def reset_password():
                 account.password = services.sercrets.encrypt(request.form['password'])
                 return redirect(url_for('login'), code=307)
     return redirect(url_for('login'))
-
-
-@app.route('/choose_character', methods=['GET', 'POST'])
-@login_required
-def choose_character():
-    account = database.get_object_by_id("Account", session['id'])
-    # print(account)
-    # exit("testing choose character.")
-    hero = None
-    if len(account.heroes) == 1:
-        hero = account.heroes[0]
-    elif request.method == 'POST':
-        hero = database.get_object_by_id("Hero", request.form['hero_id'])
-    else:
-        return render_template('choose_character.html', account=account)
-
-    # Below is code for daily login reward. It's temporary as I am just trying to play with and learn about timestamps and whatnot.
-    hero.check_daily_login_reward(str(EZDB.now()))
-    # End of daily login reward code (Elthran)
-    session['hero_id'] = hero.id
-    # Now I need to work out how to make game not global *sigh*
-    # (Marlen)
-    game.set_hero(hero)
-    flash(hero.login_alerts)
-    hero.login_alerts = ""
-    # If it's a new character, send them to create_character url
-    # pdb.set_trace()
-    if hero.creation_phase:
-        return redirect(url_for('create_character'))
-    # If the character already exist go straight the main home page!
-    return redirect(url_for('home'))
 
 
 # this gets called if you are logged in and there is no character info stored

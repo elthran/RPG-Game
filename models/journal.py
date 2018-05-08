@@ -77,10 +77,6 @@ from achievements import Achievements
 # This would give me custom places such as beasts or quests in the Journal
 # The add_entry would sort the new objects into the right category.
 class Journal(Base):
-    __tablename__ = 'journal'
-
-    id = Column(Integer, primary_key=True)
-
     # Relationships
     # Hero to Journal is One to One
     hero_id = Column(Integer, ForeignKey('hero.id',
@@ -200,10 +196,6 @@ class Entry(Base):
     for obj in journal.notifications:
         obj.get_description()
     """
-    __tablename__ = 'entry'
-
-    id = Column(Integer, primary_key=True)
-
     timestamp = Column(DateTime)
     position = Column(Integer)
     info = Column(String(50))

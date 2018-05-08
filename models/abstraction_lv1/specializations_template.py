@@ -1,10 +1,8 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
+import sqlalchemy as sa
+import sqlalchemy.orm
 
-from models.base_classes import Base
-from models.mixins import TemplateMixin
-from build_code import normalize_attrib_name
+import models
+import services.naming
 
 # This is a list of specializations. Your hero can have one of each type active at any time. There are 4 types of specs.
 # You get one basic spec which defines your basic character stats. Then you further choose an archetype (eg. Scoundrel -> Thief,
@@ -21,20 +19,17 @@ SPECIALIZATIONS_CATEGORIES = ['archetype', 'calling']
 {% import 'container_helpers.py' as container_helpers %}
 {{ container_helpers.build_container("Ability", "abilities", ALL_SPECIALIZATIONS, no_container=True) }}
 
-class Specialization(TemplateMixin, Base):
-    __tablename__ = "specialization"
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50))  # Maybe 'unique' is not necessary?
-    type = Column(String(50))
-    description = Column(String(200))
-    requirements = Column(String(50))
-    attrib_name = Column(String(50))
+class Specialization(models.mixins.TemplateMixin, models.Base):
+    name = sa.Column(sa.String(50))  # Maybe 'unique' is not necessary?
+    type = sa.Column(sa.String(50))
+    description = sa.Column(sa.String(200))
+    requirements = sa.Column(sa.String(50))
+    attrib_name = sa.Column(sa.String(50))
 
     # Relationships
     # Each hero can have one list of abilities (bi, one to one)
-    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
-    hero = relationship(
+    hero_id = sa.Column(sa.Integer, sa.ForeignKey('hero.id', ondelete="CASCADE"))
+    hero = sa.orm.relationship(
         "Hero",
         back_populates="_specializations",
         cascade="all, delete-orphan",
@@ -47,13 +42,14 @@ class Specialization(TemplateMixin, Base):
 
     def __init__(self, name, description, requirements, template=False):
         self.name = name
-        self.attrib_name = normalize_attrib_name(name)
+        self.attrib_name = services.naming.normalize_attrib_name(name)
         self.description = description
         self.requirements = requirements
         self.template = template
 
 
 class Archetype(Specialization):
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Archetype',
     }
@@ -63,6 +59,7 @@ class Archetype(Specialization):
 
 
 class Calling(Specialization):
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Calling',
     }
@@ -72,6 +69,7 @@ class Calling(Specialization):
 
 
 class Pantheon(Specialization):
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Pantheon',
     }

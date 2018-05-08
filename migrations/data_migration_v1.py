@@ -13,7 +13,7 @@ sys.path.insert(0, new_path)
 from __init__ import *
 
 import database as db
-from build_code import normalize_class_name, normalize_attrib_name
+from services.naming import normalize_attrib_name, normalize_class_name
 from rpg_game_tests.test_helpers import db_execute_script
 from migrations import migration_helpers
 

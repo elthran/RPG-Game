@@ -1,10 +1,8 @@
 import flask as fl
 import flask_sslify
-import sendgrid
 
-import game
-import services
-import controller
+from models import game
+import services.event_service
 
 # For testing
 engine = services.event_service.Engine()

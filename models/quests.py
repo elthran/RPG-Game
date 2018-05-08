@@ -103,10 +103,6 @@ class QuestPath(models.mixins.TemplateMixin, models.mixins.HandlerMixin, models.
     Once a normal Path is opened it will be linked to a hero object through
     that hero's Journal.
     """
-    __tablename__ = 'quest_path'
-    
-    id = sa.Column(sa.Integer, primary_key=True)
-
     name = sa.Column(sa.String(50))
     description = sa.Column(sa.String(200))
     reward_experience = sa.Column(sa.Integer)
@@ -259,9 +255,6 @@ class Quest(models.Base):
     Useful note: Relationships are set ... but a commit must occur
     between adding in each new element.
     """
-    __tablename__ = "quest"
-    
-    id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String(50))
     description = sa.Column(sa.String(200))
     reward_experience = sa.Column(sa.Integer)

@@ -27,7 +27,6 @@
 #     5. Probably a better way using decorators ...?
 #     """
 #     __tablename__ = "base_list"
-#     id = Column(Integer, primary_key=True)
 #     int_value = Column(Integer)
 #     str_value = Column(String(50))
 #
@@ -71,7 +70,6 @@
 #
 # class BaseItem(Base):
 #     __tablename__ = 'base_item'
-#     id = Column(Integer, primary_key=True)
 #     str_key = Column(String(50))
 #     int_key = Column(Integer)
 #     str_value = Column(String(50))
@@ -134,7 +132,6 @@
 #
 #     """
 #     __tablename__ = "base_dict"
-#     id = Column(Integer, primary_key=True)
 #
 #     base_items = relationship("BaseItem", cascade="all, delete-orphan")
 #

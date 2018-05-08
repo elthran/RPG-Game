@@ -10,7 +10,7 @@ I am using this tutorial https://docs.python.org/3.6/library/unittest.html
 import unittest
 
 from database import EZDB
-from game import Hero
+from models.game import Hero
 from models.attributes import Attributes
 import prebuilt_objects
 

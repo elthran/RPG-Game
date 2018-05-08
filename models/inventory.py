@@ -39,10 +39,6 @@ class Inventory(models.Base):
         item.unequipped_position = None
         item.ring_position = None
     """
-    __tablename__ = 'inventory'
-
-    id = sa.Column(sa.Integer, primary_key=True)
-
     # Marked for restructuring as causes conflics with multiple heroes?
     # As in if hero1 has 4 of an item then hero2 will as well?
     # Move to Inventory?

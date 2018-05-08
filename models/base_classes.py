@@ -17,9 +17,17 @@ import sqlalchemy.orm.collections
 import sqlalchemy.ext.declarative
 
 from . import database
+import services.naming
 
 
 class Base(object):
+    # noinspection PyMethodParameters
+    @sa.ext.declarative.declared_attr
+    def __tablename__(cls):
+        return services.naming.normalize_attrib_name(cls.__name__)
+
+    id = sa.Column(sa.Integer, primary_key=True)
+
     def get_mro_till_base(self):
         """Return the MRO until you hit base."""
 

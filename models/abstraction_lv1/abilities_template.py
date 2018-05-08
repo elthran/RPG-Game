@@ -5,23 +5,18 @@
 #                                                                             #
 # ////////////////////////////////////////////////////////////////////////////#
 
-from sqlalchemy import Column, Integer, String, Boolean
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy import orm
-from flask import render_template_string
+import sqlalchemy as sa
+import sqlalchemy.orm
+import flask
 
-from models import proficiencies, attribute_mapped_dict_hybrid
-# !Important!: Base can only be defined in ONE location and ONE location ONLY!
-# Well ... ok, but for simplicity sake just pretend that that is true.
-from models.base_classes import Base
+import models
 
 ALL_ABILITIES = {{ ALL_ABILITIES }}
 
 {% import 'container_helpers.py' as container_helpers %}
 {{ container_helpers.build_container("Ability", "abilities", ALL_ABILITIES, no_container=True) }}
 
-class Ability(Base):
+class Ability(models.Base):
     """Ability object base class.
 
     Relates to the Abilities class which is a meta list of all Abilities ...
@@ -33,45 +28,42 @@ class Ability(Base):
     buy_price : Price to buy the item
     level_req : level requirement
     """
-    __tablename__ = "ability"
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50))  # Maybe 'unique' is not necessary?
-    level = Column(Integer)
-    max_level = Column(Integer)
+    name = sa.Column(sa.String(50))  # Maybe 'unique' is not necessary?
+    level = sa.Column(sa.Integer)
+    max_level = sa.Column(sa.Integer)
     # Maybe description should be unique? use: unique=True as keyword.
-    description = Column(String(200))
-    castable = Column(Boolean)
-    _current = Column(String(50))
-    _next = Column(String(50))
-    sanctity_cost = Column(Integer)
-    endurance_cost = Column(Integer)
+    description = sa.Column(sa.String(200))
+    castable = sa.Column(sa.Boolean)
+    _current = sa.Column(sa.String(50))
+    _next = sa.Column(sa.String(50))
+    sanctity_cost = sa.Column(sa.Integer)
+    endurance_cost = sa.Column(sa.Integer)
 
     # Note: Original code used default of "Unknown"
     # I chopped the BasicAbility class as redundant. Now I am going to
     # have to add the fucker back in.
-    type = Column(String(50))
-    ability_type = orm.synonym('type')
+    type = sa.Column(sa.String(50))
+    ability_type = sa.orm.synonym('type')
 
     # This determines if the ability is hidden and can not be learned or seen by the player
-    hidden = Column(Boolean)
-    learnable = Column(Boolean)
+    hidden = sa.Column(sa.Boolean)
+    learnable = sa.Column(sa.Boolean)
 
     # This decides which of the 4 types of abilities it is (default is basic)
 
-    tree = Column(String(50))
-    tree_type = Column(String(50))
-    image = Column(String(50))
+    tree = sa.Column(sa.String(50))
+    tree_type = sa.Column(sa.String(50))
+    image = sa.Column(sa.String(50))
 
     # Relationships
     # Hero to self is one to one.
-    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
-    hero = relationship("Hero", back_populates="abilities")
+    hero_id = sa.Column(sa.Integer, sa.ForeignKey('hero.id', ondelete="CASCADE"))
+    hero = sa.orm.relationship("Hero", back_populates="abilities")
 
     # Ability to Proficiencies is One to Many
-    proficiencies = relationship(
+    proficiencies = sa.orm.relationship(
         "Proficiency",
-        collection_class=attribute_mapped_dict_hybrid('name'),
+        collection_class=models.attribute_mapped_dict_hybrid('name'),
         back_populates='ability',
         cascade="all, delete-orphan")
 
@@ -88,11 +80,11 @@ class Ability(Base):
 
     @property
     def current(self):
-        return render_template_string(self._current, level=self.level)
+        return flask.render_template_string(self._current, level=self.level)
 
     @property
     def next(self):
-        return render_template_string(self._next, level=self.level)
+        return flask.render_template_string(self._next, level=self.level)
 
     # Requirements is a One to Many relationship to self.
     """
@@ -100,7 +92,7 @@ class Ability(Base):
     hero.can_learn(ability)
     if all hero.abilities are in ability.requirements.
     """
-    # ability_id = Column(Integer, ForeignKey('ability.id'))
+    # ability_id = sa.Column(sa.Integer, ForeignKey('ability.id'))
     # requirements = relationship("Ability")
 
     __mapper_args__ = {
@@ -143,14 +135,14 @@ class Ability(Base):
         # Initialize proficiencies
         # Currently doesn't add any proficiencies.
         for class_name, arg_dict in proficiency_data:
-            Class = getattr(proficiencies, class_name)
+            Class = getattr(models.proficiencies, class_name)
             # pdb.set_trace()
             obj = Class(**arg_dict)
             self.proficiencies[obj.name] = obj
 
         # Jacob did this. I need some help setting it up. This should be for casting spells.
         for class_name, arg_dict in spell_data:
-            Class = getattr(proficiencies, class_name)
+            Class = getattr(models.proficiencies, class_name)
             # pdb.set_trace()
             obj = Class(**arg_dict)
             self.proficiencies[obj.name] = obj
@@ -163,7 +155,7 @@ class Ability(Base):
     # def display_name(self):
     #     return self.name.capitalize()
 
-    @orm.validates('level')
+    @sa.orm.validates('level')
     def validate_level(self, key, current):
         """Set the base and modifier off the current level.
 
@@ -181,13 +173,13 @@ class Ability(Base):
         return current
 
     def get_description(self):
-        return render_template_string(self.description)
+        return flask.render_template_string(self.description)
 
     def get_current_bonus(self):
-        return render_template_string(self.current, level=self.level)
+        return flask.render_template_string(self.current, level=self.level)
 
     def get_next_bonus(self):
-        return render_template_string(self.next, level=self.level)
+        return flask.render_template_string(self.next, level=self.level)
 
     def is_max_level(self):
         """Return True if level is at max_level."""
@@ -208,6 +200,7 @@ class Ability(Base):
 
 
 class CastableAbility(Ability):
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'CastableAbility',
     }
@@ -237,7 +230,7 @@ class CastableAbility(Ability):
                       <button id=levelUpAbilityButton class="upgradeButton" onclick="sendToPy(event, abilityTooltip, 'update_ability', {'id': {{ ability.id }}});"></button>
                       {% endif %}"""
         {% endraw %}
-        return render_template_string(temp, ability=self)
+        return flask.render_template_string(temp, ability=self)
 
     def cast(self, hero):
         """Use the ability. Like casting a spell.
@@ -257,7 +250,9 @@ class CastableAbility(Ability):
         hero.base_proficiencies['endurance'].current -= self.endurance_cost
         return "success"
 
+
 class AuraAbility(Ability):
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'AuraAbility',
     }
@@ -286,13 +281,13 @@ class AuraAbility(Ability):
                       <button id=levelUpAbilityButton class="upgradeButton" onclick="sendToPy(event, abilityTooltip, 'update_ability', {'id': {{ ability.id }}});"></button>
                       {% endif %}"""
         {% endraw %}
-        return render_template_string(temp, ability=self)
+        return flask.render_template_string(temp, ability=self)
 
 
 {% for value in ALL_ABILITIES %}
 class {{ value[0] }}({{ value[1] }}):
     attrib_name = "{{ normalize_attrib_name(value[0]) }}"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': '{{ value[0] }}',
     }

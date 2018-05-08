@@ -1,5 +1,7 @@
 from elthranonline import app
 
+import controller
+
 
 # This runs after every @app.route before returning a response.
 # It even runs if there is an error.

@@ -5,10 +5,6 @@ import models
 
 
 class Inbox(models.Base):
-    __tablename__ = 'inbox'
-
-    id = sa.Column(sa.Integer, primary_key=True)
-
     # Relationships
     # Each inbox has a single user. One to One (bidirectional).
     account_id = sa.Column(sa.Integer, sa.ForeignKey("account.id", ondelete="CASCADE"))
@@ -64,9 +60,6 @@ class Inbox(models.Base):
 
 
 class Message(models.Base):
-    __tablename__ = "message"
-
-    id = sa.Column(sa.Integer, primary_key=True)
     content = sa.Column(sa.String(50))
     unread = sa.Column(sa.Boolean)
 

@@ -11,16 +11,11 @@ It has been set to read only so that you don't edit it without using
 #                                                                             #
 # ////////////////////////////////////////////////////////////////////////////#
 
-from sqlalchemy import Column, Integer, String, Boolean
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy import orm
-from flask import render_template_string
+import sqlalchemy as sa
+import sqlalchemy.orm
+import flask
 
-from models import proficiencies, attribute_mapped_dict_hybrid
-# !Important!: Base can only be defined in ONE location and ONE location ONLY!
-# Well ... ok, but for simplicity sake just pretend that that is true.
-from models.base_classes import Base
+import models
 
 ALL_ABILITIES = [('Apprentice', 'AuraAbility', 'Archetype', 'Ascetic', 3, 'You are capable of learning additional spells.', '{{ (level) * 1 }}', '{{ (level + 1) * 1 }}', True, 'SpellLimit', 1, 'Understanding', 0, 'Null', 'Null'), ('Arcanum', 'AuraAbility', 'Basic', 'None', 5, 'Gain maximum sanctity. Master this ability to unlock the Philosopher archetype.', '{{ (level) * 2 }}', '{{ (level + 1) * 2 }}', True, 'Sanctity', 2, 'Understanding', 0, 'Null', 'Null'), ('Backstab', 'AuraAbility', 'Archetype', 'Scoundrel', 3, 'You are more likely to attack first in combat.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'FirstStrike', 5, 'Understanding', 0, 'Null', 'Null'), ('Bash', 'AuraAbility', 'Archetype', 'Brute', 3, '(BROKEN)You deal more damage with blunt weapons.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0, 'Understanding', 0, 'Null', 'Null'), ('Blackhearted', 'AuraAbility', 'Archetype', 'Scoundrel', 3, '(BROKEN)Lose virtue faster.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0, 'Understanding', 0, 'Null', 'Null'), ('Charmer', 'AuraAbility', 'Archetype', 'Opportunist', 3, '(BROKEN)You are more likely to succeed when choosing charm dialogues.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0, 'Understanding', 0, 'Null', 'Null'), ('Discipline', 'AuraAbility', 'Basic', 'None', 5, 'Gain devotion faster. Master this ability to unlock the Ascetic archetype.', '{{ (level) * 1 }}%', '{{ (level + 1) * 1 }}%', True, 'Piety', 1, 'Understanding', 0, 'Null', 'Null'), ('Haggler', 'AuraAbility', 'Archetype', 'Opportunist', 3, 'Prices at shops are cheaper.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Bartering', 5, 'Understanding', 0, 'Null', 'Null'), ('MartialArts', 'AuraAbility', 'Archetype', 'Ascetic', 3, 'You deal more damage in combat.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Damage', 5, 'Understanding', 0, 'Null', 'Null'), ('Meditation', 'AuraAbility', 'Archetype', 'Ascetic', 3, 'Regenerate sanctity per day.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Redemption', 5, 'Understanding', 0, 'Null', 'Null'), ('Poet', 'AuraAbility', 'Basic', 'None', 5, 'Gain renown faster. Master this ability to unlock the Opportunist archetype.', '{{ (level) * 1 }}', '{{ (level + 1) * 1 }}', True, 'Reputation', 1, 'Understanding', 0, 'Null', 'Null'), ('Relentless', 'AuraAbility', 'Basic', 'None', 5, 'Gain maximum health. Master this ability to unlock the Brute archetype.', '{{ (level) * 3 }}', '{{ (level + 1) * 3 }}', True, 'Health', 3, 'Understanding', 0, 'Null', 'Null'), ('Scholar', 'AuraAbility', 'Archetype', 'Philosopher', 3, 'Gain experience faster.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Understanding', 5, 'Understanding', 0, 'Null', 'Null'), ('Skinner', 'AuraAbility', 'Archetype', 'Survivalist', 3, '(BROKEN)You have a chance of obtaining a usable fur after kiling a beast.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0, 'Understanding', 0, 'Null', 'Null'), ('Strider', 'AuraAbility', 'Archetype', 'Survivalist', 3, '(BROKEN)Traveling on the map requires less endurance.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0, 'Understanding', 0, 'Null', 'Null'), ('Student', 'AuraAbility', 'Archetype', 'Philosopher', 3, '(BROKEN)You are capable of learning additional spells.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0, 'Understanding', 0, 'Null', 'Null'), ('Traveler', 'AuraAbility', 'Basic', 'None', 5, 'Reveal more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', '{{ (level) * 1 }}', '{{ (level + 1) * 1 }}', True, 'Vision', 1, 'Understanding', 0, 'Null', 'Null'), ('Trickster', 'AuraAbility', 'Basic', 'None', 5, 'Become harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', '{{ (level) * 3 }}', '{{ (level + 1) * 3 }}', True, 'Stealth', 3, 'Understanding', 0, 'Null', 'Null'), ('Vigilance', 'AuraAbility', 'Archetype', 'Survivalist', 3, '(BROKEN)You are less likely to be ambushed.', '{{ (level) * 5 }}', '{{ (level + 1) * 5 }}', True, 'Health', 0, 'Understanding', 0, 'Null', 'Null'), ('FameBombTest', 'CastableAbility', 'Basic', 'None', 3, 'Spend 2 sanctity to gain instant fame with this silly test spell.', '{{ (level) * 3 }}', '{{ (level + 1) * 3 }}', True, 'Renown', 0, 'Understanding', 0, '2', '0'), ('VirtueBombTest', 'CastableAbility', 'Basic', 'None', 3, 'Spend 1 endurance to gain instant virtue with this silly spell for testing purposes.', '{{ (level) * 2 }}', '{{ (level + 1) * 2 }}', True, 'Virtue', 0, 'Understanding', 0, '0', '1'), ('IgnoreTest1', 'CastableAbility', 'Basic', 'None', 3, 'Irrelevant', 'Irrelevant', 'Irrelevant', True, 'Virtue', 0, 'Understanding', 0, '0', '0'), ('IgnoreTest2', 'CastableAbility', 'Basic', 'None', 3, 'Irrelevant', 'Irrelevant', 'Irrelevant', True, 'Virtue', 0, 'Understanding', 0, '0', '0'), ('IgnoreTest3', 'CastableAbility', 'Basic', 'None', 3, 'Irrelevant', 'Irrelevant', 'Irrelevant', True, 'Virtue', 0, 'Understanding', 0, '0', '0'), ('IgnoreTest4', 'CastableAbility', 'Basic', 'None', 3, 'Irrelevant', 'Irrelevant', 'Irrelevant', True, 'Virtue', 0, 'Understanding', 0, '0', '0'), ('IgnoreTest5', 'CastableAbility', 'Basic', 'None', 3, 'Irrelevant', 'Irrelevant', 'Irrelevant', True, 'Virtue', 0, 'Understanding', 0, '0', '0'), ('IgnoreTest6', 'CastableAbility', 'Basic', 'None', 3, 'Irrelevant', 'Irrelevant', 'Irrelevant', True, 'Virtue', 0, 'Understanding', 0, '0', '0'), ('IgnoreTest7', 'CastableAbility', 'Basic', 'None', 3, 'Irrelevant', 'Irrelevant', 'Irrelevant', True, 'Virtue', 0, 'Understanding', 0, '0', '0'), ('VampiricAura', 'AuraAbility', 'Basic', 'None', 3, 'You steal life per hit', 'Amount stolen: {{ (level) * 1 }}', 'Amount stolen: {{ (level + 1) * 1 }}', True, 'LifestealStatic', 1, 'Understanding', 0, 'Null', 'Null'), ('Lifeleech', 'AuraAbility', 'Basic', 'None', 3, 'You steal life based on how much damage you deal in combat', 'Percent of damage dealt: {{ (level) * 5 }}', 'Percent of damage dealt: {{ (level + 1) * 5 }}', True, 'LifestealPercent', 5, 'Understanding', 0, 'Null', 'Null')]
 
@@ -29,7 +24,7 @@ ALL_ATTRIBUTE_NAMES = ['apprentice', 'arcanum', 'backstab', 'bash', 'blackhearte
 ALL_CLASS_NAMES = ['Apprentice', 'Arcanum', 'Backstab', 'Bash', 'Blackhearted', 'Charmer', 'Discipline', 'FameBombTest', 'Haggler', 'IgnoreTest1', 'IgnoreTest2', 'IgnoreTest3', 'IgnoreTest4', 'IgnoreTest5', 'IgnoreTest6', 'IgnoreTest7', 'Lifeleech', 'MartialArts', 'Meditation', 'Poet', 'Relentless', 'Scholar', 'Skinner', 'Strider', 'Student', 'Traveler', 'Trickster', 'VampiricAura', 'Vigilance', 'VirtueBombTest']
 
 
-class Ability(Base):
+class Ability(models.Base):
     """Ability object base class.
 
     Relates to the Abilities class which is a meta list of all Abilities ...
@@ -41,45 +36,42 @@ class Ability(Base):
     buy_price : Price to buy the item
     level_req : level requirement
     """
-    __tablename__ = "ability"
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50))  # Maybe 'unique' is not necessary?
-    level = Column(Integer)
-    max_level = Column(Integer)
+    name = sa.Column(sa.String(50))  # Maybe 'unique' is not necessary?
+    level = sa.Column(sa.Integer)
+    max_level = sa.Column(sa.Integer)
     # Maybe description should be unique? use: unique=True as keyword.
-    description = Column(String(200))
-    castable = Column(Boolean)
-    _current = Column(String(50))
-    _next = Column(String(50))
-    sanctity_cost = Column(Integer)
-    endurance_cost = Column(Integer)
+    description = sa.Column(sa.String(200))
+    castable = sa.Column(sa.Boolean)
+    _current = sa.Column(sa.String(50))
+    _next = sa.Column(sa.String(50))
+    sanctity_cost = sa.Column(sa.Integer)
+    endurance_cost = sa.Column(sa.Integer)
 
     # Note: Original code used default of "Unknown"
     # I chopped the BasicAbility class as redundant. Now I am going to
     # have to add the fucker back in.
-    type = Column(String(50))
-    ability_type = orm.synonym('type')
+    type = sa.Column(sa.String(50))
+    ability_type = sa.orm.synonym('type')
 
     # This determines if the ability is hidden and can not be learned or seen by the player
-    hidden = Column(Boolean)
-    learnable = Column(Boolean)
+    hidden = sa.Column(sa.Boolean)
+    learnable = sa.Column(sa.Boolean)
 
     # This decides which of the 4 types of abilities it is (default is basic)
 
-    tree = Column(String(50))
-    tree_type = Column(String(50))
-    image = Column(String(50))
+    tree = sa.Column(sa.String(50))
+    tree_type = sa.Column(sa.String(50))
+    image = sa.Column(sa.String(50))
 
     # Relationships
     # Hero to self is one to one.
-    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
-    hero = relationship("Hero", back_populates="abilities")
+    hero_id = sa.Column(sa.Integer, sa.ForeignKey('hero.id', ondelete="CASCADE"))
+    hero = sa.orm.relationship("Hero", back_populates="abilities")
 
     # Ability to Proficiencies is One to Many
-    proficiencies = relationship(
+    proficiencies = sa.orm.relationship(
         "Proficiency",
-        collection_class=attribute_mapped_dict_hybrid('name'),
+        collection_class=models.attribute_mapped_dict_hybrid('name'),
         back_populates='ability',
         cascade="all, delete-orphan")
 
@@ -96,11 +88,11 @@ class Ability(Base):
 
     @property
     def current(self):
-        return render_template_string(self._current, level=self.level)
+        return flask.render_template_string(self._current, level=self.level)
 
     @property
     def next(self):
-        return render_template_string(self._next, level=self.level)
+        return flask.render_template_string(self._next, level=self.level)
 
     # Requirements is a One to Many relationship to self.
     """
@@ -108,7 +100,7 @@ class Ability(Base):
     hero.can_learn(ability)
     if all hero.abilities are in ability.requirements.
     """
-    # ability_id = Column(Integer, ForeignKey('ability.id'))
+    # ability_id = sa.Column(sa.Integer, ForeignKey('ability.id'))
     # requirements = relationship("Ability")
 
     __mapper_args__ = {
@@ -151,14 +143,14 @@ class Ability(Base):
         # Initialize proficiencies
         # Currently doesn't add any proficiencies.
         for class_name, arg_dict in proficiency_data:
-            Class = getattr(proficiencies, class_name)
+            Class = getattr(models.proficiencies, class_name)
             # pdb.set_trace()
             obj = Class(**arg_dict)
             self.proficiencies[obj.name] = obj
 
         # Jacob did this. I need some help setting it up. This should be for casting spells.
         for class_name, arg_dict in spell_data:
-            Class = getattr(proficiencies, class_name)
+            Class = getattr(models.proficiencies, class_name)
             # pdb.set_trace()
             obj = Class(**arg_dict)
             self.proficiencies[obj.name] = obj
@@ -171,7 +163,7 @@ class Ability(Base):
     # def display_name(self):
     #     return self.name.capitalize()
 
-    @orm.validates('level')
+    @sa.orm.validates('level')
     def validate_level(self, key, current):
         """Set the base and modifier off the current level.
 
@@ -189,13 +181,13 @@ class Ability(Base):
         return current
 
     def get_description(self):
-        return render_template_string(self.description)
+        return flask.render_template_string(self.description)
 
     def get_current_bonus(self):
-        return render_template_string(self.current, level=self.level)
+        return flask.render_template_string(self.current, level=self.level)
 
     def get_next_bonus(self):
-        return render_template_string(self.next, level=self.level)
+        return flask.render_template_string(self.next, level=self.level)
 
     def is_max_level(self):
         """Return True if level is at max_level."""
@@ -216,6 +208,7 @@ class Ability(Base):
 
 
 class CastableAbility(Ability):
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'CastableAbility',
     }
@@ -244,7 +237,7 @@ class CastableAbility(Ability):
                       {% if not ability.is_max_level() and ((ability.tree == "Basic" and ability.hero.basic_ability_points) or (ability.tree == "Archetype" and ability.hero.archetype_ability_points))%}
                       <button id=levelUpAbilityButton class="upgradeButton" onclick="sendToPy(event, abilityTooltip, 'update_ability', {'id': {{ ability.id }}});"></button>
                       {% endif %}"""
-        return render_template_string(temp, ability=self)
+        return flask.render_template_string(temp, ability=self)
 
     def cast(self, hero):
         """Use the ability. Like casting a spell.
@@ -264,7 +257,9 @@ class CastableAbility(Ability):
         hero.base_proficiencies['endurance'].current -= self.endurance_cost
         return "success"
 
+
 class AuraAbility(Ability):
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'AuraAbility',
     }
@@ -292,12 +287,12 @@ class AuraAbility(Ability):
                       {% if not ability.is_max_level() and ((ability.tree == "Basic" and ability.hero.basic_ability_points) or (ability.tree == "Archetype" and ability.hero.archetype_ability_points))%}
                       <button id=levelUpAbilityButton class="upgradeButton" onclick="sendToPy(event, abilityTooltip, 'update_ability', {'id': {{ ability.id }}});"></button>
                       {% endif %}"""
-        return render_template_string(temp, ability=self)
+        return flask.render_template_string(temp, ability=self)
 
 
 class Apprentice(AuraAbility):
     attrib_name = "apprentice"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Apprentice',
     }
@@ -310,7 +305,7 @@ class Apprentice(AuraAbility):
 
 class Arcanum(AuraAbility):
     attrib_name = "arcanum"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Arcanum',
     }
@@ -323,7 +318,7 @@ class Arcanum(AuraAbility):
 
 class Backstab(AuraAbility):
     attrib_name = "backstab"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Backstab',
     }
@@ -336,7 +331,7 @@ class Backstab(AuraAbility):
 
 class Bash(AuraAbility):
     attrib_name = "bash"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Bash',
     }
@@ -349,7 +344,7 @@ class Bash(AuraAbility):
 
 class Blackhearted(AuraAbility):
     attrib_name = "blackhearted"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Blackhearted',
     }
@@ -362,7 +357,7 @@ class Blackhearted(AuraAbility):
 
 class Charmer(AuraAbility):
     attrib_name = "charmer"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Charmer',
     }
@@ -375,7 +370,7 @@ class Charmer(AuraAbility):
 
 class Discipline(AuraAbility):
     attrib_name = "discipline"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Discipline',
     }
@@ -388,7 +383,7 @@ class Discipline(AuraAbility):
 
 class Haggler(AuraAbility):
     attrib_name = "haggler"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Haggler',
     }
@@ -401,7 +396,7 @@ class Haggler(AuraAbility):
 
 class MartialArts(AuraAbility):
     attrib_name = "martial_arts"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'MartialArts',
     }
@@ -414,7 +409,7 @@ class MartialArts(AuraAbility):
 
 class Meditation(AuraAbility):
     attrib_name = "meditation"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Meditation',
     }
@@ -427,7 +422,7 @@ class Meditation(AuraAbility):
 
 class Poet(AuraAbility):
     attrib_name = "poet"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Poet',
     }
@@ -440,7 +435,7 @@ class Poet(AuraAbility):
 
 class Relentless(AuraAbility):
     attrib_name = "relentless"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Relentless',
     }
@@ -453,7 +448,7 @@ class Relentless(AuraAbility):
 
 class Scholar(AuraAbility):
     attrib_name = "scholar"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Scholar',
     }
@@ -466,7 +461,7 @@ class Scholar(AuraAbility):
 
 class Skinner(AuraAbility):
     attrib_name = "skinner"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Skinner',
     }
@@ -479,7 +474,7 @@ class Skinner(AuraAbility):
 
 class Strider(AuraAbility):
     attrib_name = "strider"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Strider',
     }
@@ -492,7 +487,7 @@ class Strider(AuraAbility):
 
 class Student(AuraAbility):
     attrib_name = "student"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Student',
     }
@@ -505,7 +500,7 @@ class Student(AuraAbility):
 
 class Traveler(AuraAbility):
     attrib_name = "traveler"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Traveler',
     }
@@ -518,7 +513,7 @@ class Traveler(AuraAbility):
 
 class Trickster(AuraAbility):
     attrib_name = "trickster"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Trickster',
     }
@@ -531,7 +526,7 @@ class Trickster(AuraAbility):
 
 class Vigilance(AuraAbility):
     attrib_name = "vigilance"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Vigilance',
     }
@@ -544,7 +539,7 @@ class Vigilance(AuraAbility):
 
 class FameBombTest(CastableAbility):
     attrib_name = "fame_bomb_test"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'FameBombTest',
     }
@@ -557,7 +552,7 @@ class FameBombTest(CastableAbility):
 
 class VirtueBombTest(CastableAbility):
     attrib_name = "virtue_bomb_test"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'VirtueBombTest',
     }
@@ -570,7 +565,7 @@ class VirtueBombTest(CastableAbility):
 
 class IgnoreTest1(CastableAbility):
     attrib_name = "ignore_test1"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'IgnoreTest1',
     }
@@ -583,7 +578,7 @@ class IgnoreTest1(CastableAbility):
 
 class IgnoreTest2(CastableAbility):
     attrib_name = "ignore_test2"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'IgnoreTest2',
     }
@@ -596,7 +591,7 @@ class IgnoreTest2(CastableAbility):
 
 class IgnoreTest3(CastableAbility):
     attrib_name = "ignore_test3"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'IgnoreTest3',
     }
@@ -609,7 +604,7 @@ class IgnoreTest3(CastableAbility):
 
 class IgnoreTest4(CastableAbility):
     attrib_name = "ignore_test4"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'IgnoreTest4',
     }
@@ -622,7 +617,7 @@ class IgnoreTest4(CastableAbility):
 
 class IgnoreTest5(CastableAbility):
     attrib_name = "ignore_test5"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'IgnoreTest5',
     }
@@ -635,7 +630,7 @@ class IgnoreTest5(CastableAbility):
 
 class IgnoreTest6(CastableAbility):
     attrib_name = "ignore_test6"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'IgnoreTest6',
     }
@@ -648,7 +643,7 @@ class IgnoreTest6(CastableAbility):
 
 class IgnoreTest7(CastableAbility):
     attrib_name = "ignore_test7"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'IgnoreTest7',
     }
@@ -661,7 +656,7 @@ class IgnoreTest7(CastableAbility):
 
 class VampiricAura(AuraAbility):
     attrib_name = "vampiric_aura"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'VampiricAura',
     }
@@ -674,7 +669,7 @@ class VampiricAura(AuraAbility):
 
 class Lifeleech(AuraAbility):
     attrib_name = "lifeleech"
-
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Lifeleech',
     }

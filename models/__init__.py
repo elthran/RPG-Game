@@ -16,5 +16,6 @@ from . import mixins
 from . import proficiencies
 from .quests import Quest, QuestPath
 from . import specializations
+from .game import Game
 
 # from . import database

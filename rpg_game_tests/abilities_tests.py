@@ -1,7 +1,7 @@
 import unittest
 
 from database import EZDB
-from game import Hero
+from models.game import Hero
 from models.abilities import (
     Ability, Archetype_Ability
 )

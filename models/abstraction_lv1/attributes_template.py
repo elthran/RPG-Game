@@ -1,30 +1,25 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
+import sqlalchemy as sa
+import sqlalchemy.orm
 
-from models.base_classes import Base
+import models
 
 ALL_ATTRIBUTES = {{ ALL_ATTRIBUTES }}
 
 {% import 'container_helpers.py' as container_helpers %}
 {{ container_helpers.build_container("Attribute", "attributes", ALL_ATTRIBUTES, no_container=True) }}
 
-class Attribute(Base):
+class Attribute(models.Base):
     """Attribute class that stores data about a hero object.
     """
-    __tablename__ = "attribute"
-    
-    id = Column(Integer, primary_key=True)
-
-    type_ = Column(String(50))
-    name = Column(String(50))
-    description = Column(String(200))
-    level = Column(Integer)
+    type_ = sa.Column(sa.String(50))
+    name = sa.Column(sa.String(50))
+    description = sa.Column(sa.String(200))
+    level = sa.Column(sa.Integer)
 
     # Relationships
     # Hero to self is one to one.
-    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
-    hero = relationship("Hero", back_populates="attributes")
+    hero_id = sa.Column(sa.Integer, sa.ForeignKey('hero.id', ondelete="CASCADE"))
+    hero = sa.orm.relationship("Hero", back_populates="attributes")
 
     attrib_name = 'attribute'
 
@@ -48,6 +43,7 @@ class Attribute(Base):
 class {{ attrib[0] }}(Attribute):
     attrib_name = "{{ normalize_attrib_name(attrib[0]) }}"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': '{{ attrib[0] }}',
     }

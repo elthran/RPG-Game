@@ -7,7 +7,7 @@ NOTE: every time I define a test I add it to the run_all function.
 
 I am using this tutorial https://docs.python.org/3.6/library/unittest.html
 '''
-from game import Hero
+from models.game import Hero
 
 from database import EZDB
 from models.basic_types import BaseItem, BaseDict

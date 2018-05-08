@@ -4,11 +4,10 @@ It has been set to read only so that you don't edit it without using
 'build_code.py'. Thought that may change in the future.
 """
 
-from sqlalchemy import Column, Integer, String
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
+import sqlalchemy as sa
+import sqlalchemy.orm
 
-from models.base_classes import Base
+import models
 
 ALL_ATTRIBUTES = [('Agility', 'A measure of how skilfully you can move.'), ('Brawn', 'A measure of how strong you are.'), ('Charisma', 'A measure of how well you interact with other people'), ('Divinity', 'A measure of your connection with the spirit world.'), ('Fortuity', 'A measure of your luck.'), ('Intellect', 'A measure of your mental prowess and knowledge.'), ('Pathfinding', 'A measure of your ability to traverse the world.'), ('Quickness', 'A measure of how fast you can move.'), ('Resilience', 'A measure of how tough you are.'), ('Survivalism', 'A measure of how well you can adapt to your surroundings.'), ('Vitality', 'A measure of how healthy you are.'), ('Willpower', 'A measure of how disciplined you are.')]
 
@@ -17,22 +16,18 @@ ALL_ATTRIBUTE_NAMES = ['agility', 'brawn', 'charisma', 'divinity', 'fortuity', '
 ALL_CLASS_NAMES = ['Agility', 'Brawn', 'Charisma', 'Divinity', 'Fortuity', 'Intellect', 'Pathfinding', 'Quickness', 'Resilience', 'Survivalism', 'Vitality', 'Willpower']
 
 
-class Attribute(Base):
+class Attribute(models.Base):
     """Attribute class that stores data about a hero object.
     """
-    __tablename__ = "attribute"
-    
-    id = Column(Integer, primary_key=True)
-
-    type_ = Column(String(50))
-    name = Column(String(50))
-    description = Column(String(200))
-    level = Column(Integer)
+    type_ = sa.Column(sa.String(50))
+    name = sa.Column(sa.String(50))
+    description = sa.Column(sa.String(200))
+    level = sa.Column(sa.Integer)
 
     # Relationships
     # Hero to self is one to one.
-    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"))
-    hero = relationship("Hero", back_populates="attributes")
+    hero_id = sa.Column(sa.Integer, sa.ForeignKey('hero.id', ondelete="CASCADE"))
+    hero = sa.orm.relationship("Hero", back_populates="attributes")
 
     attrib_name = 'attribute'
 
@@ -55,6 +50,7 @@ class Attribute(Base):
 class Agility(Attribute):
     attrib_name = "agility"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Agility',
     }
@@ -69,6 +65,7 @@ class Agility(Attribute):
 class Brawn(Attribute):
     attrib_name = "brawn"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Brawn',
     }
@@ -83,6 +80,7 @@ class Brawn(Attribute):
 class Charisma(Attribute):
     attrib_name = "charisma"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Charisma',
     }
@@ -97,6 +95,7 @@ class Charisma(Attribute):
 class Divinity(Attribute):
     attrib_name = "divinity"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Divinity',
     }
@@ -111,6 +110,7 @@ class Divinity(Attribute):
 class Fortuity(Attribute):
     attrib_name = "fortuity"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Fortuity',
     }
@@ -125,6 +125,7 @@ class Fortuity(Attribute):
 class Intellect(Attribute):
     attrib_name = "intellect"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Intellect',
     }
@@ -139,6 +140,7 @@ class Intellect(Attribute):
 class Pathfinding(Attribute):
     attrib_name = "pathfinding"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Pathfinding',
     }
@@ -153,6 +155,7 @@ class Pathfinding(Attribute):
 class Quickness(Attribute):
     attrib_name = "quickness"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Quickness',
     }
@@ -167,6 +170,7 @@ class Quickness(Attribute):
 class Resilience(Attribute):
     attrib_name = "resilience"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Resilience',
     }
@@ -181,6 +185,7 @@ class Resilience(Attribute):
 class Survivalism(Attribute):
     attrib_name = "survivalism"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Survivalism',
     }
@@ -195,6 +200,7 @@ class Survivalism(Attribute):
 class Vitality(Attribute):
     attrib_name = "vitality"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Vitality',
     }
@@ -209,6 +215,7 @@ class Vitality(Attribute):
 class Willpower(Attribute):
     attrib_name = "willpower"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'Willpower',
     }
