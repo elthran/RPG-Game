@@ -303,9 +303,6 @@ class EZDB:
             QuestPath).filter_by(
             is_default=True, template=True).all()
 
-    def get_user_by_username(self, username):
-        return self.session.query(User).filter_by(username=username).first()
-
     @scoped_session
     def validate_reset(self, username, key):
         """Make sure the reset key matches.

@@ -5,6 +5,8 @@ from elthranonline import app
 import services
 import controller
 
+import pdb
+
 
 @app.route('/')
 def main():
@@ -29,9 +31,9 @@ def login():
     # if 'logged_in' in session and session['logged_in']
     fl.session['logged_in'] = False
 
-    username = fl.request.form['username'] if 'username' in fl.request.form else ""
-    password = fl.request.form['password'] if 'password' in fl.request.form else ""
-    email_address = fl.request.form['email'] if 'email' in fl.request.form else ""
+    username = fl.request.form.get('username', '', type=str)
+    password = fl.request.form.get('password', '', type=str)
+    email_address = fl.request.form.get('email', '', type=str)
 
     if fl.request.method == 'POST':
         if fl.request.form['type'] == "login":
@@ -56,8 +58,6 @@ def login():
 
         if 'logged_in' in fl.session and fl.session['logged_in']:
             fl.flash("LOG IN SUCCESSFUL")
-            user = database.get_user_by_username(username)
-            fl.session['id'] = user.id
             # Will barely pause here if only one character exists.
             # Maybe should just go directly to home page.
             return fl.redirect(fl.url_for('choose_character'))
