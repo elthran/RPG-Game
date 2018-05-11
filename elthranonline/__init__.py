@@ -1,16 +1,6 @@
 import flask as fl
 import flask_sslify
 
-from models import game
-import services.event_service
-
-# For testing
-engine = services.event_service.Engine()
-
-# Disable will need to be restructured (Marlen)
-# initialization
-game = game.Game()
-
 
 def create_app():
     # create the application object
@@ -22,7 +12,7 @@ def create_app():
 
 
 app = create_app()
-# Must after app created http://flask.pocoo.org/docs/0.12/patterns/packages/
+# Must import views after app created http://flask.pocoo.org/docs/0.12/patterns/packages/
 # noinspection PyUnresolvedReferences
 import views
 

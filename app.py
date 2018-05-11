@@ -5,7 +5,6 @@
 #                                                                            #
 # ///////////////////////////////////////////////////////////////////////////#
 
-from functools import wraps
 import os
 from math import ceil
 from socket import gethostname
@@ -28,9 +27,10 @@ from services.event_service import Engine
 from models.forum import Board, Thread, Post
 from models.bestiary2 import create_monster, MonsterTemplate
 import services
-import models
 
 # For testing
+from services.decorators import login_required, uses_hero, update_current_location
+
 engine = Engine()
 
 # Disable will need to be restructured (Marlen)
@@ -78,79 +78,7 @@ def favicon():
         'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
-def login_required(f):
-    """Set certain pages as requiring a login to visit.
-
-    This should redirect you to the login page."""
-
-    @wraps(f)
-    def wrap_login(*args, **kwargs):
-        if 'logged_in' in session and session['logged_in']:
-            return f(*args, **kwargs)
-        else:
-            flash('You need to login first.')
-            return redirect(url_for('login'))
-
-    return wrap_login
-
-
 # Untested (Marlen)
-def uses_hero(f):
-    """Preload hero object and save it afterwards.
-
-    Note: KeyError occurs when this method is called before login method
-    has been run. Also after a POST request before page reload.
-    Seems wipe the session cookie temporarily? Fine after normal page load
-    Only fails if view page source after POST.
-    """
-
-    @wraps(f)
-    def wrap_uses_hero(*args, **kwargs):
-        try:
-            # print("Currently at the uses_hero function!")
-            hero = models.hero.Hero.get(session["hero_id"])
-        except KeyError as ex:
-            if not session:
-                # After making a POST request with AJAX the session
-                # gets cleared? Until you make a new GET request?
-                # This is a request for the Page Source and it occurs
-                # in a new blank session.
-                return "After POST request reload the page to view source."
-            else:
-                raise ex
-        return f(*args, hero=hero, **kwargs)
-    return wrap_uses_hero
-
-
-def update_current_location(f):
-    """Load the location object and set it to hero.current_location.
-
-    NOTE: this must come after "@uses_hero"
-    Adds a keyword argument 'location' to argument list.
-
-    Example usage:
-    @app.route('/barracks/<name>')
-    @login_required
-    @uses_hero
-    @update_current_location
-    def barracks(name='', hero=None, location=None):
-        if hero.proficiencies.health.current <= 0:
-            location.display.page_heading = "Your hero is currently dead."
-    """
-
-    @wraps(f)
-    def wrap_current_location(*args, **kwargs):
-        hero = kwargs['hero']
-        location = models.locations.Location.query().filter_by(name=kwargs['name']).one()
-        hero.current_location = location
-        engine.spawn(
-            'move_event',
-            hero,
-            description="{} visits {}.".format(hero.name, location.url)
-        )
-        return f(*args, location=location, **kwargs)
-
-    return wrap_current_location
 
 
 @app.route("/reset", methods=["GET", "POST"])
@@ -169,62 +97,6 @@ def reset_password():
 
 
 # this gets called if you are logged in and there is no character info stored
-@app.route('/create_character', methods=['GET', 'POST'])
-@login_required
-@uses_hero
-def create_character(hero=None):
-    page_image = ""
-    # This should prevent anyone getting here if they haven't been sent
-    # by the login -> create account code.
-    if not hero.creation_phase:
-        return redirect(url_for('home'))
-    # Accept regular or json form data.
-    if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            if 'form' in data:
-                request.form = data['form']
-        if hero.name is None:
-            hero.name = request.form["get_data"].title()
-        elif hero.background is None:
-            hero.background = data["response"]
-            if hero.background == "Barbarian":
-                hero.attributes.brawn.level += 1
-            elif hero.background == "Missionary":
-                hero.attributes.intellect.level += 1
-
-    if len(hero.journal.quest_paths) == 0:
-        hero.journal.quest_paths = database.get_default_quest_paths()
-
-    if hero.current_world is None:
-        hero.current_world = database.get_default_world()
-        hero.current_location = database.get_default_location()
-
-    if hero.name is None:
-        page_image = "beached"
-        generic_text = "You awake to great pain and confusion as you hear footsteps " \
-                    "approaching in the sand. Unsure of where you are, you quickly look " \
-                    "around for something to defend yourself. A firm and inquisitive voice " \
-                    "pierces the air."
-        npc_text = [("Stranger", "Who are you and what are you doing here?")]
-        account_action = "get text"
-        account_response = "...I don't remember what happened. My name is"
-        account_text_placeholder = "Character Name"
-    elif hero.background is None:
-        # This is needed if the account names there hero but leaves the page and returns later. But I will write it out later.
-        page_image = "character_background"
-        generic_text = ""
-        account_text_placeholder = ""
-        npc_text = [("Stranger", "Where do you come from, child?")]
-        account_action = "make choice"
-        account_response = [
-            ("My father was a great warlord from the north.", ["Gain", ("+1 Brawn",)], "Barbarian"),
-            ("My father was a great missionary traveling to the west.", ["Gain", ("+1 Intellect",)], "Missionary")]
-    else:
-        hero.creation_phase = False  # Prevent the account from returning here.
-        hero.refresh_character(full=True)
-        return redirect(url_for('home'))
-    return render_template('generic_dialogue.html', page_image=page_image, generic_text=generic_text, npc_text=npc_text, account_action=account_action, account_response=account_response, account_text_placeholder=account_text_placeholder)
 
 
 # this gets called if you press "logout"

@@ -1,18 +1,13 @@
 import flask
 
-# from flask import session, request, render_template, flash, url_for
-# from werkzeug.utils import redirect
-import werkzeug.utils
-
 from elthranonline import app
-from app import login_required, game
-
 import models
 import controller
+import services.decorators
 
 
 @app.route('/choose_character', methods=['GET', 'POST'])
-@login_required
+@services.decorators.login_required
 def choose_character():
     account = models.Account.get(flask.session['id'])
     # print(account)
@@ -31,6 +26,6 @@ def choose_character():
     # If it's a new character, send them to create_character url
     # pdb.set_trace()
     if hero.creation_phase:
-        return werkzeug.utils.redirect(flask.url_for('create_character'))
+        return flask.redirect(flask.url_for('create_character'))
     # If the character already exist go straight the main home page!
-    return werkzeug.utils.redirect(flask.url_for('home'))
+    return flask.redirect(flask.url_for('home'))
