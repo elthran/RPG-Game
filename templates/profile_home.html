@@ -270,6 +270,12 @@
 		<td>Virtue Gain</td>
 		<td>+ {{ proficiencies.dualism.final|int }}%</td>
 	</tr>
+	{% if proficiencies.potion_effectiveness.final %}
+	<tr>
+		<td>Potion Effectiveness</td>
+		<td>+ {{ proficiencies.potion_effectiveness.final|int }}%</td>
+	</tr>
+	{% endif %}
 	{% if proficiencies.lifesteal_static.final or proficiencies.lifesteal_percent.final %}
 	<tr>
 		<td>Average life stolen per hit</td>
@@ -296,10 +302,12 @@
 		<td>{{ proficiencies.freezing_chance.final|int }}% per hit</td>
 	</tr>
 	{% endif %}
+	{% if proficiencies.thawing_chance.final != 50 %}
 	<tr>
 		<td>Thawing Chance</td>
-		<td>{% if proficiencies.thawing_chance.final %}{{ proficiencies.thawing_chance.final|int }}%{% else %}-{% endif %}</td>
+		<td>{{ proficiencies.thawing_chance.final|int }}%</td>
 	</tr>
+	{% endif %}
 </table>
 {% endblock %}
 

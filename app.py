@@ -524,7 +524,7 @@ def admin(path="modify_self", path2="users", hero=None):
     admin_form_content = None
     if path == "edit_database":
         sorted_heroes = database.fetch_sorted_heroes("id", False)
-        return render_template('admin.html', hero=hero, path=path, path2=path2, all_heroes=sorted_heroes)  # return a string
+        return render_template('admin.html', page_title="Admin", hero=hero, path=path, path2=path2, all_heroes=sorted_heroes)  # return a string
     elif path == "modify_self":
         page_title = "Admin"
         if request.method == 'POST':
@@ -558,7 +558,7 @@ def admin(path="modify_self", path2="users", hero=None):
             ("Pantheon Ability Points", hero.pantheon_ability_points),
             ("Attribute Points", hero.attribute_points),
             ("Proficiency Points", hero.proficiency_points)]
-    return render_template('admin.html', hero=hero, admin=admin_form_content, path=path)  # return a string
+    return render_template('admin.html', page_title="Admin", hero=hero, admin=admin_form_content, path=path)  # return a string
 
 
 @app.route('/add_new_character')
@@ -712,7 +712,7 @@ def settings(hero=None, tab="profile", choice="none"):
             email = request.form['new_email']
             hero.user.email = database.encrypt(email)
             message = "Email address changed to: " + email
-    return render_template('settings.html', hero=hero, user=hero.user, tab=tab, choice=choice, message=message)
+    return render_template('settings.html', page_title="Settings", hero=hero, user=hero.user, tab=tab, choice=choice, message=message)
 
 
 # PROFILE PAGES (Basically the home page of the game with your character
@@ -769,15 +769,19 @@ def ability_tree(spec, hero=None):
     #     if prof.name == "stealth" or prof.name == "health":
     #         print(prof,"\n")
     if spec == "archetype" and hero.specializations.archetype is None: # On the archetype pagebut the hero doesn't have one!
+        page_title = "Archetype Abilities"
         becomeType = "archetype"
         spec_choices = database.get_all_objects("Archetype")
     elif spec == "calling" and hero.specializations.calling is None: # On the archetype pagebut the hero doesn't have one!
+        page_title = "Calling Abilities"
         becomeType = "calling"
         spec_choices = database.get_all_objects("Calling")
     elif spec == "pantheon" and hero.specializations.pantheon is None: # On the archetype pagebut the hero doesn't have one!
+        page_title = "Pantheon Abilities"
         becomeType = "pantheon"
         spec_choices = database.get_all_objects("Pantheon")
     else:
+        page_title = "Basic Abilities"
         becomeType = None
         spec_choices = []
 
@@ -790,7 +794,7 @@ def ability_tree(spec, hero=None):
                 if hero.specializations.archetype.name == ability.tree_type: # If the chosen archetype matches the ability's archetype add it
                     all_abilities.append(ability)
 
-    return render_template('profile_ability.html', hero=hero, ability_tree=spec,
+    return render_template('profile_ability.html', page_title=page_title, hero=hero, ability_tree=spec,
                            all_abilities=all_abilities, becomeType=becomeType,
                            spec_choices=spec_choices)
 

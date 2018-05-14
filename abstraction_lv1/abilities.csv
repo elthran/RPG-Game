@@ -1,10 +1,10 @@
 Name,Type,Tree,TreeType,Max,Description,Current,Learnable,Prof1,Value1,Prof2,Value2,SanctityCost,EnduranceCost
 Alchemy,AuraAbility,Basic,None,5,Your effectiveness at utilizing potions.,Potion Effectiveness +{{ (level) * 2 }}%,TRUE,PotionEffectiveness,2,Null,-,-,-
-Diplomacy,AuraAbility,Basic,None,5,Your ability to persuade other people.,Dialogue Effectiveness +{{ (level) * 2 }}%,TRUE,Oration,2,Null,-,-,-
-Discipline,AuraAbility,Basic,None,5,Your effectiveness at teaching yourself.,Experience Gain +{{ (level) * 2 }}%,TRUE,Understanding,2,Null,-,-,-
-Concealment,AuraAbility,Basic,None,5,How well you can hide from enemies.,Stealth Actions +{{ (level) * 2 }}%,TRUE,Stealth,2,Null,-,-,-
-Foraging,AuraAbility,Basic,None,5,Your ability to find items while exploring.,Item Aqcuisition +{{ (level) * 5 }}%,TRUE,Adventuring,5,Null,-,-,-
-Might,AuraAbility,Basic,None,5,Your ability to swing heavy objects.,Damage +{{ (level) * 2 }}%,TRUE,Strength,2,Null,-,-,-
+Diplomacy,AuraAbility,Basic,None,5,Your ability to persuade other people.,Oration +{{ (level) * 2 }}%,TRUE,Oration,2,Null,-,-,-
+Discipline,AuraAbility,Basic,None,5,Your effectiveness at teaching yourself and how quickly you gain experience.,Understanding +{{ (level) * 2 }}%,TRUE,Understanding,2,Null,-,-,-
+Concealment,AuraAbility,Basic,None,5,How well you can hide from enemies.,Stealth +{{ (level) * 2 }}%,TRUE,Stealth,2,Null,-,-,-
+Foraging,AuraAbility,Basic,None,5,Your ability to find items while exploring.,Adventuring +{{ (level) * 5 }}%,TRUE,Adventuring,5,Null,-,-,-
+Might,AuraAbility,Basic,None,5,Your ability to swing heavy objects and deal melee damage.,Strength +{{ (level) * 2 }}%,TRUE,Strength,2,Null,-,-,-
 Apprentice,AuraAbility,Archetype,Ascetic,10,Study of the arcane arts allows you to become capable of learning spells.,Number of Spells: +{{ (level) * 1 }},TRUE,SpellLimit,1,Null,-,-,-
 Arcanum,AuraAbility,Archetype,Ascetic,5,Through your studies you become capable of raising your maximum sanctity. <b>Master this ability to unlock the Philosopher calling</b>,{{ (level) * 2 }},TRUE,Sanctity,2,Null,-,-,-
 Backstab,AuraAbility,Archetype,Scoundrel,5,You are more likely to attack first in combat.,First Strike: +{{ (level) * 3 }}%,TRUE,FirstStrike,5,Null,-,-,-
