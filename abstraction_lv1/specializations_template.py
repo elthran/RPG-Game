@@ -7,6 +7,7 @@ from flask import render_template_string
 from base_classes import Base
 from factories import TemplateMixin
 from build_code import normalize_attrib_name
+import interfaces.requirements
 import pdb
 
 # This is a list of specializations. Your hero can have one of each type active at any time. There are 4 types of specs.
@@ -33,7 +34,6 @@ class Specialization(TemplateMixin, Base):
     description = Column(String(200))
     requirements = Column(String(50))
     attrib_name = Column(String(50))
-    unlocked = Column(Boolean)
 
     # Relationships
     # Each hero can have one list of abilities (bi, one to one)
@@ -55,7 +55,6 @@ class Specialization(TemplateMixin, Base):
         self.description = description
         self.requirements = requirements
         self.template = template
-        self.unlocked = False
 
 
 class Archetype(Specialization):
@@ -65,6 +64,9 @@ class Archetype(Specialization):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    def check_locked(self, hero):
+        return interfaces.requirements.Requirement.met(self, hero)
 
 
 class Calling(Specialization):

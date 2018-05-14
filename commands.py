@@ -385,7 +385,7 @@ class Command:
     def update_specialization_tooltip(hero, database, data, **kwargs):
         tooltip_id = data['id']
         spec = database.get_specialization_by_id(tooltip_id)
-        return jsonify(description=spec.description, requirements=spec.requirements, unlocked=spec.unlocked, id=spec.id)
+        return jsonify(description=spec.description, requirements=spec.requirements, unlocked=spec.check_locked(hero), id=spec.id)
 
     @staticmethod
     def change_ability_tooltip(hero, database, data, **kwargs):
@@ -419,6 +419,8 @@ class Command:
     def update_specialization(hero, database, data, **kwargs):
         spec_id = data['id']
         specialization = database.get_object_by_id("Specialization", spec_id)
+        if not specialization.check_locked(hero):
+            return "error: Attempted to add locked specialization to hero."
         # spec.level += 1 or something?
 
         # You can ignore templating here as hero takes care of it.
