@@ -385,7 +385,7 @@ class Command:
     def update_specialization_tooltip(hero, database, data, **kwargs):
         tooltip_id = data['id']
         spec = database.get_specialization_by_id(tooltip_id)
-        return jsonify(description=spec.description, requirements=spec.requirements, unlocked=spec.unlocked)
+        return jsonify(description=spec.description, requirements=spec.requirements, unlocked=spec.unlocked, id=spec.id)
 
     @staticmethod
     def change_ability_tooltip(hero, database, data, **kwargs):
@@ -423,8 +423,8 @@ class Command:
 
         # You can ignore templating here as hero takes care of it.
         hero.specializations = specialization
-        pprint(hero.specializations)
-        spec = data['spec']
+        #pprint(hero.specializations)
+        #spec = data['spec']
         # PLEASE MAKE THE ABOVE PRINT STATEMENT TRUE!!!!!!!!!!!!!!!!!!!!!!!
         #specialization = database.get_object_by_name("Specialization", choice)
         #setattr(hero.specializations, choice, specialization)

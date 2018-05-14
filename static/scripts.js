@@ -478,10 +478,12 @@ function specializationTooltip(response, oldData) {
     description.innerHTML = response.description;
     requirements = document.getElementById("specializationRequirements");
     requirements.innerHTML = "Requirements:<br />   " + response.requirements;
+    button = document.getElementById("specializationButton");
     if (response.unlocked) {
-        document.getElementById("specializationButton").disabled = false;
+        button.disabled = false;
+        button.setAttribute( "onclick", "sendToPy(event, refreshPage, 'update_specialization', {'id': " + response.id + "} )" );
     } else {
-        document.getElementById("specializationButton").disabled = true;
+        button.disabled = true;
     }
 }
 
