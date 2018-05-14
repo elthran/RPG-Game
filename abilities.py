@@ -23,11 +23,11 @@ import proficiencies
 from base_classes import Base, attribute_mapped_dict_hybrid
 import pdb
 
-ALL_ABILITIES = [('Apprentice', 'AuraAbility', 'Archetype', 'Ascetic', 10, 'Study of the arcane arts allows you to become capable of learning spells.', 'Number of Spells: +{{ (level) * 1 }}', True, 'SpellLimit', 1, 'Null', '-', '-', '-'), ('Arcanum', 'AuraAbility', 'Archetype', 'Ascetic', 5, 'Through your studies you become capable of raising your maximum sanctity. <b>Master this ability to unlock the Philosopher calling</b>', '{{ (level) * 2 }}', True, 'Sanctity', 2, 'Null', '-', '-', '-'), ('Backstab', 'AuraAbility', 'Archetype', 'Scoundrel', 5, 'You are more likely to attack first in combat.', 'First Strike: +{{ (level) * 3 }}%', True, 'FirstStrike', 5, 'Null', '-', '-', '-'), ('Bash', 'AuraAbility', 'Archetype', 'Brute', 5, 'Your proficiency with blunt weapons is increased.', 'Blunt Weapon Damage: +{{ (level) * 5 }}%', True, 'Blunt', 5, 'Null', '-', '-', '-'), ('Blackhearted', 'AuraAbility', 'Archetype', 'Scoundrel', 5, 'Your sinister nature is more apparent. Actions affect your virtue more quickly. <b>Master this ability to unlock the Assassin calling</b>', 'Virtue drops {{ (level) * 5 }}% faster', True, 'Dualism', 5, 'Null', '-', '-', '-'), ('Charmer', 'AuraAbility', 'Archetype', 'Opportunist', 5, 'Your relation with other people raises much more quickly.', 'Dialogue Success: +{{ (level) * 5 }}%', True, 'Charm', 5, 'Null', '-', '-', '-'), ('Discipline', 'AuraAbility', 'Basic', 'None', 5, 'Gain devotion faster. Master this ability to unlock the Ascetic archetype.', '{{ (level) * 1 }}%', True, 'Piety', 1, 'Null', '-', '-', '-'), ('Haggler', 'AuraAbility', 'Archetype', 'Opportunist', 5, 'You can get a better price at stores through negoations.', 'Store Prices: -{{ (level) * 2 }}%', True, 'Bartering', 2, 'Null', '-', '-', '-'), ('MartialArts', 'AuraAbility', 'Archetype', 'Ascetic', 3, 'You deal more damage in combat when fighting with no weapon.', 'Unarmed Damage: +{{ (level) * 50 }}%', True, 'Unarmed', 50, 'Null', '-', '-', '-'), ('Meditation', 'AuraAbility', 'Archetype', 'Ascetic', 3, 'Regenerate sanctity per day.', '{{ (level) * 5 }}', True, 'Redemption', 5, 'Null', '-', '-', '-'), ('Poet', 'AuraAbility', 'Basic', 'None', 5, 'Gain renown faster. Master this ability to unlock the Opportunist archetype.', '{{ (level) * 1 }}', True, 'Reputation', 1, 'Null', '-', '-', '-'), ('Relentless', 'AuraAbility', 'Basic', 'None', 5, 'Gain maximum health. Master this ability to unlock the Brute archetype.', '{{ (level) * 3 }}', True, 'Health', 3, 'Null', '-', '-', '-'), ('Scholar', 'AuraAbility', 'Archetype', 'Philosopher', 3, 'Gain experience faster.', '{{ (level) * 5 }}', True, 'Understanding', 5, 'Null', '-', '-', '-'), ('Skinner', 'AuraAbility', 'Archetype', 'Survivalist', 3, '(BROKEN)You have a chance of obtaining a usable fur after kiling a beast.', '{{ (level) * 5 }}', True, 'Health', 0, 'Null', '-', '-', '-'), ('Strider', 'AuraAbility', 'Archetype', 'Survivalist', 3, '(BROKEN)Traveling on the map requires less endurance.', '{{ (level) * 5 }}', True, 'Health', 0, 'Null', '-', '-', '-'), ('Student', 'AuraAbility', 'Archetype', 'Philosopher', 3, '(BROKEN)You are capable of learning additional spells.', '{{ (level) * 5 }}', True, 'Health', 0, 'Null', '-', '-', '-'), ('Traveler', 'AuraAbility', 'Basic', 'None', 5, 'Reveal more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', '{{ (level) * 1 }}', True, 'Vision', 1, 'Null', '-', '-', '-'), ('Trickster', 'AuraAbility', 'Basic', 'None', 5, 'Become harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', '{{ (level) * 3 }}', True, 'Stealth', 3, 'Null', '-', '-', '-'), ('Vigilance', 'AuraAbility', 'Archetype', 'Survivalist', 3, '(BROKEN)You are less likely to be ambushed.', '{{ (level) * 5 }}', True, 'Health', 0, 'Null', '-', '-', '-'), ('FameBombTest', 'CastableAbility', 'Basic', 'None', 3, 'Spend 2 sanctity to gain instant fame with this silly test spell.', '{{ (level) * 3 }}', True, 'Renown', 0, 'Understanding', '0', '2', '0'), ('VirtueBombTest', 'CastableAbility', 'Basic', 'None', 3, 'Spend 1 endurance to gain instant virtue with this silly spell for testing purposes.', '{{ (level) * 2 }}', True, 'Virtue', 0, 'Understanding', '0', '0', '1'), ('PoisonedBlades', 'AuraAbility', 'Archetype', 'Scoundrel', 3, 'Successful attacks apply a poison to the enemy', 'Damage per turn: {{ (level) * 1 }}', True, 'PoisonAmount', 1, 'Null', '-', '-', '-'), ('PoisonMastery', 'AuraAbility', 'Archetype', 'Scoundrel', 3, 'Your poisons last an additional round', '+{{ (level) * 1 }} rounds', True, 'PoisonDuration', 1, 'Null', '-', '-', '-'), ('VampiricAura', 'AuraAbility', 'Basic', 'None', 3, 'You steal life per hit', 'Amount stolen: {{ (level) * 1 }}', True, 'LifestealStatic', 1, 'Null', '-', '-', '-'), ('Lifeleech', 'AuraAbility', 'Basic', 'None', 3, 'You steal life based on how much damage you deal in combat', 'Percent of damage dealt: {{ (level) * 5 }}', True, 'LifestealPercent', 5, 'Null', '-', '-', '-'), ('FrozenBlades', 'AuraAbility', 'Basic', 'None', 5, 'Gives your weapon a chance of freezing enemies attacked', 'Chance to freeze: {{ level * 5 }}', True, 'FreezingChance', 5, 'Null', '-', '-', '-'), ('FrozenHeart', 'AuraAbility', 'Basic', 'None', 1, 'Makes you immediately thaw out if frozen in combat', 'Chance to thaw: 100%', True, 'ThawingChance', 50, 'Null', '-', '-', '-'), ('Immunity', 'AuraAbility', 'Basic', 'None', 3, 'Your poison resistance is increased', '+{{ (level) * 25 }}%', True, 'ResistPoison', 25, 'Null', '-', '-', '-'), ('FireBlades', 'AuraAbility', 'Basic', 'None', 5, 'Gives your weapon flaming damage', 'Flaming damage: {{ level * 1 }}', True, 'FlameDamage', 1, 'Null', '-', '-', '-')]
+ALL_ABILITIES = [('Alchemy', 'AuraAbility', 'Basic', 'None', 5, 'Your effectiveness at utilizing potions.', 'Potion Effectiveness +{{ (level) * 2 }}%', True, 'PotionEffectiveness', 2, 'Null', '-', '-', '-'), ('Diplomacy', 'AuraAbility', 'Basic', 'None', 5, 'Your ability to persuade other people.', 'Dialogue Effectiveness +{{ (level) * 2 }}%', True, 'Oration', 2, 'Null', '-', '-', '-'), ('Discipline', 'AuraAbility', 'Basic', 'None', 5, 'Your effectiveness at teaching yourself.', 'Experience Gain +{{ (level) * 2 }}%', True, 'Understanding', 2, 'Null', '-', '-', '-'), ('Concealment', 'AuraAbility', 'Basic', 'None', 5, 'How well you can hide from enemies.', 'Stealth Actions +{{ (level) * 2 }}%', True, 'Stealth', 2, 'Null', '-', '-', '-'), ('Foraging', 'AuraAbility', 'Basic', 'None', 5, 'Your ability to find items while exploring.', 'Item Aqcuisition +{{ (level) * 5 }}%', True, 'Adventuring', 5, 'Null', '-', '-', '-'), ('Might', 'AuraAbility', 'Basic', 'None', 5, 'Your ability to swing heavy objects.', 'Damage +{{ (level) * 2 }}%', True, 'Strength', 2, 'Null', '-', '-', '-'), ('Apprentice', 'AuraAbility', 'Archetype', 'Ascetic', 10, 'Study of the arcane arts allows you to become capable of learning spells.', 'Number of Spells: +{{ (level) * 1 }}', True, 'SpellLimit', 1, 'Null', '-', '-', '-'), ('Arcanum', 'AuraAbility', 'Archetype', 'Ascetic', 5, 'Through your studies you become capable of raising your maximum sanctity. <b>Master this ability to unlock the Philosopher calling</b>', '{{ (level) * 2 }}', True, 'Sanctity', 2, 'Null', '-', '-', '-'), ('Backstab', 'AuraAbility', 'Archetype', 'Scoundrel', 5, 'You are more likely to attack first in combat.', 'First Strike: +{{ (level) * 3 }}%', True, 'FirstStrike', 5, 'Null', '-', '-', '-'), ('Bash', 'AuraAbility', 'Archetype', 'Brute', 5, 'Your proficiency with blunt weapons is increased.', 'Blunt Weapon Damage: +{{ (level) * 5 }}%', True, 'Blunt', 5, 'Null', '-', '-', '-'), ('Blackhearted', 'AuraAbility', 'Archetype', 'Scoundrel', 5, 'Your sinister nature is more apparent. Actions affect your virtue more quickly. <b>Master this ability to unlock the Assassin calling</b>', 'Virtue drops {{ (level) * 5 }}% faster', True, 'Dualism', 5, 'Null', '-', '-', '-'), ('Charmer', 'AuraAbility', 'Archetype', 'Opportunist', 5, 'Your relation with other people raises much more quickly.', 'Dialogue Success: +{{ (level) * 5 }}%', True, 'Charm', 5, 'Null', '-', '-', '-'), ('Haggler', 'AuraAbility', 'Archetype', 'Opportunist', 5, 'You can get a better price at stores through negoations.', 'Store Prices: -{{ (level) * 2 }}%', True, 'Bartering', 2, 'Null', '-', '-', '-'), ('MartialArts', 'AuraAbility', 'Archetype', 'Ascetic', 3, 'You deal more damage in combat when fighting with no weapon.', 'Unarmed Damage: +{{ (level) * 50 }}%', True, 'Unarmed', 50, 'Null', '-', '-', '-'), ('Meditation', 'AuraAbility', 'Archetype', 'Ascetic', 3, 'Regenerate sanctity per day.', '{{ (level) * 5 }}', True, 'Redemption', 5, 'Null', '-', '-', '-'), ('Poet', 'AuraAbility', 'Archetype', 'Opportunist', 5, 'Gain renown faster. Master this ability to unlock the Opportunist archetype.', '{{ (level) * 1 }}', True, 'Reputation', 1, 'Null', '-', '-', '-'), ('Relentless', 'AuraAbility', 'Archetype', 'Brute', 5, 'Gain maximum health. Master this ability to unlock the Brute archetype.', '{{ (level) * 3 }}', True, 'Health', 3, 'Null', '-', '-', '-'), ('Scholar', 'AuraAbility', 'Archetype', 'Philosopher', 3, 'Gain experience faster.', '{{ (level) * 5 }}', True, 'Understanding', 5, 'Null', '-', '-', '-'), ('Skinner', 'AuraAbility', 'Archetype', 'Survivalist', 3, '(BROKEN)You have a chance of obtaining a usable fur after kiling a beast.', '{{ (level) * 5 }}', True, 'Health', 0, 'Null', '-', '-', '-'), ('Strider', 'AuraAbility', 'Archetype', 'Survivalist', 3, '(BROKEN)Traveling on the map requires less endurance.', '{{ (level) * 5 }}', True, 'Health', 0, 'Null', '-', '-', '-'), ('Student', 'AuraAbility', 'Archetype', 'Philosopher', 3, '(BROKEN)You are capable of learning additional spells.', '{{ (level) * 5 }}', True, 'Health', 0, 'Null', '-', '-', '-'), ('Traveler', 'AuraAbility', 'Archetype', 'Survivalist', 5, 'Reveal more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', '{{ (level) * 1 }}', True, 'Vision', 1, 'Null', '-', '-', '-'), ('Trickster', 'AuraAbility', 'Archetype', 'Scoundrel', 5, 'Become harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', '{{ (level) * 3 }}', True, 'Stealth', 3, 'Null', '-', '-', '-'), ('Vigilance', 'AuraAbility', 'Archetype', 'Survivalist', 3, '(BROKEN)You are less likely to be ambushed.', '{{ (level) * 5 }}', True, 'Health', 0, 'Null', '-', '-', '-'), ('PoisonedBlades', 'AuraAbility', 'Archetype', 'Scoundrel', 3, 'Successful attacks apply a poison to the enemy', 'Damage per turn: {{ (level) * 1 }}', True, 'PoisonAmount', 1, 'Null', '-', '-', '-'), ('PoisonMastery', 'AuraAbility', 'Archetype', 'Scoundrel', 3, 'Your poisons last an additional round', '+{{ (level) * 1 }} rounds', True, 'PoisonDuration', 1, 'Null', '-', '-', '-'), ('VampiricAura', 'AuraAbility', 'Archetype', 'None', 3, 'You steal life per hit', 'Amount stolen: {{ (level) * 1 }}', True, 'LifestealStatic', 1, 'Null', '-', '-', '-'), ('Lifeleech', 'AuraAbility', 'Archetype', 'None', 3, 'You steal life based on how much damage you deal in combat', 'Percent of damage dealt: {{ (level) * 5 }}', True, 'LifestealPercent', 5, 'Null', '-', '-', '-'), ('FrozenBlades', 'AuraAbility', 'Archetype', 'None', 5, 'Gives your weapon a chance of freezing enemies attacked', 'Chance to freeze: {{ level * 5 }}', True, 'FreezingChance', 5, 'Null', '-', '-', '-'), ('FrozenHeart', 'AuraAbility', 'Archetype', 'None', 1, 'Makes you immediately thaw out if frozen in combat', 'Chance to thaw: 100%', True, 'ThawingChance', 50, 'Null', '-', '-', '-'), ('Immunity', 'AuraAbility', 'Archetype', 'None', 3, 'Your poison resistance is increased', '+{{ (level) * 25 }}%', True, 'ResistPoison', 25, 'Null', '-', '-', '-'), ('FireBlades', 'AuraAbility', 'Archetype', 'None', 5, 'Gives your weapon flaming damage', 'Flaming damage: {{ level * 1 }}', True, 'FlameDamage', 1, 'Null', '-', '-', '-')]
 
-ALL_NAMES = ['Apprentice', 'Arcanum', 'Backstab', 'Bash', 'Blackhearted', 'Charmer', 'Discipline', 'Fame bomb test', 'Fire blades', 'Frozen blades', 'Frozen heart', 'Haggler', 'Immunity', 'Lifeleech', 'Martial arts', 'Meditation', 'Poet', 'Poison mastery', 'Poisoned blades', 'Relentless', 'Scholar', 'Skinner', 'Strider', 'Student', 'Traveler', 'Trickster', 'Vampiric aura', 'Vigilance', 'Virtue bomb test']
-ALL_ATTRIBUTE_NAMES = ['apprentice', 'arcanum', 'backstab', 'bash', 'blackhearted', 'charmer', 'discipline', 'fame_bomb_test', 'fire_blades', 'frozen_blades', 'frozen_heart', 'haggler', 'immunity', 'lifeleech', 'martial_arts', 'meditation', 'poet', 'poison_mastery', 'poisoned_blades', 'relentless', 'scholar', 'skinner', 'strider', 'student', 'traveler', 'trickster', 'vampiric_aura', 'vigilance', 'virtue_bomb_test']
-ALL_CLASS_NAMES = ['Apprentice', 'Arcanum', 'Backstab', 'Bash', 'Blackhearted', 'Charmer', 'Discipline', 'FameBombTest', 'FireBlades', 'FrozenBlades', 'FrozenHeart', 'Haggler', 'Immunity', 'Lifeleech', 'MartialArts', 'Meditation', 'Poet', 'PoisonMastery', 'PoisonedBlades', 'Relentless', 'Scholar', 'Skinner', 'Strider', 'Student', 'Traveler', 'Trickster', 'VampiricAura', 'Vigilance', 'VirtueBombTest']
+ALL_NAMES = ['Alchemy', 'Apprentice', 'Arcanum', 'Backstab', 'Bash', 'Blackhearted', 'Charmer', 'Concealment', 'Diplomacy', 'Discipline', 'Fire blades', 'Foraging', 'Frozen blades', 'Frozen heart', 'Haggler', 'Immunity', 'Lifeleech', 'Martial arts', 'Meditation', 'Might', 'Poet', 'Poison mastery', 'Poisoned blades', 'Relentless', 'Scholar', 'Skinner', 'Strider', 'Student', 'Traveler', 'Trickster', 'Vampiric aura', 'Vigilance']
+ALL_ATTRIBUTE_NAMES = ['alchemy', 'apprentice', 'arcanum', 'backstab', 'bash', 'blackhearted', 'charmer', 'concealment', 'diplomacy', 'discipline', 'fire_blades', 'foraging', 'frozen_blades', 'frozen_heart', 'haggler', 'immunity', 'lifeleech', 'martial_arts', 'meditation', 'might', 'poet', 'poison_mastery', 'poisoned_blades', 'relentless', 'scholar', 'skinner', 'strider', 'student', 'traveler', 'trickster', 'vampiric_aura', 'vigilance']
+ALL_CLASS_NAMES = ['Alchemy', 'Apprentice', 'Arcanum', 'Backstab', 'Bash', 'Blackhearted', 'Charmer', 'Concealment', 'Diplomacy', 'Discipline', 'FireBlades', 'Foraging', 'FrozenBlades', 'FrozenHeart', 'Haggler', 'Immunity', 'Lifeleech', 'MartialArts', 'Meditation', 'Might', 'Poet', 'PoisonMastery', 'PoisonedBlades', 'Relentless', 'Scholar', 'Skinner', 'Strider', 'Student', 'Traveler', 'Trickster', 'VampiricAura', 'Vigilance']
 
 
 class Ability(Base):
@@ -296,6 +296,84 @@ class AuraAbility(Ability):
         return render_template_string(temp, ability=self)
 
 
+class Alchemy(AuraAbility):
+    attrib_name = "alchemy"
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'Alchemy',
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(name='Alchemy', tree='Basic', tree_type='None', max_level=5, description='Your effectiveness at utilizing potions.', current='Potion Effectiveness +{{ (level) * 2 }}%', next='Potion Effectiveness +{{ (level) * 2 }}%'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('PotionEffectiveness', {'base': 2}), ])
+        for key, value in kwargs:
+            setattr(self, key, value)
+
+
+class Diplomacy(AuraAbility):
+    attrib_name = "diplomacy"
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'Diplomacy',
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(name='Diplomacy', tree='Basic', tree_type='None', max_level=5, description='Your ability to persuade other people.', current='Dialogue Effectiveness +{{ (level) * 2 }}%', next='Dialogue Effectiveness +{{ (level) * 2 }}%'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('Oration', {'base': 2}), ])
+        for key, value in kwargs:
+            setattr(self, key, value)
+
+
+class Discipline(AuraAbility):
+    attrib_name = "discipline"
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'Discipline',
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(name='Discipline', tree='Basic', tree_type='None', max_level=5, description='Your effectiveness at teaching yourself.', current='Experience Gain +{{ (level) * 2 }}%', next='Experience Gain +{{ (level) * 2 }}%'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('Understanding', {'base': 2}), ])
+        for key, value in kwargs:
+            setattr(self, key, value)
+
+
+class Concealment(AuraAbility):
+    attrib_name = "concealment"
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'Concealment',
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(name='Concealment', tree='Basic', tree_type='None', max_level=5, description='How well you can hide from enemies.', current='Stealth Actions +{{ (level) * 2 }}%', next='Stealth Actions +{{ (level) * 2 }}%'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('Stealth', {'base': 2}), ])
+        for key, value in kwargs:
+            setattr(self, key, value)
+
+
+class Foraging(AuraAbility):
+    attrib_name = "foraging"
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'Foraging',
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(name='Foraging', tree='Basic', tree_type='None', max_level=5, description='Your ability to find items while exploring.', current='Item Aqcuisition +{{ (level) * 5 }}%', next='Item Aqcuisition +{{ (level) * 5 }}%'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('Adventuring', {'base': 5}), ])
+        for key, value in kwargs:
+            setattr(self, key, value)
+
+
+class Might(AuraAbility):
+    attrib_name = "might"
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'Might',
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(name='Might', tree='Basic', tree_type='None', max_level=5, description='Your ability to swing heavy objects.', current='Damage +{{ (level) * 2 }}%', next='Damage +{{ (level) * 2 }}%'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('Strength', {'base': 2}), ])
+        for key, value in kwargs:
+            setattr(self, key, value)
+
+
 class Apprentice(AuraAbility):
     attrib_name = "apprentice"
 
@@ -374,19 +452,6 @@ class Charmer(AuraAbility):
             setattr(self, key, value)
 
 
-class Discipline(AuraAbility):
-    attrib_name = "discipline"
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'Discipline',
-    }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(name='Discipline', tree='Basic', tree_type='None', max_level=5, description='Gain devotion faster. Master this ability to unlock the Ascetic archetype.', current='{{ (level) * 1 }}%', next='{{ (level) * 1 }}%'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('Piety', {'base': 1}), ])
-        for key, value in kwargs:
-            setattr(self, key, value)
-
-
 class Haggler(AuraAbility):
     attrib_name = "haggler"
 
@@ -434,7 +499,7 @@ class Poet(AuraAbility):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__(name='Poet', tree='Basic', tree_type='None', max_level=5, description='Gain renown faster. Master this ability to unlock the Opportunist archetype.', current='{{ (level) * 1 }}', next='{{ (level) * 1 }}'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('Reputation', {'base': 1}), ])
+        super().__init__(name='Poet', tree='Archetype', tree_type='Opportunist', max_level=5, description='Gain renown faster. Master this ability to unlock the Opportunist archetype.', current='{{ (level) * 1 }}', next='{{ (level) * 1 }}'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('Reputation', {'base': 1}), ])
         for key, value in kwargs:
             setattr(self, key, value)
 
@@ -447,7 +512,7 @@ class Relentless(AuraAbility):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__(name='Relentless', tree='Basic', tree_type='None', max_level=5, description='Gain maximum health. Master this ability to unlock the Brute archetype.', current='{{ (level) * 3 }}', next='{{ (level) * 3 }}'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('Health', {'base': 3}), ])
+        super().__init__(name='Relentless', tree='Archetype', tree_type='Brute', max_level=5, description='Gain maximum health. Master this ability to unlock the Brute archetype.', current='{{ (level) * 3 }}', next='{{ (level) * 3 }}'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('Health', {'base': 3}), ])
         for key, value in kwargs:
             setattr(self, key, value)
 
@@ -512,7 +577,7 @@ class Traveler(AuraAbility):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__(name='Traveler', tree='Basic', tree_type='None', max_level=5, description='Reveal more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', current='{{ (level) * 1 }}', next='{{ (level) * 1 }}'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('Vision', {'base': 1}), ])
+        super().__init__(name='Traveler', tree='Archetype', tree_type='Survivalist', max_level=5, description='Reveal more of the map when exploring new places. Master this ability to unlock the Survivalist archetype.', current='{{ (level) * 1 }}', next='{{ (level) * 1 }}'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('Vision', {'base': 1}), ])
         for key, value in kwargs:
             setattr(self, key, value)
 
@@ -525,7 +590,7 @@ class Trickster(AuraAbility):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__(name='Trickster', tree='Basic', tree_type='None', max_level=5, description='Become harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', current='{{ (level) * 3 }}', next='{{ (level) * 3 }}'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('Stealth', {'base': 3}), ])
+        super().__init__(name='Trickster', tree='Archetype', tree_type='Scoundrel', max_level=5, description='Become harder to detect when performing stealthy activities. Master this ability to unlock the Scoundrel archetype.', current='{{ (level) * 3 }}', next='{{ (level) * 3 }}'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('Stealth', {'base': 3}), ])
         for key, value in kwargs:
             setattr(self, key, value)
 
@@ -539,32 +604,6 @@ class Vigilance(AuraAbility):
 
     def __init__(self, *args, **kwargs):
         super().__init__(name='Vigilance', tree='Archetype', tree_type='Survivalist', max_level=3, description='(BROKEN)You are less likely to be ambushed.', current='{{ (level) * 5 }}', next='{{ (level) * 5 }}'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('Health', {'base': 0}), ])
-        for key, value in kwargs:
-            setattr(self, key, value)
-
-
-class FameBombTest(CastableAbility):
-    attrib_name = "fame_bomb_test"
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'FameBombTest',
-    }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(name='FameBombTest', tree='Basic', tree_type='None', max_level=3, description='Spend 2 sanctity to gain instant fame with this silly test spell.', current='{{ (level) * 3 }}', next=next, learnable=True, proficiency_data=[], spell_data=[('Renown', {'base': 0}), ('Understanding', {'base': 0})], sanctity_cost=2, endurance_cost=0)
-        for key, value in kwargs:
-            setattr(self, key, value)
-
-
-class VirtueBombTest(CastableAbility):
-    attrib_name = "virtue_bomb_test"
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'VirtueBombTest',
-    }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(name='VirtueBombTest', tree='Basic', tree_type='None', max_level=3, description='Spend 1 endurance to gain instant virtue with this silly spell for testing purposes.', current='{{ (level) * 2 }}', next=next, learnable=True, proficiency_data=[], spell_data=[('Virtue', {'base': 0}), ('Understanding', {'base': 0})], sanctity_cost=0, endurance_cost=1)
         for key, value in kwargs:
             setattr(self, key, value)
 
@@ -603,7 +642,7 @@ class VampiricAura(AuraAbility):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__(name='VampiricAura', tree='Basic', tree_type='None', max_level=3, description='You steal life per hit', current='Amount stolen: {{ (level) * 1 }}', next='Amount stolen: {{ (level) * 1 }}'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('LifestealStatic', {'base': 1}), ])
+        super().__init__(name='VampiricAura', tree='Archetype', tree_type='None', max_level=3, description='You steal life per hit', current='Amount stolen: {{ (level) * 1 }}', next='Amount stolen: {{ (level) * 1 }}'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('LifestealStatic', {'base': 1}), ])
         for key, value in kwargs:
             setattr(self, key, value)
 
@@ -616,7 +655,7 @@ class Lifeleech(AuraAbility):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__(name='Lifeleech', tree='Basic', tree_type='None', max_level=3, description='You steal life based on how much damage you deal in combat', current='Percent of damage dealt: {{ (level) * 5 }}', next='Percent of damage dealt: {{ (level) * 5 }}'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('LifestealPercent', {'base': 5}), ])
+        super().__init__(name='Lifeleech', tree='Archetype', tree_type='None', max_level=3, description='You steal life based on how much damage you deal in combat', current='Percent of damage dealt: {{ (level) * 5 }}', next='Percent of damage dealt: {{ (level) * 5 }}'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('LifestealPercent', {'base': 5}), ])
         for key, value in kwargs:
             setattr(self, key, value)
 
@@ -629,7 +668,7 @@ class FrozenBlades(AuraAbility):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__(name='FrozenBlades', tree='Basic', tree_type='None', max_level=5, description='Gives your weapon a chance of freezing enemies attacked', current='Chance to freeze: {{ level * 5 }}', next='Chance to freeze: {{ level * 5 }}'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('FreezingChance', {'base': 5}), ])
+        super().__init__(name='FrozenBlades', tree='Archetype', tree_type='None', max_level=5, description='Gives your weapon a chance of freezing enemies attacked', current='Chance to freeze: {{ level * 5 }}', next='Chance to freeze: {{ level * 5 }}'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('FreezingChance', {'base': 5}), ])
         for key, value in kwargs:
             setattr(self, key, value)
 
@@ -642,7 +681,7 @@ class FrozenHeart(AuraAbility):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__(name='FrozenHeart', tree='Basic', tree_type='None', max_level=1, description='Makes you immediately thaw out if frozen in combat', current='Chance to thaw: 100%', next='Chance to thaw: 100%'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('ThawingChance', {'base': 50}), ])
+        super().__init__(name='FrozenHeart', tree='Archetype', tree_type='None', max_level=1, description='Makes you immediately thaw out if frozen in combat', current='Chance to thaw: 100%', next='Chance to thaw: 100%'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('ThawingChance', {'base': 50}), ])
         for key, value in kwargs:
             setattr(self, key, value)
 
@@ -655,7 +694,7 @@ class Immunity(AuraAbility):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__(name='Immunity', tree='Basic', tree_type='None', max_level=3, description='Your poison resistance is increased', current='+{{ (level) * 25 }}%', next='+{{ (level) * 25 }}%'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('ResistPoison', {'base': 25}), ])
+        super().__init__(name='Immunity', tree='Archetype', tree_type='None', max_level=3, description='Your poison resistance is increased', current='+{{ (level) * 25 }}%', next='+{{ (level) * 25 }}%'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('ResistPoison', {'base': 25}), ])
         for key, value in kwargs:
             setattr(self, key, value)
 
@@ -668,6 +707,6 @@ class FireBlades(AuraAbility):
     }
 
     def __init__(self, *args, **kwargs):
-        super().__init__(name='FireBlades', tree='Basic', tree_type='None', max_level=5, description='Gives your weapon flaming damage', current='Flaming damage: {{ level * 1 }}', next='Flaming damage: {{ level * 1 }}'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('FlameDamage', {'base': 1}), ])
+        super().__init__(name='FireBlades', tree='Archetype', tree_type='None', max_level=5, description='Gives your weapon flaming damage', current='Flaming damage: {{ level * 1 }}', next='Flaming damage: {{ level * 1 }}'.replace("(level)", "(level+1)"), learnable=True, proficiency_data=[('FlameDamage', {'base': 1}), ])
         for key, value in kwargs:
             setattr(self, key, value)
