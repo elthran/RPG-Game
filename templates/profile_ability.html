@@ -12,7 +12,7 @@
             <ul>
             {% for spec in spec_choices %}
                 <li>
-                    <button class="genericTooltipTrigger" onclick="sendToPy(event, refreshPage, 'update_specialization', {'spec': '{{ becomeType }}', 'id': {{ spec.id }}});">
+                    <button class="genericTooltipTrigger" onclick="sendToPy(event, specializationTooltip, 'update_specialization_tooltip', {'id': {{ spec.id }}});">
                         {{ spec.name.title() }}
                     </button>
                 </li>
@@ -20,8 +20,13 @@
             </ul>
         </div>
         <div style="float:left;width:400px;border:dotted;height:auto;padding:5px;margin-left:50px;">
-            <div><span id="abilityTooltip">You must choose a {{ ability_tree.title() }} before you can learn any abilities.</span></div>
-            <div><span id="choiceImage"></span></div>
+            <div>
+                <span id="specializationTooltip">You must choose a {{ ability_tree.title() }} before you can learn any abilities.</span>
+                <br>
+                <span id="specializationRequirements" style="color: red;"></span>
+                <br>
+                <button style="position:absolute;width:80px;height:30px;" id="upgradeButton" disabled>Choose</button>
+            </div>
         </div>
     </div>
 {% else %} <!-- Hero has a chosen type. Let him choose their abilities! -->

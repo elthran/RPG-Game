@@ -21,7 +21,7 @@ import pdb
 # Each of the 4 choices unlocks different abilities to learn. So each character will be very unique based on the 4 paths they choose.
 # name, type, description, requirements
 
-ALL_SPECIALIZATIONS = [('Brute', 'Archetype', 'A character who uses strength and combat to solve problems. Proficient with many types of weapons.', 'Brawn of 6, Any Weapon Talent ~ 10'), ('Scoundrel', 'Archetype', 'A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.', 'Dagger Talent of 6, Virtue of -100'), ('Ascetic', 'Archetype', 'A character who focuses on disciplining mind and body. They use a combination of combat and intellect.', '10 Errands Complete, Virtue of 100, Willpower of 4'), ('Survivalist', 'Archetype', 'A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.', '5 Locations Discovered, 10 Animals in Bestiary'), ('Philosopher', 'Archetype', 'A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.', 'Intellect of 7, Books Read of 10'), ('Opportunist', 'Archetype', 'A character who solves problems using speech and dialogue.', 'Charisma of 7, Fame of 200'), ('Test Calling', 'Calling', 'A blacksmith dude.', 'Be a dude ... who likes hitting hot metal.'), ('Test Pantheon', 'Pantheon', 'A fire god dude.', 'Be a Pyro ... and a dude.')]
+ALL_SPECIALIZATIONS = [('Brute', 'Archetype', 'A character who uses strength and combat to solve problems. Proficient with many types of weapons.', 'Brawn Attribute Level 3'), ('Scoundrel', 'Archetype', 'A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.', 'Dagger Talent of 6, Virtue of -100'), ('Ascetic', 'Archetype', 'A character who focuses on disciplining mind and body. They use a combination of combat and intellect.', '10 Errands Complete, Virtue of 100, Willpower of 4'), ('Survivalist', 'Archetype', 'A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.', '5 Locations Discovered, 10 Animals in Bestiary'), ('Philosopher', 'Archetype', 'A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.', 'Alchemy Ability Level 3'), ('Opportunist', 'Archetype', 'A character who solves problems using speech and dialogue.', 'Charisma of 7, Fame of 200'), ('Test Calling', 'Calling', 'A blacksmith dude.', 'Be a dude ... who likes hitting hot metal.'), ('Test Pantheon', 'Pantheon', 'A fire god dude.', 'Be a Pyro ... and a dude.')]
 
 SPECIALIZATION_NAMES = [key[0] for key in ALL_SPECIALIZATIONS]
 
@@ -92,7 +92,7 @@ class Pantheon(Specialization):
 
 
 def Brute(template=False):
-    return Archetype("Brute", "A character who uses strength and combat to solve problems. Proficient with many types of weapons.", "Brawn of 6, Any Weapon Talent ~ 10", template=template)
+    return Archetype("Brute", "A character who uses strength and combat to solve problems. Proficient with many types of weapons.", "Brawn Attribute Level 3", template=template)
 # What do the two lines of code below do?
 
 
@@ -112,7 +112,7 @@ def Survivalist(template=False):
 
 
 def Philosopher(template=False):
-    return Archetype("Philosopher", "A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.", "Intellect of 7, Books Read of 10", template=template)
+    return Archetype("Philosopher", "A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.", "Alchemy Ability Level 3", template=template)
 # What do the two lines of code below do?
 
 

@@ -382,6 +382,12 @@ class Command:
         return jsonify(tooltip=proficiency.tooltip)
 
     @staticmethod
+    def update_specialization_tooltip(hero, database, data, **kwargs):
+        tooltip_id = data['id']
+        spec = database.get_specialization_by_id(tooltip_id)
+        return jsonify(description=spec.description, requirements=spec.requirements)
+
+    @staticmethod
     def change_ability_tooltip(hero, database, data, **kwargs):
         tooltip_id = data['id']
         ability = database.get_ability_by_id(tooltip_id)

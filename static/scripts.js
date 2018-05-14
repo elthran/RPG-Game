@@ -470,6 +470,15 @@ function proficiencyTooltip(response, oldData) {
     }
 }
 
+function specializationTooltip(response, oldData) {
+    var description;
+    var requirements;
+    description = document.getElementById("specializationTooltip");
+    description.innerHTML = response.description;
+    requirements = document.getElementById("specializationRequirements");
+    requirements.innerHTML = "Requirements:<br />   " + response.requirements;
+}
+
 function abilityTooltip(response, oldData) {
     var newTooltip;
     newTooltip = document.getElementById("abilityTooltip");

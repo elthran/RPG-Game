@@ -241,6 +241,10 @@ class EZDB:
         """Return a proficiency object by id."""
         return self.session.query(Proficiency).get(prof_id)
 
+    def get_specialization_by_id(self, prof_id):
+        """Return a proficiency object by id."""
+        return self.session.query(Specialization).get(prof_id)
+
     def get_item_by_id(self, item_id):
         """Return an item from its ID.
         """
