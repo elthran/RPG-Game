@@ -772,6 +772,15 @@ def ability_tree(spec, hero=None):
         page_title = "Archetype Abilities"
         becomeType = "archetype"
         spec_choices = database.get_all_objects("Archetype")
+
+        # BELOW IS SHITTIEST CODE IN THE WORLD
+        for specc in spec_choices:
+            if specc.name == "Brute" and hero.attributes.brawn.level >= 3:
+                specc.unlocked = True
+            if specc.name == "Philosopher" and hero.abilities.alchemy.level >= 3:
+                specc.unlocked = True
+        # PLEASE FIX ABOVE CODE
+
     elif spec == "calling" and hero.specializations.calling is None: # On the archetype pagebut the hero doesn't have one!
         page_title = "Calling Abilities"
         becomeType = "calling"

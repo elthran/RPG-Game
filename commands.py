@@ -385,7 +385,7 @@ class Command:
     def update_specialization_tooltip(hero, database, data, **kwargs):
         tooltip_id = data['id']
         spec = database.get_specialization_by_id(tooltip_id)
-        return jsonify(description=spec.description, requirements=spec.requirements)
+        return jsonify(description=spec.description, requirements=spec.requirements, unlocked=spec.unlocked)
 
     @staticmethod
     def change_ability_tooltip(hero, database, data, **kwargs):

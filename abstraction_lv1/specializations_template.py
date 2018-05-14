@@ -33,6 +33,7 @@ class Specialization(TemplateMixin, Base):
     description = Column(String(200))
     requirements = Column(String(50))
     attrib_name = Column(String(50))
+    unlocked = Column(Boolean)
 
     # Relationships
     # Each hero can have one list of abilities (bi, one to one)
@@ -54,6 +55,7 @@ class Specialization(TemplateMixin, Base):
         self.description = description
         self.requirements = requirements
         self.template = template
+        self.unlocked = False
 
 
 class Archetype(Specialization):

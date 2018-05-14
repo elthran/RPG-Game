@@ -473,10 +473,16 @@ function proficiencyTooltip(response, oldData) {
 function specializationTooltip(response, oldData) {
     var description;
     var requirements;
+    var button;
     description = document.getElementById("specializationTooltip");
     description.innerHTML = response.description;
     requirements = document.getElementById("specializationRequirements");
     requirements.innerHTML = "Requirements:<br />   " + response.requirements;
+    if (response.unlocked) {
+        document.getElementById("specializationButton").disabled = false;
+    } else {
+        document.getElementById("specializationButton").disabled = true;
+    }
 }
 
 function abilityTooltip(response, oldData) {
