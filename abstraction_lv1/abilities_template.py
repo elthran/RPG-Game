@@ -291,7 +291,8 @@ class AuraAbility(Ability):
 
 
 {% for value in ALL_ABILITIES %}
-class {{ value[0] }}({{ value[1] }}):
+{% set class_name = normalize_class_name(value[0]) %}
+class {{ class_name }}({{ value[1] }}):
     attrib_name = "{{ normalize_attrib_name(value[0]) }}"
 
     __mapper_args__ = {
