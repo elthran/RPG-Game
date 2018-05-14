@@ -530,34 +530,34 @@ def admin(path="modify_self", path2="users", hero=None):
         if request.method == 'POST':
             hero.age = int(request.form["Age"])
             hero.experience = int(request.form["Experience"])
-            hero.experience_maximum = int(request.form["Experience_maximum"])
+            hero.experience_maximum = int(request.form["Experience Maximum"])
             hero.base_proficiencies['renown'].current = int(request.form["Renown"])
             hero.base_proficiencies['virtue'].current = int(request.form["Virtue"])
             hero.base_proficiencies['devotion'].current = int(request.form["Devotion"])
             hero.gold = int(request.form["Gold"])
-            hero.basic_ability_points = int(request.form["Basic_ability_points"])
-            hero.archetype_ability_points = int(request.form["Archetype_ability_points"])
-            hero.calling_ability_points = int(request.form["Calling_ability_points"])
-            hero.pantheon_ability_points = int(request.form["Pantheonic_ability_points"])
-            hero.attribute_points = int(request.form["Attribute_points"])
-            hero.proficiency_points = int(request.form['Proficiency_Points'])
+            hero.basic_ability_points = int(request.form["Basic Ability Points"])
+            hero.archetype_ability_points = int(request.form["Archetype Ability Points"])
+            hero.calling_ability_points = int(request.form["Calling Ability Points"])
+            hero.pantheon_ability_points = int(request.form["Pantheon Ability Points"])
+            hero.attribute_points = int(request.form["Attribute Points"])
+            hero.proficiency_points = int(request.form['Proficiency Points'])
             hero.refresh_character(full=True)
             return redirect(url_for('home'))
 
         admin_form_content = [
             ("Age", hero.age),
             ("Experience", hero.experience),
-            ("Experience_maximum", hero.experience_maximum),
+            ("Experience Maximum", hero.experience_maximum),
             ("Renown", hero.base_proficiencies['renown'].current),
             ("Virtue", hero.base_proficiencies['virtue'].current),
             ("Devotion", hero.base_proficiencies['devotion'].current),
             ("Gold", hero.gold),
-            ("Basic_ability_points", hero.basic_ability_points),
-            ("Archetype_ability_points", hero.archetype_ability_points),
-            ("Calling_ability_points", hero.calling_ability_points),
-            ("Pantheonic_ability_points", hero.pantheon_ability_points),
-            ("Attribute_points", hero.attribute_points),
-            ("Proficiency_Points", hero.proficiency_points)]
+            ("Basic Ability Points", hero.basic_ability_points),
+            ("Archetype Ability Points", hero.archetype_ability_points),
+            ("Calling Ability Points", hero.calling_ability_points),
+            ("Pantheon Ability Points", hero.pantheon_ability_points),
+            ("Attribute Points", hero.attribute_points),
+            ("Proficiency Points", hero.proficiency_points)]
     return render_template('admin.html', hero=hero, admin=admin_form_content, path=path)  # return a string
 
 
