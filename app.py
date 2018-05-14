@@ -11,7 +11,7 @@ from socket import gethostname
 
 from flask import (
     Flask, render_template, redirect, url_for, request, session,
-    flash, send_from_directory)
+    send_from_directory)
 from flask_sslify import SSLify
 import werkzeug
 
@@ -81,55 +81,8 @@ def favicon():
 # Untested (Marlen)
 
 
-@app.route("/reset", methods=["GET", "POST"])
-def reset_password():
-    if request.method == "GET":
-        if database.validate_reset(request.args['account'], request.args['key']):
-            return render_template("reset.html", username=request.args['account'], key=request.args['key'])
-    elif request.method == "POST":
-        if database.validate_reset(request.form['username'], request.form['key']):
-            user = database.get_user_by_username(request.form['username'])
-            if account.reset_key:
-                account.reset_key = None
-                account.password = services.sercrets.encrypt(request.form['password'])
-                return redirect(url_for('login'), code=307)
-    return redirect(url_for('login'))
-
-
-# this gets called if you are logged in and there is no character info stored
-
-
-# this gets called if you press "logout"
-@app.route('/logout')
-@login_required
-def logout(hero=None):
-    # hero.refresh_character()  # probably no longer wanted?
-    # session.pop('logged_in', None)  # I'm not sure why you might want this instead of a full clear ..
-    session.clear()
-    flash("Thank you for playing! Your have successfully logged out.")
-    return redirect(url_for('login'))
-
-
 # An admin button that lets you reset your character. Currently doesnt reset attributes/proficiencies, nor inventory and other stuff. Should be rewritten as something
 # like deleting the current hero and rebuilding the admin hero. I commented out the beginning of that but I cant get it to work
-@app.route('/reset_character/<stat_type>')
-@login_required
-@uses_hero
-def reset_character(stat_type, hero=None):
-    hero.age = 7
-    hero.experience = 0
-    hero.experience_maximum = 10
-    hero.renown = 0
-    hero.virtue = 0
-    hero.devotion = 0
-    hero.gold = 5000
-    hero.basic_ability_points = 5
-    hero.archetype_ability_points = 5
-    hero.calling_ability_points = 5
-    hero.pantheon_ability_points = 5
-    hero.attribute_points = 10
-    hero.proficiency_points = 10
-    return redirect(url_for('home'))  # return a string
 
 
 # this is a temporary page that lets you modify any attributes for testing
@@ -333,28 +286,6 @@ def settings(hero=None, tab="profile", choice="none"):
 
 # PROFILE PAGES (Basically the home page of the game with your character
 # display and stats)
-@app.route('/home')
-@login_required
-@uses_hero
-def home(hero=None):
-    """Build the home page and return it as a string of HTML.
-
-    render_template uses Jinja2 markup.
-    """
-
-    # Is this supposed to update the time of all hero objects?
-    # database.update_time(hero)
-
-    # Not implemented. Control user moves on map.
-    # Sets up initial valid moves on the map.
-    # Should be a list of urls ...
-    # session['valid_moves'] \
-    #  = hero.current_world.show_directions(hero.current_location)
-    # session['valid_moves'].append(hero.current_location.id)
-
-    return render_template(
-        'profile_home.html', page_title="Profile", hero=hero, profile=True,
-        proficiencies=hero.get_summed_proficiencies())
 
 
 # This gets called anytime you have  attribute points to spend

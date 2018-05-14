@@ -33,12 +33,12 @@ def check_daily_login_reward(hero):
 
     It's temporary as I am just trying to play with and learn about timestamps and whatnot.
     """
-    time = services.time.now()
+    time = str(services.time.now().date())
     if hero.last_login == "":
         hero.login_alerts += "First time logging in!"
-    elif hero.last_login != time[:10]:
+    elif hero.last_login != time:
         reward = 3
         hero.login_alerts += "Thanks for logging in today! You earn " + str(
             reward) + " experience."
         hero.gain_experience(reward)
-    hero.last_login = time[:10]
+    hero.last_login = time

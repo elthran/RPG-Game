@@ -8,3 +8,6 @@ of various session objects.
 Note use of Account.save() delete and rebuild the session
 
 I'm not even sure if my Fancy Session manager (models.base_classes.Base.query -> database.sessions.session_scope) will actually commit changes or not? Or if it even closes ...
+
+
+NEED TO TEST is object.filter_by() .. will save properly!

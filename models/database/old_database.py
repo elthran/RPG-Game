@@ -299,20 +299,6 @@ class EZDB:
             QuestPath).filter_by(
             is_default=True, template=True).all()
 
-    @scoped_session
-    def validate_reset(self, username, key):
-        """Make sure the reset key matches.
-
-        Additionally make sure you can't use a blank reset key.
-        """
-        user = self.session.query(User).filter_by(username=username).first()
-        # For some reason the key get converted to binary then back
-        # so it looks like "b'______'" instead of b'________' or
-        # '_________'. I strip the "b'" of the start and "'" of the end.
-        if user.reset_key and user.reset_key == key:
-            return True
-        return False
-
     def fetch_hero_by_username(self, username, character_name=None):
         """Return hero objected based on username_or_id and character_name.
 

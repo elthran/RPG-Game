@@ -1,5 +1,7 @@
 import models
 import services.fetcher
+import services.secrets
+import services.time
 
 
 def register_account(username, password, email_address, session):
@@ -9,6 +11,7 @@ def register_account(username, password, email_address, session):
         account = add_new_account(username, password, email=email_address)
         hero = add_new_hero_to_account(account)
         session['logged_in'] = True
+        session['id'] = account.id
         account.heroes[0].creation_phase = True  # At this point only one hero should exist
         return True
     return False

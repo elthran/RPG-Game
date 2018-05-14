@@ -1,7 +1,3 @@
-# NOTE MIGRATED FULLY.
-# Might need to pass in session object?
-
-
 import functools
 
 import flask
