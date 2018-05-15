@@ -123,54 +123,14 @@
 	<tr>
 		<th colspan="2">Offense</th>
 	</tr>
-	<tr>
-		<td>{{ hero.damage_type }} Damage</td>
-		<td>{{ proficiencies.combat.final }}-{{ proficiencies.combat.final + proficiencies.strength.final }}</td>
-	</tr>
-	{% if proficiencies.frost_damage.final %}
-	<tr>
-		<td>Frost Damage</td>
-		<td>{{ proficiencies.frost_damage.final }}</td>
-	</tr>
-	{% endif %}
-	{% if proficiencies.flame_damage.final %}
-	<tr>
-		<td>Flame Damage</td>
-		<td>{{ proficiencies.flame_damage.final }}</td>
-	</tr>
-	{% endif %}
-	<tr>
-		<td>Attack Speed</td>
-		<td>{{ proficiencies.speed.final }}</td>
-	</tr>
-	<tr>
-		<td>Accuracy</td>
-		<td>{{ proficiencies.accuracy.final }}%</td>
-	</tr>
-	<tr>
-		<td>First Strike Chance</td>
-		<td>{{ proficiencies.first_strike.final }}%</td>
-	</tr>
-	<tr>
-		<td>Kill Shot Chance</td>
-		<td>{{ proficiencies.precision.final }}%</td>
-	</tr>
-	<tr>
-		<td>Kill Shot Multiplier</td>
-		<td>{{ proficiencies.killshot.final }}x</td>
-	</tr>
-	<tr>
-		<td>Evasion</td>
-		<td>{{ proficiencies.evade.final }}%</td>
-	</tr>
-	<tr>
-		<td>Parry</td>
-		<td>{{ proficiencies.parry.final }}%</td>
-	</tr>
-	<tr>
-		<td>Fatigue</td>
-		<td>{{ proficiencies.fatigue.current }}</td>
-	</tr>
+	{% for proficiency in proficiencies %}
+		{% if proficiency.display_chunk == "Offence" %}
+			<tr>
+				<td>{{ proficiency.display_name }}</td>
+				<td>+ {{ proficiency.final|int }}%</td>
+			</tr>
+		{% endif %}
+	{% endfor %}
 </table>
 
 <table class="profileColumns">
@@ -228,50 +188,14 @@
 	<tr>
 		<th colspan="2">Weaponry</th>
 	</tr>
-	<tr>
-		<td>Current Weapon Affinity</td>
-		<td>+ {{ proficiencies.weapon_affinity.final|int }}%</td>
-	</tr>
-	<tr>
-		<td>Unarmed Combat</td>
-		<td>+ {{ proficiencies.unarmed.final|int }}%</td>
-	</tr>
-	<tr>
-		<td>Blunt Weaponry</td>
-		<td>+ {{ proficiencies.blunt.final|int }}%</td>
-	</tr>
-	<tr>
-		<td>Piercing Weaponry</td>
-		<td>+ {{ proficiencies.piercing.final|int }}%</td>
-	</tr>
-	<tr>
-		<td>Slashing Weaponry</td>
-		<td>+ {{ proficiencies.slashing.final|int }}%</td>
-	</tr>
-	{% if proficiencies.dagger.final %}
-	<tr>
-		<td>Daggers</td>
-		<td>+ {{ proficiencies.dagger.final|int }}%</td>
-	</tr>
-	{% endif %}
-	{% if proficiencies.sword.final %}
-	<tr>
-		<td>Swords</td>
-		<td>+ {{ proficiencies.sword.final|int }}%</td>
-	</tr>
-	{% endif %}
-	{% if proficiencies.axe.final %}
-	<tr>
-		<td>Axes</td>
-		<td>+ {{ proficiencies.axe.final|int }}%</td>
-	</tr>
-	{% endif %}
-	{% if proficiencies.staff.final %}
-	<tr>
-		<td>Staves</td>
-		<td>+ {{ proficiencies.staff.final|int }}%</td>
-	</tr>
-	{% endif %}
+	{% for proficiency in proficiencies %}
+		{% if proficiency.display_chunk == "Weaponry" %}
+			<tr>
+				<td>{{ proficiency.display_name }}</td>
+				<td>+ {{ proficiency.final|int }}%</td>
+			</tr>
+		{% endif %}
+	{% endfor %}
 </table>
 
 <table class="profileColumns">

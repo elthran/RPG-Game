@@ -49,6 +49,7 @@ class Proficiency(TemplateMixin, Base):
     current = Column(Integer)
     hidden = Column(Boolean)
     error = Column(String(50))
+    display_chunk = Column(String(50))
 
     # In child classes this allows different levels of rounding.
     num_of_decimals = 0
@@ -166,6 +167,7 @@ class Proficiency(TemplateMixin, Base):
 {% set decimals = prof[6] %}
 {% set hidden = prof[7] %}
 {% set percent = prof[8] %}
+{% set display_chunk = prof[9] %}
 class {{ prof_class }}(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
@@ -176,6 +178,7 @@ class {{ prof_class }}(Proficiency):
     # This should add a "%" to the display at the end of a prof.
     is_percent = {{ percent }}  # Should be {{ percent }} but I'm getting an error
     format_spec = "{{ '{' }}:.{{ decimals }}f{{ '}' }}{{ '%' if percent else '' }}"
+    display_chunk = "{{ display_chunk }}"
 
     __mapper_args__ = {
         'polymorphic_identity': "{{ prof_class }}"
