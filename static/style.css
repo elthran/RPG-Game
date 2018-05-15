@@ -1168,3 +1168,16 @@ Centered margin is 275px left/right.
 }
 
 /* End of Atlas stuff */
+
+.proficiencyParent {
+    border: 1px dotted;
+}
+
+.proficiencyChild {
+    visibility: hidden;
+}
+
+.proficiencyParent:hover ~ .proficiencyChild {
+    visibility: visible;
+    cursor:pointer;
+}

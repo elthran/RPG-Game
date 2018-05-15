@@ -111,7 +111,7 @@
 		{% if proficiency.display_chunk == "Offence" %}
 			{% if not proficiency.hidden or proficiency.final %}
 				<tr>
-					<td>{{ proficiency.display_name }}</td>
+					<div class="proficiencyParent" style="width:50px;height:15px;"><td>{{ proficiency.display_name }}</td><span class="proficiencyChild">{{ proficiency.description }}</span></div>
 					<td>{% if proficiency.is_percent %}{{ proficiency.final|int }}%{% else %}{{ proficiency.final }}{% endif %}</td>
 				</tr>
 			{% endif %}
