@@ -5,3 +5,5 @@ from . import create_character
 from . import home
 from . import logout
 from . import reset
+from . import icon
+from . import admin

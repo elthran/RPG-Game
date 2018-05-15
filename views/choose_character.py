@@ -4,6 +4,7 @@ from elthranonline import app
 import models
 import controller
 import services.decorators
+import services.filters
 
 
 @app.route('/choose_character', methods=['GET', 'POST'])

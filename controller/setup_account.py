@@ -12,7 +12,6 @@ def register_account(username, password, email_address, session):
         hero = add_new_hero_to_account(account)
         session['logged_in'] = True
         session['id'] = account.id
-        account.heroes[0].creation_phase = True  # At this point only one hero should exist
         return True
     return False
 
@@ -42,6 +41,7 @@ def add_new_hero_to_account(account):
         hero.journal.quest_paths = models.QuestPath.filter_by(is_default=True, template=True).all()
         hero.current_world = models.Location.filter_by(name="Htrae", type="map").one()
         hero.current_location = models.Location.filter_by(name="Old Man's Hut", type="building").one()
+        hero.creation_phase = True
         return hero
 
 

@@ -1,6 +1,8 @@
 import flask as fl
 import flask_sslify
 
+# import services.filters  # Not sure where to import this ... maybe I only need it in the view that uses it?
+
 
 def create_app():
     # create the application object

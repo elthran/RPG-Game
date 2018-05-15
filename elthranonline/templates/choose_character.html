@@ -12,11 +12,11 @@
 <body>
 <div class="container">
     <form action="" method="post">
-        <h1>Welcome {{ user.username }}!</h1>
+        <h1>Welcome {{ account.username }}!</h1>
         <br>
         <h3>Please choose the Hero you want to play as:</h3>
         <input type="hidden" name="hero_id" value="" />
-        {% for hero in user.heroes %}
+        {% for hero in account.heroes %}
         <span class="imageContainer">
             <input type="image" id="{{ hero.id }}" src="/static/images/{{ hero | validate_hero_image }}" border="0" alt="{{ hero.name }}" {% if loop.first %}autofocus {% endif %}tabindex={{ loop.index }} onclick="return confirmHeroSelection(this);" />
             <label class="label" for="{{ hero.id }}">{{ hero | validate_hero_name }}</label>

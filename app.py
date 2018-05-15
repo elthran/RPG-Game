@@ -5,13 +5,11 @@
 #                                                                            #
 # ///////////////////////////////////////////////////////////////////////////#
 
-import os
 from math import ceil
 from socket import gethostname
 
 from flask import (
-    Flask, render_template, redirect, url_for, request, session,
-    send_from_directory)
+    Flask, render_template, redirect, url_for, request, session)
 from flask_sslify import SSLify
 import werkzeug
 
@@ -49,93 +47,6 @@ def create_app():
 
 app = create_app()
 sslify = SSLify(app)
-
-
-@app.template_filter()
-def validate_hero_image(hero):
-    """Used to handle an expected/possible error in the template.
-
-    See https://codenhagen.wordpress.com/2015/08/20/custom-jinja2-template-filters-and-flask/
-    """
-    # pdb.set_trace()
-    image_name = ''
-    try:
-        image_name = "archetype_{}.jpg".format(hero.archetype.lower())
-    except AttributeError:
-        image_name = "character.jpg"
-    return image_name
-
-
-@app.template_filter()
-def validate_hero_name(hero):
-    return hero.name if hero.name else "UnNamed"
-
-
-@app.route('/favicon.ico')
-def favicon():
-    return send_from_directory(
-        os.path.join(app.root_path, 'static'),
-        'favicon.ico', mimetype='image/vnd.microsoft.icon')
-
-
-# Untested (Marlen)
-
-
-# An admin button that lets you reset your character. Currently doesnt reset attributes/proficiencies, nor inventory and other stuff. Should be rewritten as something
-# like deleting the current hero and rebuilding the admin hero. I commented out the beginning of that but I cant get it to work
-
-
-# this is a temporary page that lets you modify any attributes for testing
-@app.route('/admin/<path>/<path2>', methods=['GET', 'POST'])
-@app.route('/admin', methods=['GET', 'POST'])
-@login_required
-@uses_hero
-def admin(path="modify_self", path2="users", hero=None):
-    admin_form_content = None
-    if path == "edit_database":
-        sorted_heroes = database.fetch_sorted_heroes("id", False)
-        return render_template('admin.html', hero=hero, path=path, path2=path2, all_heroes=sorted_heroes)  # return a string
-    elif path == "modify_self":
-        page_title = "Admin"
-        if request.method == 'POST':
-            hero.age = int(request.form["Age"])
-            hero.experience = int(request.form["Experience"])
-            hero.experience_maximum = int(request.form["Experience_maximum"])
-            hero.base_proficiencies['renown'].current = int(request.form["Renown"])
-            hero.base_proficiencies['virtue'].current = int(request.form["Virtue"])
-            hero.base_proficiencies['devotion'].current = int(request.form["Devotion"])
-            hero.gold = int(request.form["Gold"])
-            hero.basic_ability_points = int(request.form["Basic_ability_points"])
-            hero.archetype_ability_points = int(request.form["Archetype_ability_points"])
-            hero.calling_ability_points = int(request.form["Calling_ability_points"])
-            hero.pantheon_ability_points = int(request.form["Pantheonic_ability_points"])
-            hero.attribute_points = int(request.form["Attribute_points"])
-            hero.proficiency_points = int(request.form['Proficiency_Points'])
-            hero.refresh_character(full=True)
-            return redirect(url_for('home'))
-
-        admin_form_content = [
-            ("Age", hero.age),
-            ("Experience", hero.experience),
-            ("Experience_maximum", hero.experience_maximum),
-            ("Renown", hero.base_proficiencies['renown'].current),
-            ("Virtue", hero.base_proficiencies['virtue'].current),
-            ("Devotion", hero.base_proficiencies['devotion'].current),
-            ("Gold", hero.gold),
-            ("Basic_ability_points", hero.basic_ability_points),
-            ("Archetype_ability_points", hero.archetype_ability_points),
-            ("Calling_ability_points", hero.calling_ability_points),
-            ("Pantheonic_ability_points", hero.pantheon_ability_points),
-            ("Attribute_points", hero.attribute_points),
-            ("Proficiency_Points", hero.proficiency_points)]
-    return render_template('admin.html', hero=hero, admin=admin_form_content, path=path)  # return a string
-
-
-@app.route('/add_new_character')
-def add_new_character():
-    account = database.get_object_by_id("Account", session['id'])
-    database.add_new_hero_to_account(account)
-    return redirect(url_for('choose_character'))
 
 
 # The if statement works and displays the account page as normal. Now if you
