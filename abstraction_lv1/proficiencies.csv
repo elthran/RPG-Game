@@ -71,6 +71,10 @@ Unarmed,Skill with using your bare hands,None,linear,0,0,0,TRUE,TRUE
 WeaponAffinity,How accustomed to your current weapon you are,None,linear,0,0,0,TRUE,TRUE
 FrostDamage,How much frost damage you do per attack,None,linear,0,0,0,TRUE,TRUE
 FlameDamage,How much flame damage you do per attack,None,linear,0,0,0,TRUE,TRUE
+Dagger,Skill with daggers,None,linear,0,0,0,TRUE,TRUE
+Sword,Skill with swords,None,linear,0,0,0,TRUE,TRUE
+Axe,Skill with axes,None,linear,0,0,0,TRUE,TRUE
+Staff,Skill with staves,None,linear,0,0,0,TRUE,TRUE
 
 Renown,How famous you are,None,linear,0,0,0,TRUE,FALSE
 Virtue,How good or evil you are,None,linear,0,0,0,TRUE,FALSE

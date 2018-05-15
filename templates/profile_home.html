@@ -229,7 +229,7 @@
 		<th colspan="2">Weaponry</th>
 	</tr>
 	<tr>
-		<td>Current Weapon Affinty</td>
+		<td>Current Weapon Affinity</td>
 		<td>+ {{ proficiencies.weapon_affinity.final|int }}%</td>
 	</tr>
 	<tr>
@@ -248,6 +248,30 @@
 		<td>Slashing Weaponry</td>
 		<td>+ {{ proficiencies.slashing.final|int }}%</td>
 	</tr>
+	{% if proficiencies.dagger.final %}
+	<tr>
+		<td>Daggers</td>
+		<td>+ {{ proficiencies.dagger.final|int }}%</td>
+	</tr>
+	{% endif %}
+	{% if proficiencies.sword.final %}
+	<tr>
+		<td>Swords</td>
+		<td>+ {{ proficiencies.sword.final|int }}%</td>
+	</tr>
+	{% endif %}
+	{% if proficiencies.axe.final %}
+	<tr>
+		<td>Axes</td>
+		<td>+ {{ proficiencies.axe.final|int }}%</td>
+	</tr>
+	{% endif %}
+	{% if proficiencies.staff.final %}
+	<tr>
+		<td>Staves</td>
+		<td>+ {{ proficiencies.staff.final|int }}%</td>
+	</tr>
+	{% endif %}
 </table>
 
 <table class="profileColumns">

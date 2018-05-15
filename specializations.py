@@ -72,16 +72,10 @@ class Archetype(Specialization):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-    #     self.init_on_load()
-    #
-    # @orm.reconstructor
-    # def init_on_load(self):
-    #     self.validator = interfaces.requirements.Requirement(self.requirements)
-        # interfaces.requirements.Requirement.met(self, hero)
 
     def check_locked(self, hero):
-        # return self.validator.met(self, hero)
         return interfaces.requirements.Requirement.met(self, hero)
+
 
 class Calling(Specialization):
     __mapper_args__ = {

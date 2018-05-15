@@ -17,11 +17,11 @@ from pprint import pprint
 import pdb
 
 
-ALL_PROFICIENCIES = [('Accuracy', 'How accurately you attack. This gives a bonus chance to successfully striking your opponent in combat.', 'Agility', 'linear', 0, 1.0, 0, False, True), ('Adventuring', 'Your skill at exploring new places. This increases your likelihood of finding items when exploring', 'Fortuity', 'linear', 0, 5.0, 0, False, True), ('Bartering', 'Your skill at negotiating prices. It reduces the price you pay when buying any item from a vendor.', 'Charisma', 'linear', 0, 2.0, 0, False, True), ('Block', 'Skill with a shield. If a shield is equipped then the amount of damage blocked is increased.', 'Resilience', 'linear', 0, 2.0, 0, False, True), ('Charm', 'How likeable you are. It increases the speed of how quickly people begin to trust you.', 'Charisma', 'linear', 0, 5.0, 0, False, True), ('Combat', 'Your proficiency in fighting. The greater combat proficiency you have then the more damage you do with any attack.', 'Brawn', 'linear', 1, 1.0, 0, False, False), ('Courage', 'How capable you are of overcoming your fears. The greater your courage then the greater the obstacles you will be capable of facing.', 'Willpower', 'linear', 0, 1.0, 0, False, False), ('Defence', 'Your ability to take physical damage. This combines with your armour to reduce all physical damaged received.', 'Resilience', 'linear', 0, 1.0, 0, False, True), ('Detection', 'Determines the chance that you will uncover enemy traps and ambushes.', 'Survivalism', 'linear', 0, 3.0, 0, False, True), ('Dualism', 'How quickly you are able to change your virtue.', 'None', 'linear', 0, 2.0, 0, False, True), ('Encumbrance', 'Your ability to fight in combat while carrying cumbersome gear.', 'Brawn', 'linear', 0, 5.0, 0, False, True), ('Endurance', 'Number of actions you can perform each day.', 'Resilience', 'linear', 5, 0.5, 0, False, False), ('Evade', 'Your ability to dodge enemy attacks. Gives a bonus chance for enemies to miss their close combat attacks.', 'Quickness', 'linear', 0, 2.0, 0, False, True), ('Explorer', 'Reveals additional optional tasks which can be performed while exploring.', 'Survivalism', 'linear', 0, 1.0, 0, False, False), ('Faith', 'Adds a bonus to how effective your spells are.', 'Divinity', 'linear', 0, 5.0, 0, False, True), ('Fatigue', 'Reduces the speed at which you become exhausted in combat.', 'Resilience', 'linear', 0, 5.0, 0, False, False), ('First strike', 'Increases the likelihood that you will attack first in combat.', 'Quickness', 'linear', 0, 3.5, 1, False, False), ('Flee', 'Increases the chance that you can successful escape from a battle.', 'Quickness', 'linear', 0, 10.0, 0, False, False), ('Health', 'Determines the number of health points you have. When your health reahes zero then you fall unconscious.', 'Vitality', 'linear', 5, 1.0, 0, False, False), ('Huntsman', 'The amount of information that you can learn from defeated enemies.', 'Survivalism', 'linear', 0, 1.0, 0, False, False), ('Killshot', 'Damage multiplier added when performing a critical hit.', 'Agility', 'linear', 1, 10.0, 0, False, True), ('Knowledge', 'UNUSED', 'Intellect', 'linear', 0, 0.0, 0, False, False), ('Literacy', 'UNUSED', 'Intellect', 'linear', 0, 0.0, 0, False, False), ('Logistics', 'UNUSED', 'Pathfinding', 'linear', 0, 0.0, 0, False, False), ('Luck', 'A bonus chance of having incredibly good luck.', 'Fortuity', 'linear', 0, 1.0, 0, False, True), ('Mountaineering', 'UNUSED', 'Pathfinding', 'linear', 0, 0.0, 0, False, False), ('Navigator', 'UNUSED', 'Pathfinding', 'linear', 0, 0.0, 0, False, False), ('Oration', 'UNUSED', 'Charisma', 'linear', 0, 0.0, 0, False, False), ('Parry', 'The likelihood that you can parry an incoming attack.', 'Quickness', 'linear', 0, 2.0, 0, False, True), ('Pickpocketing', 'Increases the chance that you will successfully pickpocket someone.', 'Agility', 'linear', 0, 5.0, 0, False, True), ('Piety', 'How quickly you are able to gain the devotion of a god.', 'None', 'linear', 0, 2.0, 0, False, True), ('Precision', 'Chance to critically hit enemies. A critical hit always hits for maximum damage and then applies your killshot multiplier to that value.', 'Agility', 'linear', 0, 1.0, 0, False, True), ('Recovery', 'How quickly you recover from poisons and the negative effects of different ailments.', 'Vitality', 'linear', 0, 10.0, 0, False, True), ('Redemption', 'For each two levels of redemption you recover one sanctity each day.', 'Divinity', 'linear', 0, 0.5, 0, False, False), ('Regeneration', 'For each two levels of regeneration you recover one additional health each day.', 'Vitality', 'linear', 1, 0.5, 0, False, False), ('Reputation', 'The magnitutde of which your actions affect your renown.', 'Charisma', 'linear', 0, 5.0, 0, False, True), ('Resist blunt', 'Ability to resist blunt damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist unarmed', 'Ability to resist blunt damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist flame', 'Ability to resist flame damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist frost', 'Ability to resist frost damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist holy', 'Ability to resist holy damage', 'Divinity', 'linear', 0, 3.0, 0, False, True), ('Resist piercing', 'Ability to resist piercing damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist poison', 'Ability to resist poison damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist shadow', 'Ability to resist shadow damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist slashing', 'Ability to resist slashing damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Riposte', 'UNUSED', 'Agility', 'linear', 0, 0.0, 0, False, False), ('Sanctity', 'Amount of sanctity you can have.', 'Divinity', 'linear', 0, 1.0, 0, False, False), ('Sanity', 'Your ability to resist mind altering affects.', 'Willpower', 'linear', 0, 3.0, 0, False, True), ('Speed', 'How quickly you can attack in combat.', 'Quickness', 'linear', 1, 0.03, 3, False, False), ('Stamina', 'For each four levels of stamina you recover one additional endurance each day.', 'Resilience', 'linear', 1, 0.25, 0, False, False), ('Stealth', 'Chance to avoid detection when attempting to stay concealed.', 'Agility', 'linear', 0, 2.0, 0, False, True), ('Storage', 'The amount of weight that you can carry.', 'Brawn', 'linear', 10, 3.0, 0, False, False), ('Strength', 'Your capability of inflicting damage through melee. This is added to your combat skill and determines the greatest posssible damage you can deal in a single blow.', 'Brawn', 'linear', 1, 2.0, 0, False, False), ('Survivalist', 'UNUSED', 'Survivalism', 'linear', 0, 0.0, 0, False, False), ('Trustworthiness', 'UNUSED', 'Charisma', 'linear', 0, 0.0, 0, False, False), ('Understanding', 'How much more quickly you level up.', 'Intellect', 'linear', 0, 1.0, 0, False, True), ('CautionLevel', 'How much detail is revealed of a location before you visit it.', 'None', 'linear', 0, 0.0, 0, True, False), ('ClimbingAbility', 'The higher your climbing skill then the more difficult mountains you may climb.', 'None', 'linear', 0, 0.0, 0, True, False), ('SpellLimit', 'How many spells you may know.', 'None', 'linear', 0, 0.0, 0, True, False), ('Vision', 'How much of the map is revealed.', 'None', 'linear', 0, 0.0, 0, True, False), ('Woodsman', 'Modifier for forest movement.', 'Pathfinding', 'linear', 1, 1.0, 0, True, False), ('PotionEffectiveness', 'Modifier for how effective potions are.', 'None', 'linear', 0, 0.0, 0, True, True), ('BlockAmount', 'Amount of damage absorbed when a shield successfully blocks', 'None', 'linear', 0, 0.0, 0, True, True), ('Blunt', 'Skill with blunt weapons', 'None', 'linear', 0, 0.0, 0, True, True), ('Piercing', 'Skill with piercing weapons', 'None', 'linear', 0, 0.0, 0, True, True), ('Slashing', 'Skill with slashing weapons', 'None', 'linear', 0, 0.0, 0, True, True), ('Unarmed', 'Skill with using your bare hands', 'None', 'linear', 0, 0.0, 0, True, True), ('WeaponAffinity', 'How accustomed to your current weapon you are', 'None', 'linear', 0, 0.0, 0, True, True), ('FrostDamage', 'How much frost damage you do per attack', 'None', 'linear', 0, 0.0, 0, True, True), ('FlameDamage', 'How much flame damage you do per attack', 'None', 'linear', 0, 0.0, 0, True, True), ('Renown', 'How famous you are', 'None', 'linear', 0, 0.0, 0, True, False), ('Virtue', 'How good or evil you are', 'None', 'linear', 0, 0.0, 0, True, False), ('Devotion', 'How religious you are', 'None', 'linear', 0, 0.0, 0, True, False), ('LifestealStatic', 'Amount of life stolen per hit', 'None', 'linear', 0, 0.0, 0, True, True), ('LifestealPercent', 'Amount of life stolen per hit as percent of damage dealt', 'None', 'linear', 0, 0.0, 0, True, True), ('PoisonAmount', 'Amount of damage enemy takes from poison each turn. Poison generally lasts for 2 rounds unless reapplied.', 'None', 'linear', 0, 0.0, 0, True, True), ('PoisonDuration', 'How many turns an enemy is poisoned for.', 'None', 'linear', 2, 0.0, 0, True, True), ('PoisonChance', 'Likelihood that a poisoned attack will inflict the enemy.', 'None', 'linear', 25, 0.0, 0, True, True), ('FreezingChance', 'Likelihood that an enemy is frozen after being attacked.', 'None', 'linear', 0, 0.0, 0, True, True), ('ThawingChance', 'Likelihood that you will thaw each round in combat if frozen.', 'None', 'linear', 50, 0.0, 0, True, True)]
+ALL_PROFICIENCIES = [('Accuracy', 'How accurately you attack. This gives a bonus chance to successfully striking your opponent in combat.', 'Agility', 'linear', 0, 1.0, 0, False, True), ('Adventuring', 'Your skill at exploring new places. This increases your likelihood of finding items when exploring', 'Fortuity', 'linear', 0, 5.0, 0, False, True), ('Bartering', 'Your skill at negotiating prices. It reduces the price you pay when buying any item from a vendor.', 'Charisma', 'linear', 0, 2.0, 0, False, True), ('Block', 'Skill with a shield. If a shield is equipped then the amount of damage blocked is increased.', 'Resilience', 'linear', 0, 2.0, 0, False, True), ('Charm', 'How likeable you are. It increases the speed of how quickly people begin to trust you.', 'Charisma', 'linear', 0, 5.0, 0, False, True), ('Combat', 'Your proficiency in fighting. The greater combat proficiency you have then the more damage you do with any attack.', 'Brawn', 'linear', 1, 1.0, 0, False, False), ('Courage', 'How capable you are of overcoming your fears. The greater your courage then the greater the obstacles you will be capable of facing.', 'Willpower', 'linear', 0, 1.0, 0, False, False), ('Defence', 'Your ability to take physical damage. This combines with your armour to reduce all physical damaged received.', 'Resilience', 'linear', 0, 1.0, 0, False, True), ('Detection', 'Determines the chance that you will uncover enemy traps and ambushes.', 'Survivalism', 'linear', 0, 3.0, 0, False, True), ('Dualism', 'How quickly you are able to change your virtue.', 'None', 'linear', 0, 2.0, 0, False, True), ('Encumbrance', 'Your ability to fight in combat while carrying cumbersome gear.', 'Brawn', 'linear', 0, 5.0, 0, False, True), ('Endurance', 'Number of actions you can perform each day.', 'Resilience', 'linear', 5, 0.5, 0, False, False), ('Evade', 'Your ability to dodge enemy attacks. Gives a bonus chance for enemies to miss their close combat attacks.', 'Quickness', 'linear', 0, 2.0, 0, False, True), ('Explorer', 'Reveals additional optional tasks which can be performed while exploring.', 'Survivalism', 'linear', 0, 1.0, 0, False, False), ('Faith', 'Adds a bonus to how effective your spells are.', 'Divinity', 'linear', 0, 5.0, 0, False, True), ('Fatigue', 'Reduces the speed at which you become exhausted in combat.', 'Resilience', 'linear', 0, 5.0, 0, False, False), ('First strike', 'Increases the likelihood that you will attack first in combat.', 'Quickness', 'linear', 0, 3.5, 1, False, False), ('Flee', 'Increases the chance that you can successful escape from a battle.', 'Quickness', 'linear', 0, 10.0, 0, False, False), ('Health', 'Determines the number of health points you have. When your health reahes zero then you fall unconscious.', 'Vitality', 'linear', 5, 1.0, 0, False, False), ('Huntsman', 'The amount of information that you can learn from defeated enemies.', 'Survivalism', 'linear', 0, 1.0, 0, False, False), ('Killshot', 'Damage multiplier added when performing a critical hit.', 'Agility', 'linear', 1, 10.0, 0, False, True), ('Knowledge', 'UNUSED', 'Intellect', 'linear', 0, 0.0, 0, False, False), ('Literacy', 'UNUSED', 'Intellect', 'linear', 0, 0.0, 0, False, False), ('Logistics', 'UNUSED', 'Pathfinding', 'linear', 0, 0.0, 0, False, False), ('Luck', 'A bonus chance of having incredibly good luck.', 'Fortuity', 'linear', 0, 1.0, 0, False, True), ('Mountaineering', 'UNUSED', 'Pathfinding', 'linear', 0, 0.0, 0, False, False), ('Navigator', 'UNUSED', 'Pathfinding', 'linear', 0, 0.0, 0, False, False), ('Oration', 'UNUSED', 'Charisma', 'linear', 0, 0.0, 0, False, False), ('Parry', 'The likelihood that you can parry an incoming attack.', 'Quickness', 'linear', 0, 2.0, 0, False, True), ('Pickpocketing', 'Increases the chance that you will successfully pickpocket someone.', 'Agility', 'linear', 0, 5.0, 0, False, True), ('Piety', 'How quickly you are able to gain the devotion of a god.', 'None', 'linear', 0, 2.0, 0, False, True), ('Precision', 'Chance to critically hit enemies. A critical hit always hits for maximum damage and then applies your killshot multiplier to that value.', 'Agility', 'linear', 0, 1.0, 0, False, True), ('Recovery', 'How quickly you recover from poisons and the negative effects of different ailments.', 'Vitality', 'linear', 0, 10.0, 0, False, True), ('Redemption', 'For each two levels of redemption you recover one sanctity each day.', 'Divinity', 'linear', 0, 0.5, 0, False, False), ('Regeneration', 'For each two levels of regeneration you recover one additional health each day.', 'Vitality', 'linear', 1, 0.5, 0, False, False), ('Reputation', 'The magnitutde of which your actions affect your renown.', 'Charisma', 'linear', 0, 5.0, 0, False, True), ('Resist blunt', 'Ability to resist blunt damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist unarmed', 'Ability to resist blunt damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist flame', 'Ability to resist flame damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist frost', 'Ability to resist frost damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist holy', 'Ability to resist holy damage', 'Divinity', 'linear', 0, 3.0, 0, False, True), ('Resist piercing', 'Ability to resist piercing damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist poison', 'Ability to resist poison damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist shadow', 'Ability to resist shadow damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Resist slashing', 'Ability to resist slashing damage', 'Resilience', 'linear', 0, 3.0, 0, False, True), ('Riposte', 'UNUSED', 'Agility', 'linear', 0, 0.0, 0, False, False), ('Sanctity', 'Amount of sanctity you can have.', 'Divinity', 'linear', 0, 1.0, 0, False, False), ('Sanity', 'Your ability to resist mind altering affects.', 'Willpower', 'linear', 0, 3.0, 0, False, True), ('Speed', 'How quickly you can attack in combat.', 'Quickness', 'linear', 1, 0.03, 3, False, False), ('Stamina', 'For each four levels of stamina you recover one additional endurance each day.', 'Resilience', 'linear', 1, 0.25, 0, False, False), ('Stealth', 'Chance to avoid detection when attempting to stay concealed.', 'Agility', 'linear', 0, 2.0, 0, False, True), ('Storage', 'The amount of weight that you can carry.', 'Brawn', 'linear', 10, 3.0, 0, False, False), ('Strength', 'Your capability of inflicting damage through melee. This is added to your combat skill and determines the greatest posssible damage you can deal in a single blow.', 'Brawn', 'linear', 1, 2.0, 0, False, False), ('Survivalist', 'UNUSED', 'Survivalism', 'linear', 0, 0.0, 0, False, False), ('Trustworthiness', 'UNUSED', 'Charisma', 'linear', 0, 0.0, 0, False, False), ('Understanding', 'How much more quickly you level up.', 'Intellect', 'linear', 0, 1.0, 0, False, True), ('CautionLevel', 'How much detail is revealed of a location before you visit it.', 'None', 'linear', 0, 0.0, 0, True, False), ('ClimbingAbility', 'The higher your climbing skill then the more difficult mountains you may climb.', 'None', 'linear', 0, 0.0, 0, True, False), ('SpellLimit', 'How many spells you may know.', 'None', 'linear', 0, 0.0, 0, True, False), ('Vision', 'How much of the map is revealed.', 'None', 'linear', 0, 0.0, 0, True, False), ('Woodsman', 'Modifier for forest movement.', 'Pathfinding', 'linear', 1, 1.0, 0, True, False), ('PotionEffectiveness', 'Modifier for how effective potions are.', 'None', 'linear', 0, 0.0, 0, True, True), ('BlockAmount', 'Amount of damage absorbed when a shield successfully blocks', 'None', 'linear', 0, 0.0, 0, True, True), ('Blunt', 'Skill with blunt weapons', 'None', 'linear', 0, 0.0, 0, True, True), ('Piercing', 'Skill with piercing weapons', 'None', 'linear', 0, 0.0, 0, True, True), ('Slashing', 'Skill with slashing weapons', 'None', 'linear', 0, 0.0, 0, True, True), ('Unarmed', 'Skill with using your bare hands', 'None', 'linear', 0, 0.0, 0, True, True), ('WeaponAffinity', 'How accustomed to your current weapon you are', 'None', 'linear', 0, 0.0, 0, True, True), ('FrostDamage', 'How much frost damage you do per attack', 'None', 'linear', 0, 0.0, 0, True, True), ('FlameDamage', 'How much flame damage you do per attack', 'None', 'linear', 0, 0.0, 0, True, True), ('Dagger', 'Skill with daggers', 'None', 'linear', 0, 0.0, 0, True, True), ('Sword', 'Skill with swords', 'None', 'linear', 0, 0.0, 0, True, True), ('Axe', 'Skill with axes', 'None', 'linear', 0, 0.0, 0, True, True), ('Staff', 'Skill with staves', 'None', 'linear', 0, 0.0, 0, True, True), ('Renown', 'How famous you are', 'None', 'linear', 0, 0.0, 0, True, False), ('Virtue', 'How good or evil you are', 'None', 'linear', 0, 0.0, 0, True, False), ('Devotion', 'How religious you are', 'None', 'linear', 0, 0.0, 0, True, False), ('LifestealStatic', 'Amount of life stolen per hit', 'None', 'linear', 0, 0.0, 0, True, True), ('LifestealPercent', 'Amount of life stolen per hit as percent of damage dealt', 'None', 'linear', 0, 0.0, 0, True, True), ('PoisonAmount', 'Amount of damage enemy takes from poison each turn. Poison generally lasts for 2 rounds unless reapplied.', 'None', 'linear', 0, 0.0, 0, True, True), ('PoisonDuration', 'How many turns an enemy is poisoned for.', 'None', 'linear', 2, 0.0, 0, True, True), ('PoisonChance', 'Likelihood that a poisoned attack will inflict the enemy.', 'None', 'linear', 25, 0.0, 0, True, True), ('FreezingChance', 'Likelihood that an enemy is frozen after being attacked.', 'None', 'linear', 0, 0.0, 0, True, True), ('ThawingChance', 'Likelihood that you will thaw each round in combat if frozen.', 'None', 'linear', 50, 0.0, 0, True, True)]
 
-ALL_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'Block amount', 'Blunt', 'Caution level', 'Charm', 'Climbing ability', 'Combat', 'Courage', 'Defence', 'Detection', 'Devotion', 'Dualism', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'First strike', 'Flame damage', 'Flee', 'Freezing chance', 'Frost damage', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Lifesteal percent', 'Lifesteal static', 'Literacy', 'Logistics', 'Luck', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Piercing', 'Piety', 'Poison amount', 'Poison chance', 'Poison duration', 'Potion effectiveness', 'Precision', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'Reputation', 'Resist blunt', 'Resist flame', 'Resist frost', 'Resist holy', 'Resist piercing', 'Resist poison', 'Resist shadow', 'Resist slashing', 'Resist unarmed', 'Riposte', 'Sanctity', 'Sanity', 'Slashing', 'Speed', 'Spell limit', 'Stamina', 'Stealth', 'Storage', 'Strength', 'Survivalist', 'Thawing chance', 'Trustworthiness', 'Unarmed', 'Understanding', 'Virtue', 'Vision', 'Weapon affinity', 'Woodsman']
-ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'bartering', 'block', 'block_amount', 'blunt', 'caution_level', 'charm', 'climbing_ability', 'combat', 'courage', 'defence', 'detection', 'devotion', 'dualism', 'encumbrance', 'endurance', 'evade', 'explorer', 'faith', 'fatigue', 'first_strike', 'flame_damage', 'flee', 'freezing_chance', 'frost_damage', 'health', 'huntsman', 'killshot', 'knowledge', 'lifesteal_percent', 'lifesteal_static', 'literacy', 'logistics', 'luck', 'mountaineering', 'navigator', 'oration', 'parry', 'pickpocketing', 'piercing', 'piety', 'poison_amount', 'poison_chance', 'poison_duration', 'potion_effectiveness', 'precision', 'recovery', 'redemption', 'regeneration', 'renown', 'reputation', 'resist_blunt', 'resist_flame', 'resist_frost', 'resist_holy', 'resist_piercing', 'resist_poison', 'resist_shadow', 'resist_slashing', 'resist_unarmed', 'riposte', 'sanctity', 'sanity', 'slashing', 'speed', 'spell_limit', 'stamina', 'stealth', 'storage', 'strength', 'survivalist', 'thawing_chance', 'trustworthiness', 'unarmed', 'understanding', 'virtue', 'vision', 'weapon_affinity', 'woodsman']
-ALL_CLASS_NAMES = ['Accuracy', 'Adventuring', 'Bartering', 'Block', 'BlockAmount', 'Blunt', 'CautionLevel', 'Charm', 'ClimbingAbility', 'Combat', 'Courage', 'Defence', 'Detection', 'Devotion', 'Dualism', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'FirstStrike', 'FlameDamage', 'Flee', 'FreezingChance', 'FrostDamage', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'LifestealPercent', 'LifestealStatic', 'Literacy', 'Logistics', 'Luck', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Piercing', 'Piety', 'PoisonAmount', 'PoisonChance', 'PoisonDuration', 'PotionEffectiveness', 'Precision', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'Reputation', 'ResistBlunt', 'ResistFlame', 'ResistFrost', 'ResistHoly', 'ResistPiercing', 'ResistPoison', 'ResistShadow', 'ResistSlashing', 'ResistUnarmed', 'Riposte', 'Sanctity', 'Sanity', 'Slashing', 'Speed', 'SpellLimit', 'Stamina', 'Stealth', 'Storage', 'Strength', 'Survivalist', 'ThawingChance', 'Trustworthiness', 'Unarmed', 'Understanding', 'Virtue', 'Vision', 'WeaponAffinity', 'Woodsman']
+ALL_NAMES = ['Accuracy', 'Adventuring', 'Axe', 'Bartering', 'Block', 'Block amount', 'Blunt', 'Caution level', 'Charm', 'Climbing ability', 'Combat', 'Courage', 'Dagger', 'Defence', 'Detection', 'Devotion', 'Dualism', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'First strike', 'Flame damage', 'Flee', 'Freezing chance', 'Frost damage', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'Lifesteal percent', 'Lifesteal static', 'Literacy', 'Logistics', 'Luck', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Piercing', 'Piety', 'Poison amount', 'Poison chance', 'Poison duration', 'Potion effectiveness', 'Precision', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'Reputation', 'Resist blunt', 'Resist flame', 'Resist frost', 'Resist holy', 'Resist piercing', 'Resist poison', 'Resist shadow', 'Resist slashing', 'Resist unarmed', 'Riposte', 'Sanctity', 'Sanity', 'Slashing', 'Speed', 'Spell limit', 'Staff', 'Stamina', 'Stealth', 'Storage', 'Strength', 'Survivalist', 'Sword', 'Thawing chance', 'Trustworthiness', 'Unarmed', 'Understanding', 'Virtue', 'Vision', 'Weapon affinity', 'Woodsman']
+ALL_ATTRIBUTE_NAMES = ['accuracy', 'adventuring', 'axe', 'bartering', 'block', 'block_amount', 'blunt', 'caution_level', 'charm', 'climbing_ability', 'combat', 'courage', 'dagger', 'defence', 'detection', 'devotion', 'dualism', 'encumbrance', 'endurance', 'evade', 'explorer', 'faith', 'fatigue', 'first_strike', 'flame_damage', 'flee', 'freezing_chance', 'frost_damage', 'health', 'huntsman', 'killshot', 'knowledge', 'lifesteal_percent', 'lifesteal_static', 'literacy', 'logistics', 'luck', 'mountaineering', 'navigator', 'oration', 'parry', 'pickpocketing', 'piercing', 'piety', 'poison_amount', 'poison_chance', 'poison_duration', 'potion_effectiveness', 'precision', 'recovery', 'redemption', 'regeneration', 'renown', 'reputation', 'resist_blunt', 'resist_flame', 'resist_frost', 'resist_holy', 'resist_piercing', 'resist_poison', 'resist_shadow', 'resist_slashing', 'resist_unarmed', 'riposte', 'sanctity', 'sanity', 'slashing', 'speed', 'spell_limit', 'staff', 'stamina', 'stealth', 'storage', 'strength', 'survivalist', 'sword', 'thawing_chance', 'trustworthiness', 'unarmed', 'understanding', 'virtue', 'vision', 'weapon_affinity', 'woodsman']
+ALL_CLASS_NAMES = ['Accuracy', 'Adventuring', 'Axe', 'Bartering', 'Block', 'BlockAmount', 'Blunt', 'CautionLevel', 'Charm', 'ClimbingAbility', 'Combat', 'Courage', 'Dagger', 'Defence', 'Detection', 'Devotion', 'Dualism', 'Encumbrance', 'Endurance', 'Evade', 'Explorer', 'Faith', 'Fatigue', 'FirstStrike', 'FlameDamage', 'Flee', 'FreezingChance', 'FrostDamage', 'Health', 'Huntsman', 'Killshot', 'Knowledge', 'LifestealPercent', 'LifestealStatic', 'Literacy', 'Logistics', 'Luck', 'Mountaineering', 'Navigator', 'Oration', 'Parry', 'Pickpocketing', 'Piercing', 'Piety', 'PoisonAmount', 'PoisonChance', 'PoisonDuration', 'PotionEffectiveness', 'Precision', 'Recovery', 'Redemption', 'Regeneration', 'Renown', 'Reputation', 'ResistBlunt', 'ResistFlame', 'ResistFrost', 'ResistHoly', 'ResistPiercing', 'ResistPoison', 'ResistShadow', 'ResistSlashing', 'ResistUnarmed', 'Riposte', 'Sanctity', 'Sanity', 'Slashing', 'Speed', 'SpellLimit', 'Staff', 'Stamina', 'Stealth', 'Storage', 'Strength', 'Survivalist', 'Sword', 'ThawingChance', 'Trustworthiness', 'Unarmed', 'Understanding', 'Virtue', 'Vision', 'WeaponAffinity', 'Woodsman']
 
 
 class Proficiency(TemplateMixin, Base):
@@ -2820,6 +2820,158 @@ class FlameDamage(Proficiency):
 
     def scale_by_level(self, level=None):
         """Update FlameDamage's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(0.0 * level, self.num_of_decimals)
+
+
+class Dagger(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = True
+    name = "dagger"
+    display_name = "Dagger"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Dagger"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.none
+
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Skill with daggers"
+        self.attribute_type = "None"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Dagger's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(0.0 * level, self.num_of_decimals)
+
+
+class Sword(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = True
+    name = "sword"
+    display_name = "Sword"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Sword"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.none
+
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Skill with swords"
+        self.attribute_type = "None"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Sword's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(0.0 * level, self.num_of_decimals)
+
+
+class Axe(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = True
+    name = "axe"
+    display_name = "Axe"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Axe"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.none
+
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Skill with axes"
+        self.attribute_type = "None"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Axe's attributes and tooltip variable.
+        """
+
+        # Allows you to determine the value at the next level without
+        # modifying self.level (which might have unintended consequences).
+        if level is None:
+            level = self.level
+
+        return round(0.0 * level, self.num_of_decimals)
+
+
+class Staff(Proficiency):
+    # If this is true, then the proficiency should not show up on the
+    # prof page and should only be modifiable by items/abilities.
+    hidden = True
+    name = "staff"
+    display_name = "Staff"
+    num_of_decimals = 0
+    # This should add a "%" to the display at the end of a prof.
+    is_percent = True  # Should be True but I'm getting an error
+    format_spec = "{:.0f}%"
+
+    __mapper_args__ = {
+        'polymorphic_identity': "Staff"
+    }
+
+    # Proficiency to Attribute is many to one.
+    @property
+    def attribute(self):
+        return self.hero.attributes.none
+
+    def __init__(self, *args, base=0, **kwargs):
+        super().__init__(*args, base=base, **kwargs)
+        self.description = "Skill with staves"
+        self.attribute_type = "None"
+        self.error = "You do not have enough {}".format(self.attribute_type)
+
+    def scale_by_level(self, level=None):
+        """Update Staff's attributes and tooltip variable.
         """
 
         # Allows you to determine the value at the next level without
