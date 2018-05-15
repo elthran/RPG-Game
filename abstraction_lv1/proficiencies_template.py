@@ -165,7 +165,7 @@ class Proficiency(TemplateMixin, Base):
 {% set base = prof[4] %}
 {% set weight = prof[5] %}
 {% set decimals = prof[6] %}
-{% set hidden = prof[7] %}
+{% if prof[7] == "TRUE" %}{% set hidden = True %}{% else %}{% set hidden = False %}{% endif %}
 {% set percent = prof[8] %}
 {% set display_chunk = prof[9] %}
 class {{ prof_class }}(Proficiency):

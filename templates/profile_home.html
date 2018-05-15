@@ -88,34 +88,14 @@
 		<td>{{ hero.house.name }}</td>
 	</tr>
 	{% endif %}
-	<tr>
-		<td>Stealth</td>
-		<td>{{ proficiencies.stealth.final }}%</td>
-	</tr>
-	<tr>
-		<td>Pickpocketing</td>
-		<td>{{ proficiencies.pickpocketing.final }}%</td>
-	</tr>
-	<tr>
-		<td>Faith</td>
-		<td>{{ proficiencies.faith.final }}%</td>
-	</tr>
-	<tr>
-		<td>Bartering</td>
-		<td>{{ proficiencies.bartering.final }}%</td>
-	</tr>
-	<tr>
-		<td>Oration</td>
-		<td>{{ proficiencies.oration.final }}%</td>
-	</tr>
-	<tr>
-		<td>Literacy</td>
-		<td>{{ proficiencies.literacy.final }}%</td>
-	</tr>
-	<tr>
-		<td>Luck</td>
-		<td>{{ proficiencies.luck.final }}%</td>
-	</tr>
+	{% for proficiency in proficiencies %}
+		{% if proficiency.display_chunk == "Stealth" %}
+			<tr>
+				<td>{{ proficiency.display_name }}</td>
+				<td>+ {{ proficiency.final|int }}%</td>
+			</tr>
+		{% endif %}
+	{% endfor %}
 </table>
 <div style="clear:both;"></div>
 <br><h1 style="text-align:center;">Combat</h1>
@@ -123,12 +103,18 @@
 	<tr>
 		<th colspan="2">Offense</th>
 	</tr>
+	<tr>
+		<td>Damage</td>
+		<td>{{ proficiencies.combat.final|int }}-{{ (proficiencies.strength.final + proficiencies.combat.final)|int }}</td>
+	</tr>
 	{% for proficiency in proficiencies %}
 		{% if proficiency.display_chunk == "Offence" %}
-			<tr>
-				<td>{{ proficiency.display_name }}</td>
-				<td>+ {{ proficiency.final|int }}%</td>
-			</tr>
+			{% if not proficiency.hidden or proficiency.final %}
+				<tr>
+					<td>{{ proficiency.display_name }}</td>
+					<td>{% if proficiency.is_percent %}{{ proficiency.final|int }}%{% else %}{{ proficiency.final }}{% endif %}</td>
+				</tr>
+			{% endif %}
 		{% endif %}
 	{% endfor %}
 </table>
@@ -137,50 +123,14 @@
 	<tr>
 		<th colspan="2">Defence</th>
 	</tr>
-	<tr>
-		<td>Defence</td>
-		<td>{{ proficiencies.defence.final|int }}%</td>
-	</tr>
-	<tr>
-		<td>Block Chance</td>
-		<td>{% if hero.inventory.hero.inventory.left_hand.type == "Shield"%}{{ proficiencies.block.final }}%{% else %}<font color="red">-</font>{% endif %}</td>
-	</tr>
-	<tr>
-		<td>Block Amount</td>
-		<td>{% if hero.inventory.hero.inventory.left_hand.type == "Shield"%}{{ proficiencies.block_amount.final }}%{% else %}<font color="red">-</font>{% endif %}</td>
-	</tr>
-	<tr>
-		<td>Resist Frost</td>
-		<td>{{ proficiencies.resist_frost.final|int }}%</td>
-	</tr>
-	<tr>
-		<td>Resist Flame</td>
-		<td>{{ proficiencies.resist_flame.final|int }}%</td>
-	</tr>
-	<tr>
-		<td>Resist Shadow</td>
-		<td>{{ proficiencies.resist_shadow.final|int }}%</td>
-	</tr>
-	<tr>
-		<td>Resist Holy</td>
-		<td>{{ proficiencies.resist_holy.final|int }}%</td>
-	</tr>
-	<tr>
-		<td>Resist Poison</td>
-		<td>{{ proficiencies.resist_poison.final|int }}%</td>
-	</tr>
-	<tr>
-		<td>Resist Blunt</td>
-		<td>{{ proficiencies.resist_blunt.final|int }}%</td>
-	</tr>
-	<tr>
-		<td>Resist Slashing</td>
-		<td>{{ proficiencies.resist_slashing.final|int }}%</td>
-	</tr>
-	<tr>
-		<td>Resist Piercing</td>
-		<td>{{ proficiencies.resist_piercing.final|int }}%</td>
-	</tr>
+	{% for proficiency in proficiencies %}
+		{% if proficiency.display_chunk == "Defence" %}
+			<tr>
+				<td>{{ proficiency.display_name }}</td>
+				<td>+ {{ proficiency.final|int }}%</td>
+			</tr>
+		{% endif %}
+	{% endfor %}
 </table>
 <div style="clear:both;"></div>
 <br><h1 style="text-align:center;">Advanced</h1>
@@ -202,60 +152,14 @@
 	<tr>
 		<th colspan="2">Modifiers</th>
 	</tr>
-	<tr>
-		<td>Experience Gain</td>
-		<td>+ {{ proficiencies.understanding.final|int }}%</td>
-	</tr>
-	<tr>
-		<td>Renown Gain</td>
-		<td>+ {{ proficiencies.reputation.final|int }}%</td>
-	</tr>
-	<tr>
-		<td>Devotion Gain</td>
-		<td>+ {{ proficiencies.piety.final|int }}%</td>
-	</tr>
-	<tr>
-		<td>Virtue Gain</td>
-		<td>+ {{ proficiencies.dualism.final|int }}%</td>
-	</tr>
-	{% if proficiencies.potion_effectiveness.final %}
-	<tr>
-		<td>Potion Effectiveness</td>
-		<td>+ {{ proficiencies.potion_effectiveness.final|int }}%</td>
-	</tr>
-	{% endif %}
-	{% if proficiencies.lifesteal_static.final or proficiencies.lifesteal_percent.final %}
-	<tr>
-		<td>Average life stolen per hit</td>
-		<td>{{ proficiencies.lifesteal_percent.final * proficiencies.combat.final * 0.01 + proficiencies.lifesteal_static.final }}</td>
-	</tr>
-	{% endif %}
-	{% if proficiencies.poison_amount.final %}
-		<tr>
-			<td>Poison Damage</td>
-			<td>{{ proficiencies.poison_amount.final|int }} per round</td>
-		</tr>
-		<tr>
-			<td>Poison Duration</td>
-			<td>{{ proficiencies.poison_duration.final|int }} combat rounds</td>
-		</tr>
-		<tr>
-			<td>Poison Chance</td>
-			<td>{{ proficiencies.poison_chance.final|int }}% per hit</td>
-		</tr>
-	{% endif %}
-	{% if proficiencies.freezing_chance.final %}
-	<tr>
-		<td>Freezing Chance</td>
-		<td>{{ proficiencies.freezing_chance.final|int }}% per hit</td>
-	</tr>
-	{% endif %}
-	{% if proficiencies.thawing_chance.final != 50 %}
-	<tr>
-		<td>Thawing Chance</td>
-		<td>{{ proficiencies.thawing_chance.final|int }}%</td>
-	</tr>
-	{% endif %}
+	{% for proficiency in proficiencies %}
+		{% if proficiency.display_chunk == "Modifier" %}
+			<tr>
+				<td>{{ proficiency.display_name }}</td>
+				<td>+ {{ proficiency.final|int }}%</td>
+			</tr>
+		{% endif %}
+	{% endfor %}
 </table>
 {% endblock %}
 
