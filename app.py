@@ -48,7 +48,7 @@ def create_app():
     app = Flask(__name__)
     # pdb.set_trace()
 
-    async_process(game_clock, args=(database,))
+    # async_process(game_clock, args=(database,))
     return app
 
 
@@ -376,7 +376,7 @@ def login():
                 print("Trying to send mail ...")
                 key = database.setup_account_for_reset(username)
                 send_email(username, email_address, key)
-                async_process(rest_key_timelock, args=(database, username), kwargs={'timeout': 5})
+                # async_process(rest_key_timelock, args=(database, username), kwargs={'timeout': 5})
         else:
             raise Exception("The form of this 'type' doesn't exist!")
 

@@ -34,7 +34,7 @@ class Requirement:
                 var = 'attributes'
             elif "Talent" in requirement:  # Type 2
                 type_ = 2
-                var = 'proficiencies'
+                var = 'base_proficiencies'
             elif services.finder.is_word(requirement[0]) and 'of' == requirement[1] and services.finder.is_integer(requirement[2]):
                 type_ = 3
             elif "Discovered" in requirement:
