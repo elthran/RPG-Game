@@ -4,21 +4,19 @@ from elthranonline import app
 import services.decorators
 import services.secrets
 import services.validation
+import controller
 import models
 
 
 @app.route("/reset", methods=["GET", "POST"])
 def reset_password():
     if flask.request.method == "GET":
-        if services.validation.validate_reset(flask.request.args['account'], flask.request.args['key']):
-            return flask.render_template("reset.html", username=flask.request.args['account'], key=flask.request.args['key'])
+        return flask.render_template("reset.html", username=flask.request.args['account'], key=flask.request.args['key'])
     elif flask.request.method == "POST":
+        # Maybe make account auto reset after 3 failed tries too?
         if services.validation.validate_reset(flask.request.form['username'], flask.request.form['key']):
-            account = models.Account.filter_by(username=flask.request.form['username']).one()
-            if account.reset_key:
-                account.reset_key = None
-                account.password = services.secrets.encrypt(flask.request.form['password'])
-                return flask.redirect(flask.url_for('login'), code=307)
+            controller.reset_account(flask.request.form['username'], flask.request.form['password'])
+            return flask.redirect(flask.url_for('login'), code=307)
     return flask.redirect(flask.url_for('login'))
 
 

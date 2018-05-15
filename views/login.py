@@ -46,9 +46,9 @@ def login():
                 error = "Username already exists!"
         elif flask.request.form['type'] == "reset":
             print("Validating email address ...")
-            resetting = controller.reset_account_via_email(username, email_address, flask.request.url_root, flask.session)
+            resetting = controller.reset_account_via_email(username, email_address, flask.request.url_root)
             if resetting:
-                print("Trying to send mail ...")
+                print("Sending reset email ...")
         else:
             raise Exception("The form of this 'type' doesn't exist!")
 

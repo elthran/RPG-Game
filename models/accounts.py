@@ -13,6 +13,7 @@ class Account(models.Base):
     password = sa.Column(sa.Unicode(200, convert_unicode=False), nullable=False)
     email = sa.Column(sa.Unicode(200, convert_unicode=False))
     reset_key = sa.Column(sa.Unicode(200, convert_unicode=False))
+    reset_timeout = sa.Column(sa.DateTime)
     timestamp = sa.Column(sa.DateTime)
     is_admin = sa.Column(sa.Boolean)
     inbox_alert = sa.Column(sa.Boolean)

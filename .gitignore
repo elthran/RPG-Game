@@ -11,3 +11,4 @@ templates/desktop.ini
 .pytest_cache/
 private_config.py
 elthranonline.egg-info/
+specifications/.ipynb_checkpoints/

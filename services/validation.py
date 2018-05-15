@@ -1,6 +1,7 @@
 import models
 import services.migration
 import services.secrets
+import services.time
 
 
 def validate(username, password):
@@ -40,6 +41,6 @@ def validate_reset(username, key):
     # For some reason the key get converted to binary then back
     # so it looks like "b'______'" instead of b'________' or
     # '_________'. I strip the "b'" of the start and "'" of the end.
-    if account.reset_key and account.reset_key == key:
+    if (account.reset_key and account.reset_timeout) and account.reset_key == key and account.reset_timeout > services.time.now():
         return True
     return False

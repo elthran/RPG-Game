@@ -63,17 +63,6 @@ def async_process(func, args=(), kwargs=None):
     Process(target=func, args=args, kwargs=kwargs).start()
 
 
-@models.database.sessions.scoped_session
-def rest_key_timelock(database, username, timeout=5):
-    """Erase the user reset key after x minutes."""
-
-    # pdb.set_trace()
-    timeout *= 60  # Convert minute time to seconds required by time.sleep.
-    time.sleep(timeout)
-    user = database.get_user_by_username(username)
-    user.reset_key = None
-
-
 if __name__ == "__main__":
     import os
     os.system("python3 -m pytest -vv rpg_game_tests/test_{}".format(__file__))
