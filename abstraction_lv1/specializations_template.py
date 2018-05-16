@@ -64,9 +64,14 @@ class Archetype(Specialization):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.requirement_interface = interfaces.requirements.Requirement(self.requirements)
+
+    @orm.reconstructor
+    def init_on_load(self):
+        self.requirement_interface = interfaces.requirements.Requirement(self.requirements)
 
     def check_locked(self, hero):
-        return interfaces.requirements.Requirement.met(self, hero)
+        return self.requirement_interface.met(hero)
 
 
 class Calling(Specialization):

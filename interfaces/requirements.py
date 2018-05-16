@@ -58,12 +58,15 @@ class Requirement:
         code = " and ".join(code)
         return code
 
-    @staticmethod
-    def met(obj, hero):
-        code = Requirement.parse_requirements(obj.requirements)
+    def met(self, hero):
         try:
-            return eval(code, {'hero': hero})
+            return eval(self.code, {'hero': hero})
         except SyntaxError:
             return True  # If code is broken return True :P
         except KeyError:
             return True  # If broken return True
+
+    @staticmethod
+    def static_met(obj, hero):
+        req = Requirement(obj.requirements)
+        return req.met(hero)
