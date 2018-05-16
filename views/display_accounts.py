@@ -35,8 +35,9 @@ def display_accounts_page(hero=None, page_type=None, page_detail=None, descendin
         # Descending attribute inverted each time.
         return flask.render_template('accounts.html', page_title="Users", hero=hero, page_detail=page_detail, descending=not descending, all_heroes=sorted_heroes)
 
+    # TODO work out what this actually does.
     elif page_type == "see_account":
-        this_user = models.Account.filter_by(username=page_detail)
+        this_user = models.Account.filter_by(username=page_detail).one()
         this_hero = services.fetcher.fetch_hero_by_username(page_detail)
         # Below code is just messing with inbox
         if flask.request.method == 'POST':

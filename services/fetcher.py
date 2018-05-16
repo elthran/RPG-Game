@@ -71,8 +71,8 @@ def fetch_hero_by_username(username, character_name=None):
     Note: Providing a username when you have the hero/character id is
     redundant.
     """
-    user = models.Account.filter_by(username=username)
+    account = models.Account.filter_by(username=username).one()
     if character_name is not None:
         return models.Hero.filter_by(
-            user_id=user.id, character_name=character_name).one()
-    return user.heroes[0]
+            account_id=account.id, character_name=character_name).one()
+    return account.heroes[0]
