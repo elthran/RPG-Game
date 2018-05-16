@@ -1,3 +1,5 @@
+import pdb
+
 import sqlalchemy as sa
 
 import models
@@ -38,20 +40,28 @@ def fetch_sorted_heroes(attribute, descending=False):
 
     https://stackoverflow.com/questions/4186062/sqlalchemy-order-by-descending
     """
+    query = models.Hero.query()
     if '.' not in attribute:
         if descending:
-            return models.Hero.query().order_by(sa.desc(attribute)).all()
-        else:
-            return models.Hero.query().order_by(attribute).all()
-    elif attribute.startswith('account'):
-        _, attribute = attribute.split('.')
-        if descending:
-            return models.Hero.query().join(models.Hero.account).order_by(sa.desc(attribute)).all()
-        else:
-            return models.Hero.query().join(models.Hero.account).order_by(attribute).all()
-    else:
+            return query.order_by(sa.desc(attribute)).all()
+        return query.order_by(attribute).all()
+
+    all_attrs = attribute.split('.')
+    sort_attr = all_attrs.pop()  # Remove last value for use as sort key
+    try:
+        join_attr = getattr(models.Hero, all_attrs.pop(0))  # remove first attr
+        for extended_attr in all_attrs:
+            join_attr = getattr(join_attr, extended_attr)
+    except AttributeError:
         raise Exception("Trying to access an attribute that this code"
                         " does not accommodate.")
+    joined_query = query.join(join_attr)
+    heroes = []
+    if descending:
+        heroes = joined_query.order_by(sa.desc(sort_attr)).all()
+    else:
+        heroes = joined_query.order_by(sort_attr).all()
+    return heroes if heroes else models.Hero.all()
 
 
 def fetch_hero_by_username(username, character_name=None):

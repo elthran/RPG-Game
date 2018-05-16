@@ -49,13 +49,6 @@ app = create_app()
 sslify = SSLify(app)
 
 
-# The if statement works and displays the account page as normal. Now if you
-# click on a account it should run the else statement and pass in the account's
-# username (which is unique).
-# Now, I am having trouble sending the account to HTML. I can't seem to
-# understand how to store the account information as a variable.
-
-
 @app.route('/global_chat', methods=['GET', 'POST'])
 @uses_hero
 def global_chat(hero=None):

@@ -15,7 +15,7 @@ from .locations import Location
 from . import mixins
 from . import proficiencies
 from .quests import Quest, QuestPath
-from . import specializations
+from .specializations import Specialization, Archetype, Calling, Pantheon
 from .game import Game
 
 # from . import database

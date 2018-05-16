@@ -223,8 +223,8 @@ class Base(object):
     #         return session.query(cls)
 
     @classmethod
-    def query(cls):
-        return cls.session.query(cls)
+    def query(cls, *args):
+        return cls.session.query(cls, *args)
 
     @classmethod
     def first(cls):
