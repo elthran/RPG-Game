@@ -40,7 +40,7 @@ def admin(path="modify_self", path2="users", hero=None):
             # get("var", None(default), type=int)
             # supports type casting and default values.
             for key, attrib in admin_form_mapping:
-                exec("{} = {}".format(attrib, flask.request.form.get(key, type=int)))  # Probably not very secure :P
+                exec("{} = {}".format(attrib, flask.request.form.get(key, type=int)))  # Should be secure as user input is type cast to int before evaluating?
             hero.refresh_character(full=True)
             return flask.redirect(flask.url_for('home'))
     elif path == "add_new_character":

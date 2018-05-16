@@ -52,3 +52,17 @@ def fetch_sorted_heroes(attribute, descending=False):
     else:
         raise Exception("Trying to access an attribute that this code"
                         " does not accommodate.")
+
+
+def fetch_hero_by_username(username, character_name=None):
+    """Return hero objected based on username_or_id and character_name.
+
+    If no character_name is passed just return first hero.
+    Note: Providing a username when you have the hero/character id is
+    redundant.
+    """
+    user = models.Account.filter_by(username=username)
+    if character_name is not None:
+        return models.Hero.filter_by(
+            user_id=user.id, character_name=character_name).one()
+    return user.heroes[0]

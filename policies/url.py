@@ -6,7 +6,7 @@ from werkzeug.utils import redirect
 ALWAYS_VALID_URLS = [
     '/login', '/home', '/about', '/inventory_page', '/quest_log',
     '/attributes', '/proficiencies', '/ability_tree/*', '/bestiary/*',
-    '/people_log/*', '/map_log', '/quest_log', '/display_users/*',
+    '/people_log/*', '/map_log', '/quest_log', '/display_accounts/*',
     '/inbox', '/logout',
 ]
 

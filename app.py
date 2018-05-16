@@ -9,7 +9,7 @@ from math import ceil
 from socket import gethostname
 
 from flask import (
-    Flask, render_template, redirect, url_for, request, session)
+    Flask, render_template, request)
 from flask_sslify import SSLify
 import werkzeug
 
@@ -54,38 +54,6 @@ sslify = SSLify(app)
 # username (which is unique).
 # Now, I am having trouble sending the account to HTML. I can't seem to
 # understand how to store the account information as a variable.
-@app.route('/display_users/<page_type>/<page_detail>', methods=['GET', 'POST'])
-@uses_hero
-def display_user_page(page_type, page_detail, hero=None):
-    descending = False
-    if page_detail == hero.clicked_user_attribute:
-        hero.clicked_user_attribute = ""
-        descending = True
-    else:
-        hero.clicked_user_attribute = page_detail
-
-    if page_type == "display":
-        sorted_heroes = database.fetch_sorted_heroes(page_detail, descending)
-        return render_template(
-            'users.html', page_title="Users", hero=hero,
-            page_detail=page_detail, all_heroes=sorted_heroes)
-    elif page_type == "see_user":
-        this_user = database.get_user_by_username(page_detail)
-        this_hero = database.fetch_hero_by_username(page_detail)
-        # Below code is just messing with inbox
-        if request.method == 'POST':
-            this_message = request.form['message']
-            if len(this_message) > 1:
-                hero.account.inbox.send_message(this_user, this_message, str(EZDB.now()))
-                confirmation_message = "Message sent!"
-            else:
-                confirmation_message = "Please type your message"
-            return render_template('profile_other_user.html', hero=hero, page_title=str(this_user.username),
-                                   enemy_hero=this_hero, confirmation=confirmation_message)
-        # Above this is inbox nonsense
-        return render_template(
-            'profile_other_user.html', hero=hero, page_title=str(this_user.username),
-            enemy_hero=this_hero)
 
 
 @app.route('/global_chat', methods=['GET', 'POST'])

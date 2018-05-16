@@ -31,9 +31,9 @@
         <tr id="messageID-{{ message.id }}">
             <td><input id="selectableCheckbox" type="checkbox" value="{{ message.id }}" />{% if message.unread %}NEW{% else %}OLD{% endif %}</td>
             {% if outbox %}
-                <td><a href=/display_users/see_user/{{ message.receiver.user.username }}>{{ message.receiver.user.username }}</a></td>
+                <td><a href=/display_accounts/see_account/{{ message.receiver.user.username }}>{{ message.receiver.user.username }}</a></td>
             {% else %}
-                <td><a href=/display_users/see_user/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
+                <td><a href=/display_accounts/see_account/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
             {% endif %}
             <td
                 {% if message.unread %}

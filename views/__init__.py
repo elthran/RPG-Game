@@ -7,3 +7,4 @@ from . import logout
 from . import reset
 from . import icon
 from . import admin
+from . import display_accounts

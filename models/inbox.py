@@ -86,4 +86,4 @@ class Message(models.Base):
         self.receiver = receiver
         self.content = content
         self.unread = True
-        self.timestamp = time[:19]
+        self.timestamp = str(time[:19])

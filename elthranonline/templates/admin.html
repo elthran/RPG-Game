@@ -22,7 +22,7 @@
     <div style="clear: both;"></div>
     {% if path2 == "heroes" %}
         {% for hero in all_heroes %}
-        <li><a href="http://127.0.0.1:5000/display_users/see_user/{{ hero.account.username }}">{{ hero.name }}</a></li>
+        <li><a href="http://127.0.0.1:5000/display_accounts/see_account/{{ hero.account.username }}">{{ hero.name }}</a></li>
         {% endfor %}
     {% endif %}
 {% endif %}
