@@ -41,6 +41,7 @@ def add_new_hero_to_account(account):
         hero.journal.quest_paths = models.QuestPath.filter_by(is_default=True, template=True).all()
         hero.current_world = models.Location.filter_by(name="Htrae", type="map").one()
         hero.current_location = models.Location.filter_by(name="Old Man's Hut", type="building").one()
+        hero.game = models.Game()
         hero.creation_phase = True
         return hero
 

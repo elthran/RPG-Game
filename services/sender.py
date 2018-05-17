@@ -58,3 +58,8 @@ def send_email(user, address, key, url_root):
         print("Error: unable to send email")
         print("You need to setup your sendgrid server correctly.")
         print(ex)  # Fail gracefully ... should probably send error to user
+
+
+class Notification(object):
+    def send_notification(title="Attention!", content="Something interesting has happened.", url="/home"):
+        return None

@@ -24,7 +24,7 @@ def setup_account_for_reset(username):
     key = base64.urlsafe_b64encode(hashlib.sha256(key).digest())
     urlsafe_key = str(key)[2:-2]
     account.reset_key = urlsafe_key
-    account.reset_timeout = services.time.timeout_in(minutes=5)
+    account.reset_timeout = services.time.different_from_now_by(minutes=5)
     return urlsafe_key
 
 

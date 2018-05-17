@@ -8,7 +8,8 @@
 """ These functions control each battle within the game """
 
 from random import randint
-from models.game import round_number_intelligently
+from services.readability import round_number_intelligently
+
 
 def determine_attacker(active, inactive):
     """

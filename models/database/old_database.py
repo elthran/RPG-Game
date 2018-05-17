@@ -25,7 +25,7 @@ import sqlalchemy.exc
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
 from models import base_classes
 # Internal game modules
-from models.game import round_number_intelligently
+from services.readability import round_number_intelligently
 from models.hero import Hero
 from models.abilities import Ability
 from models.locations import Location

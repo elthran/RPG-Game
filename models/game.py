@@ -9,30 +9,28 @@
 
 Suggestion: change name to game_objects.py
 """
-
-from random import random
+import pdb
 
 import sqlalchemy as sa
+import sqlalchemy.orm
 
 import models
 
 
 class Game(models.Base):
+    has_enemy = sa.Column(sa.Boolean)
+
+    # Relationships
+    # game to hero is one to one
+    hero_id = sa.Column(sa.Integer, sa.ForeignKey('hero.id'))
+    hero = sa.orm.relationship("Hero", back_populates='game')
+
+    chat_log_id = sa.Column(sa.Integer, sa.ForeignKey('chat_log.id'))
+    chat_log = sa.orm.relationship("ChatLog", back_populates="games")
+
     def __init__(self, hero=None):
         self.hero = hero
         self.has_enemy = False
-        self.global_chat_user_list = {}
-        self.global_chat = []  # I am not sure if this should goin database? Just very temporary chat log that all users can see
-
-
-class Notification(object):
-    def send_notification(title="Attention!", content="Something interesting has happened.", url="/home"):
-        return None
-
-
-def round_number_intelligently(number):
-    """This will round a number based on its closeness to the next number. So (1.4) has a 40% chance to be rounded to a (2).
-    It returns an integer."""
-    new_amount = int(number) + (random() < number - int(number))
-    return new_amount
-
+        self.chat_log = models.ChatLog.get(1)
+        if not self.chat_log:
+            self.chat_log = models.ChatLog()

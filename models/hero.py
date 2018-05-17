@@ -4,9 +4,9 @@ import sqlalchemy as sa
 import sqlalchemy.orm
 import sqlalchemy.ext.hybrid
 
-import models.collections
-from models.game import round_number_intelligently
+import services.readability
 import models
+import models.collections
 
 
 class Hero(models.Base):
@@ -45,6 +45,8 @@ class Hero(models.Base):
     login_alerts = sa.Column(sa.String(200))  # Testing messages when you are attacked or get a new message
 
     # Relationships
+    game = sa.orm.relationship("Game", back_populates='hero', uselist=False, cascade="all, delete-orphan")
+
     # User to Hero. One to many. Ordered!
     # Note deleting the user deletes all their heroes!
     account_id = sa.Column(sa.Integer, sa.ForeignKey('account.id', ondelete="CASCADE"))
@@ -449,7 +451,7 @@ class Hero(models.Base):
 
     def gain_experience(self, amount):
         new_amount = amount * (1 + self.get_summed_proficiencies('understanding').final / 100)  # Each value of understanding should add 1% exp gained
-        new_amount = round_number_intelligently(new_amount)
+        new_amount = services.readability.round_number_intelligently(new_amount)
         self.experience += new_amount
         if self.experience >= self.experience_maximum:
             self.experience -= self.experience_maximum

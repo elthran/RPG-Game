@@ -22,10 +22,8 @@ def login_hero(hero, session):
     check_daily_login_reward(hero)
     # End of daily login reward code (Elthran)
     session['hero_id'] = hero.id
-    # Now I need to work out how to make game not global *sigh*
-    # (Marlen)
-    game = models.Game(hero)
-    models.Base.session.add(game)
+    if not hero.game:
+        hero.game = models.Game()
 
 
 def check_daily_login_reward(hero):

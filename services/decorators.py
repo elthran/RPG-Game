@@ -35,7 +35,7 @@ def uses_hero(f):
     def wrap_uses_hero(*args, **kwargs):
         try:
             # print("Currently at the uses_hero function!")
-            hero = models.hero.Hero.get(flask.session["hero_id"])
+            hero = models.Hero.get(flask.session["hero_id"])
         except KeyError as ex:
             if not flask.session:
                 # After making a POST request with AJAX the session

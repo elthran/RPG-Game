@@ -17,5 +17,6 @@ from . import proficiencies
 from .quests import Quest, QuestPath
 from .specializations import Specialization, Archetype, Calling, Pantheon
 from .game import Game
+from .chat import ChatLog, ChatMessage
 
 # from . import database
