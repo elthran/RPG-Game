@@ -12,6 +12,14 @@
 <body class="loginBody">
     <div class="loginPage">
         <div class="loginDiv">
+            <form id="login-form" class="login-form" action="" method="post">
+                <input class="hide" type="text" name="type" value="login" />
+                <input id="loginFocus"  type="text" placeholder="username" name="username" autofocus tabindex=1 />
+                <input type="password" placeholder="password" name="password" tabindex=2 />
+                <button tabindex=3>login</button>
+                <br>
+                <p>New user? <a class="loginAlternateButton" title="Switch to register" href="#" onclick="toggleLoginRegister(this);return false;" data="register" >Create account</a></p>
+            </form>
             <form id="register-form" class="hide" action="" method="post">
                 <input class="hide" type="text" name="type" value="register" />
                 <input id="registerFocus" type="text" placeholder="username" name="username" autofocus tabindex=1 />
@@ -20,14 +28,6 @@
                 <button tabindex=4>create account</button>
                 <br>
                 <p>Already have an account? <a class="loginAlternateButton" title="Switch to login" href="#" onclick="toggleLoginRegister(this);return false;" data="login" >Login</a></p>
-            </form>
-            <form id="login-form" class="login-form" action="" method="post">
-                <input class="hide" type="text" name="type" value="login" />
-                <input id="loginFocus"  type="text" placeholder="username" name="username" autofocus tabindex=1 />
-                <input type="password" placeholder="password" name="password" tabindex=2 />
-                <button tabindex=3>login</button>
-                <br>
-                <p>New user? <a class="loginAlternateButton" title="Switch to register" href="#" onclick="toggleLoginRegister(this);return false;" data="register" >Create account</a></p>
             </form>
             <form id="reset-form" class="hide" action="" method="post">
                 <p style="float:left;">Email reset link for account: <strong>{{ username }}</strong></p>

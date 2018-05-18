@@ -4,11 +4,10 @@
 {% block block1 %}
 <h1><center>Global Chat Room</center></h1>
 <form method="post" action="" autocomplete="off">
-	<input type="text" name="message" value="">
-	<input type="submit" value="Send">
+	<input type="text" name="message" value="" autofocus tabindex="1">
+	<input type="submit" value="Send" tabindex="2">
 </form>
 <ul>
-    <p>Should be newest to oldest! Check order_by in Game object.</p>
 	{% for entry in chat_messages %}
 	<li><strong>{{ entry.timestamp.strftime("%H:%M:%S") }} - {{ entry.sender_name }}:</strong> {{ entry.message }}</li>
 	{% endfor %}
