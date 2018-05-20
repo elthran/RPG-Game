@@ -1,6 +1,7 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 
+import services.time
 import models
 
 
@@ -42,7 +43,7 @@ class Inbox(models.Base):
         """
         return self.received_messages
 
-    def send_message(self, receiver, content, time):
+    def send_message(self, receiver, content):
         """Create a message between the inbox's user and another user.
 
         A database commit must take place after this method or the
@@ -56,7 +57,7 @@ class Inbox(models.Base):
         So in app.py you will call:
         user.inbox.send_message(other_user, content)
         """
-        Message(self, receiver.inbox, content, time)
+        Message(self, receiver.inbox, content)
 
 
 class Message(models.Base):
@@ -74,9 +75,9 @@ class Message(models.Base):
         "Inbox", back_populates="received_messages",
         foreign_keys="[Message.receiver_id]")
 
-    timestamp = sa.Column(sa.String(50))
+    timestamp = sa.Column(sa.DateTime)
 
-    def __init__(self, sender, receiver, content, time):
+    def __init__(self, sender, receiver, content):
         """A message between two users with some content.
 
         Both the sender and receiver are User objects.
@@ -86,4 +87,4 @@ class Message(models.Base):
         self.receiver = receiver
         self.content = content
         self.unread = True
-        self.timestamp = str(time[:19])
+        self.timestamp = services.time.now()

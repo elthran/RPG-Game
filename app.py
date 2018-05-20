@@ -49,44 +49,6 @@ app = create_app()
 sslify = SSLify(app)
 
 
-@app.route('/inbox/<outbox>', methods=['GET', 'POST'])
-@uses_hero
-def inbox(outbox, hero=None):
-    hero.account.inbox_alert = False # Your inbox alert will no longer glow until a new message is sent to you, even if you dont open all your letters
-    if outbox == "outbox":
-        outbox = True
-    else:
-        outbox = False
-    if request.method == 'POST':
-        # pprint(request.form)
-        if request.is_json:
-            data = request.get_json()
-            ids_to_delete = data['ids']
-            try:
-                for message_id in ids_to_delete:
-                    database.delete_object_by_id("Message", message_id)
-                return "success"
-            except IndexError as ex:
-                return "error: {}".format(ex)
-        else:
-            if "replyToMessage" in request.form:
-                message = database.get_object_by_id("Message", request.form['message_id'])
-                content = request.form["replyContent"]
-                receiver = message.sender.account
-                hero.account.inbox.send_message(receiver, content, str(EZDB.now()))
-                receiver.inbox_alert = True
-            else:
-                content = request.form["newMessageContent"]
-                receiver = request.form["receiver"]
-                receiver = database.get_account_by_username(receiver)
-                try:
-                    hero.account.inbox.send_message(receiver, content, str(EZDB.now()))
-                    receiver.inbox_alert = True
-                except AttributeError:
-                    print("Message failed to send: the username does not exist")
-    return render_template('inbox.html', page_title="Inbox", hero=hero, outbox=outbox)
-
-
 @app.route('/spellbook')
 @uses_hero
 def spellbook(hero=None):

@@ -31,6 +31,9 @@ class Game(models.Base):
     def __init__(self, hero=None):
         self.hero = hero
         self.has_enemy = False
+
+        # Use first ChatLog object or create it if it doesn't exits.
+        # This could in theory be used to add custom player to player chat?
         self.chat_log = models.ChatLog.get(1)
         if not self.chat_log:
             self.chat_log = models.ChatLog()

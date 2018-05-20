@@ -7,7 +7,7 @@ from . import bestiary2
 from .events import Event
 from .forum import Forum
 from .hero import Hero
-from .inbox import Inbox
+from .inbox import Inbox, Message
 from .inventory import Inventory
 from .items import Item
 from .journal import Journal

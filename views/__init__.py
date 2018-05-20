@@ -9,3 +9,4 @@ from . import icon
 from . import admin
 from . import display_accounts
 from . import global_chat
+from . import inbox
