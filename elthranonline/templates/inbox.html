@@ -31,9 +31,9 @@
         <tr id="messageID-{{ message.id }}">
             <td><input id="selectableCheckbox" type="checkbox" value="{{ message.id }}" />{% if message.unread %}NEW{% else %}OLD{% endif %}</td>
             {% if outbox %}
-                <td><a href=/display_accounts/see_account/{{ message.receiver.user.username }}>{{ message.receiver.user.username }}</a></td>
+                <td><a href=/display_accounts/see_account/{{ message.receiver.account.username }}>{{ message.receiver.account.username }}</a></td>
             {% else %}
-                <td><a href=/display_accounts/see_account/{{ message.sender.user.username }}>{{ message.sender.user.username }}</a></td>
+                <td><a href=/display_accounts/see_account/{{ message.sender.account.username }}>{{ message.sender.account.username }}</a></td>
             {% endif %}
             <td
                 {% if message.unread %}
@@ -42,7 +42,7 @@
                     >
                 {% endif %}
                 <!-- Trigger/Open The Modal -->
-                <button data="{{ message.id }}" data-py-function="get_message_content_and_sender_by_id" data-js-callback="popupReplyBox">
+                <button onclick="sendToPy(event, popupReplyBox, 'get_message_content_and_sender_by_id', {'id': {{ message.id }}});">
                     {{ message.content[0:7] }}...
                 </button>
             <td>{{ message.timestamp }}</td>

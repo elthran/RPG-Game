@@ -587,8 +587,10 @@ function confirmHeroSelection(element) {
 // Inbox Reply popup
 
 //Function To Display Popup
-function popupReplyBox(button, messageContent, messageSender) {
+function popupReplyBox(response, oldData) {
     // Here we need to add some JS to make the message no longer bold, as it is no longer unread
+
+    // old code (button, messageContent, messageSender)
     document.getElementById('inboxPopupWindow').style.display = "block";
 
     var contentInput = document.querySelector("[name=content]");
@@ -596,9 +598,9 @@ function popupReplyBox(button, messageContent, messageSender) {
     if (contentInput) {
         contentInput.focus();
     }
-    document.getElementById('replyBoxMessageContent').innerHTML = messageContent;
-    document.getElementById('replyBoxMessageSender').innerHTML = messageSender;
-    document.querySelector("[name=message_id]").value = button.getAttribute("data");
+    document.getElementById('replyBoxMessageContent').innerHTML = response.messageContent;
+    document.getElementById('replyBoxMessageSender').innerHTML = response.messageSender;
+    document.querySelector("[name=message_id]").value = oldData.id;
 }
 
 function newPopupReplyBox(button) {
