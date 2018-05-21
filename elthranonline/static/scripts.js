@@ -695,7 +695,7 @@ function getIdsFromCheckboxes(element) {
     var i;
     for (i = 0; i < form.length; i++) {
         if (form.elements[i].checked) {
-            ids.push(form.elements[i].value);
+            ids.push(parseInt(form.elements[i].value));
         }
     }
     return {

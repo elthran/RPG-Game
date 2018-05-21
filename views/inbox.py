@@ -1,3 +1,5 @@
+import pdb
+
 import flask
 
 from elthranonline import app
@@ -15,6 +17,7 @@ def inbox(outbox, hero=None):
             data = flask.request.get_json()
             # TODO add security to this! Otherwise a malicious user could delete messages from an account they didn't own!
             controller.inbox.delete_messages_by_id(data['ids'])
+            return "success"
         else:
             if "replyToMessage" in flask.request.form:
                 controller.inbox.reply_to_message(hero, flask.request.form.get('message_id', None, type=int), flask.request.form.get("replyContent", None, type=str))

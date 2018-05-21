@@ -1,3 +1,5 @@
+import pdb
+
 import models
 
 
@@ -12,8 +14,11 @@ def check_messages(hero):
 
 
 def delete_messages_by_id(ids):
-    """Delete all messages with passed ids."""
-    models.Message.query().filter(models.Message.id.in_(ids)).delete()
+    """Delete all messages with passed ids.
+
+    I don't understand what synchronize_session="fetch" does ...
+    """
+    models.Message.query().filter(models.Message.id.in_(ids)).delete(synchronize_session='fetch')
 
 
 def reply_to_message(sender, message_id, content):
