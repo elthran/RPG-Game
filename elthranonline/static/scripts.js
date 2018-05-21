@@ -601,13 +601,15 @@ function popupReplyBox(button, messageContent, messageSender) {
     document.querySelector("[name=message_id]").value = button.getAttribute("data");
 }
 
-function newPopupReplyBox(button, messageContent, messageSender) {
-    document.getElementById('inboxNewPopupWindow').style.display = "block";
-    var contentInput = document.querySelector("[name=content]");
+function newPopupReplyBox(button) {
+    var modal = document.getElementById('inboxNewPopupWindow')
+
+    modal.style.display = "block";
+    var contentInput = modal.querySelector("[name=receiver]");
     if (contentInput) {
         contentInput.focus();
     }
-    document.querySelector("[name=message_id]").value = button.getAttribute("data");
+    document.querySelector("[name=message_id]").value = "";
 }
 
 function newThreadBox(button, threadName, threadDescription) {
@@ -622,32 +624,41 @@ function newThreadBox(button, threadName, threadDescription) {
 document.addEventListener("DOMContentLoaded", function () {
     "use strict";
     // Get the modal
-    var modal = document.getElementById('inboxPopupWindow');
+    var modals = document.querySelectorAll(".modal");
+    modals.forEach(setUpModal);
 
-    if (modal) {
-        // Get the <span> element that closes the modal
-        var span = document.querySelector(".close");
+    function setUpModal(modal) {
+        if (modal) {
+            // Get the <span> element that closes the modal
+            // Search only inside this modal element!
+            var span = modal.querySelector(".close");
 
-        // When the user clicks on <span> (x), close the modal
-        if (span) {
-            span.onclick = function() {
-                modal.style.display = "none";
+            // When the user clicks on <span> (x), close the modal
+            if (span) {
+                span.addEventListener("click", function() {
+                    modal.style.display = "none";
+                });
             }
+            // When the user clicks anywhere outside of the modal, close it
+            // TODO doesn't quite work .. sidebar eats all clicks?
+            var modalContent = modal.querySelector(".modal-content");
+            if (modalContent) {
+                document.addEventListener('click', closeModal, true);
+            }
+
+            function closeModal(event) {
+                if (event.target.querySelector(".modal-content")) {
+                    modal.style.display = "none";
+                }
+            }
+
+            // Handle ESC key (key code 27)
+            document.addEventListener('keyup', function(e) {
+                if (e.keyCode == 27) {
+                    modal.style.display = "none";
+                }
+            });
         }
-
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-
-        // Handle ESC key (key code 27)
-        document.addEventListener('keyup', function(e) {
-            if (e.keyCode == 27) {
-                modal.style.display = "none";
-            }
-        });
     }
 }, true);
 
