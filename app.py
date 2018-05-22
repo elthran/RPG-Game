@@ -773,6 +773,10 @@ def ability_tree(spec, hero=None):
         becomeType = "archetype"
         spec_choices = database.get_all_objects("Archetype")
 
+        for temp in spec_choices:
+            if temp.name == "Philosopher":
+                temp.hidden = False
+
     elif spec == "calling" and hero.specializations.calling is None: # On the archetype pagebut the hero doesn't have one!
         page_title = "Calling Abilities"
         becomeType = "calling"

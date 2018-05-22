@@ -12,9 +12,16 @@
             <ul>
             {% for spec in spec_choices %}
                 <li>
-                    <button class="genericTooltipTrigger" onclick="sendToPy(event, specializationTooltip, 'update_specialization_tooltip', {'id': {{ spec.id }}});">
-                        {{ spec.name.title() }}
-                    </button>
+                    {% if spec.hidden %}
+                    <button class="genericTooltipTrigger"
+                            onclick="sendToPy(event, specializationTooltip, 'update_specialization_tooltip', {'id': 0});">
+                        Unknown
+                        {% else %}
+                        <button class="genericTooltipTrigger"
+                                onclick="sendToPy(event, specializationTooltip, 'update_specialization_tooltip', {'id': {{ spec.id }}});">
+                            {{ spec.name.title() }}
+                        </button>
+                        {% endif %}
                 </li>
             {% endfor %}
             </ul>
