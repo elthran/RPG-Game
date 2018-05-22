@@ -5,6 +5,8 @@ import re
 from functools import wraps
 from flask import render_template_string, jsonify
 
+import specializations
+
 
 def set_notification_active(f):
     """Tack data onto a response that activates the notification button.
@@ -383,9 +385,16 @@ class Command:
 
     @staticmethod
     def update_specialization_tooltip(hero, database, data, **kwargs):
-        tooltip_id = data['id']
-        spec = database.get_specialization_by_id(tooltip_id)
-        return jsonify(description=spec.description, requirements=spec.requirements, unlocked=spec.check_locked(hero), id=spec.id)
+        if data['id']:
+            spec = database.get_object_by_id("Specialization", data['id'])
+            if data['id'] in hero.specialization_access:
+                hsa = hero.specialization_access[data['id']]
+                if hsa.disabled:
+                    hsa.disabled = hsa.check_locked(hero)
+            else:
+                hsa = None
+            return jsonify(description=spec.description, requirements=spec.requirements, disabled=hsa.disabled if hsa else True, id=spec.id)
+        return jsonify(description="Unknown", requirements="Unknown", disabled=True, id=0)
 
     @staticmethod
     def change_ability_tooltip(hero, database, data, **kwargs):
@@ -419,7 +428,8 @@ class Command:
     def update_specialization(hero, database, data, **kwargs):
         spec_id = data['id']
         specialization = database.get_object_by_id("Specialization", spec_id)
-        if not specialization.check_locked(hero):
+        hsa = hero.specialization_access[spec_id]
+        if hsa.disabled:
             return "error: Attempted to add locked specialization to hero."
         # spec.level += 1 or something?
 

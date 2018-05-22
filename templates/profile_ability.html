@@ -11,17 +11,18 @@
             <h2>You have yet to choose a {{ ability_tree }}. After you choose, you will be able to learn abilities related to that {{ ability_tree }}.</h2>
             <ul>
             {% for spec in spec_choices %}
+                {% set hsa = hero.specialization_access[spec.id] if spec.id in hero.specialization_access else None %}
                 <li>
-                    {% if spec.hidden %}
+                    {% if not hsa or (hsa and hsa.hidden) %} {# check if spec has a hero.spec_access ... then check it's hidden property #}
                     <button class="genericTooltipTrigger"
                             onclick="sendToPy(event, specializationTooltip, 'update_specialization_tooltip', {'id': 0});">
                         Unknown
-                        {% else %}
+                        {% elif hsa and not hsa.hidden %}
                         <button class="genericTooltipTrigger"
                                 onclick="sendToPy(event, specializationTooltip, 'update_specialization_tooltip', {'id': {{ spec.id }}});">
                             {{ spec.name.title() }}
-                        </button>
                         {% endif %}
+                        </button>
                 </li>
             {% endfor %}
             </ul>

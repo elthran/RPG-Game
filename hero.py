@@ -12,6 +12,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import orm
 from sqlalchemy.orm import validates
 from sqlalchemy.ext.hybrid import hybrid_property
+import sqlalchemy.orm.collections
 
 from game import round_number_intelligently
 import attributes
@@ -250,6 +251,19 @@ class Hero(SessionHoistMixin, Base):
             getattr(specializations, value.name)().hero = self
         else:
             value.hero = self
+
+    # Hero specialization - disable and/or hidden
+    specialization_access = relationship("HeroSpecializationAccess", collection_class=sqlalchemy.orm.collections.attribute_mapped_collection('specialization_id'), cascade='all, delete-orphan', back_populates="hero")
+
+    def set_specialization_access(self, specialization, hidden=True, disabled=True):
+        """Add a new specialization access object to this hero.
+
+        You must pass in a valid specialization object.
+        Future versions could query the database and create a relationship
+        based specialization name.
+        """
+        hsa = specializations.HeroSpecializationAccess(specialization, hidden=hidden, disabled=disabled)
+        self.specialization_access[specialization.id] = hsa
 
     def __init__(self, **kwargs):
         """Initialize the Hero object.

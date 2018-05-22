@@ -6,6 +6,7 @@ import services.finder
 import build_code
 
 
+# TODO convert to mixin! save compiled code for reuse!
 class Requirement:
     # description = sa.Column(sa.String(100))
 
@@ -54,7 +55,8 @@ class Requirement:
                 level = requirement[-1]
                 code.append("hero.{}.{}.level >= {}".format(var, attrib, level))
             elif type_ in (3, 5, 7):
-                print("This requirement '{}' (type {}) isn't specific enough!".format(' '.join(requirement), type_))
+                pass
+                # print("This requirement '{}' (type {}) isn't specific enough!".format(' '.join(requirement), type_))
         code = " and ".join(code)
         return code
 
