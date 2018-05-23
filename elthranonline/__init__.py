@@ -1,3 +1,5 @@
+import socket
+
 import flask as fl
 import flask_sslify
 
@@ -9,6 +11,11 @@ def create_app():
     app_ = fl.Flask(__name__)
     app_.config.from_object('private_config')
 
+    if 'liveweb' not in socket.gethostname():  # Running on local machine.
+        # Shouldn't run when not testing.
+        app_.jinja_env.trim_blocks = True
+        app_.jinja_env.lstrip_blocks = True
+        app_.jinja_env.auto_reload = True
     # async_process(game_clock, args=(database,))
     return app_
 

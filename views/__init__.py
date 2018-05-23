@@ -13,3 +13,6 @@ from . import inbox
 from . import command
 from . import about
 from . import gate
+from . import house
+from . import market
+from . import tavern

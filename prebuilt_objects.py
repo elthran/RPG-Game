@@ -93,6 +93,10 @@ blacksmith = Location('Blacksmith', 'store')
 marketplace = Location('Marketplace', 'store')
 #marketplace.children.append(Location('general', 'marketplace'))
 tavern = Location("Red Dragon Inn", 'tavern')
+tavern.display.page_title = "Tavern"
+tavern.display.page_heading = "You enter the Red Dragon Inn."
+tavern.display.page_image = "bartender"
+tavern.display.paragraph = None
 
 barracks = Location('Barracks', 'barracks')
 spar = Location('Spar', 'spar')
