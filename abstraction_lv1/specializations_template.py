@@ -25,6 +25,33 @@ SPECIALIZATIONS_CATEGORIES = ['archetype', 'calling']
 {% import 'container_helpers.py' as container_helpers %}
 {{ container_helpers.build_container("Ability", "abilities", ALL_SPECIALIZATIONS, no_container=True) }}
 
+class HeroSpecializationAccess(Base):
+    __tablename__ = 'hero_specialization_access'
+    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"), primary_key=True)
+    specialization_id = Column(Integer, ForeignKey('specialization.id'), primary_key=True)
+    hidden = Column(Boolean)
+    disabled = Column(Boolean)
+    specialization = relationship("Specialization")
+    hero = relationship("Hero")
+
+    def __init__(self, specialization, hidden=True, disabled=True):
+        self.specialization = specialization
+        self.hidden = hidden
+        self.disabled = disabled
+        self.requirement_interface = None
+        # self.requirement_interface = interfaces.requirements.Requirement(self.requirements)
+
+    # @orm.reconstructor
+    # def init_on_load(self):
+    #     self.requirement_interface = interfaces.requirements.Requirement(self.requirements)
+
+    def check_locked(self, hero):
+        if getattr(self, 'requirement_interface', None) is None:
+            self.requirement_interface = interfaces.requirements.Requirement(self.specialization.requirements)
+        self.disabled = not self.requirement_interface.met(hero)
+        return self.disabled
+
+
 class Specialization(TemplateMixin, Base):
     __tablename__ = "specialization"
 
@@ -66,14 +93,6 @@ class Archetype(Specialization):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.requirement_interface = interfaces.requirements.Requirement(self.requirements)
-
-    @orm.reconstructor
-    def init_on_load(self):
-        self.requirement_interface = interfaces.requirements.Requirement(self.requirements)
-
-    def check_locked(self, hero):
-        return self.requirement_interface.met(hero)
 
 
 class Calling(Specialization):
