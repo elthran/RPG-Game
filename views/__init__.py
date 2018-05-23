@@ -16,3 +16,4 @@ from . import gate
 from . import house
 from . import market
 from . import tavern
+from . import battle

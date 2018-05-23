@@ -520,6 +520,17 @@ class Hero(models.Base):
                 for hero in self.current_location.heroes_by_current_location
                 if self.id != hero.id]
 
+    def is_dead(self):
+        """Return True if hero is dead, else False.
+
+        Opposite of is_alive(). Both of these are just convenience functions.
+        """
+        return not self.is_alive()
+
+    def is_alive(self):
+        """Return True if Hero is alive else False."""
+        return self.base_proficiencies['health'].current > 0
+
 
 if __name__ == "__main__":
     import os

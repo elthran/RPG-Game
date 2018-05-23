@@ -12,7 +12,6 @@ from flask import (
 from flask_sslify import SSLify
 
 from models.game import Game
-import combat_simulator
 # Marked for restructure! Avoid use of import * in production code.
 from bestiary import *
 # from events import Event
@@ -540,54 +539,6 @@ def arena(name='', hero=None, location=None):
         page_heading=location.display.page_heading,
         page_image=location.display.page_image, hero=hero, game=game,
         page_links=page_links, enemy_info=conversation)
-
-
-# this gets called if you fight in the arena
-@app.route('/battle/<enemy_user>')
-@login_required
-@uses_hero
-def battle(enemy_user=None, hero=None):
-    page_links = [("Return to your ", "/home", "profile", " page.")]
-    if enemy_user == "monster": # Ideally if this is an integer then search for a monster with that ID.
-        pass
-    else:   # If it's not an integer, then it's a username. Search for that user's hero.
-        enemy = database.fetch_hero_by_username(enemy_user)
-        # enemy.login_alerts += "You have been attacked!-"     This will be changed to the new notification system.
-        enemy.experience_rewarded = enemy.age # For now you just get 1 experience for each level the other hero was
-        enemy.items_rewarded = []   # Currently you get no items for killing another user
-    battle_log = combat_simulator.battle_logic(hero, enemy) # Not sure if the combat sim should update the database or return the heros to be updated here
-    hero.current_dungeon_monster = False # Whether you win or lose, the monster will now be gone.
-    if hero.base_proficiencies['health'].current == 0: # First see if the player died.
-        location = database.get_object_by_name('Location', hero.last_city.name) # Return hero to last visited city
-        hero.current_location = location
-        hero.current_dungeon_monster = False  # Reset any progress in any dungeon he was in
-        hero.journal.achievements.deaths += 1  # Record that the hero has another death
-        battle_log.append("You were defeated. You gain no experience and your account should be deleted.")
-        if enemy_user != "monster":
-            enemy.journal.achievements.player_kills += 1
-            pass
-    else:  # Ok, the hero is not dead. Currently that means he won! Since we don't have ties yet.
-        experience_gained = str(hero.gain_experience(enemy.experience_rewarded)) # This works PERFECTLY as intended!
-        if enemy_user == "monster": # This needs updating. If you killed a monster then the next few lines should differ from a user
-            hero.journal.achievements.monster_kills += 1
-            pass
-        else: # Ok, you killed a user!
-            hero.journal.achievements.player_kills += 1  # You get a player kill score!
-            enemy.journal.achievements.deaths += 1  # Make sure they get their death recorded!
-            location = database.get_object_by_name('Location', enemy.last_city.name) # Send them to their last visited city
-            enemy.current_location = location
-        if len(enemy.items_rewarded) > 0: # Give the hero any items earned! This probably should be completely redone.
-            for item in enemy.items_rewarded:
-                if not any(items.name == item.name for items in hero.inventory):
-                    hero.inventory.append(item)
-                else:
-                    for items in hero.inventory:
-                        if items.name == item.name:
-                            items.amount_owned += 1
-                battle_log.append("You have defeated the " + enemy.name + " and gained " + experience_gained + " experience!")
-        page_links = [("Return to where you ", hero.current_location.url, "were", ".")]
-    return render_template('battle.html', battle_log=battle_log, hero=hero, enemy=enemy, page_links=page_links)
-
 
 # END OF STARTING TOWN FUNCTIONS
 
