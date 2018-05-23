@@ -10,7 +10,7 @@ from .hero import Hero
 from .inbox import Inbox, Message
 from .inventory import Inventory
 from .items import Item
-from .journal import Journal
+from .journal import Journal, Entry
 from .locations import Location
 from . import mixins
 from . import proficiencies

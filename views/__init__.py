@@ -11,3 +11,5 @@ from . import display_accounts
 from . import global_chat
 from . import inbox
 from . import command
+from . import about
+from . import gate

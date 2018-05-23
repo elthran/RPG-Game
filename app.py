@@ -696,30 +696,7 @@ def house(name='', hero=None):
     return render_template('generic_location.html', hero=hero)
 
 
-@app.route('/gate/<name>')
-@login_required
-@uses_hero
-def leave_town(name='', hero=None):
-    location = database.get_object_by_name('Location', name)
-    conversation = [
-        ("City Guard: ", "You are too young to be out on your own.")]
-    page_links = [
-        ("Return to the ", "/Town/" + hero.current_city.name, "city", ".")]
-    return render_template('gate.html', hero=hero,
-                           page_heading=location.display.page_heading,
-                           conversation=conversation,
-                           page_links=page_links)  # return a string
 # END OF STARTING TOWN FUNCTIONS
-
-
-@app.route('/about')
-@uses_hero
-def about_page(hero=None):
-    info = "The game is being created by Elthran and Haldon, with some help " \
-           "from Gnahz. Any inquiries can be made to elthranRPG@gmail.com"
-    return render_template('about.html', hero=hero, page_title="About",
-                           gameVersion="0.11.26", info=info)
-
 
 
 # start the server with the 'run()' method

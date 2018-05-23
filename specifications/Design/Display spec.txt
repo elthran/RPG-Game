@@ -1,0 +1,37 @@
+New generic.html -> display object.
+Problem:
+    How to set up different version of a page based on hero values.
+Solutions:
+    Move if statements to html make specific pages for barracks etc.
+    Make page_links variable dynamic? It is some kind of function that accepts a dictionary?
+    Make function that sets up Location content based on passed variables? Like the "Adjacent locations"/display_links are some kind of function object? Very meta. Might be too hard to understand. Hmmm ... Ok what about a setup involving "Condition" -> "Page state" or should I just have another page? The barracks object can have an adjacentcy/page_links function that accepts if conditions? If "if hero.proficiencies.health.current <= 0:" adjacentcy/page_links is None, else display all normal links.    
+
+Principles:
+    I believe that a "Location" on the website and a "Location" in the game world ... should be the same thing.
+I don't think I need to distiguish between them. Or maybe I do. Like ... Location ... web Location. I guess that is sort of what the Display object is ... a web location.
+
+Solution 3:
+    I guess this would be link a "view" each location can have multiple views?
+    Each view has a certain number of links.
+    These links must be part of the normal parent/children/siblings set.
+    Set up a way to remove links based on a condition.
+    
+class Location:
+    def add_view(self, condition, keys):
+        """Add a view to a this object.
+        
+        Each key must be a parent/child/sibling.
+        Each condition is python code as a string.
+        """
+        self.view.conditions[condition] = keys
+        
+    def adjacent(self, hero):
+        reuturn self.view(hero) -> keys
+        
+    def build_views(self, hero):
+        self.conditions
+        
+        {% for condition, link in conditions.items() %}
+            if {{ condition }}:
+                self.display.page_links = keys?
+        {% endfor %}
