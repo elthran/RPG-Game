@@ -22,13 +22,17 @@ def battle(hero, enemy):
     setup_for_battle(hero)
     setup_for_battle(enemy)
 
-    hero.battle_log = combat_simulator.battle_logic(hero, enemy)  # Not sure if the combat sim should update the database or return the heroes to be updated here
-    enemy.battle_log = []
-    if enemy.__class__.__name__ == "Hero":
-        post_hero_battle(hero, enemy)
-    else:
-        post_monster_battle(hero, enemy)
-    return hero.battle_log, enemy
+    if enemy and hero.is_alive() and enemy.is_alive():
+        hero.battle_log = combat_simulator.battle_logic(hero, enemy)  # Not sure if the combat sim should update the database or return the heroes to be updated here
+        enemy.battle_log = []
+        if enemy.__class__.__name__ == "Hero":
+            post_hero_battle(hero, enemy)
+        else:
+            post_monster_battle(hero, enemy)
+        return hero.battle_log, enemy
+    if hero.is_dead():
+        return ["You are to weak to fight!"], enemy
+    return ["{} is dead. Don't beat a dead horse!".format(enemy.name)], enemy
 
 
 def post_hero_battle(hero, enemy):
