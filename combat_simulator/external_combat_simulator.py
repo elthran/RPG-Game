@@ -1,7 +1,7 @@
 import sys
 import time
 
-from combat_formulas import *
+from .combat_formulas import *
 from math import floor, sin
 from random import randint, seed
 from enum import Enum

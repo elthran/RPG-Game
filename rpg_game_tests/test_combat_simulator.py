@@ -2,7 +2,7 @@
 Test combat simulator.
 """
 import pytest
-from combat_simulator import battle_logic, determine_attacker, determine_if_hits, determine_if_critical_hit, calculate_damage, add_killshot_multiplier
+from combat_simulator.combat_simulator import battle_logic, determine_attacker, determine_if_hits, determine_if_critical_hit, calculate_damage, add_killshot_multiplier
 from models.hero import Hero
 
 """
