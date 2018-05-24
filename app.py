@@ -6,8 +6,6 @@
 # ///////////////////////////////////////////////////////////////////////////#
 
 
-import pdb  # For testing!
-from pprint import pprint  # For testing!
 from functools import wraps
 import os
 
@@ -18,19 +16,20 @@ from flask_sslify import SSLify
 
 import werkzeug
 
-from game import Game
+from models.game import Game
 import combat_simulator
 # Marked for restructure! Avoid use of import * in production code.
-from bestiary import generate_monster
+from models.bestiary import generate_monster
 from commands import Command
 # from events import Event
 # MUST be imported _after_ all other game objects but
 # _before_ any of them are used.
 from database import EZDB
-from engine import Engine, game_clock, async_process, rest_key_timelock
+from engine import Engine
 from forum import Board, Thread, Post
 from math import ceil
 from random import randint # Currently just used in the dungeon code I think
+from models.bestiary import NPC
 
 # INIT AND LOGIN FUNCTIONS
 # for server code swap this over:
@@ -1417,120 +1416,4 @@ def leave_town(name='', hero=None):
                            page_heading=location.display.page_heading,
                            conversation=conversation,
                            page_links=page_links)  # return a string
-# END OF STARTING TOWN FUNCTIONS
 
-
-# This gets called anytime a button gets clicked in html using
-# <button class="command", value="foo">. "foo" is what gets sent to this
-# Python code.
-# need to make sure this doesn't conflict with other routes
-@app.route('/command/<cmd>', methods=['GET', 'POST'])
-@uses_hero
-def command(cmd=None, hero=None):
-    """Accept a string from HTML button code -> send back a response.
-
-    The response must be in the form: "key=value" (at this time.)
-    See the Command class in the commands.py module.
-    cmd is equal to the value of the value field in the html code
-    i.e. <button value='foo'> -> cmd == 'foo'
-
-    Extra data can be sent in request.args (which is accessible from within this namespace).
-
-    args are sent in the form "/" + command + "?key=value&&key2=value2".
-    Where the value of command == cmd and
-    args == {key: value, key2: value2} (well it isn't a real dict but it mostly acts like one).
-
-    Or you could sent the data as a file ... or raw or some XML or something
-    and then parse it on this end based on the headers. But that is more complicated
-    than I need right now.
-    """
-
-    testing = False  # True/False
-    if testing:
-        print('request is:', repr(request))
-        # print('request data:', repr(request.data))
-        # print("request form:", repr(request.form))
-        print('request view_args:', repr(request.view_args))
-        print('request args:', repr(request.args))
-        print('cmd is:', repr(cmd))
-
-    # event = Event(request.args)
-    # event.add["hero"] = hero
-    # event.add["database"] = database
-
-    response = None
-    try:
-        # command_function = getattr(Command, <cmd>)
-        # response = command_function(hero, database,
-        #   javascript_kwargs_from_html)
-        command_function = Command.cmd_functions(cmd)
-    except AttributeError as ex:
-        if str(ex) == "type object 'Command' has no attribute '{}'".format(
-                cmd):
-            print("You need to write a static function called '{}' in "
-                  "commands.py in the Command class.".format(cmd))
-            raise ex
-        raise ex
-
-    if request.method == 'POST' and request.is_json:
-        try:
-            data = request.get_json()
-        except werkzeug.exceptions.BadRequest as ex:
-            # This might be a terrible idea as maybe it lets people crash
-            # the server by sending invalid data?
-            # I figure that this error shouldn't pass silently with no idea
-            # what caused it.
-            raise Exception(str(ex))
-        response = command_function(hero, database, data=data,
-                                    engine=engine)
-    else:
-        response = command_function(hero, database=database,
-                                arg_dict=request.args, engine=engine)
-    # pdb.set_trace()
-    return response
-
-
-@app.route('/about')
-@uses_hero
-def about_page(hero=None):
-    info = "The game is being created by Elthran and Haldon, with some help " \
-           "from Gnahz. Any inquiries can be made to elthranRPG@gmail.com"
-    return render_template('about.html', hero=hero, page_title="About",
-                           gameVersion="0.11.26", info=info)
-
-
-###testing by Marlen ####
-@app.route('/')
-def main():
-    """Redirects user to a default first page
-
-    Currently the login page.
-    """
-    return redirect(url_for('login'))
-
-
-# start the server with the 'run()' method
-if __name__ == '__main__':
-    # import os
-
-    # Set Current Working Directory (CWD) to the home of this file.
-    # This should make all other files import relative to this file fixing the Database doesn't exist problem.
-
-    # os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
-
-    # Not implemented ... should be moved to prebuilt_objects.py and implemented in
-    # database.py as get_default_quests()
-    # Quest aren't actually implement yet but they will be soon!
-    # Super temporary while testing quests
-    # hero.inventory.append(QuestItem("Wolf Pelt", hero, 50))
-    # hero.inventory.append(QuestItem("Spider Leg", hero, 50))
-    # hero.inventory.append(QuestItem("Copper Coin", hero, 50))
-    # for item in hero.inventory:
-    #     item.amount_owned = 5
-
-    # Remove when not testing.
-    app.jinja_env.trim_blocks = True
-    app.jinja_env.lstrip_blocks = True
-    app.jinja_env.auto_reload = True
-    app.run(debug=True)

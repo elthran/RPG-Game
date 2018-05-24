@@ -1,40 +1,40 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
-from sqlalchemy.orm import relationship
+import sqlalchemy as sa
+import sqlalchemy.orm
 
-from models.base_classes import Base
+import models
 
 
-class Achievements(Base):
+class Achievements(models.Base):
     # Relationships
     # Achievements to Journal is One to One
     # Journal to Achievements is One to One.
-    journal_id = Column(Integer, ForeignKey('journal.id', ondelete="CASCADE"))
-    journal = relationship(
+    journal_id = sa.Column(sa.Integer, sa.ForeignKey('journal.id', ondelete="CASCADE"))
+    journal = sa.orm.relationship(
         "Journal",
         back_populates="achievements",
         cascade="all, delete-orphan",
         single_parent=True)
 
-    deepest_dungeon_floor = Column(Integer)  # High score for dungeon runs
-    current_dungeon_floor = Column(Integer)  # Which floor of dungeon your on
+    deepest_dungeon_floor = sa.Column(sa.Integer)  # High score for dungeon runs
+    current_dungeon_floor = sa.Column(sa.Integer)  # Which floor of dungeon your on
     # Current progress in current cave floor
-    current_dungeon_floor_progress = Column(Integer)
-    player_kills = Column(Integer)
-    monster_kills = Column(Integer)
-    deaths = Column(Integer)
-    wolf_kills = Column(Integer)
+    current_dungeon_floor_progress = sa.Column(sa.Integer)
+    player_kills = sa.Column(sa.Integer)
+    monster_kills = sa.Column(sa.Integer)
+    deaths = sa.Column(sa.Integer)
+    wolf_kills = sa.Column(sa.Integer)
 
-    achievements = relationship("Achievement", cascade="all, delete-orphan")
+    achievements = sa.orm.relationship("Achievement", cascade="all, delete-orphan")
 
     # Should return all completed Achievements?
-    completed_achievements = relationship(
+    completed_achievements = sa.orm.relationship(
         "Achievement",
         primaryjoin="and_(Achievements.id==Achievement.achievements_id, "
                     "Achievement.completed==True)",
         cascade="all, delete-orphan")
 
     # Should return a list of all Achievement type with "kill" in their name.
-    kill_achievements = relationship(
+    kill_achievements = sa.orm.relationship(
         "Achievement",
         primaryjoin="and_(Achievements.id==Achievement.achievements_id, "
                     "Achievement.name.ilike('%kill%'))",
@@ -53,17 +53,16 @@ class Achievements(Base):
         self.achievements = [Achievement("Wolf kills", experience=50)]
 
 
-class Achievement(Base):
+class Achievement(models.Base):
     # Relationships
-    achievements_id = Column(Integer, ForeignKey("achievements.id",
-                                                 ondelete="CASCADE"))
+    achievements_id = sa.Column(sa.Integer, sa.ForeignKey("achievements.id", ondelete="CASCADE"))
 
-    completed = Column(Boolean)
+    completed = sa.Column(sa.Boolean)
 
-    name = Column(String(100))
-    current_level = Column(Integer)
-    next_level = Column(Integer)
-    experience = Column(Integer)
+    name = sa.Column(sa.String(100))
+    current_level = sa.Column(sa.Integer)
+    next_level = sa.Column(sa.Integer)
+    experience = sa.Column(sa.Integer)
 
     def __init__(self, name, experience=0):
         self.name = name

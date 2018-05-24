@@ -23,7 +23,7 @@ def set_notification_active(f):
         response = f(hero, *args, **kwargs)
         # print("Using the set notification active code!")
         # notice = str(bool(hero.journal.notification)).lower()
-        notice = str(False).lower()  # debuging
+        notice = str(False).lower()  # debugging
         try:
             new_data = b'\n  "isNotice": ' + notice.encode() + b', '
             response.data = b"{" + new_data + response.data[1:]
@@ -230,8 +230,7 @@ def toggle_equip(hero, database, data, engine):
             hero,
             description="{} unequips a/an {}.".format(hero.name, item.name)
         )
-        return flask.jsonify(primarySlotType=primary_slot_type,
-                       command="unequip")
+        return flask.jsonify(primarySlotType=primary_slot_type, command="unequip")
     else:
         ids_to_unequip = hero.inventory.equip(item)
         hero.refresh_character()
@@ -240,8 +239,7 @@ def toggle_equip(hero, database, data, engine):
             hero,
             description="{} equips a/an {}.".format(hero.name, item.name)
         )
-        return flask.jsonify(primarySlotType=primary_slot_type,
-                       command="equip", idsToUnequip=ids_to_unequip)
+        return flask.jsonify(primarySlotType=primary_slot_type, command="equip", idsToUnequip=ids_to_unequip)
 
 
 def cast_spell(hero, database, data, **kwargs):
@@ -257,7 +255,7 @@ def turn_spellbook_page(hero, database, data, **kwargs):
     if data['direction'] == "forward":
         hero.spellbook_page = min(hero.spellbook_page+1,page_max)
     else:
-        hero.spellbook_page = max(hero.spellbook_page-1,1)
+        hero.spellbook_page = max(hero.spellbook_page-1, 1)
     # The code below determines which spells to show based on what page you are on (up to 8 spells).
     spells = []
     for ability in hero.abilities:
@@ -272,7 +270,7 @@ def turn_spellbook_page(hero, database, data, **kwargs):
     spell_ids = []
     spell_imgs = []
     spell_infos = []
-    for i in range(first_index,last_index):
+    for i in range(first_index, last_index):
         spell_ids.append(spells[i].id)
         spell_imgs.append(spells[i].image)
         spell_infos.append("<h1>" + spells[i].name.title() + "</h1><h2>" + spells[i].description + "</h2>")
@@ -289,7 +287,7 @@ def verify_password(hero, database, data, **kwargs):
     field = data['field']
     password = data['password']
     password2 = data['password2']
-    if len(password)< 5:
+    if len(password) < 5:
         success = "no"
         message = "Password is too short. It requires a minimum of 5 characters."
     elif password != password2:
@@ -304,9 +302,9 @@ def verify_password(hero, database, data, **kwargs):
 
 
 def verify_email(hero, database, data, **kwargs):
-    addressToVerify = data['email']
-    match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', addressToVerify)
-    if match == None:
+    address_to_verify = data['email']
+    match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', address_to_verify)
+    if match is None:
         print('Bad Syntax')
         success = "no"
         message = "Invalid syntax"
@@ -369,15 +367,26 @@ def update_proficiency(hero, database, data, **kwargs):
 
     hero.proficiency_points -= 1
     proficiency.level_up()
-    return flask.jsonify(tooltip=proficiency.tooltip,
-                   pointsRemaining=hero.proficiency_points,
-                   level=proficiency.level)
+    return flask.jsonify(tooltip=proficiency.tooltip, pointsRemaining=hero.proficiency_points, level=proficiency.level)
 
 
 def change_proficiency_tooltip(hero, database, data, **kwargs):
     tooltip_id = data['id']
     proficiency = database.get_proficiency_by_id(tooltip_id)
     return flask.jsonify(tooltip=proficiency.tooltip)
+
+
+def update_specialization_tooltip(hero, database, data, **kwargs):
+        if data['id']:
+            spec = database.get_object_by_id("Specialization", data['id'])
+            if data['id'] in hero.specialization_access:
+                hsa = hero.specialization_access[data['id']]
+                if hsa.disabled:
+                    hsa.disabled = hsa.check_locked(hero)
+            else:
+                hsa = None
+            return flask.jsonify(description=spec.description, requirements=spec.requirements, disabled=hsa.disabled if hsa else True, id=spec.id)
+        return flask.jsonify(description="Unknown", requirements="Unknown", disabled=True, id=0)
 
 
 def change_ability_tooltip(hero, database, data, **kwargs):
@@ -411,13 +420,15 @@ def update_ability(hero, database, data, **kwargs):
 def update_specialization(hero, database, data, **kwargs):
     spec_id = data['id']
     specialization = database.get_object_by_id("Specialization", spec_id)
+    hsa = hero.specialization_access[spec_id]
+    if hsa.disabled:
+        return "error: Attempted to add locked specialization to hero."
     # spec.level += 1 or something?
 
     # You can ignore templating here as hero takes care of it.
     hero.specializations = specialization
     pprint(hero.specializations)
     spec = data['spec']
-    print("The hero's " + spec + " should be " + specialization.name)
     # PLEASE MAKE THE ABOVE PRINT STATEMENT TRUE!!!!!!!!!!!!!!!!!!!!!!!
     # specialization = database.get_object_by_name("Specialization", choice)
     # setattr(hero.specializations, choice, specialization)
@@ -434,6 +445,32 @@ def change_quest_tooltip(hero, database, data, **kwargs):
     quest = database.get_object_by_id("Quest", data['id'])
     return flask.jsonify(description=quest.description, reward=quest.reward_experience)
 
+
+def get_message_content_and_sender_by_id(hero, database, arg_dict, **kwargs):
+    """Return the content of a message based on its id."""
+    id = arg_dict.get('data', None, type=int)
+    message = database.get_object_by_id("Message", id)
+    message.unread = False  # Marks the message as having been seen by the receiver
+    return "{}&&{}".format(message.content, message.sender.user.username)
+
+
+def send_notification_data(hero, database, data, *args, **kwargs):
+    """Return the quest notification data as a JSON
+
+    Maybe this should be a decorator?
+    It would wrap any function and tack the "activate notification button"
+    function and data on the end of any Json capable response?
+    """
+    notice = database.get_object_by_id("Entry", data['id'])
+    data = flask.jsonify(header=notice.header, body=notice.body, footer=notice.footer, url=notice.url, redirect=data['redirect'])
+
+    # print("Sending Notice content to JS.")
+    # pprint(data)
+
+    # Clear quest notification
+    # Should delete this notice when it has been viewed.
+    notice.journal = None
+    return data
 
 #
 # def clear_quest_notification(hero, database, arg_dict, **kwargs):

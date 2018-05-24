@@ -55,7 +55,7 @@ import sqlalchemy.ext.hybrid
 import sqlalchemy.ext.orderinglist
 
 import models
-from achievements import Achievements
+import models.achievements
 
 
 # For testing
@@ -175,7 +175,7 @@ class Journal(models.Base):
     known_locations = sa.orm.relationship("Location", secondary="journal_to_location", back_populates='journals')
 
     def __init__(self):
-        self.achievements = Achievements()
+        self.achievements = models.achievements.Achievements()
 
         # This will let you create an entry object using an instantiated journal
         # hero.journal.notifications.append(hero.journal.Entry(some_object))

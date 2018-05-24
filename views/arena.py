@@ -1,7 +1,7 @@
 import flask
 
 from elthranonline import app
-import bestiary
+from models import bestiary
 import services.decorators
 
 
