@@ -41,7 +41,7 @@ class Proficiency(models.mixins.TemplateMixin, models.Base):
     current = sa.Column(sa.Integer)
     hidden = sa.Column(sa.Boolean)
     error = sa.Column(sa.String(50))
-    display_chunk = Column(String(50))
+    display_chunk = sa.Column(sa.String(200))
 
     # In child classes this allows different levels of rounding.
     num_of_decimals = 0

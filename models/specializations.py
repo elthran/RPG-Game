@@ -17,7 +17,7 @@ import interfaces.requirements
 # Each of the 4 choices unlocks different abilities to learn. So each character will be very unique based on the 4 paths they choose.
 # name, type, description, requirements
 
-ALL_SPECIALIZATIONS = [('Brute', 'Archetype', 'A character who uses strength and combat to solve problems. Proficient with many types of weapons.', 'Brawn Attribute Level 3'), ('Scoundrel', 'Archetype', 'A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.', 'Dagger Talent of 6, Virtue of -100'), ('Ascetic', 'Archetype', 'A character who focuses on disciplining mind and body. They use a combination of combat and intellect.', '10 Errands Complete, Virtue of 100, Willpower of 4'), ('Survivalist', 'Archetype', 'A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.', '5 Locations Discovered, 10 Animals in Bestiary'), ('Philosopher', 'Archetype', 'A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.', 'Alchemy Ability Level 3'), ('Opportunist', 'Archetype', 'A character who solves problems using speech and dialogue.', 'Charisma of 7, Fame of 200'), ('Test Calling', 'Calling', 'A blacksmith dude.', 'Be a dude ... who likes hitting hot metal.'), ('Test Pantheon', 'Pantheon', 'A fire god dude.', 'Be a Pyro ... and a dude.')]
+ALL_SPECIALIZATIONS = [('Ascetic', 'Archetype', 'A character who focuses on disciplining mind and body. They use a combination of combat and intellect.', '10 Errands Complete, Virtue of 100, Willpower of 4'), ('Brute', 'Archetype', 'A character who uses strength and combat to solve problems. Proficient with many types of weapons.', 'Brawn Attribute Level 3'), ('Opportunist', 'Archetype', 'A character who solves problems using speech and dialogue.', 'Charisma of 7, Fame of 200'), ('Philosopher', 'Archetype', 'A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.', 'Alchemy Ability Level 3'), ('Scoundrel', 'Archetype', 'A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.', 'Dagger Talent of 6, Virtue of -100'), ('Survivalist', 'Archetype', 'A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.', '5 Locations Discovered, 10 Animals in Bestiary'), ('Test Calling', 'Calling', 'A blacksmith dude.', 'Be a dude ... who likes hitting hot metal.'), ('Test Pantheon', 'Pantheon', 'A fire god dude.', 'Be a Pyro ... and a dude.')]
 
 SPECIALIZATION_NAMES = [key[0] for key in ALL_SPECIALIZATIONS]
 
@@ -28,14 +28,13 @@ ALL_ATTRIBUTE_NAMES = ['ascetic', 'brute', 'opportunist', 'philosopher', 'scound
 ALL_CLASS_NAMES = ['Ascetic', 'Brute', 'Opportunist', 'Philosopher', 'Scoundrel', 'Survivalist', 'TestCalling', 'TestPantheon']
 
 
-class HeroSpecializationAccess(Base):
-    __tablename__ = 'hero_specialization_access'
-    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"), primary_key=True)
-    specialization_id = Column(Integer, ForeignKey('specialization.id'), primary_key=True)
-    hidden = Column(Boolean)
-    disabled = Column(Boolean)
-    specialization = relationship("Specialization")
-    hero = relationship("Hero")
+class HeroSpecializationAccess(models.Base):
+    hero_id = sa.Column(sa.Integer, sa.ForeignKey('hero.id', ondelete="CASCADE"), primary_key=True)
+    specialization_id = sa.Column(sa.Integer, sa.ForeignKey('specialization.id'), primary_key=True)
+    hidden = sa.Column(sa.Boolean)
+    disabled = sa.Column(sa.Boolean)
+    specialization = sa.orm.relationship("Specialization")
+    hero = sa.orm.relationship("Hero")
 
     def __init__(self, specialization, hidden=True, disabled=True):
         self.specialization = specialization
@@ -61,7 +60,7 @@ class Specialization(models.mixins.TemplateMixin, models.Base):
     description = sa.Column(sa.String(200))
     requirements = sa.Column(sa.String(50))
     attrib_name = sa.Column(sa.String(50))
-    hidden = Column(Boolean)
+    hidden = sa.Column(sa.Boolean)
 
     # Relationships
     # Each hero can have one list of abilities (bi, one to one)
@@ -116,23 +115,18 @@ class Pantheon(Specialization):
         super().__init__(*args, **kwargs)
 
 
-def Brute(template=False):
-    return Archetype("Brute", "A character who uses strength and combat to solve problems. Proficient with many types of weapons.", "Brawn Attribute Level 3", template=template)
-# What do the two lines of code below do?
-
-
-def Scoundrel(template=False):
-    return Archetype("Scoundrel", "A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.", "Dagger Talent of 6, Virtue of -100", template=template)
-# What do the two lines of code below do?
-
-
 def Ascetic(template=False):
     return Archetype("Ascetic", "A character who focuses on disciplining mind and body. They use a combination of combat and intellect.", "10 Errands Complete, Virtue of 100, Willpower of 4", template=template)
 # What do the two lines of code below do?
 
 
-def Survivalist(template=False):
-    return Archetype("Survivalist", "A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.", "5 Locations Discovered, 10 Animals in Bestiary", template=template)
+def Brute(template=False):
+    return Archetype("Brute", "A character who uses strength and combat to solve problems. Proficient with many types of weapons.", "Brawn Attribute Level 3", template=template)
+# What do the two lines of code below do?
+
+
+def Opportunist(template=False):
+    return Archetype("Opportunist", "A character who solves problems using speech and dialogue.", "Charisma of 7, Fame of 200", template=template)
 # What do the two lines of code below do?
 
 
@@ -141,8 +135,13 @@ def Philosopher(template=False):
 # What do the two lines of code below do?
 
 
-def Opportunist(template=False):
-    return Archetype("Opportunist", "A character who solves problems using speech and dialogue.", "Charisma of 7, Fame of 200", template=template)
+def Scoundrel(template=False):
+    return Archetype("Scoundrel", "A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.", "Dagger Talent of 6, Virtue of -100", template=template)
+# What do the two lines of code below do?
+
+
+def Survivalist(template=False):
+    return Archetype("Survivalist", "A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.", "5 Locations Discovered, 10 Animals in Bestiary", template=template)
 # What do the two lines of code below do?
 
 

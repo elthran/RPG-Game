@@ -1,9 +1,9 @@
 Name,Type,Description,Requirements
-Brute,Archetype,A character who uses strength and combat to solve problems. Proficient with many types of weapons.,"Brawn Attribute Level 3"
-Scoundrel,Archetype,A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.,"Dagger Talent of 6, Virtue of -100"
 Ascetic,Archetype,A character who focuses on disciplining mind and body. They use a combination of combat and intellect.,"10 Errands Complete, Virtue of 100, Willpower of 4"
-Survivalist,Archetype,A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.,"5 Locations Discovered, 10 Animals in Bestiary"
-Philosopher,Archetype,A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.,"Alchemy Ability Level 3"
+Brute,Archetype,A character who uses strength and combat to solve problems. Proficient with many types of weapons.,Brawn Attribute Level 3
 Opportunist,Archetype,A character who solves problems using speech and dialogue.,"Charisma of 7, Fame of 200"
+Philosopher,Archetype,A character who uses intellect to solve problems. Excels at any task requiring powers of the mind.,Alchemy Ability Level 3
+Scoundrel,Archetype,A character who uses deception and sneakiness to accomplish their goals. Excels at stealth attacks and thievery.,"Dagger Talent of 6, Virtue of -100"
+Survivalist,Archetype,A character who utilizes their environment to adapt and thrive. Excellent at long ranged weaponry and exploration.,"5 Locations Discovered, 10 Animals in Bestiary"
 Test Calling,Calling,A blacksmith dude.,Be a dude ... who likes hitting hot metal.
 Test Pantheon,Pantheon,A fire god dude.,Be a Pyro ... and a dude.

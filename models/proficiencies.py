@@ -49,7 +49,7 @@ class Proficiency(models.mixins.TemplateMixin, models.Base):
     current = sa.Column(sa.Integer)
     hidden = sa.Column(sa.Boolean)
     error = sa.Column(sa.String(50))
-    display_chunk = Column(String(50))
+    display_chunk = sa.Column(sa.String(200))
 
     # In child classes this allows different levels of rounding.
     num_of_decimals = 0
@@ -248,6 +248,7 @@ class Axe(Proficiency):
     format_spec = "{:.0f}%"
     display_chunk = "Weaponry"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Axe"
     }
@@ -374,6 +375,7 @@ class BlockAmount(Proficiency):
     format_spec = "{:.0f}%"
     display_chunk = "Defence"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "BlockAmount"
     }
@@ -413,6 +415,7 @@ class Blunt(Proficiency):
     format_spec = "{:.0f}%"
     display_chunk = "Weaponry"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Blunt"
     }
@@ -452,6 +455,7 @@ class CautionLevel(Proficiency):
     format_spec = "{:.0f}"
     display_chunk = "Exploration"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "CautionLevel"
     }
@@ -531,6 +535,7 @@ class ClimbingAbility(Proficiency):
     format_spec = "{:.0f}"
     display_chunk = "Exploration"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "ClimbingAbility"
     }
@@ -770,6 +775,7 @@ class Devotion(Proficiency):
     format_spec = "{:.0f}"
     display_chunk = "Mental"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Devotion"
     }
@@ -1129,6 +1135,7 @@ class FlameDamage(Proficiency):
     format_spec = "{:.0f}%"
     display_chunk = "Offence"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "FlameDamage"
     }
@@ -1208,6 +1215,7 @@ class FreezingChance(Proficiency):
     format_spec = "{:.0f}%"
     display_chunk = "Offence"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "FreezingChance"
     }
@@ -1247,6 +1255,7 @@ class FrostDamage(Proficiency):
     format_spec = "{:.0f}"
     display_chunk = "Offence"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "FrostDamage"
     }
@@ -1446,6 +1455,7 @@ class LifestealPercent(Proficiency):
     format_spec = "{:.0f}%"
     display_chunk = "Offence"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "LifestealPercent"
     }
@@ -1485,6 +1495,7 @@ class LifestealStatic(Proficiency):
     format_spec = "{:.0f}"
     display_chunk = "Offence"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "LifestealStatic"
     }
@@ -1844,6 +1855,7 @@ class Piercing(Proficiency):
     format_spec = "{:.0f}%"
     display_chunk = "Weaponry"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Piercing"
     }
@@ -1923,6 +1935,7 @@ class PoisonAmount(Proficiency):
     format_spec = "{:.0f}"
     display_chunk = "Offence"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "PoisonAmount"
     }
@@ -1962,6 +1975,7 @@ class PoisonChance(Proficiency):
     format_spec = "{:.0f}%"
     display_chunk = "Offence"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "PoisonChance"
     }
@@ -2001,6 +2015,7 @@ class PoisonDuration(Proficiency):
     format_spec = "{:.0f}"
     display_chunk = "Offence"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "PoisonDuration"
     }
@@ -2040,6 +2055,7 @@ class PotionEffectiveness(Proficiency):
     format_spec = "{:.0f}%"
     display_chunk = "Modifier"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "PotionEffectiveness"
     }
@@ -2239,6 +2255,7 @@ class Renown(Proficiency):
     format_spec = "{:.0f}"
     display_chunk = "Basic"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "Renown"
     }
@@ -2638,6 +2655,7 @@ class ResistUnarmed(Proficiency):
     format_spec = "{:.0f}%"
     display_chunk = "Defence"
 
+    __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': "ResistUnarmed"
     }

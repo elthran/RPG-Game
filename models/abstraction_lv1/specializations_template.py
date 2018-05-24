@@ -20,14 +20,13 @@ SPECIALIZATIONS_CATEGORIES = ['archetype', 'calling']
 {% import 'container_helpers.py' as container_helpers %}
 {{ container_helpers.build_container("Ability", "abilities", ALL_SPECIALIZATIONS, no_container=True) }}
 
-class HeroSpecializationAccess(Base):
-    __tablename__ = 'hero_specialization_access'
-    hero_id = Column(Integer, ForeignKey('hero.id', ondelete="CASCADE"), primary_key=True)
-    specialization_id = Column(Integer, ForeignKey('specialization.id'), primary_key=True)
-    hidden = Column(Boolean)
-    disabled = Column(Boolean)
-    specialization = relationship("Specialization")
-    hero = relationship("Hero")
+class HeroSpecializationAccess(models.Base):
+    hero_id = sa.Column(sa.Integer, sa.ForeignKey('hero.id', ondelete="CASCADE"), primary_key=True)
+    specialization_id = sa.Column(sa.Integer, sa.ForeignKey('specialization.id'), primary_key=True)
+    hidden = sa.Column(sa.Boolean)
+    disabled = sa.Column(sa.Boolean)
+    specialization = sa.orm.relationship("Specialization")
+    hero = sa.orm.relationship("Hero")
 
     def __init__(self, specialization, hidden=True, disabled=True):
         self.specialization = specialization
@@ -53,7 +52,7 @@ class Specialization(models.mixins.TemplateMixin, models.Base):
     description = sa.Column(sa.String(200))
     requirements = sa.Column(sa.String(50))
     attrib_name = sa.Column(sa.String(50))
-    hidden = Column(Boolean)
+    hidden = sa.Column(sa.Boolean)
 
     # Relationships
     # Each hero can have one list of abilities (bi, one to one)

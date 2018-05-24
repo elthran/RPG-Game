@@ -100,7 +100,7 @@ class Ability(models.Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, name, max_level, description, spell_thing="", current=0, next=0, hidden=True, learnable=False, tree="basic", tree_type="", proficiency_data=(), spell_data=(), sanctity_cost=0, endurance_cost=0):
+    def __init__(self, name, max_level, description, spell_thing="", current=0, next_=0, hidden=True, learnable=False, tree="basic", tree_type="", proficiency_data=(), spell_data=(), sanctity_cost=0, endurance_cost=0):
         """Build a basic ability object.
 
         Note: arguments (name, hero, max_level, etc.) that require input are
@@ -122,7 +122,7 @@ class Ability(models.Base):
         self.description = description  # Describe what it does
         self.castable = False
         self._current = current
-        self._next = next
+        self._next = next_
         if learnable:   # If the ability starts as a default of learnable, then it shouldn't start hidden to the player
             self.hidden = False
         else:
@@ -134,17 +134,17 @@ class Ability(models.Base):
 
         # Initialize proficiencies
         # Currently doesn't add any proficiencies.
-        for class_name, arg_dict in proficiency_data:
-            Class = getattr(models.proficiencies, class_name)
+        for class_name_, arg_dict in proficiency_data:
+            class_ = getattr(models.proficiencies, class_name_)
             # pdb.set_trace()
-            obj = Class(**arg_dict)
+            obj = class_(**arg_dict)
             self.proficiencies[obj.name] = obj
 
         # Jacob did this. I need some help setting it up. This should be for casting spells.
-        for class_name, arg_dict in spell_data:
-            Class = getattr(models.proficiencies, class_name)
+        for class_name_, arg_dict in spell_data:
+            class_ = getattr(models.proficiencies, class_name_)
             # pdb.set_trace()
-            obj = Class(**arg_dict)
+            obj = class_(**arg_dict)
             self.proficiencies[obj.name] = obj
 
         # These and the one above should only be in castable.
@@ -179,7 +179,7 @@ class Ability(models.Base):
         return flask.render_template_string(self.current, level=self.level)
 
     def get_next_bonus(self):
-        return flask.render_template_string(self.next, level=self.level)
+        return flask.render_template_string(self._next, level=self.level)
 
     def is_max_level(self):
         """Return True if level is at max_level."""
@@ -295,9 +295,9 @@ class {{ class_name }}({{ value[1] }}):
 
     def __init__(self, *args, **kwargs):
         {% if value[1] == 'AuraAbility' %}
-        super().__init__(name='{{ value[0] }}', tree='{{ value[2] }}', tree_type='{{ value[3] }}', max_level={{ value[4] }}, description='{{ value[5] }}', current='{{ value[6] }}', next='{{ value[6] }}'.replace("(level)", "(level+1)"), learnable={{ value[7] }}, proficiency_data=[('{{ value[8] }}', {'base': {{ value[9] }}}), {% if value[10] != 'Null' %}('{{ value[10] }}', {'base': {{ value[11] }}}){% endif %}])
+        super().__init__(name='{{ value[0] }}', tree='{{ value[2] }}', tree_type='{{ value[3] }}', max_level={{ value[4] }}, description='{{ value[5] }}', current='{{ value[6] }}', next_='{{ value[6] }}'.replace("(level)", "(level+1)"), learnable={{ value[7] }}, proficiency_data=[('{{ value[8] }}', {'base': {{ value[9] }}}), {% if value[10] != 'Null' %}('{{ value[10] }}', {'base': {{ value[11] }}}){% endif %}])
         {% elif value[1] == 'CastableAbility' %}
-        super().__init__(name='{{ value[0] }}', tree='{{ value[2] }}', tree_type='{{ value[3] }}', max_level={{ value[4] }}, description='{{ value[5] }}', current='{{ value[6] }}', next=next, learnable={{ value[7] }}, proficiency_data=[], spell_data=[('{{ value[8] }}', {'base': {{ value[9] }}}), ('{{ value[10] }}', {'base': {{ value[11] }}})], sanctity_cost={{ value[12] }}, endurance_cost={{ value[13] }})
+        super().__init__(name='{{ value[0] }}', tree='{{ value[2] }}', tree_type='{{ value[3] }}', max_level={{ value[4] }}, description='{{ value[5] }}', current='{{ value[6] }}', next_=next, learnable={{ value[7] }}, proficiency_data=[], spell_data=[('{{ value[8] }}', {'base': {{ value[9] }}}), ('{{ value[10] }}', {'base': {{ value[11] }}})], sanctity_cost={{ value[12] }}, endurance_cost={{ value[13] }})
         {% endif %}
         for key, value in kwargs:
             setattr(self, key, value)
