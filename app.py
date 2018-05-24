@@ -464,29 +464,5 @@ def explore_dungeon(name='', hero=None, location=None, extra_data=None):
     location.display.page_heading += " Current progress on this floor: " + str(hero.journal.achievements.current_dungeon_floor_progress)
     return render_template('dungeon_exploring.html', hero=hero, game=game, page_links=page_links)  # return a string
 
-# From /barracks
-@app.route('/spar/<name>')
-@login_required
-@uses_hero
-@update_current_location
-def spar(name='', hero=None, location=None):
-    spar_cost = 50
-    spar_benefit = 5
-    if hero.gold < spar_cost:
-        location.display.page_heading = "You do not have enough gold to spar."
-    else:
-        hero.gold -= spar_cost
-
-        # This gives you experience and also returns how much
-        # experience you gained
-        modified_spar_benefit = hero.gain_experience(spar_benefit)
-        hero.base_proficiencies['endurance'].current -= 1
-        location.display.page_heading = \
-            "You spend some time sparring with the trainer at the barracks." \
-            " You spend {} gold and gain {} experience.".format(
-                spar_cost, modified_spar_benefit)
-    return render_template('generic_location.html', hero=hero, game=game)  # return a string
-
-
 # END OF STARTING TOWN FUNCTIONS
 

@@ -16,6 +16,7 @@ from . import inbox
 from . import login
 from . import logout
 from . import market
+from . import spar
 from . import reset
 from . import tavern
 
