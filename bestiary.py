@@ -1,26 +1,23 @@
-#//////////////////////////////////////////////////////////////////////////////#
-#                                                                              #
-#  Author: Elthran B, Jimmy Zhang                                              #
-#  Email : jimmy.gnahz@gmail.com                                               #
-#                                                                              #
-#//////////////////////////////////////////////////////////////////////////////#
+# ////////////////////////////////////////////////////////////////////////////#
+#                                                                             #
+#  Author: Elthran B, Jimmy Zhang                                             #
+#  Email : jimmy.gnahz@gmail.com                                              #
+#                                                                             #
+# ////////////////////////////////////////////////////////////////////////////#
 
 from random import randint, choice
 from proficiencies_monsters import MonsterProficiencies
 
+# TODO import this data from abstraction_lv1/bestiary.csv
 # Give each monster a rating for their attribute where 1 is about average. (So 2 is double, 4 is quadruple, 0.5 is half, 0.25 is a quarter, etc.)
 archetypes = {
-    "wolf": {"Agility": 3, "Charisma": 0.1, "Divinity": 0.1, "Resilience": 0.7, "Fortuity": 0.25, "Pathfinding": 0.75,
-             "Quickness": 4, "Willpower": 1, "Brawn": 1, "Survivalism": 2, "Vitality": 1.25, "Intellect": 0.1,
-             "Species": "Wolf", "Plural": "Wolves"},
-    "goblin": {"Agility": 1.5, "Charisma": 0.25, "Divinity": 0.25, "Resilience": 0.7, "Fortuity": 1.25, "Pathfinding": 0.6,
-               "Quickness": 1.2, "Willpower": 1.1, "Brawn": 0.8, "Survivalism": 1.2, "Vitality": 0.8, "Intellect": 0.75,
-             "Species": "Goblin", "Plural": "Goblins"},
-    "spider": {"Agility": 2, "Charisma": 0.1, "Divinity": 0.1, "Resilience": 0.4, "Fortuity": 0.8, "Pathfinding": 0.9,
-               "Quickness": 0.8, "Willpower": 0.7, "Brawn": 0.5, "Survivalism": 2, "Vitality": 0.5, "Intellect": 0.25,
-             "Species": "Spider", "Plural": "Spiders"}
-    }
+    "wolf": {"Agility": 3, "Charisma": 0.1, "Divinity": 0.1, "Resilience": 0.7, "Fortuity": 0.25, "Pathfinding": 0.75, "Quickness": 4, "Willpower": 1, "Brawn": 1, "Survivalism": 2, "Vitality": 1.25, "Intellect": 0.1, "Species": "Wolf", "Plural": "Wolves"},
+    "goblin": {"Agility": 1.5, "Charisma": 0.25, "Divinity": 0.25, "Resilience": 0.7, "Fortuity": 1.25, "Pathfinding": 0.6, "Quickness": 1.2, "Willpower": 1.1, "Brawn": 0.8, "Survivalism": 1.2, "Vitality": 0.8, "Intellect": 0.75, "Species": "Goblin", "Plural": "Goblins"},
+    "spider": {"Agility": 2, "Charisma": 0.1, "Divinity": 0.1, "Resilience": 0.4, "Fortuity": 0.8, "Pathfinding": 0.9, "Quickness": 0.8, "Willpower": 0.7, "Brawn": 0.5, "Survivalism": 2, "Vitality": 0.5, "Intellect": 0.25, "Species": "Spider", "Plural": "Spiders"}
+}
 
+
+# TODO migrate this to using a common ancestor with Hero.
 class AttributesMonster(object):
     def __init__(self, monster_level, monster_type):        
         self.agility = AttributeMonster("Agility", monster_level, monster_type["Agility"])
@@ -36,10 +33,12 @@ class AttributesMonster(object):
         self.vitality = AttributeMonster("Vitality", monster_level, monster_type["Vitality"])
         self.intellect = AttributeMonster("Intellect", monster_level, monster_type["Intellect"])
 
+
 class AttributeMonster(object):
     def __init__(self, name, monster_level, modifier):
         self.name = name
-        self.level = monster_level * modifier * randint(10,30) * 0.05
+        self.level = monster_level * modifier * randint(10, 30) * 0.05
+
 
 class Monster(object):
     def __init__(self, name, archetype, level):
@@ -54,10 +53,11 @@ class Monster(object):
         self.attributes = AttributesMonster(level, archetype)
         self.proficiencies = MonsterProficiencies(self.attributes)
 
-        self.health = self.proficiencies.health.maximum
+        self.health = self.proficiencies.health.final
 
     def __repr__(self):
         return "Unfinished Monster build"
+
 
 # THE CODE BELOW HERE IS SHIT AND I NEED HELP IMPROVING IT
 def monster_generator(level):
@@ -65,19 +65,17 @@ def monster_generator(level):
     monster = Monster(*data, level=level)
     return monster
 
+
 bestiary_data = [("Feral Dog", archetypes["wolf"]),
                  ("Giant Rat", archetypes["goblin"]),
                  ("Poisonous Spider", archetypes["spider"])]
 
-
-
-
-
 """ Don't bother looking below here"""
 
+
 class NPC(object):
-    def __init__(self, id, name, race, age):
-        self.id = id
+    def __init__(self, id_, name, race, age):
+        self.id = id_
         self.name = name
         self.race = race
         self.age = age
