@@ -19,7 +19,7 @@
         <h1 style="text-align:center;">{{ page_title }}</h1>
         <div style="clear:both"></div>
     {% if quest_log %}
-        <div style="position:relative;border:dotted;width:800px;height:700px;padding:10px;scroll:auto;">
+        <div style="position:relative;border:dotted;width:1200px;height:700px;padding:10px;scroll:auto;">
             <div class="leftPageHalf" style="width:75%;">
                 <h2>Current Quests</h2>
                 {% for path in hero.journal.quest_paths if not path.completed %}
@@ -60,17 +60,21 @@
             </div>
         </div>
     {% elif bestiary %}
-        <div style="position:relative;border:dotted;width:800px;height:700px;padding:10px;scroll:auto;">
+        <div style="position:relative;border:dotted;width:1200px;height:700px;padding:10px;scroll:auto;">
             <div style="position:relative;float:left;width:75%;">
                 {% if display_monster %}
                     <h2>{{ display_monster.name }}</h2>
                     <ul style="line-height:25px;">
+                        {# <!--
                         <li>Average Level: {{ (display_monster.level_max + display_monster.level_min) // 2 }}</li>
                         <li>Species: {{ display_monster.species }}</li>
                         <li>Description: This animal is very common.</li>
                         <li style="margin-top: 50px;">
                             <img src="/static/images/bestiary/display_{{ display_monster.id }}.jpg" alt="{{ display_monster.name }} Picture" style="width:250px;height:250px;">
                         </li>
+                        --> #}
+                        <li>{{ display_monster.name }}</li>
+                        <li>{{ display_monster.monster_id }}</li>
                     </ul>
                 {% else %}
                     Here is a list of all of the beasts you have encountered. Click on any monster to see more information.
@@ -79,7 +83,7 @@
             <div style="position:relative;float:right;width:20%;height:100%;border:dotted;">
                 {% for monster in all_monsters %}
                     <ul>
-                        <li><a href=/bestiary/{{ monster.id }}>{{ monster.name }}</a></li>
+                        <li><a href=/bestiary/{{ monster.monster_id }}>{{ monster.name }}</a></li>
                     </ul>
                 {% endfor %}
             </div>
@@ -87,7 +91,7 @@
 
     <!-- This shows the People Log within the journal-->
     {% elif people_log %}
-        <div style="position:relative;border:dotted;width:800px;height:700px;padding:10px;scroll:auto;">
+        <div style="position:relative;border:dotted;width:1200px;height:700px;padding:10px;scroll:auto;">
             <div style="position:relative;float:left;width:75%;">
                 {% if display_npc %}
                     <h2>{{ display_npc.name }}</h2>
@@ -114,34 +118,47 @@
             </div>
         </div>
 
-    <!-- This shows the map log within the journal -->
-    {% elif atlas %}
-        <div style="position:relative;border:dotted;width:800px;height:700px;padding:10px;scroll:auto;">
-            <div style="position:relative;float:left;width:75%;">
-                {% if display_map %}
-                    <h2>{{ display_map.name }}</h2>
-                    <ul style="line-height:25px;">
-                        <li>Country: {{ display_map.parent }}</li>
-                        <li style="margin-top: 50px;">
-                            <img src="/static/images/maps/world_{{ display_map.display.page_image }}"/>
-                        </li>
-                    </ul>
-                {% else %}
-                    Here is a list of all the maps you have explored. Choose one from the list to see more.
-                {% endif %}
-            </div>
-            <div style="position:relative;float:right;width:20%;height:100%;border:dotted;">
-                {% for map in all_maps %}
-                    <ul>
-                        <li><a href=/atlas/{{ map.id }}>{{ map.name }}</a></li>
-                    </ul>
-                {% endfor %}
+<!-- This shows the map log within the journal -->
+{% elif atlas %}
+<div style="position:relative;border:dotted;width:1200px;height:700px;padding:10px;scroll:auto;">
+    <div style="position:relative;float:left;width:800px;">
+        {% if display_map %}
+        <h2>{{ display_map.name }}</h2>
+        <div style="line-height:25px;">
+            Country: {{ display_map.parent }}
+            <div class="atlas_map">
+                <img src="/static/images/maps/world_{{ display_map.display.page_image }}" />
+                <div class="atlas_nodes" style="cursor:pointer;">
+                    {% for node in nodes %}
+                    {% if node[1] == "Self" %}
+                        <a href={{ node[1] }}><img src="/static/images/maps/character.jpg" style="margin-left:{{ node[0].point.x }}px;margin-top:{{ node[0].point.y }}px;height:40px;width:40px;" onmouseenter="showText('{{ node[0].name }}', '{{ node[0].point.x }}', '{{ node[0].point.y }}')" onmouseout="hideText()"/></a>
+                    {% elif node[1] != "None" %}
+                        <a href={{ node[1] }}><img src="/static/images/maps/{{ node[2] }}_node.jpg" style="margin-left:{{ node[0].point.x }}px;margin-top:{{ node[0].point.y }}px;" onmouseenter="showText('{{ node[0].name }}', '{{ node[0].point.x }}', '{{ node[0].point.y }}')" onmouseout="hideText()"/></a>
+                    {% else %}
+                        <img src="/static/images/maps/{{ node[2] }}_node.jpg" style="margin-left:{{ node[0].point.x }}px;margin-top:{{ node[0].point.y }}px;" onmouseenter="showText('{{ node[0].name }}', '{{ node[0].point.x }}', '{{ node[0].point.y }}')" onmouseout="hideText()" />
+                    {% endif %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
-        {% for map in maps %}
-            {{ map }}
-            <img src="/static/images/maps/world_{{ map.display.page_image }}"/>
+        {% else %}
+        Here is a list of all the maps you have explored. Choose one from the list to see more.
+        {% endif %}
+
+        Mouse over a node to see its information<span id="nodeName" style="font-weight:bold;"></span>
+    </div>
+    <div style="position:relative;float:right;width:20%;height:100%;border:dotted;">
+        {% for map in all_maps %}
+        <ul>
+            <li><a href=/atlas/{{ map.id }}>{{ map.name }}</a></li>
+        </ul>
         {% endfor %}
+    </div>
+</div>
+{% for map in maps %}
+{{ map }}
+<img src="/static/images/maps/world_{{ map.display.page_image }}"/>
+{% endfor %}
 
     <!-- This shows the achievement log within the journal -->
     {% elif achievement_log %}
@@ -187,6 +204,16 @@
                     panel.style.display = "block";
                 }
             });
+        }
+
+        function showText(name, x, y) {
+            console.log(name, x, y)
+            document.getElementById('nodeName').style.display = 'block';
+            document.getElementById('nodeName').innerHTML = "Location: " + name + "<br /> Map Coordinates: " + x + "," + y;
+        }
+
+        function hideText(name) {
+            document.getElementById('nodeName').style.display = 'none';
         }
         </script>
 {% endblock %}

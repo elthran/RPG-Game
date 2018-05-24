@@ -1,7 +1,7 @@
 {% extends "profile_template.html" %}
 {% block block1 %}
  <!-- This sets the width of the entire page. I'm not sure which width is best. -->
-<h1 style="text-align:center;">General</h1>
+<br><h1 style="text-align:center;">General</h1>
 <table class="profileColumns">
 	<tr>
 		<th colspan="2">Basic Information</th>
@@ -64,196 +64,102 @@
 	<tr>
 		<th colspan="2">Skills</th>
 	</tr>
+	{% if hero.specializations.archetype %}
 	<tr>
 		<td>Archetype</td>
-		<td>{% if hero.specializations.archetype %}{{ hero.specializations.archetype.name }}{% else %}None{% endif %}</td>
+		<td>{{ hero.specializations.archetype.name }}</td>
 	</tr>
+	{% endif %}
+	{% if hero.specializations.calling %}
 	<tr>
 		<td>Calling</td>
-		<td>{% if hero.specializations.calling %}{{ hero.specializations.calling.name }}{% else %}None{% endif %}</td>
+		<td>{{ hero.specializations.calling.name }}</td>
 	</tr>
+	{% endif %}
+	{% if hero.specializations.pantheon %}
 	<tr>
 		<td>Pantheon</td>
-		<td>{% if hero.specializations.pantheon %}{{ hero.specializations.pantheon.name }}{% else %}None{% endif %}</td>
+		<td>{{ hero.specializations.pantheon.name }}</td>
 	</tr>
+	{% endif %}
+	{% if hero.house %}
 	<tr>
 		<td>House</td>
-		<td>{% if hero.house %}{{ hero.house.name }}{% else %}None{% endif %}</td>
+		<td>{{ hero.house.name }}</td>
 	</tr>
-	<tr>
-		<td>Stealth</td>
-		<td>{{ proficiencies.stealth.final }}%</td>
-	</tr>
-	<tr>
-		<td>Pickpocketing</td>
-		<td>{{ proficiencies.pickpocketing.final }}%</td>
-	</tr>
-	<tr>
-		<td>Faith</td>
-		<td>{{ proficiencies.faith.final }}%</td>
-	</tr>
-	<tr>
-		<td>Bartering</td>
-		<td>{{ proficiencies.bartering.final }}%</td>
-	</tr>
-	<tr>
-		<td>Oration</td>
-		<td>{{ proficiencies.oration.final }}%</td>
-	</tr>
-	<tr>
-		<td>Literacy</td>
-		<td>{{ proficiencies.literacy.final }}%</td>
-	</tr>
-	<tr>
-		<td>Luck</td>
-		<td>{{ proficiencies.luck.final }}%</td>
-	</tr>
+	{% endif %}
+	{% for proficiency in proficiencies %}
+		{% if proficiency.display_chunk == "Stealth" %}
+			<tr>
+				<td>{{ proficiency.display_name }}</td>
+				<td>+ {{ proficiency.final|int }}%</td>
+			</tr>
+		{% endif %}
+	{% endfor %}
 </table>
 <div style="clear:both;"></div>
-<h1 style="text-align:center;">Combat</h1>
+<br><h1 style="text-align:center;">Combat</h1>
 <table class="profileColumns">
 	<tr>
 		<th colspan="2">Offense</th>
 	</tr>
 	<tr>
-		<td>Average Damage</td>
-		<td>{{ proficiencies.combat.final }}</td>
+		<td>Damage</td>
+		<td>{{ proficiencies.combat.final|int }}-{{ (proficiencies.strength.final + proficiencies.combat.final)|int }}</td>
 	</tr>
-	<tr>
-		<td>Maximum Damage</td>
-		<td>{{ proficiencies.damage.final + proficiencies.combat.final }}</td>
-	</tr>
-	<tr>
-		<td>Attack Speed</td>
-		<td>{{ proficiencies.speed.final }}</td>
-	</tr>
-	<tr>
-		<td>Accuracy</td>
-		<td>{{ proficiencies.accuracy.final }}%</td>
-	</tr>
-	<tr>
-		<td>First Strike Chance</td>
-		<td>{{ proficiencies.first_strike.final }}%</td>
-	</tr>
-	<tr>
-		<td>Kill Shot Chance</td>
-		<td>{{ proficiencies.precision.final }}%</td>
-	</tr>
-	<tr>
-		<td>Kill Shot Multiplier</td>
-		<td>{{ proficiencies.killshot.final }}x</td>
-	</tr>
-	<tr>
-		<td>Evasion</td>
-		<td>{{ proficiencies.evade.final }}%</td>
-	</tr>
-	<tr>
-		<td>Parry</td>
-		<td>{{ proficiencies.parry.final }}%</td>
-	</tr>
-	<tr>
-		<td>Fatigue</td>
-		<td>{{ proficiencies.fatigue.current }}</td>
-	</tr>
+	{% for proficiency in proficiencies %}
+		{% if proficiency.display_chunk == "Offence" %}
+			{% if not proficiency.hidden or proficiency.final %}
+				<tr>
+					<div class="proficiencyParent" style="width:50px;height:15px;"><td>{{ proficiency.display_name }}</td><span class="proficiencyChild">{{ proficiency.description }}</span></div>
+					<td>{% if proficiency.is_percent %}{{ proficiency.final|int }}%{% else %}{{ proficiency.final }}{% endif %}</td>
+				</tr>
+			{% endif %}
+		{% endif %}
+	{% endfor %}
 </table>
 
 <table class="profileColumns">
 	<tr>
 		<th colspan="2">Defence</th>
 	</tr>
-	<tr>
-		<td>Defence</td>
-		<td>{{ proficiencies.defence.final }}%</td>
-	</tr>
-	<tr>
-		<td>Block Chance</td>
-		<td>{% if hero.inventory.hero.inventory.left_hand.type == "Shield"%}{{ proficiencies.block.final }}%{% else %}<font color="red">-</font>{% endif %}</td>
-	</tr>
-	<tr>
-		<td>Block Amount</td>
-		<td>{% if hero.inventory.hero.inventory.left_hand.type == "Shield"%}{{ proficiencies.block_amount.final }}%{% else %}<font color="red">-</font>{% endif %}</td>
-	</tr>
-	<tr>
-		<td>Resist Frost</td>
-		<td>{{ proficiencies.resist_frost.final }}%</td>
-	</tr>
-	<tr>
-		<td>Resist Flame</td>
-		<td>{{ proficiencies.resist_flame.final }}%</td>
-	</tr>
-	<tr>
-		<td>Resist Shadow</td>
-		<td>{{ proficiencies.resist_shadow.final }}%</td>
-	</tr>
-	<tr>
-		<td>Resist Holy</td>
-		<td>{{ proficiencies.resist_holy.final }}%</td>
-	</tr>
-	<tr>
-		<td>Resist Poison</td>
-		<td>{{ proficiencies.resist_poison.final }}%</td>
-	</tr>
-	<tr>
-		<td>Resist Blunt</td>
-		<td>{{ proficiencies.resist_blunt.final }}%</td>
-	</tr>
-	<tr>
-		<td>Resist Slashing</td>
-		<td>{{ proficiencies.resist_slashing.final }}%</td>
-	</tr>
-	<tr>
-		<td>Resist Piercing</td>
-		<td>{{ proficiencies.resist_piercing.final }}%</td>
-	</tr>
+	{% for proficiency in proficiencies %}
+		{% if proficiency.display_chunk == "Defence" %}
+			<tr>
+				<td>{{ proficiency.display_name }}</td>
+				<td>+ {{ proficiency.final|int }}%</td>
+			</tr>
+		{% endif %}
+	{% endfor %}
 </table>
 <div style="clear:both;"></div>
-<h1 style="text-align:center;">Advanced</h1>
+<br><h1 style="text-align:center;">Advanced</h1>
 <table class="profileColumns">
 	<tr>
 		<th colspan="2">Weaponry</th>
 	</tr>
-	<tr>
-		<td>Current Weapon Affinty</td>
-		<td>{{ proficiencies.weapon_affinity.final }}%</td>
-	</tr>
-	<tr>
-		<td>Blunt Weaponry</td>
-		<td>{{ proficiencies.blunt.final }}%</td>
-	</tr>
-	<tr>
-		<td>Piercing Weaponry</td>
-		<td>{{ proficiencies.piercing.final }}%</td>
-	</tr>
-	<tr>
-		<td>Slashing Weaponry</td>
-		<td>{{ proficiencies.slashing.final }}%</td>
-	</tr>
+	{% for proficiency in proficiencies %}
+		{% if proficiency.display_chunk == "Weaponry" %}
+			<tr>
+				<td>{{ proficiency.display_name }}</td>
+				<td>+ {{ proficiency.final|int }}%</td>
+			</tr>
+		{% endif %}
+	{% endfor %}
 </table>
 
 <table class="profileColumns">
 	<tr>
 		<th colspan="2">Modifiers</th>
 	</tr>
-	<tr>
-		<td>Experience Gain</td>
-		<td>{% if proficiencies.understanding.final %}+{{ proficiencies.understanding.final }}%{% else %}-{% endif %}</td>
-	</tr>
-	<tr>
-		<td>Renown Gain</td>
-		<td>{% if proficiencies.reputation.final %}+{{ proficiencies.reputation.final }}%{% else %}-{% endif %}</td>
-	</tr>
-	<tr>
-		<td>Devotion Gain</td>
-		<td>{% if proficiencies.piety.final %}+{{ proficiencies.piety.final }}%{% else %}-{% endif %}</td>
-	</tr>
-	<tr>
-		<td>Virtue Gain</td>
-		<td>{% if proficiencies.dualism.final %}+{{ proficiencies.dualism.final }}%{% else %}-{% endif %}</td>
-	</tr>
-	<tr>
-		<td>Lifesteal</td>
-		<td>{% if proficiencies.lifesteal_static.final %}+{{ proficiencies.lifesteal_static.final|int }} per hit{% else %}-{% endif %} and {% if proficiencies.lifesteal_percent.final %}+{{ proficiencies.lifesteal_percent.final }}% of damage dealt{% else %}-{% endif %}</td>
-	</tr>
+	{% for proficiency in proficiencies %}
+		{% if proficiency.display_chunk == "Modifier" %}
+			<tr>
+				<td>{{ proficiency.display_name }}</td>
+				<td>+ {{ proficiency.final|int }}%</td>
+			</tr>
+		{% endif %}
+	{% endfor %}
 </table>
 {% endblock %}
 

@@ -11,17 +11,30 @@
             <h2>You have yet to choose a {{ ability_tree }}. After you choose, you will be able to learn abilities related to that {{ ability_tree }}.</h2>
             <ul>
             {% for spec in spec_choices %}
+                {% set hsa = hero.specialization_access[spec.id] if spec.id in hero.specialization_access else None %}
                 <li>
-                    <button class="genericTooltipTrigger" onclick="sendToPy(event, refreshPage, 'update_specialization', {'spec': '{{ becomeType }}', 'id': {{ spec.id }}});">
-                        {{ spec.name.title() }}
-                    </button>
+                    {% if not hsa or (hsa and hsa.hidden) %} {# check if spec has a hero.spec_access ... then check it's hidden property #}
+                    <button class="genericTooltipTrigger"
+                            onclick="sendToPy(event, specializationTooltip, 'update_specialization_tooltip', {'id': 0});">
+                        Unknown
+                        {% elif hsa and not hsa.hidden %}
+                        <button class="genericTooltipTrigger"
+                                onclick="sendToPy(event, specializationTooltip, 'update_specialization_tooltip', {'id': {{ spec.id }}});">
+                            {{ spec.name.title() }}
+                        {% endif %}
+                        </button>
                 </li>
             {% endfor %}
             </ul>
         </div>
         <div style="float:left;width:400px;border:dotted;height:auto;padding:5px;margin-left:50px;">
-            <div><span id="abilityTooltip">You must choose a {{ ability_tree.title() }} before you can learn any abilities.</span></div>
-            <div><span id="choiceImage"></span></div>
+            <div>
+                <span id="specializationTooltip">You must choose a {{ ability_tree.title() }} before you can learn any abilities.</span>
+                <br>
+                <span id="specializationRequirements" style="color: red;"></span>
+                <br>
+                <button style="position:absolute;width:80px;height:30px;" id="specializationButton" disabled>Choose</button>
+            </div>
         </div>
     </div>
 {% else %} <!-- Hero has a chosen type. Let him choose their abilities! -->
@@ -48,7 +61,6 @@
 	<div style="float:left;width:600px;border:dotted;">
         <ul>
         {% for ability in all_abilities %}
-            <li>
                 <button class="genericTooltipTrigger"
                             onclick="sendToPy(event, abilityTooltip, 'change_ability_tooltip', {'id': {{ ability.id }}});">
                     {{ ability.name}}

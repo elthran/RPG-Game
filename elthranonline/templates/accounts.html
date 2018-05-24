@@ -5,38 +5,43 @@
 {% block block1 %}
 <!-- This is called on the "Users" page and displays all accounts in the database -->
 <h2>Here is a list of all current heroes:</h2>
-<table style="width:100%;text-align:center;" border="1">
-    <tr>
-        <th><a href=/display_accounts/display/account.id/{{ descending }}>Account ID</a></th>
+<table class="profileColumns" style="width:100%;margin-top:50px;">
+    <tr style="font-weight:bold;">
+        <th><a href=/display_accounts/display/account.id>Account ID</a></th>
         <th>Prestige</th>
-        <th><a href=/display_accounts/display/account.username/{{ descending }}>Username</a></th>
-        <th><a href=/display_accounts/display/name/{{ descending }}>Character Name:</a></th>
-        <th><a href=/display_accounts/display/age/{{ descending }}>Age:</a></th>
-        <th>Deepest Cave</th>
+        <th><a href=/display_accounts/display/account.username>Username</a></th>
+        <th><a href=/display_accounts/display/name>Character Name:</a></th>
+        <th><a href=/display_accounts/display/age>Age:</a></th>
         <th>Player Kills</th>
         <th>Monster Kills</th>
         <th>Deaths</th>
         <th>Health</th>
-        <th><a href=/display_accounts/display/specializations.archetype.name/{{ descending }}>Archetype:</a></th>
-        <th><a href=/display_accounts/display/last_login/{{ descending }}>Last Login:</a></th>
+        <th><a href=/display_accounts/display/archetype>Archetype:</a></th>
+        <th><a href=/display_accounts/display/last_login>Last Login:</a></th>
     </tr>
     {% for hero in all_heroes %} <!-- Works great for now unless some fields are None. So needs to be addressed later. -->
+    {% set health = hero.get_summed_proficiencies('health') %}
     <tr>
         <td>{{ hero.account.id }}</td>
-        <td>{{ hero.account.prestige }}{% if hero.account.prestige > 50 %}<img src="/static/images/star.jpg">{% endif %}</td>
-        <td><a href=/display_accounts/see_account/{{ hero.account.username }}>{{ hero.account.username }}</a> {% if hero.account.is_admin %}[ADMIN]{% endif %}</td>
+        <td>{% if hero.account.is_admin %}[Admin]{% else %}{{ hero.account.prestige }}{% if hero.account.prestige > 50 %}<img src="/static/images/star.jpg">{% endif %}</td>
+        <td><a href=/display_accounts/see_account/{{ hero.account.username }}>{{ hero.account.username }}</a></td>
         <td>{{ hero.character_name }}</td>
         <td>{{ hero.age }}</td>
-        <td>{{ hero.journal.achievements.deepest_dungeon_floor }}</td>
         <td>{{ hero.journal.achievements.player_kills }}</td>
         <td>{{ hero.journal.achievements.monster_kills }}</td>
         <td>{{ hero.journal.achievements.deaths }}</td>
-        <td>{{ hero.base_proficiencies['health'].current }}</td>
-        <td>{% if hero.specializations.archetype %}{{ hero.specializations.archetype.name }}{% endif %}</td>
-        <td>{{ hero.last_login }}</td>
+        <td>{{ health.current }}/{{ health.final|int }}</td>
+        <td>{% if hero.specializations.archetype.name %}{{ hero.specializations.archetype.name.title() }}{% else %}-{% endif %}</td>
+        <td>{% if hero.last_login %}{{ hero.last_login }}{% else %}-{% endif %}</td>
     </tr>
     {% else %}
     <tr>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
         <td>None</td>
         <td>None</td>
         <td>None</td>

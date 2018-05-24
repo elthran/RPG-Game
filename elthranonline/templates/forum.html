@@ -79,10 +79,10 @@
 
 <h3>Create a new thread</h3>
 <form action="" method="post">
+    <input type="hidden" name="form_type" value="new_thread" /> <!-- Tells python to run code for creating a new thread -->
     <ul class="forumCreateThreadList">
-        <input type="hidden" name="form_type" value="new_thread"> <!-- Tells python to run code for creating a new thread -->
-        <li><input type="text" name="thread_name" placeholder="Title of thread"></li>
-        <li><input type="text" name="thread_description" placeholder="Description of thread"></li>
+        <li><input type="text" name="thread_name" placeholder="Title of thread" /></li>
+        <li><input type="text" name="thread_description" placeholder="Description of thread" /></li>
         <li>Board:
             <select name="thread_board">
                 <option value="{{ current_board.name }}">{{ current_board.name }}</option>
@@ -133,7 +133,7 @@
         <br><input style="float:left;margin-left:650px;" type="submit" value="Post Reply">
     </form>
     <br><br><br>
-    <a href="/forum/{{ current_board.id }}/0" style="font-size:25px;">Return to board</a><br><br>
+    <a href="/forum/{{ current_board.id }}/0" style="font-size:25px;">Return to '{{ current_board.name }}' board</a><br><br>
     <a href="/forum/0/0" style="font-size:25px;">Return to forum home</a>
 {% endif %}
 {% endblock %}

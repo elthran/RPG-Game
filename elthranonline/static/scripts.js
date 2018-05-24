@@ -119,7 +119,7 @@ function successMessage(response) {
     message.innerHTML = "Updated!";
     setTimeout(function () {
         message.style.display='none';
-    }, 1000);
+    }, 1500);
 }
 
 // Allows the user to switch between the register and login forms.
@@ -467,6 +467,21 @@ function proficiencyTooltip(response, oldData) {
     if ("pointsRemaining" in response) {
         document.getElementById("pointsRemaining").innerHTML = response.pointsRemaining;
         document.getElementById("proficiency-" + oldData.id).innerHTML = response.level;
+    }
+}
+
+function specializationTooltip(response, oldData) {
+    var description;
+    var requirements;
+    var button;
+    description = document.getElementById("specializationTooltip");
+    description.innerHTML = response.description;
+    requirements = document.getElementById("specializationRequirements");
+    requirements.innerHTML = "Requirements:<br />   " + response.requirements;
+    button = document.getElementById("specializationButton");
+    button.disabled = response.disabled;
+    if (response.disabled === false) {
+        button.setAttribute( "onclick", "sendToPy(event, refreshPage, 'update_specialization', {'id': " + response.id + "} )" );
     }
 }
 

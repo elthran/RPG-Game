@@ -30,7 +30,7 @@ class Proficiency(models.mixins.TemplateMixin, models.Base):
 
     # Main colums
     level = sa.Column(sa.Integer)
-    base = sa.Column(sa.Integer)
+    base = sa.Column(sa.Float)
     modifier = sa.Column(sa.Float)
 
     type_ = sa.Column(sa.String(50))
@@ -41,6 +41,7 @@ class Proficiency(models.mixins.TemplateMixin, models.Base):
     current = sa.Column(sa.Integer)
     hidden = sa.Column(sa.Boolean)
     error = sa.Column(sa.String(50))
+    display_chunk = Column(String(50))
 
     # In child classes this allows different levels of rounding.
     num_of_decimals = 0
@@ -156,8 +157,9 @@ class Proficiency(models.mixins.TemplateMixin, models.Base):
 {% set base = prof[4] %}
 {% set weight = prof[5] %}
 {% set decimals = prof[6] %}
-{% set hidden = prof[7] %}
+{% if prof[7] == "TRUE" %}{% set hidden = True %}{% else %}{% set hidden = False %}{% endif %}
 {% set percent = prof[8] %}
+{% set display_chunk = prof[9] %}
 class {{ prof_class }}(Proficiency):
     # If this is true, then the proficiency should not show up on the
     # prof page and should only be modifiable by items/abilities.
@@ -168,6 +170,7 @@ class {{ prof_class }}(Proficiency):
     # This should add a "%" to the display at the end of a prof.
     is_percent = {{ percent }}  # Should be {{ percent }} but I'm getting an error
     format_spec = "{{ '{' }}:.{{ decimals }}f{{ '}' }}{{ '%' if percent else '' }}"
+    display_chunk = "{{ display_chunk }}"
 
     __tablename__ = None
     __mapper_args__ = {

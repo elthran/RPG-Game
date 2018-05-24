@@ -7,15 +7,22 @@ Mainly using the tutorial at:
     http://docs.sqlalchemy.org/en/latest/orm/tutorial.html
 
 """
+import hashlib
+import base64
 import importlib
+import datetime
 import random
+import os
 # Testing only
+import pdb
+from pprint import pprint
 
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import desc
 import sqlalchemy.exc
+import bcrypt
 
 # Base is the initialize SQLAlchemy base class. It is used to set up the
 # table metadata.
@@ -23,23 +30,30 @@ import sqlalchemy.exc
 # What this actually means or does I have no idea but it is neccessary.
 # And I know how to use it.
 # !Important!: Base can only be defined in ONE location and ONE location ONLY!
-from models import base_classes
+import base_classes
 # Internal game modules
-from services.readability import round_number_intelligently
-from models.hero import Hero
-from models.abilities import Ability
-from models.locations import Location
-from models.items import Item
-from models.quests import QuestPath
-from models.proficiencies import Proficiency
+from game import User, round_number_intelligently
+from inbox import Inbox, Message
+from attributes import Attribute
+from locations import Display
+from hero import Hero
+from abilities import Ability
+from specializations import Specialization, Archetype, Calling, Pantheon
+from locations import Location
+from items import Item
+from quests import Quest, QuestPath
+from proficiencies import Proficiency
+from events import Trigger, Event
+from forum import Forum, Board, Thread
+from journal import Entry
 import prebuilt_objects
 
-from services.session_helpers import scoped_session, safe_commit_session
-import services
+from session_helpers import scoped_session, safe_commit_session
 
 # Constants#
 # UPDATE_INTERVAL = 3600  # One endurance per hour.
 UPDATE_INTERVAL = 30 # One endurance per 30 seconds
+PASSWORD_HASH_COST = 10
 Session = sessionmaker()
 
 
@@ -118,11 +132,11 @@ class EZDB:
                 prebuilt_objects.all_quests,
                 prebuilt_objects.all_specializations,
                 prebuilt_objects.all_forums,
-                prebuilt_objects.all_monsters]:
+                prebuilt_objects.game_monsters]:
             for obj in obj_list:
                 self.session.add(obj)
                 if isinstance(obj, User):
-                    obj.password = services.secrets.encrypt(obj.password)
+                    obj.password = EZDB.encrypt(obj.password)
                     obj.timestamp = EZDB.now()
                 self.update()
         default_quest_paths = self.get_default_quest_paths()
@@ -227,6 +241,10 @@ class EZDB:
         """Return a proficiency object by id."""
         return self.session.query(Proficiency).get(prof_id)
 
+    def get_specialization_by_id(self, prof_id):
+        """Return a proficiency object by id."""
+        return self.session.query(Specialization).get(prof_id)
+
     def get_item_by_id(self, item_id):
         """Return an item from its ID.
         """
@@ -257,11 +275,21 @@ class EZDB:
 
     def get_all_heroes(self):
         """Return all Hero objects ordered by id."""
-        return self.session.query(Hero).order_by(Hero.id).all()
+        return self.session.query(Hero).filter_by(is_monster=False).order_by(Hero.id).all()
 
     def get_ability_by_id(self, ability_id):
         """Return an ability from its ID."""
         return self.session.query(Ability).get(ability_id)
+
+    def get_all_monsters(self, hero=None):
+        if hero == None:
+            return self.session.query(Hero).filter_by(is_monster=True).all()
+        else:
+            terrain = getattr(Hero, hero.current_terrain)
+            return self.session.query(Hero).filter_by(is_monster=True).filter(terrain == True).all()
+
+    def get_monster_by_id(self, id):
+        return self.session.query(Hero).filter_by(monster_id=id).one()
 
     def get_all_store_items(self):
         """Return all items in the database ordered by name.
@@ -298,6 +326,125 @@ class EZDB:
         return self.session.query(
             QuestPath).filter_by(
             is_default=True, template=True).all()
+
+    @scoped_session
+    def get_user_id(self, username):
+        """Return the id of the user by username from the User's table.
+
+        """
+        user = self.session.query(User).filter_by(username=username).first()
+        if user is None:
+            return None
+        return user.id
+
+    def get_user_by_username(self, username):
+        return self.session.query(User).filter_by(username=username).first()
+
+    def add_new_hero_to_user(self, user):
+        """Create a new blank character object for a user.
+
+        May not be future proof if a user has multiple heroes.
+        """
+        hero = Hero(user=user)
+        self.session.add(hero)
+        return hero
+
+    @staticmethod
+    def encrypt(s):
+        """Encrypt a string with the builtin hash cost."""
+        return bcrypt.hashpw(
+            base64.b64encode(hashlib.sha256(s.encode()).digest()),
+            bcrypt.gensalt(PASSWORD_HASH_COST))
+
+    @staticmethod
+    def check_encrypted(plain, cypher):
+        """Check if a string matches the cypher string.
+
+        You can use this to check if password is valid.
+        It encrypts the plain text variant and compares it to the cypher text one.
+        """
+        return bcrypt.checkpw(
+                base64.b64encode(hashlib.sha256(plain.encode()).digest()),
+                cypher.encode())
+
+    def add_new_user(self, username, password, email=''):
+        """Create a new user account with this username and password.
+
+        And optional email.
+
+        The password is encrypted with bcrypt.
+        The email is encrypted separately with bcrypt.
+        """
+
+        # hash and save a password
+        user = User(username=username, password=EZDB.encrypt(password), email=EZDB.encrypt(email),
+                    timestamp=EZDB.now())
+        self.session.add(user)
+        return user
+
+    @scoped_session
+    def validate_email(self, username, email):
+        """Check if the passed email matches the email for this account.
+
+        Email is encrypted separately. You can't decrypt the email even
+        if you know the user name. This might be inconvenient at some point.
+        """
+        user = self.session.query(User).filter_by(username=username).first()
+        if user is not None:
+            # check a password
+            return bcrypt.checkpw(
+                base64.b64encode(hashlib.sha256(email.encode()).digest()),
+                user.email.encode())
+        return None
+
+    @scoped_session
+    def validate(self, username, password):
+        """Check if password if valid for user.
+
+        Check for data_migration 'reset_key' ... if exists use old style
+        password validation ... then convert password to new style.
+        """
+        user = self.session.query(User).filter_by(username=username).first()
+        if user is not None:
+            self.attempt_password_migration(user, password)
+            # check a password
+            return bcrypt.checkpw(
+                base64.b64encode(hashlib.sha256(password.encode()).digest()),
+                user.password.encode())
+        return None
+
+    @safe_commit_session
+    def attempt_password_migration(self, user, password):
+        """Update password to new style if valid.
+
+        If user has reset key, and valid old style password.
+        """
+        if user.reset_key and user.password == hashlib.md5(password.encode()).hexdigest():
+            user.password = EZDB.encrypt(password)
+            user.reset_key = None
+
+    @scoped_session
+    def setup_account_for_reset(self, username):
+        """Add a reset key to the user account and return it."""
+        user = self.session.query(User).filter_by(username=username).first()
+        key = os.urandom(256)
+        urlsafe_key = base64.urlsafe_b64encode(hashlib.sha256(key).digest())
+        user.reset_key = urlsafe_key
+        return urlsafe_key
+
+    @scoped_session
+    def validate_reset(self, username, key):
+        """Make sure the reset key matches.
+
+        Additionally make sure you can't use a blank reset key.
+        """
+        user = self.session.query(User).filter_by(username=username).first()
+        # For some reason the key get converted to binary then back
+        # so it looks like "b'______'" instead of b'________' or
+        # '_________'. I strip the "b'" of the start and "'" of the end.
+        if user.reset_key and user.reset_key == key[2:-1]:
+            return True
+        return False
 
     def fetch_hero_by_username(self, username, character_name=None):
         """Return hero objected based on username_or_id and character_name.
@@ -343,17 +490,17 @@ class EZDB:
         """
         if '.' not in attribute:
             if descending:
-                return self.session.query(Hero).order_by(desc(attribute)).all()
+                return self.session.query(Hero).filter_by(is_monster=False).order_by(desc(attribute)).all()
             else:
-                return self.session.query(Hero).order_by(attribute).all()
+                return self.session.query(Hero).filter_by(is_monster=False).order_by(attribute).all()
         elif attribute.startswith('user'):
             _, attribute = attribute.split('.')
             if descending:
                 return self.session.query(
-                    Hero).join(Hero.user).order_by(desc(attribute)).all()
+                    Hero).join(Hero.user).filter_by(is_monster=False).order_by(desc(attribute)).all()
             else:
                 return self.session.query(
-                    Hero).join(Hero.user).order_by(attribute).all()
+                    Hero).join(Hero.user).filter_by(is_monster=False).order_by(attribute).all()
         else:
             raise Exception("Trying to access an attribute that this code"
                             " does not accommodate.")
@@ -424,6 +571,15 @@ class EZDB:
         return self.session.query(
             QuestPath).filter_by(name=name, template=True).one()
 
+    @staticmethod
+    def now():
+        """Return current UTC time as datetime object in string form.
+
+        NOTE: I am using UTC as we are working in different time
+        zones and I think it might screw up otherwise.
+        """
+        return datetime.datetime.utcnow()
+
     def update_time_all_heroes(self):
         """Run update_time on all hero objects.
 
@@ -481,7 +637,7 @@ class EZDB:
     #     return self.session.query(WorldMap).filter_by(name=name).first()
 
     @scoped_session
-    def add(self, objects=()):
+    def add(self, objects=[]):
         try:
             self.session.add_all(objects)
         except TypeError as ex:

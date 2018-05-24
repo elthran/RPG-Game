@@ -24,6 +24,23 @@ class Hero(models.Base):
     experience_maximum = sa.Column(sa.Integer)
     gold = sa.Column(sa.Integer)
 
+    # These needed for monsters.
+    is_monster = Column(Boolean)
+    species = Column(String(50))
+    species_plural = Column(String(50))
+    maximum_level = Column(Integer)
+    cave = Column(Boolean)
+    city = Column(Boolean)
+    forest = Column(Boolean)
+    monster_id = Column(Integer)
+
+    background = Column(String(50)) # Temporary. It's replacing 'fathers job' for now
+    age = Column(Integer)
+    house = Column(String(50))
+    experience = Column(Integer)
+    experience_maximum = Column(Integer)
+    gold = Column(Integer)
+
     basic_ability_points = sa.Column(sa.Integer)
     archetype_ability_points = sa.Column(sa.Integer)
     calling_ability_points = sa.Column(sa.Integer)
@@ -220,6 +237,19 @@ class Hero(models.Base):
         else:
             value.hero = self
 
+    # Hero specialization - disable and/or hidden
+    specialization_access = relationship("HeroSpecializationAccess", collection_class=sqlalchemy.orm.collections.attribute_mapped_collection('specialization_id'), cascade='all, delete-orphan', back_populates="hero")
+
+    def set_specialization_access(self, specialization, hidden=True, disabled=True):
+        """Add a new specialization access object to this hero.
+
+        You must pass in a valid specialization object.
+        Future versions could query the database and create a relationship
+        based specialization name.
+        """
+        hsa = specializations.HeroSpecializationAccess(specialization, hidden=hidden, disabled=disabled)
+        self.specialization_access[specialization.id] = hsa
+
     def __init__(self, **kwargs):
         """Initialize the Hero object.
 
@@ -267,6 +297,16 @@ class Hero(models.Base):
 
         self.inventory = models.Inventory()
         self.journal = models.Journal()
+
+        # Needed for monsters
+        self.is_monster = False
+        self.species = "Human"
+        self.species_plural = "Humans"
+        self.maximum_level = 99
+        self.cave = True
+        self.city = True
+        self.forest = True
+        self.monster_id = 0
 
         # Data and statistics
         self.age = 7
@@ -519,6 +559,24 @@ class Hero(models.Base):
         return [hero
                 for hero in self.current_location.heroes_by_current_location
                 if self.id != hero.id]
+
+    @property
+    def damage_type(self):
+        """Reflect damage type of equipped weapon.
+
+        # Elthran added the below clause. It changes your hero's damage type when a weapon is equipped.
+        if item.one_handed_weapon or item.two_handed_weapon:
+            hero.damage_type = item.damage_type
+        """
+        try:
+            right_hand = self.inventory.right_hand.damage_type
+        except AttributeError:
+            right_hand = None
+        try:
+            both_hands = self.inventory.both_hands.damage_type
+        except AttributeError:
+            both_hands = None
+        return right_hand or both_hands or 'Unarmed'
 
     def is_dead(self):
         """Return True if hero is dead, else False.

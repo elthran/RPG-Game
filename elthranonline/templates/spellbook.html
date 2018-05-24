@@ -10,7 +10,7 @@
             {% for x in range(0,4) %}
             <tr>
                 <td><img id="spell_img_{{ x+1 }}" class="spellIcon" onclick="sendToPy(event, null, 'cast_spell', {% if x < spells|length %}{'id': {{ spells[x].id }}});" src="/static/images/abilities/{{ spells[x].image }}.jpg"{% else %}{'id': {{ x }}});" src="/static/images/abilities/empty_box.jpg" style="display:none;"{% endif %} rowspan="2"></td>
-                <td><span id="spell_info_{{ x+1 }}">{% if x < spells|length %}<h1>{{ spells[x].name.title() }}</h1><h2>{{ spells[x].description }}</h2>{% endif %}</span></td>
+                <td><span id="spell_info_{{ x+1 }}">{% if x < spells|length %}{{ spells[x].name.title() }}{{ spells[x].description }}{% endif %}</span></td>
             </tr>
             {% else %}
             You have no spells
@@ -22,7 +22,7 @@
             {% for x in range(4,8) %}
             <tr>
                 <td><span><img id="spell_img_{{ x+1 }}" class="spellIcon" onclick="sendToPy(event, null, 'cast_spell', {% if x < spells|length %}{'id': {{ spells[x].id }}});" src="/static/images/abilities/{{ spells[x].image }}.jpg"{% else %}{'id': {{ x }}});" src="/static/images/abilities/empty_box.jpg" style="display:none;"{% endif %} rowspan="2"></span></td>
-                <td><span id="spell_info_{{ x+1 }}">{% if x < spells|length %}<h1>{{ spells[x].name.title() }}</h1><h2>{{ spells[x].description }}</h2>{% endif %}</span></td>
+                <td><span id="spell_info_{{ x+1 }}">{% if x < spells|length %}{{ spells[x].name.title() }}{{ spells[x].description }}{% endif %}</span></td>
             </tr>
             {% endfor %}
         </table>

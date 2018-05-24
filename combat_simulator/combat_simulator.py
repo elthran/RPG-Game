@@ -11,35 +11,55 @@ from random import randint
 from services.readability import round_number_intelligently
 
 
-def determine_attacker(active, inactive):
+def determine_attacker(active, inactive, frozen_counter, combat_log):
     """
     Your chance of attacking should be adding the two fighters' speeds together and seeing what % of that is yours.
     """
-    random = randint(1,int((active.get_summed_proficiencies('speed').final + inactive.get_summed_proficiencies('speed').final)*100))
-    if active.get_summed_proficiencies('speed').final*100 > random:
-        return active,inactive
+    if frozen_counter[active.name] and not frozen_counter[inactive.name]:
+        combat_log.append(active.name + " is frozen! " + inactive.name + " automatically gets to attack.")
+        return inactive, active,combat_log
+    if frozen_counter[inactive.name] and not frozen_counter[active.name]:
+        combat_log.append(inactive.name + " is frozen! " + active.name + " automatically gets to attack.")
+        return active, inactive,combat_log
+    if frozen_counter[inactive.name] and frozen_counter[active.name]:
+        combat_log.append("Both players are frozen. Not sure how to code it so I just ignore it >.<")
+    player1 = randint(0,active.get_summed_proficiencies('speed').final*100)
+    player2 = randint(0,inactive.get_summed_proficiencies('speed').final*100)
+    if player1 >= player2:
+        return active,inactive,combat_log
     else:
-        return inactive, active
+        return inactive, active,combat_log
 
 def determine_if_hits(attacker, defender):
     """
     By default, you have a 75% chance of hitting. This can be modified by your accuracy and their evasion.
     """
-    random = randint(1,100)
-    attackers_chance = 75 + attacker.get_summed_proficiencies('accuracy').final - defender.get_summed_proficiencies('evade').final
-    if attackers_chance >= random:
+    random = randint(0,100)
+    attackers_chance = 75
+    attackers_chance += attacker.get_summed_proficiencies('accuracy').final - defender.get_summed_proficiencies('evade').final
+    if attackers_chance > random:
         return True
     return False
 
 def calculate_damage(attacker, defender):
-    damage = (attacker.get_summed_proficiencies('damage').final + attacker.get_summed_proficiencies('combat').final) / 2
-    damage = damage * (1 - defender.get_summed_proficiencies('defence').final)
-    damage = max(round_number_intelligently(damage),1)
+    damage = randint(attacker.get_summed_proficiencies('combat').final,attacker.get_summed_proficiencies('strength').final+1) # Your damage done is a random number between your min/max damages
+    damage_reduction = 100 - defender.get_summed_proficiencies('defence').final # Start to calculate what % of your damage you actually do
+    damage_type = attacker.damage_type # Check damage type
+    if damage_type == "Unarmed":
+        damage_reduction -= defender.get_summed_proficiencies('resist_unarmed').final
+    if damage_type == "Piercing":
+        damage_reduction -= defender.get_summed_proficiencies('resist_piercing').final
+    if damage_type == "Slashing":
+        damage_reduction -= defender.get_summed_proficiencies('resist_slashing').final
+    if damage_type == "Blunt":
+        damage_reduction -= defender.get_summed_proficiencies('resist_blunt').final
+    damage *= (damage_reduction / 100) # Multiply damage by the % of damage you actually do
+    damage = max(round_number_intelligently(damage),1) # Round to an integer using smart rounding
     return damage
 
 def determine_if_critical_hit(attacker):
-    random = randint(1,100)
-    if attacker.get_summed_proficiencies('precision').final >= random:
+    random = randint(0,100)
+    if attacker.get_summed_proficiencies('precision').final > random:
         return True
     return False
 
@@ -51,49 +71,57 @@ def determine_life_steal(attacker, base_damage):
     percent_amount = round_number_intelligently((attacker.get_summed_proficiencies('lifesteal_percent').final / 100) * base_damage)
     return static_amount + percent_amount
 
+def apply_poison(attacker, defender, counter, combat_log):
+    random = randint(1, 100)
+    if (attacker.get_summed_proficiencies('poison_chance').final > random) and (attacker.get_summed_proficiencies('poison_amount').final > 0):
+        counter[defender.name] = attacker.get_summed_proficiencies('poison_duration').final
+        combat_log.append(attacker.name + " has applied a poison! It will last " + str(int(counter[defender.name])) + " more rounds.")
+    return counter,combat_log
 
-"""
-def determine_block_chance(chance):
-    print ("Chance to block is: " + str(chance) + "%")
-    if randint(0,100) < chance:
-        return True
-    return False
+def calculate_poison_damage(inflictor, receiver):
+    poison = int(inflictor.get_summed_proficiencies('poison_amount').final)
+    poison *= (100 - int(receiver.get_summed_proficiencies('resist_poison').final)) / 100
+    poison = round_number_intelligently(poison)
+    return poison
 
-def determine_block_amount(original_damage, modifier):
-    print ("You will block this percent of damage: " + str(modifier) + "%")
-    damage = original_damage * (1 - modifier)
-    if damage < 1:
-        damage = 1
-    return damage
+def apply_freezing(attacker, defender, combat_log, frozen_counter):
+    random = randint(1, 100)
+    if attacker.get_summed_proficiencies('freezing_chance').final > random:
+        combat_log.append(defender.name + " was frozen!")
+        frozen_counter[defender.name] = True
+    return combat_log, frozen_counter
 
-def determine_parry_chance(chance):
-    print ("Chance to parry is: " + str(chance) + "%")
-    if randint(0,100) < chance:
-        return True
-    return False
-
-def determine_riposte_chance(chance):
-    print ("Chance to riposte is: " + str(chance) + "%")
-    if randint(0,100) < chance:
-        return True
-    return False
-
-def lower_fatigue(fatigue):
-    fatigue -= 1
-    if fatigue < 0:
-        fatigue = 0
-    return fatigue
-"""
 # BUG: Lifesteal lets you go beyond maximum HP. Also let's enemy drop below 0. Easy fix!
 
 def battle_logic(active_player, inactive_player):
     """ Runs the entire battle simulator """
     # Currently just takes 1 away from health of whoever attacks slower each round. Ends when someone dies.
     combat_log = ["At the start of the battle: " + active_player.name + " Health: " + str(active_player.base_proficiencies['health'].current) + "  " + inactive_player.name + " Health: " + str(inactive_player.base_proficiencies['health'].current)]
+    poison_counter = {active_player.name: 0, inactive_player.name: 0}
+    frozen_counter = {active_player.name: False, inactive_player.name: False}
     while active_player.base_proficiencies['health'].current > 0 and inactive_player.base_proficiencies['health'].current > 0:
-        attacker,defender = determine_attacker(active_player,inactive_player)
-        combat_log.append(attacker.name + " is attacking.")
-        if determine_if_hits(attacker, defender):
+        for combatant in poison_counter: # Apply poison damage and record each tick
+            if combatant == active_player.name:
+                receiever = active_player
+                inflictor = inactive_player
+            else:
+                receiever = inactive_player
+                inflictor = active_player
+            if poison_counter[combatant] > 0:
+                poison_counter[combatant] -= 1
+                poison = calculate_poison_damage(inflictor, receiever)
+                receiever.base_proficiencies['health'].current -= poison
+                combat_log.append(receiever.name + " takes " + str(poison) + " poison damage!")
+        attacker,defender,combat_log = determine_attacker(active_player, inactive_player, frozen_counter, combat_log)
+        for combatant in frozen_counter:    # Check if frozen players will thaw
+            if active_player.name == combatant:
+                combatant = active_player
+            elif inactive_player.name == combatant:
+                combatant = inactive_player
+            if frozen_counter[combatant.name] and combatant.get_summed_proficiencies('thawing_chance').final > randint(1,100):
+                combat_log.append(combatant.name + " thaws out! They may attack as normal.")
+                frozen_counter[combatant.name] = False
+        if determine_if_hits(attacker, defender): # If there is a hit, you need to check for lifesteal, applying poison, etc.
             base_damage = calculate_damage(attacker, defender)
             if determine_if_critical_hit(attacker):
                 combat_log.append(attacker.name + " lands a critical hit!")
@@ -107,12 +135,10 @@ def battle_logic(active_player, inactive_player):
                 if attacker.base_proficiencies['health'].current > attacker.get_summed_proficiencies('health').final:
                     attacker.base_proficiencies['health'].current = attacker.get_summed_proficiencies('health').final
                 combat_log.append(attacker.name + " steals " + str(lifesteal) + " life! He now has " + str(attacker.base_proficiencies['health'].current) + " life remaining.")
+            poison_counter,combat_log = apply_poison(attacker, defender, poison_counter, combat_log)
+            combat_log,frozen_counter = apply_freezing(attacker, defender, combat_log, frozen_counter)
             defender.base_proficiencies['health'].current -= base_damage
             combat_log.append(defender.name + " takes " + str(base_damage) + ". He has " + str(defender.base_proficiencies['health'].current) + " health remaining.")
-            #lifesteal = determine_life_steal(attacker)
-            #if lifesteal > 0:
-            #    attacker.base_proficiencies['health'].current += lifesteal
-            #    combat_log.append(attacker.name + " steals " + str(lifesteal) + " life!")
         else:
             combat_log.append(attacker.name + " misses.")
 
