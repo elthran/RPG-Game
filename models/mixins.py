@@ -1,6 +1,7 @@
 import sqlalchemy as sa
 import sqlalchemy.ext.declarative
-from models.events import Handler
+
+import models.events
 
 
 class HumanReadableTimeMixin(object):
@@ -78,7 +79,7 @@ class HandlerMixin(object):
     # noinspection PyUnresolvedReferences
     @property
     def new_handler(self):
-        return lambda: Handler(self.__tablename__)
+        return lambda: models.events.Handler(self.__tablename__)
 
     def run(self):
         raise NotImplementedError("You need to override this on the '{}' class.".format(self.__class__))

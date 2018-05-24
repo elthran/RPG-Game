@@ -43,20 +43,12 @@ Ideas:
     short: /store/Store_name (basically the last part)
 """
 
-from sqlalchemy import Column, Integer, String, Table
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy import orm
-from sqlalchemy.ext.hybrid import hybrid_property
+import sqlalchemy as sa
+import sqlalchemy.orm
+import sqlalchemy.ext.hybrid
 
-import geometry
-# ###!IMPORTANT!####
-# Sqlite does not implement sqlalchemy.ARRAY so don't try and use it.
-
-# !Important!: Base can only be defined in ONE location and ONE location ONLY!
-# Well ... ok, but for simplicity sake just pretend that that is true.
-from models.base_classes import Base
-from models.display import Display
+import models
+import models.geometry
 
 """
 Allow for locations to connect to other locations.
@@ -68,20 +60,16 @@ NOTE: The docs might be wrong? I'll have to test and see if this works ...
 but I tried making both columns primary keys and it didn't work.
 But reading the normal association_table info no primary keys are used at all.
 """
-adjacent_location_association = Table(
+adjacent_location_association = sa.Table(
     "adjacent_location_association",
-    Base.metadata,
+    models.Base.metadata,
     # Column("id", Integer, primary_key=True),
-    Column("out_adjacent_id", Integer,
-           ForeignKey("location.id",
-                      ondelete="SET NULL")),
-    Column("in_adjacent_id", Integer,
-           ForeignKey("location.id",
-                      ondelete="SET NULL"))
+    sa.Column("out_adjacent_id", sa.Integer, sa.ForeignKey("location.id", ondelete="SET NULL")),
+    sa.Column("in_adjacent_id", sa.Integer, sa.ForeignKey("location.id", ondelete="SET NULL"))
 )
 
 
-class Location(Base):
+class Location(models.Base):
     """A place that the hero can travel to or interact with.
 
     The main hierarchy is parent -> child, where children with
@@ -116,25 +104,21 @@ class Location(Base):
 
     # What does this do? ... I have no idea (marlen)
     # Parent foreign key has the ondelete="CASCADE"
-    parent_id = Column(Integer, ForeignKey('location.id', ondelete="CASCADE"))
-    name = Column(String(50), nullable=False, unique=True)
-    url = Column(String(50))   # What does this do?
-    type = Column(String(50))   # What does this do?
+    parent_id = sa.Column(sa.Integer, sa.ForeignKey('location.id', ondelete="CASCADE"))
+    name = sa.Column(sa.String(50), nullable=False, unique=True)
+    url = sa.Column(sa.String(50))   # What does this do?
+    type = sa.Column(sa.String(50))   # What does this do?
 
-    terrain = Column(String(50)) # Tells the game what monsters to generate
+    terrain = sa.Column(sa.String(50))  # Tells the game what monsters to generate
 
     # Children relationship has the cascade="all, delete-orphan"
-    children = relationship("Location", back_populates="parent",
-                            foreign_keys="[Location.parent_id]",
-                            cascade="all, delete-orphan")
-    parent = relationship("Location", remote_side="[Location.id]",
-                          back_populates="children",
-                          foreign_keys="[Location.parent_id]")
-    locations = orm.synonym('children')   # What does this do?
-    encompassing_location = orm.synonym('parent')   # What does this do?
+    children = sa.orm.relationship("Location", back_populates="parent", foreign_keys="[Location.parent_id]", cascade="all, delete-orphan")
+    parent = sa.orm.relationship("Location", remote_side="[Location.id]", back_populates="children", foreign_keys="[Location.parent_id]")
+    locations = sa.orm.synonym('children')   # What does this do?
+    encompassing_location = sa.orm.synonym('parent')   # What does this do?
 
     # I have no clue about how to deal with deletes for many to many...
-    _out_adjacent = relationship(
+    _out_adjacent = sa.orm.relationship(
         "Location",
         secondary="adjacent_location_association",
         primaryjoin="Location.id==adjacent_location_association.c.out_adjacent_id",
@@ -146,30 +130,28 @@ class Location(Base):
     # External relationships
     # Many heroes -> one map/world. (bidirectional)
     # Don't cascade the delete for Heroes!
-    heroes = relationship("Hero", back_populates='current_world',
-                          foreign_keys='[Hero.map_id]')
+    heroes = sa.orm.relationship("Hero", back_populates='current_world', foreign_keys='[Hero.map_id]')
     # Each current_location -> can be held by Many Heroes (bidirectional)
-    heroes_by_current_location = relationship(
+    heroes_by_current_location = sa.orm.relationship(
         "Hero", back_populates="current_location",
         foreign_keys='[Hero.current_location_id]')
     # Each current_city -> can be held by Many Heroes (bidirectional)
     # Current_city may be: (town, cave)
-    heroes_by_city = relationship(
+    heroes_by_city = sa.orm.relationship(
         "Hero", back_populates="current_city",
         foreign_keys='[Hero.city_id]')
-    heroes_by_last_city = relationship(
+    heroes_by_last_city = sa.orm.relationship(
         "Hero", back_populates="last_city",
         foreign_keys='[Hero.last_city_id]'
     )
 
-    journals = relationship('Journal', secondary="journal_to_location", back_populates="known_locations")
+    journals = sa.orm.relationship('Journal', secondary="journal_to_location", back_populates="known_locations")
 
     # One location -> one display (bi)
-    display = relationship("Display", back_populates='_location',
-                           uselist=False, cascade="all, delete-orphan")
+    display = sa.orm.relationship("Display", back_populates='_location', uselist=False, cascade="all, delete-orphan")
 
     # One location -> one Point
-    point = relationship("Point", back_populates='location', uselist=False, cascade="all, delete-orphan")
+    point = sa.orm.relationship("Point", back_populates='location', uselist=False, cascade="all, delete-orphan")
 
     # @orm.validates('adjacent')
     # def build_adjacency(self, key, sibling):
@@ -179,13 +161,14 @@ class Location(Base):
     #         return sibling
     #     raise Exception("Not all of these are valid siblings.")
 
-    @hybrid_property
+    @sa.ext.hybrid.hybrid_property
     def adjacent(self):
         """A list of siblings that can be traveled to.
 
         This is bidirectional by default but can be changed without
         too much trouble .. I think.
         """
+        # noinspection PyUnresolvedReferences
         return set(self._out_adjacent + self._in_adjacent)
 
     @adjacent.setter
@@ -212,7 +195,7 @@ class Location(Base):
     #     else:
     #         self.update_siblings()
 
-    @hybrid_property
+    @sa.ext.hybrid.hybrid_property
     def siblings(self):
         """The children of the parent of this location, less this location.
 
@@ -232,7 +215,8 @@ class Location(Base):
         return [sibling.id for sibling in self.siblings]
 
     # @update_after_validate
-    @orm.validates('type')
+    # noinspection PyUnusedLocal
+    @sa.orm.validates('type')
     # @update_after_validate
     def validate_type(self, key, value):
         """Make sure that the programmer doesn't create arbitrary types.
@@ -250,7 +234,7 @@ class Location(Base):
                 )
             )
 
-    def __init__(self, name, location_type, parent=None, children=None, point=(0,0)):
+    def __init__(self, name, location_type, parent=None, children=None, point=(0, 0)):
         """Create a new location object that the hero can explore.
 
         :param location_type: e.g. map, town, store
@@ -277,7 +261,7 @@ class Location(Base):
         self.parent = parent
         self.children = children
         self.terrain = "none"
-        self.point = geometry.Point(*point)
+        self.point = models.geometry.Point(*point)
         self.update()
 
     # @orm.reconstructor  # I uncommented this. I don't know why it was here.
@@ -308,7 +292,7 @@ class Location(Base):
         """
         self.url = self.build_url()
         if self.display is None:
-            self.display = Display(self)
+            self.display = models.Display(self)
         else:
             self.display.update()
 
@@ -327,7 +311,7 @@ class Location(Base):
         #     return self.parent.url + "/{}/{}".format(
         #         self.type, self.name)
 
-    @hybrid_property
+    @sa.ext.hybrid.hybrid_property
     def places_of_interest(self):
         """The places that are directly connected to this place.
 
@@ -343,10 +327,10 @@ class Location(Base):
                   'parent': None}
         children = sorted(self.children, key=lambda x: x.name)
         places['children'] = sorted(children, key=lambda x: x.type)
+        # noinspection PyPropertyAccess
         places['adjacent'] = sorted(self.adjacent, key=lambda x: x.name)
         places['siblings'] = sorted(self.siblings, key=lambda x: x.name)
 
         if self.parent:
             places['parent'] = self.parent
         return places
-

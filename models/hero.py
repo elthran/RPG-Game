@@ -2,6 +2,7 @@ import datetime
 
 import sqlalchemy as sa
 import sqlalchemy.orm
+import sqlalchemy.orm.collections
 import sqlalchemy.ext.hybrid
 
 import services.readability
@@ -17,29 +18,22 @@ class Hero(models.Base):
     name = sa.Column(sa.String(50))  # Was nullable=False now it isn't. I hope that is a good idea.
     character_name = sa.orm.synonym('name')
 
+    # These needed for monsters.
+    is_monster = sa.Column(sa.Boolean)
+    species = sa.Column(sa.String(50))
+    species_plural = sa.Column(sa.String(50))
+    maximum_level = sa.Column(sa.Integer)
+    cave = sa.Column(sa.Boolean)
+    city = sa.Column(sa.Boolean)
+    forest = sa.Column(sa.Boolean)
+    monster_id = sa.Column(sa.Integer)
+
     background = sa.Column(sa.String(50))  # Temporary. It's replacing 'fathers job' for now
     age = sa.Column(sa.Integer)
     house = sa.Column(sa.String(50))
     experience = sa.Column(sa.Integer)
     experience_maximum = sa.Column(sa.Integer)
     gold = sa.Column(sa.Integer)
-
-    # These needed for monsters.
-    is_monster = Column(Boolean)
-    species = Column(String(50))
-    species_plural = Column(String(50))
-    maximum_level = Column(Integer)
-    cave = Column(Boolean)
-    city = Column(Boolean)
-    forest = Column(Boolean)
-    monster_id = Column(Integer)
-
-    background = Column(String(50)) # Temporary. It's replacing 'fathers job' for now
-    age = Column(Integer)
-    house = Column(String(50))
-    experience = Column(Integer)
-    experience_maximum = Column(Integer)
-    gold = Column(Integer)
 
     basic_ability_points = sa.Column(sa.Integer)
     archetype_ability_points = sa.Column(sa.Integer)
@@ -238,7 +232,7 @@ class Hero(models.Base):
             value.hero = self
 
     # Hero specialization - disable and/or hidden
-    specialization_access = relationship("HeroSpecializationAccess", collection_class=sqlalchemy.orm.collections.attribute_mapped_collection('specialization_id'), cascade='all, delete-orphan', back_populates="hero")
+    specialization_access = sa.orm.relationship("HeroSpecializationAccess", collection_class=sa.orm.collections.attribute_mapped_collection('specialization_id'), cascade='all, delete-orphan', back_populates="hero")
 
     def set_specialization_access(self, specialization, hidden=True, disabled=True):
         """Add a new specialization access object to this hero.
@@ -247,7 +241,7 @@ class Hero(models.Base):
         Future versions could query the database and create a relationship
         based specialization name.
         """
-        hsa = specializations.HeroSpecializationAccess(specialization, hidden=hidden, disabled=disabled)
+        hsa = models.HeroSpecializationAccess(specialization, hidden=hidden, disabled=disabled)
         self.specialization_access[specialization.id] = hsa
 
     def __init__(self, **kwargs):

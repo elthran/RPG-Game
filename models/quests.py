@@ -115,12 +115,14 @@ class QuestPath(models.mixins.TemplateMixin, models.mixins.HandlerMixin, models.
     journal_id = sa.Column(sa.Integer, sa.ForeignKey('journal.id', ondelete="SET NULL"))
     journal = sa.orm.relationship("Journal", back_populates='quest_paths', foreign_keys="[QuestPath.journal_id]")
 
+    # noinspection PyUnusedLocal
     @sa.orm.validates('journal')
     def activate_path(self, key, journal):
         """Activate the trigger for the current quest."""
 
         assert self.template is False
         assert self.handler is None
+        # noinspection PyAttributeOutsideInit
         self.handler = self.new_handler()
         self.handler.activate(self.current_quest.trigger, journal.hero)
         return journal
@@ -207,6 +209,7 @@ class QuestPath(models.mixins.TemplateMixin, models.mixins.HandlerMixin, models.
             self.completed = True
             self.reward_hero(final=True)
             self.handler.deactivate()
+            # noinspection PyAttributeOutsideInit
             self.handler = None
         else:
             self.reward_hero()  # Reward must come before stage increase.

@@ -1,11 +1,11 @@
 import sqlalchemy as sa
 import sqlalchemy.orm
 
-import base_classes
+import models
 
 
 # Messing with nodes
-class Point(base_classes.Base):
+class Point(models.Base):
     __tablename__ = 'point'
 
     id = sa.Column(sa.Integer, primary_key=True)

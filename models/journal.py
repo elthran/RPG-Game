@@ -48,16 +48,13 @@ Project breakdown:
     -Journal entries should be populated by the occurrence of events
 """
 
-from flask import render_template_string
-from sqlalchemy import (
-    Column, Integer, String, DateTime, ForeignKey
-)
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import validates
-from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.ext.orderinglist import ordering_list
+import flask
+import sqlalchemy as sa
+import sqlalchemy.orm
+import sqlalchemy.ext.hybrid
+import sqlalchemy.ext.orderinglist
 
-from models.base_classes import Base
+import models
 from achievements import Achievements
 
 
@@ -72,22 +69,21 @@ from achievements import Achievements
 #                                                 ondelete="SET NULL"))
 # )
 
-journal_to_location = Table(
-    'journal_to_location', Base.metadata,
-    Column('journal_id', Integer, ForeignKey('journal.id', ondelete="SET NULL")),
-    Column('location_id', Integer, ForeignKey('location.id', ondelete="SET NULL"))
+journal_to_location = sa.Table(
+    'journal_to_location', models.Base.metadata,
+    sa.Column('journal_id', sa.Integer, sa.ForeignKey('journal.id', ondelete="SET NULL")),
+    sa.Column('location_id', sa.Integer, sa.ForeignKey('location.id', ondelete="SET NULL"))
 )
 
 
 # I think I can combine the entry and Journal.
 # This would give me custom places such as beasts or quests in the Journal
 # The add_entry would sort the new objects into the right category.
-class Journal(Base):
+class Journal(models.Base):
     # Relationships
     # Hero to Journal is One to One
-    hero_id = Column(Integer, ForeignKey('hero.id',
-                                         ondelete="CASCADE"))
-    hero = relationship(
+    hero_id = sa.Column(sa.Integer, sa.ForeignKey('hero.id', ondelete="CASCADE"))
+    hero = sa.orm.relationship(
         "Hero",
         back_populates='journal',
         cascade="all, delete-orphan",
@@ -95,12 +91,9 @@ class Journal(Base):
 
     # Journal to QuestPath is One to Many
     # QuestPath provides many special methods.
-    quest_paths = relationship("QuestPath", back_populates='journal',
-                               cascade="all, delete-orphan",
-                               foreign_keys="[QuestPath.journal_id]",
-                               order_by="QuestPath.name")
+    quest_paths = sa.orm.relationship("QuestPath", back_populates='journal', cascade="all, delete-orphan", foreign_keys="[QuestPath.journal_id]", order_by="QuestPath.name")
 
-    _current_quest_paths = relationship(
+    _current_quest_paths = sa.orm.relationship(
         "QuestPath",
         primaryjoin="and_(Journal.id==QuestPath.journal_id, "
                     "QuestPath.completed==False)",
@@ -112,11 +105,11 @@ class Journal(Base):
     def current_quest_paths(self):
         return self._current_quest_paths
 
-    _notifications = relationship(
+    _notifications = sa.orm.relationship(
         "Entry",
         back_populates="journal",
         order_by="Entry.position",
-        collection_class=ordering_list('position'),
+        collection_class=sa.ext.orderinglist.ordering_list('position'),
         cascade="all, delete-orphan")
 
     @property
@@ -133,6 +126,7 @@ class Journal(Base):
         """
         self._notifications = value
 
+    # noinspection PyProtectedMember
     class MockNotificationOrderingList:
         def __init__(self, journal):
             self.journal = journal
@@ -157,15 +151,14 @@ class Journal(Base):
                 return self.journal._notifications.__getattribute__(item)
 
     # Journal to Achievements is One to One.
-    achievements = relationship("Achievements", back_populates="journal",
-                                uselist=False,
-                                cascade="all, delete-orphan")
+    achievements = sa.orm.relationship("Achievements", back_populates="journal", uselist=False, cascade="all, delete-orphan")
 
     # @property
     # def quest_notification(self):
     #     return self.notification.get_description()
 
-    @validates('quest_paths')
+    # noinspection PyUnusedLocal
+    @sa.orm.validates('quest_paths')
     def validate_quest_path(self, key, quest_path):
         """Overload quest_path assignment.
 
@@ -179,7 +172,7 @@ class Journal(Base):
         return quest_path
 
     # I need to work out the cascade -> should be some kind of SET NULL.
-    known_locations = relationship("Location", secondary="journal_to_location", back_populates='journals')
+    known_locations = sa.orm.relationship("Location", secondary="journal_to_location", back_populates='journals')
 
     def __init__(self):
         self.achievements = Achievements()
@@ -195,7 +188,8 @@ class Journal(Base):
     #     self.entries.append(entry)
 
 
-class Entry(Base):
+# noinspection PyPropertyAccess
+class Entry(models.Base):
     """Various entries into the Journal class.
 
     For the Notifications:
@@ -204,16 +198,16 @@ class Entry(Base):
     for obj in journal.notifications:
         obj.get_description()
     """
-    timestamp = Column(DateTime)
-    position = Column(Integer)
-    info = Column(String(50))
-    name = Column(String(50))
-    description = Column(String(200))
-    type = Column(String(50))
+    timestamp = sa.Column(sa.DateTime)
+    position = sa.Column(sa.Integer)
+    info = sa.Column(sa.String(50))
+    name = sa.Column(sa.String(50))
+    description = sa.Column(sa.String(200))
+    type = sa.Column(sa.String(50))
 
     # relationships
-    journal_id = Column(Integer, ForeignKey('journal.id', ondelete="CASCADE"))
-    journal = relationship("Journal", back_populates='_notifications')
+    journal_id = sa.Column(sa.Integer, sa.ForeignKey('journal.id', ondelete="CASCADE"))
+    journal = sa.orm.relationship("Journal", back_populates='_notifications')
 
     # Each entry can have object (beast, person or place)
     # I may need to build the inverse of the relationship ... not positive
@@ -221,13 +215,13 @@ class Entry(Base):
     # _beast = relationship()
     # _person = relationship()
     # _place = relationship("Location")
-    _beast = Column(String(50))
-    _person = Column(String(50))
-    _place = Column(String(50))
-    _quest_path = relationship("QuestPath")
-    _quest_path_id = Column(Integer, ForeignKey('quest_path.id', ondelete="CASCADE"))
+    _beast = sa.Column(sa.String(50))
+    _person = sa.Column(sa.String(50))
+    _place = sa.Column(sa.String(50))
+    _quest_path = sa.orm.relationship("QuestPath")
+    _quest_path_id = sa.Column(sa.Integer, sa.ForeignKey('quest_path.id', ondelete="CASCADE"))
 
-    @hybrid_property
+    @sa.ext.hybrid.hybrid_property
     def obj(self):
         """Return whichever object has a connection with this one."""
         # pdb.set_trace()
@@ -278,7 +272,7 @@ class Entry(Base):
                     {{ quest_notification.name }} ({{ quest_notification.stage }} / {{ quest_notification.stages }})
                 {% endif %}
             """
-        return render_template_string(header_template, quest_notification=self.obj.get_description())
+        return flask.render_template_string(header_template, quest_notification=self.obj.get_description())
 
     @property
     def body(self):
@@ -292,8 +286,7 @@ class Entry(Base):
                 {% endif %}
             """
 
-        return render_template_string(body_template,
-                                      quest_notification=self.obj.get_description())
+        return flask.render_template_string(body_template, quest_notification=self.obj.get_description())
 
     @property
     def footer(self):
@@ -306,16 +299,14 @@ class Entry(Base):
                     Reward: {{ quest_notification.current_quest.reward }}xp
                 {% endif %}
             """
-        return render_template_string(footer_template,
-                                      quest_notification=self.obj.get_description())
+        return flask.render_template_string(footer_template, quest_notification=self.obj.get_description())
 
     @property
     def url(self):
         url_template = "/quest_log"
-        return render_template_string(url_template)
+        return flask.render_template_string(url_template)
 
     @property
     def redirect_message(self):
         url_template = "Click anywhere in this box to visit your journal."
-        return render_template_string(url_template)
-
+        return flask.render_template_string(url_template)

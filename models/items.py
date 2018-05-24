@@ -52,7 +52,7 @@ class Item(models.mixins.TemplateMixin, models.Base):
     jewelry = sa.Column(sa.Boolean)
     max_durability = sa.Column(sa.Integer)
     wearable = sa.Column(sa.Boolean)
-    damage_type = Column(String(50))
+    damage_type = sa.Column(sa.String(50))
 
     # extra special :P
     affinity = sa.Column(sa.Integer, default=0)
@@ -86,9 +86,9 @@ class Item(models.mixins.TemplateMixin, models.Base):
 
         # Initialize proficiencies
         for class_name, arg_dict in proficiency_data:
-            Class = getattr(models.proficiencies, class_name)
+            class_ = getattr(models.proficiencies, class_name)
             # pdb.set_trace()
-            obj = Class(**arg_dict, template=template)
+            obj = class_(**arg_dict, template=template)
             self.proficiencies[obj.name] = obj
 
         self.template = template
@@ -97,6 +97,7 @@ class Item(models.mixins.TemplateMixin, models.Base):
     def clone(self):
         if not self.template:
             raise Exception("Only use this method if obj.template == True.")
+        # noinspection PyUnresolvedReferences
         keys = self.__class__.__table__.columns.keys()
         keys.remove('id')
         keys.remove('template')

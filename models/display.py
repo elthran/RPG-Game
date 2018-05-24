@@ -23,10 +23,8 @@ class Display(models.Base):
     a list of or statements ... only one should be set at a time.
     """
     # One location -> one display (bidirectional)
-    location_id = sa.Column(sa.Integer, sa.ForeignKey('location.id',
-                                             ondelete="CASCADE"))
-    _location = sa.orm.relationship('Location', uselist=False,
-                             back_populates='display')
+    location_id = sa.Column(sa.Integer, sa.ForeignKey('location.id', ondelete="CASCADE"))
+    _location = sa.orm.relationship('Location', uselist=False, back_populates='display')
 
     @sa.ext.hybrid.hybrid_property
     def obj(self):
