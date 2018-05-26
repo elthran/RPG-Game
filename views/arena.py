@@ -1,8 +1,8 @@
 import flask
 
 from elthranonline import app
-from models import bestiary
 import services.decorators
+import services.generators
 
 
 @app.route('/arena/<name>')
@@ -17,7 +17,7 @@ def arena(name='', hero=None, location=None):
     # If I try to check if the enemy has 0 health and there is no enemy,
     # I randomly get an error
 
-    enemy = bestiary.monster_generator(hero.age - 6)
+    enemy = services.generators.generate_monster()
     # if enemy.name == "Wolf":
     #     enemy.items_rewarded.append((QuestItem("Wolf Pelt", hero, 50)))
     # if enemy.name == "Scout":
@@ -28,24 +28,24 @@ def arena(name='', hero=None, location=None):
     location.display.page_heading = "Welcome to the arena " + hero.name + "!"
     location.display.page_image = str(enemy.name) + '.jpg'
 
-    profs = enemy.proficiencies
+    profs = enemy.get_summed_proficiencies()
 
     conversation = [("Name: ", str(enemy.name), "Enemy Details"),
-                    ("Level: ", str(enemy.level), "Combat Details"),
+                    ("Level: ", str(enemy.age), "Combat Details"),
                     ("Health: ", str(profs.health.current) + " / " + str(
                         profs.health.final)),
-                    ("Damage: ", str(profs.damage.base) + " - " + str(
-                        profs.damage.final)),
+                    ("Damage: ", str(profs.combat.final) + " - " + str(
+                        (profs.strength.final + profs.combat.final))),
                     ("Attack Speed: ", str(profs.speed.final)),
                     ("Accuracy: ", str(profs.accuracy.final) + "%"),
                     ("First Strike: ", str(profs.first_strike.final) + "%"),
-                    ("Critical Hit Chance: ", str(profs.killshot.base) + "%"),
+                    ("Critical Hit Chance: ", str(profs.killshot.final) + "%"),
                     ("Critical Hit Modifier: ", str(profs.killshot.modifier)),
                     ("Defence: ", str(profs.defence.final) + "%"),
                     ("Evade: ", str(profs.evade.final) + "%"),
                     ("Parry: ", str(profs.parry.final) + "%"),
                     ("Riposte: ", str(profs.riposte.final) + "%"),
-                    ("Block Chance: ", str(profs.block.base) + "%"),
+                    ("Block Chance: ", str(profs.block.final) + "%"),
                     ("Block Reduction: ", str(profs.block.modifier) + "%")]
 
     page_links = [("Challenge the enemy to a ", "/battle/monster", "fight", "."),

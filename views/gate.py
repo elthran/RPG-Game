@@ -16,5 +16,5 @@ def leave_town(name='', hero=None):
     #     ("City Guard: ", "You are too young to be out on your own.")]
     # page_links = [
     #     ("Return to the ", "/Town/" + hero.current_city.name, "city", ".")]
-    pdb.set_trace()
+    # pdb.set_trace()
     return flask.render_template('gate.html', hero=hero, page_heading=location.display.page_heading)  #, conversation=conversation, page_links=page_links)  # return a string

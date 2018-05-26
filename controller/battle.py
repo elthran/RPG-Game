@@ -54,6 +54,7 @@ def post_monster_battle(hero, enemy):
 
     if hero.is_dead():  # First see if the player died.
         hero_died(hero, hero.battle_log)
+        enemy.base_proficiencies['health'].current = enemy.base_proficiencies['health'].final  # auto-heal monster if it lives?
     else:  # Ok, the hero is not dead. Currently that means he won! Since we don't have ties yet.
         hero_won(hero, enemy, hero.battle_log)
         hero.journal.achievements.monster_kills += 1

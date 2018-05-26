@@ -260,7 +260,7 @@ class Location(models.Base):
         self.type = location_type
         self.parent = parent
         self.children = children
-        self.terrain = "none"
+        self.terrain = None
         self.point = models.geometry.Point(*point)
         self.update()
 

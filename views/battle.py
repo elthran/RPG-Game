@@ -3,6 +3,7 @@ import flask
 from elthranonline import app
 import services.decorators
 import services.fetcher
+import services.generators
 import controller.battle
 
 
@@ -14,8 +15,9 @@ def battle(enemy_user=None, hero=None):
     page_links = [("Return to your ", "/home", "profile", " page.")]
 
     if enemy_user == "monster":  # Ideally if this is an integer then search for a monster with that ID.
-        enemy = None
-    else:   # If it's not an integer, then it's a username. Search for that user's hero.
+        monsters = services.fetcher.get_all_monsters_by_hero_terrain(hero)
+        enemy = services.generators.generate_monster(monsters)
+    else:  # If it's not an integer, then it's a username. Search for that user's hero.
         enemy = services.fetcher.fetch_hero_by_username(enemy_user)
 
     battle_log, enemy = controller.battle.battle(hero, enemy)
