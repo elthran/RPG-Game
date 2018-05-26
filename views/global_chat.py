@@ -25,7 +25,7 @@ def global_chat(hero=None):
 
         controller.chatter.remove_old_messages(outdated_in_minutes=5)
         controller.chatter.add_new_message_to_log(chat_log, hero, message)
-        controller.chatter.prune_messages(chat_log, maxsize=25)
+        controller.chatter.prune_messages(chat_log, maxsize=15)
 
         return flask.render_template('global_chat.html', hero=hero, chat_messages=chat_log.chat_messages, active_chatters=chat_log.active_chatters())
     return flask.render_template('global_chat.html', page_title="Chat", hero=hero, chat_messages=chat_log.chat_messages, active_chatters=chat_log.active_chatters())

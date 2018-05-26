@@ -70,6 +70,11 @@ def update_current_location(f):
         hero = kwargs['hero']
         location = models.locations.Location.query().filter_by(name=kwargs['name']).one()
         hero.current_location = location
+
+        # TODO make a controller function.
+        if location not in hero.journal.known_locations:
+            hero.journal.known_locations.append(location)
+
         services.event_service.spawn(
             'move_event',
             hero,

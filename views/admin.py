@@ -20,20 +20,20 @@ def admin(path="modify_self", path2="users", hero=None):
     admin_form_mapping = [
             ("Age", "hero.age"),
             ("Experience", "hero.experience"),
-            ("Experience_maximum", "hero.experience_maximum"),
+            ("Experience Maximum", "hero.experience_maximum"),
             ("Renown", "hero.base_proficiencies['renown'].current"),
             ("Virtue", "hero.base_proficiencies['virtue'].current"),
             ("Devotion", "hero.base_proficiencies['devotion'].current"),
             ("Gold", "hero.gold"),
-            ("Basic_ability_points", "hero.basic_ability_points"),
-            ("Archetype_ability_points", "hero.archetype_ability_points"),
-            ("Calling_ability_points", "hero.calling_ability_points"),
-            ("Pantheonic_ability_points", "hero.pantheon_ability_points"),
-            ("Attribute_points", "hero.attribute_points"),
-            ("Proficiency_Points", "hero.proficiency_points")]
+            ("Basic Ability Points", "hero.basic_ability_points"),
+            ("Archetype Ability Points", "hero.archetype_ability_points"),
+            ("Calling Ability Points", "hero.calling_ability_points"),
+            ("Pantheon Ability Points", "hero.pantheon_ability_points"),
+            ("Attribute Points", "hero.attribute_points"),
+            ("Proficiency Points", "hero.proficiency_points")]
     if path == "edit_database":
         sorted_heroes = services.fetcher.fetch_sorted_heroes("id", False)
-        return flask.render_template('admin.html', hero=hero, path=path, path2=path2, all_heroes=sorted_heroes)  # return a string
+        return flask.render_template('admin.html', page_title="Admin", hero=hero, path=path, path2=path2, all_heroes=sorted_heroes)  # return a string
     elif path == "modify_self":
         page_title = "Admin"
         if flask.request.method == 'POST':
@@ -48,4 +48,4 @@ def admin(path="modify_self", path2="users", hero=None):
         controller.setup_account.add_new_hero_to_account(account)
         return flask.redirect(flask.url_for('choose_character'))
     form_content = [(key, eval(attrib, {'hero': hero})) for key, attrib in admin_form_mapping]
-    return flask.render_template('admin.html', hero=hero, form_content=form_content, path=path)  # return a string
+    return flask.render_template('admin.html', page_title="Admin", hero=hero, form_content=form_content, path=path)  # return a string

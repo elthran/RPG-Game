@@ -28,6 +28,8 @@ def url_protect(f):
         # Everything after this will run just before the function
         # runs but not during function setup.
         # There is probably cleaner way?
+        # This code will never run? - Elthran
+        # It is just disabled (the top return will be removed) - Marlen
         try:
             session['logged_in']
         except RuntimeError:

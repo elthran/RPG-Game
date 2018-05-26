@@ -9,6 +9,7 @@ class ChatLog(models.Base):
     games = sa.orm.relationship("Game", back_populates='chat_log')
     chat_messages = sa.orm.relationship("ChatMessage", order_by='ChatMessage.timestamp.desc()')
 
+    # TODO convert this to a query if possible?
     def active_chatters(self):
         names = [message.sender_name for message in self.chat_messages]
         unique_names = []
