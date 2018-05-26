@@ -2,7 +2,11 @@
 
 {% extends "layout.html" %}
 {% block block1 %}
-<h1><center>Global Chat Room</center></h1>
+<h1>Global Chat Room</h1>
+{{ monster }}
+{% for monster in monsters %}
+{{ monster }}
+{% endfor %}
 <form method="post" action="" autocomplete="off">
 	<input type="text" name="message" value="" autofocus tabindex="1">
 	<input type="submit" value="Send" tabindex="2">

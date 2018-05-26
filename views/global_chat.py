@@ -4,6 +4,7 @@ from elthranonline import app
 import services.decorators
 import services.time
 import controller.chatter
+import models
 
 
 @app.route('/global_chat', methods=['GET', 'POST'])
@@ -28,4 +29,6 @@ def global_chat(hero=None):
         controller.chatter.prune_messages(chat_log, maxsize=15)
 
         return flask.render_template('global_chat.html', hero=hero, chat_messages=chat_log.chat_messages, active_chatters=chat_log.active_chatters())
-    return flask.render_template('global_chat.html', page_title="Chat", hero=hero, chat_messages=chat_log.chat_messages, active_chatters=chat_log.active_chatters())
+
+    game_monsters = models.Hero.filter_by(is_monster=True).all()
+    return flask.render_template('global_chat.html', page_title="Chat", hero=hero, chat_messages=chat_log.chat_messages, active_chatters=chat_log.active_chatters(), monsters=game_monsters)
