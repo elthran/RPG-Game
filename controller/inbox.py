@@ -18,7 +18,7 @@ def delete_messages_by_id(ids):
 
     I don't understand what synchronize_session="fetch" does ...
     """
-    models.Message.query().filter(models.Message.id.in_(ids)).delete(synchronize_session='fetch')
+    models.Message.query.filter(models.Message.id.in_(ids)).delete(synchronize_session='fetch')
 
 
 def reply_to_message(sender, message_id, content):

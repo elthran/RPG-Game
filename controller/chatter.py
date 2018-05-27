@@ -5,7 +5,7 @@ import models
 def remove_old_messages(outdated_in_minutes=5):
     """Delete chat messages that are older than 5 minutes old."""
 
-    models.ChatMessage.query().filter(models.ChatMessage.timestamp <= services.time.different_from_now_by(minutes=-outdated_in_minutes)).delete()
+    models.ChatMessage.query.filter(models.ChatMessage.timestamp <= services.time.different_from_now_by(minutes=-outdated_in_minutes)).delete()
 
 
 def add_new_message_to_log(chat_log, sender, message):

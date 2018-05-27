@@ -68,7 +68,7 @@ def update_current_location(f):
     @functools.wraps(f)
     def wrap_current_location(*args, **kwargs):
         hero = kwargs['hero']
-        location = models.locations.Location.query().filter_by(name=kwargs['name']).one()
+        location = models.locations.Location.query.filter_by(name=kwargs['name']).one()
         hero.current_location = location
 
         # TODO make a controller function.

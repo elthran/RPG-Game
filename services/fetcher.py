@@ -40,7 +40,7 @@ def fetch_sorted_heroes(attribute, descending=False):
 
     https://stackoverflow.com/questions/4186062/sqlalchemy-order-by-descending
     """
-    query = models.Hero.query()
+    query = models.Hero.query
     if '.' not in attribute:
         if descending:
             return query.order_by(sa.desc(attribute)).all()

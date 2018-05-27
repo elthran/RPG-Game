@@ -9,6 +9,7 @@ Mainly using the tutorial at:
 This class is imported first and can be used to add generic methods to all
 database objects. Like a __str__ function that I can actually read.
 """
+import pdb
 
 import sqlalchemy as sa
 import sqlalchemy.orm
@@ -214,37 +215,83 @@ class Base(object):
 
     Session = None
     session = None
-
-    # This way is cleaner ... but each query seems to create an
-    # instantly expiring session ...
-    # @classmethod
-    # def query(cls):
-    #     with database.sessions.session_scope(cls.Session) as session:
-    #         return session.query(cls)
-
-    @classmethod
-    def query(cls, *args):
-        return cls.session.query(cls, *args)
+    query_class = None
+    query = None
 
     @classmethod
     def first(cls):
-        return cls.query().first()
+        return cls.query.first()
 
     @classmethod
     def get(cls, id_):
-        return cls.query().get(id_)
+        return cls.query.get(id_)
 
     @classmethod
     def filter_by(cls, **kwargs):
-        return cls.query().filter_by(**kwargs)
+        return cls.query.filter_by(**kwargs)
 
     @classmethod
     def all(cls):
-        return cls.query().all()
+        return cls.query.all()
 
     @classmethod
     def save(cls):
         database.sessions.save(cls)  # resets session.
+
+    @classmethod
+    def quick_save(cls):
+        database.sessions.quick_save(cls)  # doesn't reset session
+
+
+class _QueryProperty(object):
+    """Object to allow query to act as a property and a function.
+
+    Copied from the Flask-SQLAlchemy source. And modified slightly.
+
+    Setup:
+        Base.Session = sa.orm.sessionmaker(bind=database.engine)
+        Base.session = Base.Session()
+        Base.query_class = sa.orm.query.Query
+        Base.query = _QueryProperty()
+    Usage:
+            models.Hero.query.first()  # or any query method.
+            models.Hero.query(models.Account)  # use callable session query.
+    """
+    def __init__(self):
+        self.caller = None
+
+    def __get__(self, obj, type_):
+        type_.query_class.__call__ = self.__call__  # make query callable.
+        self.caller = type_  # allow passing caller to callable query.
+        try:
+            mapper = sa.orm.class_mapper(type_)
+            if mapper:
+                return type_.query_class(mapper, session=type_.session)
+        except sa.orm.exc.UnmappedClassError:
+            return None
+
+    def __call__(self, *args, **kwargs):
+        """Allow query to be callable.
+
+        Usage:
+            models.Hero.query.first()  # or any query method.
+            # use callable session query.
+            models.Hero.query(models.Account).first()
+
+        Note:
+            If you customize the query_class ... you might get different
+        results for these. Since they would be using different
+        query_classes.
+
+        Might fix this:
+            temp = self.caller.session._query_cls
+            self.caller.session._query_cls = self.caller.query_class
+            query = self.caller.session.query(self.caller, *args, **kwargs)
+            self.caller.session._query_cls = temp
+            return query
+        Unless temp will just be reassigned as well?
+        """
+        return self.caller.session.query(self.caller, *args, **kwargs)
 
 
 # Initialize SQLAlchemy base class.
@@ -264,3 +311,5 @@ Base = sa.ext.declarative.declarative_base(bind=database.engine, cls=Base, metad
 
 Base.Session = sa.orm.sessionmaker(bind=database.engine)
 Base.session = Base.Session()
+Base.query_class = sa.orm.query.Query
+Base.query = _QueryProperty()

@@ -61,6 +61,18 @@ def safe_commit_session(f):
     return wrap_safe_commit_session
 
 
+def quick_save(self):
+    """Wrap a commit and rollback in one.
+
+    Don't clear the session.
+    """
+    try:
+        self.session.commit()
+    except:
+        self.session.rollback()
+        raise
+
+
 # Seems to build sessions that expire too quickly.
 # I'm probably using this wrong.
 # noinspection PyPep8Naming
