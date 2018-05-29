@@ -117,7 +117,7 @@ def explore_dungeon(name='', hero=None, location=None):
         return flask.redirect(flask.url_for('explore_dungeon_encounter'))
     elif encounter_chance > 15:  # You find an item!
         return flask.redirect(flask.url_for('explore_dungeon_item'))
-    else:
+    else:  # You explore but don't find a lower level ..?
         page_heading += " You explore deeper into the dungeon!"
         page_links = [("Walk deeper into the", "/explore_dungeon/Explore%20Dungeon/None", "dungeon", ".")]
 
