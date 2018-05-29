@@ -448,19 +448,3 @@ def barracks(name='', hero=None, location=None):
         location.children = [arena, spar]
 
     return render_template('generic_location.html', hero=hero)
-
-
-# From /dungeon
-@app.route('/dungeon_entrance/<name>')
-@login_required
-@uses_hero
-@update_current_location
-def dungeon_entrance(name='', hero=None, location=None):
-    hero.journal.achievements.current_dungeon_floor = 0
-    hero.current_dungeon_progress = 0
-    hero.random_encounter_monster = False
-    # explore_dungeon = database.get_object_by_name('Location', 'Explore Dungeon')
-    # location.children = [explore_dungeon]
-    return render_template('generic_location.html', hero=hero, game=game)  # return a string
-
-

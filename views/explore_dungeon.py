@@ -8,6 +8,20 @@ import services.generators
 import models
 
 
+# From /dungeon
+@app.route('/dungeon_entrance/<name>')
+@services.decorators.login_required
+@services.decorators.uses_hero
+@services.decorators.update_current_location
+def dungeon_entrance(name='', hero=None, location=None):
+    hero.journal.achievements.current_dungeon_floor = 0
+    hero.current_dungeon_progress = 0
+    hero.random_encounter_monster = False
+    # explore_dungeon = database.get_object_by_name('Location', 'Explore Dungeon')
+    # location.children = [explore_dungeon]
+    return flask.render_template('generic_location.html', hero=hero, game=hero.game)  # return a string
+
+
 @app.route('/explore_dungeon/<name>/entering')
 @services.decorators.login_required
 @services.decorators.uses_hero
