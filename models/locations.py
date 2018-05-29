@@ -302,8 +302,6 @@ class Location(models.Base):
         Old: Create a url for this location based on the parent's url.
         """
         url_name = self.name.replace(" ", "%20")
-        if self.type == "explore_dungeon":
-            url_name += "/False"
         return "/{}/{}".format(self.type, url_name)
         # if self.parent is None:
         #     return "/{}/{}".format(self.type, self.name)

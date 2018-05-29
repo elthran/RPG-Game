@@ -155,7 +155,7 @@ for n in range(NUM_OF_DUNGEONS):
     dungeon_entrance = models.Location('Dungeon Entrance{}'.format(n), 'dungeon_entrance')
     dungeon_entrance.display.page_heading = "You are in the dungeon and exploring!"
     dungeon_entrance.display.page_image = "generic_cave_entrance2.jpg"
-    dungeon_entrance.display.paragraph = "Take a step into the dungeon."
+    dungeon_entrance.display.paragraph = "The entrance of a crumbling ruin."
     dungeon_entrance.children.append(explorable_dungeons[n])
     dungeon_entrances.append(dungeon_entrance)
 
