@@ -23,7 +23,7 @@
     {% set health = hero.get_summed_proficiencies('health') %}
     <tr>
         <td>{{ hero.account.id }}</td>
-        <td>{% if hero.account.is_admin %}[Admin]{% else %}{{ hero.account.prestige }}{% if hero.account.prestige > 50 %}<img src="/static/images/star.jpg">{% endif %}</td>
+        <td>{% if hero.account.is_admin %}[Admin]{% else %}{{ hero.account.prestige }}{% endif %}{% if hero.account and hero.account.prestige > 50 %}<img src="/static/images/star.jpg">{% endif %}</td>
         <td><a href=/display_accounts/see_account/{{ hero.account.username }}>{{ hero.account.username }}</a></td>
         <td>{{ hero.character_name }}</td>
         <td>{{ hero.age }}</td>
@@ -34,20 +34,19 @@
         <td>{% if hero.specializations.archetype.name %}{{ hero.specializations.archetype.name.title() }}{% else %}-{% endif %}</td>
         <td>{% if hero.last_login %}{{ hero.last_login }}{% else %}-{% endif %}</td>
     </tr>
-    {% else %}
-    <tr>
-        <td>None</td>
-        <td>None</td>
-        <td>None</td>
-        <td>None</td>
-        <td>None</td>
-        <td>None</td>
-        <td>None</td>
-        <td>None</td>
-        <td>None</td>
-        <td>None</td>
-        <td>None</td>
-    </tr>
+    <!--<tr>-->
+        <!--<td>None</td>-->
+        <!--<td>None</td>-->
+        <!--<td>None</td>-->
+        <!--<td>None</td>-->
+        <!--<td>None</td>-->
+        <!--<td>None</td>-->
+        <!--<td>None</td>-->
+        <!--<td>None</td>-->
+        <!--<td>None</td>-->
+        <!--<td>None</td>-->
+        <!--<td>None</td>-->
+    <!--</tr>-->
     {% endfor %}
 </table>
 {% endblock %}

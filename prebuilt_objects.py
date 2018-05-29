@@ -128,7 +128,7 @@ marketplace2 = models.Location('Marketplace2', 'store')
 town2.children.append(marketplace2)
 
 old_mans_hut = node_grid[7]
-old_mans_hut.name = "Old Man Hut"
+old_mans_hut.name = "Old Man's Hut"
 old_mans_hut.type = 'building'
 old_mans_hut.update()
 old_mans_hut.display.page_heading = "Old Man's Hut"

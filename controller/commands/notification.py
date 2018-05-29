@@ -3,7 +3,7 @@ import flask
 import models
 
 
-def send_notification_data(hero, data, *args, **kwargs):
+def send_notification_data(hero, data=None, *args, **kwargs):
     """Return the quest notification data as a JSON
 
     Maybe this should be a decorator?

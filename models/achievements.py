@@ -17,8 +17,6 @@ class Achievements(models.Base):
 
     deepest_dungeon_floor = sa.Column(sa.Integer)  # High score for dungeon runs
     current_dungeon_floor = sa.Column(sa.Integer)  # Which floor of dungeon your on
-    # Current progress in current cave floor
-    current_dungeon_floor_progress = sa.Column(sa.Integer)
     player_kills = sa.Column(sa.Integer)
     monster_kills = sa.Column(sa.Integer)
     deaths = sa.Column(sa.Integer)
