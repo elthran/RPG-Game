@@ -21,8 +21,8 @@ def create_app():
 
 
 app = create_app()
-# Must import views after app created http://flask.pocoo.org/docs/0.12/patterns/packages/
+# Must import routes after app created http://flask.pocoo.org/docs/0.12/patterns/packages/
 # noinspection PyUnresolvedReferences
-import views
+import routes
 
 sslify = flask_sslify.SSLify(app)

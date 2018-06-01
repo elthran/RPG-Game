@@ -45,7 +45,6 @@ class Hero(models.Base):
     # All elthran's new code for random stuff
     # Checks if you are currently about to fight a monster
     current_terrain = sa.Column(sa.String(50))
-    random_encounter_monster = sa.Column(sa.Boolean)
     spellbook_page = sa.Column(sa.Integer)
 
     # Time code of when the (account?) was created
@@ -56,7 +55,7 @@ class Hero(models.Base):
     login_alerts = sa.Column(sa.String(200))  # Testing messages when you are attacked or get a new message
 
     # Relationships
-    game = sa.orm.relationship("Game", back_populates='hero', uselist=False, cascade="all, delete-orphan")
+    game = sa.orm.relationship("Game", back_populates='hero', uselist=False, cascade="all, delete-orphan", foreign_keys="[Game.hero_id]")
 
     # User to Hero. One to many. Ordered!
     # Note deleting the user deletes all their heroes!
@@ -323,7 +322,6 @@ class Hero(models.Base):
 
         # Achievements and statistics
         self.current_terrain = "city"
-        self.random_encounter_monster = None
         self.spellbook_page = 1
 
         # Time code and login alerts

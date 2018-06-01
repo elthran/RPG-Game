@@ -14,6 +14,9 @@
         <h2>{{ page_heading }}</h2>
         <img src="/static/images/{{ location.display.page_image }}" height="500" width="500" alt="{{ location.display.page_image }}">
         <h3>{{ paragraph }}</h3>
+        {% for dialogue in dialogues %}
+        {{ dialogue | safe }}
+        {% endfor %}
         {% for link in page_links%}
         <h2>{{ link[0] }} <a href={{ link[1] }}>{{ link[2] }}</a>{{ link[3] }}</h2>
         {% endfor %}

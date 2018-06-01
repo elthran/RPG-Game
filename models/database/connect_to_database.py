@@ -8,7 +8,7 @@ import sqlalchemy.orm
 
 import models
 # from session_helpers import scoped_session, safe_commit_session
-import services
+import services.secrets
 
 import private_config
 

@@ -4,7 +4,7 @@ The new format of the code should work like this:
 
 * All game objects should go in the 'models' package.
 
-* All app.routes should go in the 'views' package. Views should only manipulate the display of information.
+* All app.routes should go in the 'routes' package. Views should only manipulate the display of information.
 
 * For each 'view' there should be a 'controller' package module. The controller should allow for any action in the game to be enacted via python interpreter.
 e.g.
