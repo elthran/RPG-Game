@@ -31,6 +31,9 @@ class Game(models.Base):
     random_encounter_monster_id = sa.Column(sa.Integer, sa.ForeignKey('hero.id'))
     random_encounter_monster = sa.orm.relationship("Hero", foreign_keys="[Game.random_encounter_monster_id]")
 
+    discovered_item_id = sa.Column(sa.Integer, sa.ForeignKey('item.id'))
+    discovered_item = sa.orm.relationship("Item")
+
     @sa.orm.validates("random_encounter_monster")
     def validate_random_encounter_monster(self, key, value):
         if value and value.is_monster is False:

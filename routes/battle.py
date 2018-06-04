@@ -7,18 +7,14 @@ import services.generators
 import controller.battle
 
 
-@app.route('/battle/<enemy_user>')
+@app.route('/battle/<enemy>')
 @services.decorators.login_required
 @services.decorators.uses_hero
-def battle(enemy_user=None, hero=None):
+def battle(enemy=None, hero=None):
     """This gets called if you fight in the arena."""
     page_links = [("Return to your ", "/home", "profile", " page.")]
 
-    if enemy_user == "monster":  # Ideally if this is an integer then search for a monster with that ID.
-        monsters = services.fetcher.get_all_monsters_by_hero_terrain(hero)
-        enemy = services.generators.generate_monster(monsters)
-    else:  # If it's not an integer, then it's a username. Search for that user's hero.
-        enemy = services.fetcher.fetch_hero_by_username(enemy_user)
+    enemy = services.fetcher.fetch_hero_by_username(enemy)
 
     battle_log, enemy = controller.battle.battle(hero, enemy)
     if hero.is_alive():

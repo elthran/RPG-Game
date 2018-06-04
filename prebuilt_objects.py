@@ -342,9 +342,10 @@ basic_forum = models.forum.Forum("Basic")  # Create the first forum
 all_forums = [basic_forum]  # Add it to the list of forums to be generated on game init
 basic_forum.create_board(models.forum.Board("General"))  # Add a board to the forum so it doesn't seem so lonely
 
-all_monsters = [models.Hero(name="Sewer Rat", species="Rat", level_max=10, forest=False, city=True),
-                models.Hero(name="Giant Spider", species="Spider", level_max=10, forest=True, city=False),
-                models.Hero(name="Rabid Dog", species="Dog", level_max=10, forest=False, city=True)]
+all_monsters = [
+    models.Hero(name="Sewer Rat", species="Rat", maximum_level=10, forest=False, city=True, template=True),
+    models.Hero(name="Giant Spider", species="Spider", maximum_level=10, forest=True, city=False, template=True),
+    models.Hero(name="Rabid Dog", species="Dog", maximum_level=10, forest=False, city=True, template=True)]
 
 for i in range(len(all_monsters)):
     all_monsters[i].is_monster = True

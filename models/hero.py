@@ -1,4 +1,5 @@
 import datetime
+import pdb
 
 import sqlalchemy as sa
 import sqlalchemy.orm
@@ -8,9 +9,10 @@ import sqlalchemy.ext.hybrid
 import services.readability
 import models
 import models.collections
+import models.mixins
 
 
-class Hero(models.Base):
+class Hero(models.mixins.TemplateMixin, models.Base):
     """Store data about the Hero/Character object.
 
     """
@@ -269,8 +271,9 @@ class Hero(models.Base):
         for cls_name in models.proficiencies.ALL_CLASS_NAMES:
             # attributes.Attribute
             # noinspection PyPep8Naming
-            ProfClass = getattr(models.proficiencies, cls_name)
-            ProfClass().hero = self
+            class_ = getattr(models.proficiencies, cls_name)
+            obj = class_(template=kwargs.get('template', False))
+            self.base_proficiencies[obj.name] = obj
 
         self.base_proficiencies['endurance'].current = self.base_proficiencies['endurance'].final
 
@@ -580,6 +583,21 @@ class Hero(models.Base):
     def is_alive(self):
         """Return True if Hero is alive else False."""
         return self.base_proficiencies['health'].current > 0
+
+    def clone(self):
+        """If this is a monster template -> clone it."""
+        if not self.template and not self.is_monster:
+            raise Exception("Only use this method if obj.template == True and obj.is_monster == True.")
+        keys = ['name', 'species', 'maximum_level', 'forest', 'city', 'is_monster']
+        obj = self.__class__(template=False)
+        for key in keys:
+            try:
+                setattr(obj, key, getattr(self, key))
+            except AttributeError:
+                pass
+        for key, prof in self.base_proficiencies.items():
+            obj.base_proficiencies[key] = prof.clone()
+        return obj
 
 
 if __name__ == "__main__":

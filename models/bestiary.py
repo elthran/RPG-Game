@@ -12,3 +12,4 @@ class NPC(object):
         self.name = name
         self.race = race
         self.age = age
+
