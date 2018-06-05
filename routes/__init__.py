@@ -20,3 +20,5 @@ from . import spar
 from . import reset
 from . import tavern
 from . import explore_dungeon
+from . import barracks
+from . import building

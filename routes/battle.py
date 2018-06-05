@@ -9,7 +9,6 @@ import models
 
 
 @app.route('/battle/<int:id_>')
-@services.decorators.login_required
 @services.decorators.uses_hero
 def battle(id_=0, hero=None):
     """This gets called if you fight in the arena."""

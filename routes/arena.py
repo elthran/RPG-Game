@@ -6,8 +6,6 @@ import services.generators
 
 
 @app.route('/arena/<name>')
-@services.decorators.login_required
-@services.decorators.uses_hero
 @services.decorators.update_current_location
 def arena(name='', hero=None, location=None):
     """Set up a battle between the player and a random monster.

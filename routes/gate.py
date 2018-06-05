@@ -8,7 +8,6 @@ import models
 
 
 @app.route('/gate/<name>')
-@services.decorators.login_required
 @services.decorators.uses_hero
 def leave_town(name='', hero=None):
     location = models.Location.filter_by(name=name).one()

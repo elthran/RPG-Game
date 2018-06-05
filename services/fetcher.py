@@ -79,8 +79,35 @@ def fetch_hero_by_username(username, character_name=None):
 
 
 def get_all_monsters_by_hero_terrain(hero):
+    """Return all monster template that fit the hero's terrain type."""
     if hero.current_terrain is None:
         return models.Hero.filter_by(is_monster=True, template=True).all()
     else:
         terrain = getattr(models.Hero, hero.current_terrain)
         return models.Hero.filter_by(is_monster=True, template=True).filter(terrain == True).all()
+
+
+def hero_has_quest_path_named(hero, name):
+    """Returns True if hero has a ques_path of the given name.
+
+    If hero has 2 quest_paths of the same name it throws an error.
+    """
+    quest = models.QuestPath.filter_by(name=name, journal_id=hero.journal.id).one_or_none()
+
+    if quest:
+        return True
+    return False
+
+
+def get_quest_path_template(name):
+    """Return the quest path template of the given name."""
+    return models.QuestPath.filter_by(name=name, template=True).one()
+
+
+def get_other_heroes_at_current_location(hero):
+    """Return a list of heroes at the same location as this one.
+
+    Not including self.
+    This is probably inefficient ...
+    """
+    return [other_hero for other_hero in hero.current_location.heroes_by_current_location if other_hero.id != hero.id]

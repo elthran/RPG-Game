@@ -3,18 +3,17 @@
 
 {% extends "layout.html" %}
 {% set location = hero.current_location %}
-{% if page_title is not defined %}
-    {% set page_title = location.display.page_title %}
-{% endif %}
-{% if places_of_interest is not defined %}
-    {% set places_of_interest = location.places_of_interest %}
-{% endif %}
+{% set page_heading = page_heading or location.display.page_heading %}
+{% set page_image = page_image or location.display.page_image %}
+{% set paragraph = paragraph or location.display.paragraph %}
+{% set page_title = page_title or location.display.page_title %}
+{% set places_of_interest = places_of_interest or location.places_of_interest %}
 {% block block1 %}
 
 <h1>I am at {{ location.name }}</h1>
-<h1>{{ location.display.page_heading }}</h1>
-<img src="/static/images/{{ location.display.page_image }}" alt="{{ location.display.page_image }}">
-<p>{{ location.display.paragraph }}</p>
+<h1>{{ page_heading }}</h1>
+<img src="/static/images/{{ page_image }}" alt="{{ page_image }}">
+<p>{{ paragraph }}</p>
 
 <div>
     {% if places_of_interest['children'] %}
@@ -57,7 +56,7 @@
 </div>
 
 <div>
-    {% if location.parent %}
+    {% if places_of_interest['parent'] %}
         <h3>Return to <a href="{{ location.parent.url }}">
             {{ location.parent.name }}</a>:
             {{ location.parent.display.paragraph }}

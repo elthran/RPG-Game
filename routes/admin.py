@@ -11,7 +11,6 @@ import controller.setup_account
 
 @app.route('/admin/<path>/<path2>', methods=['GET', 'POST'])
 @app.route('/admin', methods=['GET', 'POST'])
-@services.decorators.login_required
 @services.decorators.uses_hero
 def admin(path="modify_self", path2="users", hero=None):
     if not hero.account.is_admin:  # Prevent tampering

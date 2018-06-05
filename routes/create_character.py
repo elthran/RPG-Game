@@ -6,7 +6,6 @@ import controller
 
 
 @app.route('/create_character', methods=['GET', 'POST'])
-@services.decorators.login_required
 @services.decorators.uses_hero
 def create_character(hero=None):
     data = {}

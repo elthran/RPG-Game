@@ -115,8 +115,11 @@ tavern.display.paragraph = None
 barracks = models.Location('Barracks', 'barracks')
 spar = models.Location('Spar', 'spar')
 spar.display.page_title = "Sparring Room"
+spar.display.paragraph = "Spar with the trainer."
 barracks.children.append(spar)
-barracks.children.append(models.Location('Arena', 'arena'))
+arena = models.Location('Arena', 'arena')
+arena.display.paragraph = "Compete in the arena."
+barracks.children.append(arena)
 
 town.children.append(blacksmith)
 town.children.append(barracks)
