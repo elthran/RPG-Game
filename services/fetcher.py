@@ -80,7 +80,7 @@ def fetch_hero_by_username(username, character_name=None):
 
 def get_all_monsters_by_hero_terrain(hero):
     if hero.current_terrain is None:
-        return models.Hero.filter_by(is_monster=True).all()
+        return models.Hero.filter_by(is_monster=True, template=True).all()
     else:
         terrain = getattr(models.Hero, hero.current_terrain)
-        return models.Hero.filter_by(is_monster=True).filter(terrain == True).all()
+        return models.Hero.filter_by(is_monster=True, template=True).filter(terrain == True).all()

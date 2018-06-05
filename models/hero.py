@@ -535,13 +535,13 @@ class Hero(models.mixins.TemplateMixin, models.Base):
         If current_location is a city ... set value of current_city as well.
         If not remove the value of current_city.
         """
-        if location.type in ("cave", "town"):
+        if location and location.type in ("cave", "town"):
             self.current_city = location
 
         # So the game remembers your last visited city
-        if location.type == 'town':
+        if location and location.type == 'town':
             self.last_city = location
-        if location.type == 'map':
+        if location and location.type == 'map':
             self.current_world = location
         return location
 
