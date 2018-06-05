@@ -100,12 +100,11 @@
 <!-- The user has chosen a thread. Let them read the posts in the thread! -->
     <h1>Topic: {{ current_thread.name }}</h1>
     {% for post in current_thread.posts %}
-    {% set author = get_author(post.author) %}
         <div class="forumPostContainer">
             <div class="forumPostAuthor">
-                {{ author.username.title() }}
-                <br><br>{{ author.prestige }} Prestige
-                <br><br><img src="/static/images/avatars/{{ author.avatar }}.jpg" alt="No avatar">
+                {{ post.account.username.title() }}
+                <br><br>{{ post.account.prestige }} Prestige
+                <br><br><img src="/static/images/avatars/{{ post.account.avatar }}.jpg" alt="No avatar">
             </div>
             <div class="forumPostContent">
                 <div class="forumPostHeader">
@@ -121,7 +120,7 @@
                     {{ post.content }}
                 </div>
                 <div class="forumPostFooter">
-                    {{ author.signature }}
+                    {{ post.account.signature }}
                 </div>
             </div>
         </div>

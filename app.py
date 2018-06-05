@@ -17,7 +17,6 @@ from models.game import Game
 # _before_ any of them are used.
 from models.database.old_database import EZDB
 from engine import Engine
-from models.forum import Board, Thread, Post
 from math import ceil
 from models.bestiary import NPC
 from services.decorators import login_required, uses_hero
@@ -282,55 +281,3 @@ def achievement_log(hero=None):
         display_achievement = all_achievements[0]
     return render_template('journal.html', hero=hero, achievement_log=True, page_title=page_title,
                            all_achievements=all_achievements, display_achievement=display_achievement)  # return a string
-
-
-@app.route('/forum/<board_id>/<thread_id>', methods=['GET', 'POST'])
-@login_required
-@uses_hero
-def forum(hero=None, board_id=0, thread_id=0):
-    page_title = "Forum"
-    # Checking current forum. Currently it's always on this forum as we only have 1
-    current_forum = database.get_object_by_id("Forum", 1)
-    # Letting python/html know which board/thread you are reading. Will be simpler with database and get_thread_by_id ;)
-    try:
-        current_board = database.get_object_by_id("Board", int(board_id))
-    except:
-        current_board = None
-    try:
-        current_thread = database.get_object_by_id("Thread", int(thread_id))
-        current_thread.views += 1
-    except:
-        current_thread = None
-
-    if request.method == 'POST':
-        form_type = request.form["form_type"]
-        if form_type == "new_board":  # If starting new board
-            board_name = request.form["board_name"]
-            new_board = Board(board_name)
-            current_forum.create_board(new_board)
-        elif form_type == "new_thread":  # If starting new thread
-            thread_name = request.form["thread_name"]
-            thread_description = request.form["thread_description"]
-            thread_board = database.get_object_by_name("Board", request.form["thread_board"])
-            new_thread = Thread(thread_name, hero.user.username, thread_description)
-            thread_board.create_thread(new_thread)
-            if len(request.form["thread_post"]) > 0:  # If they typed a new post, add it to the new thread
-                new_post = Post(request.form["thread_post"], hero.user)
-                new_thread.write_post(new_post)
-        else: # If repyling
-            post_content = request.form["post_content"]
-            new_post = Post(post_content, hero.user)
-            current_thread.write_post(new_post)
-            hero.user.prestige += 1  # Give the user prestige. It's used to track meta activities and is unrelated to gameplay
-
-    return render_template('forum.html', hero=hero,
-                           current_forum=current_forum, current_board=current_board, current_thread=current_thread,
-                           page_title=page_title, get_author=database.get_user_by_username)  # return a string
-
-
-@app.route('/under_construction')
-@login_required
-@uses_hero
-def under_construction(hero=None):
-    page_title = "Under Construction"
-    return render_template('layout.html', page_title=page_title, hero=hero)  # return a string

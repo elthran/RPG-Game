@@ -24,3 +24,5 @@ from . import barracks
 from . import building
 from . import store
 from . import move
+from . import under_construction
+from . import forum

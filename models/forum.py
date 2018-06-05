@@ -18,9 +18,6 @@ class Forum(models.Base):
     def __init__(self, name):
         self.name = name
 
-    def create_board(self, board):
-        self.boards.append(board)
-
 
 class Board(models.mixins.HumanReadableTimeMixin, models.Base):
     # Relationships
@@ -35,9 +32,6 @@ class Board(models.mixins.HumanReadableTimeMixin, models.Base):
 
     def __init__(self, name):
         self.name = name
-
-    def create_thread(self, thread):
-        self.threads.append(thread)
 
     def get_post_count(self):
         return sum((len(thread.posts) for thread in self.threads))
@@ -91,9 +85,6 @@ class Thread(models.mixins.HumanReadableTimeMixin, models.Base):
         self.timestamp = datetime.datetime.utcnow()
         self.views = 0
 
-    def write_post(self, post):
-        self.posts.append(post)
-
 
 class Post(models.mixins.HumanReadableTimeMixin, models.Base):
     # Relationships
@@ -109,9 +100,9 @@ class Post(models.mixins.HumanReadableTimeMixin, models.Base):
 
     @sa.ext.hybrid.hybrid_property
     def author(self):
-        return self.user.username
+        return self.account.username
 
-    def __init__(self, content="Error: Content missing", user=None):
+    def __init__(self, content="Error: Content missing", account=None):
         self.content = content
-        self.user = user
+        self.account = account
         self.timestamp = datetime.datetime.utcnow()

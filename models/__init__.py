@@ -4,7 +4,7 @@ from . import abilities
 from .accounts import Account
 from . import attributes
 from .events import Event
-from .forum import Forum
+from .forum import Forum, Board, Thread, Post
 from .hero import Hero
 from .inbox import Inbox, Message
 from .inventory import Inventory
