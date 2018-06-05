@@ -28,7 +28,6 @@ class Hero(models.mixins.TemplateMixin, models.Base):
     cave = sa.Column(sa.Boolean)
     city = sa.Column(sa.Boolean)
     forest = sa.Column(sa.Boolean)
-    monster_id = sa.Column(sa.Integer)
 
     background = sa.Column(sa.String(50))  # Temporary. It's replacing 'fathers job' for now
     age = sa.Column(sa.Integer)
@@ -302,7 +301,6 @@ class Hero(models.mixins.TemplateMixin, models.Base):
         self.cave = True
         self.city = True
         self.forest = True
-        self.monster_id = 0
 
         # Data and statistics
         self.age = 7

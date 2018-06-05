@@ -74,7 +74,7 @@
                         </li>
                         --> #}
                         <li>{{ display_monster.name }}</li>
-                        <li>{{ display_monster.monster_id }}</li>
+                        <li>{{ display_monster.id }}</li>
                     </ul>
                 {% else %}
                     Here is a list of all of the beasts you have encountered. Click on any monster to see more information.
@@ -83,7 +83,7 @@
             <div style="position:relative;float:right;width:20%;height:100%;border:dotted;">
                 {% for monster in all_monsters %}
                     <ul>
-                        <li><a href=/bestiary/{{ monster.monster_id }}>{{ monster.name }}</a></li>
+                        <li><a href=/bestiary/{{ monster.id }}>{{ monster.name }}</a></li>
                     </ul>
                 {% endfor %}
             </div>

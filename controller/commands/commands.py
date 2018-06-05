@@ -434,17 +434,6 @@ def update_specialization(hero, database, data, **kwargs):
     # setattr(hero.specializations, choice, specialization)
     return flask.jsonify(tooltip="Temp", pointsRemaining=0, level=0)
 
-
-# This should be combined with function below when I know how to pass a path.id
-def change_path_tooltip(hero, database, data, **kwargs):
-    path = database.get_object_by_id("QuestPath", data['id'])
-    return flask.jsonify(description=path.description, reward=path.total_reward)
-
-
-def change_quest_tooltip(hero, database, data, **kwargs):
-    quest = database.get_object_by_id("Quest", data['id'])
-    return flask.jsonify(description=quest.description, reward=quest.reward_experience)
-
 #
 # def clear_quest_notification(hero, database, arg_dict, **kwargs):
 #     id = arg_dict.get('data', None, type=int)

@@ -352,7 +352,6 @@ all_monsters = [
 
 for i in range(len(all_monsters)):
     all_monsters[i].is_monster = True
-    all_monsters[i].monster_id = i + 1
     if all_monsters[i].species == "Rat":
         all_monsters[i].species_plural = "Rats"
         all_monsters[i].base_proficiencies.poison_chance.base = 15

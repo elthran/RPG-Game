@@ -171,24 +171,4 @@ def inventory_page(hero=None):
         'inventory.html', hero=hero, page_title=page_title,
         isinstance=isinstance, getattr=getattr)
 
-@app.route('/quest_log')
-@login_required
-@uses_hero
-def quest_log(hero=None):
-    page_title = "Quest Log"
-    return render_template('journal.html', hero=hero, quest_log=True, page_title=page_title)
-
-@app.route('/bestiary/<monster_id>')
-@login_required
-@uses_hero
-def bestiary(hero=None, monster_id=0):
-    page_title = "Bestiary"
-    all_monsters = database.get_all_monsters()
-    if monster_id == "0":
-        display_monster = None
-    else:
-        display_monster = database.get_monster_by_id(monster_id)
-    return render_template('journal.html', hero=hero, bestiary=True, page_title=page_title,
-        all_monsters=all_monsters, display_monster=display_monster)
-
 

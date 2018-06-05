@@ -59,6 +59,8 @@ def import_routes():
     import routes.achievements
     import routes.atlas
     import routes.people
+    import routes.bestiary
+    import routes.quest
 
 
 import_routes()
