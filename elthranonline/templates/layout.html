@@ -44,7 +44,7 @@
                 <li onclick="this.firstChild.click();"><a href=/home>Profile</a></li>
                 <li onclick="this.firstChild.click();"><a href=/inventory_page>Inventory</a></li>
                 <li onclick="this.firstChild.click();"><a href=/spellbook>Spellbook</a></li>
-                <li onclick="this.firstChild.click();"><a href={{ hero.current_location.url }}>{{ hero.current_location.name.title() }}</a></li>
+                <li onclick="this.firstChild.click();"><a href={{ hero.current_location.url }}>{{ hero.current_location.name }}</a></li>
                 <li onclick="this.firstChild.click();"><a href=/quest_log>Journal</a></li>
             {% if hero.account.is_admin %}
                 <li onclick="this.firstChild.click();"><a href=/admin>Admin</a></li>

@@ -159,16 +159,3 @@ def ability_tree(spec, hero=None):
                            spec_choices=spec_choices)
 
 
-@app.route('/inventory_page')
-@login_required
-@uses_hero
-def inventory_page(hero=None):
-    page_title = "Inventory"
-    # for item in hero.inventory:
-    #     if item.wearable:
-    #         item.check_if_improvement()
-    return render_template(
-        'inventory.html', hero=hero, page_title=page_title,
-        isinstance=isinstance, getattr=getattr)
-
-

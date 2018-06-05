@@ -1,38 +1,9 @@
 from pprint import pprint
 import re
 
-import functools
 import flask
 
-
-def set_notification_active(f):
-    """Tack data onto a response that activates the notification button.
-
-    This is a decorator that will be used to un-hide the
-    globalNotificationButton.
-
-    Add the isNotice=true/false into any response.
-    If the response is a json type then it adds it to the JSON object
-        (at the front, but as this is a dictionary it isn't that important).
-    If the response is a string it tacks it on the end as a
-        keyword=variable pair.
-    """
-
-    @functools.wraps(f)
-    def wrap_set_notice_active(hero, *args, **kwargs):
-        response = f(hero, *args, **kwargs)
-        # print("Using the set notification active code!")
-        # notice = str(bool(hero.journal.notification)).lower()
-        notice = str(False).lower()  # debugging
-        try:
-            new_data = b'\n  "isNotice": ' + notice.encode() + b', '
-            response.data = b"{" + new_data + response.data[1:]
-        except AttributeError:
-            # Convert the string from binary.
-            response += "&&isNotice={}".format(notice)
-        return response
-    return wrap_set_notice_active
-
+import commands.decorators
 
 # TODO: update documentation!
 """Run a list of html update commands based on the string cmd.
@@ -176,7 +147,7 @@ NOTES:
 """
 
 
-@set_notification_active
+@commands.decorators.set_notification_active
 def buy(hero, database, data, engine):
     """Allow the hero to buy items from the Blacksmith.
 
@@ -209,37 +180,6 @@ def consume(hero, database, arg_dict, **kwargs):
     item.apply_effect(hero)
     database.delete_item(item_id)
     return "success"
-
-
-@set_notification_active
-def toggle_equip(hero, database, data, engine):
-    item_id = data['id']
-    item = database.get_item_by_id(item_id)
-    len_rings = None
-    if item.type == "Ring":
-        lowest_empty_slot = hero.inventory.get_lowest_empty_ring_pos()
-        primary_slot_type = "finger-{}".format(lowest_empty_slot)
-    else:
-        primary_slot_type = hero.inventory.\
-            js_slots_used_by_item_type[item.type][0]
-    if item.equipped:
-        hero.inventory.unequip(item)
-        hero.refresh_character()
-        engine.spawn(
-            'unequip_event',
-            hero,
-            description="{} unequips a/an {}.".format(hero.name, item.name)
-        )
-        return flask.jsonify(primarySlotType=primary_slot_type, command="unequip")
-    else:
-        ids_to_unequip = hero.inventory.equip(item)
-        hero.refresh_character()
-        engine.spawn(
-            'equip_event',
-            hero,
-            description="{} equips a/an {}.".format(hero.name, item.name)
-        )
-        return flask.jsonify(primarySlotType=primary_slot_type, command="equip", idsToUnequip=ids_to_unequip)
 
 
 def cast_spell(hero, database, data, **kwargs):

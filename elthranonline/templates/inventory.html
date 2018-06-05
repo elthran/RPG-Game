@@ -69,12 +69,11 @@
                     <span class="inventory-tooltip-text">{{ item.tooltip|safe }}</span>
                 </div>
             </div>
-            {% else %}
-            <div class="inventory-unequipped inventory-item">
-                <div>
+            {% endfor %}
+            <div id="unequipped-empty" class="inventory-unequipped inventory-item">
+                <div class="inventory-tooltip">
                     <img src="/static/images/items/empty.jpg" />
                 </div>
             </div>
-            {% endfor %}
         </div>
 {% endblock %}

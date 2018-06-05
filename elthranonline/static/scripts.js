@@ -319,9 +319,11 @@ function equip(tooltipDiv, primarySlotType) {
     var inventoryItemDiv;
     var slotDiv;
     var emptySlotDiv;
+    var unequippedEmptySlotDiv;
     var slotType;
     var rightHandDiv;
     var emptyLeftHandDiv;
+    var unequippedDiv;
 
     inventoryItemDiv = tooltipDiv.parentElement;
     slotDiv = document.getElementById("inventory-" + primarySlotType);
@@ -330,7 +332,8 @@ function equip(tooltipDiv, primarySlotType) {
     // Delete the inventoryItemDiv
     // Hide the emptySlot Div.
     // Move the tooltipDiv
-    inventoryItemDiv.parentElement.removeChild(inventoryItemDiv);
+    unequippedDiv = document.getElementById("unequipped");
+    unequippedDiv.removeChild(inventoryItemDiv);
     emptySlotDiv.style.display = "none";
     slotDiv.appendChild(tooltipDiv);
     slotDiv.style.display = "";
@@ -352,6 +355,11 @@ function equip(tooltipDiv, primarySlotType) {
         slotDiv = document.getElementById("inventory-" + slotType);
         slotDiv.style.display = "none";
     }
+
+    if (unequippedDiv.childElementCount < 3) {
+        unequippedEmptySlotDiv = document.getElementById("unequipped-empty");
+        unequippedEmptySlotDiv.style.display = "inline";
+    }
 }
 
 // Unequip an item from its current location.
@@ -361,6 +369,7 @@ function unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv, primarySlotType) {
 
     var unequippedItemDiv;
     var unequippedGeneralDiv;
+    var unequippedEmptySlotDiv;
     var emptyLeftHandDiv;
     var rightHandDiv;
     var bothHandsDiv;
@@ -386,12 +395,14 @@ function unequip(tooltipDiv, inventoryItemDiv, emptySlotDiv, primarySlotType) {
     inventoryItemDiv.removeChild(tooltipDiv);
     emptySlotDiv.style.display = "inline";
 
+    unequippedEmptySlotDiv = document.getElementById("unequipped-empty");
+
     unequippedItemDiv = document.createElement("div");
     unequippedItemDiv.classList.add("inventory-unequipped", "inventory-item");
     unequippedItemDiv.appendChild(tooltipDiv);
 
     unequippedGeneralDiv = document.getElementById("unequipped");
-    unequippedGeneralDiv.appendChild(unequippedItemDiv);
+    unequippedGeneralDiv.insertBefore(unequippedItemDiv, unequippedEmptySlotDiv);
 }
 
 /*

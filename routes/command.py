@@ -1,11 +1,9 @@
-import pdb
-
 import flask
 import werkzeug.exceptions
 
 from elthranonline import app
 import services.decorators
-import controller.commands
+import commands
 
 
 # Implement Security Policies here?
@@ -46,17 +44,7 @@ def command(cmd=None, hero=None):
     # event.add["database"] = database
 
     response = None
-    try:
-        # command_function = getattr(globals(), <cmd>)
-        # response = command_function(hero, javascript_kwargs_from_html)
-        command_function = controller.commands.cmd_functions(cmd)
-    except AttributeError as ex:
-        if str(ex) == "type object 'Command' has no attribute '{}'".format(
-                cmd):
-            print("You need to write a function called '{}' in "
-                  "controller/commands.py.".format(cmd))
-            raise ex
-        raise ex
+    command_function = commands.cmd_functions(cmd)
 
     if flask.request.method == 'POST' and flask.request.is_json:
         try:

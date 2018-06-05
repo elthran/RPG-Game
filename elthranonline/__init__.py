@@ -61,6 +61,7 @@ def import_routes():
     import routes.people
     import routes.bestiary
     import routes.quest
+    import routes.inventory
 
 
 import_routes()
