@@ -258,26 +258,3 @@ def atlas(hero=None, map_id=0):
                            nodes=nodes)  # return a string
 
 
-@app.route('/achievements/<achievement_id>')
-@login_required
-@uses_hero
-def achievements(hero=None, achievement_id=0):
-    """
-def achievement_log(hero=None):
-    achievements = hero.journal.achievements
-    page_title = "Achievements"
-    return render_template(
-        'journal.html', hero=hero, achievement_log=True,
-        completed_achievements=achievements.completed_achievements,
-        kill_achievements=achievements.kill_achievements,
-        kill_quests={},
-        page_title=page_title)  # return a string
-    """
-    page_title = "Achievements"
-    all_achievements = [(1, "Kill 3 Wolves", 5)]
-    if achievement_id == "0":
-        display_achievement = None
-    else:
-        display_achievement = all_achievements[0]
-    return render_template('journal.html', hero=hero, achievement_log=True, page_title=page_title,
-                           all_achievements=all_achievements, display_achievement=display_achievement)  # return a string

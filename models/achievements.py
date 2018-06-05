@@ -4,6 +4,7 @@ import sqlalchemy.orm
 import models
 
 
+# TODO rework this so as to drop the container class ...
 class Achievements(models.Base):
     # Relationships
     # Achievements to Journal is One to One
@@ -62,6 +63,7 @@ class Achievement(models.Base):
     current_level = sa.Column(sa.Integer)
     next_level = sa.Column(sa.Integer)
     experience = sa.Column(sa.Integer)
+    # TODO Add some kind of condition so you can display it?
 
     def __init__(self, name, experience=0):
         self.name = name

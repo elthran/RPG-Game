@@ -26,3 +26,4 @@ from . import store
 from . import move
 from . import under_construction
 from . import forum
+from . import achievements

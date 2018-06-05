@@ -164,19 +164,22 @@
     {% elif achievement_log %}
         <div style="position:relative;border:dotted;width:800px;height:300px;padding:10px;scroll:auto;">
             <div style="position:relative;float:left;width:75%;">
-                {% if display_achievement %}
-                    <h2>{{ display_achievement[1] }}</h2>
-                    <p>Reward of {{ display_achievement[2] }} experience points.</p>
-                {% else %}
-                    Here is a list of all the achievemets you have explored. Choose one from the list to see more.
-                {% endif %}
+            {% if display_achievement %}
+                <h2>{{ display_achievement.name }}</h2>
+                <p>Current level of {{ display_achievement.current_level }}</p>
+                <p>Reward of {{ display_achievement.experience }} experience points.</p>
+                <p>Next level of {{ display_achievement.next_level }}</p>
             </div>
             <div style="position:relative;float:right;width:20%;height:100%;border:dotted;">
-                {% for achievement in all_achievements %}
-                    <ul>
-                        <li><a href=/achievements/{{ achievement.id }}><b>{{ achievement.name }} -> Current level: {{ achievement.current_level }} -> Next level: {{ achievement.next_level }}</b></a></li>
-                    </ul>
-                {% endfor %}
+                <p>Back to <a href="/achievements/0">All Achievements</a></p>
+            {% else %}
+                <p>Here is a list of all the achievements you have explored. Choose one from the list to see more information.</p>
+            {% endif %}
+            {% for achievement in all_achievements %}
+                <ul>
+                    <li><a href=/achievements/{{ achievement.id }}><b>{{ achievement.name }} -> Current level: {{ achievement.current_level }} -> Next level: {{ achievement.next_level }}</b></a></li>
+                </ul>
+            {% endfor %}
             </div>
             {% if completed_achievements %}
             {% for achievement in completed_achievements %}
@@ -191,6 +194,7 @@
 
     {% endif %}
         <!-- I don't know why this needs to be below my code and not above it -->
+        <!-- Because the page loads sequentially and your code would be referring to elements that didn't exist yet if it was above them. -->
         <script>
         var allProfs = document.getElementsByClassName("genericAccordion");
         var index;

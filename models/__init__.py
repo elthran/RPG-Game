@@ -18,5 +18,6 @@ from .specializations import HeroSpecializationAccess, Specialization, Archetype
 from .game import Game
 from .chat import ChatLog, ChatMessage
 from .display import Display
+from .achievements import Achievement
 
 # from . import database
