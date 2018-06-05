@@ -295,7 +295,7 @@ default_quest_paths = [
 ]
 
 ##########
-# Users (and heroes)
+# Accounts (and heroes)
 """
 NOTE: password is set as plaintext here. It must (and currently is) hashed in connect_to_database.py
 when prebuilt_objects are preloaded into the database.

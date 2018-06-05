@@ -20,7 +20,7 @@ from engine import Engine
 from models.forum import Board, Thread, Post
 from math import ceil
 from models.bestiary import NPC
-from services.decorators import login_required, uses_hero, update_current_location
+from services.decorators import login_required, uses_hero
 
 # INIT AND LOGIN FUNCTIONS
 # for server code swap this over:
@@ -334,38 +334,3 @@ def forum(hero=None, board_id=0, thread_id=0):
 def under_construction(hero=None):
     page_title = "Under Construction"
     return render_template('layout.html', page_title=page_title, hero=hero)  # return a string
-
-
-@app.route('/map/<name>')
-@app.route('/town/<name>')
-@app.route('/dungeon/<name>')
-@app.route('/explorable/<name>')
-@login_required
-@uses_hero
-@update_current_location
-@url_protect
-def move(name='', hero=None, location=None):
-    """Set up a directory for the hero to move to.
-
-    Arguments are in the form of a url and are sent by the data that can be
-    found with the 'view page source' command in the browser window.
-    """
-    # pdb.set_trace()
-    # TODO move this to 'update_current_location'
-    hero.current_terrain = location.terrain  # Set the hero's terrain to the terrain type of the place he just moved to.
-    if location.type == 'map':
-        # location.pprint() # Why do we have this? For debugging :P
-        other_heroes = []
-    else:
-        other_heroes = hero.get_other_heroes_at_current_location()
-
-    return render_template(
-        'move.html', hero=hero,
-        page_title=location.display.page_title,
-        page_heading=location.display.page_heading,
-        page_image=location.display.page_image,
-        paragraph=location.display.paragraph,
-        people_of_interest=other_heroes,
-        places_of_interest=location.places_of_interest)
-
-

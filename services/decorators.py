@@ -3,7 +3,7 @@ import functools
 import flask
 
 import models
-import services.event_service
+import controller.move
 
 
 def login_required(f):
@@ -72,18 +72,9 @@ def update_current_location(f):
     @functools.wraps(f)
     def wrap_current_location(*args, **kwargs):
         hero = kwargs['hero']
-        location = models.locations.Location.query.filter_by(name=kwargs['name']).one()
-        hero.current_location = location
+        location = models.locations.Location.filter_by(name=kwargs['name']).one()
 
-        # TODO make a controller function.
-        if location not in hero.journal.known_locations:
-            hero.journal.known_locations.append(location)
-
-        services.event_service.spawn(
-            'move_event',
-            hero,
-            description="{} visits {}.".format(hero.name, location.url)
-        )
+        controller.move.move_hero(hero, location)
         return f(*args, location=location, **kwargs)
 
     return uses_hero(wrap_current_location)

@@ -4,6 +4,6 @@
 {% block block1 %}
 	<img src="/static/images/gate.jpg" alt="Sample">
       Here is where the connection for the world map will be, but you will need to ask the guard and meet the requirements to leave.
-	  <h1><a href=/{{ hero.current_world.type }}/{{ hero.current_world.name }}/{{ hero.current_location.id }}>{{ hero.current_world.type }}</a></h1>
+	  <h1><a href="{{ hero.current_world.url }}">{{ hero.current_world.type }}</a></h1>
 {% endblock %}
 

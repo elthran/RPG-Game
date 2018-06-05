@@ -23,3 +23,4 @@ from . import explore_dungeon
 from . import barracks
 from . import building
 from . import store
+from . import move
