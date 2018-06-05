@@ -40,7 +40,7 @@ def meet_monster(hero, progress, dialogues):
         monsters = services.fetcher.get_all_monsters_by_hero_terrain(hero)
         monster = services.generators.generate_monster(monsters)
         hero.game.random_encounter_monster = monster
-    dialogues.append(models.dialogue.WebDialogue("Attack the ", "/battle/{}".format(monster.name), monster.name))
+    dialogues.append(models.dialogue.WebDialogue("Attack the ", "/battle/{}".format(monster.id), monster.name))
     dialogues.append(models.dialogue.WebDialogue("Attempt to ", hero.current_location.parent.url, "flee"))
     return progress, dialogues
 
@@ -53,14 +53,14 @@ def explore_item(hero, action):
 
     if action == 'approaching':  # Approaching item.
         progress += " You find something shiny in a corner of the dungeon."
-        dialogues.append(models.dialogue.WebDialogue("", "{}/item".format(hero.current_location.url), "Investigate", " the light's source."))
+        dialogues.append(models.dialogue.WebDialogue("", "/explore_dungeon/item/finding", "Investigate", " the light's source."))
     elif action == 'finding':  # Finding item.
         if not hero.game.discovered_item:
             hero.game.discovered_item = services.generators.get_random_item()
         discovered_item = hero.game.discovered_item
         progress += " You find an item in the dungeon! It's a {}".format(discovered_item.name)
-        dialogues.append(("Pick up the ", "{}/item/pick_up".format(hero.current_location.url), "item"))
-    elif action == 'picking_up':  # picking up item
+        dialogues.append(models.dialogue.WebDialogue("Pick up the ", "/explore_dungeon/item/pick_up", "item"))
+    elif action == 'pick_up':  # picking up item
         hero.inventory.add_item(hero.game.discovered_item)
         return progress, []
     else:

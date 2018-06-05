@@ -20,7 +20,7 @@
 	{% elif hero.base_proficiencies['health'].current == 0 %}
 	You can't battle while you are dead.
 	{% else %}
-	<a href="/battle/{{ enemy_hero.account.username }}">Battle</a>
+	<a href="/battle/{{ enemy_hero.id }}">Battle</a>
 	{% endif %}
 </div>
 {% endif %}

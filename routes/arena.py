@@ -48,6 +48,6 @@ def arena(name='', hero=None, location=None):
                     ("Block Chance: ", str(profs.block.final) + "%"),
                     ("Block Reduction: ", str(profs.block.modifier) + "%")]
 
-    page_links = [("Challenge the enemy to a ", "/battle/monster", "fight", "."),
+    page_links = [("Challenge the enemy to a ", "/battle/{}".format(enemy.id), "fight", "."),
                   ("Go back to the ", "/barracks/Barracks", "Barracks", ".")]
     return flask.render_template('building_default.html', page_title=location.display.page_title, page_heading=location.display.page_heading, page_image=location.display.page_image, hero=hero, game=hero.game, page_links=page_links, enemy_info=conversation)

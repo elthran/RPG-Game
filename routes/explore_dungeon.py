@@ -28,7 +28,7 @@ def explore_dungeon_item(hero=None, action=None):
 
     progress, dialogues = controller.explore_dungeon.explore_item(hero, action)
     if not dialogues:
-        return flask.redirect(flask.url_for('explore_dungeon'))
+        return flask.redirect(flask.url_for('explore_dungeon', name=hero.current_location.name))
     return flask.render_template('dungeon_exploring.html', hero=hero, game=hero.game, dialogues=dialogues, progress=progress)
 
 

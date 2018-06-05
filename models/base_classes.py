@@ -242,6 +242,14 @@ class Base(object):
     def quick_save(cls):
         database.sessions.quick_save(cls)  # doesn't reset session
 
+    def delete(self):
+        """Delete this object from the database."""
+        self.session.delete(self)
+
+    # @classmethod
+    # def count(cls, **kwargs):
+    #     return cls.session.query(sa.func.count(cls.id)).filter_by(**kwargs)
+
 
 class _QueryProperty(object):
     """Object to allow query to act as a property and a function.

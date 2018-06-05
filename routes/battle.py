@@ -5,16 +5,17 @@ import services.decorators
 import services.fetcher
 import services.generators
 import controller.battle
+import models
 
 
-@app.route('/battle/<enemy>')
+@app.route('/battle/<int:id_>')
 @services.decorators.login_required
 @services.decorators.uses_hero
-def battle(enemy=None, hero=None):
+def battle(id_=0, hero=None):
     """This gets called if you fight in the arena."""
     page_links = [("Return to your ", "/home", "profile", " page.")]
 
-    enemy = services.fetcher.fetch_hero_by_username(enemy)
+    enemy = models.Hero.get(id_)
 
     battle_log, enemy = controller.battle.battle(hero, enemy)
     if hero.is_alive():

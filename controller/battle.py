@@ -58,6 +58,8 @@ def post_monster_battle(hero, enemy):
     else:  # Ok, the hero is not dead. Currently that means he won! Since we don't have ties yet.
         hero_won(hero, enemy, hero.battle_log)
         hero.journal.achievements.monster_kills += 1
+        # TODO this should be hidden in some other code somewhere?
+        enemy.delete()
 
 
 def hero_died(hero, battle_log):
