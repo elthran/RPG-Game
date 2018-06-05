@@ -19,6 +19,7 @@ def setup_explore_dungeon(hero):
 def descend_level(hero, progress, dialogues):
     achieve = hero.journal.achievements
     achieve.current_dungeon_floor += 1
+    hero.journal.achievements.current_floor_progress = 0
     achieve.deepest_dungeon_floor = max(achieve.deepest_dungeon_floor, achieve.current_dungeon_floor)
     progress += " You descend to a deeper level of the dungeon!! Current Floor of dungeon: {}".format(achieve.current_dungeon_floor)
     dialogues.append(models.dialogue.WebDialogue("Start ", hero.current_location.url, "exploring", " this level of the dungeon."))
@@ -32,6 +33,7 @@ def meet_monster(hero, progress, dialogues):
     if hero.game.random_encounter_monster:  # You have a monster waiting for you from before
         progress += " Your past foe paces in front of you."
         monster = hero.game.random_encounter_monster
+        hero.game.random_encounter_monster = None
     else:
         # monsters = services.fetcher.get_all_monsters_by_hero_terrain(hero)
         # monster = services.generators.generate_monster(monsters)
