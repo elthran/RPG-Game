@@ -20,7 +20,8 @@ def add_prebuilt_objects():
             prebuilt_objects.all_quests,
             prebuilt_objects.all_specializations,
             prebuilt_objects.all_forums,
-            prebuilt_objects.all_monsters]:
+            prebuilt_objects.all_monsters,
+            prebuilt_objects.all_npcs]:
         for obj in obj_list:
             models.Base.session.add(obj)
             if isinstance(obj, models.Account):

@@ -18,7 +18,6 @@ from models.game import Game
 from models.database.old_database import EZDB
 from engine import Engine
 from math import ceil
-from models.bestiary import NPC
 from services.decorators import login_required, uses_hero
 
 # INIT AND LOGIN FUNCTIONS
@@ -191,26 +190,5 @@ def bestiary(hero=None, monster_id=0):
         display_monster = database.get_monster_by_id(monster_id)
     return render_template('journal.html', hero=hero, bestiary=True, page_title=page_title,
         all_monsters=all_monsters, display_monster=display_monster)
-
-
-@app.route('/people_log/<npc_id>')
-@login_required
-@uses_hero
-def people_log(hero=None, npc_id=0):
-    page_title = "People"
-    all_npcs = [NPC(1, "Old Man", "Human", 87), NPC(2, "Blacksmith", "Human", 53)] # Temp
-    #all_npcs = database.session.query(NPCS).filter().all()
-    try:
-        display_npc = database.get_object_by_id("NPCS", int(npc_id))
-    except:
-        display_npc = None
-    #BELOW IS JUST FOR TESTING
-    if npc_id == "1":
-        display_npc = all_npcs[0]
-    elif npc_id == "2":
-        display_npc = all_npcs[1]
-    #ABOVEIS JUST FOR TESTING
-    return render_template('journal.html', hero=hero, people_log=True, page_title=page_title,
-                           all_npcs=all_npcs, display_npc=display_npc)  # return a string
 
 

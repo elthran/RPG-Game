@@ -343,7 +343,7 @@ all_specializations = [getattr(models.specializations, cls_name)(template=True)
 
 basic_forum = models.forum.Forum("Basic")  # Create the first forum
 all_forums = [basic_forum]  # Add it to the list of forums to be generated on game init
-basic_forum.create_board(models.forum.Board("General"))  # Add a board to the forum so it doesn't seem so lonely
+basic_forum.boards.append(models.forum.Board("General"))  # Add a board to the forum so it doesn't seem so lonely
 
 all_monsters = [
     models.Hero(name="Sewer Rat", species="Rat", maximum_level=10, forest=False, city=True, template=True),
@@ -366,3 +366,9 @@ for i in range(len(all_monsters)):
     if all_monsters[i].species == "Dog":
         all_monsters[i].species_plural = "Dogs"
         all_monsters[i].base_proficiencies.health.current += 5
+
+
+all_npcs = [
+    models.NPC("Old Man", "Human", 87),
+    models.NPC("Blacksmith", "Human", 53)
+]
