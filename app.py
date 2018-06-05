@@ -369,26 +369,3 @@ def move(name='', hero=None, location=None):
         places_of_interest=location.places_of_interest)
 
 
-# Currently runs blacksmith and marketplace
-@app.route('/store/<name>')
-@login_required
-@uses_hero
-@update_current_location
-def store(name, hero=None, location=None):
-    # print(hero.current_city)
-    dialogue = None
-    items_for_sale = []
-
-    if name == "Blacksmith":
-        dialogue = "I have the greatest armoury in all of Thornwall!"  # This should be pulled from pre_built objects
-        items_for_sale = database.get_all_store_items()
-    elif name == "Marketplace":
-        dialogue = "I have trinkets from all over the world! Please take a look."
-        items_for_sale = database.get_all_marketplace_items()
-    else:
-        error = "Trying to get to the store but the store name is not valid."
-        render_template('broken_page_link', error=error)
-    return render_template('store.html', hero=hero,
-                           dialogue=dialogue,
-                           items_for_sale=items_for_sale,
-                           page_title=location.display.page_title)
