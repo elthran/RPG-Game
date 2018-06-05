@@ -5,8 +5,6 @@ import services.decorators
 
 
 @app.route('/spar/<name>')
-@services.decorators.login_required
-@services.decorators.uses_hero
 @services.decorators.update_current_location
 def spar(name='', hero=None, location=None):
     """Spar with local?

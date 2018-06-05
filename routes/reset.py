@@ -21,7 +21,6 @@ def reset_password():
 
 
 @app.route('/reset_character/<stat_type>')
-@services.decorators.login_required
 @services.decorators.uses_hero
 def reset_character(stat_type, hero=None):
     hero.age = 7

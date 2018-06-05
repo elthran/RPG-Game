@@ -5,7 +5,6 @@ import services.decorators
 
 
 @app.route('/home')
-@services.decorators.login_required
 @services.decorators.uses_hero
 def home(hero=None):
     """Build the home page and return it as a string of HTML.

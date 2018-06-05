@@ -6,7 +6,6 @@ import models
 
 
 @app.route('/tavern/<name>', methods=['GET', 'POST'])
-@services.decorators.login_required
 @services.decorators.uses_hero
 def tavern(name='', hero=None):
     location = models.Location.filter_by(type='tavern', name=name).one()

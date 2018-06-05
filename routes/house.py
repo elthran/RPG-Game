@@ -6,7 +6,6 @@ import models
 
 
 @app.route('/house/<name>')
-@services.decorators.login_required
 @services.decorators.uses_hero
 def house(name='', hero=None):
     """A web page for a house.

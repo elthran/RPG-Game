@@ -7,7 +7,6 @@ import models
 
 # TODO not sure if this code is still alive? Or if it is just a remnant.
 @app.route('/marketplace/<inventory>')
-@services.decorators.login_required
 @services.decorators.uses_hero
 def marketplace(inventory, hero=None):
     if inventory == "shopping":

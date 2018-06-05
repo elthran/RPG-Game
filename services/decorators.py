@@ -29,6 +29,8 @@ def uses_hero(f):
     has been run. Also after a POST request before page reload.
     Seems wipe the session cookie temporarily? Fine after normal page load
     Only fails if view page source after POST.
+
+    NOTE: Runs login_required!
     """
 
     @functools.wraps(f)
@@ -46,7 +48,7 @@ def uses_hero(f):
             else:
                 raise ex
         return f(*args, hero=hero, **kwargs)
-    return wrap_uses_hero
+    return login_required(wrap_uses_hero)
 
 
 def update_current_location(f):
@@ -63,6 +65,8 @@ def update_current_location(f):
     def barracks(name='', hero=None, location=None):
         if hero.proficiencies.health.current <= 0:
             location.display.page_heading = "Your hero is currently dead."
+
+    NOTE: Runs login_required(uses_hero(self))
     """
 
     @functools.wraps(f)
@@ -82,4 +86,4 @@ def update_current_location(f):
         )
         return f(*args, location=location, **kwargs)
 
-    return wrap_current_location
+    return uses_hero(wrap_current_location)
