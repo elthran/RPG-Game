@@ -245,6 +245,7 @@ class Base(object):
     def delete(self):
         """Delete this object from the database."""
         self.session.delete(self)
+        self.quick_save()
 
     # @classmethod
     # def count(cls, **kwargs):

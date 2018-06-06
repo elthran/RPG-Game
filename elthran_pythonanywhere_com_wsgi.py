@@ -19,4 +19,4 @@ if project_home not in sys.path:
 # load_dotenv(os.path.join(project_home, '.env'))
 
 # import flask app but need to call it "application" for WSGI to work
-from app import app as application
+from elthranonline import app as application

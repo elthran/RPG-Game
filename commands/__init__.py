@@ -1,6 +1,6 @@
 import pdb
 
-from .commands import *
+from .old_commands import temp_temp  # Marked for removal!
 from .message import get_message_content_and_sender_by_id
 from .notification import send_notification_data
 from .change_tooltip import change_path_tooltip, change_quest_tooltip
@@ -19,6 +19,8 @@ from .verify_password import verify_password
 from .verify_email import verify_email
 from .cast_spell import cast_spell
 from .turn_spellbook_page import turn_spellbook_page
+from .consume_item import consume_item
+from .buy_item import buy_item
 
 
 def cmd_functions(name):

@@ -67,6 +67,7 @@ def import_routes():
     import routes.attributes
     import routes.settings
     import routes.spellbook
+    import routes.add_new_character
 
 
 import_routes()

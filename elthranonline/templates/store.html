@@ -15,7 +15,7 @@ the next town and store. Until then, this should be completely fine. -->
             {% for item in items_for_sale %}
                 <tr>
                     <td>{{ item.name }}</td>
-                    <td><button onclick="sendToPy(event, itemPurchasedPopup, 'buy', {'id': {{ item.id }}});">Buy</button></td>
+                    <td><button onclick="sendToPy(event, itemPurchasedPopup, 'buy_item', {'id': {{ item.id }}});">Buy</button></td>
                     <td><b>{{ item.buy_price }}</b> gold</td>
                 </tr>
             {% endfor %}

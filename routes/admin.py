@@ -42,9 +42,5 @@ def admin(path="modify_self", path2="users", hero=None):
                 exec("{} = {}".format(attrib, flask.request.form.get(key, type=int)))  # Should be secure as user input is type cast to int before evaluating?
             hero.refresh_character(full=True)
             return flask.redirect(flask.url_for('home'))
-    elif path == "add_new_character":
-        account = models.Account.get(flask.session['id'])
-        controller.setup_account.add_new_hero_to_account(account)
-        return flask.redirect(flask.url_for('choose_character'))
     form_content = [(key, eval(attrib, {'hero': hero})) for key, attrib in admin_form_mapping]
     return flask.render_template('admin.html', page_title="Admin", hero=hero, form_content=form_content, path=path)  # return a string
