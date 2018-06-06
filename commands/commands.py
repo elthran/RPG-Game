@@ -1,5 +1,3 @@
-import re
-
 import flask
 
 import commands.decorators
@@ -220,52 +218,6 @@ def turn_spellbook_page(hero, database, data, **kwargs):
     for i in range(8):
         print(spell_ids[i], spell_imgs[i], spell_infos[i])
     return flask.jsonify(page=hero.spellbook_page, page_max=page_max, spell_ids=spell_ids, spell_imgs=spell_imgs, spell_infos=spell_infos)
-
-
-def verify_password(hero, database, data, **kwargs):
-    field = data['field']
-    password = data['password']
-    password2 = data['password2']
-    if len(password) < 5:
-        success = "no"
-        message = "Password is too short. It requires a minimum of 5 characters."
-    elif password != password2:
-        success = "no"
-        message = "Passwords don't match. The two new passwords you enter must be exactly the same."
-        if field != "2":
-            field = "0"
-    else:
-        success = "yes"
-        message = "Passwords match!"
-    return flask.jsonify(success=success, message=message, button="password", field=field, fields=2)
-
-
-def verify_email(hero, database, data, **kwargs):
-    address_to_verify = data['email']
-    match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', address_to_verify)
-    if match is None:
-        print('Bad Syntax')
-        success = "no"
-        message = "Invalid syntax"
-    else:
-        print('Good Syntax')
-        success= "yes"
-        message = "Valid email"
-    return flask.jsonify(success=success, message=message, button="email", field="1", fields=1)
-
-
-def change_avatar(hero, database, data, **kwargs):
-    avatar = data['id']
-    name = data['name']
-    hero.account.avatar = avatar
-    return flask.jsonify(name=name)
-
-
-def change_signature(hero, database, data, **kwargs):
-    signature = data['signature']
-    name = data['name']
-    hero.account.signature = signature
-    return flask.jsonify(name=name)
 
 
 #

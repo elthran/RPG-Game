@@ -13,6 +13,10 @@ from .change_proficiency_tooltip import change_proficiency_tooltip
 from .update_proficiency import update_proficiency
 from .change_attribute_tooltip import change_attribute_tooltip
 from .update_attribute import update_attribute
+from .change_avatar import change_avatar
+from .change_signature import change_signature
+from .verify_password import verify_password
+from .verify_email import verify_email
 
 
 def cmd_functions(name):

@@ -65,6 +65,7 @@ def import_routes():
     import routes.ability_tree
     import routes.proficiencies
     import routes.attributes
+    import routes.settings
 
 
 import_routes()

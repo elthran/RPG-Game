@@ -7,7 +7,7 @@
 
 
 from flask import (
-    Flask, render_template, redirect, url_for, request, session)
+    Flask, render_template, redirect, url_for, session)
 from flask_sslify import SSLify
 
 from models.game import Game
@@ -71,23 +71,3 @@ def spellbook(hero=None):
     else:
         last_index = first_index + 8
     return render_template('spellbook.html', page_title="Spellbook", hero=hero, spells=spells[first_index:last_index], max_pages=max_pages)
-
-@app.route('/settings/<tab>/<choice>', methods=['GET', 'POST'])
-@uses_hero
-def settings(hero=None, tab="profile", choice="none"):
-    message = None
-    if request.method == 'POST':
-        if request.form['type'] == "update_password":
-            if database.validate(hero.user.username, request.form['old_password']):
-                new_password = request.form['new_password']
-                user = hero.user
-                user.password = database.encrypt(new_password)
-                message = "Password changed!"
-            else:
-                print("wrong password!")
-                message = "You entered the wrong password. Password change failed."
-        elif request.form['type'] == "update_email":
-            email = request.form['new_email']
-            hero.user.email = database.encrypt(email)
-            message = "Email address changed to: " + email
-    return render_template('settings.html', page_title="Settings", hero=hero, user=hero.user, tab=tab, choice=choice, message=message)

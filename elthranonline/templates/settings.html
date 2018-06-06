@@ -125,7 +125,7 @@ if (newSignature) {
 function verifyPassword() {
     sendToPy(event, toggleButton, 'verify_password', {'password': document.getElementById("newPassword").value, 'password2': document.getElementById("newPassword2").value});
 }
-function verifyEmail() {
+function verifyEmail(event) {
     sendToPy(event, toggleButton, 'verify_email', {'email': document.getElementById("newEmail").value});
 }
 function toggleSignature() {
