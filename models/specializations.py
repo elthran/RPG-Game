@@ -29,6 +29,7 @@ ALL_CLASS_NAMES = ['Ascetic', 'Brute', 'Opportunist', 'Philosopher', 'Scoundrel'
 
 
 class HeroSpecializationAccess(models.Base):
+    id = None  # Suppress default id column creation!
     hero_id = sa.Column(sa.Integer, sa.ForeignKey('hero.id', ondelete="CASCADE"), primary_key=True)
     specialization_id = sa.Column(sa.Integer, sa.ForeignKey('specialization.id'), primary_key=True)
     hidden = sa.Column(sa.Boolean)

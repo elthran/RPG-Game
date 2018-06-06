@@ -3,7 +3,7 @@
 # import events
 # import base_classes
 import services.finder
-import build_code
+import services.naming
 
 
 # TODO convert to mixin! save compiled code for reuse!
@@ -51,7 +51,7 @@ class Requirement:
                 type_ = 7
 
             if type_ in (1, 2, 6):
-                attrib = build_code.normalize_attrib_name(requirement[0])
+                attrib = services.naming.normalize_attrib_name(requirement[0])
                 level = requirement[-1]
                 code.append("hero.{}.{}.level >= {}".format(var, attrib, level))
             elif type_ in (3, 5, 7):

@@ -316,25 +316,6 @@ def change_proficiency_tooltip(hero, database, data, **kwargs):
     return flask.jsonify(tooltip=proficiency.tooltip)
 
 
-def update_specialization_tooltip(hero, database, data, **kwargs):
-        if data['id']:
-            spec = database.get_object_by_id("Specialization", data['id'])
-            if data['id'] in hero.specialization_access:
-                hsa = hero.specialization_access[data['id']]
-                if hsa.disabled:
-                    hsa.disabled = hsa.check_locked(hero)
-            else:
-                hsa = None
-            return flask.jsonify(description=spec.description, requirements=spec.requirements, disabled=hsa.disabled if hsa else True, id=spec.id)
-        return flask.jsonify(description="Unknown", requirements="Unknown", disabled=True, id=0)
-
-
-def change_ability_tooltip(hero, database, data, **kwargs):
-    tooltip_id = data['id']
-    ability = database.get_ability_by_id(tooltip_id)
-    return flask.jsonify(tooltip=ability.tooltip)
-
-
 def update_ability(hero, database, data, **kwargs):
     ability_id = data['id']
     ability = database.get_ability_by_id(ability_id)

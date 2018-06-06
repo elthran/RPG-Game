@@ -5,6 +5,8 @@ from .message import get_message_content_and_sender_by_id
 from .notification import send_notification_data
 from .change_tooltip import change_path_tooltip, change_quest_tooltip
 from .toggle_equip import toggle_equip
+from .change_ability_tooltip import change_ability_tooltip
+from .update_specialization_tooltip import update_specialization_tooltip
 
 
 def cmd_functions(name):

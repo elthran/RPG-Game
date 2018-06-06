@@ -62,6 +62,7 @@ def import_routes():
     import routes.bestiary
     import routes.quest
     import routes.inventory
+    import routes.ability_tree
 
 
 import_routes()
