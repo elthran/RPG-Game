@@ -288,33 +288,6 @@ def update_attribute(hero, database, arg_dict, **kwargs):
     return "success".format()
 
 
-def update_proficiency(hero, database, data, **kwargs):
-    """Raise proficiency level, decrement proficiency_points.
-
-    Return status of: success, hide_all, hide_this.
-    "success" means hide none ... maybe I should call it that instead?
-    """
-    proficiency_id = data['id']
-    proficiency = database.get_proficiency_by_id(proficiency_id)
-
-    # Defensive coding: command buttons should be hidden by JavaScript
-    # when no longer valid due to the return values of this function.
-    # If for some reason they are still clickable return error to
-    # JS console.
-    if hero.proficiency_points <= 0 or proficiency.is_max_level:
-        return "error: no proficiency_points or proficiency is at max level."
-
-    hero.proficiency_points -= 1
-    proficiency.level_up()
-    return flask.jsonify(tooltip=proficiency.tooltip, pointsRemaining=hero.proficiency_points, level=proficiency.level)
-
-
-def change_proficiency_tooltip(hero, database, data, **kwargs):
-    tooltip_id = data['id']
-    proficiency = database.get_proficiency_by_id(tooltip_id)
-    return flask.jsonify(tooltip=proficiency.tooltip)
-
-
 #
 # def clear_quest_notification(hero, database, arg_dict, **kwargs):
 #     id = arg_dict.get('data', None, type=int)

@@ -9,6 +9,8 @@ from .change_ability_tooltip import change_ability_tooltip
 from .update_specialization_tooltip import update_specialization_tooltip
 from .update_ability import update_ability
 from .update_specialization import update_specialization
+from .change_proficiency_tooltip import change_proficiency_tooltip
+from .update_proficiency import update_proficiency
 
 
 def cmd_functions(name):

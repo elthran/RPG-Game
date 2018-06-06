@@ -63,6 +63,7 @@ def import_routes():
     import routes.quest
     import routes.inventory
     import routes.ability_tree
+    import routes.proficiencies
 
 
 import_routes()

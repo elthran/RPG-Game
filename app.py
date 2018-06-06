@@ -102,14 +102,6 @@ def settings(hero=None, tab="profile", choice="none"):
 def attributes(hero=None):
     return render_template('profile_attributes.html', page_title="Attributes", hero=hero, all_attributes=hero.attributes)
 
-# This gets called anytime you have secondary attribute points to spend
-# Currently I send "proficiencies=True" so that the html knows to highlight
-# the bar and show that you are on this page
-@app.route('/proficiencies', methods=['GET', 'POST'])
-@login_required
-@uses_hero
-def proficiencies(hero=None):
-    # This page is literally just a html page with tooltips and proficiency level up buttons. No python code is needed. Python only tells html which page to load.
-    return render_template('profile_proficiencies.html', page_title="Proficiencies", hero=hero, all_attributes=hero.attributes, all_proficiencies=hero.base_proficiencies)
+
 
 
