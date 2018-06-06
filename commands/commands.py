@@ -1,4 +1,3 @@
-from pprint import pprint
 import re
 
 import flask
@@ -315,45 +314,6 @@ def change_proficiency_tooltip(hero, database, data, **kwargs):
     proficiency = database.get_proficiency_by_id(tooltip_id)
     return flask.jsonify(tooltip=proficiency.tooltip)
 
-
-def update_ability(hero, database, data, **kwargs):
-    ability_id = data['id']
-    ability = database.get_ability_by_id(ability_id)
-    points_remaining = 0
-    if ability.tree == "Basic":
-        if hero.basic_ability_points <= 0 or ability.is_max_level():
-            return "error: no basic_ability_points or ability is at max level."
-        hero.basic_ability_points -= 1
-        points_remaining = hero.basic_ability_points
-    elif ability.tree == "Archetype":
-        if hero.archetype_ability_points <= 0 or ability.is_max_level():
-            return "error: no archetype_ability_points or ability is at max level."
-        hero.archetype_ability_points -= 1
-        points_remaining = hero.archetype_ability_points
-    else:
-        return "error: code not built for ability.tree == {}".format(ability.type)
-    ability.level += 1 # Should be a level_up() function instead?
-    return flask.jsonify(tooltip=ability.tooltip,
-                   pointsRemaining=points_remaining,
-                   level=ability.level)
-
-
-def update_specialization(hero, database, data, **kwargs):
-    spec_id = data['id']
-    specialization = database.get_object_by_id("Specialization", spec_id)
-    hsa = hero.specialization_access[spec_id]
-    if hsa.disabled:
-        return "error: Attempted to add locked specialization to hero."
-    # spec.level += 1 or something?
-
-    # You can ignore templating here as hero takes care of it.
-    hero.specializations = specialization
-    pprint(hero.specializations)
-    spec = data['spec']
-    # PLEASE MAKE THE ABOVE PRINT STATEMENT TRUE!!!!!!!!!!!!!!!!!!!!!!!
-    # specialization = database.get_object_by_name("Specialization", choice)
-    # setattr(hero.specializations, choice, specialization)
-    return flask.jsonify(tooltip="Temp", pointsRemaining=0, level=0)
 
 #
 # def clear_quest_notification(hero, database, arg_dict, **kwargs):

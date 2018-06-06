@@ -7,6 +7,8 @@ from .change_tooltip import change_path_tooltip, change_quest_tooltip
 from .toggle_equip import toggle_equip
 from .change_ability_tooltip import change_ability_tooltip
 from .update_specialization_tooltip import update_specialization_tooltip
+from .update_ability import update_ability
+from .update_specialization import update_specialization
 
 
 def cmd_functions(name):
