@@ -7,7 +7,7 @@
 
 
 from flask import (
-    Flask, render_template, redirect, url_for, session)
+    Flask, redirect, url_for, session)
 from flask_sslify import SSLify
 
 from models.game import Game
@@ -17,8 +17,6 @@ from models.game import Game
 # _before_ any of them are used.
 from models.database.old_database import EZDB
 from engine import Engine
-from math import ceil
-from services.decorators import uses_hero
 
 # INIT AND LOGIN FUNCTIONS
 # for server code swap this over:
@@ -55,19 +53,3 @@ def add_new_character():
     user = database.get_object_by_id("User", session['id'])
     database.add_new_hero_to_user(user)
     return redirect(url_for('choose_character'))
-
-
-@app.route('/spellbook')
-@uses_hero
-def spellbook(hero=None):
-    spells = []
-    for ability in hero.abilities:
-        if ability.castable and ability.level > 0:
-            spells.append(ability)
-    max_pages = max(ceil(len(spells)/8), 1)
-    first_index = (hero.spellbook_page - 1) * 8
-    if len(spells) <= first_index + 8:
-        last_index = first_index + ((len(spells) - 1) % 8) + 1
-    else:
-        last_index = first_index + 8
-    return render_template('spellbook.html', page_title="Spellbook", hero=hero, spells=spells[first_index:last_index], max_pages=max_pages)

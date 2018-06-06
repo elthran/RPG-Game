@@ -17,6 +17,8 @@ from .change_avatar import change_avatar
 from .change_signature import change_signature
 from .verify_password import verify_password
 from .verify_email import verify_email
+from .cast_spell import cast_spell
+from .turn_spellbook_page import turn_spellbook_page
 
 
 def cmd_functions(name):

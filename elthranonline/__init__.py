@@ -66,6 +66,7 @@ def import_routes():
     import routes.proficiencies
     import routes.attributes
     import routes.settings
+    import routes.spellbook
 
 
 import_routes()
