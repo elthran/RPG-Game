@@ -18,7 +18,7 @@ from models.game import Game
 from models.database.old_database import EZDB
 from engine import Engine
 from math import ceil
-from services.decorators import login_required, uses_hero
+from services.decorators import uses_hero
 
 # INIT AND LOGIN FUNCTIONS
 # for server code swap this over:
@@ -91,17 +91,3 @@ def settings(hero=None, tab="profile", choice="none"):
             hero.user.email = database.encrypt(email)
             message = "Email address changed to: " + email
     return render_template('settings.html', page_title="Settings", hero=hero, user=hero.user, tab=tab, choice=choice, message=message)
-
-
-# This gets called anytime you have  attribute points to spend
-# Currently I send "attributes=True" so that the html knows to highlight
-# the bar and show that you are on this page
-@app.route('/attributes', methods=['GET', 'POST'])
-@login_required
-@uses_hero
-def attributes(hero=None):
-    return render_template('profile_attributes.html', page_title="Attributes", hero=hero, all_attributes=hero.attributes)
-
-
-
-

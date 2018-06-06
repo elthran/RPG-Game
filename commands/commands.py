@@ -268,26 +268,6 @@ def change_signature(hero, database, data, **kwargs):
     return flask.jsonify(name=name)
 
 
-def change_attribute_tooltip(hero, database, arg_dict, **kwargs):
-    # I want to pass in the actual attribute here instead of the description. That way I can assign the attribute name and description to the tooltip.
-    # Unfortunately, I don't know how to pull the attribute object from the database. I need a get_attribute_by_name() function in connect_to_database.py
-    tooltip = arg_dict.get('data', None, type=str)
-    return "{}".format(tooltip)
-
-
-def update_attribute(hero, database, arg_dict, **kwargs):
-    attribute_id = arg_dict.get('data', None, type=int)
-    if hero.attribute_points <= 0:
-        return "error: no attribute points"
-    for attribute in hero.attributes:
-        if attribute.id == attribute_id:
-            attribute.level += 1
-    hero.attribute_points -= 1
-    if hero.attribute_points == 0:
-        return "hide_all".format()
-    return "success".format()
-
-
 #
 # def clear_quest_notification(hero, database, arg_dict, **kwargs):
 #     id = arg_dict.get('data', None, type=int)

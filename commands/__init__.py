@@ -11,6 +11,8 @@ from .update_ability import update_ability
 from .update_specialization import update_specialization
 from .change_proficiency_tooltip import change_proficiency_tooltip
 from .update_proficiency import update_proficiency
+from .change_attribute_tooltip import change_attribute_tooltip
+from .update_attribute import update_attribute
 
 
 def cmd_functions(name):
