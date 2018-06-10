@@ -139,6 +139,9 @@ def migrate_heroes():
         migrate_items(old_hero, hero)
         migrate_skill(old_hero, hero, 'ability', base=0, hero_attrib='abilities', points_var='basic_ability_points')
         migrate_skill(old_hero, hero, 'attribute', base=1, hero_attrib='attributes')
+        migrate_skill(old_hero, hero, 'proficiency', hero_attrib='base_proficiencies')
+        # Not bothering to migrate specializations as nobody has any.
+        migrate_achievements(old_hero, hero)
 
 
 def migrate_items(old_hero, hero):
@@ -147,7 +150,7 @@ def migrate_items(old_hero, hero):
     Give gold if item has been removed from the game.
     """
 
-    old_inventory = old_session.query(old_meta.tables['inventory']).filter_by(hero_id=old_hero.id).one()
+    old_inventory = join_to_hero(old_hero, 'inventory')
 
     for old_item in old_session.query(old_meta.tables['item']).filter_by(inventory_id=old_inventory.id).all():
         template_item = models.Item.filter_by(name=old_item.name, template=True).one_or_none()
@@ -162,6 +165,11 @@ def migrate_items(old_hero, hero):
 
 
 def migrate_skill(old_hero, hero, table_name, base=0, hero_attrib="", points_var=""):
+    """Very generic method for migrating any skill class.
+
+    This can be used to migrate abilities, attributes or proficiencies ...
+    possibly even specializations.
+    """
     container_table = old_meta.tables[table_name]
     old_skills = old_session.query(container_table).filter_by(hero_id=old_hero.id).filter(container_table.c.level > base).all()
 
@@ -181,6 +189,34 @@ def migrate_skill(old_hero, hero, table_name, base=0, hero_attrib="", points_var
             points_var = points_var or table_name + "_points"
             setattr(hero, points_var, getattr(hero, points_var) + old_skill.level - base)
     models.Base.quick_save()
+
+
+def migrate_achievements(old_hero, hero):
+    """Migrate hero achievements.
+
+    Accommodates change of achievements.current_dungeon_floor_progress -> achievements.current_floor_progress
+    """
+
+    old_journal = join_to_hero(old_hero, 'journal')
+    for old_achievements in old_session.query(old_meta.tables['achievements']).filter_by(journal_id=old_journal.id).all():
+        migrations.migration_helpers.set_all(old_achievements, hero.journal.achievements, except_=('id', 'journal_id'))
+        hero.journal.achievements.current_floor_progress = old_achievements.current_dungeon_floor_progress
+    models.Base.quick_save()
+
+
+def join_to_hero(result_hero, table_name):
+    """Simulates a hero.relationship_name call.
+
+    Allows me to treat a result object like a normal database object.
+
+    e.g.
+    Normally you can do:
+        hero.journal.id
+    But with a table_query object you don't have access to relationships.
+    So this lets you do:
+        join(hero, 'journal').id
+    """
+    return old_session.query(old_meta.tables[table_name]).filter_by(hero_id=result_hero.id).one()
 
 
 if __name__ == "__main__":
