@@ -3,7 +3,7 @@
 # I think if I installed this in a virtual environment ..
 # it might show me what I really need?
 
-alembic==0.9.9
+#alembic==0.9.9  # I need this for my data transfer.
 #amqp==2.2.2
 #apt-xapian-index==0.47
 #attrs==17.4.0
@@ -11,7 +11,7 @@ bcrypt==3.1.4
 #billiard==3.5.0.3
 #bleach==2.1.3
 #blinker==1.3
-celery==4.1.0
+#celery==4.1.0
 #cffi==1.11.5
 #chardet==2.3.0
 #click==6.7
