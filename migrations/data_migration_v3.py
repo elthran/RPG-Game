@@ -24,7 +24,8 @@ import models
 import controller.setup_account
 import controller.forum
 import services.time
-# from services.naming import normalize_attrib_name, normalize_class_name
+import services.generators
+import services.naming  # import normalize_attrib_name, normalize_class_name
 # from rpg_game_tests.test_helpers import db_execute_script
 import migrations.migration_helpers
 sys.path.pop(0)
@@ -56,7 +57,16 @@ def migrate_users_to_account():
         if account is None:
             account = controller.setup_account.add_new_account(old_user.username, old_user.password, email=old_user.email)
         migrations.migration_helpers.set_all(old_user, account, except_=('id',))
+        # I don't need to migrate inbox or messages because there are none.
+        # models.Base.quick_save()
+        # migrate_inbox(account, old_user)
     models.Base.save()
+
+
+# def migrate_inbox(account, old_user):
+#     """Migrate each account's inbox."""
+#     for old_inbox in old_session.query(old_meta.tables['inbox']).filter_by(user_id=old_user.id).all():
+#         pass
 
 
 def migrate_forum():
@@ -69,35 +79,36 @@ def migrate_forum():
     migrate_boards(forum)
 
 
-def migrate_boards(old_forum):
+def migrate_boards(forum):
     """Migrate forum boards.
 
     Change title to name, set timestamp.
     NOTE: only migrate the boards for the passed forum.
     """
-    for old_board in old_session.query(old_meta.tables['board']).filter_by(forum_id=old_forum.id).all():
+    for old_board in old_session.query(old_meta.tables['board']).all():
         board = models.Board.filter_by(name=old_board.title).one_or_none()
         if board is None:
-            board = controller.forum.create_board(old_forum, old_board.title)
+            board = controller.forum.create_board(forum, old_board.title)
+            models.Base.session.add(board)
         board.timestamp = board.timestamp or services.time.now()
         models.Board.quick_save()
-        migrate_threads(board)
+        migrate_threads(board, old_board)
     models.Base.save()
 
 
-def migrate_threads(old_board):
+def migrate_threads(board, old_board):
     """Migrate all threads.
 
     Pass in migrated board to send data to correctly.
     NOTE: only migrate the threads for the passed board.
     """
     for old_thread in old_session.query(old_meta.tables['thread']).filter_by(board_id=old_board.id).all():
-        thread = controller.forum.create_thread(old_board, old_thread.title, old_thread.description, old_thread.creator)
+        thread = controller.forum.create_thread(board, old_thread.title, old_thread.description, old_thread.creator)
         models.Base.quick_save()
-        migrate_posts(thread)
+        migrate_posts(thread, old_thread)
 
 
-def migrate_posts(old_thread):
+def migrate_posts(thread, old_thread):
     """Migrate all posts.
 
     Note: I need to query in the correct Account data.
@@ -106,17 +117,74 @@ def migrate_posts(old_thread):
     for old_post in old_session.query(old_meta.tables['post']).filter_by(thread_id=old_thread.id).all():
         old_user = old_session.query(old_meta.tables['user']).filter_by(id=old_post.user_id).one()
         account = models.Account.filter_by(username=old_user.username).one()
-        post = controller.forum.create_post(old_thread, old_post.content, account)
+        post = controller.forum.create_post(thread, old_post.content, account)
         migrations.migration_helpers.set_all(old_post, post, except_=('id', 'thread_id', 'user_id', 'content'))
         models.Base.quick_save()
 
 
 def migrate_heroes():
-    pass
+    """Migrate hero data.
+
+    This will probably have to be a cascade as well.
+    """
+    for old_hero in old_session.query(old_meta.tables['hero']).all():
+        old_user = old_session.query(old_meta.tables['user']).filter_by(id=old_hero.user_id).one()
+        account = models.Account.filter_by(username=old_user.username).one()
+        hero = models.Hero.filter_by(name=old_hero.name).one_or_none()
+        if hero is None:
+            hero = controller.setup_account.add_new_hero_to_account(account)
+            models.Base.session.add(hero)
+        migrations.migration_helpers.set_all(old_hero, hero, except_=('id', 'user_id'))
+        models.Base.quick_save()
+        migrate_items(old_hero, hero)
+        migrate_skill(old_hero, hero, 'ability', base=0, hero_attrib='abilities', points_var='basic_ability_points')
+        migrate_skill(old_hero, hero, 'attribute', base=1, hero_attrib='attributes')
+
+
+def migrate_items(old_hero, hero):
+    """Migrate items from old hero's inventory.
+
+    Give gold if item has been removed from the game.
+    """
+
+    old_inventory = old_session.query(old_meta.tables['inventory']).filter_by(hero_id=old_hero.id).one()
+
+    for old_item in old_session.query(old_meta.tables['item']).filter_by(inventory_id=old_inventory.id).all():
+        template_item = models.Item.filter_by(name=old_item.name, template=True).one_or_none()
+        if template_item is not None:
+            item = services.generators.create_item(template_item.id)
+            hero.inventory.add_item(item)
+            migrations.migration_helpers.set_all(old_item, item, except_=['id', 'inventory_id'])
+        else:
+            # Give Player gold instead of migrating items. Lame :P
+            hero.gold += old_item.buy_price
+        models.Base.quick_save()
+
+
+def migrate_skill(old_hero, hero, table_name, base=0, hero_attrib="", points_var=""):
+    container_table = old_meta.tables[table_name]
+    old_skills = old_session.query(container_table).filter_by(hero_id=old_hero.id).filter(container_table.c.level > base).all()
+
+    for old_skill in old_skills:
+        container = hero_attrib or table_name
+        try:
+            try:
+                getattr(hero, container)[services.naming.normalize_attrib_name(old_skill.type_)].level = old_skill.level
+
+            # All my tables except 'ability' use 'type_', it uses 'type'.
+            # I modified the latest ability table so now it should use 'type_'.
+            # I should be able to remove this try in the next migration.
+            except AttributeError:
+                getattr(hero, container)[services.naming.normalize_attrib_name(old_skill.type)].level = old_skill.level
+        except KeyError:
+            # If points_var is passed use it.
+            points_var = points_var or table_name + "_points"
+            setattr(hero, points_var, getattr(hero, points_var) + old_skill.level - base)
+    models.Base.quick_save()
 
 
 if __name__ == "__main__":
     migrate_users_to_account()
     migrate_forum()
-    # migrate_heroes()
+    migrate_heroes()
     exit("It didn't crash!")

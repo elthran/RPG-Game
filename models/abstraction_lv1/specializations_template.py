@@ -21,6 +21,7 @@ SPECIALIZATIONS_CATEGORIES = ['archetype', 'calling']
 {{ container_helpers.build_container("Ability", "abilities", ALL_SPECIALIZATIONS, no_container=True) }}
 
 class HeroSpecializationAccess(models.Base):
+    id = None  # Suppress default id column creation!
     hero_id = sa.Column(sa.Integer, sa.ForeignKey('hero.id', ondelete="CASCADE"), primary_key=True)
     specialization_id = sa.Column(sa.Integer, sa.ForeignKey('specialization.id'), primary_key=True)
     hidden = sa.Column(sa.Boolean)

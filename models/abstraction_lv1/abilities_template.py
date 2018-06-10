@@ -42,7 +42,7 @@ class Ability(models.Base):
     # Note: Original code used default of "Unknown"
     # I chopped the BasicAbility class as redundant. Now I am going to
     # have to add the fucker back in.
-    type = sa.Column(sa.String(50))
+    type_ = sa.Column(sa.String(50))
     ability_type = sa.orm.synonym('type')
 
     # This determines if the ability is hidden and can not be learned or seen by the player
@@ -97,7 +97,7 @@ class Ability(models.Base):
 
     __mapper_args__ = {
         'polymorphic_identity': 'Basic',
-        'polymorphic_on': type
+        'polymorphic_on': type_
     }
 
     def __init__(self, name, max_level, description, spell_thing="", current=0, next_=0, hidden=True, learnable=False, tree="basic", tree_type="", proficiency_data=(), spell_data=(), sanctity_cost=0, endurance_cost=0):
