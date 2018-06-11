@@ -1,4 +1,6 @@
-import sqlalchemy
+import pdb
+
+import sqlalchemy.exc
 
 
 def truncate_table(name, engine):
@@ -74,3 +76,113 @@ def set_all(old, new, except_=()):
     for key in old.keys():
         if key not in except_:
             setattr(new, key, getattr(old, key))
+
+
+class TableQuery:
+    def __init__(self, session, meta):
+        """Allows quick querying of table.
+
+        This class saves me having to do:
+            old_session.query(old_meta.tables['users'])
+        and instead do:
+            old_table_query('users')
+        """
+        self.session = session
+        self.meta = meta
+
+    def __call__(self, table_name):
+        """Return a query on a table object."""
+
+        try:
+            smart_query = SmartQuery(self.session.query(self.meta.tables[table_name]), self, table_name)
+        except KeyError:
+            raise KeyError("No table named '{}' exists.".format(table_name))
+        return smart_query
+
+    def join_to_hero(self, result_hero, table_name):
+        """Simulates a hero.relationship_name call.
+
+        Allows me to treat a result object like a normal database object.
+
+        e.g.
+        Normally you can do:
+            hero.journal.id
+        But with a table_query object you don't have access to relationships.
+        So this lets you do:
+            join(hero, 'journal').id
+        """
+        return self(table_name).filter_by(hero_id=result_hero.id).one()
+
+
+class SmartQuery:
+    def __init__(self, query, table_query, table_name):
+        """Improve on querying by returning smarter results.
+
+        Basically hacks into the query result chain and returns an
+        enhanced result object.
+        """
+        self._query = query
+        self._table_query = table_query
+        self._table_name = table_name
+
+    def __getattr__(self, item):
+        """Return an enhanced result object."""
+
+        table_query = self._table_query
+        table_name = self._table_name
+
+        class MethodWrapper:
+            def __init__(self, method):
+                """Hack into query method invocation."""
+                self._method = method
+
+            def __call__(self, *args, **kwargs):
+                results = self._method(*args, **kwargs)
+                if isinstance(results, list):
+                    return [SmartResult(result, table_query, table_name) for result in results]
+                return SmartResult(results, table_query, table_name)
+
+        return MethodWrapper(getattr(self._query, item))
+
+
+class SmartResult:
+    def __init__(self, result, table_query, table_name):
+        """Allow automatic relationship interpolation in table queries.
+
+        Usage:
+        old_table_query = TableQuery(old_session, old_meta)
+        for old_hero in old_table_query('hero').all():
+            old_hero.journal
+
+        This code has automatically recreated the relationship between
+        hero and journal and returned the journal object.
+        """
+        self._result = result
+        self._table_query = table_query
+        self._table_name = table_name
+
+    def __getattr__(self, item):
+        try:
+            # in case of normal query on attribute the exists.
+            # e.g. hero.name -> returns the hero's name.
+            return getattr(self._result, item)
+        except AttributeError:
+            try:
+                other_table = self._table_query(item)
+            except KeyError:
+                # raise
+                import pattern3.text.en
+                singular = pattern3.text.en.singularize(item)
+                try:
+                    other_table = self._table_query(singular)
+                except KeyError:
+                    raise
+                print("Now do extra cool stuff!")
+            # In case of valid other table return magic join query
+            # hero.journal -> attribute doesn't exist but the
+            # journal table has a 'hero_id' return that journal object.
+            results = other_table.filter_by(**{self._table_name + "_id": self._result.id}).all()
+            if len(results) == 1:
+                return results[0]
+            return results
+
