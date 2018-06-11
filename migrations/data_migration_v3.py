@@ -16,8 +16,8 @@ sys.path.insert(0, new_path)
 # This will help me to additively create a migration script.
 # As in ... I add some code and run it and try and make my migration more
 # and more complete.
-# os.system('mysql -u elthran -p7ArQMuTUSoxXqEfzYfUR -e "DROP DATABASE IF EXISTS rpg_database;"')
-# os.system('python3 -c "import models.database.populate_database as pd; pd.create_all(); pd.add_prebuilt_objects()"')
+os.system('mysql -u elthran -p7ArQMuTUSoxXqEfzYfUR -e "DROP DATABASE IF EXISTS rpg_database;"')
+os.system('python3 -c "import models.database.populate_database as pd; pd.create_all(); pd.add_prebuilt_objects()"')
 
 import models
 import controller.setup_account
@@ -39,9 +39,6 @@ old_meta.reflect()
 
 old_session = Session(bind=old_engine)
 old_table_query = migrations.migration_helpers.TableQuery(old_session, old_meta)
-obj = old_table_query('hero').first()
-print(obj.users)
-exit(0)
 
 # Beginning of actual migration code!
 print("Beginning actual migration.")
@@ -103,6 +100,7 @@ def migrate_threads(board, old_board):
     Pass in migrated board to send data to correctly.
     NOTE: only migrate the threads for the passed board.
     """
+    # with magic methods: for old_thread in old_board.thread:
     for old_thread in old_table_query('thread').filter_by(board_id=old_board.id).all():
         thread = controller.forum.create_thread(board, old_thread.title, old_thread.description, old_thread.creator)
         models.Base.quick_save()
@@ -116,6 +114,7 @@ def migrate_posts(thread, old_thread):
     NOTE: only migrate the posts for the passed thread.
     """
     for old_post in old_table_query('post').filter_by(thread_id=old_thread.id).all():
+        # With magic methods: old_post.user
         old_user = old_table_query('user').filter_by(id=old_post.user_id).one()
         account = models.Account.filter_by(username=old_user.username).one()
         post = controller.forum.create_post(thread, old_post.content, account)

@@ -1,6 +1,7 @@
 import pdb
 
 import sqlalchemy.exc
+import sqlalchemy.orm
 
 
 def truncate_table(name, engine):
@@ -120,16 +121,18 @@ class SmartQuery:
 
         Basically hacks into the query result chain and returns an
         enhanced result object.
+
+        # TODO figure out how to handle filter_by?
         """
         self._query = query
         self._table_query = table_query
-        self._table_name = table_name
+        self.table_name = table_name
 
     def __getattr__(self, item):
         """Return an enhanced result object."""
 
         table_query = self._table_query
-        table_name = self._table_name
+        table_name = self.table_name
 
         class MethodWrapper:
             def __init__(self, method):
@@ -137,9 +140,13 @@ class SmartQuery:
                 self._method = method
 
             def __call__(self, *args, **kwargs):
+                # if item == 'filter_by': pdb.set_trace()
                 results = self._method(*args, **kwargs)
+                if isinstance(results, sqlalchemy.orm.query.Query):
+                    pdb.set_trace()
+                    return SmartQuery(results, table_query, table_name)
                 if isinstance(results, list):
-                    return [SmartResult(result, table_query, table_name) for result in results]
+                    return [SmartResult(results, table_query, table_name) for result in results]
                 return SmartResult(results, table_query, table_name)
 
         return MethodWrapper(getattr(self._query, item))
@@ -156,6 +163,20 @@ class SmartResult:
 
         This code has automatically recreated the relationship between
         hero and journal and returned the journal object.
+
+        I did briefly use Pattern3
+        import pattern.text.en
+
+        # user.heroes
+        pattern.text.en.singularize('heroes')
+        To detect whether I should return an item or a list but decided
+        it was to much overhead :P
+
+        Usage:
+        obj = old_table_query('hero').first()
+        print(obj.user) -> singular user object.
+        obj = old_table_query('user').first()
+        print(obj.hero) -> all heroes of that user as a list.
         """
         self._result = result
         self._table_query = table_query
@@ -170,19 +191,23 @@ class SmartResult:
             try:
                 other_table = self._table_query(item)
             except KeyError:
-                # raise
-                import pattern3.text.en
-                singular = pattern3.text.en.singularize(item)
-                try:
-                    other_table = self._table_query(singular)
-                except KeyError:
-                    raise
-                print("Now do extra cool stuff!")
+                raise
             # In case of valid other table return magic join query
             # hero.journal -> attribute doesn't exist but the
             # journal table has a 'hero_id' return that journal object.
-            results = other_table.filter_by(**{self._table_name + "_id": self._result.id}).all()
-            if len(results) == 1:
-                return results[0]
+            # user.hero -> detect one to many relationship and return a list
+            # of heroes.
+            try:
+                results = other_table.filter_by(**{self._table_name + "_id": self._result.id}).all()
+            except sqlalchemy.exc.InvalidRequestError:
+                # Try the inverse relationship many to one
+                # hero.user -> detect many to one and return a single user.
+                # hero.user -> User.query.filter_by(id=hero.user_id).one()
+                try:
+                    results = other_table.filter_by(**{"id": getattr(self._result, other_table.table_name + "_id")}).one()
+                except sqlalchemy.exc.InvalidRequestError:
+                    raise
+            # if len(results) == 1:
+            #     return results[0]
             return results
 
