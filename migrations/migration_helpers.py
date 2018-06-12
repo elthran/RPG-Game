@@ -143,10 +143,9 @@ class SmartQuery:
                 # if item == 'filter_by': pdb.set_trace()
                 results = self._method(*args, **kwargs)
                 if isinstance(results, sqlalchemy.orm.query.Query):
-                    pdb.set_trace()
                     return SmartQuery(results, table_query, table_name)
                 if isinstance(results, list):
-                    return [SmartResult(results, table_query, table_name) for result in results]
+                    return [SmartResult(entry, table_query, table_name) for entry in results]
                 return SmartResult(results, table_query, table_name)
 
         return MethodWrapper(getattr(self._query, item))
@@ -187,11 +186,13 @@ class SmartResult:
             # in case of normal query on attribute the exists.
             # e.g. hero.name -> returns the hero's name.
             return getattr(self._result, item)
-        except AttributeError:
+        except AttributeError as original_attrib_error:
             try:
                 other_table = self._table_query(item)
             except KeyError:
-                raise
+                # I guess they were looking for an attribute and it doesn't
+                # exist.
+                raise original_attrib_error
             # In case of valid other table return magic join query
             # hero.journal -> attribute doesn't exist but the
             # journal table has a 'hero_id' return that journal object.
@@ -204,10 +205,18 @@ class SmartResult:
                 # hero.user -> detect many to one and return a single user.
                 # hero.user -> User.query.filter_by(id=hero.user_id).one()
                 try:
-                    results = other_table.filter_by(**{"id": getattr(self._result, other_table.table_name + "_id")}).one()
+                    local_id = getattr(self._result, other_table.table_name + "_id")
+                except AttributeError:
+                    raise original_attrib_error
+                try:
+                    results = other_table.filter_by(**{"id": local_id}).one()
                 except sqlalchemy.exc.InvalidRequestError:
-                    raise
-            # if len(results) == 1:
-            #     return results[0]
+                    raise  # I'm not sure what this should raise ...
             return results
+
+    def __len__(self):
+        return 1
+
+    def __repr__(self):
+        return repr(self._result)
 

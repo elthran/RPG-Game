@@ -5,11 +5,14 @@ import pdb
 import sqlalchemy as sa
 import sqlalchemy.orm
 
-# Patch the import path to 1 directory above this one.
-old_path = os.path.dirname(__file__).split(os.sep)
-new_path = os.sep.join(old_path[:-1])
-# -1 refers to how many levels of directory to go up
-sys.path.insert(0, new_path)
+import models
+import controller.setup_account
+import controller.forum
+import controller.questing
+import services.time
+import services.generators
+import services.naming  # import normalize_attrib_name, normalize_class_name
+import migrations.migration_helpers
 
 # Make a new version of the current database each time.
 # Each time I run the script it starts from the same point.
@@ -19,15 +22,6 @@ sys.path.insert(0, new_path)
 os.system('mysql -u elthran -p7ArQMuTUSoxXqEfzYfUR -e "DROP DATABASE IF EXISTS rpg_database;"')
 os.system('python3 -c "import models.database.populate_database as pd; pd.create_all(); pd.add_prebuilt_objects()"')
 
-import models
-import controller.setup_account
-import controller.forum
-import controller.questing
-import services.time
-import services.generators
-import services.naming  # import normalize_attrib_name, normalize_class_name
-import migrations.migration_helpers
-sys.path.pop(0)
 
 Session = sa.orm.sessionmaker()
 
