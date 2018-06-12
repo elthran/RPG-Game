@@ -1,11 +1,10 @@
-import datetime
-
 import sqlalchemy as sa
 import sqlalchemy.orm
 import sqlalchemy.ext.hybrid
 
 # import models
 import models.mixins
+import services.time
 
 
 class Forum(models.Base):
@@ -32,6 +31,7 @@ class Board(models.mixins.HumanReadableTimeMixin, models.Base):
 
     def __init__(self, name):
         self.name = name
+        self.timestamp = services.time.now()
 
     def get_post_count(self):
         return sum((len(thread.posts) for thread in self.threads))
@@ -74,7 +74,7 @@ class Thread(models.mixins.HumanReadableTimeMixin, models.Base):
     name = sa.Column(sa.String(50))
     creator = sa.Column(sa.String(50))
     description = sa.Column(sa.String(200))
-    category = sa.Column(sa.String(50))
+    category = sa.Column(sa.String(50))  # TODO work out what category was for.
     views = sa.Column(sa.Integer)
 
     def __init__(self, name="unnamed thread", creator="None", description="", category="General"):
@@ -82,7 +82,7 @@ class Thread(models.mixins.HumanReadableTimeMixin, models.Base):
         self.creator = creator.title()
         self.description = description
         self.category = category
-        self.timestamp = datetime.datetime.utcnow()
+        self.timestamp = services.time.now()
         self.views = 0
 
 
@@ -96,7 +96,7 @@ class Post(models.mixins.HumanReadableTimeMixin, models.Base):
     account_id = sa.Column(sa.Integer, sa.ForeignKey('account.id', ondelete="CASCADE"))
     account = sa.orm.relationship("Account", back_populates="posts")
 
-    content = sa.Column(sa.String(50))
+    content = sa.Column(sa.String(512))
 
     @sa.ext.hybrid.hybrid_property
     def author(self):
@@ -105,4 +105,4 @@ class Post(models.mixins.HumanReadableTimeMixin, models.Base):
     def __init__(self, content="Error: Content missing", account=None):
         self.content = content
         self.account = account
-        self.timestamp = datetime.datetime.utcnow()
+        self.timestamp = services.time.now()

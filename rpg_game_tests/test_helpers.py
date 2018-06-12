@@ -9,7 +9,7 @@ import pdb
 
 import pytest
 
-from database import EZDB
+from models.database.connect_to_database import EZDB
 
 config = configparser.ConfigParser()
 config.read('rpg_game_tests/test.ini')

@@ -30,5 +30,4 @@ def global_chat(hero=None):
 
         return flask.render_template('global_chat.html', hero=hero, chat_messages=chat_log.chat_messages, active_chatters=chat_log.active_chatters())
 
-    game_monsters = models.Hero.filter_by(is_monster=True).all()
-    return flask.render_template('global_chat.html', page_title="Chat", hero=hero, chat_messages=chat_log.chat_messages, active_chatters=chat_log.active_chatters(), monsters=game_monsters)
+    return flask.render_template('global_chat.html', page_title="Chat", hero=hero, chat_messages=chat_log.chat_messages, active_chatters=chat_log.active_chatters())
