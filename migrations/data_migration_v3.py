@@ -12,6 +12,7 @@ import controller.questing
 import services.time
 import services.generators
 import services.naming  # import normalize_attrib_name, normalize_class_name
+import services.event_service
 import migrations.migration_helpers
 
 # Make a new version of the current database each time.
@@ -137,6 +138,7 @@ def migrate_heroes():
         # Not bothering to migrate specializations as nobody has any.
         migrate_achievements(old_hero, hero)
         migrate_quest_paths(old_hero, hero)
+    models.Base.save()
 
 
 def migrate_items(old_hero, hero):
@@ -206,8 +208,23 @@ def migrate_quest_paths(old_hero, hero):
     models.Base.quick_save()
 
 
+def migrate_events():
+    """Simulate event occurrence.
+
+    This will hopefully update the handlers and quest_path objects.
+    """
+    # pdb.set_trace()
+    for old_event in old_table_query('event').order_by('id').all():
+        old_hero = old_event.hero
+        hero = models.Hero.filter_by(name=old_hero.name).one()
+        event = services.event_service.spawn(old_event.type, hero, description=old_event.description)
+        event.when = old_event.when
+        models.Base.quick_save()
+
+
 if __name__ == "__main__":
     migrate_users_to_account()
     migrate_forum()
     migrate_heroes()
+    migrate_events()
     exit("It didn't crash!")

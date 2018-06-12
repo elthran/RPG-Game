@@ -43,6 +43,7 @@ def spawn(event_name, hero, *args, description=None):
         # handler.pprint()
         if handler.evaluate(event):
             handler.run()
+    return event
 
 
 def game_clock(database):
