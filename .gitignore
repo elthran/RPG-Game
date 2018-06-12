@@ -2,7 +2,8 @@ __pycache__/
 *.pyo
 *.bak
 .editorconfig
-elthranonline/static/mydb_data.sql
+mydb_data.sql
+mydb_new_database.sql
 .idea/
 .cache/
 templates/desktop.ini
