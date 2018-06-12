@@ -9,7 +9,7 @@ import argparse
 import pandas
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-import pdb
+import services.naming
 
 LANGUAGES = {
     '.html': {
@@ -25,54 +25,6 @@ LANGUAGES = {
         },
     },
 }
-
-
-def fix_camel_case(name):
-    """Detect and fix camel case names.
-
-    Otherwise these names will be lost when converting to 'title()'.
-    """
-    if name[0].isupper() and name[1:].islower():
-        return name
-    # print("Bad name:", name)
-    fixed_name = name[0] + ''.join([" " + letter.lower()
-                                    if (index > 0 and letter.isupper())
-                                    else letter
-                                    for index, letter in enumerate(name[1:])])
-    # print("Fixed name:", fixed_name)
-    return fixed_name
-
-
-def get_names(names):
-    """Pull the first item from a more complex list of data.
-
-    Fix the naming scheme if it use camel case an use human readable instead.
-    """
-    sorted_names = sorted([name[0] for name in names])
-    return [fix_camel_case(name) for name in sorted_names]
-
-
-def normalize_attrib_name(name):
-    """Normalize name to Python attribute style.
-
-    Convert "First strike" to "first_strike"
-    """
-    return fix_camel_case(name).lower().replace(" ", "_")
-
-
-def normalize_attrib_names(names):
-    """Normalize names for columns."""
-    return [normalize_attrib_name(name) for name in names]
-
-
-def normalize_class_name(name):
-    """Normalized name for class."""
-    return fix_camel_case(name).title().replace(" ", "")
-
-
-def normalize_class_names(names):
-    """Normalized names for classes."""
-    return [normalize_class_name(name) for name in names]
 
 
 def get_hash(filename):
@@ -154,6 +106,9 @@ def csv_or_module_data(name):
         key_name = 'ALL_' + name.upper()  # e.g. ALL_ABILITIES
         data[key_name] = []
         for i, row in enumerate(objs.itertuples(), 1):
+            # If first value is blank skip this row. Handles empty rows.
+            if row[1] != row[1]:  # check for nan, float('nan') != float('nan')
+                continue
             data[key_name].append(tuple(getattr(row, key)
                                   for key in tuple(objs.columns.values)))
     else:
@@ -195,11 +150,11 @@ def build_templates(filenames, extension, use_backup_system=True):
         lstrip_blocks=True,
     )
 
-    env.globals['get_names'] = get_names
-    env.globals['normalize_attrib_name'] = normalize_attrib_name
-    env.globals['normalize_attrib_names'] = normalize_attrib_names
-    env.globals['normalize_class_name'] = normalize_class_name
-    env.globals['normalize_class_names'] = normalize_class_names
+    env.globals['get_names'] = services.naming.get_names
+    env.globals['normalize_attrib_name'] = services.naming.normalize_attrib_name
+    env.globals['normalize_attrib_names'] = services.naming.normalize_attrib_names
+    env.globals['normalize_class_name'] = services.naming.normalize_class_name
+    env.globals['normalize_class_names'] = services.naming.normalize_class_names
 
     for name in filenames:
         temp_name = "../" + name + '.tmp'

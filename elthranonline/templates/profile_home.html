@@ -1,0 +1,165 @@
+{% extends "profile_template.html" %}
+{% block block1 %}
+ <!-- This sets the width of the entire page. I'm not sure which width is best. -->
+<br><h1 style="text-align:center;">General</h1>
+<table class="profileColumns">
+	<tr>
+		<th colspan="2">Basic Information</th>
+	</tr>
+	<tr>
+		<td>Name</td>
+		<td>{{ hero.character_name}}</td>
+	</tr>
+	<tr>
+		<td>Age</td>
+		<td>{{ hero.age}}</td>
+	</tr>
+	<tr>
+		<td>Experience</td>
+		<td>{{ hero.experience }} / {{ hero.experience_maximum }}</td>
+	</tr>
+	<tr>
+		<td>Renown</td>
+		<td>{{ hero.proficiencies.renown.final|int }}</td>
+	</tr>
+	<tr>
+		<td>Devotion</td>
+		<td>{{ hero.base_proficiencies['devotion'].current }}</td>
+	</tr>
+	<tr>
+		<td>Virtue</td>
+		<td>{{ hero.base_proficiencies['virtue'].current }}</td>
+	</tr>
+	<tr>
+		<td>Health</td>
+		<td>{{ hero.base_proficiencies['health'].current }} / {{ hero.proficiencies.health.final|int }}</td>
+	</tr>
+	<tr>
+		<td>Sanctity</td>
+		<td>{{ hero.base_proficiencies['sanctity'].current }} / {{ proficiencies.sanctity.final|int }}</td>
+	</tr>
+	<tr>
+		<td>Storage</td>
+		<td>{{ hero.base_proficiencies['storage'].current }} / {{ proficiencies.storage.final|int }}</td>
+	</tr>
+	<tr>
+		<td>Endurance</td>
+		<td>{{ hero.base_proficiencies['endurance'].current }} / {{ proficiencies.endurance.final|int }}</td>
+	</tr>
+	<tr>
+		<td>Player Kills</td>
+		<td>{{ hero.journal.achievements.player_kills }}</td>
+	</tr>
+	<tr>
+		<td>Monster Kills</td>
+		<td>{{ hero.journal.achievements.monster_kills }}</td>
+	</tr>
+	<tr>
+		<td>Deaths</td>
+		<td>{{ hero.journal.achievements.deaths }}</td>
+	</tr>
+</table>
+
+<table class="profileColumns">
+	<tr>
+		<th colspan="2">Skills</th>
+	</tr>
+	{% if hero.specializations.archetype %}
+	<tr>
+		<td>Archetype</td>
+		<td>{{ hero.specializations.archetype.name }}</td>
+	</tr>
+	{% endif %}
+	{% if hero.specializations.calling %}
+	<tr>
+		<td>Calling</td>
+		<td>{{ hero.specializations.calling.name }}</td>
+	</tr>
+	{% endif %}
+	{% if hero.specializations.pantheon %}
+	<tr>
+		<td>Pantheon</td>
+		<td>{{ hero.specializations.pantheon.name }}</td>
+	</tr>
+	{% endif %}
+	{% if hero.house %}
+	<tr>
+		<td>House</td>
+		<td>{{ hero.house.name }}</td>
+	</tr>
+	{% endif %}
+	{% for proficiency in proficiencies %}
+		{% if proficiency.display_chunk == "Stealth" %}
+			<tr>
+				<td>{{ proficiency.display_name }}</td>
+				<td>+ {{ proficiency.final|int }}%</td>
+			</tr>
+		{% endif %}
+	{% endfor %}
+</table>
+<div style="clear:both;"></div>
+<br><h1 style="text-align:center;">Combat</h1>
+<table class="profileColumns">
+	<tr>
+		<th colspan="2">Offense</th>
+	</tr>
+	<tr>
+		<td>Damage</td>
+		<td>{{ proficiencies.combat.final|int }}-{{ (proficiencies.strength.final + proficiencies.combat.final)|int }}</td>
+	</tr>
+	{% for proficiency in proficiencies %}
+		{% if proficiency.display_chunk == "Offence" %}
+			{% if not proficiency.hidden or proficiency.final %}
+				<tr>
+					<div class="proficiencyParent" style="width:50px;height:15px;"><td>{{ proficiency.display_name }}</td><span class="proficiencyChild">{{ proficiency.description }}</span></div>
+					<td>{% if proficiency.is_percent %}{{ proficiency.final|int }}%{% else %}{{ proficiency.final }}{% endif %}</td>
+				</tr>
+			{% endif %}
+		{% endif %}
+	{% endfor %}
+</table>
+
+<table class="profileColumns">
+	<tr>
+		<th colspan="2">Defence</th>
+	</tr>
+	{% for proficiency in proficiencies %}
+		{% if proficiency.display_chunk == "Defence" %}
+			<tr>
+				<td>{{ proficiency.display_name }}</td>
+				<td>+ {{ proficiency.final|int }}%</td>
+			</tr>
+		{% endif %}
+	{% endfor %}
+</table>
+<div style="clear:both;"></div>
+<br><h1 style="text-align:center;">Advanced</h1>
+<table class="profileColumns">
+	<tr>
+		<th colspan="2">Weaponry</th>
+	</tr>
+	{% for proficiency in proficiencies %}
+		{% if proficiency.display_chunk == "Weaponry" %}
+			<tr>
+				<td>{{ proficiency.display_name }}</td>
+				<td>+ {{ proficiency.final|int }}%</td>
+			</tr>
+		{% endif %}
+	{% endfor %}
+</table>
+
+<table class="profileColumns">
+	<tr>
+		<th colspan="2">Modifiers</th>
+	</tr>
+	{% for proficiency in proficiencies %}
+		{% if proficiency.display_chunk == "Modifier" %}
+			<tr>
+				<td>{{ proficiency.display_name }}</td>
+				<td>+ {{ proficiency.final|int }}%</td>
+			</tr>
+		{% endif %}
+	{% endfor %}
+</table>
+{% endblock %}
+

@@ -51,7 +51,7 @@ class SQLiteCompat:
         self.metadata.reflect(self.engine)
         self.session = Session(bind=self.engine)
 
-    def copy_schema(self, source, dest, without_columns=[], force=False):
+    def copy_schema(self, source, dest, without_columns=(), force=False):
         """Copy the schema from an existing table to a new one.
 
         Deletes table if it exists (requires force).

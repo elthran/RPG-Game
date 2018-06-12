@@ -1,0 +1,139 @@
+<!-- This shows the admin page -->
+
+{% extends "layout.html" %}
+{% block block1 %}
+<!-- Check if the user is reading a thread -->
+{% if current_thread == None %}
+    <!-- Next check if the user has selected a board yet. If he hasn't, here is a board selection -->
+    {% if current_board == None %}
+        <h1>Welcome to the Forum!</h1>
+        <table class="forumTable">
+            <tr>
+                <th>Board</th>
+                <th>Threads</th>
+                <th>Posts</th>
+                <th>Last Post</th>
+            </tr>
+            {% for board in current_forum.boards %}
+                <tr>
+                    <td style="width:50%;"><a href="/forum/{{ board.id }}/0"{{ board.name }}>{{ board.name }}</a></td>
+                    <td style="width:10%;text-align:center;">{{ board.threads|length }}</td>
+                    <td style="width:10%;text-align:center;">{{ board.get_post_count() }}</td>
+                    <td style="width:30%;text-align:center;">
+                        {% if board.get_post_count() %}
+                            by {{ board.get_most_recent_post().author }}<br>{{ board.get_most_recent_post().human_readable_time() }}
+                        {% else %}
+                            No Posts
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% if hero.account.is_admin %}
+            <br><br><br><br>
+            <h1>As an admin, you are able to create new boards.</h1>
+            <form action="" method="post">
+                <input type="hidden" name="form_type" value="new_board"> <!-- Tells python to run code for an existing thread -->
+                Board Name: <input type="text" name="board_name">
+                <input type="submit" value="Create">
+            </form>
+        {% endif %}
+    {% else %}
+    <!-- He already has chosen a board. So show the threads on that board -->
+        <h1>Current Board: {{ current_board.name }}</h1>
+        <table class="forumTable">
+            <tr>
+                <th>Thread</th>
+                <th>Description</th>
+                <th>Posts</th>
+                <th>Last Post</th>
+            </tr>
+                {% for thread in current_board.threads %}
+                    <tr>
+                        <td style="width:30%;font-size:15px;">
+                            <a href="/forum/{{ current_board.id }}/{{ thread.id }}" style="font-size:25px;">{{ thread.name }}</a>
+                            <br>Created by: {{ thread.creator }}
+                        </td>
+                        <td style="width:35%">{{ thread.description }}</td>
+                        <td style="width:15%;text-align:center;">
+                            {{ thread.posts|length }} Replies
+                            <br>{{ thread.views }} Views
+                        </td>
+                        <td style="width:20%;text-align:center;">
+                            {% if thread.posts|length %}
+                                by {{ current_board.get_most_recent_post().author }}<br>{{ current_board.get_most_recent_post().human_readable_time() }}
+                            {% else %}
+                                No Posts
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>No posts</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                {% endfor %}
+        </table>
+        <br><br><br>
+
+<h3>Create a new thread</h3>
+<form action="" method="post">
+    <input type="hidden" name="form_type" value="new_thread" /> <!-- Tells python to run code for creating a new thread -->
+    <ul class="forumCreateThreadList">
+        <li><input type="text" name="thread_name" placeholder="Title of thread" /></li>
+        <li><input type="text" name="thread_description" placeholder="Description of thread" /></li>
+        <li>Board:
+            <select name="thread_board">
+                <option value="{{ current_board.name }}">{{ current_board.name }}</option>
+                {% for board in current_forum.boards if board.name != current_board.name %}
+                <option value="{{ board.name }}">{{ board.name }}</option>
+                {% endfor %}
+            </select></li>
+        <li><textarea cols="100" rows="10" type="text" name="thread_post" placeholder="Type your post here"></textarea></li>
+        <li><input type="submit" value="Create new thread"></li>
+    </ul>
+</form>
+<br><br><br><a href="/forum/0/0" style="font-size:25px;">Return to forum home</a><br><br><br>
+    {% endif %}
+{% else %}
+<!-- The user has chosen a thread. Let them read the posts in the thread! -->
+    <h1>Topic: {{ current_thread.name }}</h1>
+    {% for post in current_thread.posts %}
+        <div class="forumPostContainer">
+            <div class="forumPostAuthor">
+                {{ post.account.username.title() }}
+                <br><br>{{ post.account.prestige }} Prestige
+                <br><br><img src="/static/images/avatars/{{ post.account.avatar }}.jpg" alt="No avatar">
+            </div>
+            <div class="forumPostContent">
+                <div class="forumPostHeader">
+                {% if loop.index == 1 %}
+                    <a href="/forum/{{ current_board.id }}/{{ current_thread.id }}" style="font-size:25px;">{{ current_thread.name }}</a>
+                    Original Post at {{ post.human_readable_time() }}
+                {% else %}
+                    <a href="/forum/{{ current_board.id }}/{{ current_thread.id }}" style="font-size:25px;">Re: {{ current_thread.name }}</a>
+                    Reply #{{ loop.index - 1 }} at {{ post.human_readable_time() }}
+                {% endif %}
+                </div>
+                <div class="forumPostBody">
+                    {{ post.content }}
+                </div>
+                <div class="forumPostFooter">
+                    {{ post.account.signature }}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <h1>Reply to thread</h1>
+    <form action="" method="post">
+        <input type="hidden" name="form_type" value="viewing_old_thread"> <!-- Tells python to run code for an existing thread -->
+        <textarea cols="100" rows="10" type="text" name="post_content"></textarea>
+        <br><input style="float:left;margin-left:650px;" type="submit" value="Post Reply">
+    </form>
+    <br><br><br>
+    <a href="/forum/{{ current_board.id }}/0" style="font-size:25px;">Return to '{{ current_board.name }}' board</a><br><br>
+    <a href="/forum/0/0" style="font-size:25px;">Return to forum home</a>
+{% endif %}
+{% endblock %}
+

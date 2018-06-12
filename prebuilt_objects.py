@@ -1,20 +1,11 @@
-from locations import Location
-from abilities import Ability
-import specializations
-from game import User
-from hero import Hero
-from quests import Quest, QuestPath
-from items import (
-    OneHandedWeapon, Shield, TwoHandedWeapon, LegArmour, ChestArmour,
-    HeadArmour, FootArmour, ArmArmour, HandArmour, Ring, Consumable
-)
-from events import Trigger, Condition
-from random import choice # To create pre-built adjectives
-from forum import Forum, Board, Thread, Post
-from bestiary2 import MonsterTemplate
+import random  # To create pre-built adjectives
+
+import models
+import models.geometry
+import models.events
+import models.forum
 
 # for testing
-import pdb
 
 """
 This module preloads all of its objects directly into the database or does
@@ -59,24 +50,46 @@ which loads these object from a .csv file.
 
 adjective_list = ["Dark", "Creepy", "Shadowy", "Haunted", "Sacred"]
 
-starting_world = Location(name="Htrae", location_type="map")
+starting_world = models.Location(name="Htrae", location_type="map")
 starting_world.display.page_heading = "You are wandering in the world"
 starting_world.page_heading = "You are looking at the world map."
 starting_world.display.paragraph = "Be safe"
 starting_world.display.page_image = "htrae.jpg"
 
+"""
+Nodes used:
+    5 - Thornwall (town)
+    7 - Old Man's Hut (building)
+    2 - Cave (dungeon)
+    8 - Forest (dungeon)
+    4 - Outpost (town)
+"""
+
 node_grid = []
-for i in range(0, 12):
+for i in range(0, 10):
     node_grid.append(
-        Location(name="Location{}".format(i),
-                 location_type='explorable'))
+        models.Location(name="Location{}".format(i), location_type='explorable'))
 starting_world.children = node_grid
+
+node_grid[0].point = models.geometry.Point(75, 120)
+node_grid[1].point = models.geometry.Point(170, 135)
+node_grid[3].point = models.geometry.Point(75, 165)
+node_grid[6].point = models.geometry.Point(230, 175)
+node_grid[9].point = models.geometry.Point(230, 235)
 
 town = node_grid[5]
 town.name = "Thornwall"
 town.type = 'town'
 town.terrain = 'city'
+town.point = models.geometry.Point(175, 175)
 town.update()
+
+town2 = node_grid[4]
+town2.name = "Outpost"
+town2.type = 'town'
+town2.terrain = 'city'
+town2.point = models.geometry.Point(60, 195)
+town2.update()
 
 """
 town.display.places_of_interest=[
@@ -89,23 +102,33 @@ town.display.places_of_interest=[
 ("/WorldMap/{}/{}".format(town.location_world.name, town.id), "World Map")
 ]
 """
-blacksmith = Location('Blacksmith', 'store')
-#blacksmith.children.append(Location('armoury', 'blacksmith'))
-#blacksmith.children.append(Location('weaponry', 'store'))
-marketplace = Location('Marketplace', 'store')
-#marketplace.children.append(Location('general', 'marketplace'))
-tavern = Location("Red Dragon Inn", 'tavern')
 
-barracks = Location('Barracks', 'barracks')
-spar = Location('Spar', 'spar')
+# Town's children
+blacksmith = models.Location('Blacksmith', 'store')
+marketplace = models.Location('Marketplace', 'store')
+tavern = models.Location("Red Dragon Inn", 'tavern')
+tavern.display.page_title = "Tavern"
+tavern.display.page_heading = "You enter the Red Dragon Inn."
+tavern.display.page_image = "bartender"
+tavern.display.paragraph = None
+
+barracks = models.Location('Barracks', 'barracks')
+spar = models.Location('Spar', 'spar')
 spar.display.page_title = "Sparring Room"
+spar.display.paragraph = "Spar with the trainer."
 barracks.children.append(spar)
-barracks.children.append(Location('Arena', 'arena'))
+arena = models.Location('Arena', 'arena')
+arena.display.paragraph = "Compete in the arena."
+barracks.children.append(arena)
 
 town.children.append(blacksmith)
 town.children.append(barracks)
 town.children.append(marketplace)
 town.children.append(tavern)
+
+# Outpost's children
+marketplace2 = models.Location('Marketplace2', 'store')
+town2.children.append(marketplace2)
 
 old_mans_hut = node_grid[7]
 old_mans_hut.name = "Old Man's Hut"
@@ -114,38 +137,52 @@ old_mans_hut.update()
 old_mans_hut.display.page_heading = "Old Man's Hut"
 old_mans_hut.display.page_image = 'hut.jpg'
 old_mans_hut.display.paragraph = "Nice to see you again kid. What do you need?"
+old_mans_hut.point = models.geometry.Point(300, 175)
 
-gate = Location('Village Gate', 'gate')
+
+gate = models.Location('Village Gate', 'gate')
 town.children.append(gate)
 
+NUM_OF_DUNGEONS = 2
 # Child of Dungeon Entrance
-explore_dungeon = Location('Explore Dungeon', 'explore_dungeon')
-explore_dungeon.display.page_title = "Exploring"
+explorable_dungeons = []
+for n in range(NUM_OF_DUNGEONS):
+    explorable_dungeon = models.Location('Explore Dungeon{}'.format(n), 'explore_dungeon')
+    explorable_dungeon.display.page_title = "Exploring"
+    explorable_dungeons.append(explorable_dungeon)
+
 
 # Child of all "type == dungeon": Cave/Forest/etc.
-dungeon_entrance = Location('Dungeon Entrance', 'dungeon_entrance')
-dungeon_entrance.display.page_image = "generic_cave_entrance2.jpg"
-dungeon_entrance.children.append(explore_dungeon)
+dungeon_entrances = []
+for n in range(NUM_OF_DUNGEONS):
+    dungeon_entrance = models.Location('Dungeon Entrance{}'.format(n), 'dungeon_entrance')
+    dungeon_entrance.display.page_heading = "You are in the dungeon and exploring!"
+    dungeon_entrance.display.page_image = "generic_cave_entrance2.jpg"
+    dungeon_entrance.display.paragraph = "The entrance of a crumbling ruin."
+    dungeon_entrance.children.append(explorable_dungeons[n])
+    dungeon_entrances.append(dungeon_entrance)
 
 cave = node_grid[2]
-cave.name = choice(adjective_list) + " Cave"
+cave.name = random.choice(adjective_list) + " Cave"
 cave.type = 'dungeon'
 cave.terrain = 'cave'
 cave.update()
 cave.display.page_heading = "You are outside {}".format(cave.name)
 cave.display.page_image = "generic_cave_entrance.jpg"
 cave.display.paragraph = "There are many scary places to die within the cave. Have a look!"
-cave.children.append(dungeon_entrance)
+cave.children.append(dungeon_entrances[0])
+cave.point = models.geometry.Point(240, 75)
 
 forest = node_grid[8]
-forest.name = choice(adjective_list) + " Forest"
+forest.name = random.choice(adjective_list) + " Forest"
 forest.type = 'dungeon'
 forest.terrain = 'forest'
 forest.update()
 forest.display.page_heading = "You are outside {}".format(forest.name)
 forest.display.page_image = "generic_forest_entrance.jpg"
 forest.display.paragraph = "There are many scary places to die within the forest. Have a look!"
-forest.children.append(dungeon_entrance)
+forest.children.append(dungeon_entrances[1])
+forest.point = models.geometry.Point(60, 235)
 
 node_grid[0].adjacent = [node_grid[1], node_grid[3], node_grid[5]]
 node_grid[1].adjacent = [node_grid[0], node_grid[2], node_grid[5]]
@@ -158,7 +195,6 @@ node_grid[6].adjacent = [node_grid[5], node_grid[7], node_grid[9]]
 node_grid[7].adjacent = [node_grid[6]]
 node_grid[8].adjacent = [node_grid[5]]
 node_grid[9].adjacent = [node_grid[5], node_grid[6]]
-node_grid[10].adjacent = []
 
 current_location = town
 game_worlds = [starting_world]  # Just chop this out and use world instead.
@@ -171,35 +207,32 @@ game_worlds = [starting_world]  # Just chop this out and use world instead.
 #########
 # Conditions
 #########
-blacksmith_condition = Condition('current_location', '==', blacksmith)
-blacksmith_is_parent_of_current_location_condition \
-    = Condition('current_location.parent', '==', blacksmith)
-
-
+blacksmith_condition = models.events.Condition('current_location', '==', blacksmith)
+blacksmith_is_parent_of_current_location_condition = models.events.Condition('current_location.parent', '==', blacksmith)
 
 ##########
 # Triggers
 ##########
-visit_blacksmith_trigger = Trigger(
+visit_blacksmith_trigger = models.events.Trigger(
     'move_event', conditions=[blacksmith_condition],
     extra_info_for_humans='Should activate when '
                           'the hero.current_location.id == the id of the '
                           'blacksmith object.')
 
-buy_item_from_blacksmith_trigger = Trigger(
+buy_item_from_blacksmith_trigger = models.events.Trigger(
     'buy_event',
     conditions=[blacksmith_condition],
     extra_info_for_humans='Should activate when buy code runs and '
                           'hero.current_location.id == id of the blacksmith.'
 )
 
-equip_item_trigger = Trigger(
+equip_item_trigger = models.events.Trigger(
     'equip_event',
     conditions=[],
     extra_info_for_humans="Should activate when equip_event spawns."
 )
 
-unequip_item_trigger = Trigger(
+unequip_item_trigger = models.events.Trigger(
     'unequip_event',
     conditions=[],
     extra_info_for_humans="Should activate when unequip_event spawns."
@@ -209,26 +242,26 @@ unequip_item_trigger = Trigger(
 ###########
 # Quests
 ##########
-blacksmith_quest_stage1 = Quest(
+blacksmith_quest_stage1 = models.Quest(
     "Go talk to the blacksmith",
     "Find the blacksmith in Thornwall and enter his shop.",
     trigger=visit_blacksmith_trigger
 )
 
-blacksmith_quest_stage2 = Quest(
+blacksmith_quest_stage2 = models.Quest(
     "Buy your first item",
     "Buy any item from the blacksmith.",
     reward_experience=4,
     trigger=buy_item_from_blacksmith_trigger
 )
 
-inventory_quest_stage1 = Quest(
+inventory_quest_stage1 = models.Quest(
     "Equip an item",
     "Equip any item in your inventory.",
     trigger=equip_item_trigger
 )
 
-inventory_quest_stage2 = Quest(
+inventory_quest_stage2 = models.Quest(
     "Unequip an item",
     "Unequip any item in your inventory.",
     trigger=unequip_item_trigger
@@ -244,13 +277,13 @@ inventory_quest_stage2 = Quest(
 all_quests = [blacksmith_quest_stage1, blacksmith_quest_stage2,
               inventory_quest_stage1, inventory_quest_stage2]
 
-meet_the_blacksmith_path = QuestPath(
+meet_the_blacksmith_path = models.QuestPath(
     "Get Acquainted with the Blacksmith",
     "Find the blacksmith and buy something from him.",
     quests=[blacksmith_quest_stage1, blacksmith_quest_stage2]
 )
 
-learn_about_your_inventory_path = QuestPath(
+learn_about_your_inventory_path = models.QuestPath(
     "Learn how your inventory works",
     "Practice equipping an unequipping.",
     quests=[inventory_quest_stage1, inventory_quest_stage2],
@@ -262,70 +295,79 @@ default_quest_paths = [
 ]
 
 ##########
-# Users (and heroes)
+# Accounts (and heroes)
 """
-NOTE: password is set as plaintext here. It must (and currently is) hashed in database.py
+NOTE: password is set as plaintext here. It must (and currently is) hashed in connect_to_database.py
 when prebuilt_objects are preloaded into the database.
 """
 ##########
-admin = User(username="admin", password="admin", is_admin=True)
-admin.prestige = 500
-adminHero = Hero(name="Admin", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
+admin = models.Account(username="admin", password="admin", is_admin=True)
+admin.signature = "I am admin."
+adminHero = models.Hero(name="Gnahz", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
 admin.heroes = [adminHero]
 
-marlen = User(username="marlen", password="brunner", is_admin=True)
-marlen.prestige = 500
-haldon = Hero(name="Haldon", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
+marlen = models.Account(username="marlen", password="brunner", is_admin=True)
+marlen.signature = "Insert some joke about Haldon here."
+haldon = models.Hero(name="Haldon", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
 marlen.heroes = [haldon]
-users = [marlen, admin]
+
+elthran = models.Account(username="elthran", password="brunner", is_admin=True)
+elthranHero = models.Hero(name="Elthran", fathers_job="Priest", current_world=starting_world, current_location=town, gold=5000)
+elthran.heroes = [elthranHero]
+
+users = [elthran, marlen, admin]
+for user in users:
+    user.prestige = 50
+
 ##########
 # Items
 ##########
 all_store_items = [
-    ChestArmour("Cloth Tunic", buy_price=18, description="A simple cloth tunic.", template=True,
-                proficiency_data=[
-                    ('Defence', {'base': 5})]),
-    TwoHandedWeapon("Gnarled Staff", buy_price=13, description="An old, simple walking stick.", template=True,
-                    proficiency_data=[
-                        ('Damage', {'base': 15}),
-                        ('Combat', {'modifier': 10})]),
-    Shield("Small Shield", buy_price=25, description="A simple wooden shield.", template=True,
-           proficiency_data=[
-                ('Block', {'base': 25}),
-                ('BlockAmount', {'base': 15})]),
-    OneHandedWeapon("Rusted Dagger", buy_price=23, description="A rusted dagger in poor condition.", template=True,
-                    proficiency_data=[
-                        ('Damage', {'base': 5}),
-                        ('Speed', {'base': 0.5})]),
-    Ring("Silver Ring", buy_price=35, description="A silver ring with no markings. Nothing seems special about it.", template=True, style="silver",
-                    proficiency_data=[
-                        ('Luck', {'base': 1})])
+    models.items.ChestArmour("Cloth Tunic", buy_price=18, description="A simple cloth tunic.", template=True, proficiency_data=[('Defence', {'base': 5})]),
+    models.items.TwoHandedWeapon("Gnarled Staff", buy_price=13, description="An old, simple walking stick.", template=True, damage_type='Blunt', proficiency_data=[('Strength', {'base': 15}), ('Combat', {'base': 0, 'modifier': 100})]),
+    models.items.Shield("Small Shield", buy_price=25, description="A simple wooden shield.", template=True, proficiency_data=[('Block', {'base': 25}), ('BlockAmount', {'base': 15})]),
+    models.items.OneHandedWeapon("Poisoned Dagger", buy_price=23, description="A rusted dagger in poor condition.", template=True, damage_type='Piercing', proficiency_data=[('Strength', {'base': 7}), ('Speed', {'base': 0.6}), ('PoisonAmount', {'base': 1})]),
+    models.items.Ring("Silver Ring", buy_price=35, description="A silver ring with no markings. Nothing seems special about it.", template=True, style="silver", proficiency_data=[('Luck', {'base': 1})])
     ]
 
 all_marketplace_items = [
-    Consumable("Minor Health Potion", 3,
-               proficiency_data=[('Health', {'base': 10})], template=True),
-    Consumable("Major Health Potion", 6,
-               proficiency_data=[('Health', {'base': 50})], template=True),
-    Consumable("Major Faith Potion", 6,
-               proficiency_data=[('Sanctity', {'base': 50})], template=True),
-    Consumable("Major Awesome Max Potion", 6000,
-               proficiency_data=[('Sanctity', {'base': 50})],
-               template=True)
+    models.items.Consumable("Minor Health Potion", 3, proficiency_data=[('Health', {'base': 10})], template=True),
+    models.items.Consumable("Major Health Potion", 6, proficiency_data=[('Health', {'base': 50})], template=True),
+    models.items.Consumable("Major Faith Potion", 6, proficiency_data=[('Sanctity', {'base': 50})], template=True),
+    models.items.Consumable("Major Awesome Max Potion", 6000, proficiency_data=[('Sanctity', {'base': 50})], template=True)
 ]
 
-all_specializations = [getattr(specializations, cls_name)(template=True)
-                       for cls_name in specializations.ALL_CLASS_NAMES]
+all_specializations = [getattr(models.specializations, cls_name)(template=True)
+                       for cls_name in models.specializations.ALL_CLASS_NAMES]
 
 
-basic_forum = Forum("Basic")  # Create the first forum
+basic_forum = models.forum.Forum("Basic")  # Create the first forum
 all_forums = [basic_forum]  # Add it to the list of forums to be generated on game init
-basic_forum.create_board(Board("General"))  # Add a board to the forum so it doesn't seem so lonely
+basic_forum.boards.append(models.forum.Board("General"))  # Add a board to the forum so it doesn't seem so lonely
 
-all_monsters = [MonsterTemplate(name="Sewer Rat", species="Rat", species_plural="Rats", level_max=10, experience_rewarded=1, level_modifier=0.5,
-                        cave=True, city=True,
-                        agility=1.5, charisma=0, divinity=0.1, resilience=1.2, quickness=1.7, willpower=0.5, brawn=0.9, vitality=0.8, intellect=0),
-                MonsterTemplate(name="Rabid Dog", species="Dog", species_plural="Dogs", level_max=20, experience_rewarded=2,
-                        forest=True,
-                        agility=1.5, charisma=0, divinity=0.1, resilience=1.5, fortuity=1, quickness=1.7, willpower=0.5, brawn=1.5, vitality=0.8, intellect=0)
-                ]
+all_monsters = [
+    models.Hero(name="Sewer Rat", species="Rat", maximum_level=10, forest=False, city=True, template=True),
+    models.Hero(name="Giant Spider", species="Spider", maximum_level=10, forest=True, city=False, template=True),
+    models.Hero(name="Rabid Dog", species="Dog", maximum_level=10, forest=False, city=True, template=True)]
+
+for i in range(len(all_monsters)):
+    all_monsters[i].is_monster = True
+    if all_monsters[i].species == "Rat":
+        all_monsters[i].species_plural = "Rats"
+        all_monsters[i].base_proficiencies.poison_chance.base = 15
+        all_monsters[i].base_proficiencies.poison_duration.base = 4
+        all_monsters[i].base_proficiencies.poison_amount.base = 2
+    if all_monsters[i].species == "Spider":
+        all_monsters[i].species_plural = "Spiders"
+        all_monsters[i].base_proficiencies.poison_chance.base = 35
+        all_monsters[i].base_proficiencies.poison_duration.base = 3
+        all_monsters[i].base_proficiencies.poison_amount.base = 1
+    if all_monsters[i].species == "Dog":
+        all_monsters[i].species_plural = "Dogs"
+        all_monsters[i].base_proficiencies.health.current += 5
+
+
+all_npcs = [
+    models.NPC("Old Man", "Human", 87),
+    models.NPC("Blacksmith", "Human", 53)
+]

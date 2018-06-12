@@ -1,12 +1,13 @@
 __pycache__/
-*.pyc
 *.pyo
 *.bak
 .editorconfig
-static/database.db
-static/database.db-journal
+mydb_data.sql
+mydb_new_database.sql
 .idea/
 .cache/
 templates/desktop.ini
 .pytest_cache/
-.env
+private_config.py
+elthranonline.egg-info/
+specifications/.ipynb_checkpoints/

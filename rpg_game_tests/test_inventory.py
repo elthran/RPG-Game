@@ -1,11 +1,8 @@
 import pytest
-from pprint import pprint
-import pdb
-import re
 
-from inventory import Inventory
-from items import (Item, OneHandedWeapon, HeadArmour, TwoHandedWeapon, Ring,
-                   Shield, LegArmour)
+from models.inventory import Inventory
+from models.items import (Item, OneHandedWeapon, HeadArmour, TwoHandedWeapon, Ring,
+                          Shield, LegArmour)
 
 from . import GenericTestCase
 
@@ -54,7 +51,7 @@ class TestInventory(GenericTestCase):
         # Add second stock item/template combo - 2 handed weapon.
         template_2handed = TwoHandedWeapon(
             "Medium Polearm", buy_price=5,
-            proficiency_data=[('Damage', {'base': 30}),
+            proficiency_data=[('Strength', {'base': 30}),
                               ('Combat', {'base': 60}),
                               ('Speed', {'base': 1})],
             template=True)
@@ -79,7 +76,7 @@ class TestInventory(GenericTestCase):
 
         template_sword = OneHandedWeapon(
             "Big Dagger", buy_price=10,
-            proficiency_data=[('Damage', {'base': 300}),
+            proficiency_data=[('Strength', {'base': 300}),
                               ('Combat', {'base': 600}),
                               ('Speed', {'base': 2})],
             template=True)

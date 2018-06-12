@@ -1,0 +1,18 @@
+Current concerns:
+
+Is it possible to migrate tavern quest code?
+Is marketplace code dead code?
+
+Old concerns:
+
+I'm probably mangling session usage again.
+In services.validate I'm doing a auto-closing query? I think?
+This calls services.attempt_password_migration .. which might close the session.
+Or open a close a different one? Anyways I'm not sure of the chain of custody
+of various session objects.
+Note use of Account.save()/delete() and rebuild the session
+
+I'm not even sure if my Fancy Session manager (models.base_classes.Base.query -> database.sessions.session_scope) will actually commit changes or not? Or if it even closes ...
+
+
+NEED TO TEST if object.filter_by() .. will save properly!

@@ -1,8 +1,7 @@
 import pytest
-import pdb
 
 from . import GenericTestCase
-from base_classes import DictHybrid, attribute_mapped_dict_hybrid
+from models import attribute_mapped_dict_hybrid, DictHybrid
 
 
 class TestDictHybrid:
