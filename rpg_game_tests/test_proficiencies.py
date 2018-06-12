@@ -2,8 +2,7 @@ from . import GenericTestCase
 
 # from hero import Hero
 
-from proficiencies import Proficiency, Health, Regeneration
-import pdb
+from models.proficiencies import Proficiency, Health, Regeneration
 
 """
 To add current directory to sys.path run like this:

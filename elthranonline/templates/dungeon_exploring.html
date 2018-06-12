@@ -1,0 +1,26 @@
+<!-- This should be merged with generic_location hopefully -->
+
+{% extends "layout.html" %}
+{% set location = hero.current_location %}
+{% if page_title is not defined %}
+    {% set page_title = location.display.page_title %}
+{% endif %}
+{% if places_of_interest is not defined %}
+    {% set places_of_interest = location.places_of_interest %}
+{% endif %}
+{% set paragraph = paragraph if paragraph else location.display.paragraph %}
+{% block block1 %}
+        <h1>I am at {{ location.name }}</h1>
+        <img src="/static/images/{{ location.display.page_image }}" height="500" width="500" alt="{{ location.display.page_image }}">
+        <h3>{{ paragraph }}</h3>
+        {% for dialogue in dialogues %}
+        {{ dialogue | safe }}
+        {% endfor %}
+        {% for link in page_links%}
+        <h2>{{ link[0] }} <a href={{ link[1] }}>{{ link[2] }}</a>{{ link[3] }}</h2>
+        {% endfor %}
+        {% if location.parent %}
+        <p>Return to <a href="{{ location.parent.url }}">{{ location.parent.type }}</a>: {{ location.parent.display.paragraph }}</p>
+        {% endif %}
+{% endblock %}
+

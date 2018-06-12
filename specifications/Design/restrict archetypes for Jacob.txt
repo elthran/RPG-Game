@@ -1,0 +1,33 @@
+11:20am
+let me lok up the exact specs that i want and lets try to code it
+But this really isn't necessarily the best way to go about it ..
+thats fine ?? as long as it works for now
+*description="User views the {}.".format(page.url?)
+ok the specific triggers i want are
+
+if hero.attributes.brawn.level >= 3:
+    brute_archetype = True
+
+and
+
+if hero.abilities.alchemy.level >= 3:
+    philosopher_archetype = True
+so all the archetypes should be locked. getting 3 brawn (an attribute) unlocks brute. and getting 3 alchemy (an ability) unlocks philosopher
+if we can get both of those hacked together, then i think i can expand it to do the others and messa round
+We could add a Locked attribute to all the Archetype classes?
+And implement a specific unlock method in each?
+sure
+Hmmmm ..
+sounds like something we will need
+I'm going to copy this conversation and try and work it out toonight.
+ok. and im going to prepare the HTML/CSS/JS
+right now clicking on an archetype on the archetype page immediately turns you into that archetype. but ill make it instead give a description of requirements if you click on it, with a button. the button will be grayed out if its locked
+actually, i dont think this requires triggers now that i think about it. just when you load the page to choose archetype it needs to check the requirements
+in the future you would want triggers for it in case you wanted a pop-up message or something when you hit the trigger. but for now i really just need to do it on that one page load
+so for now i could just load the page and do a simple,
+
+if condition met:
+    button works
+else:
+     button grayed out
+ill try and code it all today, then if you want to improve it tonight you can ?? but after thinking about it, it seems simple enough

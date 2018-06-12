@@ -3,8 +3,8 @@ if __name__ == "__main__":
     os.system("python3 -m pytest -vv {}".format(__file__))
     exit()  # prevents code from trying to run file afterwards.
 
-from events import Trigger, Condition
-from locations import Location
+from models.events import Trigger, Condition
+from models.locations import Location
 
 
 class TestTrigger:

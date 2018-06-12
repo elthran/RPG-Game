@@ -1,4 +1,4 @@
-from .test_helpers import GenericTestCase
+# from .test_helpers import GenericTestCase
 from .test_helpers import db_execute_script
 from .test_helpers import Mock
 

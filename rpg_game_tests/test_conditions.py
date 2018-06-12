@@ -3,10 +3,8 @@ if __name__ == "__main__":
     os.system("python3 -m pytest -vv {}".format(__file__))
     exit()  # prevents code from trying to run file afterwards.
 
-import pdb
-
-from events import Condition
-from locations import Location
+from models.events import Condition
+from models.locations import Location
 from . import Mock
 
 

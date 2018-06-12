@@ -1,11 +1,8 @@
 import pytest
-from pprint import pprint
-import pdb
-import re
 
-from inventory import Inventory
-from items import (Item, OneHandedWeapon, HeadArmour, TwoHandedWeapon, Ring,
-                   Shield, LegArmour)
+from models.inventory import Inventory
+from models.items import (Item, OneHandedWeapon, HeadArmour, TwoHandedWeapon, Ring,
+                          Shield, LegArmour)
 
 from . import GenericTestCase
 

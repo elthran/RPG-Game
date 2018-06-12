@@ -1,0 +1,32 @@
+Code style:
+
+1. requirements.txt?
+2. more submodules?
+
+
+
+Ideas:
+-make Database objects context objects?
+e.g.
+
+class Account(object):
+    def __init__(self, name):
+        self.account_name = name
+
+    def save():
+	db.save(self)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, ctx_type, ctx_value, ctx_traceback):
+        self.save()
+
+with Account('marlen') as account:
+    account.password = 'test'
+
+Would save the user automagically?
+
+3. Add in Group policies!
+* CRUD functionality: create, read, update, delete items and other objects
+* User permissions anagement: Admin full CRUD, Manager CRU, User R

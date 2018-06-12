@@ -1,0 +1,4 @@
+Species,Plural,Agility,Brawn,Charisma,Divinity,Fortuity,Pathfinding,Quickness,Survivalism,Resilience,Willpower
+Goblin,Goblins,1.5,0.8,0.25,0.25,1.25,0.6,1.2,1.2,0.7,1.1
+Spider,Spiders,2,0.5,0.1,0.1,0.8,0.9,0.8,2,0.4,0.7
+Wolf,Wolves,3,1,0.1,0.1,0.25,0.75,4,2,0.7,1

@@ -1,10 +1,9 @@
 __pycache__/
-*.pyc
 *.pyo
 *.bak
 .editorconfig
-static/database.db
-static/database.db-journal
+mydb_data.sql
+mydb_new_database.sql
 .idea/
 .cache/
 templates/desktop.ini

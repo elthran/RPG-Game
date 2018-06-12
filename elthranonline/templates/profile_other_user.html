@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+{% block block1 %}
+
+<!-- Messing with inbox for fun stuff -->
+{% if enemy_hero.user != hero.user %}
+<div>
+	<h1>Message user</h1>
+	<form method="post" action="" autocomplete="off">
+		<input type="text" name="message" value="" autofocus tabindex=1 />
+		<input type="submit" value="Send" autofocus tabindex=2 />
+	</form>
+	{% if confirmation %}{{ confirmation }}{% endif %}
+</div>
+
+<!-- Messing with multiplayer battling -->
+<div>
+	<h1>Battle user</h1>
+	{% if enemy_hero.base_proficiencies['health'].current == 0 %}
+	They are already dead.
+	{% elif hero.base_proficiencies['health'].current == 0 %}
+	You can't battle while you are dead.
+	{% else %}
+	<a href="/battle/{{ enemy_hero.id }}">Battle</a>
+	{% endif %}
+</div>
+{% endif %}
+<!-- End of funny code -->
+
+<!-- This is the enemy_hero page -->	
+<img class="profileImage" src="/static/images/character_background.jpg" alt="Sample">
+<div style="clear: both;"></div>
+
+<div class="profileContainer">
+<h1>General Statistics</h1>
+	<div class="profileColumn">
+		<h2>Basic</h2>
+		<ul> 
+			<li>Name: {{ enemy_hero.character_name}}</li>
+			<li>Age: {{ enemy_hero.age }}</li>
+			{% if enemy_hero.renown %}}
+				<li>Renown: {{ enemy_hero.character_name}}</li>
+			{% endif %}
+			{% if enemy_hero.devotion %}}
+				<li>Devotion: {{ enemy_hero.age }}</li>
+			{% endif %}
+			{% if enemy_hero.virtue %}}
+				<li>Virtue: {{ enemy_hero.virtue }}</li>
+			{% endif %}			
+			<li>Experience: {{ enemy_hero.experience }} / {{ enemy_hero.experience_maximum }}</li>
+			<li>Health: {{ enemy_hero.base_proficiencies['health'].current }} / {{ enemy_hero.get_summed_proficiencies()['health'].final }}</li>
+			<li>Sanctity: {{ enemy_hero.get_summed_proficiencies()['sanctity'].current }} / {{ enemy_hero.get_summed_proficiencies()['sanctity'].final }}</li>
+			<li>Storage: {{ enemy_hero.get_summed_proficiencies()['storage'].current }} / {{ enemy_hero.get_summed_proficiencies()['storage'].final }}</li>
+			<li>Endurance: {{ enemy_hero.get_summed_proficiencies()['endurance'].current }} / {{ enemy_hero.get_summed_proficiencies()['endurance'].final }}</li>
+		</ul>
+	</div>
+</div>
+<div style="clear:both;"></div>
+<h1>Return to <a href=/display_accounts/display/id>user</a> page.</h1>
+{% endblock %}
