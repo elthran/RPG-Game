@@ -96,7 +96,7 @@ class Post(models.mixins.HumanReadableTimeMixin, models.Base):
     account_id = sa.Column(sa.Integer, sa.ForeignKey('account.id', ondelete="CASCADE"))
     account = sa.orm.relationship("Account", back_populates="posts")
 
-    content = sa.Column(sa.String(50))
+    content = sa.Column(sa.String(512))
 
     @sa.ext.hybrid.hybrid_property
     def author(self):
